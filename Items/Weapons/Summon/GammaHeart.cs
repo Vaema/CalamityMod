@@ -8,15 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class GammaHeart : ModItem
+    public class GammaHeart : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gamma Heart");
-            Tooltip.SetDefault("Summons radioactive heads that are bound by your body");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
             Item.width = 58;

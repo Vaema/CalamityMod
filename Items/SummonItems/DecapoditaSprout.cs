@@ -1,23 +1,19 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs.Crabulon;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class DecapoditaSprout : ModItem
+    public class DecapoditaSprout : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Decapodita Sprout");
-            Tooltip.SetDefault("Summons Crabulon when used in the Mushroom biome\n" +
-                "Enrages outside the Underground Mushroom biome\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 3; // Worm Food / Bloody Spine
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 3; // Worm Food / Bloody Spine
         }
 
         public override void SetDefaults()
@@ -31,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -46,12 +42,12 @@ namespace CalamityMod.Items.SummonItems
             SoundEngine.PlaySound(SoundID.Roar, player.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-250, 251)), (int)(player.position.Y - 500f), ModContent.NPCType<Crabulon>(), 1);
+                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-160, 161)), (int)(player.position.Y - 320f), ModContent.NPCType<Crabulon>(), 1);
                 Main.npc[npc].timeLeft *= 20;
                 CalamityUtils.BossAwakenMessage(npc);
             }
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<Crabulon>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Crabulon>());
 
             return true;
         }

@@ -5,23 +5,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class MarksmanRound : ModItem
+    public class MarksmanRound : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Marksman Round");
-            Tooltip.SetDefault("A carefully crafted round which can be ricocheted off of midair coins\n" +
-                "This allows other guns to utilize the coins tossed by Crackshot Colt and Midas Prime");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 12;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 12;
             Item.height = 26;
-            Item.maxStack = 999;
+            Item.damage = 12;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 2.25f;
             Item.value = Item.sellPrice(copper: 10);

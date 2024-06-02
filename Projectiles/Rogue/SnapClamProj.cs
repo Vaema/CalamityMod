@@ -1,20 +1,17 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SnapClamProj : ModProjectile
+    public class SnapClamProj : ModProjectile, ILocalizedModType
     {
-        public int clamCounter = 0;
-        public bool openClam = true;
-        public bool onEnemy = false;
+        public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Snap Clam");
             Main.projFrames[Projectile.type] = 2;
         }
 
@@ -26,18 +23,17 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
-            if (openClam && !onEnemy)
+            if (Projectile.ai[2] < 30f && Projectile.ai[0] != 1f)
             {
-                ++clamCounter;
-                if (clamCounter >= 30)
-                {
-                    openClam = false;
+                Projectile.ai[2]++;
+                if (Projectile.ai[2] >= 30f)
                     Projectile.damage = (int)(Projectile.damage * 0.8);
-                }
             }
             if (Projectile.ai[0] == 0f)
             {
@@ -48,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(15);
-            if (openClam && !onEnemy)
+            if (Projectile.ai[2] < 30f && Projectile.ai[0] != 1f)
             {
                 Projectile.frame = 1;
             }
@@ -58,14 +54,13 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (openClam)
-            {
-                onEnemy = true;
-                Projectile.ModifyHitNPCSticky(2, false);
-            }
+            if (Projectile.ai[2] < 30f)
+                Projectile.ModifyHitNPCSticky(2);
         }
+
+        public override bool? CanDamage() => Projectile.ai[0] == 1f ? false : base.CanDamage();
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -76,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
             return null;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -85,17 +80,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 20;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num194 = 0; num194 < 20; num194++)
+            for (int i = 0; i < 20; i++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 0, new Color(115, 124, 124), 1f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 2f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 0, new Color(115, 124, 124), 1f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 2f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<SnapClamDebuff>(), 240);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<SnapClamDebuff>(), 240);
     }
 }

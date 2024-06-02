@@ -1,20 +1,21 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.ID;
+using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using Terraria.ID;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class BrimstoneSlagWall : ModItem
+    public class BrimstoneSlagWall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
+            Item.ResearchUnlockCount = 400;
         }
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -26,7 +27,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<BrimstoneSlag>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(4).
+                AddIngredient<BrimstoneSlag>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

@@ -1,16 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Healing
 {
-    public class BurntSiennaProj : ModProjectile
+    public class BurntSiennaProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Healing";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sienna");
-        }
 
         public override void SetDefaults()
         {
@@ -21,7 +19,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
-			Projectile.tileCollide = false;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
@@ -29,7 +27,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.velocity *= 0.95f;
 
             Projectile.HealingProjectile(3, (int)Projectile.ai[0], 6f, 15f, false);
-            int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 1f);
+            int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 1f);
             Dust dust = Main.dust[dusty];
             dust.noGravity = true;
             dust.position.X -= Projectile.velocity.X * 0.2f;

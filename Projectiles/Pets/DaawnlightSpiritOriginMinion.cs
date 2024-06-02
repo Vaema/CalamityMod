@@ -1,16 +1,16 @@
-using CalamityMod.Buffs.Pets;
+﻿using CalamityMod.Buffs.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Pets
 {
-    public class DaawnlightSpiritOriginMinion : ModProjectile
+    public class DaawnlightSpiritOriginMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Daawnlight");
             Main.projFrames[Projectile.type] = 12;
         }
 
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Pets
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Owner.FindBuffIndex(ModContent.BuffType<ArcherofLunamoon>()) != -1)
                 Owner.ClearBuff(ModContent.BuffType<ArcherofLunamoon>());

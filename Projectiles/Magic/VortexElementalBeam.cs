@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,8 +10,9 @@ using Terraria.Utilities;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class VortexElementalBeam : ModProjectile
+    public class VortexElementalBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public const int Lifetime = 30;
         public const float LightningTurnRandomnessFactor = 1.7f;
         public ref float InitialVelocityAngle => ref Projectile.ai[0];
@@ -21,7 +23,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 30;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
@@ -117,7 +118,7 @@ namespace CalamityMod.Projectiles.Magic
         #region Drawing
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D lightningSegmentTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D lightningSegmentTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Projectile.GetAlpha(lightColor);
             Vector2 lightningScale = new Vector2(Projectile.scale) / 2f;
             for (int i = 0; i < 3; i++)
@@ -155,8 +156,9 @@ namespace CalamityMod.Projectiles.Magic
         }
         #endregion
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
             for (int i = 0; i < Projectile.oldPos.Length - 1; i++)
             {
                 // Skip zeroed old positions. They are almost certainly a
@@ -169,7 +171,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 dustSpawnPosition = Vector2.Lerp(Projectile.oldPos[i], Projectile.oldPos[i + 1], j / 8f);
                     dustSpawnPosition += Projectile.Size * 0.5f;
 
-                    Dust electricity = Dust.NewDustPerfect(dustSpawnPosition, Main.rand.NextBool(2) ? 226 : 229);
+                    Dust electricity = Dust.NewDustPerfect(dustSpawnPosition, Main.rand.NextBool() ? 226 : 229);
                     electricity.velocity = Vector2.Zero;
                     electricity.scale = Main.rand.NextFloat(1.1f, 1.18f);
                     electricity.noGravity = true;

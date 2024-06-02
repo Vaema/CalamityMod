@@ -1,52 +1,38 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.Plates;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Placeables.Ores;
-using System.Collections.Generic;
+using CalamityMod.Items.Placeables.Plates;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Linq;
 
 namespace CalamityMod.Items
 {
-    public class NormalityRelocator : ModItem
+    public class NormalityRelocator : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Normality Relocator");
-            Tooltip.SetDefault("I'll be there in the blink of an eye\n" +
-                "This line is modified below\n" +
-                "Fall speed is doubled for 30 frames after teleporting\n" +
-                "Teleportation is disabled while Chaos State is active\n" +
-                "Works while in the inventory");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 7));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.Calamity().donorItem = true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list)
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.NormalityRelocatorHotKey);
+
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
-            string hotkey = CalamityKeybinds.NormalityRelocatorHotKey.TooltipHotkeyString();
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
-
-            if (line != null)
-                line.Text = "Press " + hotkey + " to teleport to the position of the mouse";
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
         }
-
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
 
         public override void UpdateInventory(Player player)
         {

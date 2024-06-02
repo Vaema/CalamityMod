@@ -1,14 +1,14 @@
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Items.Weapons.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class MeteorStarExplosion : ModProjectile
+    public class MeteorStarExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Explosion");
             Main.projFrames[Projectile.type] = 7;
         }
 
@@ -33,20 +33,26 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
         }
 
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            damage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
+            int intendedDamage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
+
+            modifiers.SourceDamage *= 0f;
+            modifiers.SourceDamage.Flat += intendedDamage * (Main.masterMode ? 2.4f : Main.expertMode ? 1.6f : 1f);
             if (Projectile.ai[0] == 1f)
-                damage /= 2;
+                modifiers.SourceDamage.Flat /= 2;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (target.townNPC)
             {
-                damage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
+                int intendedDamage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
+
+                modifiers.SourceDamage *= 0f;
+                modifiers.SourceDamage.Flat += intendedDamage * (Main.masterMode ? 2.4f : Main.expertMode ? 1.6f : 1f);
                 if (Projectile.ai[0] == 1f)
-                    damage /= 2;
+                    modifiers.SourceDamage.Flat /= 2;
             }
         }
     }

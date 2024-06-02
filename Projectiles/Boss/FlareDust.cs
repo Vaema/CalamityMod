@@ -1,16 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class FlareDust : ModProjectile
+    public class FlareDust : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/Boss/FlareBomb";
 
         private bool start = true;
@@ -20,7 +21,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flare Dust");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -79,17 +79,17 @@ namespace CalamityMod.Projectiles.Boss
                 start = false;
             }
 
-            float amount = Projectile.localAI[0] / 120f;
-            if (amount > 1f)
-                amount = 1f;
-            distance += MathHelper.Lerp(1f, 9f, amount);
+            float earlyTimeProjSpeed = Projectile.localAI[0] / 120f;
+            if (earlyTimeProjSpeed > 1f)
+                earlyTimeProjSpeed = 1f;
+            distance += MathHelper.Lerp(1f, 9f, earlyTimeProjSpeed);
 
             if (Projectile.timeLeft < 380)
             {
-                float amount2 = (Projectile.localAI[0] - 300f) / 240f;
-                if (amount2 > 1f)
-                    amount2 = 1f;
-                distance += MathHelper.Lerp(1f, 9f, amount2);
+                float longTimeProjSpeed = (Projectile.localAI[0] - 300f) / 240f;
+                if (longTimeProjSpeed > 1f)
+                    longTimeProjSpeed = 1f;
+                distance += MathHelper.Lerp(1f, 9f, longTimeProjSpeed);
             }
 
             double rad = MathHelper.ToRadians(Projectile.ai[1]);
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.position.Y = startingPosY - (int)(Math.Sin(rad) * distance) - Projectile.height / 2;
             }
 
-            Projectile.ai[1] += (1.1f - amount) * 0.5f;
+            Projectile.ai[1] += (1.1f - earlyTimeProjSpeed) * 0.5f;
             Projectile.localAI[0] += 1f;
         }
 
@@ -112,22 +112,22 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = texture.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = texture.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(48);
             for (int d = 0; d < 2; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + Main.rand.NextFloat(0.1f, 1f);
@@ -135,10 +135,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int d = 0; d < 4; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 2f;
             }
 
@@ -211,15 +211,15 @@ namespace CalamityMod.Projectiles.Boss
             return minDist <= 16f * Projectile.scale;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             if (Projectile.ai[0] == 3f)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 240);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 160);
             else
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 120);
+                target.AddBuff(ModContent.BuffType<Dragonfire>(), 60);
         }
     }
 }

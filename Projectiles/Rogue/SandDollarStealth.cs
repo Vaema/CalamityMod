@@ -5,14 +5,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SandDollarStealth : ModProjectile
+    public class SandDollarStealth : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SandDollar";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sand Dollar");
-        }
 
         public override void SetDefaults()
         {
@@ -28,15 +24,9 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = 10;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            OnHitEffects();
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects();
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            OnHitEffects();
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects();
 
         private void OnHitEffects()
         {

@@ -4,11 +4,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class LostSoulFriendly : ModProjectile
+    public class LostSoulFriendly : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lost Soul");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -50,27 +50,22 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         // Reduce damage of projectiles if more than the cap are active
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (!Projectile.CountsAsClass<ThrowingDamageClass>())
             {
-                int projectileCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
                 int cap = 5;
-                int oldDamage = damage;
-                if (projectileCount > cap)
-                {
-                    damage -= (int)(oldDamage * ((projectileCount - cap) * 0.05));
-                    if (damage < 1)
-                        damage = 1;
-                }
+                float capDamageFactor = 0.05f;
+                int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+                modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int j = 0; j <= 10; j++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 175, 0f, 0f, 100, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
             }
         }
 

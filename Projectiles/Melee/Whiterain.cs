@@ -1,18 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class Whiterain : ModProjectile
+    public class Whiterain : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rain");
-        }
 
         public override void SetDefaults()
         {
@@ -32,20 +28,20 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item125, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.Item125 with { Volume = 0.7f }, Projectile.Center);
             }
 
             Lighting.AddLight(Projectile.Center, 0.2f, 0.2f, 0.2f);
 
-            for (int num457 = 0; num457 < 2; num457++)
+            for (int i = 0; i < 2; i++)
             {
-                int num458 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 91, 0f, 0f, 100, default, 1.25f);
-                Main.dust[num458].noGravity = true;
-                Main.dust[num458].velocity *= 0.5f;
-                Main.dust[num458].velocity += Projectile.velocity * 0.1f;
+                int shiny = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemDiamond, 0f, 0f, 100, default, 1.25f);
+                Main.dust[shiny].noGravity = true;
+                Main.dust[shiny].velocity *= 0.5f;
+                Main.dust[shiny].velocity += Projectile.velocity * 0.1f;
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 320f, 14f, 20f);
         }
     }
 }

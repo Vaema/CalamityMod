@@ -1,23 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ContaminatedBileFlask : ModProjectile
+    public class ContaminatedBileFlask : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ContaminatedBile";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Contaminated Bile");
-        }
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 24;
+            Projectile.width = Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
@@ -37,7 +33,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation += MathHelper.ToRadians(Projectile.velocity.Length());
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item107, Projectile.Bottom);
 

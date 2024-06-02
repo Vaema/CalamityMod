@@ -1,5 +1,7 @@
-﻿using CalamityMod.Tiles.Abyss.AbyssAmbient;
+﻿using System.Collections.Generic;
+using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -9,25 +11,26 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class AbyssGravel : ModTile
     {
-        int animationFrameWidth = 288;
+        int animationFrameWidth = 234;
 
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AbyssGravelMine", 3);
-        
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-            Main.tileMergeDirt[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.AbyssGravel>();
             AddMapEntry(new Color(25, 28, 54));
             MineResist = 5f;
             MinPick = 65;
             HitSound = MineSound;
             DustType = 33;
+
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -39,28 +42,26 @@ namespace CalamityMod.Tiles.Abyss
         {
             num = fail ? 1 : 3;
         }
-        
+
         public override void RandomUpdate(int i, int j)
         {
             Tile tile = Main.tile[i, j];
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
 
-            //place kelp
-            if (WorldGen.genRand.Next(8) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            // Place kelp
+            if (WorldGen.genRand.NextBool(8) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<AbyssKelp>();
                 up.HasTile = true;
                 up.TileFrameY = 0;
 
-                //16 different frames, choose a random one
+                // 16 different frames, choose a random one
                 up.TileFrameX = (short)(WorldGen.genRand.Next(16) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server) 
-                {
+                if (Main.netMode == NetmodeID.Server)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
-                }
             }
         }
 
@@ -153,12 +154,6 @@ namespace CalamityMod.Tiles.Abyss
                     break;
             }
             frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, TileID.Dirt, false, false, false);
-            return false;
         }
     }
 }

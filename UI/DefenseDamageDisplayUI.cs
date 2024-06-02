@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.UI.Chat;
+using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.GameContent;
+using Terraria.UI.Chat;
 
 namespace CalamityMod.UI
 {
@@ -39,7 +39,7 @@ namespace CalamityMod.UI
             if (hoveringOverIcon)
             {
                 Main.hoverItemName = $"{Main.LocalPlayer.statDefense} {Language.GetTextValue("LegacyInterface.10")}" +
-                    $"\n{defenseDamage} {Language.GetTextValue("Mods.CalamityMod.DefenseDamage")}";
+                    $"\n{defenseDamage} {CalamityUtils.GetTextValue("UI.DefenseDamage")}";
             }
         }
     }

@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,21 +9,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class GraveGrimreaver : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Grave Grimreaver");
-            Tooltip.SetDefault("Hurls a cursed scythe which homes in\n"+
-            "The scythe summons skulls as it flies and explodes into bats on hit\n"+
-            "Stealth strikes spawn a flood of bats and falling skulls when destroyed\n"+
-            "Inflicts cursed flames and confusion\n"+
-            "'A dapper skeleton's weapon of choice'");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 80;
-            Item.damage = 31;
+            Item.height = 68;
+            Item.damage = 84;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 48;
@@ -32,17 +22,16 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 68;
             Item.shoot = ModContent.ProjectileType<GraveGrimreaverProjectile>();
             Item.shootSpeed = 16.5f;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
         }
 
-		public override float StealthDamageMultiplier => 0.45f;
-        public override float StealthVelocityMultiplier => 1f;
+        public override float StealthDamageMultiplier => 0.40f;
+        public override float StealthVelocityMultiplier => 1.75f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -60,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Sickle, 1).
-                AddRecipeGroup("TombstonesGroup").
+                AddIngredient(ItemID.Sickle).
+                AddRecipeGroup("AnyTombstone").
                 AddIngredient(ItemID.Bone, 50).
                 AddIngredient(ItemID.CursedFlame, 5).
                 AddIngredient(ItemID.SoulofFright, 10).

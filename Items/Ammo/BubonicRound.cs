@@ -7,23 +7,18 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Ammo
 {
     [LegacyName("AcidBullet", "AcidRound")]
-    public class BubonicRound : ModItem
+    public class BubonicRound : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Bubonic Round");
-            Tooltip.SetDefault("Bursts into virulent plague on contact\n" +
-                "Does more damage the higher the target's defense");
-        }
+        public new string LocalizationCategory => "Items.Ammo";
+        public override void SetStaticDefaults() => Item.ResearchUnlockCount = 99;
 
         public override void SetDefaults()
         {
-            Item.damage = 20;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 8;
             Item.height = 8;
-            Item.maxStack = 999;
+            Item.damage = 16;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 1.5f;
             Item.value = Item.sellPrice(copper: 16);

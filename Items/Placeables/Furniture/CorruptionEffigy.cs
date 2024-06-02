@@ -1,24 +1,17 @@
-using Terraria;
-using Terraria.ModLoader;
+﻿using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class CorruptionEffigy : ModItem
+    public class CorruptionEffigy : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Corruption Effigy");
-            Tooltip.SetDefault("When placed down, nearby players have their movement speed and crit chance increased by 10%\n" +
-                "Nearby players also suffer a 5% decrease to their damage reduction");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,6 +21,16 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.value = Item.buyPrice(0, 9, 0, 0);
             Item.rare = ItemRarityID.Orange;
             Item.createTile = ModContent.TileType<Tiles.Furniture.CorruptionEffigy>();
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<CrimsonEffigy>().
+                AddTile(TileID.TinkerersWorkbench).
+                AddCondition(Condition.InGraveyard).
+                Register()
+                .DisableDecraft();
         }
     }
 }

@@ -7,17 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class RadiatingCrystal : ModItem
+    public class RadiatingCrystal : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Radiating Crystal");
-            Tooltip.SetDefault("The crystal contains traces of holothurin\n" +
-                "Summons a radiator light pet\n" +
-                "Provides a small amount of light in the abyss");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.WispinaBottle);

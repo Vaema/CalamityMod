@@ -7,21 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Body)]
-    public class BloodflareBodyArmor : ModItem
+    public class BloodflareBodyArmor : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Body Armor");
-            Tooltip.SetDefault("12% increased damage and 8% increased critical strike chance\n" +
-                       "+40 max life");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 35;
             Item.rare = ModContent.RarityType<PureGreen>();
         }

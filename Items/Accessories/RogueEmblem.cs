@@ -1,23 +1,17 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class RogueEmblem : ModItem
+    public class RogueEmblem : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Rogue Emblem");
-            Tooltip.SetDefault("15% increased rogue damage");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
@@ -30,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             Recipe r = Recipe.Create(ItemID.AvengerEmblem);
-            r.AddIngredient(ModContent.ItemType<RogueEmblem>());
+            r.AddIngredient<RogueEmblem>();
             r.AddIngredient(ItemID.SoulofMight, 5);
             r.AddIngredient(ItemID.SoulofSight, 5);
             r.AddIngredient(ItemID.SoulofFright, 5);

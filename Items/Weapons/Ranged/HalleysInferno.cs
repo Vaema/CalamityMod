@@ -4,40 +4,41 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class HalleysInferno : ModItem
+    public class HalleysInferno : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Halley's Inferno");
-            Tooltip.SetDefault("Halley came sooner than expected\n" +
-            "Fires a flaming comet\n" +
-            "50% chance to not consume gel\n" +
-            "Right click to zoom out");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
 
+        public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
+        public static readonly SoundStyle Hit = new("CalamityMod/Sounds/Item/HalleysInfernoHit") { Volume = 0.75f };
         public override void SetDefaults()
         {
-            Item.damage = 1350;
-            Item.knockBack = 5f;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 30;
-            Item.autoReuse = true;
-            Item.useAmmo = AmmoID.Gel;
-            Item.shootSpeed = 14.6f;
-            Item.shoot = ModContent.ProjectileType<HalleysComet>();
-
             Item.width = 84;
             Item.height = 34;
+            Item.damage = 444;
+            Item.knockBack = 5.5f;
+            Item.DamageType = DamageClass.Ranged;
+
+            // Burst of 5, one every 5 frames for 25 total. Cooldown of 39 frames.
+            Item.useTime = 5;
+            Item.useAnimation = 25;
+            Item.reuseDelay = 39;
+            Item.useLimitPerAnimation = 5;
+            Item.autoReuse = true;
+
+            Item.useAmmo = AmmoID.Gel;
+            Item.shootSpeed = 12f;
+            Item.shoot = ModContent.ProjectileType<HalleysComet>();
+
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.UseSound = SoundID.Item34;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.UseSound = ShootSound;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
@@ -45,6 +46,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, 0);
+
+        public override void HoldItem(Player player) => player.scope = true;
 
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
 

@@ -13,30 +13,21 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ExecutionersBlade : RogueWeapon
     {
-        private int counter = 0;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Executioner's Blade");
-            Tooltip.SetDefault("Throws a stream of homing blades\n" +
-                "Stealth strikes summon a guillotine of blades on hit");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 64;
-            Item.damage = 188;
+            Item.height = 64;
+            Item.damage = 195;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = 3;
             Item.useAnimation = 9;
             Item.reuseDelay = 1;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6.75f;
             Item.UseSound = SoundID.Item73;
             Item.autoReuse = true;
-            Item.height = 64;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ModContent.ProjectileType<ExecutionersBladeProj>();
             Item.shootSpeed = 24f;
@@ -48,19 +39,15 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/ExecutionersBladeGlow").Value);
         }
-		public override bool AdditionalStealthCheck() => counter == 0;
+        public override float StealthDamageMultiplier => 0.6f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            bool usingStealth = player.Calamity().StealthStrikeAvailable() && counter == 0;
+            bool usingStealth = player.Calamity().StealthStrikeAvailable();
 
             int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (usingStealth && stealth.WithinBounds(Main.maxProjectiles))
                 Main.projectile[stealth].Calamity().stealthStrike = true;
-
-            counter++;
-            if (counter >= Item.useAnimation / Item.useTime)
-                counter = 0;
             return false;
         }
 

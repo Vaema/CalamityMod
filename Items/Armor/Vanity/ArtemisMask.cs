@@ -1,19 +1,17 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class ArtemisMask : ModItem, IExtendedHat
+    public class ArtemisMask : ModItem, IExtendedHat, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Artemis Mask");
-
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);

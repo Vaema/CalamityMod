@@ -10,28 +10,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class SomaPrime : ModItem
+    public class SomaPrime : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         private static readonly float XYInaccuracy = 0.32f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Soma Prime");
-            Tooltip.SetDefault(@"This weapon can supercrit if its crit chance is over 100%
-All bullets fired inflict Shred, a stacking bleed debuff
-Shred deals 150 DPS per stack and scales with your ranged stats
-Damage ticks of Shred can also critically strike or supercrit
-Replaces standard bullets with High Velocity Bullets
-80% chance to not consume ammo");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = 370;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 94;
             Item.height = 34;
+            Item.damage = 400;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -42,7 +31,7 @@ Replaces standard bullets with High Velocity Bullets
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -55,7 +44,8 @@ Replaces standard bullets with High Velocity Bullets
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (type == ProjectileID.Bullet) {
+            if (type == ProjectileID.Bullet)
+            {
                 type = ProjectileID.BulletHighVelocity;
                 damage += 4; // in 1.4, HVBs deal 11 damage and Musket Balls deal 7
             }
@@ -65,7 +55,7 @@ Replaces standard bullets with High Velocity Bullets
             Vector2 vel = velocity;
             Projectile shot = Projectile.NewProjectileDirect(source, position, vel, type, damage, knockback, player.whoAmI);
             CalamityGlobalProjectile cgp = shot.Calamity();
-            cgp.supercritHits  = -1;
+            cgp.supercritHits = -1;
             cgp.appliesSomaShred = true;
             return false;
         }
@@ -75,8 +65,8 @@ Replaces standard bullets with High Velocity Bullets
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<P90>().
-                AddIngredient<Minigun>().
+                AddIngredient<Kingsbane>().
+                AddIngredient<ClockGatlignum>().
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

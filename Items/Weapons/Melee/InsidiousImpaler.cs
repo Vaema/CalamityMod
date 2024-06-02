@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
@@ -6,38 +7,29 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class InsidiousImpaler : ModItem
+    public class InsidiousImpaler : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Insidious Impaler");
-            Tooltip.SetDefault("Fires a harpoon that sticks to enemies and explodes");
-            SacrificeTotal = 1;
-            ItemID.Sets.Spears[Item.type] = true;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
             Item.width = 66;
-            Item.damage = 210;
-            Item.DamageType = DamageClass.Melee;
+            Item.height = 70;
+            Item.damage = 198;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 20;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 20;
+            Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 70;
-            Item.shoot = ModContent.ProjectileType<InsidiousImpalerProj>();
-            Item.shootSpeed = 5f;
+            Item.shoot = ModContent.ProjectileType<InsidiousHarpoon>();
+            Item.shootSpeed = 15f;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
-
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
     }
 }

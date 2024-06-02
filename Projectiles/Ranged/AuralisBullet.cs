@@ -6,14 +6,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class AuralisBullet : ModProjectile
+    public class AuralisBullet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bullet");
-        }
 
         public override void SetDefaults()
         {
@@ -37,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int d = 0; d < 5; d++)
                 {
-                    Dust dust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, Projectile.velocity.X, Projectile.velocity.Y, 100, CalamityUtils.ColorSwap(Auralis.blueColor, Auralis.greenColor, 1f), 1f)];
+                    Dust dust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X, Projectile.velocity.Y, 100, CalamityUtils.ColorSwap(Auralis.blueColor, Auralis.greenColor, 1f), 1f)];
                     dust.velocity = Vector2.Zero;
                     dust.position -= Projectile.velocity / 5f * d;
                     dust.noGravity = true;
@@ -48,12 +44,12 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 420);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 420);
         }

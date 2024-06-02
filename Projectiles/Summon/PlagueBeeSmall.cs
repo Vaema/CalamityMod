@@ -2,29 +2,27 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PlagueBeeSmall : ModProjectile
+    public class PlagueBeeSmall : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Rogue/PlaguenadeBee";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Plague Bee");
             Main.projFrames[Projectile.type] = 4;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 420;
             Projectile.ignoreWater = true;
-            Projectile.minion = true;
             Projectile.MaxUpdates = 2;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -159,7 +157,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = frameHeight * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -169,23 +167,17 @@ namespace CalamityMod.Projectiles.Summon
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 2; i++)
             {
-                int plague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 1f);
+                int plague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 1f);
                 Main.dust[plague].noGravity = true;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 60);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 60);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 60);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Plague>(), 60);
     }
 }

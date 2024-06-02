@@ -6,16 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Brimflame
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class BrimflameBoots : ModItem
+    public class BrimflameBoots : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Brimflame Boots");
-            Tooltip.SetDefault("5% increased magic damage\n" +
-                "5% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;

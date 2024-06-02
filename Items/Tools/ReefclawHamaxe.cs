@@ -5,16 +5,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
 {
-    public class ReefclawHamaxe : ModItem
+    public class ReefclawHamaxe : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Reefclaw Hamaxe");
-        }
-
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
+            Item.width = 44;
+            Item.height = 44;
             Item.damage = 15;
             Item.knockBack = 6f;
             Item.useTime = 11;
@@ -23,11 +20,9 @@ namespace CalamityMod.Items.Tools
             Item.axe = 55 / 5;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 44;
-            Item.height = 44;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

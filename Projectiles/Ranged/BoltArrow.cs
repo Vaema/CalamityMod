@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class BoltArrow : ModProjectile
+    public class BoltArrow : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bolt Arrow");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -26,26 +22,26 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(BuffID.Electrified, 60);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 60);
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] == 15f)
             {
                 Projectile.localAI[0] = 0f;
                 for (int l = 0; l < 12; l++)
                 {
-                    Vector2 vector3 = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
-                    vector3 += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
-                    vector3 = vector3.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int num9 = Dust.NewDust(Projectile.Center, 0, 0, 221, 0f, 0f, 160, default, 1f);
-                    Main.dust[num9].scale = 1.1f;
-                    Main.dust[num9].noGravity = true;
-                    Main.dust[num9].position = Projectile.Center + vector3;
-                    Main.dust[num9].velocity = Projectile.velocity * 0.1f;
-                    Main.dust[num9].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[num9].position) * 1.25f;
+                    Vector2 rotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
+                    rotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
+                    rotate = rotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
+                    int blueDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 160, default, 1f);
+                    Main.dust[blueDust].scale = 1.1f;
+                    Main.dust[blueDust].noGravity = true;
+                    Main.dust[blueDust].position = Projectile.Center + rotate;
+                    Main.dust[blueDust].velocity = Projectile.velocity * 0.1f;
+                    Main.dust[blueDust].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[blueDust].position) * 1.25f;
                 }
             }
         }
@@ -57,7 +53,7 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 32;
@@ -70,12 +66,12 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.damage = (int)(Projectile.damage * 0.6f);
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item92, Projectile.Center);
-            int num212 = Main.rand.Next(10, 20);
-            for (int num213 = 0; num213 < num212; num213++)
+            int rando = Main.rand.Next(10, 20);
+            for (int i = 0; i < rando; i++)
             {
-                int num214 = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
-                Main.dust[num214].velocity *= 2f;
-                Main.dust[num214].noGravity = true;
+                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
+                Main.dust[dust].velocity *= 2f;
+                Main.dust[dust].noGravity = true;
             }
         }
     }

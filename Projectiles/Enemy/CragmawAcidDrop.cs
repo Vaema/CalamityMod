@@ -5,14 +5,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class CragmawAcidDrop : ModProjectile
+    public class CragmawAcidDrop : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override string Texture => "CalamityMod/Projectiles/Environment/AcidDrop";
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Acid");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -33,9 +29,9 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<Irradiated>(), 60);

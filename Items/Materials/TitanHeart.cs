@@ -1,24 +1,24 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class TitanHeart : ModItem
+    public class TitanHeart : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Titan Heart");
-            Tooltip.SetDefault("Also used at the Astral Beacon");
+            Item.ResearchUnlockCount = 3;
         }
 
         public override void SetDefaults()
         {
             Item.width = 10;
             Item.height = 10;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.LightRed;
-        }    }
+        }
+    }
 }

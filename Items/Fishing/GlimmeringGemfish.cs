@@ -4,22 +4,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing
 {
-    public class GlimmeringGemfish : ModItem
+    public class GlimmeringGemfish : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Glimmering Gemfish");
-            Tooltip.SetDefault("Right click to extract gems");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 34;
             Item.height = 30;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(silver: 50);
         }

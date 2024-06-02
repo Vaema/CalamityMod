@@ -1,17 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class IgneousBladeStrike : ModProjectile
+    public class IgneousBladeStrike : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Summon/IgneousBlade";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blade");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -20,8 +20,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.width = 86;
             Projectile.height = 36;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
@@ -35,7 +33,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + MathHelper.PiOver4;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < Main.rand.Next(28, 41); i++)
             {

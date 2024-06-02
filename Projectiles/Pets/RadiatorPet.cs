@@ -5,13 +5,13 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Pets
 {
-    public class RadiatorPet : ModProjectile
+    public class RadiatorPet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         private bool fly = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Radiator");
             Main.projFrames[Projectile.type] = 4;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.LightPet[Projectile.type] = true;
@@ -31,9 +31,9 @@ namespace CalamityMod.Projectiles.Pets
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
             Player player = Main.player[Projectile.owner];
-            Vector2 center2 = Projectile.Center;
-            Vector2 vector48 = player.Center - center2;
-            float playerDistance = vector48.Length();
+            Vector2 projCenter = Projectile.Center;
+            Vector2 playerDirection = player.Center - projCenter;
+            float playerDistance = playerDirection.Length();
             fallThrough = playerDistance > 200f;
             return true;
         }
@@ -82,9 +82,9 @@ namespace CalamityMod.Projectiles.Pets
             if (!fly)
             {
                 Projectile.rotation = 0;
-                Vector2 center2 = Projectile.Center;
-                Vector2 vector48 = player.Center - center2;
-                float playerDistance = vector48.Length();
+                Vector2 projCenter = Projectile.Center;
+                Vector2 playerDirection = player.Center - projCenter;
+                float playerDistance = playerDirection.Length();
                 if (Projectile.velocity.Y == 0 && (HoleBelow() || (playerDistance > 110f && Projectile.position.X == Projectile.oldPosition.X)))
                 {
                     Projectile.velocity.Y = -5f;

@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("SpiritGenerator")]
-    public class SpiritGlyph : ModItem
+    public class SpiritGlyph : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Spirit Glyph");
-            Tooltip.SetDefault("Whenever your minions hit an enemy you will gain a random buff\n" +
-                "These buffs will either boost your defense, summon damage, or life regen for a while");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.width = 24;
+            Item.height = 30;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }

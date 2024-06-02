@@ -5,18 +5,19 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureCosmilite
 {
-    public class CosmiliteBrick : ModItem
+    public class CosmiliteBrick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -39,7 +40,6 @@ namespace CalamityMod.Items.Placeables.FurnitureCosmilite
                 Register();
             CreateRecipe().
                 AddIngredient<CosmilitePlatform>(2).
-                AddTile<CosmicAnvil>().
                 Register();
         }
     }

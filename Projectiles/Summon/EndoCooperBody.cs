@@ -4,20 +4,20 @@ using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class EndoCooperBody : ModProjectile
+    public class EndoCooperBody : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private int AttackMode = 0;
         private int LimbID = 0;
         private int laserdirection = 1;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ascened Cooper");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
@@ -49,21 +49,21 @@ namespace CalamityMod.Projectiles.Summon
             //dust
             if (Main.rand.NextBool(15))
             {
-                int dusttype = Main.rand.NextBool(2) ? 68 : 67;
+                int dusttype = Main.rand.NextBool() ? 68 : 67;
                 if (Main.rand.NextBool(4))
                 {
                     dusttype = 80;
                 }
-                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, dusttype , Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 50, default, 0.6f);
+                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, dusttype, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 50, default, 0.6f);
                 Main.dust[dust].noGravity = true;
 
             }
             //Apply the buff
-            bool flag64 = Projectile.type == ModContent.ProjectileType<EndoCooperBody>();
+            bool isMinion = Projectile.type == ModContent.ProjectileType<EndoCooperBody>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             player.AddBuff(ModContent.BuffType<EndoCooperBuff>(), 3600);
-            if (flag64)
+            if (isMinion)
             {
                 if (player.dead)
                 {
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.localAI[0] += 1f;
                 for (int i = 0; i < 60; i++)
                 {
-                    int dusttype = Main.rand.NextBool(2) ? 68 : 67;
+                    int dusttype = Main.rand.NextBool() ? 68 : 67;
                     if (Main.rand.NextBool(4))
                     {
                         dusttype = 80;
@@ -110,22 +110,26 @@ namespace CalamityMod.Projectiles.Summon
 
             switch (AttackMode)
             {
-                case 0: chasespeed1 = 29f;
-                        chasespeed2 = 16f;
-                        firerate = 60f;
-                        break;
-                case 1: chasespeed1 = 24f;
-                        chasespeed2 = 12f;
-                        firerate = 200f;
+                case 0:
+                    chasespeed1 = 29f;
+                    chasespeed2 = 16f;
+                    firerate = 60f;
+                    break;
+                case 1:
+                    chasespeed1 = 24f;
+                    chasespeed2 = 12f;
+                    firerate = 200f;
 
-                        break;
-                case 2: chasespeed1 = 32f;
-                        chasespeed2 = 20f;
-                        firerate = 30f;
-                        break;
-                case 3: chasespeed1 = 34f;
-                        chasespeed2 = 21f;
-                        firerate = 30f;
+                    break;
+                case 2:
+                    chasespeed1 = 32f;
+                    chasespeed2 = 20f;
+                    firerate = 30f;
+                    break;
+                case 3:
+                    chasespeed1 = 34f;
+                    chasespeed2 = 21f;
+                    firerate = 30f;
                     break;
             }
 
@@ -133,7 +137,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.Kill();
 
             Projectile.MinionAntiClump();
-            bool flag24 = false;
+            bool accelerate = false;
             if (Projectile.ai[0] == 2f)
             {
                 Projectile.ai[1] += 1f;
@@ -148,10 +152,10 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    flag24 = true;
+                    accelerate = true;
                 }
             }
-            if (flag24)
+            if (accelerate)
             {
                 return;
             }
@@ -173,9 +177,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!gotoenemy)
             {
-                for (int num645 = 0; num645 < Main.maxNPCs; num645++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[num645];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
                         float disttoobjective = Vector2.Distance(nPC2.Center, Projectile.Center);
@@ -231,23 +234,23 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 Vector2 center2 = Projectile.Center;
                 Vector2 playerpos = player.Center - center2 + new Vector2(0f, -60f);
-                float lenghttoplayer = playerpos.Length();
-                if (lenghttoplayer > 200f && speedtoplayer < 8f)
+                float LengthToPlayer = playerpos.Length();
+                if (LengthToPlayer > 200f && speedtoplayer < 8f)
                 {
                     speedtoplayer = 10f;
                 }
-                if (lenghttoplayer < idledistance && gotoplayer && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
+                if (LengthToPlayer < idledistance && gotoplayer && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
                 {
                     Projectile.ai[0] = 0f;
                     Projectile.netUpdate = true;
                 }
-                if (lenghttoplayer > 2700f)
+                if (LengthToPlayer > 2700f)
                 {
                     Projectile.position.X = Main.player[Projectile.owner].Center.X - (float)(Projectile.width / 2);
                     Projectile.position.Y = Main.player[Projectile.owner].Center.Y - (float)(Projectile.height / 2);
                     Projectile.netUpdate = true;
                 }
-                if (lenghttoplayer > 70f)
+                if (LengthToPlayer > 70f)
                 {
                     playerpos.Normalize();
                     playerpos *= speedtoplayer;
@@ -281,41 +284,41 @@ namespace CalamityMod.Projectiles.Summon
                         switch (AttackMode)
                         {
                             case 0:
-                                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
-                                    Vector2 aimlaser = objectivepos - Projectile.Center;
-                                    aimlaser.Normalize();
-                                    aimlaser = aimlaser.RotatedBy(MathHelper.ToRadians(30 * -laserdirection));
-                                    float angularChange = (MathHelper.Pi / 180f) * 1.1f * laserdirection;
-                                    //aimlaser *= 12f;
-                                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, aimlaser, ModContent.ProjectileType<EndoBeam>(), Projectile.damage, 0f, Projectile.owner, angularChange, (float)Projectile.whoAmI);
-                                    if (Main.projectile.IndexInRange(p))
-                                        Main.projectile[p].originalDamage = Projectile.originalDamage;
-                                    laserdirection *= -1;
-                                    break;
+                                SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                                Vector2 aimlaser = objectivepos - Projectile.Center;
+                                aimlaser.Normalize();
+                                aimlaser = aimlaser.RotatedBy(MathHelper.ToRadians(30 * -laserdirection));
+                                float angularChange = (MathHelper.Pi / 180f) * 1.1f * laserdirection;
+                                //aimlaser *= 12f;
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, aimlaser, ModContent.ProjectileType<EndoBeam>(), Projectile.damage, 0f, Projectile.owner, angularChange, (float)Projectile.whoAmI);
+                                laserdirection *= -1;
+                                break;
 
                             case 1: //Kill limbs
-                                    if (limbs.ai[0] == 0f)
-                                    {
-                                        limbs.ai[0] = 1f;
-                                    }
-                                    //Respawn limbs
-                                    else if (limbs.ai[0] == 2f)
-                                    {
-                                        limbs.ai[0] = 3f;
-                                    }
-                                    Projectile.netUpdate = true;
-                                    break;
+                                if (limbs.ai[0] == 0f)
+                                {
+                                    limbs.ai[0] = 1f;
+                                }
+                                //Respawn limbs
+                                else if (limbs.ai[0] == 2f)
+                                {
+                                    limbs.ai[0] = 3f;
+                                }
+                                Projectile.netUpdate = true;
+                                break;
 
-                            case 2: Projectile.ai[0] = 2f;
-                                    Vector2 aimtoenemy = objectivepos - Projectile.Center;
-                                    aimtoenemy.Normalize();
-                                    Projectile.velocity = aimtoenemy * 18f;
-                                    Projectile.netUpdate = true;
-                                    break;
-                            case 3: limbs.ai[0] = 4f;
-                                    Projectile.netUpdate = true;
-                                    break;
-                            default:break;
+                            case 2:
+                                Projectile.ai[0] = 2f;
+                                Vector2 aimtoenemy = objectivepos - Projectile.Center;
+                                aimtoenemy.Normalize();
+                                Projectile.velocity = aimtoenemy * 18f;
+                                Projectile.netUpdate = true;
+                                break;
+                            case 3:
+                                limbs.ai[0] = 4f;
+                                Projectile.netUpdate = true;
+                                break;
+                            default: break;
                         }
                     }
                 }
@@ -345,9 +348,8 @@ namespace CalamityMod.Projectiles.Summon
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Color.LightSkyBlue, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<ExoFreeze>(), 30);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             target.AddBuff(BuffID.Frostburn, 180);
         }

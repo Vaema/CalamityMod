@@ -6,18 +6,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor
 {
     [AutoloadEquip(EquipType.Head)]
-    public class ForbiddenCirclet : ModItem
+    public class ForbiddenCirclet : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public const int manaCost = 60;
         public const int tornadoBaseDmg = 80;
         public const float tornadoBaseKB = 1f;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Forbidden Circlet");
-            Tooltip.SetDefault("10% increased summon damage and 15% increased rogue velocity");
-        }
 
         public override void SetDefaults()
         {
@@ -44,12 +38,8 @@ namespace CalamityMod.Items.Armor
         public override void UpdateArmorSet(Player player)
         {
             int stormMana = (int)(manaCost * player.manaCost);
-            string hotkey = CalamityKeybinds.SetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = "+40 maximum stealth\n" +
-					"Press " + hotkey + " to call an ancient storm to the cursor location\n" +
-                    "The ancient storm costs " + stormMana + " mana and benefits from both summon and rogue bonuses\n" +
-                    "Rogue stealth strikes spawn homing eaters on enemy hits\n" +
-                    "Rogue and summon attacks will scale off of the stat with a higher boost";
+            string hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, stormMana);
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.forbiddenCirclet = true;
             modPlayer.rogueStealthMax += 0.4f;

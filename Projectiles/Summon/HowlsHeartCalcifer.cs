@@ -4,11 +4,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class HowlsHeartCalcifer : ModProjectile
+    public class HowlsHeartCalcifer : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Calcifer");
             Main.projFrames[Projectile.type] = 4;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.LightPet[Projectile.type] = true;

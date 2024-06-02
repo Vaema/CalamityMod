@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
@@ -6,8 +8,6 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -17,8 +17,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Summon
 {
     [LegacyName("PrototypeAndromechaRing")]
-    public class FlamsteedRing : ModItem
+    public class FlamsteedRing : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         //Note: In the future i may just do some changes to this item, and the cripple effect will probably be gone. But in the meanwhile
         //- Iban
         public static readonly SoundStyle CrippleSound = new("CalamityMod/Sounds/Custom/AndromedaCripple");
@@ -37,32 +38,20 @@ namespace CalamityMod.Items.Weapons.Summon
         public const int CrippleTime = 360; // 6 seconds
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flamsteed Ring");
-            Tooltip.SetDefault("Summons a colossal controllable mech\n" +
-                "Right click to display the mech's control panel\n" +
-                "The panel has 3 configurations, selected using the brackets on the edges of the UI\n" +
-                "Each bracket powers 2 out of 3 possible functions, represented by the circular icons.\n" +
-                "The bottom left icon miniaturizes the mech to the size of a player, but weakens its weapons.\n" +
-                "The bottom right icon is a powerful jet booster which greatly enhances movement.\n" +
-                "The top icon is the mech's weaponry. It must be powered in order to attack.\n" +
-                "Click the top icon to switch between Regicide, an enormous energy blade, and a powerful Gauss rifle.\n" +
-                "Exiting the mount while a boss is alive will temporarily hinder your movement\n" +
-            CalamityUtils.ColorMessage("Now, make them pay.", new Color(135, 206, 235)));
 
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "HeadlessEquipTexture", EquipType.Head);
                 ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
             }
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 28;
             Item.mana = 200;
             Item.damage = 1999;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.width = Item.height = 28;
             Item.useTime = Item.useAnimation = 9;
             Item.noMelee = true;
             Item.knockBack = 1f;
@@ -94,7 +83,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
                         if (!visuals)
                             return false;
-                            
+
                         Dust warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, 127, Scale: 1.2f);
 
                         warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, 114, Vector2.Zero, Scale: 1.4f);
@@ -106,11 +95,11 @@ namespace CalamityMod.Items.Weapons.Summon
             if (!sufficientSpace)
             {
                 Rectangle displayZone = player.Hitbox;
-                CombatText.NewText(displayZone, new Color(203, 157, 255), "Insufficient space!", true);
+                CombatText.NewText(displayZone, new Color(203, 157, 255), CalamityUtils.GetTextValueFromModItem<FlamsteedRing>("NoSpaceTextBottom"), true);
 
                 displayZone.Y -= 30;
 
-                CombatText.NewText(displayZone, new Color(59, 194, 255), "Cannot Deploy", true);
+                CombatText.NewText(displayZone, new Color(59, 194, 255), CalamityUtils.GetTextValueFromModItem<FlamsteedRing>("NoSpaceTextTop"), true);
                 return false;
             }
 
@@ -133,13 +122,12 @@ namespace CalamityMod.Items.Weapons.Summon
             // If the player has any robots, kill them all.
             if (player.ownedProjectileCounts[Item.shoot] > 0)
             {
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active &&
-                        Main.projectile[i].type == Item.shoot &&
-                        Main.projectile[i].owner == player.whoAmI)
+                    if (p.type == Item.shoot &&
+                        p.owner == player.whoAmI)
                     {
-                        Main.projectile[i].Kill();
+                        p.Kill();
                     }
                 }
                 if (CalamityPlayer.areThereAnyDamnBosses)
@@ -162,13 +150,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
             int robotIndex = -1;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == ModContent.ProjectileType<GiantIbanRobotOfDoom>() &&
-                    Main.projectile[i].owner == player.whoAmI)
+                if (p.type == ModContent.ProjectileType<GiantIbanRobotOfDoom>() &&
+                    p.owner == player.whoAmI)
                 {
-                    robotIndex = i;
+                    robotIndex = p.whoAmI;
                     break;
                 }
             }

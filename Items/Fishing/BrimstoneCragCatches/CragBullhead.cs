@@ -1,16 +1,15 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
 {
-    public class CragBullhead : ModItem
+    public class CragBullhead : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crag Bullhead"); //Bass substitute
-            Tooltip.SetDefault("Its scales are scorching hot");
-            SacrificeTotal = 3;
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -18,14 +17,14 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         {
             Item.width = 32;
             Item.height = 36;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 5);
             Item.rare = ItemRarityID.Blue;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
+        }
     }
 }

@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class DraedonsLogSunkenSea : ModItem
+    public class DraedonsLogSunkenSea : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Marine Biology Log");
-            Tooltip.SetDefault("[Bioform Research] - Aquatic Life of Ilmeris\nClick to view its contents");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 28;

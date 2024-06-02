@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -13,14 +13,13 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sludge Splotch");
-            Tooltip.SetDefault("Stealth strikes cause the main ball of sludge to split on hit, inflicting more damage");
-            SacrificeTotal = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
+            Item.height = 30;
             Item.damage = 48;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -30,8 +29,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.knockBack = 1f;
             Item.autoReuse = true;
-            Item.height = 30;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(0, 0, 0, 40);
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SludgeSplotchProj1>();

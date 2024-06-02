@@ -1,17 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class SuicideBomberDemon : ModProjectile
+    public class SuicideBomberDemon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public bool HasDamagedSomething
         {
             get => Projectile.ai[0] == 1f;
@@ -19,10 +21,8 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public ref float Time => ref Projectile.ai[1];
         public Player Owner => Main.player[Projectile.owner];
-        public PrimitiveTrail FlameTrailDrawer = null;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Demon");
             Main.projFrames[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 11;
@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.frameCounter++;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.DD2_KoboldExplosion, Projectile.Center);
             for (int i = 0; i < 40; i++)
@@ -206,12 +206,12 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool? CanDamage() => Projectile.Opacity >= 1f ? null : false;
 
-        // TODO -- this damage should be after Terraria vanilla multipliers, so it won't one shot people
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            if (Main.masterMode) damage = 540;
-            else if (Main.expertMode) damage = 450;
-            else damage = 360;
+            modifiers.SourceDamage *= 0f;
+            if (Main.masterMode) modifiers.SourceDamage.Flat += 540f;
+            else if (Main.expertMode) modifiers.SourceDamage.Flat += 450f;
+            else modifiers.SourceDamage.Flat += 360f;
         }
 
         public float FlameTrailWidthFunction(float completionRatio) => MathHelper.SmoothStep(21f, 8f, completionRatio);
@@ -228,10 +228,6 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
-
-            // Initialize the flame trail drawer.
-            if (FlameTrailDrawer is null)
-                FlameTrailDrawer = new PrimitiveTrail(FlameTrailWidthFunction, FlameTrailColorFunction, null, GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
 
             // Prepare the flame trail shader with its map texture.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
@@ -268,7 +264,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Vector2 trailOffset = Projectile.Size * 0.5f;
                 trailOffset += (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 20f;
-                FlameTrailDrawer.Draw(Projectile.oldPos, trailOffset - Main.screenPosition, 61);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FlameTrailWidthFunction, FlameTrailColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 61);
             }
 
             Main.spriteBatch.ExitShaderRegion();
@@ -276,13 +272,13 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             HasDamagedSomething = true;
             Projectile.netUpdate = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             HasDamagedSomething = true;
             Projectile.netUpdate = true;

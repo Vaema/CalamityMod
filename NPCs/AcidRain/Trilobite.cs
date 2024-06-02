@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Trilobite");
             Main.npcFrameCount[NPC.type] = 8;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.TrailCacheLength[NPC.type] = 5;
@@ -45,7 +44,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.damage = 80;
-                NPC.lifeMax = 4125;
+                NPC.lifeMax = 4200;
                 NPC.defense = 30;
             }
 
@@ -63,14 +62,17 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Their shell is of notable hardness, and it carries the same weight as stone. It speaks of their strength, for them to be able to fling themselves about the way they do.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Trilobite")
             });
         }
 
@@ -159,18 +161,16 @@ namespace CalamityMod.NPCs.AcidRain
                 CalamityGlobalNPC.DrawAfterimage(NPC, spriteBatch, drawColor, Color.Transparent, directioning: true);
         }
 
-        public override void ModifyHitByProjectile(Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             // No need for a netmode check- this code is only called by 1 client, the owner of the projectile that hit the NPC.
             if (SpikeShootCountdown <= 0f)
             {
                 SoundEngine.PlaySound(SoundID.NPCDeath11, NPC.Center);
-                int projDamage = DownedBossSystem.downedPolterghast ? 35 : DownedBossSystem.downedAquaticScourge ? 29 : 21;
-                if (Main.expertMode)
-                    projDamage = (int)Math.Round(projDamage * 0.8);
+                int projDamage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 23 : Main.expertMode ? 28 : 35) : DownedBossSystem.downedAquaticScourge ? (Main.masterMode ? 19 : Main.expertMode ? 23 : 29) : (Main.masterMode ? 14 : Main.expertMode ? 17 : 21);
 
                 Vector2 spikeVelocity = -NPC.velocity.RotatedByRandom(0.18f);
-                if (CalamityWorld.getFixedBoi) // more true to the original concept art.
+                if (Main.zenithWorld) // more true to the original concept art.
                 {
                     spikeVelocity = -projectile.velocity;
                     spikeVelocity.Normalize();
@@ -194,11 +194,11 @@ namespace CalamityMod.NPCs.AcidRain
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
@@ -210,14 +210,14 @@ namespace CalamityMod.NPCs.AcidRain
                 }
                 for (int k = 0; k < 30; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
+            if (hurtInfo.Damage > 0)
                 target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
         }
     }

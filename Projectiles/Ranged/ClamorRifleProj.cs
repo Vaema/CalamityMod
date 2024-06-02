@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ClamorRifleProj : ModProjectile
+    public class ClamorRifleProj : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Energy Bolt");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -33,23 +29,22 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.localAI[0] > 3f)
             {
                 Lighting.AddLight(Projectile.Center, new Vector3(44, 191, 232) * (1.3f / 255));
-                for (int num151 = 0; num151 < 2; num151++)
+                for (int i = 0; i < 2; i++)
                 {
-                    int num154 = 14;
-                    int num155 = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - num154 * 2, Projectile.height - num154 * 2, 68, 0f, 0f, 100, default, 1f);
-                    Main.dust[num155].noGravity = true;
-                    Main.dust[num155].velocity *= 0.1f;
-                    Main.dust[num155].velocity += Projectile.velocity * 0.5f;
+                    int blueDust = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - 28, Projectile.height - 28, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1f);
+                    Main.dust[blueDust].noGravity = true;
+                    Main.dust[blueDust].velocity *= 0.1f;
+                    Main.dust[blueDust].velocity += Projectile.velocity * 0.5f;
                 }
             }
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 150f, 12f, 25f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<Eutrophication>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Eutrophication>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<Eutrophication>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Eutrophication>(), 180);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int bulletAmt = 2;
             if (Projectile.owner == Main.myPlayer)

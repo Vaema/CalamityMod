@@ -10,24 +10,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class Endogenesis : ModItem
+    public class Endogenesis : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         //Cooper be like cool
 
         public static int AttackMode = 0;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Endogenesis");
-            Tooltip.SetDefault("Summons an ascended ice construct to protect you \n" +
-                "Changes attack modes by resummoning or reusing the staff \n" +
-                "The first mode makes it shoot sweeping lasers aimed at the enemy \n" +
-                "The second mode sacrifices its limbs to shoot out homing projectiles \n" +
-                "The third mode allows it to agressively tackle its enemies \n" +
-                "The fourth mode makes the limbs function as endothermic flamethrowers \n" +
-                "Requires 10 minion slots to be summoned \n" +
-                "There can only be one \n" +
-                "[c/B0FBFF:Ice puns not included]"); //Icy no problems with that
-            SacrificeTotal = 1;
+            //Icy no problems with that
         }
 
         public override void SetDefaults()
@@ -47,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<EndoCooperBody>();
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -58,7 +49,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                player.itemTime = Item.useTime;
                 CalamityUtils.KillShootProjectileMany(player, new int[]
                 {
                     type,

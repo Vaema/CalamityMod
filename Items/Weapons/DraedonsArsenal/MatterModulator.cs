@@ -1,11 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,17 +12,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class MatterModulator : ModItem
+    public class MatterModulator : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Matter Modulator");
-            Tooltip.SetDefault("Using extra mass gained from collision with solid materials, it causes extra damage\n" +
-            "Fires a burst of unstable matter that does significant damage after striking a tile\n" +
-            "Before striking a tile, the matter pierces infinitely but deals little damage");
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -40,8 +31,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
 
             Item.shoot = ModContent.ProjectileType<UnstableMatter>();
             Item.shootSpeed = 12f;
@@ -69,7 +60,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(8).
                 AddRecipeGroup("AnyMythrilBar", 10).
                 AddIngredient(ItemID.SoulofFright, 20).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

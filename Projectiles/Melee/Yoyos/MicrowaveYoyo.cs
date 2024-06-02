@@ -1,19 +1,22 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Melee;
 using ReLogic.Utilities;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
     public class MicrowaveYoyo : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMicrowave>();
+        public const int MaxUpdates = 3;
         private const float Radius = 100f;
         private SlotId mmmmmm;
         private bool spawnedAura = false;
@@ -21,10 +24,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Microwave");
             ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 450f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 14f;
+            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 512f;
+            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 54f / MaxUpdates;
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -33,15 +35,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override void SetDefaults()
         {
             Projectile.aiStyle = ProjAIStyleID.Yoyo;
-            Projectile.width = 16;
-            Projectile.height = 16;
-            Projectile.scale = 1f;
+            Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
-            Projectile.MaxUpdates = 2;
+            Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10 * MaxUpdates;
         }
 
         public override void SendExtraAI(BinaryWriter writer) => writer.Write(soundCooldown);
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Projectile.Kill();
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             ActiveSound MMMMMMMMMMMMMMM;
             if (SoundEngine.TryGetActiveSound(mmmmmm, out MMMMMMMMMMMMMMM))
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/MicrowaveYoyoGlow").Value, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
             if (target.life <= 0 && soundCooldown <= 0)
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
             if (target.statLife <= 0 && soundCooldown <= 0)

@@ -10,35 +10,26 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class MidasPrime : ModItem
+    public class MidasPrime : ModItem, ILocalizedModType
     {
-        internal static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/CrackshotColtShot") { PitchVariance = 0.1f };
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+        internal static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/CrackshotColtShot") { Volume = 0.5f, PitchVariance = 0.1f };
 
         // Internal storage used to keep track between UseItem and Shoot hooks whether a gold coin was queued up
         private bool nextShotGoldCoin = false;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Midas Prime");
-            Tooltip.SetDefault("Right click to coss a Gold Coin or Silver Coin in the air\n" +
-                "Striking a coin with a bullet causes it to ricochet into the nearest enemy\n" +
-                "Up to 4 coins can be tossed simultaneously, and shots will ricochet off multiple coins if possible\n" +
-                "Ricocheted bullets always critically strike and do bonus damage based on the coins used");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 81;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 23;
             Item.height = 8;
+            Item.damage = 81;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 32;
             Item.useAnimation = 32;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;
@@ -65,12 +56,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 // player.CanBuyItem() breaks if the player has more than 2,147 platinum coins and was never fixed
-                // This alternative method works no matter how much money the player has
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (cashAvailable < 100 && !overflow)
-                    return false;
-
-                return player.GetActiveRicoshotCoinCount() < 4;
+                // 20APR2024: Ozzatron: The method was instead replaced with player.CanAfford, which is immune to overflow
+                // Additionally, CanAfford checks your Piggy Bank, Safe, etc., meaning Midas Prime can use coins from there
+                bool hasAtLeastOneSilver = player.CanAfford(100);
+                return hasAtLeastOneSilver && player.GetActiveRicoshotCoinCount() < 4;
             }
             return true;
         }
@@ -80,10 +69,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Remove either 1 gold (if possible) or 1 silver (otherwise) when using right click
             if (player.altFunctionUse == 2)
             {
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
+                // 20APR2024: Ozzatron: Use CanAfford (new function) to sum money across all the player's banks
+                // If they have a sum total of at least 1 gold everywhere, they can toss a gold coin
+                bool hasAtLeastOneGold = player.CanAfford(10000);
 
                 // If the player has at least 1 gold in their inventory, spend it and use a gold coin
-                if (overflow || cashAvailable > 10000)
+                if (hasAtLeastOneGold)
                 {
                     player.BuyItem(10000);
                     nextShotGoldCoin = true;
@@ -103,7 +94,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         // This hook is a convenient location to change the use sound.
         public override void UseAnimation(Player player)
         {
-            Item.UseSound = ShootSound; 
+            Item.UseSound = ShootSound;
             if (player.altFunctionUse == 2)
                 Item.UseSound = RicoshotCoin.BlingSound;
         }
@@ -150,10 +141,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         #region Hidden ULTRAKILL Reference Tooltip
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            TooltipLine ultrakillIntro = new TooltipLine(Mod,
-                "CalamityMod:UltrakillIntroReference",
-                "MANKIND IS DEAD.\nBLOOD IS FUEL.\nHELL IS FULL.")
-            { OverrideColor = Color.Red };
+            TooltipLine ultrakillIntro = new TooltipLine(Mod, "CalamityMod:UltrakillIntroReference", this.GetLocalizedValue("UltrakillEasterEgg")) { OverrideColor = Color.Red };
             CalamityUtils.HoldShiftTooltip(tooltips, new TooltipLine[] { ultrakillIntro });
         }
         #endregion
@@ -162,7 +150,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         #region Firing Animation
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 7f;
@@ -176,7 +164,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseItemFrame(Player player)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;

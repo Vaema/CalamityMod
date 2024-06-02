@@ -1,22 +1,23 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria.Graphics.Shaders;
+using CalamityMod.Particles;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Tiles.Astral;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class AndromedasStride : ModProjectile
+    public class AndromedasStride : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Items/Weapons/Melee/GalaxiaExtra";
         private bool initialized = false;
         Vector2 direction = Vector2.Zero;
@@ -26,16 +27,11 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CurrentIndicator => ref Projectile.localAI[0]; //What "indicator" stage are you on.
         public ref float OverCharge => ref Projectile.localAI[1];
 
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
-        const float MaxCharge = 500;
+        const float MaxCharge = 360;
 
         public Vector2 lastDisplacement;
         public float dashDuration;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Andromeda's Stride");
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -56,10 +52,10 @@ namespace CalamityMod.Projectiles.Melee
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLenght = 145 * Projectile.scale;
+            float bladeLength = 145 * Projectile.scale;
             float bladeWidth = 25 * Projectile.scale;
 
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + (direction * bladeLenght), bladeWidth, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + (direction * bladeLength), bladeWidth, ref collisionPoint);
         }
 
         public CurveSegment QuickOut = new CurveSegment(EasingType.PolyIn, 0f, 0f, 0.2f, 3);
@@ -79,7 +75,7 @@ namespace CalamityMod.Projectiles.Melee
                 initialized = true;
             }
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (State == 0f)
                 {
@@ -138,7 +134,7 @@ namespace CalamityMod.Projectiles.Melee
                         Particle smoke = new HeavySmokeParticle(Projectile.Center + direction * 50f, smokeSpeed + Owner.velocity, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f), 0.8f, 0, false, 0, true);
                         GeneralParticleHandler.SpawnParticle(smoke);
 
-                        if (Main.rand.Next(3) == 0)
+                        if (Main.rand.NextBool(3))
                         {
                             Particle smokeGlow = new HeavySmokeParticle(Projectile.Center + direction * 50f, smokeSpeed + Owner.velocity, Main.hslToRgb(0.85f, 1, 0.8f), 20, Main.rand.NextFloat(0.4f, 0.7f), 0.8f, 0, true, 0.01f, true);
                             GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -197,12 +193,12 @@ namespace CalamityMod.Projectiles.Melee
             //Scaling based on charge
             Projectile.scale = 1f + (Charge / MaxCharge * 0.3f);
 
-            Owner.direction = Math.Sign(direction.X);
+            Owner.ChangeDir(Math.Sign(direction.X));
             Owner.itemRotation = direction.ToRotation();
 
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
 
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
@@ -263,14 +259,16 @@ namespace CalamityMod.Projectiles.Melee
             return validPositionFound;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Owner.GiveIFrames(FourSeasonsGalaxia.AndromedaAttunement_DashHitIFrames);
+            // 17APR2024: Ozzatron: Galaxia's dash gives iframes when striking enemies in a similar manner to a ram dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(FourSeasonsGalaxia.AndromedaAttunement_DashHitIFrames);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            damage = (int)(damage * (1f + FourSeasonsGalaxia.AndromedaAttunement_FullChargeBoost * (float)Math.Pow(Charge / MaxCharge, 2)));
+            modifiers.SourceDamage *= 1f + FourSeasonsGalaxia.AndromedaAttunement_FullChargeBoost * (float)Math.Pow(Charge / MaxCharge, 2);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -298,7 +296,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Cut the velocity short if dashing
             if (State == 1f)

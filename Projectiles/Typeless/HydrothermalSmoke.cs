@@ -5,14 +5,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class HydrothermalSmoke : ModProjectile
+    public class HydrothermalSmoke : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Smoke");
-        }
 
         public override void SetDefaults()
         {
@@ -41,15 +37,15 @@ namespace CalamityMod.Projectiles.Typeless
             }
             if (Main.rand.NextBool(4))
             {
-                int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
+                int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
                 if (Main.rand.NextBool(4))
                 {
-                    Main.dust[num469].scale *= 0.35f;
+                    Main.dust[fieryDust].scale *= 0.35f;
                 }
-                Main.dust[num469].velocity *= 0f;
+                Main.dust[fieryDust].velocity *= 0f;
             }
 
-            Vector2 goreVec = new Vector2(Projectile.position.X, Projectile.position.Y);
+            Vector2 goreVec = Projectile.position;
             if (Main.rand.NextBool(8) && Main.netMode != NetmodeID.Server)
             {
                 int smoke = Gore.NewGore(Projectile.GetSource_FromAI(), goreVec, default, Main.rand.Next(375, 378), 0.75f);

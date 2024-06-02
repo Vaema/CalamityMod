@@ -1,10 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,16 +11,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class GalvanizingGlaive : ModItem
+    public class GalvanizingGlaive : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Galvanizing Glaive");
-            Tooltip.SetDefault("Its use as a tool is to quickly separate a single object into two\n" +
-                "That is also its use as a weapon\n" +
-                "Swings a spear which envelops struck foes in an energy field\n" +
-                "When done swinging, the spear discharges an extra pulse of energy");
             ItemID.Sets.Spears[Item.type] = true;
         }
 
@@ -42,8 +36,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.rare = ItemRarityID.Yellow;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
 
             Item.shoot = ModContent.ProjectileType<GalvanizingGlaiveProjectile>();
             Item.shootSpeed = 21f;
@@ -71,7 +65,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(18).
                 AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

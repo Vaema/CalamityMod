@@ -1,29 +1,29 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Particles;
-using CalamityMod.DataStructures;
-using CalamityMod.Items.Weapons.Melee;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class LamentationsOfTheChained : ModProjectile
+    public class LamentationsOfTheChained : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private NPC[] excludedTargets = new NPC[4];
 
         public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_LamentationsOfTheChained";
         public Player Owner => Main.player[Projectile.owner];
         public ref float ChainSwapTimer => ref Projectile.ai[0];
         public ref float SnapCoyoteTime => ref Projectile.ai[1];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
 
         const float MaxTangleReach = 400f; //How long can tangling vines from crits be
 
@@ -35,10 +35,6 @@ namespace CalamityMod.Projectiles.Melee
         public Particle smear;
         public Particle smear2;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Lamentations of the Chained");
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -77,7 +73,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             GenerateCurve(whip1.Y, whip1.X.ToRotationVector2(), out _, out _, out _, out Vector2 control13, (ChainSwapTimer % OmegaBiomeBlade.FlailBladeAttunement_FlailTime) / (float)OmegaBiomeBlade.FlailBladeAttunement_FlailTime, 1);
             GenerateCurve(whip2.Y, whip2.X.ToRotationVector2(), out _, out _, out _, out Vector2 control23, ((ChainSwapTimer - OmegaBiomeBlade.FlailBladeAttunement_FlailTime / 3f) % OmegaBiomeBlade.FlailBladeAttunement_FlailTime) / (float)OmegaBiomeBlade.FlailBladeAttunement_FlailTime, -1);
@@ -93,7 +89,7 @@ namespace CalamityMod.Projectiles.Melee
                     sword.OnHitProc = true;
 
 
-                crit = true;
+                modifiers.SetCrit();
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 sparkSpeed = Owner.DirectionTo(target.Center).RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2)) * 9f;
@@ -114,14 +110,14 @@ namespace CalamityMod.Projectiles.Melee
                 if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.FlailBladeAttunement_ChainProc)
                     sword.OnHitProc = true;
 
-                damage = (int)(damage * OmegaBiomeBlade.FlailBladeAttunement_ChainDamageReduction); //If the enemy is hit with the chain of the whip, the damage gets reduced
-                crit = false; //For once, we also block crits completely from the chain
+                modifiers.SourceDamage *= OmegaBiomeBlade.FlailBladeAttunement_ChainDamageReduction; //If the enemy is hit with the chain of the whip, the damage gets reduced
+                modifiers.DisableCrit(); //For once, we also block crits completely from the chain
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (crit)
+            if (hit.Crit)
             {
                 SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound, Projectile.Center);
                 excludedTargets[0] = target;
@@ -130,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
                     NPC potentialTarget = TargetNext(target.Center, i);
                     if (potentialTarget == null)
                         break;
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<GhastlyChain>(), (int)(damage * OmegaBiomeBlade.FlailBladeAttunement_GhostChainDamageReduction), 0, Owner.whoAmI, target.whoAmI, potentialTarget.whoAmI);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<GhastlyChain>(), (int)(damageDone * OmegaBiomeBlade.FlailBladeAttunement_GhostChainDamageReduction), 0, Owner.whoAmI, target.whoAmI, potentialTarget.whoAmI);
                     if (proj.ModProjectile is GhastlyChain chain)
                         chain.Gravity = Main.rand.NextFloat(30f, 50f);
                 }
@@ -142,9 +138,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float longestReach = MaxTangleReach;
             NPC target = null;
-            for (int i = 0; i < 200; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (!excludedTargets.Contains(npc) && npc.CanBeChasedBy() && !npc.friendly && !npc.townNPC)
                 {
                     float distance = Vector2.Distance(hitFrom, npc.Center);
@@ -162,7 +157,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -175,11 +170,11 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(Projectile.velocity.X);
+            Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
             Owner.itemRotation = Projectile.rotation;
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
@@ -412,7 +407,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 origin = new(guardFrame.Width / 2, guardFrame.Height); //Draw from center bottom of texture
                     Main.EntitySpriteDraw(tex, chainPositions[i] - Main.screenPosition, guardFrame, chainLightColor, rotation, origin, 1, SpriteEffects.None, 0);
 
-                    if ((ChainSwapTimer % OmegaBiomeBlade.FlailBladeAttunement_FlailTime) == 1 && Main.rand.Next(3) == 0f)
+                    if ((ChainSwapTimer % OmegaBiomeBlade.FlailBladeAttunement_FlailTime) == 1 && Main.rand.NextBool(3))
                     {
                         Particle Flake = new SnowflakeSparkle(chainPositions[i], Vector2.Zero, Color.PaleTurquoise, Color.MediumTurquoise, 1f + Main.rand.NextFloat(0, 1f), 30, 0.4f, 0.2f);
                         GeneralParticleHandler.SpawnParticle(Flake);

@@ -1,17 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SeafoamBombProj : ModProjectile
+    public class SeafoamBombProj : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seafoam Bomb");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -28,8 +24,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.Y = Projectile.velocity.Y + 0.15f;
             Projectile.velocity.X = Projectile.velocity.X * 0.99f;
         }
-
-        public override void Kill(int timeLeft)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Main.zenithWorld)
+                modifiers.SourceDamage *= 12;
+        }
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = Projectile.Calamity().stealthStrike ? 256 : 128;

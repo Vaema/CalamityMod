@@ -1,33 +1,27 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Fungicide : ModItem
+    public class Fungicide : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Fungicide");
-            Tooltip.SetDefault("Converts musket balls into fungal rounds that split on death");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 20;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 40;
             Item.height = 26;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.damage = 20;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 22;
+            Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item61;
             Item.autoReuse = true;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,11 +13,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class MarksmanShot : ModProjectile
+    public class MarksmanShot : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         private static readonly int trailLength = 35;
-        private PrimitiveTrail trailDrawer;
         internal List<Vector2> trailPositions;
 
         // Lifetime of a bullet. Defined in terms of updates because Terraria's engine is trash.
@@ -34,7 +35,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marksman Shot");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 4000;
         }
 
@@ -45,6 +45,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = Lifetime;
             Projectile.MaxUpdates = UpdateCount;
             Projectile.alpha = 255;
@@ -131,9 +133,14 @@ namespace CalamityMod.Projectiles.Ranged
             float speed = Projectile.velocity.Length();
             Projectile.velocity = Projectile.DirectionTo(target.pos) * speed;
 
-            // Force the projectile as a crit. This is done without editing underlying crit chance.
+            // If the coin is old enough, and this is the first coin struck, force the projectile as a crit.
+            // This is done without editing underlying crit chance.
+            //
+            // The limitations here are intended to stop the dominant strategy of tossing coins 6 inches straight up and immediately shooting them.
+            // Because only the first coin hit can enable the forced crit, you can't get it "for free" by chaining coins. You have to aim at a ripe coin initially.
             CalamityGlobalProjectile cgp = Projectile.Calamity();
-            cgp.forcedCrit = true;
+            if (NumRicochets == 0 && CalamityUtils.CanRicoshotCoinForceCrit(struckCoin))
+                cgp.forcedCrit = true;
 
             // Apply bonus damage to the projectile. This is an additive multiplier between multiple coins.
             float bonusDamageRatio = struckCoin.ai[0] switch
@@ -180,7 +187,7 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Midas, 60);
 
@@ -207,11 +214,8 @@ namespace CalamityMod.Projectiles.Ranged
             if (trailPositions is null)
                 return false;
 
-            if (trailDrawer is null)
-                trailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
-            trailDrawer.Draw(trailPositions, Projectile.Size * 0.5f - Main.screenPosition, trailLength);
+            PrimitiveRenderer.RenderTrail(trailPositions, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), trailLength);
 
             return false;
         }

@@ -1,15 +1,13 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
-    public class Phantom : ModProjectile
+    public class Phantom : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Phantom");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -28,10 +26,10 @@ namespace CalamityMod.Projectiles.Magic
 
             Lighting.AddLight(Projectile.Center, 0.2f, 0.2f, 0.2f);
 
-            for (int num457 = 0; num457 < 2; num457++)
+            for (int i = 0; i < 2; i++)
             {
-                int num458 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 175, 0f, 0f, 100, default, 1f);
-                Main.dust[num458].noGravity = true;
+                int spectre = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
+                Main.dust[spectre].noGravity = true;
             }
 
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 300f, 12f, 20f);

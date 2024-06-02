@@ -1,30 +1,23 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Accessories;
+﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
+using CalamityMod.Tiles.Furniture;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Tiles.Furniture;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class WulfrumLureItem : ModItem
+    public class WulfrumLureItem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public static int SignalTime = 30 * 60;
         public static int SpawnIntervals = 4 * 60;
         public static int MaxEnemiesPerWave = 3;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Wulfrum Lure");
-            Tooltip.SetDefault($"Consumes [i:{ModContent.ItemType<EnergyCore>()}] Energy Cores to emit a wulfrum signal that lures Wulfrum automatons out\n" +
-                $"The signal lasts for {SignalTime / 60f} seconds");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 22;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -37,9 +30,9 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-            AddIngredient(ModContent.ItemType<WulfrumMetalScrap>(), 5).
-            AddIngredient(ModContent.ItemType<WulfrumBattery>(), 1).
+            CreateRecipe().
+            AddIngredient<WulfrumMetalScrap>(5).
+            AddIngredient<WulfrumBattery>().
             AddTile(TileID.Anvils).
             Register();
         }

@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,8 +9,6 @@ namespace CalamityMod.Buffs.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Reaver Orb");
-            Description.SetDefault("The reaver orb will light your way");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
             //Main.persistentBuff[Type] = true;

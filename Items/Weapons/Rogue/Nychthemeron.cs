@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,20 +10,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Nychthemeron : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nychthemeron");
-            Tooltip.SetDefault("Throws a spiky ball that ignores gravity and summons a pair of dark and light orbs that orbit the player\n" +
-                "Once the spiky ball disappears the orbs will home in on the nearest target\n" +
-                "Up to 10 spiky balls can exist at a time\n" +
-                "Stealth strikes cause all spiky balls and orbs to be thrown at once\n" +
-                "Right click to recall all existing spiky balls");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
+            Item.height = 18;
             Item.damage = 60;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -33,8 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<NychthemeronProjectile>();
             Item.shootSpeed = 6f;
@@ -43,10 +32,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool AltFunctionUse(Player player)
         {
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p.type == ModContent.ProjectileType<NychthemeronProjectile>() && p.owner == player.whoAmI)
+                if (p.type == Item.shoot && p.owner == player.whoAmI)
                 {
                     p.ai[0] = 1f;
                 }
@@ -54,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             return true;
         }
 
-		public override float StealthDamageMultiplier => 0.3333f;
+        public override float StealthDamageMultiplier => 0.3333f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -104,12 +92,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             // Ideally new projectiles will fill in the most recently vacated spots in the pattern
             int[] activeSlots = new int[10] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj.type == ModContent.ProjectileType<NychthemeronOrb>() && proj.owner == player.whoAmI && proj.active && proj.localAI[0] == 0f && activeSlots[(int)proj.localAI[1]] == -1)
+                if (proj.type == ModContent.ProjectileType<NychthemeronOrb>() && proj.owner == player.whoAmI && proj.localAI[0] == 0f && activeSlots[(int)proj.localAI[1]] == -1)
                 {
-                    activeSlots[(int)proj.localAI[1]] = i;
+                    activeSlots[(int)proj.localAI[1]] = proj.whoAmI;
                 }
             }
 

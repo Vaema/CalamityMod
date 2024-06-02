@@ -1,17 +1,21 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using CalamityMod.Balancing;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Terraria;
 using Terraria.GameContent.Drawing;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Map;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
@@ -117,96 +121,28 @@ namespace CalamityMod.ILEditing
         #endregion Reforge Requirement Relaxation
 
         #region Prevention of Slime Rain Spawns When Near Bosses
-        private static void PreventBossSlimeRainSpawns(On.Terraria.NPC.orig_SlimeRainSpawns orig, int plr)
+        private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
             if (!Main.player[plr].Calamity().isNearbyBoss && CalamityConfig.Instance.BossZen)
                 orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
 
-        #region Voodoo Demon Doll Spawn Manipulations
-        // This may seem absolutely obscene, but vanilla spawn behavior does not occur within the spawn pool that TML provides, only modded
-        // spawns do. Pretty much everything else is simply a fuckton of manual conditional NPC.NewNPC calls. As such, the only way to bypass
-        // vanilla spawn behaviors is the IL edit them out of existence. Here, simply replacing the voodoo demon ID with an empty one is performed.
-        // Something cleaner could probably be done, such as getting rid of the entire NPC.NewNPC call, but this is the easiest solution I can come up with.
-        private static void MakeVoodooDemonDollWork(ILContext il)
+        #region Remove Feral Bite Random Debuffs
+        private static void RemoveFeralBiteRandomDebuffs(ILContext il)
         {
             var cursor = new ILCursor(il);
 
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(NPCID.VoodooDemon)))
+            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
             {
-                LogFailure("Voodoo Demon Doll Mechanic", "Could not locate the Voodoo Demon ID.");
+                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
                 return;
             }
 
+            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldloc, 10);
-            cursor.EmitDelegate<Func<int, int>>(spawnPlayerIndex =>
-            {
-                if (Main.player[spawnPlayerIndex].active && Main.player[spawnPlayerIndex].Calamity().disableVoodooSpawns)
-                    return NPCID.None;
-
-                return NPCID.VoodooDemon;
-            });
-        }
-        #endregion Voodoo Demon Doll Spawn Manipulations
-
-        #region Disabling of Lava Slime Lava Creation
-        private static void RemoveLavaDropsFromExpertLavaSlimes(ILContext il)
-        {
-            // Prevent Lava Slimes from dropping lava.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<WorldGen>("SquareTileFrame"))) // The only SquareTileFrame call in HitEffect.
-            {
-                LogFailure("Remove Lava Drops From Expert Lava Slimes", "Could not locate the SquareTileFrame function call.");
-                return;
-            }
-            if (!cursor.TryGotoPrev(MoveType.Before, i => i.MatchLdcI4(NPCID.LavaSlime))) // The ID of Lava Slimes.
-            {
-                LogFailure("Remove Lava Drops From Expert Lava Slimes", "Could not locate the Lava Slime ID variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 0); // Change to an impossible scenario.
-        }
-        #endregion Disabling of Lava Slime Lava Creation
-
-        #region Increase Pylon Interaction Range
-        private static void IncreasePylonInteractionRange(ILContext il)
-        {
-            // Find the tile range variables and change them to something greater.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(20)))
-            {
-                LogFailure("Increase Pylon Interaction Range", "Could not locate the tile range X variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 200);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(20)))
-            {
-                LogFailure("Increase Pylon Interaction Range", "Could not locate the tile range X variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 200);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(20)))
-            {
-                LogFailure("Increase Pylon Interaction Range", "Could not locate the tile range Y variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 200);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(20)))
-            {
-                LogFailure("Increase Pylon Interaction Range", "Could not locate the tile range Y variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 200);
+            cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
         #endregion
 
@@ -215,13 +151,22 @@ namespace CalamityMod.ILEditing
         {
             // Find the Tile ID of Meteorite and change it to something that doesn't matter.
             var cursor = new ILCursor(il);
+
+            // There are two checks for the Meteorite Tile ID. The first one is required for the switch cases to function properly, so we need to move past it.
+            ILLabel label = null; // pointless label for MatchBeq
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchBeq(out label)))
+            {
+                LogFailure("Make Meteorite Explodable", "Could not locate the branching instruction.");
+                return;
+            }
+
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(TileID.Meteorite))) // The Meteorite Tile ID check.
             {
                 LogFailure("Make Meteorite Explodable", "Could not locate the Meteorite Tile ID variable.");
                 return;
             }
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, TileID.HellstoneBrick); // Change to Hellstone Brick. They're made of Hellstone, so it makes sense they can't be exploded until Hardmode starts :^)
+            cursor.Emit(OpCodes.Ldc_I4, TileID.HellstoneBrick); // This won't actually do anything since the ID is above Meteorite's and thus unreachable
         }
         #endregion
 
@@ -258,13 +203,27 @@ namespace CalamityMod.ILEditing
         {
             // Blood Moons only happen when the player has over 200 max life.
             var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(120))) // The 120 max life check.
+            // Find the moon phase check which will forward the cursor around the Blood Moon portion
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchLdsfld<Main>("moonPhase")))
             {
-                LogFailure("Make Blood Moons Require 200 Max Life", "Could not locate the max life variable.");
+                LogFailure("Make Blood Moons Require 200 Max Life", "Could not locate the moon phase check.");
+                return;
+            }
+            // Find the player check itself
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCallOrCallvirt<Player>("get_ConsumedLifeCrystals")))
+            {
+                LogFailure("Make Blood Moons Require 200 Max Life", "Could not locate the Life Crystal check.");
+                return;
+            }
+            // Find the >1 Life Crystal requirement
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(1)))
+            {
+                LogFailure("Make Blood Moons Require 200 Max Life", "Could not locate the Life Crystal requirement.");
                 return;
             }
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 200); // Change to 200.
+            // Change it to >4 Life Crystals, which effectively allows a Blood Moon at 200 natural health.
+            cursor.Emit(OpCodes.Ldc_I4, 4);
         }
         #endregion Change Blood Moon Max HP Requirements
 
@@ -283,115 +242,8 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Make Tag Damage Multiplicative
-        private static void MakeTagDamageMultiplicative(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-            int damageLocalIndex = 37;
-
-            bool replaceWithMultipler(int flagLocalIndex, float damageFactor, bool usesExtraVariableToStoreDamage = false)
-            {
-                // Move after the bool load and branch-if-false instruction.
-                cursor.Goto(0);
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(flagLocalIndex)))
-                {
-                    LogFailure("Making Tag Damage Multiplicative", $"Could not locate the flag local index of '{flagLocalIndex}'.");
-                    return false;
-                }
-
-                // Move to the point at which a local is loaded after the boolean.
-                // Ideally this would be two instructions afterwards (load bool, branch), but we cannot guarantee that this will be the case.
-                // As such, a match is done instead.
-                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc(out _)))
-                {
-                    LogFailure("Making Tag Damage Multiplicative", $"Could not locate the succeeding local after the flag local index of '{flagLocalIndex}'.");
-                    return false;
-                }
-
-                // OPTIONAL case for if an extra variable to store damage is used:
-                // Load damage to add.
-                // Store damage to add as a variable.
-
-                // Load damage ->
-                // Load damage addition ->
-                // Add the two ->
-                // Store damage.
-
-                // This logic for adding damage is disabled by popped at the point at which the addition happens and replacing it with zero, resulting in x += 0.
-                if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchAdd()))
-                {
-                    LogFailure("Making Tag Damage Multiplicative", $"Could not locate the damage addition at the flag local index of '{flagLocalIndex}'.");
-                    return false;
-                }
-                cursor.Emit(OpCodes.Pop);
-                cursor.Emit(OpCodes.Ldc_I4_0);
-
-                // After this, the following operations are done as a replacement to achieve multiplicative damage:
-
-                // Load damage ->
-                // Cast damage to float ->
-                // Load the damage factor ->
-                // Multiply the two ->
-                // Cast the result to int, removing the fractional part ->
-                // Store damage.
-                cursor.Emit(OpCodes.Ldloc, damageLocalIndex);
-                cursor.Emit(OpCodes.Conv_R4);
-                cursor.Emit(OpCodes.Ldc_R4, damageFactor);
-                cursor.Emit(OpCodes.Mul);
-                cursor.Emit(OpCodes.Conv_I4);
-                cursor.Emit(OpCodes.Stloc, damageLocalIndex);
-                return true;
-            }
-
-            // Leather whip.
-            replaceWithMultipler(50, BalancingConstants.LeatherWhipTagDamageMultiplier);
-
-            // Durendal.
-            replaceWithMultipler(51, BalancingConstants.DurendalTagDamageMultiplier);
-
-            // Snapthorn.
-            replaceWithMultipler(54, BalancingConstants.SnapthornTagDamageMultiplier);
-
-            // Spinal Tap.
-            replaceWithMultipler(55, BalancingConstants.SpinalTapTagDamageMultiplier);
-
-            // Morning Star.
-            replaceWithMultipler(56, BalancingConstants.MorningStarTagDamageMultiplier);
-
-            // Kaleidoscope.
-            replaceWithMultipler(57, BalancingConstants.KaleidoscopeTagDamageMultiplier, true);
-
-            // SPECIAL CASE: Firecracker's damage is fucking absurd and everything needs to go.
-            cursor.Goto(0);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(64)))
-            {
-                LogFailure("Making Tag Damage Multiplicative", $"Could not locate the flag local index of 52.");
-                return;
-            }
-
-            // Change the damage of the explosions.
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<Projectile, int>>(projectile =>
-            {
-                int damage = (int)(Main.player[projectile.owner].ActiveItem().damage * BalancingConstants.FirecrackerExplosionDamageMultiplier);
-                damage = (int)Main.player[projectile.owner].GetTotalDamage<SummonDamageClass>().ApplyTo(damage);
-                return damage;
-            });
-            cursor.Emit(OpCodes.Stloc, 64);
-
-            // Change the x in damage += x; to zero.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchAdd()))
-            {
-                LogFailure("Making Tag Damage Multiplicative", $"Could not locate the damage additive value.");
-                return;
-            }
-            cursor.Emit(OpCodes.Pop);
-            cursor.Emit(OpCodes.Ldc_I4_0);
-        }
-        #endregion Make Tag Damage Multiplicative
-
         #region Remove Hellforge Pickaxe Requirement
-        private static int RemoveHellforgePickaxeRequirement(On.Terraria.Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
+        private static int RemoveHellforgePickaxeRequirement(Terraria.On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
         {
             if (tileTarget.TileType == TileID.Hellforge)
                 pickPower = 65;
@@ -405,7 +257,7 @@ namespace CalamityMod.ILEditing
         #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
 
         #region Color Blighted Gel
-        private static void ColorBlightedGel(On.Terraria.GameContent.ItemDropRules.CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
+        private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
             orig(npc, itemIndex);
 
@@ -426,47 +278,401 @@ namespace CalamityMod.ILEditing
 
             // Sync the color changes.
             if (colorWasChanged)
-                NetMessage.SendData(MessageID.ItemTweaker, -1, -1, null, itemID, 1f);
+                NetMessage.SendData(MessageID.ItemTweaker, -1, -1, null, itemIndex, 1f);
         }
         #endregion Color Blighted Gel
 
         #region Improve Angler Quest Rewards
-        private static void ImproveAnglerRewards(On.Terraria.Player.orig_GetAnglerReward orig, Player self, NPC angler)
+        private static void ImproveAnglerRewards(Terraria.On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
         {
-            orig(self, angler);
+            orig(self, angler, questItemType);
 
             EntitySource_Gift source = new EntitySource_Gift(angler);
-            int questsDone = self.anglerQuestsFinished + Main.rand.Next(101);
+            int questsDone = self.anglerQuestsFinished;
             float rarityReduction = 1f;
             rarityReduction = (questsDone <= 50) ? (rarityReduction - questsDone * 0.01f) : ((questsDone <= 100) ? (0.5f - (questsDone - 50) * 0.005f) : ((questsDone > 150) ? 0.15f : (0.25f - (questsDone - 100) * 0.002f)));
             rarityReduction *= 0.9f;
             rarityReduction *= (float)(self.currentShoppingSettings.PriceAdjustment + 1.0) / 2f;
+
+            if (rarityReduction < 0.1f)
+                rarityReduction = 0.1f;
 
             List<Item> rewardItems = new List<Item>();
 
             GetItemSettings anglerRewardSettings = GetItemSettings.NPCEntityToPlayerInventorySettings;
 
             Item item = new Item();
-            item.SetDefaults(ItemID.MasterBait);
-            item.stack += 5;
-            if (item.stack > 0)
-                rewardItems.Add(item);
 
-            Item item2 = self.GetItem(self.whoAmI, item, GetItemSettings.NPCEntityToPlayerInventorySettings);
-            if (item2.stack > 0)
-                rewardItems.Add(item2);
+            // GUARANTEED REWARDS
 
-            item = new Item();
-            item.SetDefaults(ItemID.GoldCoin);
-            item.stack = 10;
+            // BAIT
+            switch (questsDone)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    item = new Item();
+                    item.SetDefaults(ItemID.Stinkbug);
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    item = new Item();
+                    item.SetDefaults(ItemID.ApprenticeBait);
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                    item = new Item();
+                    item.SetDefaults(Main.rand.NextBool() ? ItemID.Worm : ItemID.Maggot);
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
+                    item = new Item();
+                    item.SetDefaults(ItemID.JourneymanBait);
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+
+                case 21:
+                case 22:
+                case 23:
+                case 24:
+                case 25:
+                case 26:
+                    item = new Item();
+                    item.SetDefaults(Main.rand.NextBool() ? ItemID.EnchantedNightcrawler : ItemID.Buggy);
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+
+                case 27:
+                case 28:
+                case 29:
+                case 30:
+                    item = new Item();
+                    item.SetDefaults(ItemID.MasterBait);
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+
+                default:
+                    item = new Item();
+                    item.SetDefaults(ModContent.ItemType<GrandMarquisBait>());
+                    item.stack = Main.rand.Next(2, 6);
+                    break;
+            }
+
+            item.position = self.Center;
+            Item item2 = self.GetItem(self.whoAmI, item, anglerRewardSettings);
+            rewardItems.Add(item2);
+
+            // COINS
+            switch (questsDone)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldCoin);
+                    break;
+
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldCoin);
+                    item.stack = 2;
+                    item = new Item();
+                    item.SetDefaults(ItemID.SilverCoin);
+                    item.stack = 50;
+                    break;
+
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldCoin);
+                    item.stack = 4;
+                    break;
+
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldCoin);
+                    item.stack = 6;
+                    break;
+
+                case 20:
+                case 21:
+                case 22:
+                case 23:
+                case 24:
+                case 25:
+                case 26:
+                case 27:
+                case 28:
+                case 29:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldCoin);
+                    item.stack = 8;
+                    break;
+
+                default:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldCoin);
+                    item.stack = 10;
+                    break;
+            }
 
             item.position = self.Center;
             item2 = self.GetItem(self.whoAmI, item, anglerRewardSettings);
-            if (item2.stack > 0)
-                rewardItems.Add(item2);
-            
+            rewardItems.Add(item2);
+
+            // PRIMARY ITEMS
+            switch (questsDone)
+            {
+                case 0:
+                case 1:
+                    item = new Item();
+                    item.SetDefaults(ModContent.ItemType<Spadefish>());
+                    rewardItems.Add(item);
+                    break;
+
+                case 2:
+                    item = new Item();
+                    item.SetDefaults(ModContent.ItemType<StuffedFish>());
+                    item.stack = Main.rand.Next(4, 10);
+                    rewardItems.Add(item);
+                    break;
+
+                case 3:
+                    item = new Item();
+                    item.SetDefaults(ItemID.HighTestFishingLine);
+                    rewardItems.Add(item);
+                    break;
+
+                case 4:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishHook);
+                    rewardItems.Add(item);
+                    break;
+
+                case 5:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FuzzyCarrot);
+                    rewardItems.Add(item);
+                    break;
+
+                case 6:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishermansGuide);
+                    rewardItems.Add(item);
+                    break;
+
+                case 7:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishCostumeMask);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishCostumeShirt);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishCostumeFinskirt);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ModContent.ItemType<SandyAnglingKit>());
+                    rewardItems.Add(item);
+                    break;
+
+                case 8:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishMinecart);
+                    rewardItems.Add(item);
+                    break;
+
+                case 9:
+                    item = new Item();
+                    item.SetDefaults(ItemID.SailfishBoots);
+                    rewardItems.Add(item);
+                    break;
+
+                case 10:
+                    item = new Item();
+                    item.SetDefaults(ItemID.AnglerHat);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ItemID.AnglerVest);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ItemID.AnglerPants);
+                    rewardItems.Add(item);
+                    break;
+
+                case 11:
+                    item = new Item();
+                    item.SetDefaults(ItemID.WeatherRadio);
+                    rewardItems.Add(item);
+                    break;
+
+                case 12:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FishingBobber);
+                    rewardItems.Add(item);
+                    break;
+
+                case 13:
+                    item = new Item();
+                    item.SetDefaults(ItemID.SeashellHairpin);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ItemID.MermaidAdornment);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ItemID.MermaidTail);
+                    rewardItems.Add(item);
+                    item = new Item();
+                    item.SetDefaults(ModContent.ItemType<SandyAnglingKit>());
+                    rewardItems.Add(item);
+                    break;
+
+                case 14:
+                    item = new Item();
+                    item.SetDefaults(ItemID.Sextant);
+                    rewardItems.Add(item);
+                    break;
+
+                case 15:
+                    item = new Item();
+                    item.SetDefaults(ItemID.TackleBox);
+                    rewardItems.Add(item);
+                    break;
+
+                case 16:
+                    item = new Item();
+                    item.SetDefaults(ItemID.SuperAbsorbantSponge);
+                    rewardItems.Add(item);
+                    break;
+
+                case 17:
+                    item = new Item();
+                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
+                    rewardItems.Add(item);
+                    break;
+
+                case 18:
+                    item = new Item();
+                    item.SetDefaults(ItemID.MagicConch);
+                    rewardItems.Add(item);
+                    break;
+
+                case 19:
+                    item = new Item();
+                    item.SetDefaults(ItemID.DemonConch);
+                    rewardItems.Add(item);
+                    break;
+
+                case 20:
+                    item = new Item();
+                    item.SetDefaults(ItemID.AnglerEarring);
+                    rewardItems.Add(item);
+                    break;
+
+                case 21:
+                    item = new Item();
+                    item.SetDefaults(ItemID.LavaFishingHook);
+                    rewardItems.Add(item);
+                    break;
+
+                case 22:
+                    item = new Item();
+                    item.SetDefaults(ItemID.HotlineFishingHook);
+                    rewardItems.Add(item);
+                    break;
+
+                case 23:
+                    item = new Item();
+                    item.SetDefaults(ItemID.FrogLeg);
+                    rewardItems.Add(item);
+                    break;
+
+                case 24:
+                    item = new Item();
+                    item.SetDefaults(ItemID.SuperheatedBlood);
+                    rewardItems.Add(item);
+                    break;
+
+                case 25:
+                    item = new Item();
+                    item.SetDefaults(ItemID.BottomlessBucket);
+                    rewardItems.Add(item);
+                    break;
+
+                case 26:
+                    item = new Item();
+                    item.SetDefaults(ItemID.Sundial);
+                    rewardItems.Add(item);
+                    break;
+
+                case 27:
+                    item = new Item();
+                    item.SetDefaults(ItemID.BottomlessHoneyBucket);
+                    rewardItems.Add(item);
+                    break;
+
+                case 28:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldenBugNet);
+                    rewardItems.Add(item);
+                    break;
+
+                case 29:
+                    item = new Item();
+                    item.SetDefaults(ItemID.BottomlessLavaBucket);
+                    rewardItems.Add(item);
+                    break;
+
+                case 30:
+                    item = new Item();
+                    item.SetDefaults(ItemID.GoldenFishingRod);
+                    rewardItems.Add(item);
+                    break;
+            }
+
+            // RANDOM DROPS
+
+            // Angling Kits
+            if (Main.rand.NextBool((int)(12f * rarityReduction)) && questsDone > 30)
+            {
+                item = new Item();
+                item.SetDefaults(Main.hardMode ? ModContent.ItemType<BleachedAnglingKit>() : ModContent.ItemType<SandyAnglingKit>());
+                rewardItems.Add(item);
+            }
+
             // Golden Fishing Rod
-            if (Main.rand.NextBool((int)(500f * rarityReduction)))
+            if (Main.rand.NextBool((int)(500f * rarityReduction)) && questsDone > 30)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.GoldenFishingRod);
@@ -474,7 +680,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Hotline Fishing Hook
-            if (Main.rand.NextBool((int)(200f * rarityReduction)) || self.anglerQuestsFinished == 22)
+            if (Main.rand.NextBool((int)(200f * rarityReduction)) && questsDone > 22)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.HotlineFishingHook);
@@ -482,7 +688,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Angler Set
-            if (Main.rand.NextBool((int)(150f * rarityReduction)))
+            if (Main.rand.NextBool((int)(150f * rarityReduction)) && questsDone > 10)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.AnglerHat);
@@ -496,7 +702,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Mermaid Set
-            if (Main.rand.NextBool((int)(150f * rarityReduction)) || self.anglerQuestsFinished == 11)
+            if (Main.rand.NextBool((int)(150f * rarityReduction)) && questsDone > 13)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SeashellHairpin);
@@ -510,7 +716,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Fish Set
-            if (Main.rand.NextBool((int)(150f * rarityReduction)) || self.anglerQuestsFinished == 8)
+            if (Main.rand.NextBool((int)(150f * rarityReduction)) && questsDone > 7)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.FishCostumeMask);
@@ -524,7 +730,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Fin Wings
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && Main.hardMode)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && Main.hardMode && questsDone > 10)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.FinWings);
@@ -532,7 +738,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Bottomless Water Bucket
-            if (Main.rand.NextBool((int)(140f * rarityReduction)))
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 25)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.BottomlessBucket);
@@ -540,15 +746,39 @@ namespace CalamityMod.ILEditing
             }
 
             // Bottomless Honey Bucket
-            /*if (Main.rand.NextBool((int)(140f * rarityReduction)) || self.anglerQuestsFinished == 29)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 27)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.BottomlessHoneyBucket);
                 rewardItems.Add(item);
-            }*/
+            }
+
+            // Bottomless Lava Bucket
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 29)
+            {
+                item = new Item();
+                item.SetDefaults(ItemID.BottomlessLavaBucket);
+                rewardItems.Add(item);
+            }
+
+            // Magic Conch
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 18)
+            {
+                item = new Item();
+                item.SetDefaults(ItemID.MagicConch);
+                rewardItems.Add(item);
+            }
+
+            // Demon Conch
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 19)
+            {
+                item = new Item();
+                item.SetDefaults(ItemID.DemonConch);
+                rewardItems.Add(item);
+            }
 
             // Super Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) || self.anglerQuestsFinished == 17)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 16)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SuperAbsorbantSponge);
@@ -556,15 +786,15 @@ namespace CalamityMod.ILEditing
             }
 
             // Honey Absorbant Sponge
-            /*if (Main.rand.NextBool((int)(140f * rarityReduction)) || self.anglerQuestsFinished == 19)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 17)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SuperAbsorbantSponge);
                 rewardItems.Add(item);
-            }*/
+            }
 
             // Golden Bug Net
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) || self.anglerQuestsFinished == 27)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 28)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.GoldenBugNet);
@@ -572,7 +802,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Fish Hook
-            if (Main.rand.NextBool((int)(120f * rarityReduction)) || self.anglerQuestsFinished == 4)
+            if (Main.rand.NextBool((int)(120f * rarityReduction)) && questsDone > 4)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.FishHook);
@@ -580,15 +810,23 @@ namespace CalamityMod.ILEditing
             }
 
             // Minecarp
-            if (Main.rand.NextBool((int)(120f * rarityReduction)) || self.anglerQuestsFinished == 9)
+            if (Main.rand.NextBool((int)(120f * rarityReduction)) && questsDone > 8)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.FishMinecart);
                 rewardItems.Add(item);
             }
 
+            // Lava Shark
+            if (Main.rand.NextBool((int)(120f * rarityReduction)) && questsDone > 24)
+            {
+                item = new Item();
+                item.SetDefaults(ItemID.SuperheatedBlood);
+                rewardItems.Add(item);
+            }
+
             // High Test Fishing Line
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) || self.anglerQuestsFinished == 2)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 3)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.HighTestFishingLine);
@@ -596,15 +834,23 @@ namespace CalamityMod.ILEditing
             }
 
             // Angler Earring
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) || self.anglerQuestsFinished == 7)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 20)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.AnglerEarring);
                 rewardItems.Add(item);
             }
 
+            // Lavaproof Fishing Hook
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 21)
+            {
+                item = new Item();
+                item.SetDefaults(ItemID.LavaFishingHook);
+                rewardItems.Add(item);
+            }
+
             // Tackle Box
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) || self.anglerQuestsFinished == 12)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 15)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.TackleBox);
@@ -612,7 +858,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Fisherman's Pocket Guide
-            if (Main.rand.NextBool((int)(60f * rarityReduction)) || self.anglerQuestsFinished == 1)
+            if (Main.rand.NextBool((int)(60f * rarityReduction)) && questsDone > 6)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.FishermansGuide);
@@ -620,7 +866,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Weather Radio
-            if (Main.rand.NextBool((int)(60f * rarityReduction)) || self.anglerQuestsFinished == 3)
+            if (Main.rand.NextBool((int)(60f * rarityReduction)) && questsDone > 11)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.WeatherRadio);
@@ -628,7 +874,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Sextant
-            if (Main.rand.NextBool((int)(60f * rarityReduction)) || self.anglerQuestsFinished == 6)
+            if (Main.rand.NextBool((int)(60f * rarityReduction)) && questsDone > 14)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.Sextant);
@@ -636,12 +882,12 @@ namespace CalamityMod.ILEditing
             }
 
             // Fishing Bobber
-            /*if (Main.rand.NextBool((int)(50f * rarityReduction)) || self.anglerQuestsFinished == 13)
+            if (Main.rand.NextBool((int)(50f * rarityReduction)) && questsDone > 12)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.FishingBobber);
                 rewardItems.Add(item);
-            }*/
+            }
 
             PlayerLoader.AnglerQuestReward(self, rarityReduction, rewardItems);
 
@@ -659,6 +905,63 @@ namespace CalamityMod.ILEditing
                         NetMessage.SendData(MessageID.SyncItem, -1, -1, null, number, 1f);
                 }
             }
+        }
+        #endregion
+
+        #region Render Special Map Colors
+        private static void UseVisibleThroughWaterMapTile(ILContext il)
+        {
+            var c = new ILCursor(il);
+
+            if (!c.TryGotoNext(x => x.MatchCall<Tilemap>("get_Item")))
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Map.TileMap::get_Item.");
+                return;
+            }
+            
+            int tileIndex = -1;
+            if (!c.TryGotoNext(x => x.MatchStloc(out tileIndex)) || tileIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index tile is pushed to.");
+                return;
+            }
+
+            if (!c.TryGotoNext(x => x.MatchCall<Tile>("liquidType")))
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Tile::liquidType.");
+                return;
+            }
+
+            int liquidTypeIndex = -1;
+            if (!c.TryGotoNext(x => x.MatchStloc(out liquidTypeIndex)) || liquidTypeIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index liquidType is pushed to.");
+                return;
+            }
+
+            int relativeMapTypeIndex = -1;
+            if (!c.TryGotoNext(MoveType.After, x => x.MatchStloc(out relativeMapTypeIndex)) || relativeMapTypeIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index of the relative map type.");
+                return;
+            }
+
+            c.Emit(OpCodes.Ldloc_0);
+            c.Emit(OpCodes.Ldloc, relativeMapTypeIndex);
+            c.Emit(OpCodes.Ldloc, liquidTypeIndex);
+            c.EmitDelegate(
+                (Tile tile, int relativeMapType, int liquidType) =>
+                {
+                    if (liquidType != LiquidID.Water)
+                        return relativeMapType;
+
+                    if (WallLoader.GetWall(tile.WallType) is IVisibleThroughWater visibleThroughWater)
+                        return visibleThroughWater.WaterMapEntry;
+
+                    return relativeMapType;
+                }
+            );
+            c.Emit(OpCodes.Stloc, relativeMapTypeIndex);
         }
         #endregion
 

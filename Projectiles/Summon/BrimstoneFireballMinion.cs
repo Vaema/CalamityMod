@@ -2,18 +2,18 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class BrimstoneFireballMinion : ModProjectile
+    public class BrimstoneFireballMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Boss/BrimstoneHellfireball";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Brimfire");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
@@ -22,14 +22,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 12;
-            Projectile.height = 12;
+            Projectile.width = Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 200;
             Projectile.penetrate = 2;
             Projectile.extraUpdates = 1;
-            Projectile.minion = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
             Projectile.alpha = 255;
@@ -60,10 +58,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) - MathHelper.ToRadians(90) * Projectile.direction;
 
-            int num458 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
-            Main.dust[num458].noGravity = true;
-            Main.dust[num458].velocity *= 0.5f;
-            Main.dust[num458].velocity += Projectile.velocity * 0.1f;
+            int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
+            Main.dust[brimDust].noGravity = true;
+            Main.dust[brimDust].velocity *= 0.5f;
+            Main.dust[brimDust].velocity += Projectile.velocity * 0.1f;
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.05f / 255f, (255 - Projectile.alpha) * 0.05f / 255f);
 
             if (Projectile.localAI[0] == 0f)
@@ -73,17 +71,15 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
-        {
-            if (Projectile.owner == Main.myPlayer)
-            {
-                int explosion = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneExplosionMinion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                if (Main.projectile.IndexInRange(explosion))
-                    Main.projectile[explosion].originalDamage = Projectile.originalDamage;
-            }
-        }
+        //public override void OnKill(int timeLeft)
+        //{
+        //if (Projectile.owner == Main.myPlayer)
+        //{
+        //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneExplosionMinion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+        //}
+        //}
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }

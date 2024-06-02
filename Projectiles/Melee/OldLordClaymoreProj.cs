@@ -1,19 +1,21 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class OldLordClaymoreProj : BaseIdleHoldoutProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<OldLordClaymore>();
         public enum SwingState
         {
             Default,
@@ -31,15 +33,14 @@ namespace CalamityMod.Projectiles.Melee
         public bool LMBUse => Owner.altFunctionUse != 2 && !RMBChannel && Owner.itemAnimation > 0;
         public ref float ChargePower => ref Projectile.localAI[1];
 
-        public const int MaxChargeTime = 60;
+        public const int MaxChargeTime = 90;
         public override string Texture => "CalamityMod/Items/Weapons/Melee/OldLordClaymore";
         public override int AssociatedItemID => ModContent.ItemType<OldLordClaymore>();
         public override int IntendedProjectileType => ModContent.ProjectileType<OldLordClaymoreProj>();
-        public override bool? CanDamage() => CurrentState != 0; //Could also disable the damage during the channel state,
+        public override bool? CanDamage() => (CurrentState == SwingState.Default || CurrentState == SwingState.Channeling) ? false : base.CanDamage();
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Old Lord Claymore");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
         }
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 90000;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
-            Projectile.noEnchantments = true;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -124,11 +125,6 @@ namespace CalamityMod.Projectiles.Melee
                 baseRotation = MathHelper.WrapAngle(swingCompletion * Direction * MathHelper.Pi * -3f);
                 Owner.fullRotation = baseRotation;
                 Owner.fullRotationOrigin = Owner.Center - Owner.position;
-                Owner.immuneNoBlink = true;
-                Owner.immune = true;
-                Owner.immuneTime = 5;
-                for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
-                    Owner.hurtCooldowns[k] = Owner.immuneTime;
 
                 // Emit fire dust.
                 for (int i = 0; i < 4; i++)
@@ -147,7 +143,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    Owner.velocity = Vector2.Lerp(Owner.velocity, Owner.SafeDirectionTo(Main.MouseWorld) * 23f, 0.125f);
+                    Owner.velocity = Vector2.Lerp(Owner.velocity, Owner.SafeDirectionTo(Main.MouseWorld) * 16f, 0.125f);
                     NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.myPlayer);
                 }
 
@@ -182,7 +178,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Raise the blade and do charge effects upwards if channeling.
             float horizontalBladeOffset = -4f;
-            float chargeInterpolant = Utils.GetLerpValue(0f, 35f, ChargeTime, true);
+            float chargeInterpolant = Utils.GetLerpValue(0f, 65f, ChargeTime, true);
             if (CurrentState == SwingState.Channeling)
             {
                 baseRotation = MathHelper.PiOver2 * -Direction;
@@ -225,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
             // Create charge dust.
             if (CurrentState == SwingState.Channeling)
             {
-                int chargeDustCount = (int)Math.Round(MathHelper.Lerp(1f, 3f, ChargePower / 60f));
+                int chargeDustCount = (int)Math.Round(MathHelper.Lerp(1f, 3f, ChargePower / MaxChargeTime));
                 if (ChargePower >= MaxChargeTime)
                     chargeDustCount = 0;
 
@@ -301,7 +297,7 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:BasicTint"].UseColor(Main.hslToRgb(0.95f, 0.85f, 0.5f));
             GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(0f);
             if (ChargePower >= MaxChargeTime)
-                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(0.7f - ((Main.GlobalTimeWrappedHourly * 30) % 30f / 60f));
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(0.7f - ((Main.GlobalTimeWrappedHourly * (int)(MaxChargeTime * 0.5f)) % (MaxChargeTime * 0.5f) / MaxChargeTime));
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
             var texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OldLordClaymore").Value;
@@ -312,13 +308,28 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, damage, knockback, crit);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), damage, knockback, crit);
-            PlayerLoader.OnHitNPC(Owner, Owner.ActiveItem(), target, damage, knockback, crit);
+            if (CurrentState == SwingState.Spinning)
+                hitbox = new Rectangle((int)Owner.position.X - 35, (int)Owner.position.Y - 35, 102, 118);
         }
 
-        public override void Kill(int timeLeft) => Owner.fullRotation = 0f;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
+
+            if (CurrentState == SwingState.Spinning)
+            {
+                Owner.immuneNoBlink = true;
+                Owner.immune = true;
+                Owner.immuneTime = 12;
+                for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
+                    Owner.hurtCooldowns[k] = Owner.immuneTime;
+            }
+        }
+
+        public override void OnKill(int timeLeft) => Owner.fullRotation = 0f;
     }
 }

@@ -1,19 +1,15 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class StickyBol : ModProjectile
+    public class StickyBol : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/StickySpikyBall";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sticky Bol");
-        }
 
         public override void SetDefaults()
         {
@@ -33,7 +29,7 @@ namespace CalamityMod.Projectiles.Rogue
             Color color = new Color(0, 80, 255, 100);
             if (Main.rand.NextBool(12))
             {
-                Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - 12, Projectile.height - 12, 4, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 175, color, 1.2f);
+                Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - 12, Projectile.height - 12, DustID.TintableDust, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 175, color, 1.2f);
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(10);
@@ -59,10 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            Projectile.ModifyHitNPCSticky(5, true);
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(5);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -73,14 +66,8 @@ namespace CalamityMod.Projectiles.Rogue
             return null;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Slimed, 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Slimed, 120);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Slimed, 120);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Slimed, 120);
     }
 }

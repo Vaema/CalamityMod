@@ -1,20 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ExorcismProj : ModProjectile
+    public class ExorcismProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Exorcism";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Exorcism");
-        }
 
         public override void SetDefaults()
         {
@@ -35,18 +31,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.Y += 0.1f;
             Projectile.rotation += 0.05f * Projectile.direction;
 
-            // Damage Scaling
-            if (Projectile.velocity.Y > 0 && Projectile.ai[0] < 2f)
-            {
-                Projectile.ai[0] += 0.015f;
-            }
-            if (Projectile.ai[0] > 2f)
-            {
-                Projectile.ai[0] = 2f;
-            }
-
-            Projectile.damage = (int)(Projectile.ai[1] * Projectile.ai[0]);
-
             // Dust Effects
             Vector2 dustLeft = (new Vector2(-1, 0)).RotatedBy(Projectile.rotation);
             Vector2 dustRight = (new Vector2(1, 0)).RotatedBy(Projectile.rotation);
@@ -59,7 +43,7 @@ namespace CalamityMod.Projectiles.Rogue
             float maxScale = 1.4f;
 
             int dustType = 175;
-            int dustCount = (int)(5 * (Projectile.ai[0] - 1f));
+            int dustCount = (int)(5 * (Projectile.ai[0]));
 
             for (int i = 0; i < dustCount; i++)
             {
@@ -89,9 +73,23 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Stars
+            if (Projectile.Calamity().stealthStrike)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    Vector2 pos = new Vector2(Projectile.Center.X + (float)Projectile.width * 0.5f + (float)Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
+                    Vector2 starVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(pos, target, 30f, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, starVelocity, ModContent.ProjectileType<ExorcismStar>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack * 0.5f, Projectile.owner, Main.rand.NextFloat(-3f, 3f), 0f);
+                }
+            }
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -104,24 +102,15 @@ namespace CalamityMod.Projectiles.Rogue
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Crystal smash sound
             SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             // Light burst
-            int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ExorcismShockwave>(), Projectile.damage, 0, Projectile.owner, Projectile.ai[0] - 1f, 0);
+            int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ExorcismShockwave>(), (int)(Projectile.damage * 0.8f), 0, Projectile.owner, Projectile.ai[0], 0);
             Main.projectile[p].rotation = Projectile.rotation;
-            // Stars
             if (Projectile.Calamity().stealthStrike)
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    Vector2 pos = new Vector2(Projectile.Center.X + (float)Projectile.width * 0.5f + (float)Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
-                    float speedX = (Projectile.Center.X - pos.X) / 20f;
-                    float speedY = (Projectile.Center.Y - pos.Y) / 20f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos.X, pos.Y, speedX, speedY, ModContent.ProjectileType<ExorcismStar>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner, Main.rand.NextFloat(-3f, 3f), 0f);
-                }
-            }
+                Main.projectile[p].Calamity().stealthStrike = true;
         }
     }
 }

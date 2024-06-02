@@ -7,28 +7,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Waywasher : ModItem
+    public class Waywasher : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Waywasher");
-            Tooltip.SetDefault("Casts inaccurate water bolts");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 30;
             Item.damage = 16;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 4;
-            Item.width = 30;
-            Item.height = 30;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;

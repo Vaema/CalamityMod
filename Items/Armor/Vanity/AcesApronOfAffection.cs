@@ -6,15 +6,9 @@ namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Body)]
     [LegacyName("ApronOfAffection")]
-    public class AcesApronOfAffection : ModItem
+    public class AcesApronOfAffection : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ace's Apron of Affection");
-            Tooltip.SetDefault("Great for hugging people");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetDefaults()
         {
             Item.width = 18;

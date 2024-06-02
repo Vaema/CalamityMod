@@ -4,13 +4,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class BlasphemousDonut : ModItem
+    public class BlasphemousDonut : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blasphemous Donut");
-            Tooltip.SetDefault("{$CommonItemTooltip.MediumStats}\n'Donut worry, it's perfectly edible'");
-            SacrificeTotal = 5;
+            Item.ResearchUnlockCount = 5;
         }
         public override void SetDefaults()
         {
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Potions
             Item.height = 26;
             Item.value = Item.buyPrice(0, 2, 0, 0);
             Item.rare = ItemRarityID.Purple;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.useAnimation = 17;
             Item.useTime = 17;

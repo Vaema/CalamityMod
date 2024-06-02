@@ -1,14 +1,10 @@
 ﻿using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class MageHammerBoom : ModProjectile
+    public class MageHammerBoom : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Explosion");
-        }
 
         public override void SetDefaults()
         {

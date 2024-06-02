@@ -1,4 +1,4 @@
-using CalamityMod.NPCs.Signus;
+﻿using CalamityMod.NPCs.Signus;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

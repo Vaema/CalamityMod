@@ -1,39 +1,30 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class CinderBlossomStaff : ModItem
+    public class CinderBlossomStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cinder Blossom Staff");
-            Tooltip.SetDefault("Summons scorching flower over your head\n" +
-                "There can only be one flower");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 50;
+            Item.height = 56;
             Item.damage = 16;
             Item.knockBack = 2f;
             Item.mana = 10;
-
             Item.shoot = ModContent.ProjectileType<CinderBlossom>();
-
-            Item.width = 50;
-            Item.height = 56;
             Item.useTime = Item.useAnimation = 30;
 
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item34;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.noMelee = true;
         }
 
@@ -52,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.HellstoneBar, 10).
-                //AddIngredient(ItemID.AshWood, 10).
+                AddIngredient(ItemID.AshWood, 10).
                 AddIngredient(ItemID.Fireblossom, 5).
                 AddTile(TileID.Anvils).
                 Register();

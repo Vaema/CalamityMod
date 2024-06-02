@@ -1,16 +1,17 @@
-﻿using CalamityMod.DataStructures;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.DataStructures;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class PulseDragonProjectile : ModProjectile
+    public class PulseDragonProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public bool ReelingBack
         {
             get => Projectile.timeLeft <= ReelbackTime;
@@ -30,11 +31,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const int ReelbackTime = 25;
         public const int Lifetime = ChargeTime + ReelbackTime;
         public const float MaximumPossibleOutwardness = 72f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Pulse Dragon");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -139,7 +135,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             Player player = Main.player[Projectile.owner];
             Texture2D chainTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseDragonChain").Value;
-            Texture2D pulseTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseAura").Value;
+            Texture2D pulseTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
             Texture2D dragonHeadTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseDragonProjectile").Value;
             if (ReelingBack)
                 dragonHeadTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseDragonHeadClosed").Value;

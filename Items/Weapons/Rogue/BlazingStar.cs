@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,39 +10,30 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class BlazingStar : RogueWeapon
     {
-        public const float Speed = 13f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Blazing Star");
-            Tooltip.SetDefault("Tosses up to 3 red hot returning glaives\n" +
-                               "Stealth strikes throw three glaives with infinite piercing");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 129;
+            Item.width = 1;
+            Item.height = 1;
+            Item.damage = 75;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.width = 1;
-            Item.height = 1;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
 
-            Item.shootSpeed = Speed;
+            Item.shootSpeed = 13f;
             Item.shoot = ModContent.ProjectileType<BlazingStarProj>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 4;
 
-		public override float StealthDamageMultiplier => 1.55f;
+        public override float StealthDamageMultiplier => 0.575f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

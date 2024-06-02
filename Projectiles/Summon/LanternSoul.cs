@@ -1,18 +1,18 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using System;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class LanternSoul : ModProjectile
+    public class LanternSoul : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public float count = 0f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lantern");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -53,9 +53,9 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             int flameCount = 0;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == ModContent.ProjectileType<LanternFlame>())
+                if (p.owner == Main.myPlayer && p.type == ModContent.ProjectileType<LanternFlame>())
                 {
                     flameCount++;
                 }
@@ -73,9 +73,7 @@ namespace CalamityMod.Projectiles.Summon
                         float startOffsetY = Main.rand.NextFloat(15f, 200f) * (Main.rand.NextBool() ? -1f : 1f);
                         Vector2 startPos = new Vector2(Projectile.position.X + startOffsetX, Projectile.position.Y + startOffsetY);
                         Vector2 speed = new Vector2(0f, 0f);
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPos, speed, ModContent.ProjectileType<LanternFlame>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPos, speed, ModContent.ProjectileType<LanternFlame>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
             }

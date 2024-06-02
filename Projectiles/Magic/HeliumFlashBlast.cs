@@ -1,24 +1,20 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class HeliumFlashBlast : ModProjectile
+    public class HeliumFlashBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private static int Lifetime = 40;
         private static float ExplosionRadius = 210.0f;
         private static float StartDustQuantity = 36f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Helium Flash");
-        }
 
         public override void SetDefaults()
         {
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Daybreak, 300);
         }

@@ -1,40 +1,34 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
-using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class AquashardShotgun : ModItem
+    public class AquashardShotgun : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aquashard Shotgun");
-            Tooltip.SetDefault("Converts musket balls into aquashards that split upon hitting an enemy");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 14;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 62;
             Item.height = 26;
-            Item.useTime = 26;
-            Item.useAnimation = 26;
+            Item.damage = 12;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item61;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Aquashard>();
-            Item.shootSpeed = 22f;
+            Item.shootSpeed = 30f;
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -46,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int num6 = Main.rand.Next(2, 4);
-            for (int index = 0; index < num6; ++index)
+            int projAmt = Main.rand.Next(2, 4);
+            for (int index = 0; index < projAmt; ++index)
             {
                 float SpeedX = velocity.X + Main.rand.Next(-40, 41) * 0.05f;
                 float SpeedY = velocity.Y + Main.rand.Next(-40, 41) * 0.05f;

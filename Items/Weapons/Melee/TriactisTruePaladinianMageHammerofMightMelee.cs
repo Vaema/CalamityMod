@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TriactisTruePaladinianMageHammerofMightMelee : ModItem
+    public class TriactisTruePaladinianMageHammerofMightMelee : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Triactis' True Paladinian Mage-Hammer of Might");
-            Tooltip.SetDefault("Explodes on enemy hits");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 160;
@@ -33,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<TriactisHammerProj>();
             Item.shootSpeed = 25f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

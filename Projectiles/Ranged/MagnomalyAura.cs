@@ -1,19 +1,15 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class MagnomalyAura : ModProjectile
+    public class MagnomalyAura : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private int radius = 100;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Magnomaly Aura");
-        }
 
         public override void SetDefaults()
         {
@@ -34,9 +30,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Projectile parent = Main.projectile[0];
             bool active = false;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
                 if (p.identity == Projectile.ai[0] && p.active && p.type == ModContent.ProjectileType<MagnomalyRocket>())
                 {
                     parent = p;

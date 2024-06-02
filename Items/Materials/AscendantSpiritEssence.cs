@@ -9,26 +9,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class AscendantSpiritEssence : ModItem
+    public class AscendantSpiritEssence : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Ascendant Spirit Essence");
-            Tooltip.SetDefault("A catalyst of the highest caliber formed by fusing powerful souls");
+            Item.ResearchUnlockCount = 25;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 118;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 118;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 54;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.value = Item.sellPrice(gold: 40);
         }
@@ -54,7 +53,7 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Phantoplasm>(2).
+                AddIngredient<Necroplasm>(2).
                 AddIngredient<NightmareFuel>(5).
                 AddIngredient<EndothermicEnergy>(5).
                 AddIngredient<DarksunFragment>(2).

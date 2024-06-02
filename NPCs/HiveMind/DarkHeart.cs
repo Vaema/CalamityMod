@@ -1,8 +1,8 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,49 +14,37 @@ namespace CalamityMod.NPCs.HiveMind
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dark Heart");
+            this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
         public override void SetDefaults()
         {
-            NPC.damage = 0;
+            NPC.damage = 20;
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 2;
 
-            NPC.lifeMax = 150;
+            NPC.lifeMax = 75;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1800;
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
 
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.4f;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath21;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-        }
-
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            int associatedNPCType = ModContent.NPCType<HiveMind>();
-            bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
-
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCorruption,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("It pulses with stagnant, stinking waters of corruption, and leaks as it flies overhead. Wherever those drops land, any organic matter nearby slowly corrodes.")
-            });
         }
 
         public override void FindFrame(int frameHeight)
@@ -69,74 +57,98 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
+            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
-            NPC.TargetClosest();
-            float num1164 = revenge ? 4.5f : 4f;
-            float num1165 = revenge ? 0.8f : 0.75f;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+            // Float around the player
+            NPC.rotation = NPC.velocity.X / 20f;
+
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
+
+            float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : death ? 7f : revenge ? 6f : 4f;
+            float acceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
+            float deceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
+            if (masterMode)
+            {
+                velocity += 2f;
+                acceleration += 0.2f;
+                deceleration -= 0.05f;
+            }
             if (BossRushEvent.BossRushActive)
             {
-                num1164 *= 2f;
-                num1165 *= 2f;
+                velocity *= 2f;
+                acceleration *= 2f;
             }
 
-            Vector2 vector133 = new Vector2(NPC.Center.X, NPC.Center.Y);
-            float num1166 = Main.player[NPC.target].Center.X - vector133.X;
-            float num1167 = Main.player[NPC.target].Center.Y - vector133.Y - 400f;
-            float num1168 = (float)Math.Sqrt(num1166 * num1166 + num1167 * num1167);
-            if (num1168 < 20f)
+            if (NPC.position.Y > Main.player[NPC.target].position.Y - 350f)
             {
-                num1166 = NPC.velocity.X;
-                num1167 = NPC.velocity.Y;
+                if (NPC.velocity.Y > 0f)
+                    NPC.velocity.Y *= deceleration;
+
+                NPC.velocity.Y -= acceleration;
+
+                if (NPC.velocity.Y > velocity)
+                    NPC.velocity.Y = velocity;
             }
-            else
+            else if (NPC.position.Y < Main.player[NPC.target].position.Y - 450f)
             {
-                num1168 = num1164 / num1168;
-                num1166 *= num1168;
-                num1167 *= num1168;
+                if (NPC.velocity.Y < 0f)
+                    NPC.velocity.Y *= deceleration;
+
+                NPC.velocity.Y += acceleration;
+
+                if (NPC.velocity.Y < -velocity)
+                    NPC.velocity.Y = -velocity;
             }
-            if (NPC.velocity.X < num1166)
+
+            bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 300f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
+            float distanceX = masterMode ? 200f : 400f;
+            float velocityX = velocity * 1.5f;
+            if (NPC.Center.X > Main.player[NPC.target].Center.X + distanceX)
             {
-                NPC.velocity.X = NPC.velocity.X + num1165;
-                if (NPC.velocity.X < 0f && num1166 > 0f)
-                {
-                    NPC.velocity.X = NPC.velocity.X + num1165 * 2f;
-                }
+                dropRain = false;
+
+                if (NPC.velocity.X > 0f)
+                    NPC.velocity.X *= deceleration;
+
+                NPC.velocity.X -= acceleration;
+
+                if (NPC.velocity.X > velocityX)
+                    NPC.velocity.X = velocityX;
             }
-            else if (NPC.velocity.X > num1166)
+            if (NPC.Center.X < Main.player[NPC.target].Center.X - distanceX)
             {
-                NPC.velocity.X = NPC.velocity.X - num1165;
-                if (NPC.velocity.X > 0f && num1166 < 0f)
-                {
-                    NPC.velocity.X = NPC.velocity.X - num1165 * 2f;
-                }
+                dropRain = false;
+
+                if (NPC.velocity.X < 0f)
+                    NPC.velocity.X *= deceleration;
+
+                NPC.velocity.X += acceleration;
+
+                if (NPC.velocity.X < -velocityX)
+                    NPC.velocity.X = -velocityX;
             }
-            if (NPC.velocity.Y < num1167)
-            {
-                NPC.velocity.Y = NPC.velocity.Y + num1165;
-                if (NPC.velocity.Y < 0f && num1167 > 0f)
-                {
-                    NPC.velocity.Y = NPC.velocity.Y + num1165 * 2f;
-                }
-            }
-            else if (NPC.velocity.Y > num1167)
-            {
-                NPC.velocity.Y = NPC.velocity.Y - num1165;
-                if (NPC.velocity.Y > 0f && num1167 < 0f)
-                {
-                    NPC.velocity.Y = NPC.velocity.Y - num1165 * 2f;
-                }
-            }
-            if (NPC.position.X + NPC.width > Main.player[NPC.target].position.X && NPC.position.X < Main.player[NPC.target].position.X + Main.player[NPC.target].width && NPC.position.Y + NPC.height < Main.player[NPC.target].position.Y && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height) && Main.netMode != NetmodeID.MultiplayerClient)
+
+            if (dropRain && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.ai[0] += 1f;
-                if (NPC.ai[0] >= (Main.getGoodWorld ? 12f : 24f))
+                float rainDropRate = Main.getGoodWorld ? 8f : death ? 16f : revenge ? 20f : 24f;
+                if (NPC.ai[0] >= rainDropRate)
                 {
                     NPC.ai[0] = 0f;
-                    int num1169 = (int)(NPC.position.X + 10f + Main.rand.Next(NPC.width - 20));
-                    int num1170 = (int)(NPC.position.Y + NPC.height + 4f);
+                    int shaderainXPos = (int)(NPC.position.X + 10f + Main.rand.Next(NPC.width - 20));
+                    int shaderainYos = (int)(NPC.position.Y + NPC.height + 4f);
                     int type = ModContent.ProjectileType<ShaderainHostile>();
                     int damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), num1169, num1170, 0f, 4f, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                    float randomXVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.rand.NextFloat() * 5f : 0f;
+                    float velocityY = 8f;
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, damage, 0f, Main.myPlayer);
                 }
             }
         }
@@ -148,18 +160,15 @@ namespace CalamityMod.NPCs.HiveMind
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 14, hitDirection, -1f, 0, default, 1f);
-            }
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
+
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 14, hitDirection, -1f, 0, default, 1f);
-                }
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
     }

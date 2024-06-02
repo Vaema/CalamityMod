@@ -1,25 +1,23 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shoes)]
-    public class IronBoots : ModItem
+    public class IronBoots : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Iron Boots");
-            Tooltip.SetDefault("Allows you to fall faster while in liquids");
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AnechoicPlating>();
         }
-
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

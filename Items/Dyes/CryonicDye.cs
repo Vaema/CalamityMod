@@ -11,12 +11,11 @@ namespace CalamityMod.Items.Dyes
 {
     public class CryonicDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/CryonicDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CryonicDyeShader"), "DyePass").
             UseColor(new Color(138, 225, 255)).UseSecondaryColor(new Color(90, 90, 204)).UseImage("Images/Misc/Perlin");
         public override void SafeSetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Cryonic Dye");
+            Item.ResearchUnlockCount = 3;
         }
 
         public override void SafeSetDefaults()

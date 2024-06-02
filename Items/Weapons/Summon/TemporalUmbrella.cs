@@ -11,25 +11,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Summon
 {
     [LegacyName("BensUmbrella")]
-    public class TemporalUmbrella : ModItem
+    public class TemporalUmbrella : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Temporal Umbrella");
-            Tooltip.SetDefault("Surprisingly sturdy, I reckon this could defeat the Mafia in a single blow\n" +
-                "Summons a variety of tools to assist you in battle:\n" +
-                " - A vermilion arrow to pierce your adversaries\n" +
-                " - A marmalade hammer to bonk enemies in style\n" +
-                " - A jade axe to cleave monsters and occasionally fell a tree\n" +
-                " - A cyan umbrella to beat down your foes with grace\n" +
-                " - A lavender rifle to snipe those who stand in your way\n" +
-                "Best of all, you get to wear a top hat\n" +
-                "Requires 5 minion slots to use and there can only be one set of tools");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 74;
+            Item.height = 72;
             Item.damage = 193;
             Item.knockBack = 1f;
             Item.mana = 99;
@@ -39,11 +27,9 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<MagicHat>();
 
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.width = 74;
-            Item.height = 72;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item68;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

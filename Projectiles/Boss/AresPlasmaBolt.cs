@@ -1,20 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresPlasmaBolt : ModProjectile
+    public class AresPlasmaBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         private const int timeLeft = 360;
 
         private const float maxVelocity = 10f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exoplasma Bolt");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -70,9 +70,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.Opacity != 1f)
+            if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
             target.AddBuff(BuffID.OnFire, 180);

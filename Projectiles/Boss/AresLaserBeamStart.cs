@@ -1,27 +1,27 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresLaserBeamStart : ModProjectile
+    public class AresLaserBeamStart : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         private const int maxFrames = 5;
         private int frameDrawn = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exothermal Laser");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Boss
             else
                 Projectile.Kill();
 
-            float num801 = 1f;
+            float projScale = 1f;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] >= 60f)
             {
@@ -88,45 +88,44 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             }
 
-            Projectile.scale = (float)Math.Sin(Projectile.localAI[0] * (float)Math.PI / 60f) * 10f * num801;
-            if (Projectile.scale > num801)
-                Projectile.scale = num801;
+            Projectile.scale = (float)Math.Sin(Projectile.localAI[0] * (float)Math.PI / 60f) * 10f * projScale;
+            if (Projectile.scale > projScale)
+                Projectile.scale = projScale;
 
-            float num804 = Projectile.velocity.ToRotation();
-            Projectile.rotation = num804 - MathHelper.PiOver2;
-            Projectile.velocity = num804.ToRotationVector2();
+            float projVelRotation = Projectile.velocity.ToRotation();
+            Projectile.rotation = projVelRotation - MathHelper.PiOver2;
+            Projectile.velocity = projVelRotation.ToRotationVector2();
 
-            float num805 = 3f; //3f
-            float num806 = Projectile.width;
+            float projWidth = Projectile.width;
 
             Vector2 samplingPoint = Projectile.Center;
             if (vector78.HasValue)
                 samplingPoint = vector78.Value;
 
-            float[] array3 = new float[(int)num805];
-            Collision.LaserScan(samplingPoint, Projectile.velocity, num806 * Projectile.scale, 2400f, array3);
-            float num807 = 0f;
-            for (int num808 = 0; num808 < array3.Length; num808++)
+            float[] array3 = new float[3];
+            Collision.LaserScan(samplingPoint, Projectile.velocity, projWidth * Projectile.scale, 2400f, array3);
+            float laserLength = 0f;
+            for (int j = 0; j < array3.Length; j++)
             {
-                num807 += array3[num808];
+                laserLength += array3[j];
             }
-            num807 /= num805;
+            laserLength /= 3f;
 
             // Fire laser through walls at max length if target cannot be seen
             if (!Collision.CanHitLine(Main.npc[(int)Projectile.ai[1]].Center, 1, 1, Main.player[Main.npc[(int)Projectile.ai[1]].target].Center, 1, 1))
             {
-                num807 = 2400f;
+                laserLength = 2400f;
             }
 
             float amount = 0.5f;
-            Projectile.localAI[1] = MathHelper.Lerp(Projectile.localAI[1], num807, amount); //length of laser, linear interpolation
+            Projectile.localAI[1] = MathHelper.Lerp(Projectile.localAI[1], laserLength, amount); //length of laser, linear interpolation
 
             // Spawn dust at the end of the beam
             int dustType = (int)CalamityDusts.Brimstone;
             Vector2 dustPos = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14f);
             for (int i = 0; i < 2; i++)
             {
-                float dustRot = Projectile.velocity.ToRotation() + ((Main.rand.Next(2) == 1) ? -1f : 1f) * MathHelper.PiOver2;
+                float dustRot = Projectile.velocity.ToRotation() + ((Main.rand.NextBool(2)) ? -1f : 1f) * MathHelper.PiOver2;
                 float dustVelMult = (float)Main.rand.NextDouble() * 2f + 2f;
                 Vector2 dustVel = new Vector2((float)Math.Cos(dustRot) * dustVelMult, (float)Math.Sin(dustRot) * dustVelMult);
                 int dust = Dust.NewDust(dustPos, 0, 0, dustType, dustVel.X, dustVel.Y, 0, default, 1f);
@@ -151,7 +150,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D beamStart = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D beamStart = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D beamMiddle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
             Texture2D beamEnd = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 
@@ -229,12 +228,12 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

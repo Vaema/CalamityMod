@@ -1,14 +1,14 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,8 +19,9 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class FourSeasonsGalaxia : ModItem
+    public class FourSeasonsGalaxia : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public Attunement mainAttunement = null;
 
         //Used for passive effects. On hit proc is never used but its just there so i can pass it as a reference in the passiveeffect function
@@ -30,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 800;
 
-        public static int PhoenixAttunement_BaseDamage = 800;
+        public static int PhoenixAttunement_BaseDamage = 1200;
         public static int PhoenixAttunement_LocalIFrames = 30; //Remember its got one extra update
         public static float PhoenixAttunement_BoltDamageReduction = 0.5f;
         public static float PhoenixAttunement_BoltThrowDamageMultiplier = 1f;
@@ -38,8 +39,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float PhoenixAttunement_FullChargeDamageBoost = 2.1f;
         public static float PhoenixAttunement_ThrowDamageBoost = 3.2f;
 
-        public static int PolarisAttunement_BaseDamage = 1200;
-        public static int PolarisAttunement_FullChargeDamage = 1900;
+        public static int PolarisAttunement_BaseDamage = 1800;
+        public static int PolarisAttunement_FullChargeDamage = 3600;
         public static int PolarisAttunement_ShredIFrames = 10;
         public static int PolarisAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static int PolarisAttunement_LocalIFramesCharged = 16;
@@ -47,17 +48,17 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int PolarisAttunement_SlashBoltsDamage = 1300;
         public static int PolarisAttunement_SlashIFrames = 20;
         public static float PolarisAttunement_ShotDamageBoost = 0.8f; //The shots fired if the dash connects
-        public static float PolarisAttunement_ShredChargeupGain = 1.1f; //How much charge is gainted per second.
+        public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gainted per second.
 
-        public static int AndromedaAttunement_BaseDamage = 2200;
+        public static int AndromedaAttunement_BaseDamage = 2800;
         public static int AndromedaAttunement_DashHitIFrames = 20;
-        public static float AndromedaAttunement_FullChargeBoost = 3.5f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
+        public static float AndromedaAttunement_FullChargeBoost = 6f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
         public static float AndromedaAttunement_MonolithDamageBoost = 1.2f;
         public static float AndromedaAttunement_BoltsDamageReduction = 0.2f; //The shots fired as it charges
 
-        public static int AriesAttunement_BaseDamage = 950;
+        public static int AriesAttunement_BaseDamage = 1325;
         public static int AriesAttunement_LocalIFrames = 10;
-        public static int AriesAttunement_Reach = 600;
+        public static int AriesAttunement_Reach = 650;
         public static float AriesAttunement_ChainDamageReduction = 0.2f;
         public static float AriesAttunement_OnHitBoltDamageReduction = 0.5f;
 
@@ -70,19 +71,6 @@ namespace CalamityMod.Items.Weapons.Melee
         #endregion
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Galaxia"; //Base sprite for stuff like item browser and shit. yeah
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Galaxia");
-            Tooltip.SetDefault("FUNCTION_DESC\n" +
-            "FUNCTION_PASSIVE\n" +
-            "Freed from earthly shackles and coursing with cosmic power\n" +
-            "Has access to all of the attunements at all times\n" +
-            "Use right click to cycle the sword's attunement depending on the cursor's position\n" +
-            "Active Attunement : None\n" +
-            "Passive Blessing : None\n");
-            SacrificeTotal = 1;
-        }
 
         #region tooltip editing
 
@@ -97,10 +85,10 @@ namespace CalamityMod.Items.Weapons.Melee
             if (player is null)
                 return;
 
-            var effectDescTooltip = list.FirstOrDefault(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
-            var passiveDescTooltip = list.FirstOrDefault(x => x.Name == "Tooltip1" && x.Mod == "Terraria");
-            var mainAttunementTooltip = list.FirstOrDefault(x => x.Name == "Tooltip4" && x.Mod == "Terraria");
-            var blessingTooltip = list.FirstOrDefault(x => x.Name == "Tooltip5" && x.Mod == "Terraria");
+            var effectDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[FUNC]") && x.Mod == "Terraria");
+            var passiveDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[PASS]") && x.Mod == "Terraria");
+            var mainAttunementTooltip = list.FirstOrDefault(x => x.Text.Contains("[ATT]") && x.Mod == "Terraria");
+            var blessingTooltip = list.FirstOrDefault(x => x.Text.Contains("[BLE]") && x.Mod == "Terraria");
 
             //Default stuff gets skipped here. MainAttunement is set to true in SafeCheckAttunements() above
 
@@ -113,25 +101,25 @@ namespace CalamityMod.Items.Weapons.Melee
 
             if (effectDescTooltip != null)
             {
-                effectDescTooltip.Text = mainAttunement.function_description + "\n" + mainAttunement.function_description_extra;
+                effectDescTooltip.Text = Lang.SupportGlyphs(mainAttunement.FunctionText.ToString());
                 effectDescTooltip.OverrideColor = mainAttunement.tooltipColor;
             }
 
             if (passiveDescTooltip != null)
             {
-                passiveDescTooltip.Text = mainAttunement.passive_description;
+                passiveDescTooltip.Text = mainAttunement.PassiveDesc.ToString();
                 passiveDescTooltip.OverrideColor = mainAttunement.tooltipPassiveColor;
             }
 
             if (mainAttunementTooltip != null)
             {
-                mainAttunementTooltip.Text = "Active Attunement : [" + mainAttunement.name + "]";
+                mainAttunementTooltip.Text = mainAttunementTooltip.Text.Replace("ATT", mainAttunement.AttunementName.ToString());
                 mainAttunementTooltip.OverrideColor = Color.Lerp(mainAttunement.tooltipColor, mainAttunement.tooltipColor2, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.5f);
             }
 
             if (blessingTooltip != null)
             {
-                blessingTooltip.Text = "Passive Blessing : [" + mainAttunement.passive_name + "]";
+                blessingTooltip.Text = blessingTooltip.Text.Replace("BLE", mainAttunement.PassiveName.ToString());
                 blessingTooltip.OverrideColor = mainAttunement.tooltipPassiveColor;
             }
         }
@@ -152,7 +140,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 24f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = RarityType<DarkBlue>();
+            Item.reuseDelay = 30;
         }
 
         #region saving and syncing attunements
@@ -193,10 +182,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         #endregion
 
+        // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
+        public override bool AltFunctionUse(Player player) => true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (mainAttunement == null)
+            if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
                 return false;
+
             return true;
         }
 
@@ -256,7 +249,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
+            bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
+            return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<PhoenixsPride>() ||
              n.type == ProjectileType<AndromedasStride>() ||
              n.type == ProjectileType<PolarisGaze>() ||

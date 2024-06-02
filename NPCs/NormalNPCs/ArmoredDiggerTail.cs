@@ -4,16 +4,17 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class ArmoredDiggerTail : ModNPC
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.ArmoredDiggerHead.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Armored Digger");
         }
 
         public override void SetDefaults()
@@ -38,6 +39,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ArmoredDiggerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
@@ -55,50 +60,66 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.TargetClosest(true);
             }
-            bool flag = false;
+            bool shouldDie = false;
             if (NPC.ai[1] <= 0f)
             {
-                flag = true;
+                shouldDie = true;
             }
             else if (Main.npc[(int)NPC.ai[1]].life <= 0)
             {
-                flag = true;
+                shouldDie = true;
             }
-            if (flag && !CalamityWorld.getFixedBoi)
+            if (shouldDie && !Main.zenithWorld)
             {
                 NPC.life = 0;
                 NPC.HitEffect(0, 10.0);
                 NPC.checkDead();
             }
-            Vector2 vector3 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float num20 = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float num21 = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
-            num20 = (float)((int)(num20 / 16f) * 16);
-            num21 = (float)((int)(num21 / 16f) * 16);
-            vector3.X = (float)((int)(vector3.X / 16f) * 16);
-            vector3.Y = (float)((int)(vector3.Y / 16f) * 16);
-            num20 -= vector3.X;
-            num21 -= vector3.Y;
-            float num22 = (float)Math.Sqrt((double)(num20 * num20 + num21 * num21));
+            Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+            float targetXDist = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
+            float targetYDist = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
+            targetXDist = (float)((int)(targetXDist / 16f) * 16);
+            targetYDist = (float)((int)(targetYDist / 16f) * 16);
+            segmentPosition.X = (float)((int)(segmentPosition.X / 16f) * 16);
+            segmentPosition.Y = (float)((int)(segmentPosition.Y / 16f) * 16);
+            targetXDist -= segmentPosition.X;
+            targetYDist -= segmentPosition.Y;
+            float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
             if (NPC.ai[1] > 0f && NPC.ai[1] < (float)Main.npc.Length)
             {
                 try
                 {
-                    vector3 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    num20 = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - vector3.X;
-                    num21 = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - vector3.Y;
-                } catch
+                    segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+                    targetXDist = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - segmentPosition.X;
+                    targetYDist = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
+                }
+                catch
                 {
                 }
-                NPC.rotation = (float)Math.Atan2((double)num21, (double)num20) + 1.57f;
-                num22 = (float)Math.Sqrt((double)(num20 * num20 + num21 * num21));
-                int num23 = (int)(44f * NPC.scale);
-                num22 = (num22 - (float)num23) / num22;
-                num20 *= num22;
-                num21 *= num22;
+                NPC.rotation = (float)Math.Atan2((double)targetYDist, (double)targetXDist) + 1.57f;
+                targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                int segmentWidth = (int)(44f * NPC.scale);
+                targetDistance = (targetDistance - (float)segmentWidth) / targetDistance;
+                targetXDist *= targetDistance;
+                targetYDist *= targetDistance;
                 NPC.velocity = Vector2.Zero;
-                NPC.position.X = NPC.position.X + num20;
-                NPC.position.Y = NPC.position.Y + num21;
+                NPC.position.X = NPC.position.X + targetXDist;
+                NPC.position.Y = NPC.position.Y + targetYDist;
+            }
+
+            // Calculate contact damage based on velocity
+            float maxChaseSpeed = CalamityWorld.death ? 13.5f : 10f;
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
@@ -107,17 +128,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             return false;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -129,15 +150,15 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyTypeName(ref string typeName)
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
-                typeName = "Mechanized Serpent";
+                typeName = CalamityUtils.GetTextValue("NPCs.MechanizedSerpent");
             }
         }
 
         public override Color? GetAlpha(Color drawColor)
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 Color lightColor = Color.Orange * drawColor.A;
                 return lightColor * NPC.Opacity;

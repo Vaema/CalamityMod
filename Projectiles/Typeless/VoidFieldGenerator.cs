@@ -1,22 +1,18 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Particles.Metaballs;
+using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class VoidFieldGenerator : ModProjectile
+    public class VoidFieldGenerator : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public bool start = true;
-        public BaseFusableParticleSet.FusableParticle voidaura;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Void Field Generator");
-        }
+        public StreamGougeMetaball.CosmicParticle VoidAura;
 
         public override void SetDefaults()
         {
@@ -62,7 +58,7 @@ namespace CalamityMod.Projectiles.Typeless
                 var proj = Main.projectile[k];
                 if (proj.active && proj.owner == Projectile.owner && proj.arrow && !proj.Calamity().nihilicArrow && proj.friendly && Vector2.Distance(proj.Center, Projectile.Center) < 65)
                 {
-                    Main.projectile[k].damage = (int)(proj.damage * 2f);
+                    Main.projectile[k].damage = (int)(proj.damage * 1.75f);
                     proj.extraUpdates += 1;
                     Main.projectile[k].Calamity().nihilicArrow = true;
                     SoundEngine.PlaySound(SoundID.Item104 with { Volume = SoundID.Item104.Volume * 0.75f }, Projectile.Center);
@@ -72,7 +68,7 @@ namespace CalamityMod.Projectiles.Typeless
                         Vector2 dustpos = Vector2.UnitX * (float)-(float)proj.width / 2f;
                         dustpos += -Vector2.UnitY.RotatedBy((double)((float)i * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                         dustpos = dustpos.RotatedBy((double)(proj.rotation - 1.57079637f), default);
-                        int dust = Dust.NewDust(proj.Center, 0, 0, 27, 0f, 0f, 100, Color.HotPink, 1f);
+                        int dust = Dust.NewDust(proj.Center, 0, 0, DustID.Shadowflame, 0f, 0f, 100, Color.HotPink, 1f);
                         Main.dust[dust].scale = 1.1f;
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].position = proj.Center + dustpos;
@@ -82,14 +78,14 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            if (voidaura == null)
+            if (VoidAura == null)
             {
-                voidaura = FusableParticleManager.GetParticleSetByType<VoidGeneratorParticleSet>()?.SpawnParticle(Projectile.Center, 500);
+                VoidAura = VoidGeneratorMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, 120f);
             }
             else
             {
-                voidaura.Center = Projectile.Center;
-                voidaura.Size = 500;
+                VoidAura.Center = Projectile.Center;
+                VoidAura.Size = 120f;
             }
         }
         public override bool? CanCutTiles() => false;

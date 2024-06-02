@@ -1,16 +1,17 @@
-using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class WavePounderBoom : BaseMassiveExplosionProjectile
+    public class WavePounderBoom : BaseMassiveExplosionProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override int Lifetime => 60;
         public override bool UsesScreenshake => Projectile.Calamity().stealthStrike;
         public override float GetScreenshakePower(float pulseCompletionRatio) => CalamityUtils.Convert01To010(pulseCompletionRatio) * 16f;
         public override Color GetCurrentExplosionColor(float pulseCompletionRatio) => Color.Lerp(Color.Yellow * 1.6f, Color.White, MathHelper.Clamp(pulseCompletionRatio * 2.2f, 0f, 1f));
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Explosion");
 
         public override void SetDefaults()
         {

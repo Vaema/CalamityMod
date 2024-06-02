@@ -7,16 +7,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class ShadowPotion : ModItem
+    public class ShadowPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Shadow Potion");
-            Tooltip.SetDefault("Turns the player into a shadow with glowing eyes\n" +
-			"Rogue weapons spawn projectiles on hit\n" +
-            "Stealth generation is increased by 8%\n" +
-			"Visual effects can be disabled with the Stealth Invisibility config");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -24,7 +20,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Orange;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -49,7 +45,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient(ItemID.BottledWater).
                 AddIngredient<BloodOrb>(10).
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

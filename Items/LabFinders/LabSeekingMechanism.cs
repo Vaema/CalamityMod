@@ -6,13 +6,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.LabFinders
 {
     [LegacyName("MysteriousMechanism")]
-    public class LabSeekingMechanism : ModItem
+    public class LabSeekingMechanism : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Lab Seeking Mechanism");
-            Tooltip.SetDefault("A receptacle for technology which pinpoints the power cores of Draedon's Labs");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()

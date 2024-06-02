@@ -1,31 +1,26 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Rogue;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Armor.PlagueReaper
 {
     [AutoloadEquip(EquipType.Head)]
-    public class PlagueReaperMask : ModItem
+    public class PlagueReaperMask : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/PlagueReaperAbility");
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plague Reaper Mask");
-            Tooltip.SetDefault("10% increased ranged damage and 8% increased ranged critical strike chance");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 9; //35
         }
@@ -42,16 +37,11 @@ namespace CalamityMod.Items.Armor.PlagueReaper
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.SetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = "25% reduced ammo usage and 5% increased flight time\n" +
-                "Enemies receive 10% more damage from ranged projectiles when afflicted by the Plague\n" +
-                "Getting hit causes plague cinders to rain from above\n" +
-                "Press " + hotkey + " to blind yourself for 5 seconds but massively boost your ranged damage\n" +
-                "This has a 25 second cooldown.";
+            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
             var modPlayer = player.Calamity();
             modPlayer.plagueReaper = true;
             player.ammoCost75 = true;
-
 
             var hasPlagueBlackoutCD = modPlayer.cooldowns.TryGetValue(PlagueBlackout.ID, out var cd);
             if (hasPlagueBlackoutCD && cd.timeLeft > 1500)
@@ -71,6 +61,8 @@ namespace CalamityMod.Items.Armor.PlagueReaper
                     if (player.miscCounter % 10 == 0)
                     {
                         var damage = (int)player.GetTotalDamage<RangedDamageClass>().ApplyTo(40);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         var cinder = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<TheSyringeCinder>(), damage, 4f, player.whoAmI);
                         if (cinder.whoAmI.WithinBounds(Main.maxProjectiles))
                             cinder.DamageType = DamageClass.Generic;

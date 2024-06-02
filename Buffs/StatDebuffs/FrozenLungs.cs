@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -7,8 +7,6 @@ namespace CalamityMod.Buffs.StatDebuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Frozen Lungs");
-            Description.SetDefault("The icy waters restrict your breathing");
             Main.buffNoTimeDisplay[Type] = true;
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;

@@ -6,29 +6,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class GleamingMagnolia : ModItem
+    public class GleamingMagnolia : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gleaming Magnolia");
-            Tooltip.SetDefault("Casts a gleaming flower that explodes into petals");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 52;
+            Item.height = 54;
             Item.damage = 53;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 11;
-            Item.width = 52;
-            Item.height = 54;
             Item.useTime = 27;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
@@ -36,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 14f;
         }
 
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

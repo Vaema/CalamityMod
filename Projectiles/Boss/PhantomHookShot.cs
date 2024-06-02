@@ -1,21 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class PhantomHookShot : ModProjectile
+    public class PhantomHookShot : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Phantom Hook Shot");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -52,13 +48,13 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] == 6f)
             {
-                for (int num151 = 0; num151 < 40; num151++)
+                for (int i = 0; i < 40; i++)
                 {
-                    int num152 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 180, 0f, 0f, 100, default, 1f);
-                    Main.dust[num152].velocity *= 3f;
-                    Main.dust[num152].velocity += Projectile.velocity * 0.75f;
-                    Main.dust[num152].scale *= 1.2f;
-                    Main.dust[num152].noGravity = true;
+                    int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1f);
+                    Main.dust[redDust].velocity *= 3f;
+                    Main.dust[redDust].velocity += Projectile.velocity * 0.75f;
+                    Main.dust[redDust].scale *= 1.2f;
+                    Main.dust[redDust].noGravity = true;
                 }
             }
 
@@ -70,12 +66,12 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 120);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 80);
         }
 
         public override Color? GetAlpha(Color lightColor)

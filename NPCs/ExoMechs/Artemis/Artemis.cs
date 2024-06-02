@@ -1,24 +1,27 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Potions;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Skies;
+using CalamityMod.Sounds;
+using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
+using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
-using ReLogic.Utilities;
-using CalamityMod.Items.Potions;
 
 namespace CalamityMod.NPCs.ExoMechs.Artemis
 {
@@ -38,6 +41,8 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
         public static readonly SoundStyle LaserShotgunSound = new("CalamityMod/Sounds/Custom/ExoMechs/ArtemisShotgunLaser") { Volume = 1.2f };
 
         public static readonly SoundStyle SpinLaserbeamSound = new("CalamityMod/Sounds/Custom/ExoMechs/ArtemisSpinLaserbeam") { Volume = 1.3f };
+
+        public static Asset<Texture2D> GlowTexture;
 
         internal static void LoadHeadIcons()
         {
@@ -147,13 +152,6 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
         // Intensity of flash effects during the charge combo
         public float ChargeFlash;
 
-        // Primitive trail drawers for thrusters when charging
-        public PrimitiveTrail ChargeFlameTrail = null;
-        public PrimitiveTrail ChargeFlameTrailBig = null;
-
-        // Primitive trail drawer for the ribbon things
-        public PrimitiveTrail RibbonTrail = null;
-
         //This stores the sound slot of the ML laser sound it makes, so it may be properly updated in terms of position.
         private SlotId DeathraySoundSlot;
 
@@ -161,11 +159,10 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault(NameToDisplay);
             NPCID.Sets.TrailingMode[NPC.type] = 3;
             NPCID.Sets.TrailCacheLength[NPC.type] = 15;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = -50f,
                 PortraitPositionYOverride = -40f,
@@ -174,6 +171,10 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 Rotation = MathHelper.Pi - MathHelper.PiOver4
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -183,7 +184,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             NPC.GetNPCDamage();
             NPC.width = 204;
             NPC.height = 226;
-            NPC.defense = 80;
+            NPC.defense = 100;
             NPC.DR_NERD(0.25f);
             NPC.LifeMaxNERB(1250000, 1495000, 650000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
@@ -194,21 +195,19 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
             NPC.netAlways = true;
             NPC.boss = true;
+            NPC.BossBar = ModContent.GetInstance<ExoMechsBossBar>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                // We'll probably want a custom background for Exos like ML has.
-                // BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Exo,
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("The Exo Twins are the ultimate recon units. Capable of detecting various wavelengths of light unknown to us, nothing can hide.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Artemis")
             });
         }
 
@@ -287,7 +286,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 NPC.TargetClosest();
 
             // Target variable
-            Player player = Main.player[NPC.target];
+            int targetIndex = NPC.target;
 
             // Check if the other exo mechs are alive
             int otherExoMechsAlive = 0;
@@ -300,7 +299,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 if (Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].active)
                 {
                     // Set target to Apollo's target if Apollo is alive
-                    player = Main.player[Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].target];
+                    targetIndex = Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].target;
 
                     // Link the HP of both twins
                     if (NPC.life > Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].life)
@@ -315,7 +314,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 if (Main.npc[CalamityGlobalNPC.draedonExoMechWorm].active)
                 {
                     // Set target to Thanatos' target if Thanatos is alive
-                    player = Main.player[Main.npc[CalamityGlobalNPC.draedonExoMechWorm].target];
+                    targetIndex = Main.npc[CalamityGlobalNPC.draedonExoMechWorm].target;
 
                     otherExoMechsAlive++;
                     exoWormAlive = true;
@@ -326,7 +325,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 if (Main.npc[CalamityGlobalNPC.draedonExoMechPrime].active)
                 {
                     // Set target to Ares' target if Ares is alive
-                    player = Main.player[Main.npc[CalamityGlobalNPC.draedonExoMechPrime].target];
+                    targetIndex = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].target;
 
                     otherExoMechsAlive++;
                     exoPrimeAlive = true;
@@ -410,7 +409,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             {
                 NPC.ai[0] += 1f;
                 if (NPC.ai[0] == 10f && !NPC.AnyNPCs(ModContent.NPCType<Apollo.Apollo>()))
-                    NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Apollo.Apollo>());
+                    NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<Apollo.Apollo>());
             }
             else
             {
@@ -466,7 +465,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             // Spin variables
             float spinRadius = 500f;
             float spinLocationDistance = 50f;
-            Vector2 spinLocation = player.Center;
+            Vector2 spinLocation = Main.player[targetIndex].Center;
             switch ((int)NPC.ai[3])
             {
                 // Laser from top
@@ -558,11 +557,11 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             // Default vector to fly to
             bool flyLeft = NPC.ai[0] % 2f == 0f || NPC.ai[0] < 10f || !revenge;
             float destinationX = flyLeft ? -750f : 750f;
-            float destinationY = player.Center.Y;
-            Vector2 destination = SecondaryAIState == (float)SecondaryPhase.PassiveAndImmune ? new Vector2(player.Center.X + destinationX * 1.6f, destinationY) :
-                SecondaryAIState == (float)SecondaryPhase.Passive ? new Vector2(player.Center.X + destinationX, destinationY + 360f) :
+            float destinationY = Main.player[targetIndex].Center.Y;
+            Vector2 destination = SecondaryAIState == (float)SecondaryPhase.PassiveAndImmune ? new Vector2(Main.player[targetIndex].Center.X + destinationX * 1.6f, destinationY) :
+                SecondaryAIState == (float)SecondaryPhase.Passive ? new Vector2(Main.player[targetIndex].Center.X + destinationX, destinationY + 360f) :
                 AIState == (float)Phase.Deathray ? spinLocation :
-                new Vector2(player.Center.X + destinationX, destinationY);
+                new Vector2(Main.player[targetIndex].Center.X + destinationX, destinationY);
 
             // Add a bit of randomness to the destination, but only in specific phases where it's necessary
             if (AIState == (float)Phase.Normal || AIState == (float)Phase.LaserShotgun || AIState == (float)Phase.PhaseTransition)
@@ -589,10 +588,10 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             bool canFire = distanceFromDestination.Length() <= 320f && canFireLasers;
 
             // Rotation
-            Vector2 predictionVector = AIState == (float)Phase.Deathray ? Vector2.Zero : player.velocity * predictionAmt;
-            Vector2 aimedVector = player.Center + predictionVector - NPC.Center;
+            Vector2 predictionVector = AIState == (float)Phase.Deathray ? Vector2.Zero : Main.player[targetIndex].velocity * predictionAmt;
+            Vector2 aimedVector = Main.player[targetIndex].Center + predictionVector - NPC.Center;
             float rateOfRotation = 0.1f;
-            Vector2 rotateTowards = player.Center - NPC.Center;
+            Vector2 rotateTowards = Main.player[targetIndex].Center - NPC.Center;
             bool stopRotatingAndSlowDown = !phase2 && AIState == (float)Phase.Normal && lineUpAttack;
             if (!stopRotatingAndSlowDown)
             {
@@ -617,8 +616,8 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 }
                 else
                 {
-                    float x = player.Center.X + predictionVector.X - NPC.Center.X;
-                    float y = player.Center.Y + predictionVector.Y - NPC.Center.Y;
+                    float x = Main.player[targetIndex].Center.X + predictionVector.X - NPC.Center.X;
+                    float y = Main.player[targetIndex].Center.Y + predictionVector.Y - NPC.Center.Y;
                     rotateTowards = Vector2.Normalize(new Vector2(x, y)) * baseVelocity;
                 }
 
@@ -627,49 +626,41 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                     NPC.rotation = NPC.rotation.AngleTowards((float)Math.Atan2(rotateTowards.Y, rotateTowards.X) + MathHelper.PiOver2, rateOfRotation);
             }
 
-            // Light
-            Lighting.AddLight(NPC.Center, 0.25f * NPC.Opacity, 0.15f * NPC.Opacity, 0.05f * NPC.Opacity);
-
             // Despawn if target is dead
-            if (player.dead)
+            if (Main.player[targetIndex].dead)
             {
-                NPC.TargetClosest(false);
-                player = Main.player[NPC.target];
-                if (player.dead)
-                {
-                    AIState = (float)Phase.Normal;
-                    NPC.ai[1] = 0f;
-                    NPC.ai[2] = 0f;
-                    NPC.localAI[0] = 0f;
-                    NPC.localAI[1] = 0f;
-                    NPC.localAI[2] = 0f;
-                    calamityGlobalNPC.newAI[2] = 0f;
-                    calamityGlobalNPC.newAI[3] = 0f;
-                    rotationDirection = 0;
-                    chargeVelocityNormalized = default;
-                    spinningPoint = default;
-                    spinVelocity = default;
-                    NPC.dontTakeDamage = true;
+                AIState = (float)Phase.Normal;
+                NPC.ai[1] = 0f;
+                NPC.ai[2] = 0f;
+                NPC.localAI[0] = 0f;
+                NPC.localAI[1] = 0f;
+                NPC.localAI[2] = 0f;
+                calamityGlobalNPC.newAI[2] = 0f;
+                calamityGlobalNPC.newAI[3] = 0f;
+                rotationDirection = 0;
+                chargeVelocityNormalized = default;
+                spinningPoint = default;
+                spinVelocity = default;
+                NPC.dontTakeDamage = true;
 
+                NPC.velocity.Y -= 1f;
+                if ((double)NPC.position.Y < Main.topWorld + 16f)
                     NPC.velocity.Y -= 1f;
-                    if ((double)NPC.position.Y < Main.topWorld + 16f)
-                        NPC.velocity.Y -= 1f;
 
-                    if ((double)NPC.position.Y < Main.topWorld + 16f)
+                if ((double)NPC.position.Y < Main.topWorld + 16f)
+                {
+                    for (int a = 0; a < Main.maxNPCs; a++)
                     {
-                        for (int a = 0; a < Main.maxNPCs; a++)
-                        {
-                            if (Main.npc[a].type == NPC.type || Main.npc[a].type == ModContent.NPCType<Apollo.Apollo>() || Main.npc[a].type == ModContent.NPCType<AresBody>() ||
-                                Main.npc[a].type == ModContent.NPCType<AresLaserCannon>() || Main.npc[a].type == ModContent.NPCType<AresPlasmaFlamethrower>() ||
-                                Main.npc[a].type == ModContent.NPCType<AresTeslaCannon>() || Main.npc[a].type == ModContent.NPCType<AresGaussNuke>() ||
-                                Main.npc[a].type == ModContent.NPCType<ThanatosHead>() || Main.npc[a].type == ModContent.NPCType<ThanatosBody1>() ||
-                                Main.npc[a].type == ModContent.NPCType<ThanatosBody2>() || Main.npc[a].type == ModContent.NPCType<ThanatosTail>())
-                                Main.npc[a].active = false;
-                        }
+                        if (Main.npc[a].type == NPC.type || Main.npc[a].type == ModContent.NPCType<Apollo.Apollo>() || Main.npc[a].type == ModContent.NPCType<AresBody>() ||
+                            Main.npc[a].type == ModContent.NPCType<AresLaserCannon>() || Main.npc[a].type == ModContent.NPCType<AresPlasmaFlamethrower>() ||
+                            Main.npc[a].type == ModContent.NPCType<AresTeslaCannon>() || Main.npc[a].type == ModContent.NPCType<AresGaussNuke>() ||
+                            Main.npc[a].type == ModContent.NPCType<ThanatosHead>() || Main.npc[a].type == ModContent.NPCType<ThanatosBody1>() ||
+                            Main.npc[a].type == ModContent.NPCType<ThanatosBody2>() || Main.npc[a].type == ModContent.NPCType<ThanatosTail>())
+                            Main.npc[a].active = false;
                     }
-
-                    return;
                 }
+
+                return;
             }
 
             // Duration of deathray spin to do a full circle
@@ -735,6 +726,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 // Fly to the left of the target
                 case (int)Phase.Normal:
 
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     if (!stopRotatingAndSlowDown)
                     {
                         // Set charge variable to default
@@ -779,7 +773,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                 else
                                 {
                                     Vector2 laserVelocity = Vector2.Normalize(aimedVector);
-                                    Vector2 projectileDestination = player.Center + predictionVector;
+                                    Vector2 projectileDestination = Main.player[targetIndex].Center + predictionVector;
                                     pointToLookAt = projectileDestination;
                                     SoundEngine.PlaySound(CommonCalamitySounds.ExoLaserShootSound, NPC.Center);
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -866,10 +860,13 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                     calamityGlobalNPC.newAI[3] = 0f;
                                     if (phase2)
                                     {
-                                        AIState = (NPC.localAI[2] == 1f && !apolloUsingChargeCombo) ? (float)Phase.Deathray : (float)Phase.LaserShotgun;
+                                        AIState = (NPC.localAI[2] == 1f && (!apolloUsingChargeCombo || Main.zenithWorld)) ? (float)Phase.Deathray : (float)Phase.LaserShotgun;
                                     }
                                     else
                                     {
+                                        // Set damage
+                                        NPC.damage = NPC.defDamage;
+
                                         // Charge until a certain distance is reached and then return to normal phase
                                         SoundEngine.PlaySound(ChargeSound, NPC.Center);
                                         AIState = (float)Phase.Charge;
@@ -888,6 +885,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 // Charge
                 case (int)Phase.Charge:
 
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     // Allow the charge flash to happen
                     shouldDoChargeFlash = true;
 
@@ -895,6 +895,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                     calamityGlobalNPC.newAI[2] += 1f;
                     if (calamityGlobalNPC.newAI[2] >= chargeDuration)
                     {
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         // Decelerate
                         NPC.velocity *= decelerationVelocityMult;
 
@@ -911,6 +914,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                 // Laser shotgun barrage
                 case (int)Phase.LaserShotgun:
+
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
 
                     // Smooth movement towards the location Artemis is meant to be at
                     CalamityUtils.SmoothMovement(NPC, movementDistanceGateValue, distanceFromDestination, baseVelocity, 0f, false);
@@ -937,9 +943,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                         int baseSpread = ((nerfedAttacks || nerfedLaserShotgun) ? 9 : lastMechAlive ? 20 : 15) + numLasersAddedByDifficulty * 2;
                         int spread = baseSpread + (int)(calamityGlobalNPC.newAI[2] / divisor2) * (baseSpread / 4);
                         float rotation = MathHelper.ToRadians(spread);
-                        float distanceFromTarget = Vector2.Distance(NPC.Center, player.Center + predictionVector);
+                        float distanceFromTarget = Vector2.Distance(NPC.Center, Main.player[targetIndex].Center + predictionVector);
                         float setVelocityInAI = death ? 6.5f : revenge ? 6.25f : expertMode ? 6f : 5.5f;
-                        pointToLookAt = player.Center + predictionVector;
+                        pointToLookAt = Main.player[targetIndex].Center + predictionVector;
 
                         for (int i = 0; i < numLasersPerSpread + 1; i++)
                         {
@@ -971,6 +977,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                 // Fly above target, fire deathray and move in a circle around the target
                 case (int)Phase.Deathray:
+
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
 
                     // Fly above, stop doing this if in the proper position
                     // Stop rotating and spin around a target point
@@ -1035,7 +1044,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                     // Laser from top
                                     case 0:
                                     case 1:
-                                        if (player.Center.X >= NPC.Center.X)
+                                        if (Main.player[targetIndex].Center.X >= NPC.Center.X)
                                             rotationDirection = 1;
                                         else
                                             rotationDirection = -1;
@@ -1043,7 +1052,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                                     // Laser from bottom
                                     case 2:
-                                        if (player.Center.X >= NPC.Center.X)
+                                        if (Main.player[targetIndex].Center.X >= NPC.Center.X)
                                             rotationDirection = -1;
                                         else
                                             rotationDirection = 1;
@@ -1052,7 +1061,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                                     // Laser from left
                                     case 3:
-                                        if (player.Center.Y >= NPC.Center.Y)
+                                        if (Main.player[targetIndex].Center.Y >= NPC.Center.Y)
                                             rotationDirection = -1;
                                         else
                                             rotationDirection = 1;
@@ -1061,7 +1070,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                                     // Laser from right
                                     case 4:
-                                        if (player.Center.Y >= NPC.Center.Y)
+                                        if (Main.player[targetIndex].Center.Y >= NPC.Center.Y)
                                             rotationDirection = 1;
                                         else
                                             rotationDirection = -1;
@@ -1076,10 +1085,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                 ExoMechsSky.CreateLightningBolt(12);
 
                                 // Fire deathray
+                                DeathraySoundSlot = SoundEngine.PlaySound(SpinLaserbeamSound, NPC.Center);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    DeathraySoundSlot = SoundEngine.PlaySound(SpinLaserbeamSound, NPC.Center);
-                                    
                                     int type = ModContent.ProjectileType<ArtemisSpinLaserbeam>();
                                     int damage = NPC.GetProjectileDamage(type);
                                     int laser = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, NPC.whoAmI);
@@ -1130,15 +1138,15 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                     // Reset phase and variables
                     if (calamityGlobalNPC.newAI[2] >= deathrayTelegraphDuration + deathrayDuration)
                     {
-                        if (CalamityWorld.getFixedBoi && !exoMechdusa)
+                        if (Main.zenithWorld && !exoMechdusa)
                         {
                             calamityGlobalNPC.newAI[3] = 0f;
                             AIState = (float)Phase.Deathray;
-                            for (int i = 0; i < Main.maxProjectiles; i ++)
+                            foreach (Projectile p in Main.ActiveProjectiles)
                             {
-                                if (Main.projectile[i].type == ModContent.ProjectileType<ArtemisSpinLaserbeam>())
+                                if (p.type == ModContent.ProjectileType<ArtemisSpinLaserbeam>())
                                 {
-                                    Main.projectile[i].active = false;
+                                    p.active = false;
                                     continue;
                                 }
                             }
@@ -1189,6 +1197,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                 // Phase transition animation, that's all this exists for
                 case (int)Phase.PhaseTransition:
+
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
 
                     // Smooth movement towards the location Artemis is meant to be at
                     CalamityUtils.SmoothMovement(NPC, movementDistanceGateValue, distanceFromDestination, baseVelocity, 0f, false);
@@ -1254,20 +1265,20 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
             Rectangle targetHitbox = target.Hitbox;
 
-            float dist1 = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
-            float dist2 = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
-            float dist3 = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
-            float dist4 = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
 
-            float minDist = dist1;
-            if (dist2 < minDist)
-                minDist = dist2;
-            if (dist3 < minDist)
-                minDist = dist3;
-            if (dist4 < minDist)
-                minDist = dist4;
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
 
-            return minDist <= 100f && NPC.Opacity == 1f && AIState == (float)Phase.Charge;
+            return minDist <= 100f && NPC.Opacity == 1f;
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
@@ -1398,16 +1409,6 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            // Declare the trail drawers if they have yet to be defined.
-            if (ChargeFlameTrail is null)
-                ChargeFlameTrail = new PrimitiveTrail(FlameTrailWidthFunction, FlameTrailColorFunction, null, GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
-
-            if (ChargeFlameTrailBig is null)
-                ChargeFlameTrailBig = new PrimitiveTrail(FlameTrailWidthFunctionBig, FlameTrailColorFunctionBig, null, GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
-
-            if (RibbonTrail is null)
-                RibbonTrail = new PrimitiveTrail(RibbonTrailWidthFunction, RibbonTrailColorFunction);
-
             // Prepare the flame trail shader with its map texture.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
@@ -1470,7 +1471,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
                     currentSegmentRotation += segmentRotationOffset;
                 }
-                RibbonTrail.Draw(ribbonDrawPositions, -screenPos, 66);
+                PrimitiveRenderer.RenderTrail(ribbonDrawPositions, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
             }
 
             int instanceCount = (int)MathHelper.Lerp(1f, 15f, ChargeFlash);
@@ -1492,7 +1493,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 }
             }
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Artemis/ArtemisGlow").Value;
+            texture = GlowTexture.Value;
             if (CalamityConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
@@ -1535,11 +1536,11 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                         for (int i = 0; i < 4; i++)
                         {
                             Vector2 drawOffset = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 8f;
-                            ChargeFlameTrailBig.Draw(drawPositions, drawOffset - screenPos, 70);
+                            PrimitiveRenderer.RenderTrail(drawPositions, new(FlameTrailWidthFunctionBig, FlameTrailColorFunctionBig, (_) => drawOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 70);
                         }
                     }
                     else
-                        ChargeFlameTrail.Draw(drawPositions, -screenPos, 70);
+                        PrimitiveRenderer.RenderTrail(drawPositions, new(FlameTrailWidthFunction, FlameTrailColorFunction, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 70);
                 }
             }
 
@@ -1550,15 +1551,15 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
         {
             if (exoMechdusa)
             {
-                typeName = NameToDisplay = "Blazing Eye of XB-∞ Hekate";
+                typeName = NameToDisplay = this.GetLocalizedValue("HekateName");
             }
         }
 
         // Needs edits
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
             if (NPC.soundDelay == 0)
             {
@@ -1568,18 +1569,18 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
             if (NPC.life <= 0)
             {
-                for (int num193 = 0; num193 < 2; num193++)
+                for (int i = 0; i < 2; i++)
                 {
-                    Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 }
-                for (int num194 = 0; num194 < 20; num194++)
+                for (int j = 0; j < 20; j++)
                 {
-                    int num195 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
-                    Main.dust[num195].noGravity = true;
-                    Main.dust[num195].velocity *= 3f;
-                    num195 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
-                    Main.dust[num195].velocity *= 2f;
-                    Main.dust[num195].noGravity = true;
+                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                    Main.dust[plasmaDust].noGravity = true;
+                    Main.dust[plasmaDust].velocity *= 3f;
+                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    Main.dust[plasmaDust].velocity *= 2f;
+                    Main.dust[plasmaDust].noGravity = true;
                 }
 
                 if (Main.netMode != NetmodeID.Server)
@@ -1601,10 +1602,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
         public override bool CheckDead()
         {
             // Kill Apollo if he's still alive when Artemis dies
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC nPC in Main.ActiveNPCs)
             {
-                NPC nPC = Main.npc[i];
-                if (nPC.active && nPC.type == ModContent.NPCType<Apollo.Apollo>() && nPC.life > 0)
+                if (nPC.type == ModContent.NPCType<Apollo.Apollo>() && nPC.life > 0)
                 {
                     nPC.life = 0;
                     nPC.HitEffect();
@@ -1618,9 +1618,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
 
         public override bool CheckActive() => false;
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * bossLifeScale);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }

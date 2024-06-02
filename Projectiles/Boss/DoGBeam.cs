@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGBeam : ModProjectile
+    public class DoGBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Portal Laser");
             Main.projFrames[Projectile.type] = 2;
         }
 
@@ -23,6 +24,9 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 960;
+
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                Projectile.extraUpdates = 1;
         }
 
         public override void AI()
@@ -38,19 +42,19 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0f, 0.2f, 0.3f);
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            int num103 = Player.FindClosest(Projectile.Center, 1, 1);
+            int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] < 120f && Projectile.ai[1] > 30f)
             {
-                float scaleFactor2 = Projectile.velocity.Length();
-                Vector2 vector11 = Main.player[num103].Center - Projectile.Center;
-                vector11.Normalize();
-                vector11 *= scaleFactor2;
-                Projectile.velocity = (Projectile.velocity * 20f + vector11) / 21f;
+                float projSpeed = Projectile.velocity.Length();
+                Vector2 playerDistance = Main.player[playerTracker].Center - Projectile.Center;
+                playerDistance.Normalize();
+                playerDistance *= projSpeed;
+                Projectile.velocity = (Projectile.velocity * 20f + playerDistance) / 21f;
                 Projectile.velocity.Normalize();
-                Projectile.velocity *= scaleFactor2;
+                Projectile.velocity *= projSpeed;
             }
 
             if (Projectile.timeLeft == 950)

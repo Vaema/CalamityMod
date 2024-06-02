@@ -1,18 +1,19 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Eternity : ModItem
+    public class Eternity : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public const int BaseDamage = 840;
         public const int ExplosionDamage = 8400;
         public const int MaxHomers = 40;
@@ -20,27 +21,19 @@ namespace CalamityMod.Items.Weapons.Magic
         public static readonly Color BlueColor = new Color(34, 34, 160);
         public static readonly Color PinkColor = new Color(169, 30, 184);
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Eternity");
-            Tooltip.SetDefault("Hexes a possible nearby enemy, trapping them in a brilliant display of destruction\n" +
-                "This line is modified in ModifyTooltips");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
+            Item.width = 38;
+            Item.height = 40;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 30;
-            Item.width = 38;
-            Item.height = 40;
             Item.useTime = Item.useAnimation = 120;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 0f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -51,16 +44,12 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 0f;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
-
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
             if (line != null)
-                line.Text = $"[" + DisoHex + "There's pictures of ponies in the book]";
+                line.OverrideColor = new Color((int)MathHelper.Lerp(156f, 255f, Main.DiscoR / 256f), 108, 251);
         }
-        public static string DisoHex => "c/" +
-            ((int)(156 + Main.DiscoR * 99f / 255f)).ToString("X2")
-            + 108.ToString("X2") + 251.ToString("X2") + ":";
         public override void AddRecipes()
         {
             CreateRecipe().

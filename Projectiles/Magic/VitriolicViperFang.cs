@@ -1,17 +1,17 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class VitriolicViperFang : ModProjectile
+    public class VitriolicViperFang : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fang");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -40,11 +40,11 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 10; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.noGravity = true;
             }
         }
@@ -54,12 +54,12 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }

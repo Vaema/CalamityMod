@@ -1,24 +1,21 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class NadirSpear : BaseSpearProjectile
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nadir");
-        }
-
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Nadir>();
         public override void SetDefaults()
         {
-            Projectile.width = 55;
-            Projectile.height = 55;
-            Projectile.aiStyle = ProjAIStyleID.Spear;
+            Projectile.width = Projectile.height = 56;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.timeLeft = 90;
             Projectile.friendly = true;
@@ -31,10 +28,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 5.5f;
         public override float ReelbackSpeed => 2.1f;
-        public override float ForwardSpeed => 1.1f;
+        public override float ForwardSpeed => 1f;
         public override Action<Projectile> EffectBeforeReelback => (proj) =>
         {
-            int damage = Projectile.damage / 4;
+            int damage = (int)(Projectile.damage * 0.5f);
             float kb = Projectile.knockBack * 0.5f;
             Vector2 projPos = Projectile.Center + Projectile.velocity;
             Vector2 projVel = Projectile.velocity * 0.75f;

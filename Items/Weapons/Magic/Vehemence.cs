@@ -9,26 +9,23 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Magic
 {
     [LegacyName("Vehemenc")]
-    public class Vehemence : ModItem
+    public class Vehemence : ModItem, ILocalizedModType
     {
-        public const int BaseDamage = 5185;
-        public const float SkullRatio = 0.08f;
+        public new string LocalizationCategory => "Items.Weapons.Magic";
+        public static float SkullRatio = 0.11f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vehemence");
-            Tooltip.SetDefault("Casts intense bolts of hellish power that explode into skulls");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 41;
             Item.width = 44;
             Item.height = 44;
+            Item.damage = 6666;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 41;
             Item.useTime = Item.useAnimation = 43;
             Item.noUseGraphic = true;
             Item.channel = true;
@@ -38,10 +35,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item73;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VehemenceHoldout>();
-            Item.shootSpeed = 16f;
+            Item.shootSpeed = 16.5f;
 
             Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

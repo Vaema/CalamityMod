@@ -10,23 +10,13 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class DefectiveSphere : RogueWeapon
     {
-        public static int BaseDamage = 130;
         public static float Speed = 15f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Defective Sphere");
-            Tooltip.SetDefault(@"Fires a variety of deadly spheres with different effects
-Up to five spheres can be thrown at a time
-Stealth strikes launch all 4 sphere types at once");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 44;
-            Item.damage = BaseDamage;
+            Item.damage = 116;
             Item.knockBack = 5f;
             Item.useAnimation = 13;
             Item.useTime = 13;
@@ -61,11 +51,11 @@ Stealth strikes launch all 4 sphere types at once");
             }
         }
 
-		public override float StealthDamageMultiplier => 0.625f;
+        public override float StealthDamageMultiplier => 0.9f;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
-			type = Utils.SelectRandom(Main.rand, new int[]
+        {
+            type = Utils.SelectRandom(Main.rand, new int[]
             {
                 type,
                 ProjectileType<SphereBladed>(),
@@ -73,8 +63,8 @@ Stealth strikes launch all 4 sphere types at once");
                 ProjectileType<SphereBlue>()
             });
             if (player.Calamity().StealthStrikeAvailable())
-				velocity = velocity + Main.rand.NextVector2Square(-1.5f, 1.5f);
-		}
+                velocity = velocity + Main.rand.NextVector2Square(-1.5f, 1.5f);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

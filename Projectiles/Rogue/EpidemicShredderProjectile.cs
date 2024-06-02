@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class EpidemicShredderProjectile : ModProjectile
+    public class EpidemicShredderProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/EpidemicShredder";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Epidemic Shredder");
-        }
 
         public override void SetDefaults()
         {
@@ -71,13 +67,13 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SpawnSeeker();
             target.AddBuff(ModContent.BuffType<Plague>(), 240);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             SpawnSeeker();
             target.AddBuff(ModContent.BuffType<Plague>(), 240);

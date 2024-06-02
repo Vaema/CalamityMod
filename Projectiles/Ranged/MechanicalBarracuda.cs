@@ -3,11 +3,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class MechanicalBarracuda : ModProjectile
+    public class MechanicalBarracuda : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Barracuda");
             Main.projFrames[Projectile.type] = 4;
         }
 

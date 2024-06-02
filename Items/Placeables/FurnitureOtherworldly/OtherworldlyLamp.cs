@@ -1,22 +1,16 @@
-﻿using CalamityMod.Items.Placeables.FurnitureCosmilite;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ID;
 namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 {
     [LegacyName("OccultLamp")]
-    public class OtherworldlyLamp : ModItem
+    public class OtherworldlyLamp : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Otherworldly Lamp");
             Item.width = 28;
             Item.height = 20;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,7 +22,11 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<OtherworldlyStone>(), 9).AddIngredient(ModContent.ItemType<CosmiliteBrick>(), 1).AddTile(TileID.LunarCraftingStation).Register();
+            CreateRecipe().
+                AddIngredient<OtherworldlyStone>(3).
+                AddIngredient(ItemID.Torch).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
         }
     }
 }

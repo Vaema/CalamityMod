@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Cooldowns
@@ -48,13 +49,18 @@ namespace CalamityMod.Cooldowns
         /// When the cooldown instance ends, this sound is played. Leave at <b>null</b> for no sound.
         /// </summary>
         public virtual SoundStyle? EndSound => null;
+
+        /// <summary>
+        /// Set this to true to have the cooldown instance end sound play upon expiration. Defaults to <b>true</b>
+        /// </summary>
+        public virtual bool ShouldPlayEndSound => true;
         #endregion
 
         #region Display & Rendering
         /// <summary>
         /// The name of the cooldown instance, appears when the player hovers over the indicator
         /// </summary>
-        public virtual string DisplayName => "";
+        public virtual LocalizedText DisplayName => LocalizedText.Empty;
 
         /// <summary>
         /// Whether or not this cooldown instance should appear in the cooldown rack UI.

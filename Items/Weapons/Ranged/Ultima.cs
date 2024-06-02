@@ -11,25 +11,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Ultima : ModItem
+    public class Ultima : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public const float FullChargeTime = 420f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ultima");
-            Tooltip.SetDefault("Casts a continuous stream of plasma bolts\n" +
-                "Over time the bolts are replaced with powerful lasers\n" +
-                "Bolts power up into solid beams as you continue shooting\n" +
-                "90% chance to not consume ammo");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 116;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 44;
             Item.height = 58;
+            Item.damage = 150;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -43,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.autoReuse = true;
             Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -62,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PulseBow).
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient<TheStorm>().
-                AddIngredient<AstralRepeater>().
+                AddIngredient<AstralBow>().
                 AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).

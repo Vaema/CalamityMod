@@ -19,34 +19,33 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags
 {
-    public class PolterghastBag : ModItem
+    public class PolterghastBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Bag (Polterghast)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
-			ItemID.Sets.BossBag[Item.type] = true;
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 32;
             Item.height = 34;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -62,12 +61,12 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
 
             // Materials
             itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 10, 20);
-            itemLoot.Add(ModContent.ItemType<Phantoplasm>(), 1, 40, 50);
+            itemLoot.Add(ModContent.ItemType<Necroplasm>(), 1, 40, 50);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

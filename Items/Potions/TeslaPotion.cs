@@ -3,28 +3,28 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Ores;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class TeslaPotion : ModItem
+    public class TeslaPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Tesla Potion");
-            Tooltip.SetDefault("Summons an aura of electricity that electrifies and slows enemies\n" +
-                "Aura damage is reduced on bosses\n" +
-                "Reduces the duration of the Electrified debuff");
+            Item.ResearchUnlockCount = 20;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 14));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 26;
+            Item.width = 32;
+            Item.height = 32;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Orange;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -45,6 +45,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<PearlShard>().
                 AddIngredient<StormlionMandible>().
                 AddTile(TileID.Bottles).
+                AddDecraftCondition(CalamityConditions.DownedHiveMindOrPerforator).
                 Register();
 
             CreateRecipe().
@@ -52,7 +53,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<BloodOrb>(10).
                 AddIngredient<PearlShard>().
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

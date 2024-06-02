@@ -1,22 +1,22 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class KelvinCatalystBoomerang : ModProjectile
+    public class KelvinCatalystBoomerang : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/KelvinCatalyst";
         public int AIState = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Kelvin Catalyst");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item7, Projectile.Center);
             }
 
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 1f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 1f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0f;
 
@@ -160,13 +160,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.netUpdate = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 240);
             OnHitEffects();
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Frostburn2, 240);
             OnHitEffects();
@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             int maxSpawns = Projectile.Calamity().stealthStrike ? 3 : 1;
             if (Projectile.owner == Main.myPlayer && Projectile.numHits < maxSpawns)
-            {            
+            {
                 for (int i = 0; i < 5; i++)
                 {
                     Vector2 velocity = (MathHelper.TwoPi * i / 5f).ToRotationVector2() * 4f;

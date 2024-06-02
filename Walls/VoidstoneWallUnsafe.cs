@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria.GameContent;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,10 +22,13 @@ namespace CalamityMod.Walls
 
         public override void RandomUpdate(int i, int j)
         {
-            if (Main.tile[i, j].LiquidAmount <= 0 && j < Main.maxTilesY - 205)
+            if (Main.tile[i, j].LiquidAmount == 0 && j < Main.maxTilesY - 205)
             {
-                Main.tile[i, j].LiquidAmount = 255;
                 Main.tile[i, j].Get<LiquidData>().LiquidType = LiquidID.Water;
+                Main.tile[i, j].LiquidAmount = byte.MaxValue;
+                WorldGen.SquareTileFrame(i, j);
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                    NetMessage.sendWater(i, j);
             }
         }
 
@@ -40,7 +43,7 @@ namespace CalamityMod.Walls
 
             Rectangle frame = new Rectangle(tile.WallFrameX + xOff, tile.WallFrameY, xLength, 32);
             Color drawcolor;
-            drawcolor = WorldGen.paintColor(tile.WallColor) * (255f / 255f);
+            drawcolor = WorldGen.paintColor(tile.WallColor);
             drawcolor.A = 255;
             Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
 
@@ -57,10 +60,11 @@ namespace CalamityMod.Walls
 
             Vector2 pos = new Vector2((i * 16 - (int)Main.screenPosition.X), (j * 16 - (int)Main.screenPosition.Y)) + zero;
             Main.spriteBatch.Draw(TextureAssets.Wall[wallType].Value, pos + new Vector2(-8 + xOff, -8), frame, Lighting.GetColor(i, j, Color.White), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Color glowColor = drawcolor * 0.4f;
             for (int k = 0; k < 3; k++)
             {
-                Vector2 offset = new Vector2(Main.rand.NextFloat(-1, 1f), Main.rand.NextFloat(-1, 1f)) * 0.2f * k;
-                Main.spriteBatch.Draw(GlowTexture, pos + offset + new Vector2(-8 + xOff, -8), frame, drawcolor * 0.4f, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Vector2 offset = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f)) * 0.2f * k;
+                Main.spriteBatch.Draw(GlowTexture, pos + offset + new Vector2(-8 + xOff, -8), frame, glowColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
         }
 

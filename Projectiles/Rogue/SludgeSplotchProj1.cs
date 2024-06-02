@@ -1,19 +1,15 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SludgeSplotchProj1 : ModProjectile
+    public class SludgeSplotchProj1 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public static int sludgeDustType = 191;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sludge Splotch");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 14;
@@ -41,11 +37,11 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(BuffID.Slimed, 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Slimed, 120);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(BuffID.Slimed, 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Slimed, 120);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.Calamity().stealthStrike)
             {

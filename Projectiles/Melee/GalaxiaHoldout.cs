@@ -1,18 +1,19 @@
-﻿using CalamityMod.DataStructures;
+﻿using System.Collections.Generic;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class GalaxiaHoldout : ModProjectile //Visuals. Now much simpler than before!
+    public class GalaxiaHoldout : ModProjectile, ILocalizedModType //Visuals. Now much simpler than before!
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private Player Owner => Main.player[Projectile.owner];
         public bool OwnerCanUseItem => Owner.HeldItem == associatedItem ? (Owner.HeldItem.ModItem as FourSeasonsGalaxia).CanUseItem(Owner) : false;
         public ref float Initialized => ref Projectile.ai[0];
@@ -22,7 +23,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Galactic Formation");
         }
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public override void SetDefaults()

@@ -1,16 +1,17 @@
-﻿using CalamityMod.Events;
+﻿using System.IO;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresDeathBeamTelegraph : ModProjectile
+    public class AresDeathBeamTelegraph : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float TelegraphDelay
@@ -33,7 +34,6 @@ namespace CalamityMod.Projectiles.Boss
         public override void SetStaticDefaults()
         {
             // Telegraph for Ares' eight-pointed-star laser beams
-            DisplayName.SetDefault("Exo Overload Telegraph");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 

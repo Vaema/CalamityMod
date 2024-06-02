@@ -23,8 +23,8 @@ namespace CalamityMod.Tiles.Crags
             Main.tileFrameImportant[Type] = true;
             Main.tileLighted[Type] = true;
             TileID.Sets.ReplaceTileBreakUp[Type] = true;
-			TileID.Sets.SwaysInWindBasic[Type] = false;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.SwaysInWindBasic[Type] = false;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.addTile(Type);
@@ -35,6 +35,26 @@ namespace CalamityMod.Tiles.Crags
 
             base.SetStaticDefaults();
         }
+
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+		{
+			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+			int type = -1;
+
+			if (tileBelow.HasTile)
+            {
+				type = tileBelow.TileType;
+			}
+
+			if (type == ModContent.TileType<ScorchedRemainsGrass>())
+            {
+				return true;
+			}
+
+			WorldGen.KillTile(i, j);
+
+			return true;
+		}
 
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {

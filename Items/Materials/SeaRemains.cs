@@ -5,20 +5,20 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("VictideBar")]
-    public class SeaRemains : ModItem
+    public class SeaRemains : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Sea Remains");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 60; // Meteorite
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 60; // Meteorite
         }
 
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 24;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 6);
             Item.rare = ItemRarityID.Green;
         }

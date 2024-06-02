@@ -10,11 +10,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class Flarenado : ModProjectile
+    public class Flarenado : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flarenado");
             Main.projFrames[Projectile.type] = 12;
         }
 
@@ -35,11 +35,13 @@ namespace CalamityMod.Projectiles.Boss
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.localAI[0]);
+            writer.Write(Projectile.localAI[1]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             Projectile.localAI[0] = reader.ReadSingle();
+            Projectile.localAI[1] = reader.ReadSingle();
         }
 
         public override void AI()
@@ -103,28 +105,32 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.netUpdate = true;
                 Vector2 center = Projectile.Center;
                 center.Y -= baseHeight * Projectile.scale / 2f;
-                float num618 = (scaleBase - Projectile.ai[1] + 1f) * scaleMult / scaleBase;
-                center.Y -= baseHeight * num618 / 2f;
+                float finalProjHeight = (scaleBase - Projectile.ai[1] + 1f) * scaleMult / scaleBase;
+                center.Y -= baseHeight * finalProjHeight / 2f;
                 center.Y += 2f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 11f, Projectile.ai[1] - 1f);
             }
             int tornadoSpeed = 10;
-            int breakThreshold = -300;
-            bool breakapart = CalamityWorld.getFixedBoi && Projectile.ai[0] <= breakThreshold;
+            int breakThreshold = 300;
+            Projectile.localAI[1] += 1f;
+            bool breakapart = Main.zenithWorld && Projectile.localAI[1] >= breakThreshold;
             if (Projectile.ai[0] <= 0f && !breakapart)
             {
-                float num622 = 0.104719758f;
-                float num623 = (float)Projectile.width / 5f;
-                num623 *= 2f;
-                float num624 = (float)(Math.Cos((double)(num622 * -(double)Projectile.ai[0])) - 0.5) * num623;
-                Projectile.position.X -= num624 * -Projectile.direction;
+                float swaySize = MathHelper.Pi / 30f;
+                float smolWidth = (float)Projectile.width / 5f;
+                smolWidth *= 2f;
+                float projXChange = (float)(Math.Cos((double)(swaySize * -(double)Projectile.ai[0])) - 0.5) * smolWidth;
+                Projectile.position.X -= projXChange * -Projectile.direction;
                 Projectile.ai[0] -= 1f;
-                num624 = (float)(Math.Cos((double)(num622 * -(double)Projectile.ai[0])) - 0.5) * num623;
-                Projectile.position.X += num624 * -Projectile.direction;
+                projXChange = (float)(Math.Cos((double)(swaySize * -(double)Projectile.ai[0])) - 0.5) * smolWidth;
+                Projectile.position.X += projXChange * -Projectile.direction;
             }
-            if (Projectile.ai[0] == breakThreshold && CalamityWorld.getFixedBoi)
+            if (Projectile.localAI[1] == breakThreshold && Main.zenithWorld)
             {
-                Projectile.velocity.X = Main.rand.NextBool(2) ? -tornadoSpeed : tornadoSpeed;
+                Projectile.velocity.X = Main.rand.NextBool() ? -tornadoSpeed : tornadoSpeed;
+
+                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                    Projectile.velocity.X *= 1.5f;
             }
 
             if (Projectile.timeLeft == 480)
@@ -140,20 +146,20 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = texture.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = texture.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             if (Projectile.timeLeft <= 480)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
+                target.AddBuff(ModContent.BuffType<Dragonfire>(), 90);
         }
     }
 }

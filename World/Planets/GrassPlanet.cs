@@ -1,8 +1,8 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.DataStructures;
 using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
@@ -20,10 +20,8 @@ namespace CalamityMod.World.Planets
     {
         private ushort[] oreTypes = new ushort[]
         {
-            WorldGen.copperBar == TileID.Copper ? (Main.getGoodWorld ? TileID.Palladium : TileID.Tin) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Copper),
-            WorldGen.ironBar == TileID.Iron ? (Main.getGoodWorld ? TileID.Palladium : TileID.Lead) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Iron),
-            WorldGen.silverBar == TileID.Silver ? (Main.getGoodWorld ? TileID.Orichalcum : TileID.Tungsten) : (Main.getGoodWorld ? TileID.Mythril : TileID.Silver),
-            WorldGen.goldBar == TileID.Gold ? (Main.getGoodWorld ? TileID.Titanium : TileID.Platinum) : (Main.getGoodWorld ? TileID.Adamantite : TileID.Gold)
+            GenVars.copperBar == TileID.Copper ? (Main.getGoodWorld ? TileID.Palladium : TileID.Tin) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Copper),
+            GenVars.ironBar == TileID.Iron ? (Main.getGoodWorld ? TileID.Palladium : TileID.Lead) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Iron)
         };
 
         public override bool Place(Point origin, StructureMap structures)
@@ -133,7 +131,7 @@ namespace CalamityMod.World.Planets
 
             //Boffin's funtime 2 -- Small shrine
             #region Boffin's funtime 2
-            bool boffsFuntime2 = _random.Next(10) == 0;
+            bool boffsFuntime2 = _random.NextBool(10);
             if (boffsFuntime2)
             {
                 int topLayer = origin.Y - radius - 4;
@@ -148,7 +146,7 @@ namespace CalamityMod.World.Planets
                         }
                     }
                 }
-                TopLayerFound:
+TopLayerFound:
 
                 ushort brickType = TileID.StoneSlab;
                 int shrineDepth = _random.Next(8, 13);

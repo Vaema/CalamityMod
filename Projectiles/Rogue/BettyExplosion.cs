@@ -1,18 +1,14 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class BettyExplosion : ModProjectile
+    public class BettyExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Betty Explosion");
-        }
 
         public override void SetDefaults()
         {
@@ -40,9 +36,9 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 corner = Projectile.position;
             for (int i = 0; i < 15; i++)
             {
-                int idx = Dust.NewDust(corner, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(corner, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -50,10 +46,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int i = 0; i < 25; i++)
             {
-                int idx = Dust.NewDust(corner, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int idx = Dust.NewDust(corner, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(corner, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                idx = Dust.NewDust(corner, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 2f;
             }
 

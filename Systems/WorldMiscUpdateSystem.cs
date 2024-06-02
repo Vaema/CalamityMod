@@ -2,13 +2,15 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.AdultEidolonWyrm;
 using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
+using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,7 +18,9 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 using static CalamityMod.World.CalamityWorld;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Systems
 {
@@ -24,9 +28,12 @@ namespace CalamityMod.Systems
     {
         public override void PostUpdateWorld()
         {
-            // Reset this int because it causes bugs with other mods if you delete Dr. Draedon through abnormal means
-            if (!NPC.AnyNPCs(ModContent.NPCType<Draedon>()))
-                CalamityGlobalNPC.draedon = -1;
+            // Reset this int because it causes bugs with other mods if you delete Dr. Draedon through abnormal means.
+            if (CalamityGlobalNPC.draedon != -1)
+            {
+                if (!NPC.AnyNPCs(ModContent.NPCType<Draedon>()))
+                    CalamityGlobalNPC.draedon = -1;
+            }
 
             // Reset the exo mech to summon if Draedon is absent.
             if (DraedonMechToSummon != ExoMech.None && CalamityGlobalNPC.draedon == -1)
@@ -38,12 +45,12 @@ namespace CalamityMod.Systems
                 HandleDraedonSummoning();
             }
 
-            // Sunken Sea Location
-            // This moved in 1.4, it's now officially the "lower half of the Underground Desert" until its worldgen gets fixed
-            Rectangle ugDesert = WorldGen.UndergroundDesertLocation;
+            // Sunken Sea Location.
+            // This moved in 1.4, it's now officially the "lower half of the Underground Desert" until its worldgen gets fixed.
+            Rectangle ugDesert = GenVars.UndergroundDesertLocation;
             SunkenSeaLocation = new Rectangle(ugDesert.Left, ugDesert.Center.Y, ugDesert.Width, ugDesert.Height / 2);
 
-            // Player variable, always finds the closest player relative to the center of the map
+            // Player variable, always finds the closest player relative to the center of the map.
             int closestPlayer = Player.FindClosest(new Vector2(Main.maxTilesX / 2, (float)Main.worldSurface / 2f) * 16f, 0, 0);
             Player player = Main.player[closestPlayer];
 
@@ -68,7 +75,7 @@ namespace CalamityMod.Systems
                 AcidRainEvent.HasStartedAcidicDownpour = false;
             }
 
-            // Lumenyl crystal and sea prism crystal spawn rates
+            // Lumenyl crystal and sea prism crystal spawn rates.
             HandleTileGrowth();
 
             // Update Boss Rush.
@@ -86,7 +93,7 @@ namespace CalamityMod.Systems
             // Very, very, very rarely display a Lorde joke text if the system clock is set to April Fools Day.
             if (Main.rand.NextBool(100000000) && DateTime.Now.Month == 4 && DateTime.Now.Day == 1)
             {
-                string key = CalamityWorld.getFixedBoi ? "Mods.CalamityMod.AprilFoolsGFB" : "Mods.CalamityMod.AprilFools";
+                string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.AprilFoolsGFB" : "Mods.CalamityMod.Status.Boss.AprilFools";
                 Color messageColor = Color.Crimson;
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }
@@ -97,12 +104,12 @@ namespace CalamityMod.Systems
 
             // Attempt to summon lab critters manually since they refuse to exist when using vanilla's spawn methods.
             // This needs to check all players since the method only runs server-side.
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player p in Main.ActivePlayers)
             {
-                if (!Main.player[i].active || Main.player[i].dead)
+                if (p.dead)
                     continue;
 
-                CalamityGlobalNPC.AttemptToSpawnLabCritters(Main.player[i]);
+                CalamityGlobalNPC.AttemptToSpawnLabCritters(p);
             }
 
             // Make the cultist countdown happen much more quickly.
@@ -262,7 +269,7 @@ namespace CalamityMod.Systems
                                 {
                                     Tile tile = Main.tile[x, y];
                                     bool growTile = !tile.HasTile && tile.LiquidAmount >= 128;
-                                    bool isSunkenSeaTile = tileType == ModContent.TileType<Navystone>() || tileType == ModContent.TileType<EutrophicSand>() || tileType == ModContent.TileType<SeaPrism>();
+                                    bool isSunkenSeaTile = tileType == ModContent.TileType<Navystone>() || tileType == ModContent.TileType<SeaPrism>();
                                     bool meetsAdditionalGrowConditions = tile.Slope == SlopeType.Solid && !tile.IsHalfBlock && tile.LiquidType != LiquidID.Lava;
 
                                     if (growTile && meetsAdditionalGrowConditions)
@@ -308,6 +315,78 @@ namespace CalamityMod.Systems
                                 }
                             }
                         }
+
+                        if (growthTile.LiquidAmount == 0 && y > Main.UnderworldLayer)
+                        {
+                            bool isCragsTile = tileType == TileType<BrimstoneSlag>() ||
+                                tileType == TileType<BrimstoneSlab>() ||
+                                tileType == TileType<ScorchedRemains>() ||
+                                tileType == TileType<ScorchedRemainsGrass>() ||
+                                tileType == TileType<ScorchedBone>();
+
+                            int wallType = Main.tile[x, y2].WallType;
+                            bool isCragHouseWall = wallType == WallType<BrimstoneSlagWall>() ||
+                                wallType == WallType<BrimstoneSlabWall>() ||
+                                wallType == WallType<ScorchedBoneWall>() ||
+                                wallType == WallType<SmoothBrimstoneSlagWall>();
+
+                            if (isCragsTile && isCragHouseWall && Main.tile[x, y2].LiquidAmount == 0)
+                            {
+                                // Lilies of Finality post-Yharon.
+                                if (WorldGen.genRand.NextBool(20) && DownedBossSystem.downedYharon)
+                                {
+                                    ushort tileTypeToPlace = (ushort)TileType<LiliesOfFinalityTile>();
+                                    int tileTypeToPlaceThickness = 3;
+                                    bool placeLilies = true;
+
+                                    // Do not change this number, ever. - Fabsol
+                                    int minDistanceFromOtherLilies = 66;
+
+                                    for (int k = x - minDistanceFromOtherLilies; k < x + minDistanceFromOtherLilies; k += 2)
+                                    {
+                                        for (int m = y - minDistanceFromOtherLilies; m < y + minDistanceFromOtherLilies; m += 2)
+                                        {
+                                            if (k > tileTypeToPlaceThickness && k < Main.maxTilesX - tileTypeToPlaceThickness && m > tileTypeToPlaceThickness && m < Main.maxTilesY - tileTypeToPlaceThickness && Main.tile[k, m].HasTile && Main.tile[k, m].TileType == tileTypeToPlace)
+                                            {
+                                                placeLilies = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (placeLilies)
+                                    {
+                                        if (x < tileTypeToPlaceThickness || x > Main.maxTilesX - tileTypeToPlaceThickness || y2 < tileTypeToPlaceThickness || y2 > Main.maxTilesY - tileTypeToPlaceThickness)
+                                            return;
+
+                                        bool placeTile = true;
+                                        for (int i2 = x - 1; i2 < x + 2; i2++)
+                                        {
+                                            for (int j3 = y2 - 2; j3 < y2 + 1; j3++)
+                                            {
+                                                if (Main.tile[i2, j3] == null)
+                                                    return;
+
+                                                if (Main.tile[i2, j3].HasTile)
+                                                    placeTile = false;
+                                            }
+
+                                            if (Main.tile[i2, y2 + 1] == null)
+                                                return;
+
+                                            if (!WorldGen.SolidTile2(i2, y2 + 1))
+                                                placeTile = false;
+                                        }
+
+                                        if (placeTile)
+                                        {
+                                            WorldGen.PlaceObject(x, y2, tileTypeToPlace, true);
+                                            NetMessage.SendObjectPlacement(-1, x, y2, tileTypeToPlace, 0, 0, -1, -1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 l++;
@@ -316,7 +395,7 @@ namespace CalamityMod.Systems
 
         public static bool CanPlaceBasedOnProximity(int x, int y, int tileType)
         {
-            if (tileType == ModContent.TileType<LumenylCrystals>() && !DownedBossSystem.downedCalamitasClone)
+            if (tileType == ModContent.TileType<LumenylCrystals>() && !DownedBossSystem.downedLeviathan)
                 return false;
 
             int minDistanceFromOtherTiles = 10;
@@ -341,12 +420,15 @@ namespace CalamityMod.Systems
         #region Handle Armored Digger Random Spawns
         public static void TrySpawnArmoredDigger(Player player, CalamityPlayer modPlayer)
         {
-            bool gfbCondition = CalamityWorld.getFixedBoi && (player.ZoneHallow || player.ZoneUnderworldHeight) && NPC.downedMoonlord;
+            bool gfbCondition = Main.zenithWorld && (player.ZoneHallow || player.ZoneUnderworldHeight) && NPC.downedMoonlord;
             if ((gfbCondition || (player.ZoneRockLayerHeight && !player.ZoneUnderworldHeight && !player.ZoneJungle)) && !player.ZoneDungeon && !modPlayer.ZoneSunkenSea && !modPlayer.ZoneAbyss && !CalamityPlayer.areThereAnyDamnBosses)
             {
                 if (NPC.downedPlantBoss && player.townNPCs < 3f)
                 {
                     double spawnRate = 100000D;
+
+                    if (CalamityWorld.LegendaryMode && revenge)
+                        spawnRate *= 0.25D;
 
                     if (revenge)
                         spawnRate *= 0.85D;
@@ -409,20 +491,23 @@ namespace CalamityMod.Systems
             if (Main.drunkWorld && player.position.Y / 16f < (float)(Main.dungeonY + 40))
                 spawn = false;
 
-            if (!NPC.AnyNPCs(NPCID.DungeonGuardian) && spawn)
-                NPC.SpawnOnPlayer(player.whoAmI, NPCID.DungeonGuardian); //your hell is as vast as my bonergrin, pray your life ends quickly
+            if (spawn)
+            {
+                if (!NPC.AnyNPCs(NPCID.DungeonGuardian))
+                    NPC.SpawnOnPlayer(player.whoAmI, NPCID.DungeonGuardian); //your hell is as vast as my bonergrin, pray your life ends quickly
+            }
         }
         #endregion
 
-        #region Handle Adult Eidolon Wyrm Spawns
+        #region Handle Primordial Wyrm Spawns
         public static void TrySpawnAEoW(Player player, CalamityPlayer modPlayer)
         {
-            if (Main.netMode == NetmodeID.MultiplayerClient || !(modPlayer.ZoneAbyss || CalamityWorld.getFixedBoi) || !player.chaosState || player.dead)
+            if (Main.netMode == NetmodeID.MultiplayerClient || !(modPlayer.ZoneAbyss || Main.zenithWorld) || !player.chaosState || player.dead)
                 return;
 
             bool adultWyrmAlive = CalamityGlobalNPC.adultEidolonWyrmHead != -1 && Main.npc[CalamityGlobalNPC.adultEidolonWyrmHead].active;
             if (!adultWyrmAlive)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<AdultEidolonWyrmHead>());
+                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<PrimordialWyrmHead>());
         }
         #endregion
     }

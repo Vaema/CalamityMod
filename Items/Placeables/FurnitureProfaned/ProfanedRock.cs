@@ -4,18 +4,18 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureProfaned
 {
-    public class ProfanedRock : ModItem
+    public class ProfanedRock : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
+            Item.ResearchUnlockCount = 100;
         }
-
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -38,7 +38,6 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
                 Register();
             CreateRecipe().
                 AddIngredient<ProfanedPlatform>(2).
-                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

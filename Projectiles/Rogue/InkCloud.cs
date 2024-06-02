@@ -1,16 +1,12 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class InkCloud : ModProjectile
+    public class InkCloud : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ink Cloud");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -34,7 +30,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity *= 0.95f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (!target.friendly)
             {
@@ -42,9 +38,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Confused, 300);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Confused, 300);
     }
 }

@@ -1,23 +1,23 @@
-using CalamityMod.Items.Placeables.FurnitureExo;
+﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using CalamityMod.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class ExoPlatingWallItem : ModItem
+    public class ExoPlatingWallItem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
-            DisplayName.SetDefault("Exo Plating Wall");
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -29,7 +29,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<ExoPlating>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(4).
+                AddIngredient<ExoPlating>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

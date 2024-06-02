@@ -3,13 +3,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class Seashell : ModProjectile
+    public class Seashell : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seashell");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetDefaults()
         {
             Projectile.width = 14;

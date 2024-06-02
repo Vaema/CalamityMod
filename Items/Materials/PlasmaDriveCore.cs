@@ -1,7 +1,7 @@
-﻿using CalamityMod.Rarities;
+﻿using System;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
@@ -10,20 +10,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class PlasmaDriveCore : ModItem
+    public class PlasmaDriveCore : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Prototype Plasma Drive Core");
-            Tooltip.SetDefault("Despite all the time it spent in storage, its furnace still burns strong");
-        }
-
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 0, 0);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
@@ -43,10 +37,11 @@ namespace CalamityMod.Items.Materials
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
             float outlineWidth = MathHelper.Lerp(2, 3, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) * 0.5f + 0.5f);
+            float positionOffset = outlineWidth * scale;
 
             for (float i = 0; i < 1; i += 0.25f)
             {
-               spriteBatch.Draw(tex, position + (i * MathHelper.TwoPi).ToRotationVector2() * outlineWidth * scale, frame, outlineColor, 0f, origin, scale, 0f, 0f);
+                spriteBatch.Draw(tex, position + (i * MathHelper.TwoPi).ToRotationVector2() * positionOffset, frame, outlineColor, 0f, origin, scale, 0f, 0f);
             }
 
             spriteBatch.End();

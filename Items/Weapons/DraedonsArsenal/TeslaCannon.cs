@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,19 +14,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class TeslaCannon : ModItem
+    public class TeslaCannon : ModItem, ILocalizedModType
     {
-        private int BaseDamage = 1360;
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
 
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/TeslaCannonFire");
-        
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Tesla Cannon");
-            Tooltip.SetDefault("Lightweight energy cannon that blasts an intense electrical beam that explodes\n" +
-                "Beams can arc to nearby targets");
-        }
 
         public override void SetDefaults()
         {
@@ -35,26 +27,26 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 78;
             Item.height = 28;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = BaseDamage;
+            Item.damage = 1220;
             Item.knockBack = 10f;
             Item.useTime = 90;
             Item.useAnimation = 90;
             Item.autoReuse = true;
-            Item.mana = 30;
+            Item.mana = 60;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.shoot = ModContent.ProjectileType<TeslaCannonShot>();
             Item.shootSpeed = 5f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.9f;
+            modItem.ChargePerUse = 0.75f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -83,7 +75,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<AscendantSpiritEssence>(2).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
                 AddTile<CosmicAnvil>().
                 Register();
         }

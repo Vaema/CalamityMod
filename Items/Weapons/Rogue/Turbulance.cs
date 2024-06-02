@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,19 +10,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Turbulance : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Turbulance");
-            Tooltip.SetDefault(@"Fires a cloudy javelin that bursts into wind slashes on hit
-Wind slashes home if the javelin crits
-Stealth strikes are trailed by homing wind slashes");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 14;
-            Item.damage = 18;
+            Item.height = 14;
+            Item.damage = 28;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 18;
@@ -31,8 +23,7 @@ Stealth strikes are trailed by homing wind slashes");
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 14;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<TurbulanceProjectile>();
             Item.shootSpeed = 12f;

@@ -11,12 +11,11 @@ namespace CalamityMod.Items.Dyes
 {
     public class AstralOrangeDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/AstralOrangeDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/AstralOrangeDyeShader"), "DyePass").
             UseColor(new Color(255, 166, 94)).UseSecondaryColor(new Color(238, 93, 82));
         public override void SafeSetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Astral Orange Dye");
+            Item.ResearchUnlockCount = 3;
         }
 
         public override void SafeSetDefaults()

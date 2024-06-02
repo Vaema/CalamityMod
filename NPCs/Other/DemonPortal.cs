@@ -2,10 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Other
 {
@@ -15,7 +15,6 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Mysterious Portal");
         }
 
         public override void SetDefaults()
@@ -23,7 +22,7 @@ namespace CalamityMod.NPCs.Other
             NPC.width = NPC.height = 60;
             NPC.damage = 0;
             NPC.defense = 0;
-            NPC.lifeMax = 24660;
+            NPC.lifeMax = 25000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.value = 0f;
@@ -37,10 +36,28 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale) => NPC.lifeMax = 24660;
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment) => NPC.lifeMax = 25000;
 
         public override void AI()
         {
+            // Becomes immortal. Any existing Suicide Bomber Demons turn angry.
+            if (NPC.life == 1 && NPC.ai[1] <= 0f)
+            {
+                NPC.ai[1] = 1f;
+                NPC.dontTakeDamage = true;
+                NPC.netUpdate = true;
+                int demonType = ModContent.ProjectileType<SuicideBomberDemon>();
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type != demonType || p.hostile)
+                        continue;
+
+                    p.hostile = true;
+                    p.friendly = false;
+                    p.netUpdate = true;
+                }
+            }
+
             NPC.rotation += 0.18f;
             NPC.Opacity = Utils.GetLerpValue(0f, 30f, Time, true) * Utils.GetLerpValue(420f, 390f, Time, true);
             NPC.velocity = Vector2.Zero;
@@ -86,40 +103,8 @@ namespace CalamityMod.NPCs.Other
             return null;
         }
 
-        public override bool StrikeNPC(ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
-        {
-            bool wouldDie = NPC.life - (damage * (crit ? 2D : 1D)) <= 0;
-            if (wouldDie)
-            {
-                NPC.immortal = true;
-
-                // Enrage demons if hit when already at 1 health.
-                if (NPC.life == 1)
-                {
-                    int demonType = ModContent.ProjectileType<SuicideBomberDemon>();
-                    for (int i = 0; i < Main.maxProjectiles; i++)
-                    {
-                        if (Main.projectile[i].type != demonType || !Main.projectile[i].active || Main.projectile[i].hostile)
-                            continue;
-
-                        Main.projectile[i].hostile = true;
-                        Main.projectile[i].friendly = false;
-                        Main.projectile[i].netUpdate = true;
-                    }
-                }
-
-                NPC.life = 1;
-                damage = 0D;
-                return false;
-            }
-            return true;
-        }
-
-        public override bool CheckDead()
-        {
-            NPC.life = 1;
-            return false;
-        }
+        // This will always put the portal to 1 health before dying, which makes external checks work.
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) => modifiers.SetMaxDamage(NPC.life - 1);
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {

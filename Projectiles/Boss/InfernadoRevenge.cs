@@ -1,8 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -10,14 +11,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class InfernadoRevenge : ModProjectile
+    public class InfernadoRevenge : ModProjectile, ILocalizedModType
     {
-        internal PrimitiveTrail TornadoDrawer;
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public const int TornadoHeight = 8800;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Infernado");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -72,8 +72,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TornadoDrawer is null)
-                TornadoDrawer = new PrimitiveTrail(_ => Projectile.width * 0.5f + 16f, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:Bordernado"]);
+            Main.spriteBatch.EnterShaderRegion();
 
             GameShaders.Misc["CalamityMod:Bordernado"].UseSaturation(-0.2f);
             GameShaders.Misc["CalamityMod:Bordernado"].SetShaderTexture(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin"));
@@ -87,7 +86,9 @@ namespace CalamityMod.Projectiles.Boss
                 drawPoints[i] = Vector2.Lerp(top, bottom, i / (float)(drawPoints.Length - 1));
 
             drawPoints[drawPoints.Length - 1] = bottom;
-            TornadoDrawer.Draw(drawPoints, -Main.screenPosition, 85);
+            PrimitiveRenderer.RenderTrail(drawPoints, new((_) => Projectile.width * 0.5f + 16f, ColorFunction, shader: GameShaders.Misc["CalamityMod:Bordernado"]), 85);
+
+            Main.spriteBatch.ExitShaderRegion();
 
             Texture2D vortexTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/OldDukeVortex").Value;
             for (int i = 0; i < 110; i++)
@@ -104,12 +105,12 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
         }
     }
 }

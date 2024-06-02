@@ -2,23 +2,19 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ToxicantTwisterTwoPointZero : ModProjectile
+    public class ToxicantTwisterTwoPointZero : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ToxicantTwister";
 
         private int lifeTime = 300;
         private int targetIndex = -1;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Toxicant Twister");
-        }
 
         public override void SetDefaults()
         {
@@ -41,11 +37,10 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.timeLeft % 20 == 0 && Main.myPlayer == Projectile.owner)
                 {
                     for (int i = 0; i < 2; i++)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.35), 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.25), 0f, Projectile.owner);
                 }
                 Projectile.rotation += 0.06f * (Projectile.velocity.X > 0).ToDirectionInt();
             }
-
             // Boomerang rotation
             Projectile.rotation += 0.4f * Projectile.direction;
 
@@ -125,15 +120,15 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.ai[1] <= 40f && Projectile.ai[0] != 1f)
             {
-                damage /= 3;
+                modifiers.SourceDamage *= 0.3333f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (targetIndex == target.whoAmI)
                 Projectile.ai[0] = 1f;
@@ -141,16 +136,16 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
             SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             Projectile.ai[0] = 1f;
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
             SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
     }
 }

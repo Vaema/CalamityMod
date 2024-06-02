@@ -7,20 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("DivineHatchet")]
-    public class SeekingScorcher : ModItem
+    public class SeekingScorcher : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seeking Scorcher");
-            Tooltip.SetDefault("May your enemies burn in hell for the sins they have committed\n" +
-            "Throws a holy boomerang that seeks out up to four enemies before returning to the player");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.width = 60;
-            Item.damage = 177;
+            Item.width = 86;
+            Item.height = 64;
+            Item.damage = 232;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -30,10 +24,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8.5f;
             Item.UseSound = SoundID.Item1;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.height = 62;
             Item.shoot = ModContent.ProjectileType<DivineHatchetBoomerang>();
             Item.shootSpeed = 14f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

@@ -8,22 +8,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Demonshade
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class DemonshadeGreaves : ModItem
+    public class DemonshadeGreaves : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Demonshade Greaves");
-            Tooltip.SetDefault("Shadow speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.defense = 50;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

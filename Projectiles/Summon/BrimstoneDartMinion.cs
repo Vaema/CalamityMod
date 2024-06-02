@@ -6,13 +6,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class BrimstoneDartMinion : ModProjectile
+    public class BrimstoneDartMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Boss/BrimstoneBarrage";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Brimfire");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
@@ -25,8 +25,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 300;
-            Projectile.penetrate = 1;
-            Projectile.minion = true;
             Projectile.alpha = 255;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -44,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
             Lighting.AddLight(Projectile.Center, 0.75f, 0f, 0f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
 
         public override bool PreDraw(ref Color lightColor)
         {

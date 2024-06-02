@@ -1,16 +1,15 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.AstralCatches
 {
-    public class ArcturusAstroidean : ModItem
+    public class ArcturusAstroidean : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Arcturus Astroidean");
-            Tooltip.SetDefault("Increases fishing power if used in the Astral Infection or Sulphurous Sea");
+            Item.ResearchUnlockCount = 5;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -18,10 +17,10 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         {
             Item.width = 20;
             Item.height = 20;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Orange;
-            Item.bait = 40; 
+            Item.bait = 40;
         }
     }
 }

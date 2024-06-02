@@ -5,13 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing
 {
-    public class SunbeamFish : ModItem
+    public class SunbeamFish : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sunbeam Fish");
-            Tooltip.SetDefault("Right click to extract essence");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -19,16 +18,16 @@ namespace CalamityMod.Items.Fishing
         {
             Item.width = 30;
             Item.height = 28;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
+        }
 
         public override bool CanRightClick() => true;
         public override void ModifyItemLoot(ItemLoot itemLoot) => itemLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 5, 10);

@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.StatBuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Abyssal Madness");
-            Description.SetDefault("Increased damage, critical strike chance, and tentacle aggression/range");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;

@@ -1,4 +1,5 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
@@ -7,15 +8,15 @@ using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.AcidRain
 {
@@ -44,14 +45,15 @@ namespace CalamityMod.NPCs.AcidRain
             set => NPC.localAI[0] = value;
         }
 
+        public static Asset<Texture2D> GlowTexture;
+
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/MaulerRoar");
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mauler");
             Main.npcFrameCount[NPC.type] = 8;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.425f,
                 PortraitScale = 0.9f,
@@ -59,6 +61,10 @@ namespace CalamityMod.NPCs.AcidRain
             };
             value.Position.X += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glowmask", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -69,14 +75,14 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.height = 90;
             NPC.defense = 50;
             NPC.DR_NERD(0.05f);
-            NPC.lifeMax = 88500;
+            NPC.lifeMax = 90000;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 25, 0, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.knockBackResist = 0f;
-            NPC.RemoveWaterSlowness();
+            NPC.waterMovementSpeed = 1f;
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
@@ -87,10 +93,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("Sharks are perhaps one of the most resilient and well-adapted species in our planet's history. It is no surprise that one of these apex predators has come to thrive in these seas.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Mauler")
             });
         }
 
@@ -419,7 +424,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/MaulerGlowmask").Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             Vector2 origin = NPC.frame.Size() * 0.5f;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -427,6 +432,11 @@ namespace CalamityMod.NPCs.AcidRain
             spriteBatch.Draw(texture, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, direction, 0f);
             spriteBatch.Draw(glowmask, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, direction, 0f);
             return false;
+        }
+
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+        {
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
         }
 
         public override void FindFrame(int frameHeight)
@@ -443,10 +453,10 @@ namespace CalamityMod.NPCs.AcidRain
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<Irradiated>(), 420);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 420);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
@@ -457,15 +467,15 @@ namespace CalamityMod.NPCs.AcidRain
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<MaulerRelic>());
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 30; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -478,7 +488,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void OnKill()
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 Vector2 valueBoom = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
                 float spreadBoom = 15f * 0.0174f;
@@ -486,36 +496,36 @@ namespace CalamityMod.NPCs.AcidRain
                 double deltaAngleBoom = spreadBoom / 8f;
                 double offsetAngleBoom;
                 int iBoom;
-                int damageBoom = 200;
+                int damageBoom = Main.masterMode ? 127 : Main.expertMode ? 150 : 200;
                 for (iBoom = 0; iBoom < 25; iBoom++)
                 {
-                    int projectileType = Main.rand.NextBool(2) ? ModContent.ProjectileType<SulphuricAcidMist>() : ModContent.ProjectileType<SulphuricAcidBubble>();
+                    int projectileType = Main.rand.NextBool() ? ModContent.ProjectileType<SulphuricAcidMist>() : ModContent.ProjectileType<SulphuricAcidBubble>();
                     offsetAngleBoom = startAngleBoom + deltaAngleBoom * (iBoom + iBoom * iBoom) / 2f + 32f * iBoom;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                    int boom1 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(Math.Sin(offsetAngleBoom) * 6f), (float)(Math.Cos(offsetAngleBoom) * 6f), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
-                    int boom2 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(-Math.Sin(offsetAngleBoom) * 6f), (float)(-Math.Cos(offsetAngleBoom) * 6f), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
+                        int boom1 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(Math.Sin(offsetAngleBoom) * 6f), (float)(Math.Cos(offsetAngleBoom) * 6f), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
+                        int boom2 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(-Math.Sin(offsetAngleBoom) * 6f), (float)(-Math.Cos(offsetAngleBoom) * 6f), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
-                for (int num621 = 0; num621 < 25; num621++)
+                for (int i = 0; i < 25; i++)
                 {
-                    int num622 = Dust.NewDust(NPC.position, NPC.width, NPC.height, 31, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int deathDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
+                    Main.dust[deathDust].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                        Main.dust[deathDust].scale = 0.5f;
+                        Main.dust[deathDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                     }
-                    Main.dust[num622].noGravity = true;
+                    Main.dust[deathDust].noGravity = true;
                 }
-                for (int num623 = 0; num623 < 50; num623++)
+                for (int j = 0; j < 50; j++)
                 {
-                    int num624 = Dust.NewDust(NPC.position, NPC.width, NPC.height, 5, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(NPC.position, NPC.width, NPC.height, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
-                    Main.dust[num624].noGravity = true;
+                    int deathDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
+                    Main.dust[deathDust2].noGravity = true;
+                    Main.dust[deathDust2].velocity *= 5f;
+                    deathDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[deathDust2].velocity *= 2f;
+                    Main.dust[deathDust2].noGravity = true;
                 }
                 NPC.netUpdate = true;
             }

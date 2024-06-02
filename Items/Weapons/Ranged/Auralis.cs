@@ -12,26 +12,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Auralis : ModItem
+    public class Auralis : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly Color blueColor = new Color(0, 77, 255);
         public static readonly Color greenColor = new Color(0, 255, 77);
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Auralis");
-            Tooltip.SetDefault("Fires a high speed glowing bullet that inflicts debilitating debuffs\n" +
-                "Right click to zoom out\n" +
-                "Standing still provides increasing damage bonuses up to 25%\n" +
-                "Standing still for 5 or more seconds while using the scope ability will summon an aurora\n" +
-                "The aurora reduces the damage of the next projectile hit by a flat 100\n" +
-                "This effect lasts up to 20 seconds and has a 30 second cooldown\n" +
-                "50% chance to not consume bullets");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
+            Item.width = 96;
+            Item.height = 34;
             Item.damage = 695;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 30;
@@ -41,12 +31,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 7.5f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.width = 96;
-            Item.height = 34;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -71,6 +59,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
+        public override void HoldItem(Player player) => player.scope = true;
+
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
 
         public override void AddRecipes()
@@ -79,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.SniperRifle).
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<AureusCell>(5).
-                AddIngredient<Stardust>(50).
+                AddIngredient<StarblightSoot>(50).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -1,15 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class GrimreaverBat : ModProjectile
+    public class GrimreaverBat : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Grim Bat"); // There's an incredibly obvious thing that I could add/change in this name, but I will restrain
             Main.projFrames[Projectile.type] = 4;
         }
 

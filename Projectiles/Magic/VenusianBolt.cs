@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class VenusianBolt : ModProjectile
+    public class VenusianBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bolt");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.ToRadians(45);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45);
             Lighting.AddLight(Projectile.Center, 0.25f, 0.2f, 0f);
             if (Projectile.wet && !Projectile.lavaWet)
             {
@@ -37,24 +37,24 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item73, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
-            for (int num457 = 0; num457 < 3; num457++)
+            for (int i = 0; i < 3; i++)
             {
-                int num458 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1.2f);
-                Main.dust[num458].noGravity = true;
-                Main.dust[num458].velocity *= 0.5f;
-                Main.dust[num458].velocity += Projectile.velocity * 0.1f;
+                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1.2f);
+                Main.dust[venusDust].noGravity = true;
+                Main.dust[venusDust].velocity *= 0.5f;
+                Main.dust[venusDust].velocity += Projectile.velocity * 0.1f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Daybreak, 300);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
                 float explosionKB = 6f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VenusianExplosion>(), explosionDamage, explosionKB, Projectile.owner);
 
-                int cinderDamage = (int)(Projectile.damage * 0.75);
+                int cinderDamage = (int)(Projectile.damage * 0.20);
                 float cinderKB = 0f;
                 Vector2 cinderPos = Projectile.oldPosition + 0.5f * Projectile.Size;
                 int numCinders = Main.rand.Next(7, 10);

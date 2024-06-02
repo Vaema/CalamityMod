@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Rogue
@@ -10,15 +10,14 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Titanium Shuriken");
-            Tooltip.SetDefault("Stealth strikes act like a boomerang that spawns clones on enemy hits");
-            SacrificeTotal = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
             Item.width = 34;
-            Item.damage = 56;
+            Item.height = 34;
+            Item.damage = 41;
             Item.noMelee = true;
             Item.consumable = true;
             Item.noUseGraphic = true;
@@ -28,14 +27,16 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 34;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = 2000;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<TitaniumShurikenProjectile>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
         }
+        public override float StealthDamageMultiplier => 1.3f;
+        public override float StealthVelocityMultiplier => 1.25f;
+
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 10;

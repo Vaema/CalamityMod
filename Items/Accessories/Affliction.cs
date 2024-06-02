@@ -9,22 +9,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class Affliction : ModItem
+    public class Affliction : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Affliction");
-            Tooltip.SetDefault("Gives you and all other players on your team +1 life regen,\n" +
-                               "+10% max life, 7% damage reduction, 13 defense and 10% increased damage");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 44;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

@@ -1,19 +1,20 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ThanatosLaser : ModProjectile
+    public class ThanatosLaser : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public float TelegraphDelay
         {
             get => Projectile.ai[0];
@@ -31,7 +32,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exo Pulse Laser");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
@@ -84,8 +84,6 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
 
-            Lighting.AddLight(Projectile.Center, 0.6f, 0f, 0f);
-
             // If there is no NPC to attach to, run this instead.
             if (Projectile.ai[1] == -1f)
             {
@@ -115,7 +113,7 @@ namespace CalamityMod.Projectiles.Boss
                     else
                     {
                         Projectile.spriteDirection = 1;
-                        Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                        Projectile.rotation = Projectile.velocity.ToRotation();
                     }
                 }
                 else if (Velocity == Vector2.Zero)
@@ -178,7 +176,7 @@ namespace CalamityMod.Projectiles.Boss
                 else
                 {
                     Projectile.spriteDirection = 1;
-                    Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                    Projectile.rotation = Projectile.velocity.ToRotation();
                 }
             }
             else if (Destination == Vector2.Zero)
@@ -242,12 +240,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => TelegraphDelay > TelegraphTotalTime;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || TelegraphDelay <= TelegraphTotalTime)
+            if (info.Damage <= 0 || TelegraphDelay <= TelegraphTotalTime)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

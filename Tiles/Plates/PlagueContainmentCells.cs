@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 using Terraria.ID;
-using ReLogic.Content;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Plates
 {
@@ -31,23 +31,22 @@ namespace CalamityMod.Tiles.Plates
 
             HitSound = MinePlatingSound;
             MineResist = 1f;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Plates.Plagueplate>();
             AddMapEntry(new Color(128, 188, 67));
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 89, 0f, 0f, 100, default, 2f);
+            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity.Y = -0.15f;
 
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
         public override void RandomUpdate(int i, int j)
         {
-            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 89, 0f, 0f, 100, default, 2f);
+            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity.Y = -0.15f;
         }
@@ -73,14 +72,7 @@ namespace CalamityMod.Tiles.Plates
             //Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
 
             Tile trackTile = Main.tile[i, j];
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
-            {
-                Main.spriteBatch.Draw(GlowTexture, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            else if (trackTile.IsHalfBlock)
-            {
-                Main.spriteBatch.Draw(GlowTexture, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
+            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

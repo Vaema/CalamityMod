@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Tiles.Crags;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Tiles.Crags;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureAshen
 {
@@ -16,7 +16,6 @@ namespace CalamityMod.Tiles.FurnitureAshen
             Main.tileBlockLight[Type] = true;
             CalamityUtils.SetMerge(Type, ModContent.TileType<BrimstoneSlag>());
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenSlab>();
             HitSound = SoundID.Tink;
             MineResist = 5f;
             MinPick = 180;
@@ -27,8 +26,8 @@ namespace CalamityMod.Tiles.FurnitureAshen
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -515,7 +514,6 @@ namespace CalamityMod.Tiles.FurnitureAshen
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAshen/AshenSlabGlow").Value;
             Color drawColour = GetDrawColour(i, j, new Color(64, 64, 64, 64));
             Tile trackTile = Main.tile[i, j];
-            double num6 = Main.time * 0.08;
             if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
             {
                 Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xDrawPos, yDrawPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);

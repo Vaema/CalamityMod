@@ -1,21 +1,21 @@
-﻿using CalamityMod.World;
+﻿using System;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class RedLabSeeker : ModProjectile
+    public class RedLabSeeker : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Items/LabFinders/RedSeekingMechanism";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Seeking Mechanism");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI() => Behavior(Projectile, CalamityWorld.HellLabCenter, Color.Red, ref Time);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Time > 80f && Projectile.ai[1] == 0f)
             {
                 for (int i = 0; i < 24; i += 2)

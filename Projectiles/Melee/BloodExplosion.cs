@@ -1,19 +1,15 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BloodExplosion : ModProjectile
+    public class BloodExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Blood");
-        }
 
         public override void SetDefaults()
         {
@@ -39,7 +35,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                 Main.dust[index].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[index].scale = 0.5f;
                     Main.dust[index].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -56,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1]++;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<BurningBlood>(), 60);
         }

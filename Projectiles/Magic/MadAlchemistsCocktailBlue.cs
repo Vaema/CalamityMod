@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class MadAlchemistsCocktailBlue : ModProjectile
+    public class MadAlchemistsCocktailBlue : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mad Alchemist's Blue Cocktail");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -39,9 +35,9 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item107, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item107, Projectile.Center);
 
             if (Main.netMode != NetmodeID.Server)
             {

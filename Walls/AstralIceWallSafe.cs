@@ -1,5 +1,5 @@
-﻿using Terraria;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
@@ -12,7 +12,6 @@ namespace CalamityMod.Walls
             // TODO -- Change this dust to be one more befitting Astral Ice.
             Main.wallHouse[Type] = true;
             DustType = DustID.Shadowflame;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Walls.AstralIceWall>();
 
             AddMapEntry(new Color(83, 76, 92));
         }

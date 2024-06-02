@@ -1,105 +1,120 @@
 ﻿using System;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class BloodfireArrowProj : ModProjectile
+    public class BloodfireArrowProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+
         public override string Texture => "CalamityMod/Items/Ammo/BloodfireArrow";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloodfire Arrow");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = 20;
+            Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
+            Projectile.extraUpdates = 6;
+            Projectile.timeLeft = 1200;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
-        }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            return true;
         }
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - MathHelper.ToRadians(90);
+            Player player = Main.player[Projectile.owner];
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+            Projectile.spriteDirection = Projectile.direction;
 
-            if (Projectile.timeLeft % 15 == 0)
+            if (Projectile.localAI[0] == 0)
             {
-                for (int l = 0; l < 12; l++)
+                player.statLife -= 1;
+                if (player.statLife <= 0)
                 {
-                    Vector2 vector3 = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
-                    vector3 += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
-                    vector3 = vector3.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int num9 = Dust.NewDust(Projectile.Center, 0, 0, (int)CalamityDusts.Brimstone, 0f, 0f, 160, default, 1f);
-                    Main.dust[num9].scale = 1.1f;
-                    Main.dust[num9].noGravity = true;
-                    Main.dust[num9].position = Projectile.Center + vector3;
-                    Main.dust[num9].velocity = Projectile.velocity * 0.1f;
-                    Main.dust[num9].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[num9].position) * 1.25f;
+                    PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).Format(player.name));
+                    player.KillMe(pdr, 1000.0, 0, false);
                 }
+                Projectile.velocity *= 0.4f;
             }
 
-            if (Projectile.ai[1] == 80f) //means it's from Arterial Assault's wooden arrow conversion
-                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 12f, 20f);
-        }
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-        public override void Kill(int timeLeft)
-        {
-            Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num621 = 0; num621 < 5; num621++)
+            // Lighting
+            Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.7f);
+
+            // Dust
+            Projectile.localAI[0] += 1f;
+            if (Projectile.localAI[0] > 6f && targetDist < 1400f)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 0.5f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 130 : 60, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 0.6f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.3f, 0.7f);
+                    if (dust.type == 130)
+                        dust.scale = Main.rand.NextFloat(0.25f, 0.45f);
                 }
+                PointParticle spark = new PointParticle(Projectile.Center - Projectile.velocity, -Projectile.velocity * 0.01f, false, 2, 1.2f, Color.Firebrick);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnKill(int timeLeft)
         {
-            if (!target.canGhostHeal || Main.player[Projectile.owner].moonLeech)
+            for (int b = 0; b < 9; b++)
+            {
+                int dustType = Main.rand.NextBool() ? 303 : 90;
+                float velMulti = Main.rand.NextFloat(0.1f, 0.75f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustType, new Vector2(4, 4).RotatedByRandom(100) * velMulti);
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.75f, 1.35f);
+                if (dust.type == 303)
+                    dust.color = Color.Firebrick;
+            }
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            Player player = Main.player[Projectile.owner];
+            player.lifeRegenTime += 2;
+
+            if (player.moonLeech)
                 return;
 
-            Player player = Main.player[Projectile.owner];
+            if (target.lifeMax <= 5)
+                return;
 
-            int chance = 3;
-            if (player.ActiveItem().type == ModContent.ItemType<TheStorm>())
-                chance = 6;
+            float lifeRatio = (float)player.statLife / player.statLifeMax2;
+            float averageHealAmount = MathHelper.Lerp(4.0f, 0.5f, lifeRatio); // Average heal increases from 1/2 to 4 HP based on missing health
+            int guaranteedHeal = (int)averageHealAmount;
 
-            if (Main.rand.NextBool(chance))
-            {
-                player.statLife += 1;
-                player.HealEffect(1);
-            }
+            float chanceOfOneMoreHP = averageHealAmount - guaranteedHeal;
+            bool bonusHeal = Main.rand.NextFloat() < chanceOfOneMoreHP;
+            int finalHeal = guaranteedHeal + (bonusHeal ? 1 : 0);
+            if (finalHeal > BalancingConstants.LifeStealCap)
+                finalHeal = BalancingConstants.LifeStealCap;
+
+            if (finalHeal > 0)
+                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], finalHeal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override bool PreDraw(ref Color lightColor)

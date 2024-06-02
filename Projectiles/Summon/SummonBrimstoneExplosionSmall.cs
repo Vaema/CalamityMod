@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SummonBrimstoneExplosionSmall : ModProjectile
+    public class SummonBrimstoneExplosionSmall : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Explosion");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 6;
         }
@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = Projectile.height = 108;
             Projectile.friendly = true;
             Projectile.hostile = false;
-            Projectile.minion = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = Main.projFrames[Projectile.type] * 5;
             Projectile.usesLocalNPCImmunity = true;

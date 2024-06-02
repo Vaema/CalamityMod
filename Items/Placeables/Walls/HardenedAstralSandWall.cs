@@ -1,14 +1,14 @@
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class HardenedAstralSandWall : ModItem
+    public class HardenedAstralSandWall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
-            DisplayName.SetDefault("Hardened Astral Sand Wall");
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
@@ -22,12 +22,15 @@ namespace CalamityMod.Items.Placeables.Walls
             Item.consumable = true;
             Item.width = 16;
             Item.height = 16;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddTile(TileID.WorkBenches).AddIngredient(ModContent.ItemType<HardenedAstralSand>()).Register();
+            CreateRecipe(4).
+                AddTile(TileID.WorkBenches).
+                AddIngredient<HardenedAstralSand>().
+                Register();
         }
     }
 }

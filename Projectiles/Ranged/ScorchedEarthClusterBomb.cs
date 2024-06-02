@@ -1,17 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ScorchedEarthClusterBomb : ModProjectile
+    public class ScorchedEarthClusterBomb : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cluster Bomb");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -33,12 +29,12 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.timeLeft = 10;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 10; i++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 0, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, default, 1f);
             }
             int projAmt = Main.rand.Next(2, 4);
             if (Projectile.owner == Main.myPlayer)

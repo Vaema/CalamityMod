@@ -8,11 +8,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class HolyAura : ModProjectile
+    public class HolyAura : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Holy Aura");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = texture.Size() / 2f;
             float time = Main.GlobalTimeWrappedHourly % 10f / 10f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -69,9 +69,9 @@ namespace CalamityMod.Projectiles.Boss
                 Color color = Main.hslToRgb(hue[i] % 1f, 1f, 0.5f) * colorChangeAmt * colorChangeAmt2;
 
                 bool underworld = Projectile.ai[0] == 2f;
-                if (!CalamityWorld.getFixedBoi)
+                if (!Main.zenithWorld)
                 {
-                    if (Main.dayTime)
+                    if (Main.IsItDay())
                     {
                         color.R = 255;
                         if (underworld)

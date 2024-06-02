@@ -1,18 +1,18 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MK2FlaskSummon : ModProjectile
+    public class MK2FlaskSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Items/Weapons/Summon/FuelCellBundle";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flask");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.velocity.Y += 0.2f;
             Projectile.rotation += 0.1f * (Projectile.velocity.X > 0).ToDirectionInt();
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.myPlayer == Projectile.owner)
             {
@@ -51,11 +51,11 @@ namespace CalamityMod.Projectiles.Summon
                     Main.projectile[p].originalDamage = Projectile.originalDamage;
 
                 int beeArrayIndex = 0;
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner && Main.projectile[i].type == ModContent.ProjectileType<PlaguebringerMK2>())
+                    if (pro.owner == Projectile.owner && pro.type == ModContent.ProjectileType<PlaguebringerMK2>())
                     {
-                        Main.projectile[i].ai[1] = beeArrayIndex;
+                        pro.ai[1] = beeArrayIndex;
                         beeArrayIndex++;
                     }
                 }

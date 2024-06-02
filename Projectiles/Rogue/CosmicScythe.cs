@@ -1,21 +1,21 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class CosmicScythe : ModProjectile
+    public class CosmicScythe : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Boss/SignusScythe";
 
         private int originalDamage;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cosmic Scythe");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -32,12 +32,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 5;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.extraUpdates = 1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
             Projectile.rotation += 0.5f * (float)Projectile.direction;
-            int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+            int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
             Main.dust[shadow].noGravity = true;
             Main.dust[shadow].velocity *= 0f;
             Projectile.velocity *= 0.95f;
@@ -55,7 +57,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.Kill();
         }
@@ -66,15 +68,15 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(50);
             for (int d = 0; d < 4; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, default, 2f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, default, 2f);
                 Main.dust[shadow].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[shadow].scale = 0.5f;
                     Main.dust[shadow].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -82,10 +84,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int d = 0; d < 12; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, default, 3f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, default, 3f);
                 Main.dust[shadow].noGravity = true;
                 Main.dust[shadow].velocity *= 5f;
-                shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, default, 2f);
+                shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, default, 2f);
                 Main.dust[shadow].velocity *= 2f;
             }
         }

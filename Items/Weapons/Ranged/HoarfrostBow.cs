@@ -1,35 +1,28 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("EffluviumBow")]
-    public class HoarfrostBow : ModItem
+    public class HoarfrostBow : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Hoarfrost Bow");
-            Tooltip.SetDefault("Fires two arrows at once\n" +
-                "Converts wooden arrows into mist arrows");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 56;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 26;
             Item.height = 70;
-            Item.useTime = 25;
-            Item.useAnimation = 25;
+            Item.damage = 36;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 29;
+            Item.useAnimation = 29;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item5;
             Item.autoReuse = true;
@@ -43,8 +36,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             for (int index = 0; index < 2; ++index)
             {
-                float SpeedX = velocity.X + Main.rand.Next(-30, 31) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-30, 31) * 0.05f;
+                float SpeedX = velocity.X + Main.rand.Next(-25, 26) * 0.05f;
+                float SpeedY = velocity.Y + Main.rand.Next(-25, 26) * 0.05f;
 
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
                     Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<MistArrow>(), damage, knockback, player.whoAmI);

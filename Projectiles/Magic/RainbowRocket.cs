@@ -1,16 +1,18 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
+using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class RainbowRocket : ModProjectile
+    public class RainbowRocket : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public enum PartyCannonExplosionType
         {
             Pink = 0,
@@ -23,7 +25,6 @@ namespace CalamityMod.Projectiles.Magic
             Count = 7
         }
 
-        internal PrimitiveTrail TrailDrawer = null;
         public ref float Time => ref Projectile.ai[0];
         public PartyCannonExplosionType RocketType
         {
@@ -36,7 +37,6 @@ namespace CalamityMod.Projectiles.Magic
         public const float HomingAcceleration = 0.4f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rainbow Rocket");
             Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -135,13 +135,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction);
-
             Projectile.oldPos[0] = Projectile.position + Projectile.velocity.SafeNormalize(Vector2.Zero) * 50f;
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + Projectile.velocity, 80);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
 
-            Texture2D rocketTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D rocketTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(rocketTexture,
                              Projectile.Center - Main.screenPosition,
                              rocketTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
@@ -156,7 +153,7 @@ namespace CalamityMod.Projectiles.Magic
         #endregion
 
         #region Kill Effects
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {

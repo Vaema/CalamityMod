@@ -1,34 +1,31 @@
-﻿using Terraria.DataStructures;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class FirestormCannon : ModItem
+    public class FirestormCannon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Firestorm Cannon");
-            Tooltip.SetDefault("70% chance to not consume flares\n" +
-                "Right click to fire a spread of flares");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 14;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 56;
             Item.height = 28;
+            Item.damage = 14;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
@@ -56,8 +53,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 velocity *= 2f;
-                int num6 = Main.rand.Next(4, 6);
-                for (int index = 0; index < num6; ++index)
+                int flareAmt = Main.rand.Next(4, 6);
+                for (int index = 0; index < flareAmt; ++index)
                 {
                     float SpeedX = velocity.X + (float)Main.rand.Next(-50, 51) * 0.05f;
                     float SpeedY = velocity.Y + (float)Main.rand.Next(-50, 51) * 0.05f;
@@ -73,8 +70,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                int num6 = Main.rand.Next(1, 3);
-                for (int index = 0; index < num6; ++index)
+                int flareAmt = Main.rand.Next(1, 3);
+                for (int index = 0; index < flareAmt; ++index)
                 {
                     float SpeedX = velocity.X + (float)Main.rand.Next(-40, 41) * 0.05f;
                     float SpeedY = velocity.Y + (float)Main.rand.Next(-40, 41) * 0.05f;

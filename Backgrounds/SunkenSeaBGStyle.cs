@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
@@ -7,7 +8,10 @@ namespace CalamityMod.Backgrounds
         public override void FillTextureArray(int[] textureSlots)
         {
             for (int i = 0; i <= 3; i++)
-                textureSlots[i] = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG" + i.ToString());
+            {
+                textureSlots[i] = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/BlankPixel");
+                //textureSlots[i] = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG" + i.ToString());
+            }
         }
     }
 }

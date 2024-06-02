@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -6,15 +6,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Pets
 {
-    public class OceanSpirit : ModProjectile
+    public class OceanSpirit : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         private bool underwater = false;
         private int sleepyTimer = 0;
         private int lightLevel = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ocean Spirit");
             Main.projFrames[Projectile.type] = 17;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.LightPet[Projectile.type] = true;

@@ -6,14 +6,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class MangroveChakramProjectile : ModProjectile
+    public class MangroveChakramProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/MangroveChakram";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mangrove Chakram");
-        }
 
         public override void SetDefaults()
         {
@@ -26,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 600;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 6;
         }
 
         public override void AI()
@@ -33,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 0f, 0.25f, 0f);
 
             if (Main.rand.NextBool(5))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 44, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.JungleSpore, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
 
             if (Projectile.Calamity().stealthStrike)
             {
@@ -41,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.timeLeft < 240)
                     Projectile.Kill();
 
-                Projectile.localAI[0] += Main.rand.Next(0,3);
+                Projectile.localAI[0] += Main.rand.Next(0, 3);
                 if (Projectile.localAI[0] >= 10f)
                 {
                     Projectile.localAI[0] = 0f;
@@ -54,20 +52,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[Projectile.owner] = 6;
-            target.AddBuff(BuffID.Venom, 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 120);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Venom, 120);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 120);
     }
 }

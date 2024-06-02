@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,22 +13,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class VoltageRegulationSystem : ModItem
+    public class VoltageRegulationSystem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         public static readonly SoundStyle InstallSound = new("CalamityMod/Sounds/Custom/Codebreaker/VoltageRegulationSystemInstall");
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Voltage Regulation System");
-            Tooltip.SetDefault("Can be placed on the Codebreaker\n" +
-                "Allows you to decrypt the Ice biome schematic");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 52;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ModContent.RarityType<Turquoise>();
@@ -68,7 +61,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<DubiousPlating>(10).
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient(ItemID.LunarBar, 5).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

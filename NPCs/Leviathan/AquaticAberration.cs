@@ -1,8 +1,9 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -13,12 +14,22 @@ namespace CalamityMod.NPCs.Leviathan
 {
     public class AquaticAberration : ModNPC
     {
+        public bool WaitingForLeviathan
+        {
+            get
+            {
+                if (Main.npc.IndexInRange(CalamityGlobalNPC.leviathan) && Main.npc[CalamityGlobalNPC.leviathan].life / (float)Main.npc[CalamityGlobalNPC.leviathan].lifeMax >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.7f : 0.4f))
+                    return true;
+
+                return CalamityUtils.FindFirstProjectile(ModContent.ProjectileType<LeviathanSpawner>()) != -1;
+            }
+        }
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aquatic Aberration");
             Main.npcFrameCount[NPC.type] = 7;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 25;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
@@ -31,15 +42,12 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 14;
-            NPC.lifeMax = 600;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax = 10000;
-            }
-            NPC.knockBackResist = 0f;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : 600;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.knockBackResist = 0.2f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             AIType = -1;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -50,6 +58,10 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.3f;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -57,11 +69,10 @@ namespace CalamityMod.NPCs.Leviathan
             int associatedNPCType = ModContent.NPCType<Leviathan>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-            BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("All head and stomach, they will gorge and guzzle upon vast schools of fish on their own.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticAberration")
             });
         }
 
@@ -83,6 +94,9 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.netUpdate = true;
                 return;
             }
+
+            // Avoid cheap bullshit
+            NPC.damage = 0;
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
@@ -110,45 +124,40 @@ namespace CalamityMod.NPCs.Leviathan
             if (CalamityGlobalNPC.siren != -1)
                 sirenAlive = Main.npc[CalamityGlobalNPC.siren].active;
 
-            if (CalamityGlobalNPC.siren != -1)
+            if (sirenAlive)
             {
-                if (Main.npc[CalamityGlobalNPC.siren].active)
-                {
-                    if (Main.npc[CalamityGlobalNPC.siren].damage == 0)
-                        sirenAlive = false;
-                }
+                if (WaitingForLeviathan)
+                    sirenAlive = false;
             }
 
             float inertia = bossRush ? 24f : death ? 26f : revenge ? 27f : expertMode ? 28f : 30f;
             if (!sirenAlive || leviathanInPhase4)
                 inertia *= 0.75f;
 
-            float num1006 = 0.111111117f * inertia;
             if (NPC.ai[0] == 0f)
             {
-                float scaleFactor6 = bossRush ? 14f : death ? 12f : revenge ? 11f : expertMode ? 10f : 8f;
+                float lungeSpeed = bossRush ? 14f : death ? 12f : revenge ? 11f : expertMode ? 10f : 8f;
                 if (!sirenAlive || leviathanInPhase4)
-                    scaleFactor6 *= 1.25f;
+                    lungeSpeed *= 1.25f;
 
-                Vector2 center4 = NPC.Center;
-                Vector2 center5 = Main.player[NPC.target].Center;
-                Vector2 vector126 = center5 - center4;
-                Vector2 vector127 = vector126 - Vector2.UnitY * 300f * NPC.scale;
-                float num1013 = vector126.Length();
-                vector126 = Vector2.Normalize(vector126) * scaleFactor6;
-                vector127 = Vector2.Normalize(vector127) * scaleFactor6;
-                bool flag64 = Collision.CanHit(NPC.Center, 1, 1, Main.player[NPC.target].Center, 1, 1);
+                Vector2 npcCenter = NPC.Center;
+                Vector2 targetCenter = Main.player[NPC.target].Center;
+                Vector2 targetDirection = targetCenter - npcCenter;
+                Vector2 beginLungeYDist = targetDirection - Vector2.UnitY * 300f * NPC.scale;
+                float targetDist = targetDirection.Length();
+                targetDirection = Vector2.Normalize(targetDirection) * lungeSpeed;
+                beginLungeYDist = Vector2.Normalize(beginLungeYDist) * lungeSpeed;
+                bool canHitPlayer = Collision.CanHit(NPC.Center, 1, 1, Main.player[NPC.target].Center, 1, 1);
                 if (NPC.ai[3] >= 120f)
                 {
-                    flag64 = true;
+                    canHitPlayer = true;
                 }
-                float num1014 = 8f;
-                flag64 = flag64 && vector126.ToRotation() > MathHelper.Pi / num1014 && vector126.ToRotation() < MathHelper.Pi - MathHelper.Pi / num1014;
-                if (num1013 > 800f * NPC.scale || !flag64)
+                canHitPlayer = canHitPlayer && targetDirection.ToRotation() > MathHelper.Pi / 8f && targetDirection.ToRotation() < MathHelper.Pi - MathHelper.Pi / 8f;
+                if (targetDist > 800f * NPC.scale || !canHitPlayer)
                 {
-                    NPC.velocity.X = (NPC.velocity.X * (inertia - 1f) + vector127.X) / inertia;
-                    NPC.velocity.Y = (NPC.velocity.Y * (inertia - 1f) + vector127.Y) / inertia;
-                    if (!flag64)
+                    NPC.velocity.X = (NPC.velocity.X * (inertia - 1f) + beginLungeYDist.X) / inertia;
+                    NPC.velocity.Y = (NPC.velocity.Y * (inertia - 1f) + beginLungeYDist.Y) / inertia;
+                    if (!canHitPlayer)
                     {
                         NPC.ai[3] += 1f;
                         if (NPC.ai[3] == 120f)
@@ -164,8 +173,8 @@ namespace CalamityMod.NPCs.Leviathan
                 else
                 {
                     NPC.ai[0] = 1f;
-                    NPC.ai[2] = vector126.X;
-                    NPC.ai[3] = vector126.Y;
+                    NPC.ai[2] = targetDirection.X;
+                    NPC.ai[3] = targetDirection.Y;
                     NPC.netUpdate = true;
                 }
             }
@@ -187,8 +196,8 @@ namespace CalamityMod.NPCs.Leviathan
             else if (NPC.ai[0] == 2f)
             {
                 NPC.ai[1] += 1f;
-                bool flag65 = NPC.Center.Y + 50f > Main.player[NPC.target].Center.Y;
-                if ((NPC.ai[1] >= 90f && flag65) || NPC.velocity.Length() < ((!sirenAlive || leviathanInPhase4) ? 10f : 8f))
+                bool doLunge = NPC.Center.Y + 50f > Main.player[NPC.target].Center.Y;
+                if ((NPC.ai[1] >= 90f && doLunge) || NPC.velocity.Length() < ((!sirenAlive || leviathanInPhase4) ? 10f : 8f))
                 {
                     NPC.ai[0] = 3f;
                     NPC.ai[1] = 45f;
@@ -199,15 +208,18 @@ namespace CalamityMod.NPCs.Leviathan
                 }
                 else
                 {
-                    Vector2 center6 = NPC.Center;
-                    Vector2 center7 = Main.player[NPC.target].Center;
-                    Vector2 vec2 = center7 - center6;
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
+                    Vector2 npcCenterAgain = NPC.Center;
+                    Vector2 targetCenterAgain = Main.player[NPC.target].Center;
+                    Vector2 vec2 = targetCenterAgain - npcCenterAgain;
                     vec2.Normalize();
                     if (vec2.HasNaNs())
                     {
                         vec2 = new Vector2((float)NPC.direction, 0f);
                     }
-                    NPC.velocity = (NPC.velocity * (inertia - 1f) + vec2 * (NPC.velocity.Length() + num1006)) / inertia;
+                    NPC.velocity = (NPC.velocity * (inertia - 1f) + vec2 * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
                 }
             }
             else if (NPC.ai[0] == 3f)
@@ -225,24 +237,21 @@ namespace CalamityMod.NPCs.Leviathan
             if (death)
             {
                 float pushVelocity = 0.5f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active)
+                    if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                     {
-                        if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                        if (Vector2.Distance(NPC.Center, n.Center) < 80f * NPC.scale)
                         {
-                            if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 80f * NPC.scale)
-                            {
-                                if (NPC.position.X < Main.npc[i].position.X)
-                                    NPC.velocity.X -= pushVelocity;
-                                else
-                                    NPC.velocity.X += pushVelocity;
+                            if (NPC.position.X < n.position.X)
+                                NPC.velocity.X -= pushVelocity;
+                            else
+                                NPC.velocity.X += pushVelocity;
 
-                                if (NPC.position.Y < Main.npc[i].position.Y)
-                                    NPC.velocity.Y -= pushVelocity;
-                                else
-                                    NPC.velocity.Y += pushVelocity;
-                            }
+                            if (NPC.position.Y < n.position.Y)
+                                NPC.velocity.Y -= pushVelocity;
+                            else
+                                NPC.velocity.Y += pushVelocity;
                         }
                     }
                 }
@@ -256,7 +265,7 @@ namespace CalamityMod.NPCs.Leviathan
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
 
             // Explode into bubbles on gfb
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -272,23 +281,23 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Bleeding, 240, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Bleeding, 240, true);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

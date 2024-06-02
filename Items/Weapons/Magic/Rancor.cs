@@ -8,29 +8,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Rancor : ModItem
+    public class Rancor : ModItem, ILocalizedModType
     {
-        public const string PoeticTooltipLine = "Forgiveness can only heal so much,\n" +
-            "If the recipient has not yet forgiven themselves.";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rancor");
-            Tooltip.SetDefault("Casts a magic circle that charges energy and eventually releases a powerful laser burst of controlled maleficent magic\n" +
-                "The laser causes arms and searing lava to appear on surfaces it touches which harm both you and enemies\n" +
-                CalamityUtils.ColorMessage(PoeticTooltipLine, CalamityGlobalItem.ExhumedTooltipColor));
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 250;
+            Item.width = 66;
+            Item.height = 82;
+            Item.damage = 290;
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.mana = 10;
-            Item.width = 66;
-            Item.height = 82;
+            Item.mana = 25;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -39,8 +28,13 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<RancorHoldout>();
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
+        }
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BurningSea>();
         }
 
         // This weapon uses a holdout projectile.

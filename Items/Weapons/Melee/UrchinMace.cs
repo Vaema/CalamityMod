@@ -8,18 +8,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("RedtideSword")]
-    public class UrchinMace : ModItem
+    public class UrchinMace : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Urchin Mace");
-            Tooltip.SetDefault("Throws out a whirlpool when released at full charge");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 42;
+            Item.height = 48;
             Item.damage = 23;
             Item.channel = true;
             Item.noUseGraphic = true;
@@ -31,8 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTime = 19;
             Item.knockBack = 4;
             Item.UseSound = SoundID.Item1;
-            Item.height = 48;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<UrchinMaceProjectile>();
             Item.shootSpeed = 9f;

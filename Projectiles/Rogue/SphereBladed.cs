@@ -1,16 +1,16 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SphereBladed : ModProjectile
+    public class SphereBladed : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bladed Sphere");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.extraUpdates = 1;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 15;
             Projectile.timeLeft = 300;
             Projectile.tileCollide = false;
         }
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 1f, 0f, 0f);
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 229, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100);
             }
             if (Projectile.soundDelay == 0)
             {
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[0] == 0f)
             {
                 Projectile.ai[1] += 1f;
-                if (Projectile.ai[1] >= 25f)
+                if (Projectile.ai[1] >= 30f)
                 {
                     Projectile.ai[0] = 1f;
                     Projectile.ai[1] = 0f;
@@ -55,56 +55,55 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                float num42 = 16f;
-                float num43 = 3.2f;
-                Vector2 vector2 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-                float num44 = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - vector2.X;
-                float num45 = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - vector2.Y;
-                float num46 = (float)Math.Sqrt((double)(num44 * num44 + num45 * num45));
-                if (num46 > 3000f)
+                float acceleration = 3.2f;
+                Vector2 vector2 = Projectile.Center;
+                float xdistance = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - vector2.X;
+                float ydistance = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - vector2.Y;
+                float totalDist = (float)Math.Sqrt((double)(xdistance * xdistance + ydistance * ydistance));
+                if (totalDist > 3000f)
                 {
                     Projectile.Kill();
                 }
-                num46 = num42 / num46;
-                num44 *= num46;
-                num45 *= num46;
-                if (Projectile.velocity.X < num44)
+                totalDist = 16f / totalDist;
+                xdistance *= totalDist;
+                ydistance *= totalDist;
+                if (Projectile.velocity.X < xdistance)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X + num43;
-                    if (Projectile.velocity.X < 0f && num44 > 0f)
+                    Projectile.velocity.X = Projectile.velocity.X + acceleration;
+                    if (Projectile.velocity.X < 0f && xdistance > 0f)
                     {
-                        Projectile.velocity.X = Projectile.velocity.X + num43;
+                        Projectile.velocity.X = Projectile.velocity.X + acceleration;
                     }
                 }
-                else if (Projectile.velocity.X > num44)
+                else if (Projectile.velocity.X > xdistance)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X - num43;
-                    if (Projectile.velocity.X > 0f && num44 < 0f)
+                    Projectile.velocity.X = Projectile.velocity.X - acceleration;
+                    if (Projectile.velocity.X > 0f && xdistance < 0f)
                     {
-                        Projectile.velocity.X = Projectile.velocity.X - num43;
+                        Projectile.velocity.X = Projectile.velocity.X - acceleration;
                     }
                 }
-                if (Projectile.velocity.Y < num45)
+                if (Projectile.velocity.Y < ydistance)
                 {
-                    Projectile.velocity.Y = Projectile.velocity.Y + num43;
-                    if (Projectile.velocity.Y < 0f && num45 > 0f)
+                    Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
+                    if (Projectile.velocity.Y < 0f && ydistance > 0f)
                     {
-                        Projectile.velocity.Y = Projectile.velocity.Y + num43;
+                        Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
                     }
                 }
-                else if (Projectile.velocity.Y > num45)
+                else if (Projectile.velocity.Y > ydistance)
                 {
-                    Projectile.velocity.Y = Projectile.velocity.Y - num43;
-                    if (Projectile.velocity.Y > 0f && num45 < 0f)
+                    Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
+                    if (Projectile.velocity.Y > 0f && ydistance < 0f)
                     {
-                        Projectile.velocity.Y = Projectile.velocity.Y - num43;
+                        Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
                     }
                 }
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Rectangle rectangle = new Rectangle((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height);
-                    Rectangle value2 = new Rectangle((int)Main.player[Projectile.owner].position.X, (int)Main.player[Projectile.owner].position.Y, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height);
-                    if (rectangle.Intersects(value2))
+                    Rectangle playerPos = new Rectangle((int)Main.player[Projectile.owner].position.X, (int)Main.player[Projectile.owner].position.Y, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height);
+                    if (rectangle.Intersects(playerPos))
                     {
                         Projectile.Kill();
                     }
@@ -113,7 +112,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation += 0.5f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(SoundID.NPCHit34, Projectile.position);
         }

@@ -1,4 +1,4 @@
-﻿    using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria;
 using Terraria.ID;
@@ -6,17 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Shimmerspark : ModItem
+    public class Shimmerspark : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shimmerspark");
-            Tooltip.SetDefault("Fires stars when enemies are near\n" +
-            "A very agile yoyo");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()

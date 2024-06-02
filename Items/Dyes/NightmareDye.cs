@@ -12,12 +12,11 @@ namespace CalamityMod.Items.Dyes
 {
     public class NightmareDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/NightmareDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/NightmareDyeShader"), "DyePass").
             UseColor(new Color(249, 81, 0)).UseSecondaryColor(new Color(255, 203, 106));
         public override void SafeSetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Nightmare Dye");
+            Item.ResearchUnlockCount = 3;
         }
 
         public override void SafeSetDefaults()

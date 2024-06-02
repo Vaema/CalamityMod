@@ -1,18 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class WrathwingSpear : ModProjectile
+    public class WrathwingSpear : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private const float FireballAngleVariance = 0.07f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wrathwing");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -32,15 +33,16 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            // Spit fireballs constantly, but slightly randomly. Always spits one fireball immediately upon being thrown.
+            // Spit fireballs constantly. Always spits one fireball immediately upon being thrown.
             if (Projectile.owner == Main.myPlayer && Projectile.ai[0] <= 0f)
             {
-                Projectile.ai[0] = Main.rand.NextFloat(15f, 19f);
+                Projectile.ai[0] = 20f;
 
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot with { Volume = 0.5f, MaxInstances = -1 }, Projectile.Center);
                 int fireballID = ModContent.ProjectileType<WrathwingFireball>();
-                int damage = (int)(Projectile.damage * 0.8f);
+                int damage = (int)(Projectile.damage * 0.7f);
                 float angleDiff = Main.rand.NextFloat(-FireballAngleVariance, FireballAngleVariance);
-                Vector2 velocity = Projectile.velocity.RotatedBy(angleDiff) * 1.06f;
+                Vector2 velocity = Projectile.velocity.RotatedBy(angleDiff) * 1.04f;
                 float kb = Projectile.knockBack * 0.6f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, fireballID, damage, kb, Projectile.owner);
             }
@@ -49,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             // Homing
             // The item's default velocity is 28. Homing speed is intentionally a bit lower.
-            CalamityUtils.HomeInOnNPC(Projectile, true, 450f, 23f, 30f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 450f, 24f, 30f);
 
             // Animation
             Projectile.frameCounter++;
@@ -65,7 +67,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Stealth strikes create an eruption on hit.
             if (Projectile.owner == Main.myPlayer && Projectile.Calamity().stealthStrike)
@@ -74,8 +76,8 @@ namespace CalamityMod.Projectiles.Rogue
                 int damage = (int)(Projectile.damage * 0.375f);
                 float kb = 0f;
 
-                // Spawns 13 erupting fireballs in total.
-                for (int x = -6; x <= 6; x++)
+                // Spawns 11 erupting fireballs in total.
+                for (int x = -5; x <= 5; x++)
                 {
                     Vector2 pos = Projectile.Center + Vector2.UnitY * Main.rand.NextFloat(44f, 60f);
                     pos.X += Main.rand.NextFloat(-14f, 14f);
@@ -102,8 +104,8 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -1,4 +1,4 @@
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.LivingFire;
 using Terraria;
 using Terraria.ID;
@@ -6,19 +6,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.LivingFire
 {
-    public class LivingHolyFireBlock : ModItem
+    public class LivingHolyFireBlock : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Living Holy Fire Block");
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 10;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -35,7 +35,10 @@ namespace CalamityMod.Items.Placeables.LivingFire
 
         public override void AddRecipes()
         {
-            CreateRecipe(20).AddIngredient(ItemID.LivingFireBlock, 20).AddIngredient(ModContent.ItemType<UnholyEssence>()).Register();
+            CreateRecipe(20).
+                AddIngredient(ItemID.LivingFireBlock, 20).
+                AddIngredient<UnholyEssence>().
+                Register();
         }
     }
 }

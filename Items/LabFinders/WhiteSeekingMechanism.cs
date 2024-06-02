@@ -8,15 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.LabFinders
 {
-    public class WhiteSeekingMechanism : ModItem
+    public class WhiteSeekingMechanism : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("White Seeking Mechanism");
-            Tooltip.SetDefault("Moves swiftly towards a lab within the frozen caverns");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 24;

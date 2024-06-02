@@ -1,18 +1,14 @@
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class AcidGunStream : ModProjectile
+    public class AcidGunStream : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Acid Stream");
-        }
 
         public override void SetDefaults()
         {
@@ -24,6 +20,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = 3;
             Projectile.extraUpdates = 2;
             Projectile.tileCollide = false;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -43,12 +41,11 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.localAI[0] += 1f;
                 return;
             }
-            Projectile.velocity.Y += 0.075f;
             for (int i = 0; i < 3; i++)
             {
                 Vector2 positionDelta = Projectile.velocity / 3f * i;
                 int spawnDelta = 14;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 1f);
+                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[dustIdx];
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
@@ -58,14 +55,17 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.rand.NextBool(8))
             {
                 int spawnDelta = 16;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 0.5f);
+                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 0.5f);
                 Main.dust[dustIdx].velocity *= 0.25f;
                 Main.dust[dustIdx].velocity += Projectile.velocity * 0.5f;
             }
+
+            if (Projectile.localAI[1] >= 10f)
+                Projectile.velocity.Y += 0.075f;
         }
 
         // If any of the streams are destroyed, kill the accompanying acid streams
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.penetrate > 1)
                 return;
@@ -86,12 +86,12 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
         }

@@ -1,27 +1,21 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Armor.DesertProwler;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Armor.DesertProwler;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class OldHunterHat : ModItem
+    public class OldHunterHat : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Old Hunter Hat");
-            Tooltip.SetDefault("Attire fashioned after the appearance of hunters from a faraway land");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.vanity = true;
         }
@@ -37,8 +31,9 @@ namespace CalamityMod.Items.Armor.Vanity
     }
 
     [AutoloadEquip(EquipType.Body)]
-    public class OldHunterShirt : ModItem, IBulkyArmor
+    public class OldHunterShirt : ModItem, IBulkyArmor, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public string BulkTexture => "CalamityMod/Items/Armor/Vanity/OldHunterShirt_Bulk";
 
         public override void Load()
@@ -51,9 +46,6 @@ namespace CalamityMod.Items.Armor.Vanity
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Old Hunter Shirt");
-            Tooltip.SetDefault("Attire fashioned after the appearance of hunters from a faraway land");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -68,7 +60,7 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.vanity = true;
         }
@@ -90,20 +82,14 @@ namespace CalamityMod.Items.Armor.Vanity
     }
 
     [AutoloadEquip(EquipType.Legs)]
-    public class OldHunterPants : ModItem
+    public class OldHunterPants : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Old Hunter Pants");
-            Tooltip.SetDefault("Attire fashioned after the appearance of hunters from a faraway land");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.vanity = true;
         }

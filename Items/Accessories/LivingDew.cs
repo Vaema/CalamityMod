@@ -1,47 +1,44 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class LivingDew : ModItem
+    public class LivingDew : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Living Dew");
-            Tooltip.SetDefault("5% increased damage reduction, +5 defense, and increased life regen while in the Jungle\n" +
-            "Immunity to Poison");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 34;
-            Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-            Item.rare = ItemRarityID.Orange;
+            Item.height = 22;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.ZoneJungle)
-            {
-                player.lifeRegen += 1;
-                player.statDefense += 5;
-                player.endurance += 0.05f;
-            }
-            player.buffImmune[BuffID.Poisoned] = true;
+            player.statLifeMax2 += 50;
+
+            // Inherits all effects of Honey Dew
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.alwaysHoneyRegen = true;
+            modPlayer.honeyTurboRegen = true;
+            modPlayer.honeyDewHalveDebuffs = true;
+            modPlayer.livingDewHalveDebuffs = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Bezoar).
-                AddIngredient(ItemID.Vine, 2).
-                AddIngredient<MurkyPaste>(5).
-                AddTile(TileID.Anvils).
+                AddIngredient<HoneyDew>().
+                AddIngredient<TrapperBulb>(3).
+                AddIngredient<LivingShard>(6).
+                // TODO -- Replace with Water Essence
+                AddIngredient<EssenceofSunlight>(5).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

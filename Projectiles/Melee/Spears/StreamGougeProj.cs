@@ -1,19 +1,21 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class StreamGougeProj : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<StreamGouge>();
         public int Time;
 
         public Player Owner => Main.player[Projectile.owner];
@@ -23,11 +25,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public ref float InitialDirection => ref Projectile.ai[0];
 
         public ref float SpinDirection => ref Projectile.ai[1];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Stream Gouge");
-        }
 
         public override void SetDefaults()
         {
@@ -94,15 +91,14 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public void DeterminePlayerVariables()
         {
-            bool spearStillInUse = Owner.channel && !Owner.noItems && !Owner.CCed;
-            Owner.direction = (Math.Cos(Projectile.rotation - MathHelper.Pi + MathHelper.PiOver4) > 0f).ToDirectionInt();
+            Owner.ChangeDir((Math.Cos(Projectile.rotation - MathHelper.Pi + MathHelper.PiOver4) > 0f).ToDirectionInt());
             Owner.heldProj = Projectile.whoAmI;
             Owner.itemTime = Owner.itemAnimation = 2;
             Owner.itemRotation = CalamityUtils.WrapAngle90Degrees(MathHelper.WrapAngle(Projectile.rotation - MathHelper.Pi + MathHelper.PiOver4));
             Projectile.Center = Owner.Center;
 
             // Die if the spear is no longer in use.
-            if (!spearStillInUse)
+            if (Owner.CantUseHoldout())
                 Projectile.Kill();
         }
 
@@ -115,20 +111,16 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
             // Black portal.
             Color color = Color.Lerp(baseColor, Color.Black, 0.55f).MultiplyRGB(Color.DarkGray) * opacity;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, -rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, -rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
             // Cyan portal.
             color = Color.Lerp(baseColor, Color.Cyan, 0.55f) * opacity * 1.6f;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation * 0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation * 0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
             // Magenta portal.
             color = Color.Lerp(baseColor, Color.Fuchsia, 0.55f) * opacity * 1.6f;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation * -0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation * -0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -138,8 +130,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
             {
                 Texture2D smear = ModContent.Request<Texture2D>("CalamityMod/Particles/SemiCircularSmear").Value;
 
-                Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-
                 float rotation = Projectile.rotation - MathHelper.Pi / 5f;
                 if (SpinDirection == -1f)
                     rotation += MathHelper.Pi;
@@ -147,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 Color smearColor = Color.Fuchsia * CalamityUtils.Convert01To010(SpinCompletion) * 0.9f;
                 Vector2 smearOrigin = smear.Size() * 0.5f;
 
-                Main.EntitySpriteDraw(smear, Owner.Center - Main.screenPosition, null, smearColor, rotation, smearOrigin, Projectile.scale * 1.45f, 0, 0);
+                Main.EntitySpriteDraw(smear, Owner.Center - Main.screenPosition, null, smearColor with { A = 0 }, rotation, smearOrigin, Projectile.scale * 1.45f, 0, 0);
                 Main.spriteBatch.ExitShaderRegion();
             }
 
@@ -156,7 +146,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             bool portalIsInteractable = portalOpacity >= 1f;
             Vector2 portalDrawPosition = Owner.Center + InitialDirection.ToRotationVector2() * 130f - Main.screenPosition;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (portalIsInteractable)
             {
                 Main.spriteBatch.EnterShaderRegion();
@@ -185,7 +175,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
         }

@@ -3,14 +3,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class GaussEnergy : ModProjectile
+    public class GaussEnergy : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gauss Energy");
-        }
 
         public override void SetDefaults()
         {

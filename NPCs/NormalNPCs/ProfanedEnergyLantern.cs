@@ -1,21 +1,30 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class ProfanedEnergyLantern : ModNPC
     {
+        public static Asset<Texture2D> ChainTexture;
+
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.ProfanedEnergyBody.DisplayName");
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Profaned Energy");
             Main.npcFrameCount[NPC.type] = 6;
+            if (!Main.dedServ)
+            {
+                ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ProfanedEnergySegment", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -39,14 +48,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (CalamityGlobalNPC.energyFlame < 0 || !Main.npc[CalamityGlobalNPC.energyFlame].active)
             {
-                NPC.StrikeNPCNoInteraction(9999, 0f, 0, false, false, false);
-                NPC.netUpdate = true;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    NPC.StrikeInstantKill();
+
                 return;
             }
-            int num750 = CalamityGlobalNPC.energyFlame;
+            int energyBase = CalamityGlobalNPC.energyFlame;
             if (NPC.ai[3] > 0f)
             {
-                num750 = (int)NPC.ai[3] - 1;
+                energyBase = (int)NPC.ai[3] - 1;
             }
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -60,23 +70,23 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
             }
             NPC.TargetClosest(true);
-            float num751 = 0.1f;
-            float num752 = 500f;
+            float lanternAcceleration = 0.1f;
+            float lanternSpeed = 500f;
             if ((double)Main.npc[CalamityGlobalNPC.energyFlame].life < (double)Main.npc[CalamityGlobalNPC.energyFlame].lifeMax * 0.25)
             {
-                num752 += 50f;
+                lanternSpeed += 50f;
             }
             if ((double)Main.npc[CalamityGlobalNPC.energyFlame].life < (double)Main.npc[CalamityGlobalNPC.energyFlame].lifeMax * 0.1)
             {
-                num752 += 50f;
+                lanternSpeed += 50f;
             }
             if (Main.expertMode)
             {
-                float num753 = 1f - (float)NPC.life / (float)NPC.lifeMax;
-                num752 += num753 * 200f;
-                num751 += 0.15f;
+                float expertSpeedMult = 1f - (float)NPC.life / (float)NPC.lifeMax;
+                lanternSpeed += expertSpeedMult * 200f;
+                lanternAcceleration += 0.15f;
             }
-            if (!Main.npc[num750].active || CalamityGlobalNPC.energyFlame < 0)
+            if (!Main.npc[energyBase].active || CalamityGlobalNPC.energyFlame < 0)
             {
                 NPC.life = 0;
                 NPC.HitEffect();
@@ -84,49 +94,49 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.netUpdate = true;
                 return;
             }
-            Vector2 vector22 = new Vector2(NPC.ai[0] * 16f + 8f, NPC.ai[1] * 16f + 8f);
-            float num189 = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2) - (float)(NPC.width / 2) - vector22.X;
-            float num190 = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2) - (float)(NPC.height / 2) - vector22.Y;
-            float num191 = (float)Math.Sqrt((double)(num189 * num189 + num190 * num190));
-            float num754 = Main.npc[num750].position.X + (float)(Main.npc[num750].width / 2);
-            float num755 = Main.npc[num750].position.Y + (float)(Main.npc[num750].height / 2);
-            Vector2 vector93 = new Vector2(num754, num755);
-            float num756 = num754 + NPC.ai[0];
-            float num757 = num755 + NPC.ai[1];
-            float num758 = num756 - vector93.X;
-            float num759 = num757 - vector93.Y;
-            float num760 = (float)Math.Sqrt((double)(num758 * num758 + num759 * num759));
-            num760 = num752 / num760;
-            num758 *= num760;
-            num759 *= num760;
-            if (NPC.position.X < num754 + num758)
+            Vector2 lanternRelocation = new Vector2(NPC.ai[0] * 16f + 8f, NPC.ai[1] * 16f + 8f);
+            float targetXDist = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2) - (float)(NPC.width / 2) - lanternRelocation.X;
+            float targetYDist = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2) - (float)(NPC.height / 2) - lanternRelocation.Y;
+            float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+            float baseXPos = Main.npc[energyBase].position.X + (float)(Main.npc[energyBase].width / 2);
+            float baseYPos = Main.npc[energyBase].position.Y + (float)(Main.npc[energyBase].height / 2);
+            Vector2 baseCurrentPos = new Vector2(baseXPos, baseYPos);
+            float basePosition = baseXPos + NPC.ai[0];
+            float newLanternPos = baseYPos + NPC.ai[1];
+            float baseXDist = basePosition - baseCurrentPos.X;
+            float baseYDist = newLanternPos - baseCurrentPos.Y;
+            float baseDistance = (float)Math.Sqrt((double)(baseXDist * baseXDist + baseYDist * baseYDist));
+            baseDistance = lanternSpeed / baseDistance;
+            baseXDist *= baseDistance;
+            baseYDist *= baseDistance;
+            if (NPC.position.X < baseXPos + baseXDist)
             {
-                NPC.velocity.X = NPC.velocity.X + num751;
-                if (NPC.velocity.X < 0f && num758 > 0f)
+                NPC.velocity.X = NPC.velocity.X + lanternAcceleration;
+                if (NPC.velocity.X < 0f && baseXDist > 0f)
                 {
                     NPC.velocity.X = NPC.velocity.X * 0.9f;
                 }
             }
-            else if (NPC.position.X > num754 + num758)
+            else if (NPC.position.X > baseXPos + baseXDist)
             {
-                NPC.velocity.X = NPC.velocity.X - num751;
-                if (NPC.velocity.X > 0f && num758 < 0f)
+                NPC.velocity.X = NPC.velocity.X - lanternAcceleration;
+                if (NPC.velocity.X > 0f && baseXDist < 0f)
                 {
                     NPC.velocity.X = NPC.velocity.X * 0.9f;
                 }
             }
-            if (NPC.position.Y < num755 + num759)
+            if (NPC.position.Y < baseYPos + baseYDist)
             {
-                NPC.velocity.Y = NPC.velocity.Y + num751;
-                if (NPC.velocity.Y < 0f && num759 > 0f)
+                NPC.velocity.Y = NPC.velocity.Y + lanternAcceleration;
+                if (NPC.velocity.Y < 0f && baseYDist > 0f)
                 {
                     NPC.velocity.Y = NPC.velocity.Y * 0.9f;
                 }
             }
-            else if (NPC.position.Y > num755 + num759)
+            else if (NPC.position.Y > baseYPos + baseYDist)
             {
-                NPC.velocity.Y = NPC.velocity.Y - num751;
-                if (NPC.velocity.Y > 0f && num759 < 0f)
+                NPC.velocity.Y = NPC.velocity.Y - lanternAcceleration;
+                if (NPC.velocity.Y > 0f && baseYDist < 0f)
                 {
                     NPC.velocity.Y = NPC.velocity.Y * 0.9f;
                 }
@@ -156,21 +166,21 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         if (!Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                         {
-                            float num196 = 11f;
-                            vector22 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                            num189 = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - vector22.X + (float)Main.rand.Next(-10, 11);
-                            float num197 = Math.Abs(num189 * 0.1f);
-                            if (num190 > 0f)
+                            float projSpeed = 11f;
+                            lanternRelocation = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+                            targetXDist = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - lanternRelocation.X + (float)Main.rand.Next(-10, 11);
+                            float absoluteTargetX = Math.Abs(targetXDist * 0.1f);
+                            if (targetYDist > 0f)
                             {
-                                num197 = 0f;
+                                absoluteTargetX = 0f;
                             }
-                            num190 = Main.player[NPC.target].position.Y + (float)Main.player[NPC.target].height * 0.5f - vector22.Y + (float)Main.rand.Next(-10, 11) - num197;
-                            num191 = (float)Math.Sqrt((double)(num189 * num189 + num190 * num190));
-                            num191 = num196 / num191;
-                            num189 *= num191;
-                            num190 *= num191;
-                            int num9 = ModContent.ProjectileType<HolyBomb>();
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, num189, num190, num9, 40, 0f, Main.myPlayer, 0f, 0f);
+                            targetYDist = Main.player[NPC.target].position.Y + (float)Main.player[NPC.target].height * 0.5f - lanternRelocation.Y + (float)Main.rand.Next(-10, 11) - absoluteTargetX;
+                            targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                            targetDistance = projSpeed / targetDistance;
+                            targetXDist *= targetDistance;
+                            targetYDist *= targetDistance;
+                            int damage = Main.masterMode ? 25 : Main.expertMode ? 30 : 40;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, targetXDist, targetYDist, ModContent.ProjectileType<HolyBomb>(), damage, 0f, Main.myPlayer, 0f, 0f);
                             NPC.localAI[1] = 0f;
                             return;
                         }
@@ -216,7 +226,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         drawPositionY = Main.npc[CalamityGlobalNPC.energyFlame].Center.Y - center.Y;
                         drawPositionY -= 10f;
                         Color color = Lighting.GetColor((int)center.X / 16, (int)(center.Y / 16f));
-                        Texture2D chain = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ProfanedEnergySegment").Value;
+                        Texture2D chain = ChainTexture.Value;
                         Main.spriteBatch.Draw(chain, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
                             new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, chain.Width, chain.Height)), color, rotation,
                             new Vector2((float)chain.Width * 0.5f, (float)chain.Height * 0.5f), 1f, SpriteEffects.None, 0f);
@@ -226,13 +236,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             return true;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

@@ -1,17 +1,13 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class DesecratedBubble : ModProjectile
+    public class DesecratedBubble : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bubble");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -52,20 +48,20 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
-            int num190 = Main.rand.Next(5, 9);
-            for (int num191 = 0; num191 < num190; num191++)
+            int rando = Main.rand.Next(5, 9);
+            for (int i = 0; i < rando; i++)
             {
-                int num192 = Dust.NewDust(Projectile.Center, 0, 0, 179, 0f, 0f, 100, default, 1.4f);
-                Main.dust[num192].velocity *= 0.8f;
-                Main.dust[num192].position = Vector2.Lerp(Main.dust[num192].position, Projectile.Center, 0.5f);
-                Main.dust[num192].noGravity = true;
+                int dust = Dust.NewDust(Projectile.Center, 0, 0, DustID.BubbleBurst_Purple, 0f, 0f, 100, default, 1.4f);
+                Main.dust[dust].velocity *= 0.8f;
+                Main.dust[dust].position = Vector2.Lerp(Main.dust[dust].position, Projectile.Center, 0.5f);
+                Main.dust[dust].noGravity = true;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.ai[0] == 1f)
             {
@@ -74,7 +70,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (Projectile.ai[0] == 1f)
             {

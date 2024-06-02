@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class HarpyRing : ModItem
+    public class HarpyRing : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Harpy Ring");
-            Tooltip.SetDefault("10% increased movement speed\n" +
-                "Boosts your maximum flight time by 20%");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -29,6 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.harpyRing = true;
+            player.moveSpeed += 0.1f;
         }
 
         public override void AddRecipes()

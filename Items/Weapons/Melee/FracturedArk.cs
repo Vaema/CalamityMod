@@ -1,40 +1,27 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using static Terraria.ModLoader.ModContent;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("ArkoftheAncients")]
-    public class FracturedArk : ModItem
+    public class FracturedArk : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public float Combo = 1f;
         public float Charge = 0f;
         public static float chargeDamageMultiplier = 1.5f; //Extra damage from charge
         public static float beamDamageMultiplier = 0.8f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
-
-
-        const string ParryTooltip = "Using RMB will extend the Ark out in front of you\n" +
-        "Hitting an enemy with it will parry them, granting you a small window of invulnerability\n" +
-        "You can also parry projectiles and temporarily make them deal 100 less damage\n" +
-        "Parrying will empower the next 10 swings of the sword, boosting their damage and letting them throw projectiles out";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Fractured Ark");
-            Tooltip.SetDefault("This line gets set in ModifyTooltips\n" +
-                "A worn down and rusty blade once wielded against the evil of this world, ready to be of use once more");
-            SacrificeTotal = 1;
-        }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -45,10 +32,10 @@ namespace CalamityMod.Items.Weapons.Melee
             if (player is null)
                 return;
 
-            var tooltip = tooltips.FirstOrDefault(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
+            var tooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[PARRY]") && x.Mod == "Terraria");
             if (tooltip != null)
             {
-                tooltip.Text = ParryTooltip;
+                tooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ParryInfo"));
                 tooltip.OverrideColor = Color.CornflowerBlue;
             }
         }
@@ -56,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 60;
-            Item.damage = 70;
+            Item.damage = 35;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noUseGraphic = true;
             Item.noMelee = true;
@@ -67,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 15f;
@@ -102,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheAncientsSwungBlade>(), damage, knockback, player.whoAmI, Combo, Charge);
 
             Combo *= -1f;
-            Charge --;
+            Charge--;
             if (Charge < 0)
                 Charge = 0;
 
@@ -134,17 +121,19 @@ namespace CalamityMod.Items.Weapons.Melee
             if (Charge <= 0)
                 return;
 
-            float barScale = 1.3f;
+            float barScale = 1.34f;
 
             var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
             var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
 
-            Vector2 drawPos = position + Vector2.UnitY * (frame.Height - 2) * scale + Vector2.UnitX * (frame.Width - barBG.Width * barScale) * scale * 0.5f;
+            Vector2 barOrigin = barBG.Size() * 0.5f;
+            float yOffset = 23f;
+            Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
             Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / 10f * barFG.Width), barFG.Height);
             Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.85f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
 
-            spriteBatch.Draw(barBG, drawPos, null, color , 0f, origin, scale * barScale, 0f, 0f);
-            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, origin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, barOrigin, scale * barScale, 0f, 0f);
         }
 
         public override void AddRecipes()

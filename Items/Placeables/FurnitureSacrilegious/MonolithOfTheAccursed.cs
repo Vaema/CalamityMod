@@ -1,20 +1,14 @@
-using CalamityMod.Rarities;
+﻿using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
 {
-    public class MonolithOfTheAccursed : ModItem
+    public class MonolithOfTheAccursed : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Monolith of the Accursed");
-            Tooltip.SetDefault("Let the sky burn a blazing red\n" +
-			"The monolith has two different modes");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 24;
@@ -27,15 +21,31 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<MonolithOfTheAccursedTile>();
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<Violet>(); 
+            Item.accessory = true;
+            Item.vanity = true;
+        }
+        public override void UpdateEquip(Player player)
+        {
+            if (player.whoAmI == Main.myPlayer)
+            {
+                player.Calamity().monolithAccursedShader = 30;
+            }
+        }
+        public override void UpdateVanity(Player player)
+        {
+            if (player.whoAmI == Main.myPlayer)
+            {
+                player.Calamity().monolithAccursedShader = 30;
+            }
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-				AddIngredient(ModContent.ItemType<OccultBrickItem>(), 15).
-				AddTile(ModContent.TileType<SCalAltar>()).
-				Register();
+            CreateRecipe().
+                AddIngredient<OccultBrickItem>(15).
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,35 +10,24 @@ using Terraria.WorldBuilding;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class GaelsGreatsword : ModItem
+    public class GaelsGreatsword : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         // Weapon attribute constants
-        public static readonly int BaseDamage = 780;
-        public static readonly float GiantSkullDamageMultiplier = 1.5f;
+        public static readonly int BaseDamage = 690;
+        public static readonly float GiantSkullDamageMultiplier = 1.7f;
 
         // Weapon projectile attribute constants
         public static readonly int SearchDistance = 1450;
         public static readonly int ImmunityFrames = 10;
-        public static readonly int SkullsplosionCooldownSeconds = 30;
 
         // Skull ring attribute constants
         public static readonly float SkullsplosionDamageMultiplier = 1.5f;
+        internal static string SkullsplosionEntitySourceContext => "GaelsGreatswordRageSkullsplosion";
 
         // Rage gain attribute constant
-        public static readonly float RagePerSecond = 0.03f; // 3% rage per second, consistent with what it was prior to rage rework
+        public static readonly float RagePerSecond = 0.025f; // 2.5% rage per second
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gael's Greatsword");
-            Tooltip.SetDefault("Hand it over, that thing. Your dark soul.\n" +
-                "First swing fires homing skulls\n" +
-                "Second swing fires a giant, powerful skull\n" +
-                "Third swing has no projectiles\n" +
-                "Constantly generates rage when in use\n" +
-                "Swings leave behind exploding blood trails when below 50% health\n" +
-                "Replaces Rage Mode with an enormous barrage of skulls");
-            SacrificeTotal = 1;
-        }
         //NOTE: GetWeaponDamage is in the CalamityPlayer file
         public override void SetDefaults()
         {
@@ -46,13 +35,13 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 102;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 12;
+            Item.useAnimation = Item.useTime = 13;
             Item.useTurn = true;
             Item.knockBack = 9;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().devItem = true;
 
@@ -84,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 player.Calamity().gaelSwipes++;
                 if (player.statLife <= player.statLifeMax2 * 0.5f)
                 {
-                    for (int i = 0; i < 170; i++)
+                    for (int i = 0; i < 120; i++)
                     {
                         float r = (float)Math.Sqrt(Main.rand.NextDouble());
                         float t = Main.rand.NextFloat() * MathHelper.TwoPi;
@@ -136,9 +125,9 @@ namespace CalamityMod.Items.Weapons.Melee
                     break;
                 //Giant, slow, fading skull
                 case 1:
-                    int largeSkullDmg = (int)(damage * 1.5f);
-                    int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.5f, type, largeSkullDmg, knockback, player.whoAmI, ai1:1f);
-                    Main.projectile[projectileIndex].scale = 1.75f;
+                    int largeSkullDmg = (int)(damage * GiantSkullDamageMultiplier);
+                    int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.6f, type, largeSkullDmg, knockback, player.whoAmI, ai1: 1f);
+                    Main.projectile[projectileIndex].scale = 2f;
                     break;
             }
             return false;

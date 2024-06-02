@@ -1,37 +1,46 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Events;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.World;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Personalities;
+using Terraria.GameContent.UI;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
     public class FAP : ModNPC
     {
+        public static Asset<Texture2D> AltTexture;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Drunk Princess");
-
-            Main.npcFrameCount[NPC.type] = 25;
+            Main.npcFrameCount[NPC.type] = 27;
             NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
             NPCID.Sets.AttackFrameCount[NPC.type] = 4;
             NPCID.Sets.DangerDetectRange[NPC.type] = 400;
             NPCID.Sets.AttackType[NPC.type] = 0;
             NPCID.Sets.AttackTime[NPC.type] = 60;
             NPCID.Sets.AttackAverageChance[NPC.type] = 15;
+            NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<HallowBiome>(AffectionLevel.Love)
                 .SetBiomeAffection<OceanBiome>(AffectionLevel.Like)
@@ -44,12 +53,16 @@ namespace CalamityMod.NPCs.TownNPCs
                 .SetNPCAffection(NPCID.DD2Bartender, AffectionLevel.Dislike)
                 .SetNPCAffection(NPCID.TaxCollector, AffectionLevel.Dislike)
                 .SetNPCAffection(NPCID.GoblinTinkerer, AffectionLevel.Hate)
-                .SetNPCAffection(NPCID.Angler, AffectionLevel.Hate)
-            ;
-			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0) {
-				Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
-			};
-			NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+                .SetNPCAffection(NPCID.Angler, AffectionLevel.Hate);
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+            if (!Main.dedServ)
+            {
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -66,18 +79,580 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.knockBackResist = 0.5f;
-            AnimationType = NPCID.Guide;
+            //AnimationType = NPCID.Guide;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,                
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("No one knows where she came from, but no one minds her either. She's a good person to share a drink with, given you don't make her mad.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FAP")
             });
+        }
+
+        public override void FindFrame(int frameHeight)
+        {
+            int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[NPC.type] : 0);
+            /*if (false && !Main.dedServ && TownNPCProfiles.Instance.GetProfile(this, out var profile))
+            {
+                Asset<Texture2D> textureNPCShouldUse = profile.GetTextureNPCShouldUse(this);
+                if (textureNPCShouldUse.IsLoaded)
+                {
+                    num = textureNPCShouldUse.Height() / Main.npcFrameCount[type];
+                    frame.Width = textureNPCShouldUse.Width();
+                    frame.Height = num;
+                }
+            }*/
+
+            if (NPC.velocity.Y == 0f)
+            {
+                if (NPC.direction == 1)
+                    NPC.spriteDirection = 1;
+
+                if (NPC.direction == -1)
+                    NPC.spriteDirection = -1;
+
+                int nonAttackFrames = Main.npcFrameCount[NPC.type] - NPCID.Sets.AttackFrameCount[NPC.type];
+                if (NPC.ai[0] == 23f)
+                {
+                    NPC.frameCounter += 1D;
+                    int currentFrameHeight = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - currentFrameHeight;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && currentFrameHeight != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int num239 = ((!(NPC.frameCounter < 6D)) ? (nonAttackFrames - 4) : (nonAttackFrames - 5));
+                    if (NPC.ai[1] < 6f)
+                        num239 = nonAttackFrames - 5;
+
+                    NPC.frame.Y = frameHeight * num239;
+                }
+                else if (NPC.ai[0] >= 20f && NPC.ai[0] <= 22f)
+                {
+                    int num240 = NPC.frame.Y / frameHeight;
+                    switch ((int)NPC.ai[0])
+                    {
+                        case 20:
+                        case 21:
+                        case 22:
+                            break;
+                    }
+
+                    NPC.frame.Y = num240 * frameHeight;
+                }
+                else if (NPC.ai[0] == 2f)
+                {
+                    NPC.frameCounter += 1D;
+                    if (NPC.frame.Y / frameHeight == nonAttackFrames - 1 && NPC.frameCounter >= 5D)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+                    else if (NPC.frame.Y / frameHeight == 0 && NPC.frameCounter >= 40D)
+                    {
+                        NPC.frame.Y = frameHeight * (nonAttackFrames - 1);
+                        NPC.frameCounter = 0D;
+                    }
+                    else if (NPC.frame.Y != 0 && NPC.frame.Y != frameHeight * (nonAttackFrames - 1))
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+                }
+                else if (NPC.ai[0] == 5f) // Sitting
+                {
+                    NPC.frame.Y = frameHeight * (nonAttackFrames - 3);
+                    NPC.frameCounter = 0D;
+                }
+                else if (NPC.ai[0] == 6f) // Throwing confetti
+                {
+                    NPC.frameCounter += 1D;
+                    int confettiFrameHeight = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - confettiFrameHeight;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && confettiFrameHeight != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int confettiFrame = ((!(NPC.frameCounter < 10D)) ?
+                        ((NPC.frameCounter < 16D) ?
+                        (nonAttackFrames - 5) : ((NPC.frameCounter < 46D) ?
+                        (nonAttackFrames - 4) : ((NPC.frameCounter < 60D) ?
+                        (nonAttackFrames - 5) : ((!(NPC.frameCounter < 66D)) ?
+                        ((NPC.frameCounter < 72D) ?
+                        (nonAttackFrames - 5) : ((NPC.frameCounter < 102D) ?
+                        (nonAttackFrames - 4) : ((NPC.frameCounter < 108D) ?
+                        (nonAttackFrames - 5) : ((!(NPC.frameCounter < 114D)) ?
+                        ((NPC.frameCounter < 120D) ?
+                        (nonAttackFrames - 5) : ((NPC.frameCounter < 150D) ?
+                        (nonAttackFrames - 4) : ((NPC.frameCounter < 156D) ?
+                        (nonAttackFrames - 5) : ((!(NPC.frameCounter < 162D)) ?
+                        ((NPC.frameCounter < 168D) ?
+                        (nonAttackFrames - 5) : ((NPC.frameCounter < 198D) ?
+                        (nonAttackFrames - 4) : ((NPC.frameCounter < 204D) ?
+                        (nonAttackFrames - 5) : ((!(NPC.frameCounter < 210D)) ?
+                        ((NPC.frameCounter < 216D) ?
+                        (nonAttackFrames - 5) : ((NPC.frameCounter < 246D) ?
+                        (nonAttackFrames - 4) : ((NPC.frameCounter < 252D) ?
+                        (nonAttackFrames - 5) : ((!(NPC.frameCounter < 258D)) ?
+                        ((NPC.frameCounter < 264D) ?
+                        (nonAttackFrames - 5) : ((NPC.frameCounter < 294D) ?
+                        (nonAttackFrames - 4) : ((NPC.frameCounter < 300D) ?
+                        (nonAttackFrames - 5) : 0))) : 0)))) : 0)))) : 0)))) : 0)))) : 0)))) : 0);
+
+                    if (confettiFrame == nonAttackFrames - 4 && confettiFrameHeight == nonAttackFrames - 5)
+                    {
+                        Vector2 vector4 = NPC.Center + new Vector2(10 * NPC.direction, -4f);
+                        for (int n = 0; n < 8; n++)
+                        {
+                            int confettiDust = Main.rand.Next(139, 143);
+                            int partyTime = Dust.NewDust(vector4, 0, 0, confettiDust, NPC.velocity.X + (float)NPC.direction, NPC.velocity.Y - 2.5f, 0, default(Color), 1.2f);
+                            Main.dust[partyTime].velocity.X += (float)NPC.direction * 1.5f;
+                            Dust dust = Main.dust[partyTime];
+                            dust.position -= new Vector2(4f);
+                            dust = Main.dust[partyTime];
+                            dust.velocity *= 2f;
+                            Main.dust[partyTime].scale = 0.7f + Main.rand.NextFloat() * 0.3f;
+                        }
+                    }
+
+                    NPC.frame.Y = frameHeight * confettiFrame;
+                    if (NPC.frameCounter >= 300D)
+                        NPC.frameCounter = 0D;
+                }
+                else if (NPC.ai[0] == 7f || NPC.ai[0] == 19f) // Talking to the player
+                {
+                    NPC.frameCounter += 1D;
+                    int playerTalkFrameHeight = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - playerTalkFrameHeight;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && playerTalkFrameHeight != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int playerTalkFrame = 0;
+                    if (NPC.frameCounter < 16D)
+                        playerTalkFrame = 0;
+                    else if (NPC.frameCounter == 16D)
+                        EmoteBubble.NewBubbleNPC(new WorldUIAnchor(NPC), 112);
+                    else if (NPC.frameCounter < 128D)
+                        playerTalkFrame = ((NPC.frameCounter % 16D < 8D) ? (nonAttackFrames - 2) : 0);
+                    else if (NPC.frameCounter < 160D)
+                        playerTalkFrame = 0;
+                    else if (NPC.frameCounter != 160D)
+                        playerTalkFrame = ((NPC.frameCounter < 220D) ? ((NPC.frameCounter % 12D < 6D) ? (nonAttackFrames - 2) : 0) : 0);
+                    else
+                        EmoteBubble.NewBubbleNPC(new WorldUIAnchor(NPC), 60);
+
+                    NPC.frame.Y = frameHeight * playerTalkFrame;
+                    if (NPC.frameCounter >= 220D)
+                        NPC.frameCounter = 0D;
+                }
+                else if (NPC.ai[0] == 9f)
+                {
+                    NPC.frameCounter += 1D;
+                    int num251 = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - num251;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && num251 != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int num252 = ((!(NPC.frameCounter < 10D)) ? ((!(NPC.frameCounter < 16D)) ? (nonAttackFrames - 4) : (nonAttackFrames - 5)) : 0);
+                    if (NPC.ai[1] < 16f)
+                        num252 = nonAttackFrames - 5;
+
+                    if (NPC.ai[1] < 10f)
+                        num252 = 0;
+
+                    NPC.frame.Y = frameHeight * num252;
+                }
+                else if (NPC.ai[0] == 18f)
+                {
+                    NPC.frameCounter += 1D;
+                    int num253 = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - num253;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && num253 != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int num254 = 0;
+                    if (NPC.frameCounter < 10D)
+                        num254 = 0;
+                    else if (NPC.frameCounter < 16D)
+                        num254 = nonAttackFrames - 1;
+                    else
+                        num254 = nonAttackFrames - 2;
+
+                    if (NPC.ai[1] < 16f)
+                        num254 = nonAttackFrames - 1;
+
+                    if (NPC.ai[1] < 10f)
+                        num254 = 0;
+
+                    num254 = Main.npcFrameCount[NPC.type] - 2;
+                    NPC.frame.Y = frameHeight * num254;
+                }
+                else if (NPC.ai[0] == 10f || NPC.ai[0] == 13f) // Attacking
+                {
+                    NPC.frameCounter += 1D;
+                    int attackFrameHeight = NPC.frame.Y / frameHeight;
+                    int currentFrame = attackFrameHeight - nonAttackFrames;
+                    if ((uint)currentFrame > 3u && attackFrameHeight != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int attackTimingStart = 10;
+                    int attackFrameTiming = 6;
+                    int attackFrame = ((!(NPC.frameCounter < (double)attackTimingStart)) ?
+                        ((NPC.frameCounter < (double)(attackTimingStart + attackFrameTiming)) ?
+                        nonAttackFrames : ((NPC.frameCounter < (double)(attackTimingStart + attackFrameTiming * 2)) ?
+                        (nonAttackFrames + 1) : ((NPC.frameCounter < (double)(attackTimingStart + attackFrameTiming * 3)) ?
+                        (nonAttackFrames + 2) : ((NPC.frameCounter < (double)(attackTimingStart + attackFrameTiming * 4)) ?
+                        (nonAttackFrames + 3) : 0)))) : 0);
+
+                    NPC.frame.Y = frameHeight * attackFrame;
+                }
+                else if (NPC.ai[0] == 15f)
+                {
+                    NPC.frameCounter += 1D;
+                    int num259 = NPC.frame.Y / frameHeight;
+                    int currentFrame = num259 - nonAttackFrames;
+                    if ((uint)currentFrame > 3u && num259 != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    float num260 = NPC.ai[1] / (float)NPCID.Sets.AttackTime[NPC.type];
+                    int num261 = 0;
+                    num261 = ((num260 > 0.65f) ?
+                        nonAttackFrames : ((num260 > 0.5f) ?
+                        (nonAttackFrames + 1) : ((num260 > 0.35f) ?
+                        (nonAttackFrames + 2) : ((num260 > 0f) ?
+                        (nonAttackFrames + 3) : 0))));
+
+                    NPC.frame.Y = frameHeight * num261;
+                }
+                else if (NPC.ai[0] == 25f)
+                {
+                    NPC.frame.Y = frameHeight;
+                }
+                else if (NPC.ai[0] == 12f)
+                {
+                    NPC.frameCounter += 1D;
+                    int num262 = NPC.frame.Y / frameHeight;
+                    int currentFrame = num262 - nonAttackFrames;
+                    if ((uint)currentFrame > 4u && num262 != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int num263 = nonAttackFrames + NPC.GetShootingFrame(NPC.ai[2]);
+                    NPC.frame.Y = frameHeight * num263;
+                }
+                else if (NPC.ai[0] == 14f || NPC.ai[0] == 24f)
+                {
+                    NPC.frameCounter += 1D;
+                    int num264 = NPC.frame.Y / frameHeight;
+                    int currentFrame = num264 - nonAttackFrames;
+                    if ((uint)currentFrame > 1u && num264 != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    int num265 = 12;
+                    int num266 = ((NPC.frameCounter % (double)num265 * 2D < (double)num265) ? nonAttackFrames : (nonAttackFrames + 1));
+                    NPC.frame.Y = frameHeight * num266;
+                    if (NPC.ai[0] == 24f)
+                    {
+                        if (NPC.frameCounter == 60D)
+                            EmoteBubble.NewBubble(EmoteID.EmoteConfused, new WorldUIAnchor(NPC), 60);
+
+                        if (NPC.frameCounter == 150D)
+                            EmoteBubble.NewBubble(EmoteID.EmotionAlert, new WorldUIAnchor(NPC), 90);
+
+                        if (NPC.frameCounter >= 240D)
+                            NPC.frame.Y = 0;
+                    }
+                }
+                else if (NPC.ai[0] == 1001f)
+                {
+                    NPC.frame.Y = frameHeight * (nonAttackFrames - 1);
+                    NPC.frameCounter = 0D;
+                }
+                else if (NPC.CanTalk && (NPC.ai[0] == 3f || NPC.ai[0] == 4f)) // Talking to another NPC
+                {
+                    NPC.frameCounter += 1D;
+                    int npcTalkFrameHeight = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - npcTalkFrameHeight;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && npcTalkFrameHeight != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    bool displayEmote = NPC.ai[0] == 3f;
+                    int npcTalkFrame = 0;
+                    int npcTalkHandFrame = 0;
+                    int emoteDisplayTime = -1;
+                    int emoteDisplayTime2 = -1;
+                    if (NPC.frameCounter < 10D)
+                        npcTalkFrame = 0;
+                    else if (NPC.frameCounter < 16D)
+                        npcTalkFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 46D)
+                        npcTalkFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 60D)
+                        npcTalkFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 216D)
+                        npcTalkFrame = 0;
+                    else if (NPC.frameCounter == 216D && Main.netMode != NetmodeID.MultiplayerClient)
+                        emoteDisplayTime = 70;
+                    else if (NPC.frameCounter < 286D)
+                        npcTalkFrame = ((NPC.frameCounter % 12D < 6D) ? (nonAttackFrames - 2) : 0);
+                    else if (NPC.frameCounter < 320D)
+                        npcTalkFrame = 0;
+                    else if (NPC.frameCounter != 320D || Main.netMode == NetmodeID.MultiplayerClient)
+                        npcTalkFrame = ((NPC.frameCounter < 420D) ? ((NPC.frameCounter % 16D < 8D) ? (nonAttackFrames - 2) : 0) : 0);
+                    else
+                        emoteDisplayTime = 100;
+
+                    if (NPC.frameCounter < 70D)
+                    {
+                        npcTalkHandFrame = 0;
+                    }
+                    else if (NPC.frameCounter != 70D || Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        npcTalkHandFrame = ((NPC.frameCounter < 160D) ?
+                            ((NPC.frameCounter % 16D < 8D) ?
+                            (nonAttackFrames - 2) : 0) : ((NPC.frameCounter < 166D) ?
+                            (nonAttackFrames - 5) : ((NPC.frameCounter < 186D) ?
+                            (nonAttackFrames - 4) : ((NPC.frameCounter < 200D) ?
+                            (nonAttackFrames - 5) : ((!(NPC.frameCounter < 320D)) ?
+                            ((NPC.frameCounter < 326D) ?
+                            (nonAttackFrames - 1) : 0) : 0)))));
+                    }
+                    else
+                        emoteDisplayTime2 = 90;
+
+                    if (displayEmote)
+                    {
+                        NPC nPC = Main.npc[(int)NPC.ai[2]];
+                        if (emoteDisplayTime != -1)
+                            EmoteBubble.NewBubbleNPC(new WorldUIAnchor(NPC), emoteDisplayTime, new WorldUIAnchor(nPC));
+
+                        if (emoteDisplayTime2 != -1 && nPC.CanTalk)
+                            EmoteBubble.NewBubbleNPC(new WorldUIAnchor(nPC), emoteDisplayTime2, new WorldUIAnchor(NPC));
+                    }
+
+                    NPC.frame.Y = frameHeight * (displayEmote ? npcTalkFrame : npcTalkHandFrame);
+                    if (NPC.frameCounter >= 420D)
+                        NPC.frameCounter = 0D;
+                }
+                else if (NPC.CanTalk && (NPC.ai[0] == 16f || NPC.ai[0] == 17f)) // Rock Paper Scissors
+                {
+                    NPC.frameCounter += 1D;
+                    int rpsFrameHeight = NPC.frame.Y / frameHeight;
+                    int currentFrame = nonAttackFrames - rpsFrameHeight;
+                    if ((uint)(currentFrame - 1) > 1u && (uint)(currentFrame - 4) > 1u && rpsFrameHeight != 0)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    bool controlsRPS = NPC.ai[0] == 16f;
+                    int rpsFrame = 0;
+                    int emoteDisplayTime = -1;
+                    if (NPC.frameCounter < 10D)
+                        rpsFrame = 0;
+                    else if (NPC.frameCounter < 16D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 22D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 28D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 34D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 40D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter == 40D && Main.netMode != NetmodeID.MultiplayerClient)
+                        emoteDisplayTime = 45;
+                    else if (NPC.frameCounter < 70D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 76D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 82D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 88D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 94D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 100D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter == 100D && Main.netMode != NetmodeID.MultiplayerClient)
+                        emoteDisplayTime = 45;
+                    else if (NPC.frameCounter < 130D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 136D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 142D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 148D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter < 154D)
+                        rpsFrame = nonAttackFrames - 4;
+                    else if (NPC.frameCounter < 160D)
+                        rpsFrame = nonAttackFrames - 5;
+                    else if (NPC.frameCounter != 160D || Main.netMode == NetmodeID.MultiplayerClient)
+                        rpsFrame = ((NPC.frameCounter < 220D) ? (nonAttackFrames - 4) : ((NPC.frameCounter < 226D) ? (nonAttackFrames - 5) : 0));
+                    else
+                        emoteDisplayTime = 75;
+
+                    if (controlsRPS && emoteDisplayTime != -1)
+                    {
+                        int npcPick = (int)NPC.localAI[2];
+                        int npcWins = (int)NPC.localAI[3];
+                        int opponentWins = (int)Main.npc[(int)NPC.ai[2]].localAI[3];
+                        int opponentPick = (int)Main.npc[(int)NPC.ai[2]].localAI[2];
+                        int rpsGameEnder = 3 - npcPick - npcWins;
+                        int numGamesPlayed = 0;
+                        if (NPC.frameCounter == 40D)
+                            numGamesPlayed = 1;
+
+                        if (NPC.frameCounter == 100D)
+                            numGamesPlayed = 2;
+
+                        if (NPC.frameCounter == 160D)
+                            numGamesPlayed = 3;
+
+                        int gameCountdown = 3 - numGamesPlayed;
+                        int rockPaperScissorsResultType = -1;
+                        int gameFrameTimer = 0;
+                        while (rockPaperScissorsResultType < 0)
+                        {
+                            currentFrame = gameFrameTimer + 1;
+                            gameFrameTimer = currentFrame;
+                            if (currentFrame >= 100)
+                                break;
+
+                            rockPaperScissorsResultType = Main.rand.Next(2);
+                            if (rockPaperScissorsResultType == 0 && opponentPick >= npcWins)
+                                rockPaperScissorsResultType = -1;
+
+                            if (rockPaperScissorsResultType == 1 && opponentWins >= npcPick)
+                                rockPaperScissorsResultType = -1;
+
+                            if (rockPaperScissorsResultType == -1 && gameCountdown <= rpsGameEnder)
+                                rockPaperScissorsResultType = 2;
+                        }
+
+                        if (rockPaperScissorsResultType == 0)
+                        {
+                            Main.npc[(int)NPC.ai[2]].localAI[3] += 1f;
+                            opponentWins++;
+                        }
+
+                        if (rockPaperScissorsResultType == 1)
+                        {
+                            Main.npc[(int)NPC.ai[2]].localAI[2] += 1f;
+                            opponentPick++;
+                        }
+
+                        int emoteType = Utils.SelectRandom<int>(Main.rand, EmoteID.RPSPaper, EmoteID.RPSRock, EmoteID.RPSScissors);
+                        int emoteType2 = emoteType;
+                        switch (rockPaperScissorsResultType)
+                        {
+                            case 0:
+                                switch (emoteType)
+                                {
+                                    case EmoteID.RPSPaper:
+                                        emoteType2 = EmoteID.RPSRock;
+                                        break;
+                                    case EmoteID.RPSRock:
+                                        emoteType2 = EmoteID.RPSScissors;
+                                        break;
+                                    case EmoteID.RPSScissors:
+                                        emoteType2 = EmoteID.RPSPaper;
+                                        break;
+                                }
+                                break;
+                            case 1:
+                                switch (emoteType)
+                                {
+                                    case EmoteID.RPSPaper:
+                                        emoteType2 = EmoteID.RPSScissors;
+                                        break;
+                                    case EmoteID.RPSRock:
+                                        emoteType2 = EmoteID.RPSPaper;
+                                        break;
+                                    case EmoteID.RPSScissors:
+                                        emoteType2 = EmoteID.RPSRock;
+                                        break;
+                                }
+                                break;
+                        }
+
+                        if (gameCountdown == 0)
+                        {
+                            if (opponentWins >= 2)
+                                emoteType -= 3;
+
+                            if (opponentPick >= 2)
+                                emoteType2 -= 3;
+                        }
+
+                        EmoteBubble.NewBubble(emoteType, new WorldUIAnchor(NPC), emoteDisplayTime);
+                        EmoteBubble.NewBubble(emoteType2, new WorldUIAnchor(Main.npc[(int)NPC.ai[2]]), emoteDisplayTime);
+                    }
+
+                    NPC.frame.Y = frameHeight * (controlsRPS ? rpsFrame : rpsFrame);
+                    if (NPC.frameCounter >= 420D)
+                        NPC.frameCounter = 0D;
+                }
+                else if (NPC.velocity.X == 0f)
+                {
+                    NPC.frame.Y = 0;
+                    NPC.frameCounter = 0D;
+                }
+                else // Walking
+                {
+                    NPC.frameCounter += Math.Abs(NPC.velocity.X) * 2f;
+                    NPC.frameCounter += 1D;
+
+                    int walkFrameHeightLimit = frameHeight * 2;
+                    if (NPC.frame.Y < walkFrameHeightLimit)
+                        NPC.frame.Y = walkFrameHeightLimit;
+
+                    int walkFrameTimer = 6;
+                    if (NPC.frameCounter > (double)walkFrameTimer)
+                    {
+                        NPC.frame.Y += frameHeight;
+                        NPC.frameCounter = 0D;
+                    }
+
+                    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - extraFrameAmt)
+                        NPC.frame.Y = walkFrameHeightLimit;
+                }
+
+                return;
+            }
+
+            NPC.frameCounter = 0D;
+            NPC.frame.Y = frameHeight;
         }
 
         public override void AI()
@@ -86,38 +661,39 @@ namespace CalamityMod.NPCs.TownNPCs
                 CalamityWorld.spawnedCirrus = true;
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money)
+        public override bool CanTownNPCSpawn(int numTownNPCs)
         {
-            for (int k = 0; k < Main.maxPlayers; k++)
+            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas.SupremeCalamitas>()) && Main.zenithWorld)
+                return false;
+
+            if (CalamityWorld.spawnedCirrus)
+                return true;
+
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[k];
-                bool hasVodka = player.InventoryHas(ModContent.ItemType<FabsolsVodka>())/* || player.PortableStorageHas(ModContent.ItemType<FabsolsVodka>())*/;
-                if (player.active && hasVodka)
-                    return Main.hardMode || CalamityWorld.spawnedCirrus;
+                bool hasVodka = player.InventoryHas(ModContent.ItemType<FabsolsVodka>()) || player.PortableStorageHas(ModContent.ItemType<FabsolsVodka>());
+                if (hasVodka)
+                    return Main.hardMode;
             }
-            return CalamityWorld.spawnedCirrus;
+            return false;
         }
 
-		public override List<string> SetNPCNameList() => new List<string>() { "Cirrus" };
+        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Cirrus") };
 
         public override string GetChat()
         {
-            if (CalamityWorld.getFixedBoi)
+            Player player = Main.player[Main.myPlayer];
+            if (Main.zenithWorld)
             {
-                Main.player[Main.myPlayer].Hurt(PlayerDeathReason.ByCustomReason(Main.player[Main.myPlayer].name + " was slapped too hard."), Main.player[Main.myPlayer].statLife / 2, -Main.player[Main.myPlayer].direction, false, false, false, -1);
-                SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, Main.player[Main.myPlayer].Center);
+                player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false);
+                SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
             }
 
             if (CalamityUtils.AnyBossNPCS())
-                return "Why are you talking to me right now? Shouldn't you be bumbling around and dying for my amusement?";
+                return this.GetLocalizedValue("Chat.BossAlive");
 
             if (NPC.homeless)
-            {
-                if (Main.rand.NextBool(2))
-                    return "I could smell my vodka from MILES away!";
-                else
-                    return "Have any spare rooms available? Preferably candle-lit with a hefty supply of booze?";
-            }
+                return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
             int wife = NPC.FindFirstNPC(NPCID.Stylist);
             bool wifeIsAround = wife != -1;
@@ -125,128 +701,158 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (Main.bloodMoon)
             {
-                int random = Main.rand.Next(4);
-                if (random == 0)
+                if (Main.rand.NextBool(4))
                 {
-                    return "I'm gonna make some Bloody Marys to relax, celery included. Want one?";
+                    player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CirrusSlap" + Main.rand.Next(1, 2 + 1)).Format(player.name)), player.statLife / 2, -player.direction, false, false, -1, false); ;
+                    SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, player.Center);
+                    return this.GetLocalizedValue("Chat.BloodMoonSlap");
                 }
-                else if (random == 1)
-                {
-                    return "If you're too lazy to craft potions normally, try Blood Orbs. Blood is fuel, dumbass.";
-                }
-                else if (random == 2)
-                {
-                    return "I'm trying to not be bitchy tonight, but it's hard when everyone else won't shut up.";
-                }
-                else
-                {
-                    Main.player[Main.myPlayer].Hurt(PlayerDeathReason.ByCustomReason(Main.player[Main.myPlayer].name + " was slapped too hard."), Main.player[Main.myPlayer].statLife / 2, -Main.player[Main.myPlayer].direction, false, false, false, -1);
-                    SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, Main.player[Main.myPlayer].Center);
-                    return "Sorry, I have no moral compass at the moment.";
-                }
+                return this.GetLocalizedValue("Chat.BloodMoon" + Main.rand.Next(1, 3 + 1));
             }
 
-            IList<string> dialogue = new List<string>();
+            WeightedRandom<string> dialogue = new WeightedRandom<string>();
 
-            if (wifeIsAround)
-            {
-                dialogue.Add("You can't stop me from trying to move in with " + Main.npc[wife].GivenName + ".");
-                dialogue.Add("I love it when " + Main.npc[wife].GivenName + "'s hands get sticky from all that... wax.");
-                dialogue.Add("Ever since " + Main.npc[wife].GivenName + " moved in I haven't been drinking as much... a strange but not unwelcome feeling.");
-            }
-
-            if (Main.dayTime)
-            {
-                if (beLessDrunk)
-                    dialogue.Add(Main.npc[wife].GivenName + " helped me learn to accept my past. It's been rough, but I think I'm on the right track now.");
-                else
-                    dialogue.Add("I drink to forget certain... things. What things, you might ask? Well, the point is to forget them, isn't it?");
-
-                dialogue.Add("I'm literally balls drunk off my sass right now, what do you want?");
-                dialogue.Add("I'm either laughing because I'm drunk or because I've lost my mind, probably both.");
-                dialogue.Add("When I'm drunk I'm way happier... at least until the talking worms start to appear.");
-                dialogue.Add("I should reprogram the whole mod, while drunk, then send it back to the testers.");
-
-                if (beLessDrunk)
-                    dialogue.Add("Might go out for a jog later with " + Main.npc[wife].GivenName + ". Nice day for it.");
-                else
-                    dialogue.Add("What a great day! Might just drink so much that I get poisoned again.");
-            }
-            else
-            {
-                dialogue.Add("A perfect night to light some candles, drink some wine and relax.");
-                dialogue.Add("Here's a challenge... take a shot for every time you've had to look at the wiki. Oh wait, you'd die.");
-                dialogue.Add("Yes, everyone knows the mechworm is buggy. Well, not anymore, but still.");
-                dialogue.Add("You lost or something? I don't mind company, but I'd rather be left alone at night.");
-                dialogue.Add("Are you sure you're 21? ...Alright, fine, but don't tell anyone I sold you these.");
-
-                if (wifeIsAround)
-                    dialogue.Add("I should watch some movies with " + Main.npc[wife].GivenName + " tonight. You could come too, but only if you bring snacks for us.");
-            }
-
-            dialogue.Add("I HATE WALMART! ...Anyway, what do you want this time?");
-            dialogue.Add("Drink something that turns you into a magical flying unicorn so you can be just like me.");
-            dialogue.Add("Did anyone ever tell you that large assets cause back pain? Well, they were right.");
-            dialogue.Add("Deals so good I'll [$$!$] myself! ...Sorry, just had a minor stroke!");
-
-            if (BirthdayParty.PartyIsUp)
-                dialogue.Add("You'll always find me at parties where booze is involved... well, you'll always find BOOZE where I'M involved!");
-
-            if (Main.invasionType == InvasionID.MartianMadness)
-                dialogue.Add("You should probably deal with those ayy lmaos before anything else, but whatever.");
-
-            if (DownedBossSystem.downedCryogen)
-                dialogue.Add("God I can't wait to smash some ice again! ...For drinks, of course.");
-
-            if (DownedBossSystem.downedLeviathan)
-                dialogue.Add("How could you murder such a beautiful creature!? ...The blue sexy one, not the obese cucumber.");
-
-            if (NPC.downedMoonlord)
-                dialogue.Add("Ever wondered why the Moon Lord needed so many tentacles? Uh... on second thought, I won't answer that.");
-
-            if (AcidRainEvent.AcidRainEventIsOngoing)
-                dialogue.Add("I'm melting! Put a stop to this inclement weather this instant before it ruins my hair!");
-
-            if (DownedBossSystem.downedPolterghast)
-                dialogue.Add("I saw a ghost down by the old train tracks back at my homeland once, flailing wildly at the lily pads... frightening times those were.");
-
-            if (DownedBossSystem.downedDoG)
-                dialogue.Add("I hear it's amazing when the famous Devourer of Gods out in flap-jaw space, with the tuning fork, does a raw blink on Hara-kiri rock. I need scissors! 61!");
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+            if (ChildSafety.Disabled)
+                dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
 
             int tavernKeep = NPC.FindFirstNPC(NPCID.DD2Bartender);
             if (tavernKeep != -1)
             {
-                dialogue.Add("I've had to tell baldie where my eyes are so many times that I've lost count.");
-                dialogue.Add("Tell " + Main.npc[tavernKeep].GivenName + " to stop calling me. He's not wanted.");
-                dialogue.Add("My booze will always be better than " + Main.npc[tavernKeep].GivenName + "'s, and nobody can convince me otherwise.");
+                dialogue.Add(this.GetLocalization("Chat.Tavernkeep1").Format(Main.npc[tavernKeep].GivenName));
+                dialogue.Add(this.GetLocalization("Chat.Tavernkeep2").Format(Main.npc[tavernKeep].GivenName));
+
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalizedValue("Chat.Tavernkeep3"));
             }
 
             int permadong = NPC.FindFirstNPC(ModContent.NPCType<DILF>());
             if (permadong != -1)
-                dialogue.Add("I never realized how well-endowed " + Main.npc[permadong].GivenName + " was. It had to be the largest icicle I'd ever seen.");
+                dialogue.Add(this.GetLocalization("Chat.Archmage").Format(Main.npc[permadong].GivenName));
 
             int witch = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
             if (witch != -1)
-                dialogue.Add("The abuse " + Main.npc[witch].GivenName + " went through is something I can hardly comprehend. I'd offer her a drink, but I don't think she'd enjoy it.");
+                dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
 
-            if (Main.player[Main.myPlayer].Calamity().chibii)
-                dialogue.Add("The hell is that? Looks like something I'd carry around if I was 5 years old.");
-
-            if (Main.player[Main.myPlayer].Calamity().aquaticHeart && !Main.player[Main.myPlayer].Calamity().aquaticHeartHide)
-                dialogue.Add("Nice scales... is it hot in here or is it just me?");
-
-            if (Main.player[Main.myPlayer].Calamity().fabsolVodka)
-                dialogue.Add("Do you like my vodka? I created it by mixing fairy dust, crystallized cave sweat and other magical crap.");
-
-            if (Main.player[Main.myPlayer].HasItem(ModContent.ItemType<Fabsol>()))
+            if (wifeIsAround)
             {
-                dialogue.Add("So... you found my special bottle. Hope you enjoy it, I know I will.");
-                dialogue.Add("Be sure to dismount me once in a while, I get tired. And besides, I can't rip you off-I mean offer you excellent deals you won't find anywhere else if you're riding me 24/7.");
-                dialogue.Add("Before you ask, no, I do NOT have a heart on my butt while in human form. Don't question my transformation preferences!");
+                dialogue.Add(this.GetLocalization("Chat.Stylist1").Format(Main.npc[wife].GivenName));
+                if (ChildSafety.Disabled)
+                {
+                    dialogue.Add(this.GetLocalization("Chat.Stylist2").Format(Main.npc[wife].GivenName));
+                    dialogue.Add(this.GetLocalization("Chat.Stylist3").Format(Main.npc[wife].GivenName));
+                }
             }
 
+            if (Main.dayTime)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Day3"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Day4"));
+
+                if (beLessDrunk)
+                {
+                    dialogue.Add(this.GetLocalization("Chat.DayStylist1").Format(Main.npc[wife].GivenName));
+                    dialogue.Add(this.GetLocalization("Chat.DayStylist2").Format(Main.npc[wife].GivenName));
+                }
+                else
+                {
+                    dialogue.Add(this.GetLocalizedValue("Chat.DayDrunk1"));
+                    dialogue.Add(this.GetLocalizedValue("Chat.DayDrunk2"));
+                }
+            }
+            else
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Night1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Night4"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Night5"));
+
+                if (wifeIsAround)
+                    dialogue.Add(this.GetLocalization("Chat.NightStylist").Format(Main.npc[wife].GivenName));
+            }
+
+            if (BirthdayParty.PartyIsUp)
+                dialogue.Add(this.GetLocalizedValue("Chat.Party"));
+
+            if (AcidRainEvent.AcidRainEventIsOngoing)
+                dialogue.Add(this.GetLocalizedValue("Chat.AcidRain"));
+
+            if (Main.invasionType == InvasionID.MartianMadness)
+                dialogue.Add(this.GetLocalizedValue("Chat.Martians"));
+
+            if (DownedBossSystem.downedCryogen && ChildSafety.Disabled)
+                dialogue.Add(this.GetLocalizedValue("Chat.CryogenDefeated"));
+
+            if (DownedBossSystem.downedLeviathan)
+                dialogue.Add(this.GetLocalizedValue("Chat.LeviathanDefeated"));
+
+            if (NPC.downedMoonlord)
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated"));
+
+            if (DownedBossSystem.downedPolterghast)
+                dialogue.Add(this.GetLocalizedValue("Chat.PolterghastDefeated"));
+
+            if (DownedBossSystem.downedDoG)
+                dialogue.Add(this.GetLocalizedValue("Chat.DoGDefeated"));
+
+            if (player.Calamity().chibii)
+                dialogue.Add(this.GetLocalizedValue("Chat.HasChibii"));
+
+            if (player.Calamity().aquaticHeart && !player.Calamity().aquaticHeartHide && ChildSafety.Disabled)
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAnahitaTrans"));
+
+            if (player.Calamity().fabsolVodka)
+                dialogue.Add(this.GetLocalizedValue("Chat.HasVodka"));
+
+            if (player.HasItem(ModContent.ItemType<Fabsol>()))
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn2"));
+                if (ChildSafety.Disabled)
+                    dialogue.Add(this.GetLocalizedValue("Chat.HasAlicorn3"));
+            }
+
+            return dialogue;
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (Main.LocalPlayer.Calamity().trippy)
+                return false;
+
+            var something = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
+            return false;
+        }
+
+        public string Death()
+        {
+            int deaths = Main.player[Main.myPlayer].numberOfDeathsPVE;
+
+            string text = this.GetLocalization("DeathCount").Format(deaths);
+
+            if (deaths > 10000)
+                text += " " + this.GetLocalizedValue("Death10000");
+            else if (deaths > 5000)
+                text += " " + this.GetLocalizedValue("Death5000");
+            else if (deaths > 2500)
+                text += " " + this.GetLocalizedValue("Death2500");
+            else if (deaths > 1000)
+                text += " " + this.GetLocalizedValue("Death1000");
+            else if (deaths > 500)
+                text += " " + this.GetLocalizedValue("Death500");
+            else if (deaths > 250)
+                text += " " + this.GetLocalizedValue("Death250");
+            else if (deaths > 100)
+                text += " " + this.GetLocalizedValue("Death100");
+
             IList<string> donorList = new List<string>(CalamityLists.donatorList);
-            int maxDonorsListed = 15;
+            int maxDonorsListed = 25;
             string[] donors = new string[maxDonorsListed];
             for (int i = 0; i < maxDonorsListed; i++)
             {
@@ -254,34 +860,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 donorList.Remove(donors[i]);
             }
 
-            dialogue.Add("Hey " + donors[0] + ", " + donors[1] + ", " + donors[2] + ", " + donors[3] + ", " + donors[4] + ", " + donors[5] + ", " + donors[6] +
-                ", " + donors[7] + ", " + donors[8] + ", " + donors[9] + ", " + donors[10] + ", " + donors[11] + ", " + donors[12] + ", " + donors[13] +
-                " and " + donors[14] + "! You're all pretty good!");
-
-            return dialogue[Main.rand.Next(dialogue.Count)];
-        }
-
-        public string Death()
-        {
-            int deaths = Main.player[Main.myPlayer].Calamity().deathCount;
-
-            string text = "You have failed " + Main.player[Main.myPlayer].Calamity().deathCount +
-                (Main.player[Main.myPlayer].Calamity().deathCount == 1 ? " time." : " times.");
-
-            if (deaths > 10000)
-                text += " Congratulations! You are now, officially, the biggest loser in Terraria's history! Who was number two? Hell if I know.";
-            else if (deaths > 5000)
-                text += " I'm not sure what to say this time. That you're bad and should feel bad? That much was known already.";
-            else if (deaths > 2500)
-                text += " Bless your heart. I could dodge better than you even if I were drunk high.";
-            else if (deaths > 1000)
-                text += " It is said the average Terrarian has a lifespan of 2 minutes or less. ...Well, not really, but I feel like you'd be part of that statistic.";
-            else if (deaths > 500)
-                text += " Your inability to avoid dying to even the most basic of attacks is astonishing to me.";
-            else if (deaths > 250)
-                text += " I admire your tenacity. Keep it up, your enemies are racking up quite the kill count!";
-            else if (deaths > 100)
-                text += " Consider lowering the difficulty. If you found that statement irritating, good.";
+            text += ("\n\n" + this.GetLocalization("DonorShoutout").Format(donors));
 
             return text;
         }
@@ -289,210 +868,70 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
-            button2 = "Death Count";
+            button2 = this.GetLocalizedValue("DeathCountButton");
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
             {
-                Main.LocalPlayer.Calamity().newCirrusInventory = false;
-                shop = true;
+                shopName = "Shop";
             }
             else
             {
-                shop = false;
                 Main.npcChatText = Death();
             }
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot) //charges 50% extra than the original alcohol value
+        public override void AddShops()
         {
-            int wife = NPC.FindFirstNPC(NPCID.Stylist);
-            bool wifeIsAround = wife != -1;
-            bool beLessDrunk = wifeIsAround && NPC.downedMoonlord;
+            Mod musicMod = CalamityMod.Instance.musicMod;
+            musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
+            musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
+            musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
+            musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
-            if (CalamityConfig.Instance.PotionSelling)
-            {
-                shop.item[nextSlot].SetDefaults(ItemID.HeartreachPotion);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ItemID.LifeforcePotion);
-                int goldCost = NPC.downedMoonlord ? 8 : 4;
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, goldCost, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ItemID.LovePotion);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                nextSlot++;
-            }
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<GrapeBeer>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 0, 30, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<RedWine>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Whiskey>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Rum>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Tequila>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Fireball>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 3, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<FabsolsVodka>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 4, 0, 0);
-            nextSlot++;
-
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<Vodka>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<Screwdriver>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 6, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<WhiteWine>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 6, 0, 0);
-                nextSlot++;
-            }
-
-            if (NPC.downedPlantBoss)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<EvergreenGin>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 8, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<CaribbeanRum>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 8, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<Margarita>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 8, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ItemID.EmpressButterfly);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 10, 0, 0);
-                nextSlot++;
-            }
-
-            if (DownedBossSystem.downedAstrumAureus)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<Everclear>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 3, 0, 0);
-                nextSlot++;
-
-                if (Main.bloodMoon)
-                {
-                    shop.item[nextSlot].SetDefaults(ModContent.ItemType<BloodyMary>());
-                    shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 4, 0, 0);
-                    nextSlot++;
-                }
-
-                if (!Main.dayTime)
-                {
-                    shop.item[nextSlot].SetDefaults(ModContent.ItemType<StarBeamRye>());
-                    shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 6, 0, 0);
-                    nextSlot++;
-                }
-            }
-
-            if (NPC.downedGolemBoss)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<Moonshine>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<MoscowMule>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 8, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<CinnamonRoll>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 8, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<TequilaSunrise>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 10, 0, 0);
-                nextSlot++;
-            }
-
-            if (beLessDrunk)
-            {
-                shop.item[nextSlot].SetDefaults(ItemID.BloodyMoscato);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ItemID.BananaDaiquiri);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 0, 75, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ItemID.PeachSangria);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 0, 50, 0);
-                nextSlot++;
-
-                shop.item[nextSlot].SetDefaults(ItemID.PinaColada);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                nextSlot++;
-            }
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<WeightlessCandle>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 50, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<VigorousCandle>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 50, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<ResilientCandle>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 50, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<SpitefulCandle>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 50, 0, 0);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<OddMushroom>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(1, 0, 0, 0);
-            nextSlot++;
-
-            bool happyAsFuck = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.8999999761581421;
-            if (happyAsFuck)
-            {
-                /*if (wifeIsAround)
-                {
-                    shop.item[nextSlot].SetDefaults(ItemID.MilkCarton);
-                    shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                    nextSlot++;
-                }*/
-
-                if (Main.LocalPlayer.ZoneHallow)
-                {
-                    shop.item[nextSlot].SetDefaults(ItemID.UnicornHorn);
-                    shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 50, 0);
-                    nextSlot++;
-
-                    if (wifeIsAround)
-                    {
-                        shop.item[nextSlot].SetDefaults(ItemID.Milkshake);
-                        shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 5, 0, 0);
-                        nextSlot++;
-                    }
-                }
-            }
+            NPCShop shop = new(Type);
+            shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnough)
+                .AddWithCustomValue(ModContent.ItemType<GrapeBeer>(), Item.buyPrice(silver: 30))
+                .AddWithCustomValue(ModContent.ItemType<RedWine>(), Item.buyPrice(gold: 1))
+                .AddWithCustomValue(ModContent.ItemType<Whiskey>(), Item.buyPrice(gold: 2))
+                .AddWithCustomValue(ModContent.ItemType<Rum>(), Item.buyPrice(gold: 2))
+                .AddWithCustomValue(ModContent.ItemType<Tequila>(), Item.buyPrice(gold: 2))
+                .AddWithCustomValue(ModContent.ItemType<Fireball>(), Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ModContent.ItemType<FabsolsVodka>(), Item.buyPrice(gold: 4))
+                .AddWithCustomValue(ModContent.ItemType<Vodka>(), Item.buyPrice(gold: 2), Condition.DownedMechBossAll)
+                .AddWithCustomValue(ModContent.ItemType<Screwdriver>(), Item.buyPrice(gold: 6), Condition.DownedMechBossAll)
+                .AddWithCustomValue(ModContent.ItemType<WhiteWine>(), Item.buyPrice(gold: 6), Condition.DownedMechBossAll)
+                .AddWithCustomValue(ModContent.ItemType<EvergreenGin>(), Item.buyPrice(gold: 8), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<CaribbeanRum>(), Item.buyPrice(gold: 8), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<Margarita>(), Item.buyPrice(gold: 8), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<OldFashioned>(), Item.buyPrice(gold: 8), Condition.DownedPlantera)
+                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 10), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<Everclear>(), Item.buyPrice(gold: 3), CalamityConditions.DownedAstrumAureus)
+                .AddWithCustomValue(ModContent.ItemType<BloodyMary>(), Item.buyPrice(gold: 4), CalamityConditions.DownedAstrumAureus, Condition.BloodMoon)
+                .AddWithCustomValue(ModContent.ItemType<StarBeamRye>(), Item.buyPrice(gold: 6), CalamityConditions.DownedAstrumAureus, Condition.TimeNight)
+                .AddWithCustomValue(ModContent.ItemType<Moonshine>(), Item.buyPrice(gold: 2), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<MoscowMule>(), Item.buyPrice(gold: 8), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<CinnamonRoll>(), Item.buyPrice(gold: 8), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<TequilaSunrise>(), Item.buyPrice(gold: 10), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.BloodyMoscato, Item.buyPrice(gold: 1), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ItemID.BananaDaiquiri, Item.buyPrice(silver: 75), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ItemID.PeachSangria, Item.buyPrice(silver: 50), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ItemID.PinaColada, Item.buyPrice(gold: 1), Condition.DownedMoonLord, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ModContent.ItemType<WeightlessCandle>(), Item.buyPrice(gold: 50))
+                .AddWithCustomValue(ModContent.ItemType<VigorousCandle>(), Item.buyPrice(gold: 50))
+                .AddWithCustomValue(ModContent.ItemType<ResilientCandle>(), Item.buyPrice(gold: 50))
+                .AddWithCustomValue(ModContent.ItemType<SpitefulCandle>(), Item.buyPrice(gold: 50))
+                .AddWithCustomValue(ModContent.ItemType<OddMushroom>(), Item.buyPrice(1))
+                .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
+                .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
+                .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
+                .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods)
+                .AddWithCustomValue(ItemID.UnicornHorn, Item.buyPrice(0, 2, 50), Condition.HappyEnough, Condition.InHallow)
+                .AddWithCustomValue(ItemID.Milkshake, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.InHallow, Condition.NpcIsPresent(NPCID.Stylist))
+                .AddWithCustomValue(ModContent.ItemType<CirrusCouch>(), Item.buyPrice(gold: 25), Condition.HappyEnough, Condition.NpcIsPresent(NPCID.Stylist), Condition.NpcIsPresent(NPCID.BestiaryGirl))
+                .Register();
         }
 
         // Make this Town NPC teleport to the Queen statue when triggered.

@@ -7,33 +7,28 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("TruePaladinsHammer", "TruePaladinsHammerMelee", "TruePaladinsHammerRogue")]
-    public class FallenPaladinsHammer : ModItem
+    public class FallenPaladinsHammer : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Fallen Paladin's Hammer");
-            Tooltip.SetDefault("Explodes on enemy hits");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
+        public static float Speed = 28.8f;
         public override void SetDefaults()
+
         {
             Item.width = 14;
-            Item.damage = 87;
+            Item.height = 28;
+            Item.damage = 368;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
-            Item.useAnimation = 13;
+            Item.useAnimation = Item.useTime = 57;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 13;
             Item.knockBack = 20f;
             Item.UseSound = SoundID.Item1;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.height = 28;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<FallenPaladinsHammerProj>();
-            Item.shootSpeed = 14f;
+            Item.shootSpeed = Speed;
         }
 
         public override void AddRecipes()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,15 +10,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DyingSun : ModProjectile
-    {        
-        public PrimitiveTrail FireDrawer;
+    public class DyingSun : ModProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Boss";        
         public ref float Time => ref Projectile.ai[0];
         public ref float Radius => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dying Sun");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -45,15 +45,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public Color SunColorFunction(float completionRatio)
         {
-            Color sunColor = CalamityWorld.getFixedBoi ? (new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) * 0.8f) : (Main.dayTime ? Color.Yellow : Color.Cyan);
+            Color sunColor = Main.zenithWorld ? (new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) * 0.8f) : (Main.IsItDay() ? Color.Yellow : Color.Cyan);
             return Color.Lerp(sunColor, Color.White, (float)Math.Sin(MathHelper.Pi * completionRatio) * 0.5f + 0.3f) * Projectile.Opacity;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (FireDrawer is null)
-                FireDrawer = new PrimitiveTrail(SunWidthFunction, SunColorFunction, null, GameShaders.Misc["CalamityMod:Flame"]);
-
             GameShaders.Misc["CalamityMod:Flame"].UseSaturation(0.45f);
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
 
@@ -72,8 +69,7 @@ namespace CalamityMod.Projectiles.Boss
                     rotationPoints.Add(adjustedAngle);
                     drawPoints.Add(Vector2.Lerp(Projectile.Center - offsetDirection * Radius / 2f, Projectile.Center + offsetDirection * Radius / 2f, i / 16f));
                 }
-
-                FireDrawer.Draw(drawPoints, -Main.screenPosition, 24);
+                PrimitiveRenderer.RenderTrail(drawPoints, new(SunWidthFunction, SunColorFunction, shader: GameShaders.Misc["CalamityMod:Flame"]), 24);
             }
             return false;
         }

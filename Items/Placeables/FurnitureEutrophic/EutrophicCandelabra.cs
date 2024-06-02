@@ -1,21 +1,17 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria.ModLoader;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureEutrophic
 {
-    public class EutrophicCandelabra : ModItem
+    public class EutrophicCandelabra : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 20;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -27,7 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureEutrophic
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<Navystone>(), 5).AddIngredient(ModContent.ItemType<SeaPrism>(), 3).AddTile(ModContent.TileType<EutrophicShelf>()).Register();
+            CreateRecipe().
+                AddIngredient<Navystone>(5).
+                AddIngredient(ItemID.Torch, 3).
+                AddTile<EutrophicShelf>().
+                Register();
         }
     }
 }

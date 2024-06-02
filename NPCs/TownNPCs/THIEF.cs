@@ -1,48 +1,33 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.Items;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items;
+using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
     [AutoloadHead]
     public class THIEF : ModNPC
     {
-        public static List<string> PossibleNames = new List<string>()
-        {
-            // Patron names
-            "Xplizzy", // <@!98826096237109248> (Whitegiraffe#6342)
-            "Freakish", // <@!750363283520749598> (Freakish#0001)
-            "Calder", // <@!601897959176798228> (Paltham#8859)
-            "Hunter Jinx", // <@!757401399783850134> (Jinx_enthusiast#1580)
-            "Goose", // <@!591421917706321962> (DullElili#8016)
-
-            // Original names
-            "Laura", "Mie", "Bonnie",
-            "Sarah", "Diane", "Kate",
-            "Penelope", "Marisa", "Maribel",
-            "Valerie", "Jessica", "Rowan",
-            "Jessie", "Jade", "Hearn",
-            "Amber", "Anne", "Indiana"
-        };
+        public static Asset<Texture2D> AltTexture;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bandit");
-
             Main.npcFrameCount[NPC.type] = 23;
             NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
             NPCID.Sets.AttackFrameCount[NPC.type] = 4;
@@ -50,16 +35,21 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.AttackType[NPC.type] = 0;
             NPCID.Sets.AttackTime[NPC.type] = 60;
             NPCID.Sets.AttackAverageChance[NPC.type] = 10;
+            NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<DesertBiome>(AffectionLevel.Like)
                 .SetBiomeAffection<JungleBiome>(AffectionLevel.Dislike)
                 .SetNPCAffection(NPCID.GoblinTinkerer, AffectionLevel.Like)
-                .SetNPCAffection(NPCID.Dryad, AffectionLevel.Dislike)
-            ;
-            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0) {
+                .SetNPCAffection(NPCID.Dryad, AffectionLevel.Dislike);
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
                 Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
             };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+            if (!Main.dedServ)
+            {
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -81,12 +71,10 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Desert,                   
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("A kleptomaniac who is a bit of a coward when it comes to face-to-face fights. She's rather good at getting herself both into and out of dicey situations.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Desert,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.THIEF")
             });
         }
 
@@ -98,122 +86,130 @@ namespace CalamityMod.NPCs.TownNPCs
             }
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money)
+        public override bool CanTownNPCSpawn(int numTownNPCs)
         {
-            for (int k = 0; k < Main.maxPlayers; k++)
+            if (CalamityWorld.spawnedBandit)
+                return true;
+
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[k];
                 bool rich = player.InventoryHas(ItemID.PlatinumCoin) || player.PortableStorageHas(ItemID.PlatinumCoin);
-                if (player.active && rich)
-                {
-                    return NPC.downedBoss3 || CalamityWorld.spawnedBandit;
-                }
+                if (rich)
+                    return NPC.downedBoss3;
             }
-            return CalamityWorld.spawnedBandit;
+            return false;
         }
 
-        public override List<string> SetNPCNameList() => PossibleNames;
+        public override List<string> SetNPCNameList() => new List<string>()
+        {
+            // Patron names
+            "Xplizzy", // <@!98826096237109248> (whitegiraffe)
+            "Freakish", // <@!750363283520749598> (freak5650)
+            "Calder", // <@!601897959176798228> (hardlightcaster)
+            "Hunter Jinx", // <@!757401399783850134> (dragonslayerornstein.)
+            "Goose", // <@!591421917706321962> (dullelili)
+            "Jackson", // <@!525827730646892549> (chowchow360)
+            "Altarca", // <@!1140673052108128337> (altarca_27226_49175)
+            "Jackie", // <@!353241811717718016> (jackalchan)
+
+            // Original names
+            this.GetLocalizedValue("Name.Laura"),
+            this.GetLocalizedValue("Name.Mie"),
+            this.GetLocalizedValue("Name.Bonnie"),
+            this.GetLocalizedValue("Name.Sarah"),
+            this.GetLocalizedValue("Name.Diane"),
+            this.GetLocalizedValue("Name.Kate"),
+            this.GetLocalizedValue("Name.Penelope"),
+            this.GetLocalizedValue("Name.Marisa"),
+            this.GetLocalizedValue("Name.Maribel"),
+            this.GetLocalizedValue("Name.Valerie"),
+            this.GetLocalizedValue("Name.Jessica"),
+            this.GetLocalizedValue("Name.Rowan"),
+            this.GetLocalizedValue("Name.Jessie"),
+            this.GetLocalizedValue("Name.Jade"),
+            this.GetLocalizedValue("Name.Hearn"),
+            this.GetLocalizedValue("Name.Amber"),
+            this.GetLocalizedValue("Name.Anne"),
+            this.GetLocalizedValue("Name.Indiana")
+        };
 
         public override string GetChat()
         {
-            List<string> PossibleDialogs = new List<string>();
-            if (!Main.dayTime && Main.bloodMoon)
-            {
-                PossibleDialogs.Add("Oy, watch where you're going or I might just use you for dart practice.");
-                PossibleDialogs.Add("Bet you'd look good as a pincushion, amiright?");
-                PossibleDialogs.Add("Zombies don't dodge very well. Maybe you'll do a bit better.");
-                PossibleDialogs.Add("Hey, careful over there. I've rigged the place. One wrong step and you're going to get a knife in your forehead.");
-            }
-            else if (!Main.dayTime && !Main.bloodMoon)
-            {
-                PossibleDialogs.Add("Hm, the stars are too bright tonight. Makes sneaking around a little more difficult.");
-                PossibleDialogs.Add("You think those stars that fall occasionally would make good throwing weapons?");
-            }
+            if (Main.bloodMoon)
+                return this.GetLocalizedValue("Chat.BloodMoon" + Main.rand.Next(1, 4 + 1));
 
-            if (BirthdayParty.PartyIsUp)
-            {
-                PossibleDialogs.Add("Where is my party hat? Well, I stole it of course.");
-            }
-            if (NPC.GivenName == "Laura")
-            {
-                PossibleDialogs.Add("The nice thing about maps is I can track anything that has fallen.");
-            }
-            if (NPC.GivenName == "Penelope")
-            {
-                PossibleDialogs.Add("Imagine how fast you could throw if you just had more hands.");
-            }
-            if (NPC.GivenName == "Valerie")
-            {
-                PossibleDialogs.Add("I also take food for currency.");
-            }
-            if (NPC.GivenName == "Rowan")
-            {
-                PossibleDialogs.Add("Usually I only think of animals as food or target practice, but dragons are an exception.");
-            }
+            WeightedRandom<string> dialogue = new WeightedRandom<string>();
 
-            PossibleDialogs.Add("Anything is a weapon if you throw it hard enough.");
-            PossibleDialogs.Add("That's your chucking arm? You need to work out more.");
-            PossibleDialogs.Add("Listen here. It's all in the wrist, the wrist! Oh, forget it.");
-            PossibleDialogs.Add("Eh you know how it goes; steal from the rich, give to the poor, but I do take a cut of the profit.");
-            PossibleDialogs.Add("Snakes! Why does it always have to be snakes!");
-            PossibleDialogs.Add("It's super nice you know, to just have everything you want. Some people never got that luxury.");
-            PossibleDialogs.Add("It's not stealing! I'm just borrowing it until I die!");
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal5"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal6"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal7"));
 
-            if (Main.LocalPlayer.InventoryHas(ItemID.BoneGlove))
+            if (!Main.dayTime)
             {
-                PossibleDialogs.Add("Wouldn't be the first time I used remains as weapons.");
-            }
-            if (Main.hardMode)
-            {
-                PossibleDialogs.Add("All sorts of new weapons to be found and looted. Get to that, and I'll share some of my collection too!");
-                PossibleDialogs.Add("There's so much scrap around this land with valuable parts to them. Makes you wonder who could afford to leave em all around.");
-                PossibleDialogs.Add("Crypts, tombs, dungeons, those're all just treasure troves to me. The dead are dead, they've got nothing to do with it.");
-            }
-            if (NPC.downedMoonlord)
-            {
-                PossibleDialogs.Add("If you find anything cool, make sure to drop by and show it to me, I promise I'll keep my hands off it.");
-                PossibleDialogs.Add("So many new things to steal, I can't think of where to start!");
-                PossibleDialogs.Add("If I end up angering some deities or whatever, would you mind taking the blame for me?");
-            }
-            if (Main.LocalPlayer.InventoryHas(ModContent.ItemType<Valediction>()))
-            {
-                PossibleDialogs.Add("Oh man, did you rip that off a shark!? Now that's a weapon!");
-            }
-            if (Main.LocalPlayer.ZoneJungle)
-            {
-                PossibleDialogs.Add("I'd rather not be here. This place has bad vibes, y'know? It brings back some unpleasant memories.");
-            }
-
-            int merchantIndex = NPC.FindFirstNPC(NPCID.Merchant);
-            if (merchantIndex != -1)
-            {
-                NPC nerd = Main.npc[merchantIndex];
-                PossibleDialogs.Add($"Don't tell {nerd.GivenName}, but I took some of his stuff and replaced it with Angel Statues.");
+                dialogue.Add(this.GetLocalizedValue("Chat.Night1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
             }
 
             int witch = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
-            if(witch != -1)
-            {
-                PossibleDialogs.Add("Hey, hey, has Calamitas seriously moved in here with us? Why???");
-            }
+            if (witch != -1)
+                dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
 
+            //please help me I'm stuck in a children's video game - Fabsol
             int cirrusIndex = NPC.FindFirstNPC(ModContent.NPCType<FAP>());
             if (cirrusIndex != -1)
-            {
-                NPC cirrus = Main.npc[cirrusIndex]; //please help me I'm stuck in a children's video game - Fabsol
-                PossibleDialogs.Add($"I learned never to steal {cirrus.GivenName}'s drinks. She doesn't appreciate me right now, so I'll go back to hiding.");
-            }
+                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrusIndex].GivenName));
+
+            int merchantIndex = NPC.FindFirstNPC(NPCID.Merchant);
+            if (merchantIndex != -1)
+                dialogue.Add(this.GetLocalization("Chat.Merchant").Format(Main.npc[merchantIndex].GivenName));
 
             int armsDealerIndex = NPC.FindFirstNPC(NPCID.ArmsDealer);
             int nurseIndex = NPC.FindFirstNPC(NPCID.Nurse);
             if (armsDealerIndex != -1 && nurseIndex != -1)
+                dialogue.Add(this.GetLocalization("Chat.NurseArmsDealer").Format(Main.npc[nurseIndex].GivenName, Main.npc[armsDealerIndex].GivenName));
+
+            if (NPC.GivenName == this.GetLocalizedValue("Name.Laura"))
+                dialogue.Add(this.GetLocalizedValue("Chat.NamedLaura"));
+
+            if (NPC.GivenName == this.GetLocalizedValue("Name.Penelope"))
+                dialogue.Add(this.GetLocalizedValue("Chat.NamedPenelope"));
+
+            if (NPC.GivenName == this.GetLocalizedValue("Name.Valerie"))
+                dialogue.Add(this.GetLocalizedValue("Chat.NamedValerie"));
+
+            if (NPC.GivenName == this.GetLocalizedValue("Name.Rowan"))
+                dialogue.Add(this.GetLocalizedValue("Chat.NamedRowan"));
+
+            if (Main.LocalPlayer.ZoneJungle)
+                dialogue.Add(this.GetLocalizedValue("Chat.Jungle"));
+
+            if (BirthdayParty.PartyIsUp)
+                dialogue.Add(this.GetLocalizedValue("Chat.Party"));
+
+            if (Main.hardMode)
             {
-                NPC cheeseMachine = Main.npc[nurseIndex];
-                NPC minisharkMan = Main.npc[armsDealerIndex];
-                PossibleDialogs.Add($"Don't tell {cheeseMachine.GivenName} that I was responsible for {minisharkMan.GivenName}'s injuries.");
+                dialogue.Add(this.GetLocalizedValue("Chat.Hardmode1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Hardmode2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Hardmode3"));
+            }
+            if (NPC.downedMoonlord)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated3"));
             }
 
-            return PossibleDialogs[Main.rand.Next(PossibleDialogs.Count)];
+            if (Main.LocalPlayer.InventoryHas(ItemID.BoneGlove))
+                dialogue.Add(this.GetLocalizedValue("Chat.HasBoneGlove"));
+
+            if (Main.LocalPlayer.InventoryHas(ModContent.ItemType<Valediction>()))
+                dialogue.Add(this.GetLocalizedValue("Chat.HasValediction"));
+
+            return dialogue;
         }
 
         public string Refund()
@@ -233,136 +229,77 @@ namespace CalamityMod.NPCs.TownNPCs
                     Item.NewItem(NPC.GetSource_Loot(), NPC.Hitbox, ItemID.PlatinumCoin, coinCounts[3]);
 
                 CalamityWorld.MoneyStolenByBandit = 0;
-                NPC goblinFucker = Main.npc[goblinIndex];
                 SoundEngine.PlaySound(SoundID.Coins); // Money dink sound
+                CalamityNetcode.SyncWorld();
                 switch (Main.rand.Next(2))
                 {
                     case 0:
-                        return $"Want in on a little secret? Since {goblinFucker.GivenName} always gets so much cash from you, I've been stealing some of it as we go. I need you to keep quiet about it, so here.";
+                        return this.GetLocalization("Refund1").Format(Main.npc[goblinIndex].GivenName);
                     case 1:
-                        return "Hey, if government officials can get tax, why can't I? The heck do you mean that these two things are nothing alike?";
+                        return this.GetLocalizedValue("Refund2");
                 }
-                CalamityNetcode.SyncWorld();
             }
-            return "Sorry, I got nothing. Perhaps you could reforge something and come back later...";
+            return this.GetLocalizedValue("NoRefund");
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (Main.LocalPlayer.Calamity().trippy)
+                return false;
+
             var something = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/TownNPCs/THIEF" + (BirthdayParty.PartyIsUp ? "Alt" : "")).Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
+            spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
             return false;
         }
 
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
-            button2 = "Refund";
+            button2 = this.GetLocalizedValue("RefundButton"); ;
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
             {
-                Main.LocalPlayer.Calamity().newBanditInventory = false;
-                shop = true;
+                shopName = "Shop";
             }
             else
             {
-                shop = false;
                 Main.npcChatText = Refund();
             }
         }
-
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void AddShops()
         {
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Cinquedea>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 9, 0, 0);
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Glaive>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 9, 0, 0);
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Kylie>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 9, 0, 0);
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<OldDie>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 40, 0, 0);
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ItemID.TigerClimbingGear);
-            nextSlot++;
-            if (CalamityConfig.Instance.PotionSelling)
-            {
-                shop.item[nextSlot].SetDefaults(ItemID.InvisibilityPotion);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ItemID.NightOwlPotion);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ItemID.TrapsightPotion);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 1, 0, 0);
-                nextSlot++;
-            }
-            if (Main.hardMode)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<SlickCane>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 25, 0, 0);
-                nextSlot++;
-            }
-            if (NPC.downedPirates)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<ThiefsDime>());
-                nextSlot++;
-            }
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<MomentumCapacitor>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 60, 0, 0);
-                nextSlot++;
-            }
-            if (DownedBossSystem.downedCalamitasClone)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<DeepWounder>());
-                nextSlot++;
-            }
-            if (NPC.downedPlantBoss)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<MonkeyDarts>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<GloveOfPrecision>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<GloveOfRecklessness>());
-                nextSlot++;
-            }
-            if (NPC.downedGolemBoss)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<EtherealExtorter>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(1, 0, 0, 0);
-                nextSlot++;
-            }
-            if (NPC.downedMoonlord)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<CelestialReaper>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(2, 0, 0, 0);
-                nextSlot++;
-            }
-            if (DownedBossSystem.downedDoG)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<VeneratedLocket>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(25, 0, 0, 0);
-                nextSlot++;
-            }
-            if (DownedBossSystem.downedYharon)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<DragonScales>());
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(40, 0, 0, 0);
-                nextSlot++;
-            }
-            //:BearWatchingYou:
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<BearsEye>());
-            nextSlot++;
+            Condition potionSells = CalamityConditions.PotionSellingConfig;
+            Condition downedCalclone = CalamityConditions.DownedCalamitasClone;
+            Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
+            Condition downedYharon = CalamityConditions.DownedYharon;
+
+            NPCShop shop = new(Type);
+            shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
+                .AddWithCustomValue(ModContent.ItemType<Glaive>(), Item.buyPrice(gold: 9))
+                .AddWithCustomValue(ModContent.ItemType<Kylie>(), Item.buyPrice(gold: 9))
+                .AddWithCustomValue(ModContent.ItemType<OldDie>(), Item.buyPrice(gold: 40))
+                .Add(ItemID.TigerClimbingGear)
+                .AddWithCustomValue(ItemID.InvisibilityPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
+                .AddWithCustomValue(ItemID.NightOwlPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
+                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
+                .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
+                .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
+                .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)
+                .Add(ModContent.ItemType<MonkeyDarts>(), Condition.DownedPlantera)
+                .Add(ModContent.ItemType<GloveOfPrecision>(), Condition.DownedPlantera)
+                .Add(ModContent.ItemType<GloveOfRecklessness>(), Condition.DownedPlantera)
+                .AddWithCustomValue(ModContent.ItemType<EtherealExtorter>(), Item.buyPrice(1), Condition.DownedGolem)
+                .AddWithCustomValue(ModContent.ItemType<CelestialReaper>(), Item.buyPrice(2), Condition.DownedMoonLord)
+                .AddWithCustomValue(ModContent.ItemType<VeneratedLocket>(), Item.buyPrice(25), downedDoG)
+                .AddWithCustomValue(ModContent.ItemType<DragonScales>(), Item.buyPrice(40), downedYharon)
+                .Add(ModContent.ItemType<BearsEye>()) //:BearWatchingYou:
+                .Register();
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
@@ -376,8 +313,8 @@ namespace CalamityMod.NPCs.TownNPCs
             }
         }
 
-        // Make this Town NPC teleport to the Queen statue when triggered.
-        public override bool CanGoToStatue(bool toKingStatue) => !toKingStatue;
+        // Make this Town NPC teleport to the Queen or King statue when triggered.
+        public override bool CanGoToStatue(bool toKingStatue) => true;
 
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)
         {

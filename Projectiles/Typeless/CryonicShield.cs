@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.CalPlayer;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
-using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -9,14 +9,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class CryonicShield : ModProjectile
+    public class CryonicShield : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
         public override string Texture => "CalamityMod/NPCs/Cryogen/CryogenShield";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cryonic Shield");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
         }
 
@@ -25,7 +25,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.width = 222;
             Projectile.height = 216;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 90000;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
@@ -54,7 +53,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.Kill();
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
@@ -67,19 +66,18 @@ namespace CalamityMod.Projectiles.Typeless
                 if (target.knockBackResist <= 0f)
                     return;
 
+                // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
                 if (CalamityGlobalNPC.ShouldAffectNPC(target))
                 {
-                    float knockbackMultiplier = knockback - (1f - target.knockBackResist);
-                    if (knockbackMultiplier < 0)
-                        knockbackMultiplier = 0;
-
-                    Vector2 trueKnockback = Projectile.SafeDirectionTo(target.Center);
+                    float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
+                    Vector2 trueKnockback = target.Center - Projectile.Center;
+                    trueKnockback.Normalize();
                     target.velocity = trueKnockback * knockbackMultiplier;
                 }
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();

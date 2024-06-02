@@ -1,16 +1,17 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Damageable;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
     // TODO -- Make this one projectile with multiple frames instead of multiple projectiles with one frame.
-    public class ArtifactOfResilienceShard1 : ModProjectile
+    public class ArtifactOfResilienceShard1 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Timer = 0;
         public Vector2 StartingPosition;
         public const int MaxTimeLeft = 360;
@@ -20,7 +21,6 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxRadius = 240f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artifact Shard");
             Main.projFrames[Projectile.type] = 1;
         }
 
@@ -88,17 +88,16 @@ namespace CalamityMod.Projectiles.Typeless
                 }
                 if (projectile.ModProjectile is ArtifactOfResilienceShard1)
                 {
-                    for (int i = 0; i < Main.npc.Length; i++)
+                    foreach (var n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[i].active &&
-                            Main.npc[i].Distance(StartingPosition) < projectile.ai[1] &&
-                            Main.npc[i].damage > 0)
+                        if (n.Distance(StartingPosition) < projectile.ai[1] &&
+                            n.damage > 0)
                         {
-                            if (Main.npc[i].Calamity().relicOfResilienceCooldown <= 0)
+                            if (n.Calamity().relicOfResilienceCooldown <= 0)
                             {
-                                Main.npc[i].Calamity().relicOfResilienceCooldown = 600;
-                                Main.npc[i].Calamity().relicOfResilienceWeakness = 180;
-                                Main.npc[i].AddBuff(ModContent.BuffType<ProfanedWeakness>(), Main.npc[i].Calamity().relicOfResilienceWeakness);
+                                n.Calamity().relicOfResilienceCooldown = 600;
+                                n.Calamity().relicOfResilienceWeakness = 180;
+                                n.AddBuff(ModContent.BuffType<ProfanedWeakness>(), n.Calamity().relicOfResilienceWeakness);
                             }
                         }
                     }
@@ -139,14 +138,14 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
         public override void AI() => ArtifactOfResilienceShardAI(Projectile, ref StartingPosition, ref Timer);
     }
-    public class ArtifactOfResilienceShard2 : ModProjectile
+    public class ArtifactOfResilienceShard2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Timer = 0;
         public Vector2 StartingPosition;
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artifact Shard");
             Main.projFrames[Projectile.type] = 1;
         }
 
@@ -178,14 +177,14 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
         public override void AI() => ArtifactOfResilienceShard1.ArtifactOfResilienceShardAI(Projectile, ref StartingPosition, ref Timer);
     }
-    public class ArtifactOfResilienceShard3 : ModProjectile
+    public class ArtifactOfResilienceShard3 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Timer = 0;
         public Vector2 StartingPosition;
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artifact Shard");
             Main.projFrames[Projectile.type] = 1;
         }
 
@@ -216,14 +215,14 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
         public override void AI() => ArtifactOfResilienceShard1.ArtifactOfResilienceShardAI(Projectile, ref StartingPosition, ref Timer);
     }
-    public class ArtifactOfResilienceShard4 : ModProjectile
+    public class ArtifactOfResilienceShard4 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Timer = 0;
         public Vector2 StartingPosition;
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artifact Shard");
             Main.projFrames[Projectile.type] = 1;
         }
 
@@ -254,14 +253,14 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
         public override void AI() => ArtifactOfResilienceShard1.ArtifactOfResilienceShardAI(Projectile, ref StartingPosition, ref Timer);
     }
-    public class ArtifactOfResilienceShard5 : ModProjectile
+    public class ArtifactOfResilienceShard5 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Timer = 0;
         public Vector2 StartingPosition;
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artifact Shard");
             Main.projFrames[Projectile.type] = 1;
         }
 
@@ -292,14 +291,14 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
         public override void AI() => ArtifactOfResilienceShard1.ArtifactOfResilienceShardAI(Projectile, ref StartingPosition, ref Timer);
     }
-    public class ArtifactOfResilienceShard6 : ModProjectile
+    public class ArtifactOfResilienceShard6 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Timer = 0;
         public Vector2 StartingPosition;
         public const float MaxRadius = 660f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artifact Shard");
             Main.projFrames[Projectile.type] = 1;
         }
 

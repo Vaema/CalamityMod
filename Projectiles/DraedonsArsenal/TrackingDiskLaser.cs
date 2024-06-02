@@ -1,10 +1,12 @@
-using Terraria;
+﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class TrackingDiskLaser : ModProjectile
+    public class TrackingDiskLaser : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
@@ -12,11 +14,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             get => Projectile.localAI[0];
             set => Projectile.localAI[0] = value;
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Laser");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -27,6 +24,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.penetrate = 1;
             Projectile.extraUpdates = 100;
             Projectile.timeLeft = 600;
+            Projectile.ArmorPenetration = 10;
         }
 
         public override void AI()
@@ -38,7 +36,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.Center, 0, 0, 182, 0f, 0f, 160, default, 2f);
+                    Dust dust = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.TheDestroyer, 0f, 0f, 160, default, 2f);
                     dust.position = Projectile.Center;
                     dust.velocity = Projectile.velocity;
                     dust.scale = Projectile.scale;
@@ -47,7 +45,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(60);
             Projectile.maxPenetrate = -1;

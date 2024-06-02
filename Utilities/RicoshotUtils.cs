@@ -24,7 +24,7 @@ namespace CalamityMod
 
         public bool IsValid => type != RicoshotTargetType.None;
     }
-    
+
     public static partial class CalamityUtils
     {
         public static int GetActiveRicoshotCoinCount(this Player player)
@@ -32,15 +32,25 @@ namespace CalamityMod
             int count = 0;
             int id = ModContent.ProjectileType<RicoshotCoin>();
 
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p is null || !p.active || p.owner != player.whoAmI)
+                if (p.owner != player.whoAmI)
                     continue;
                 if (p.type == id)
                     ++count;
             }
             return count;
+        }
+
+        // Intentionally not an extension so it doesn't clog the Visual Studio recommendation lists. This is not generally useful.
+        public static bool CanRicoshotCoinForceCrit(Projectile p)
+        {
+            int id = ModContent.ProjectileType<RicoshotCoin>();
+            if (!p.active || p.type != id)
+                return false;
+
+            int coinUpdateCount = RicoshotCoin.CoinLifetime - p.timeLeft;
+            return coinUpdateCount >= RicoshotCoin.CritDelayTime;
         }
 
         /// <summary>
@@ -87,10 +97,9 @@ namespace CalamityMod
             // Search for all nearby coins.
             // Coins do not necessarily have to be owned by the same player as the searching projectile!
             int coinID = ModContent.ProjectileType<RicoshotCoin>();
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (!proj.active || proj.ModProjectile is null || proj.type != coinID)
+                if (proj.ModProjectile is null || proj.type != coinID)
                     continue;
 
                 // Coins that have already been struck are ignored.
@@ -162,10 +171,9 @@ namespace CalamityMod
             bool foundAnyBullseye = false;
             float closestBullseyeDistance = DaawnlightSpiritOrigin.RicoshotSearchDistance;
             int bullseyeID = ModContent.ProjectileType<SpiritOriginBullseye>();
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj is null || !proj.active || proj.ModProjectile is null || proj.type != bullseyeID || proj.owner != theShot.owner)
+                if (proj.ModProjectile is null || proj.type != bullseyeID || proj.owner != theShot.owner)
                     continue;
 
                 // Do a distance check.

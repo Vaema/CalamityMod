@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,17 +13,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class WavePounder : RogueWeapon
+    public class WavePounder : RogueWeapon, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Wave Pounder");
-            Tooltip.SetDefault("It utilizes its power to send heavy shockwaves throughout the area, causing agonizing internal damage\n" +
-                               "Throws a bomb which explodes into a forceful shockwave\n" +
-                               "Stealth strikes emit absurdly powerful shockwaves");
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -42,7 +34,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
 
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item1;
 
             Item.shootSpeed = 16f;
@@ -70,7 +62,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(18).
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

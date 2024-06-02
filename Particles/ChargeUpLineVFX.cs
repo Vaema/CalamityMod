@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -19,7 +19,7 @@ namespace CalamityMod.Particles
         public float BaseScale;
         public float Opacity;
         public float LineDirection;
-        public float LineLenght = 0f;
+        public float LineLength = 0f;
         private Vector2 PrevOffset = Vector2.Zero;
         private Vector2 BasePosition;
         public bool Telegraph; //Denotes if the line is used as an enemy telegraph. In that case, it'll be marked as important
@@ -46,7 +46,7 @@ namespace CalamityMod.Particles
 
         public CurveSegment goBack = new CurveSegment(EasingType.SineInOut, 0f, 1f, 0.25f);
         public CurveSegment goForward = new CurveSegment(EasingType.SineIn, 0.35f, 1.25f, -1.25f);
-        public float offsetPosition() => PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { goBack , goForward } );
+        public float offsetPosition() => PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { goBack, goForward });
 
         public CurveSegment noSquish = new CurveSegment(EasingType.Linear, 0f, 1f, 0f);
         public CurveSegment squishSpeed = new CurveSegment(EasingType.SineIn, 0.35f, 1f, 0.8f);
@@ -63,7 +63,7 @@ namespace CalamityMod.Particles
 
             RelativeOffset = offsetPosition() * LineDirection.ToRotationVector2() * BasePosition.Length();
 
-            LineLenght = (BasePosition - RelativeOffset).Length();
+            LineLength = (BasePosition - RelativeOffset).Length();
 
             RelativeOffset = RelativeOffset.RotatedBy(MathHelper.PiOver4 / 16f);
             //LineDirection -= MathHelper.PiOver4 / 16f;

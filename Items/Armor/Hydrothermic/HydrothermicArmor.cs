@@ -7,21 +7,17 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 {
     [AutoloadEquip(EquipType.Body)]
     [LegacyName("AtaxiaArmor")]
-    public class HydrothermicArmor : ModItem
+    public class HydrothermicArmor : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hydrothermic Armor");
-            Tooltip.SetDefault("+20 max life\n" +
-                "8% increased damage and 4% increased critical strike chance");
-        }
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
+        internal static string VanitySmokeEntitySourceContext => "SetBonus_Calamity_Hydrothermic_Vanity";
+        internal static string InfernoPotionEntitySourceContext => "SetBonus_Calamity_Hydrothermic_InfernoPotionBoost";
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 20;
         }

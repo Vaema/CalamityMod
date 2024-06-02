@@ -1,23 +1,18 @@
+﻿using CalamityMod.Tiles.Furniture.Fountains;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Tiles.Furniture.Fountains;
 
 namespace CalamityMod.Items.Placeables.Furniture.Fountains
 {
-    public class SunkenSeaFountain : ModItem
+    public class SunkenSeaFountain : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Sunken Water Fountain");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 32;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -25,7 +20,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Fountains
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = Item.buyPrice(0, 4, 0, 0);
-            Item.rare = ItemRarityID.White;
+            Item.rare = ItemRarityID.Blue;
             Item.createTile = ModContent.TileType<SunkenSeaFountainTile>();
         }
     }

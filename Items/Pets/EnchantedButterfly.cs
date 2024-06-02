@@ -8,17 +8,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Pets
 {
     [LegacyName("SparksSummon")]
-    public class EnchantedButterfly : ModItem
+    public class EnchantedButterfly : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Enchanted Butterfly");
-            Tooltip.SetDefault("Feed him butterflies to keep him strong!\n" +
-                "Summons a mysterious dragonfly light pet\n" +
-                "Provides a small amount of light in the abyss");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.WispinaBottle);

@@ -6,11 +6,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SolarPixie : ModProjectile
+    public class SolarPixie : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Solar Pixie");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 25;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int fire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 244, 0f, 0f, 0, default, 1f);
+                    int fire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.CopperCoin, 0f, 0f, 0, default, 1f);
                     Main.dust[fire].velocity *= 2f;
                     Main.dust[fire].scale *= 1.15f;
                 }
@@ -100,9 +100,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!foundTarget)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float npcDist = Vector2.Distance(Projectile.Center, npc.Center);
@@ -122,12 +121,8 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 velocity = targetPos - source;
                     velocity.Normalize();
                     velocity *= shootSpeed;
-                    int beam = Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, velocity, ProjectileID.HeatRay, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (beam.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[beam].DamageType = DamageClass.Summon;
-                        Main.projectile[beam].originalDamage = Projectile.originalDamage;
-                    }
+                    Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), source, velocity, ProjectileID.HeatRay, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    beam.DamageType = DamageClass.Summon;
                     Projectile.ai[0] = 50f;
                 }
             }

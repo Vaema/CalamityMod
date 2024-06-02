@@ -1,9 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Placeables;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,14 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SeafoamBomb : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seafoam Bomb");
-            Tooltip.SetDefault(@"Throws a bomb that explodes into a bubble which deals extra damage to enemies
-Stealth strikes are faster and explode into 5 bubbles");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -32,7 +25,7 @@ Stealth strikes are faster and explode into 5 bubbles");
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SeafoamBombProj>();
             Item.shootSpeed = 8f;
@@ -50,6 +43,7 @@ Stealth strikes are faster and explode into 5 bubbles");
             }
             return true;
         }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
 
         public override void AddRecipes()
         {

@@ -1,18 +1,19 @@
-﻿using CalamityMod.DataStructures;
-using CalamityMod.Items.Weapons.Ranged;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class HydraHead : ModProjectile
+    public class HydraHead : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/Hydra";
 
         public Vector2 CurrentPositionOffset;
@@ -32,11 +33,6 @@ namespace CalamityMod.Projectiles.Ranged
                 return Main.player[Projectile.owner].Top + Vector2.UnitY * 8f;
             }
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Hydra Head");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 30; //66x30 sprite
@@ -47,6 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Ranged;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -140,7 +137,7 @@ namespace CalamityMod.Projectiles.Ranged
         public void PerformAttacks(Vector2 aimDestination)
         {
             Item heldItem = Owner.ActiveItem();
-            
+
             Vector2 shootDirection = Projectile.SafeDirectionTo(aimDestination);
 
             //Normal shot
@@ -149,7 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
                 //Calculation for damage and co
                 Owner.PickAmmo(heldItem, out _, out float itemVelocity, out int itemDamage, out float itemKB, out _);
                 int type = ModContent.ProjectileType<HydrasBlood>();
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     Vector2 spreadDirection = shootDirection.RotatedByRandom(MathHelper.ToRadians(Hydra.ShotSpread / 2f));
                     float spreadVelocity = itemVelocity * Main.rand.NextFloat(1f, 1.4f);
@@ -172,14 +169,14 @@ namespace CalamityMod.Projectiles.Ranged
                 //Calculation for damage and co
                 Owner.PickAmmo(heldItem, out _, out float itemVelocity, out int itemDamage, out float itemKB, out _);
                 int gunType = ModContent.ProjectileType<HydraHeadLaunch>();
-                int gunDamage = itemDamage * 3;
+                int gunDamage = itemDamage * 5;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, itemVelocity * shootDirection, gunType, gunDamage, itemKB, Projectile.owner);
 
                 Projectile.Kill();
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.dedServ)
                 return;
@@ -231,7 +228,8 @@ namespace CalamityMod.Projectiles.Ranged
                                  0);
             }
 
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            bool shouldFlip = Math.Abs(Projectile.rotation) > MathHelper.PiOver2;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
                              null,
@@ -239,7 +237,7 @@ namespace CalamityMod.Projectiles.Ranged
                              Projectile.rotation,
                              Projectile.Size * 0.5f,
                              Projectile.scale,
-                             Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                             shouldFlip ? SpriteEffects.FlipVertically : SpriteEffects.None,
                              0);
 
             return false;

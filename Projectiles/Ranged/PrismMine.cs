@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PrismMine : ModProjectile
+    public class PrismMine : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public List<Vector2> MinesToConnectTo = new List<Vector2>();
         public ref float Time => ref Projectile.ai[0];
         public const float DamageFactorLowerBound = 0.425f;
         public const float MineConnectDistanceMax = 1200f;
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Mine");
 
         public override void SetDefaults()
         {
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Ranged
             return base.Colliding(projHitbox, targetHitbox);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Have the damage be reduced based on hit count. This effect becomes stronger the more hits, before hitting a lower bound.
             float damageFactor = 1f - 3f * (float)Math.Pow(Projectile.numHits / 14f, 2D) + 2f * (float)Math.Pow(Projectile.numHits / 14f, 3D);
@@ -62,16 +62,15 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.numHits > 12 || damageFactor < DamageFactorLowerBound)
                 damageFactor = DamageFactorLowerBound;
 
-            damage = (int)(damage * damageFactor);
+            modifiers.SourceDamage *= damageFactor;
         }
 
         public List<Projectile> LocateOtherMines()
         {
             List<Projectile> mines = new List<Projectile>();
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj.type != Projectile.type || !proj.active || proj.timeLeft <= 12 || i == Projectile.whoAmI)
+                if (proj.type != Projectile.type || proj.timeLeft <= 12 || proj.whoAmI == Projectile.whoAmI)
                     continue;
                 if (!Projectile.WithinRange(proj.Center, MineConnectDistanceMax))
                     continue;
@@ -84,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D baseTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D baseTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>($"{Texture}Glowmask").Value;
             Texture2D laserTexture = ModContent.Request<Texture2D>($"CalamityMod/Projectiles/Ranged/PrismMineArc").Value;
 

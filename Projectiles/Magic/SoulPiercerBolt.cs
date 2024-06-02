@@ -1,17 +1,15 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SoulPiercerBolt : ModProjectile
+    public class SoulPiercerBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Piercer");
-        }
 
         public override void SetDefaults()
         {
@@ -19,26 +17,27 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 4;
             Projectile.extraUpdates = 100;
             Projectile.friendly = true;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 180;
             Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            Vector2 vector33 = Projectile.position;
-            vector33 -= Projectile.velocity;
-            int num448 = Dust.NewDust(vector33, 1, 1, 173, 0f, 0f, 0, default, 0.5f);
-            Main.dust[num448].position = vector33;
-            Main.dust[num448].scale = Main.rand.Next(70, 110) * 0.014f;
-            Main.dust[num448].velocity *= 0.2f;
+            Vector2 projPos = Projectile.position;
+            projPos -= Projectile.velocity;
+            int godSlay = Dust.NewDust(projPos, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 0.5f);
+            Main.dust[godSlay].position = projPos;
+            Main.dust[godSlay].scale = Main.rand.Next(70, 110) * 0.014f;
+            Main.dust[godSlay].velocity *= 0.2f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
     }
 }

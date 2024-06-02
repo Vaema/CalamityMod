@@ -8,19 +8,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Violence : ModItem
+    public class Violence : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Violence");
-            Tooltip.SetDefault("Releases a blazing fork which stays near the mouse and shreds enemies");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.height = Item.width = 142;
-            Item.damage = 404;
+            Item.width = Item.height = 142;
+            Item.damage = 435;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.useTurn = true;

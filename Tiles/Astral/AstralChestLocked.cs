@@ -2,9 +2,8 @@
 using CalamityMod.Items.Placeables.Furniture;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
-using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Astral
@@ -13,52 +12,36 @@ namespace CalamityMod.Tiles.Astral
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpChest();
-
-            ModTranslation name = CreateMapEntryName("chestAstral");
-            name.SetDefault("Astral Chest");
-            AddMapEntry(new Color(174, 129, 92), name, MapChestName);
-
-            name = CreateMapEntryName("chestAstral_Locked");
-            name.SetDefault("Locked Astral Chest");
-            AddMapEntry(new Color(174, 129, 92), name, MapChestName);
-
+            this.SetUpChest(ModContent.ItemType<AstralChest>());
+            AddMapEntry(new Color(174, 129, 92), this.GetLocalization("MapEntry0"), MapChestName);
+            AddMapEntry(new Color(174, 129, 92), this.GetLocalization("MapEntry1"), MapChestName);
             DustType = ModContent.DustType<AstralBasic>();
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Containers };
-            ContainerName.SetDefault("Astral Chest");
-            ChestDrop = ModContent.ItemType<AstralChest>();
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+        public override void NumDust(int i, int j, bool fail, ref int num) => num = 1;
 
+        public string MapChestName(string name, int i, int j) => CalamityUtils.GetMapChestName(name, i, j);
+        public override ushort GetMapOption(int i, int j) => (ushort)(Main.tile[i, j].TileFrameX / 36);
+        public override LocalizedText DefaultContainerName(int frameX, int frameY)
+        {
+            int option = frameX / 36;
+            return this.GetLocalization("MapEntry" + option);
+        }
+        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<AstralChest>(i, j);
+        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<AstralChest>(i, j);
+        public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
+
+        // Locked Chest stuff
         public override bool IsLockedChest(int i, int j) => Main.tile[i, j].TileFrameX / 36 == 1;
-
         public override bool UnlockChest(int i, int j, ref short frameXAdjustment, ref int dustType, ref bool manual)
         {
             if (!DownedBossSystem.downedAstrumAureus)
                 return false;
 
-            dustType = this.DustType;
-
+            dustType = DustType;
             return true;
         }
-
-        public override ushort GetMapOption(int i, int j) => (ushort)(Main.tile[i, j].TileFrameX / 36);
-
-        public string MapChestName(string name, int i, int j) => CalamityUtils.GetMapChestName(name, i, j);
-
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = 1;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ChestDrop);
-            Chest.DestroyChest(i, j);
-        }
-
         public override bool RightClick(int i, int j)
         {
             Tile tile = Main.tile[i, j];
@@ -75,16 +58,6 @@ namespace CalamityMod.Tiles.Astral
                 top--;
             }
             return CalamityUtils.LockedChestRightClick(IsLockedChest(left, top), left, top, i, j);
-        }
-
-        public override void MouseOver(int i, int j)
-        {
-            CalamityUtils.ChestMouseOver<AstralChest>("Astral Chest", i, j);
-        }
-
-        public override void MouseOverFar(int i, int j)
-        {
-            CalamityUtils.ChestMouseFar<AstralChest>("Astral Chest", i, j);
         }
     }
 }

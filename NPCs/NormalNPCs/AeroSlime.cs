@@ -13,8 +13,11 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aero Slime");
             Main.npcFrameCount[NPC.type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
+            value.Position.Y -= 6;
+            value.PortraitPositionYOverride = -36f;
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
         public override void SetDefaults()
@@ -25,7 +28,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 30;
             NPC.defense = 6;
             NPC.lifeMax = 50;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.Slimer;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.alpha = 50;
@@ -38,15 +41,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<AeroSlimeBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Slimes take on the qualities of their environments and after feasting on aerialite ore, this slime has grown wings.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AeroSlime")
             });
         }
 
@@ -56,21 +62,21 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            
+
             return SpawnCondition.Sky.Chance * 0.2f;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 59, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 59, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
@@ -79,7 +85,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyTypeName(ref string typeName)
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 typeName = "YuH";
             }

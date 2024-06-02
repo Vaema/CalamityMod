@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class EvergreenGin : ModItem
+    public class EvergreenGin : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Evergreen Gin");
-            Tooltip.SetDefault(@"It tastes like a Christmas tree, if you can imagine that
-Multiplies all sickness and water-related debuff damage by 1.25
-Reduces life regen by 1");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ Reduces life regen by 1");
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Lime;
             Item.useAnimation = 17;
             Item.useTime = 17;

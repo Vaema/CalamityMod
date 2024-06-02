@@ -1,10 +1,11 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -17,10 +18,14 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class Cuttlefish : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cuttlefish");
             Main.npcFrameCount[NPC.type] = 5;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -46,24 +51,27 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer2Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Should you feel something brush your legs in the depths of the abyss, it is likely that this is the culprit, tasting the waters for potential prey.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cuttlefish")
             });
         }
 
         public override void AI()
         {
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
-            int num = 150;
+            int alphaControl = 150;
             if (NPC.ai[2] == 0f)
             {
-                NPC.alpha = num;
+                NPC.alpha = alphaControl;
                 NPC.TargetClosest(true);
                 if (!Main.player[NPC.target].dead && (Main.player[NPC.target].Center - NPC.Center).Length() < Main.player[NPC.target].Calamity().GetAbyssAggro(160f) &&
                     Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
@@ -116,15 +124,15 @@ namespace CalamityMod.NPCs.Abyss
                         NPC.ai[0] = -1f;
                     }
                 }
-                int num268 = (int)(NPC.position.X + (NPC.width / 2)) / 16;
-                int num269 = (int)(NPC.position.Y + (NPC.height / 2)) / 16;
-                if (Main.tile[num268, num269 - 1].LiquidAmount > 128)
+                int npcTileX = (int)(NPC.position.X + (NPC.width / 2)) / 16;
+                int npcTileY = (int)(NPC.position.Y + (NPC.height / 2)) / 16;
+                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
                 {
-                    if (Main.tile[num268, num269 + 1].HasTile)
+                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
-                    else if (Main.tile[num268, num269 + 2].HasTile)
+                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
@@ -143,7 +151,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 if (NPC.alpha > 0)
                 {
-                    NPC.alpha -= num / 16;
+                    NPC.alpha -= alphaControl / 16;
                     if (NPC.alpha < 0)
                     {
                         NPC.alpha = 0;
@@ -167,13 +175,13 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 if (NPC.wet || NPC.noTileCollide)
                 {
-                    bool flag14 = false;
+                    bool canAttack = false;
                     NPC.TargetClosest(false);
                     if (Main.player[NPC.target].wet && !Main.player[NPC.target].dead)
                     {
-                        flag14 = true;
+                        canAttack = true;
                     }
-                    if (!flag14)
+                    if (!canAttack)
                     {
                         if (!Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                         {
@@ -202,7 +210,7 @@ namespace CalamityMod.NPCs.Abyss
                             }
                         }
                     }
-                    if (flag14)
+                    if (canAttack)
                     {
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                         {
@@ -281,15 +289,15 @@ namespace CalamityMod.NPCs.Abyss
                             }
                         }
                     }
-                    int num258 = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                    int num259 = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                    if (Main.tile[num258, num259 - 1].LiquidAmount > 128)
+                    int npcTileXAgain = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                    int npcTileYAgain = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                    if (Main.tile[npcTileXAgain, npcTileYAgain - 1].LiquidAmount > 128)
                     {
-                        if (Main.tile[num258, num259 + 1].HasTile)
+                        if (Main.tile[npcTileXAgain, npcTileYAgain + 1].HasTile)
                         {
                             NPC.ai[0] = -1f;
                         }
-                        else if (Main.tile[num258, num259 + 2].HasTile)
+                        else if (Main.tile[npcTileXAgain, npcTileYAgain + 2].HasTile)
                         {
                             NPC.ai[0] = -1f;
                         }
@@ -346,19 +354,17 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CuttlefishGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Darkness, 120, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Darkness, 120, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -373,20 +379,20 @@ namespace CalamityMod.NPCs.Abyss
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<AnechoicCoating>(), 2);
-            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<InkBomb>(), 20, 10));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<InkBomb>(), 10, 5));
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

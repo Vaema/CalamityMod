@@ -1,14 +1,15 @@
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class AlphaSeeker : ModProjectile
+    public class AlphaSeeker : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private const float MaxSpeed = 15f;
         private const float HomingStartRange = 400f;
 
@@ -17,11 +18,6 @@ namespace CalamityMod.Projectiles.Rogue
         public static int lifetime = 120;
         public static int returnTime = 60;
         public bool initialized = false;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Alpha Virus Seeker");
-        }
 
         public override void SetDefaults()
         {
@@ -32,6 +28,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.timeLeft = lifetime;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.Calamity().CannotProc = true;
             Projectile.extraUpdates = 1;
         }
 
@@ -54,10 +51,9 @@ namespace CalamityMod.Projectiles.Rogue
 
                 Projectile parent = Main.projectile[0];
                 bool active = false;
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    Projectile p = Main.projectile[i];
-                    if (p.identity == Projectile.ai[1] && p.active)
+                    if (p.identity == Projectile.ai[1])
                     {
                         parent = p;
                         active = true;
@@ -102,7 +98,7 @@ namespace CalamityMod.Projectiles.Rogue
                 HomingAI();
             }
 
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 2f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity.Y = -0.15f;
         }
@@ -145,10 +141,9 @@ namespace CalamityMod.Projectiles.Rogue
         {
             int target = -1;
             float minDist = HomingStartRange;
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (var npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (!npc.active || npc.type == NPCID.TargetDummy)
+                if (npc.type == NPCID.TargetDummy)
                     continue;
 
                 if (npc.CanBeChasedBy(Projectile, false))
@@ -159,19 +154,19 @@ namespace CalamityMod.Projectiles.Rogue
                     if (distToNPC < minDist)
                     {
                         minDist = distToNPC;
-                        target = i;
+                        target = npc.whoAmI;
                     }
                 }
             }
             return target;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }

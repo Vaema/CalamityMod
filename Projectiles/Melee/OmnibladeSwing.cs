@@ -1,17 +1,19 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class OmnibladeSwing : ModProjectile
+    public class OmnibladeSwing : ModProjectile, ILocalizedModType
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Omniblade>();
         public Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Omniblade");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -40,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPoint = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Owner.channel && !Owner.noItems && !Owner.CCed)
+                if (!Owner.CantUseHoldout())
                     HandleChannelMovement(playerRotatedPoint);
                 else
                     Projectile.Kill();
@@ -52,9 +54,9 @@ namespace CalamityMod.Projectiles.Melee
             // Sprite and player directioning.
             Projectile.spriteDirection = -Projectile.direction;
             if (Projectile.direction == 1)
-                Projectile.Left = Owner.Center;
+                Projectile.Left = Owner.MountedCenter;
             else
-                Projectile.Right = Owner.Center;
+                Projectile.Right = Owner.MountedCenter;
             Projectile.position.X += Projectile.spriteDirection == -1 ? -116f : 88f;
             Projectile.position.Y -= Projectile.scale * 66f;
             Owner.ChangeDir(Projectile.direction);
@@ -80,12 +82,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.velocity = newVelocity;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
         }

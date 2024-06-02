@@ -5,11 +5,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class IceSentry : ModProjectile
+    public class IceSentry : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ice Sentry");
             Main.projFrames[Projectile.type] = 18;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -59,9 +59,7 @@ namespace CalamityMod.Projectiles.Summon
                         Vector2 speed = new Vector2(Main.rand.Next(-1000, 1001), Main.rand.Next(-1000, 1001));
                         speed.Normalize();
                         speed *= 15f;
-                        int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + speed, speed, ModContent.ProjectileType<IceSentryShard>(), Projectile.damage / 2, Projectile.knockBack / 2, Projectile.owner);
-                        if (Main.projectile.IndexInRange(shard))
-                            Main.projectile[shard].originalDamage = Projectile.originalDamage / 2;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + speed, speed, ModContent.ProjectileType<IceSentryShard>(), Projectile.damage / 2, Projectile.knockBack / 2, Projectile.owner);
                     }
                 }
             }
@@ -100,9 +98,7 @@ namespace CalamityMod.Projectiles.Summon
                             speed *= 8f;
                             if (Projectile.ai[1] >= 300f)
                                 speed = speed.RotatedBy(MathHelper.ToRadians(Main.rand.Next(-5, 6))) * 1.5f + npc.velocity / 2f;
-                            int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, speed + npc.velocity / 2f, ModContent.ProjectileType<IceSentryFrostBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                            if (Main.projectile.IndexInRange(p))
-                                Main.projectile[p].originalDamage = Projectile.originalDamage;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, speed + npc.velocity / 2f, ModContent.ProjectileType<IceSentryFrostBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                     }
                 }
@@ -121,16 +117,15 @@ namespace CalamityMod.Projectiles.Summon
                 float maxDistance = 1000f;
                 int possibleTarget = -1;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile))
                     {
                         float npcDistance = Projectile.Distance(npc.Center);
                         if (npcDistance < maxDistance)
                         {
                             maxDistance = npcDistance;
-                            possibleTarget = i;
+                            possibleTarget = npc.whoAmI;
                         }
                     }
                 }

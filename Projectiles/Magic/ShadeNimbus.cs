@@ -4,13 +4,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ShadeNimbus : ModProjectile
+    public class ShadeNimbus : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/Boss/ShadeNimbusHostile";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nimbus");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -53,9 +53,9 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.ai[0] = 0f;
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        int num414 = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
-                        int num415 = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)num414, (float)num415, 0f, 5f, ModContent.ProjectileType<Shaderain>(), Projectile.damage, 0f, Projectile.owner, 0f, 0f);
+                        int rainX = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
+                        int rainY = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)rainX, (float)rainY, 0f, 5f, ModContent.ProjectileType<Shaderain>(), Projectile.damage, 0f, Projectile.owner, 0f, 0f);
                     }
                 }
             }

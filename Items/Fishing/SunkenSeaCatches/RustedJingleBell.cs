@@ -7,16 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.SunkenSeaCatches
 {
-    public class RustedJingleBell : ModItem
+    public class RustedJingleBell : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rusted Jingle Bell");
-            Tooltip.SetDefault("Summons a baby ghost bell light pet\n" +
-                "Provides a moderate amount of light while underwater");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.WispinaBottle);

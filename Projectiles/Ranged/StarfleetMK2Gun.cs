@@ -1,22 +1,20 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class StarfleetMK2Gun : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Starmada>();
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/Starmada";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Starmada");
-        }
 
         public override void SetDefaults()
         {
@@ -56,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
                             Vector2 source = Vector2.Normalize(Projectile.velocity) * 9f;
                             source = source.RotatedBy((d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt, default) + player.Center;
                             Vector2 dustVel = source - player.Center;
-                            int index = Dust.NewDust(source + dustVel, 0, 0, 221, 0f, 0f, 0, default, 4f);
+                            int index = Dust.NewDust(source + dustVel, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 0, default, 4f);
                             Main.dust[index].noGravity = true;
                             Main.dust[index].velocity = dustVel;
                         }
@@ -71,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = baseUseTime - modifier * Projectile.localAI[0];
                 timeToFire = true;
             }
-            bool canFire = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canFire = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
             if (Projectile.soundDelay <= 0 && canFire)
             {
                 Projectile.soundDelay = baseUseTime - modifier * (int)Projectile.localAI[0];
@@ -82,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (canFire)
                 {
-                    int type = ModContent.ProjectileType<FallenStarProj>();
+                    int type = ProjectileID.StarCannonStar;
                     float shootSpeed = 16f;
                     int damage = player.GetWeaponDamage(player.ActiveItem());
                     float knockBack = player.ActiveItem().knockBack;
@@ -105,7 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
                             ModContent.ProjectileType<PlasmaBlast>(),
                             ModContent.ProjectileType<AstralStar>(),
                             ModContent.ProjectileType<GalacticaComet>(),
-                            ModContent.ProjectileType<FallenStarProj>(),
+                            ProjectileID.StarCannonStar,
                             ProjectileID.Starfury
                         });
                         int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, speed, type, damage, knockBack, Projectile.owner);

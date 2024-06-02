@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,29 +8,17 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("PrideHuntersPlanarRipper")]
-    public class PridefulHuntersPlanarRipper : ModItem
+    public class PridefulHuntersPlanarRipper : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int counter = 0;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Prideful Hunter's Planar Ripper");
-            Tooltip.SetDefault("Every fourth shot deals 135% damage\n" +
-                "Converts musket balls into lightning bolts\n" +
-                "Lightning bolts travel extremely fast and explode on enemy kills\n" +
-                "Lightning bolt crits grant a stacking speed boost to the player\n" +
-                "This stacks up to 20 percent bonus movement speed and acceleration\n" +
-                "The boost will reset if the player holds a different item\n" +
-                "33% chance to not consume ammo");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = 86;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 68;
             Item.height = 32;
+            Item.damage = 74;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 5;
             Item.autoReuse = true;
@@ -43,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
             Item.shootSpeed = 15f;
 
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -73,12 +61,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<P90>().
                 AddIngredient(ItemID.Uzi).
-                AddIngredient<PearlGod>(). //This should be removed
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentVortex, 10).
-                AddIngredient<GalacticaSingularity>(6). //This should be removed
-                AddIngredient<CoreofCalamity>(). // This should be removed
-                AddIngredient(ModContent.ItemType<Stardust>(), 25). // This should be removed
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

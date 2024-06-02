@@ -7,11 +7,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class DeathsAscensionProjectile : ModProjectile
+    public class DeathsAscensionProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Scythe");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -25,9 +25,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
             Projectile.alpha = 55;
-            Projectile.penetrate = 3;
-            Projectile.timeLeft = 300;
+            Projectile.penetrate = 2;
+            Projectile.timeLeft = 180;
             Projectile.ignoreWater = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
             AIType = ProjectileID.DeathSickle;
         }
 
@@ -37,10 +39,10 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 18f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)

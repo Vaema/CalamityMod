@@ -1,16 +1,17 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Hydra : ModItem
+    public class Hydra : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         //Editable stats:
         public const int BulletsPerShot = 4;
         public const float ShotSpread = 10f; //in degrees
@@ -26,13 +27,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hydra");
-            Tooltip.SetDefault("Fires a spread of " + BulletsPerShot + " toxic bullets\n"+
-                            "Grows a gun-head every " + TimeToSpawnHead + " seconds, up to a maximum of " + MaximumHeadCount + " heads\n" +
-                            "Left-click to command any existing heads to fire\n" +
-                            "Right-click to launch the heads for powerful explosive damage\n" +
-                            "[c/9D80B0:Fusion of heavy machinery and Lernaean blood]");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
@@ -50,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 10f;
             Item.knockBack = 10f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = null; //does so in Shoot
             Item.Calamity().canFirePointBlankShots = true;
@@ -61,23 +55,24 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void UpdateInventory(Player player)
         {
             //Spawn heads while holding
-            if (player.ActiveItem().type == Item.type && player.ownedProjectileCounts[HeadID] < MaximumHeadCount)
+            if (player.ActiveItem() == Item && player.ownedProjectileCounts[HeadID] < MaximumHeadCount)
             {
                 HeadSpawnTimer++;
                 if (HeadSpawnTimer >= TimeToSpawnHead * 60)
                 {
                     HeadSpawnTimer = 0;
                     SoundEngine.PlaySound(SpawnSound, player.Center);
-                    Projectile.NewProjectile(Item.GetSource_FromThis(), player.Top + Vector2.UnitY * 8f, Vector2.Zero, HeadID, 0, 0, player.whoAmI);
+                    Projectile head = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), player.Top + Vector2.UnitY * 8f, Vector2.Zero, HeadID, 0, 0, player.whoAmI);
+                    head.OriginalCritChance = Item.crit;
                 }
-            }    
+            }
             else if (player.ActiveItem().type != Item.type || player.dead || !player.active)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
                     //Destroy all heads
-                    if (Main.projectile[i].type == HeadID && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
-                        Main.projectile[i].Kill();
+                    if (p.type == HeadID && p.owner == player.whoAmI)
+                        p.Kill();
                 }
                 HeadSpawnTimer = 0;
             }
@@ -90,9 +85,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 return false;
 
             //Otherwise, launch the guns
+            SoundEngine.PlaySound(LaunchSound, player.Center);
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
-                SoundEngine.PlaySound(LaunchSound, player.Center);
                 if (Main.projectile[i].type == HeadID && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
                     Main.projectile[i].ai[1] = -1f;
             }
@@ -106,7 +101,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 int CurrentHeadCount = player.ownedProjectileCounts[HeadID];
                 //Exponentially louder the more heads, slightly
-                SoundStyle FireSound = new("CalamityMod/Sounds/Item/Hydra") { Volume = 0.3f + (float)(Math.Pow(CurrentHeadCount, 1.5D) * 0.2f) };
+                SoundStyle FireSound = new("CalamityMod/Sounds/Item/Hydra") { Volume = 0.3f + (float)(Math.Pow(CurrentHeadCount, 1.2D) * 0.15f) };
                 SoundEngine.PlaySound(FireSound, player.Center);
 
                 Vector2 spreadDirection = shootDirection.RotatedByRandom(MathHelper.ToRadians(ShotSpread / 2f));
@@ -116,11 +111,11 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, newPos, spreadVelocity * spreadDirection, Item.shoot, damage, knockback, player.whoAmI);
             }
 
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
                 //Force all heads to shoot
-                if (Main.projectile[i].type == HeadID && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
-                    Main.projectile[i].ai[1] = 1f;
+                if (p.type == HeadID && p.owner == player.whoAmI)
+                    p.ai[1] = 1f;
             }
             return false;
         }
@@ -129,7 +124,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 7f;
@@ -141,7 +136,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseItemFrame(Player player)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;

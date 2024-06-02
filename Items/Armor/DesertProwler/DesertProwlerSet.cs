@@ -1,30 +1,33 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using CalamityMod.Cooldowns;
-using static Terraria.ModLoader.ModContent;
-using Microsoft.Xna.Framework;
+﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Particles;
-using System;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
+using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using CalamityMod.Dusts;
-using ReLogic.Utilities;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.DesertProwler
 {
     [AutoloadEquip(EquipType.Head)]
-    public class DesertProwlerHat : ModItem
+    public class DesertProwlerHat : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public static readonly SoundStyle SmokeBombSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerSmokeBomb");
         public static readonly SoundStyle SmokeBombEndSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerSmokeBombEnd");
         public static readonly SoundStyle CDResetSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerCDReset");
 
+        public static int FlatDamageBonus = 1;
         public static int SmokeCooldown = 25 * 60;
         public static int SmokeDuration = 5 * 60;
         public static int LightsOutReset = (int)(1.5f * 60);
@@ -40,17 +43,12 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void Load()
         {
-            On.Terraria.Player.KeyDoubleTap += ActivateSetBonus;
+            Terraria.On_Player.KeyDoubleTap += ActivateSetBonus;
         }
 
-        public override void Unload()
+        private void ActivateSetBonus(Terraria.On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
         {
-            On.Terraria.Player.KeyDoubleTap -= ActivateSetBonus;
-        }
-
-        private void ActivateSetBonus(On.Terraria.Player.orig_KeyDoubleTap orig, Player player, int keyDir)
-        {
-            if (keyDir == 0 && HasArmorSet(player) && !player.mount.Active)
+            if (keyDir == (Main.ReversedUpDownArmorSetBonuses ? 1 : 0) && HasArmorSet(player) && !player.mount.Active)
             {
                 // The set bonus can only be activated if the player does not have the cooldown.
                 if (!player.Calamity().cooldowns.TryGetValue(SandsmokeBomb.ID, out CooldownInstance cd))
@@ -62,18 +60,11 @@ namespace CalamityMod.Items.Armor.DesertProwler
             orig(player, keyDir);
         }
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Desert Prowler Hat");
-            Tooltip.SetDefault("4% increased ranged critical strike chance and 20% chance to not consume ammo");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1; //6
         }
@@ -86,9 +77,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
 
         public override void UpdateArmorSet(Player player)
-        {           
-            player.setBonus = "Ranged attacks deal an extra 1 flat damage"; //More gets edited in elsewhere
-            
+        {
+            player.setBonus = this.GetLocalization("SetBonus").Format(FlatDamageBonus); //More gets edited in elsewhere
+            player.GetDamage<RangedDamageClass>().Flat += FlatDamageBonus;
+
             DesertProwlerPlayer armorPlayer = player.GetModPlayer<DesertProwlerPlayer>();
             armorPlayer.desertProwlerSet = true;
 
@@ -96,7 +88,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
             {
                 if (cd.timeLeft == SmokeCooldown + SmokeDuration)
                     armorPlayer.SetBonusStartEffect();
-                
+
                 player.moveSpeed *= 1.5f;
                 player.invis = true;
                 player.aggro = (int)(player.aggro * 0.5f);
@@ -175,19 +167,14 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
                 if (setBonusIndex != -1)
                 {
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", "Sandsmoke Bomb - Double tap DOWN to shroud yourself in a small cloud of sand");
+                    string dir = Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN");
+                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<DesertProwlerHat>("AbilityBrief").Format(dir));
                     setBonus1.OverrideColor = Color.Lerp(new Color(255, 229, 156), new Color(233, 225, 198), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
                     tooltips.Insert(setBonusIndex + 1, setBonus1);
 
-                    TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", "While the sand cloud is active, gain increased mobility but heavily reduced defense");
+                    TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", CalamityUtils.GetTextFromModItem<DesertProwlerHat>("AbilityDescription").Format(FreeCrit, BonusDamageCap, LightsOutReset / 60f));
                     setBonus2.OverrideColor = new Color(204, 181, 72);
                     tooltips.Insert(setBonusIndex + 2, setBonus2);
-
-                    TooltipLine setBonus3 = new TooltipLine(item.Mod, "CalamityMod:SetBonus3", $"Using a ranged weapon instantly dispels the sand cloak, but guarantees a supercrit for {FreeCrit}% damage\n" +
-                        $"The super crit applies only as long as the resulting hit wouldn't exceed {BonusDamageCap} damage\n" +
-                        $"Landing the killing blow on an enemy with this shot shortens the ability's cooldown to {LightsOutReset / 60f} seconds");
-                    setBonus3.OverrideColor = new Color(204, 181, 72);
-                    tooltips.Insert(setBonusIndex + 3, setBonus3);
                 }
             }
         }
@@ -203,7 +190,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<DesertFeather>(2).
+                AddIngredient<StormlionMandible>(2).
                 AddIngredient(ItemID.Silk, 8).
                 AddTile(TileID.Loom).
                 Register();
@@ -211,16 +198,13 @@ namespace CalamityMod.Items.Armor.DesertProwler
     }
 
     [AutoloadEquip(EquipType.Body)]
-    public class DesertProwlerShirt : ModItem, IBulkyArmor
+    public class DesertProwlerShirt : ModItem, IBulkyArmor, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/DesertProwler/DesertProwlerShirt_Bulk";
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Desert Prowler Shirt");
-            Tooltip.SetDefault("5% increased ranged critical strike chance");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -234,13 +218,12 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 3;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => DesertProwlerHat.ModifySetTooltips(this, tooltips);
-
 
         public override void UpdateEquip(Player player)
         {
@@ -250,7 +233,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<DesertFeather>(3).
+                AddIngredient<StormlionMandible>(3).
                 AddIngredient(ItemID.Silk, 10).
                 AddTile(TileID.Loom).
                 Register();
@@ -258,20 +241,14 @@ namespace CalamityMod.Items.Armor.DesertProwler
     }
 
     [AutoloadEquip(EquipType.Legs)]
-    public class DesertProwlerPants : ModItem
+    public class DesertProwlerPants : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Desert Prowler Pants");
-            Tooltip.SetDefault("10% increased movement speed and immunity to the Mighty Wind debuff");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2;
         }
@@ -285,7 +262,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<DesertFeather>().
+                AddIngredient<StormlionMandible>().
                 AddIngredient(ItemID.Silk, 5).
                 AddTile(TileID.Loom).
                 Register();
@@ -312,12 +289,6 @@ namespace CalamityMod.Items.Armor.DesertProwler
             desertProwlerSet = false;
         }
 
-        public override void ModifyWeaponDamage(Item item, ref StatModifier damage)
-        {
-            if (desertProwlerSet && item.CountsAsClass<RangedDamageClass>() && item.ammo == AmmoID.None)
-                damage.Flat += 1f;
-        }
-
         public override void PostUpdate()
         {
             if (Player.Calamity().cooldowns.TryGetValue(SandsmokeBomb.ID, out var cd))
@@ -330,7 +301,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
                 }
 
                 if (cd.timeLeft == DesertProwlerHat.SmokeCooldown)
-                SetBonusEndEffect();
+                    SetBonusEndEffect();
             }
         }
 
@@ -383,7 +354,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
                     for (int j = 0; j < 1; j++)
                     {
-                        Dust miniDust = Dust.NewDustDirect(dustPos, 32, 32, 124, dustVel.X, dustVel.Y * 0.3f, 150, default(Color), 1f);
+                        Dust miniDust = Dust.NewDustDirect(dustPos, 32, 32, DustID.SandstormInABottle, dustVel.X, dustVel.Y * 0.3f, 150, default(Color), 1f);
                         miniDust.fadeIn = 1.5f;
                     }
                 }
@@ -449,14 +420,14 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
                     projectile.CritChance += ExtraCrit;
 
-                    projectile.Calamity().supercritHits  = 1;
+                    projectile.Calamity().supercritHits = 1;
                     LightsOut = true;
                     Main.player[projectile.owner].GetModPlayer<DesertProwlerPlayer>().stopSmokeBomb = true;
                 }
             }
         }
 
-        public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (LightsOut)
             {

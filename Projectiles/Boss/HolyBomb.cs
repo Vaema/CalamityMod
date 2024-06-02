@@ -1,22 +1,22 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class HolyBomb : ModProjectile
+    public class HolyBomb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Holy Bomb");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -47,6 +47,16 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.npc[CalamityGlobalNPC.holyBoss].active)
                     Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
             }
+            else if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
+            }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
@@ -57,19 +67,19 @@ namespace CalamityMod.Projectiles.Boss
 
                 float velocityY = -2f;
                 int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-                for (int num193 = 0; num193 < 2; num193++)
+                for (int i = 0; i < 2; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, velocityY, 50, default, 1.5f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, velocityY, 50, default, 1.5f);
                     Main.dust[dust].noGravity = true;
                 }
-                for (int num194 = 0; num194 < 20; num194++)
+                for (int j = 0; j < 20; j++)
                 {
-                    int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, velocityY, 0, default, 2.5f);
-                    Main.dust[num195].noGravity = true;
-                    Main.dust[num195].velocity *= 2f;
-                    num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, velocityY, 50, default, 1.5f);
-                    Main.dust[num195].velocity *= 1.5f;
-                    Main.dust[num195].noGravity = true;
+                    int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, velocityY, 0, default, 2.5f);
+                    Main.dust[holyDust].noGravity = true;
+                    Main.dust[holyDust].velocity *= 2f;
+                    holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, velocityY, 50, default, 1.5f);
+                    Main.dust[holyDust].velocity *= 1.5f;
+                    Main.dust[holyDust].noGravity = true;
                 }
 
                 if (Projectile.owner == Main.myPlayer)
@@ -100,16 +110,16 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override bool PreDraw(ref Color lightColor)
-        {            
-            Texture2D texture = (Projectile.maxPenetrate == (int)Providence.BossMode.Day) ? ModContent.Request<Texture2D>(Texture).Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBombNight").Value;
-            int num214 = texture.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
+        {
+            Texture2D texture = (Projectile.maxPenetrate == (int)Providence.BossMode.Day) ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBombNight").Value;
+            int framing = texture.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha, true), 4f, texture);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -119,33 +129,36 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
             int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-            for (int num193 = 0; num193 < 2; num193++)
+            for (int i = 0; i < 2; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1.5f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1.5f);
                 Main.dust[dust].noGravity = true;
             }
-            for (int num194 = 0; num194 < 20; num194++)
+            for (int j = 0; j < 20; j++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 2.5f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 3f;
-                num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1.5f);
-                Main.dust[num195].velocity *= 2f;
-                Main.dust[num195].noGravity = true;
+                int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 2.5f);
+                Main.dust[holyDust].noGravity = true;
+                Main.dust[holyDust].velocity *= 3f;
+                holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1.5f);
+                Main.dust[holyDust].velocity *= 2f;
+                Main.dust[holyDust].noGravity = true;
             }
         }
 
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             //In GFB, "real damage" is replaced with negative healing
             if (Projectile.maxPenetrate >= (int)Providence.BossMode.Red)
-                damage = 0;
+                modifiers.SourceDamage *= 0f;
+        }
 
-            //If the player is dodging, don't apply debuffs
-            if (damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red || target.creativeGodMode)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            // If the player is dodging, don't apply debuffs
+            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 240, 20);
+            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 160, 20);
         }
     }
 }

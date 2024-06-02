@@ -1,6 +1,6 @@
-﻿using CalamityMod.Cooldowns;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Cooldowns;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -97,15 +97,6 @@ namespace CalamityMod.CalPlayer
             packet.Write(cooldowns.Count);
             foreach (CooldownInstance cd in cooldowns.Values)
                 cd.Write(packet);
-            Player.SendPacket(packet, server);
-        }
-
-        private void SyncDeathCount(bool server)
-        {
-            ModPacket packet = Mod.GetPacket(256);
-            packet.Write((byte)CalamityModMessageType.DeathCountSync);
-            packet.Write(Player.whoAmI);
-            packet.Write(deathCount);
             Player.SendPacket(packet, server);
         }
 
@@ -210,13 +201,6 @@ namespace CalamityMod.CalPlayer
                     localInstance.timeLeft = syncedCooldowns[netID].timeLeft;
                 }
             }
-        }
-
-        internal void HandleDeathCount(BinaryReader reader)
-        {
-            deathCount = reader.ReadInt32();
-            if (Main.netMode == NetmodeID.Server)
-                SyncDeathCount(true);
         }
 
         internal void HandleDefenseDamage(BinaryReader reader)

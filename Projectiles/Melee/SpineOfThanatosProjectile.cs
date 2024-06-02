@@ -1,17 +1,18 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class SpineOfThanatosProjectile : ModProjectile
+    public class SpineOfThanatosProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public List<Vector2> WhipPoints = new List<Vector2>();
         public Player Owner => Main.player[Projectile.owner];
         public float CurrentBendFactor => MaximumBendFactor * CalamityUtils.Convert01To010(Time / Lifetime);
@@ -29,7 +30,6 @@ namespace CalamityMod.Projectiles.Melee
         public const int FinalWhipRayShootRate = 10;
         public const int LaserRayCount = 12;
         public const float MaximumBendFactor = 42f;
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Spine of Thanatos");
 
         public override void SetDefaults()
         {
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!Owner.noItems && !Owner.CCed)
+                if (!Owner.CantUseHoldout())
                     HandleChannelMovement(playerRotatedPosition);
                 else
                     Projectile.Kill();
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee
             float attackCompletionRatio = Utils.GetLerpValue(Lifetime, FlyBackTime, Projectile.timeLeft, true);
 
             // Normally swing from a "cone" to a collision area that causes both whips to collide.
-            float baseSwingAngle = MathHelper.Lerp(-1.1f, 1.57f, 1f - attackCompletionRatio);
+            float baseSwingAngle = MathHelper.Lerp(-1.1f, MathHelper.PiOver2, 1f - attackCompletionRatio);
 
             Vector2 swingDirection = (SwingDirection * baseSwingAngle + MathHelper.PiOver2).ToRotationVector2();
             swingDirection = swingDirection.RotatedBy(InitialDirectionRotation);

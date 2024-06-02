@@ -9,21 +9,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Silva
 {
     [AutoloadEquip(EquipType.Body)]
-    public class SilvaArmor : ModItem
+    public class SilvaArmor : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Silva Armor");
-            Tooltip.SetDefault("+80 max life\n" +
-                       "12% increased damage and 8% increased critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
-            Item.width = 34;
+            Item.width = 24;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 44;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

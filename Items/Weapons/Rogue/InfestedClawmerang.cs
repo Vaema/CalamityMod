@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -11,17 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("Shroomerang")]
     public class InfestedClawmerang : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Infested Clawmerang");
-            Tooltip.SetDefault(@"Fires a slow, long-ranged boomerang
-Stealth strikes grant the Mushy buff to the user on enemy hits and summon homing spores");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 26;
+            Item.height = 50;
             Item.damage = 18;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -31,9 +24,8 @@ Stealth strikes grant the Mushy buff to the user on enemy hits and summon homing
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 50;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.shoot = ModContent.ProjectileType<InfestedClawmerangProj>();
             Item.shootSpeed = 15f;
             Item.DamageType = RogueDamageClass.Instance;

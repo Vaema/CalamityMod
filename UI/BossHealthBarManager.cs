@@ -1,4 +1,7 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Events;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.CalClone;
@@ -24,16 +27,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.UI
@@ -65,9 +65,9 @@ namespace CalamityMod.UI
     {
         public struct BossEntityExtension
         {
-            public string NameOfExtensions;
+            public LocalizedText NameOfExtensions;
             public int[] TypesToSearchFor;
-            public BossEntityExtension(string name, params int[] types)
+            public BossEntityExtension(LocalizedText name, params int[] types)
             {
                 NameOfExtensions = name;
                 TypesToSearchFor = types;
@@ -164,10 +164,10 @@ namespace CalamityMod.UI
             OneToMany[NPCType<RavagerLegLeft>()] = Rav;
             OneToMany[NPCType<RavagerHead>()] = Rav;
 
-            int[] SlimeGod = new int[] { NPCType<EbonianSlimeGod>(), NPCType<SplitEbonianSlimeGod>(),
-                NPCType<CrimulanSlimeGod>(), NPCType<SplitCrimulanSlimeGod>() };
-            OneToMany[NPCType<EbonianSlimeGod>()] = SlimeGod;
-            OneToMany[NPCType<CrimulanSlimeGod>()] = SlimeGod;
+            int[] SlimeGod = new int[] { NPCType<EbonianPaladin>(), NPCType<SplitEbonianPaladin>(),
+                NPCType<CrimulanPaladin>(), NPCType<SplitCrimulanPaladin>() };
+            OneToMany[NPCType<EbonianPaladin>()] = SlimeGod;
+            OneToMany[NPCType<CrimulanPaladin>()] = SlimeGod;
 
             SetupBossExclusionList();
             SetupMinibossHPBarList();
@@ -179,6 +179,7 @@ namespace CalamityMod.UI
         {
             BossExclusionList = new List<int>
             {
+                NPCID.None,
                 NPCID.MoonLordFreeEye,
                 NPCID.MoonLordHead,
                 NPCID.MoonLordHand,
@@ -277,14 +278,14 @@ namespace CalamityMod.UI
         {
             EntityExtensionHandler = new Dictionary<int, BossEntityExtension>()
             {
-                [NPCID.EaterofWorldsHead] = new BossEntityExtension("Segments", NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail),
-                [NPCID.BrainofCthulhu] = new BossEntityExtension("Creepers", NPCID.Creeper),
-                [NPCID.SkeletronHead] = new BossEntityExtension("Hands", NPCID.SkeletronHand),
-                [NPCID.SkeletronPrime] = new BossEntityExtension("Arms", NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser),
-                [NPCID.MartianSaucerCore] = new BossEntityExtension("Guns", NPCID.MartianSaucerTurret, NPCID.MartianSaucerCannon),
-                [NPCID.PirateShip] = new BossEntityExtension("Cannons", NPCID.PirateShipCannon),
-                [NPCType<CeaselessVoid>()] = new BossEntityExtension("Dark Energy", NPCType<DarkEnergy>()),
-                [NPCType<RavagerBody>()] = new BossEntityExtension("Body Parts", NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>()),
+                [NPCID.EaterofWorldsHead] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Segments"), NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail),
+                [NPCID.BrainofCthulhu] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Creepers"), NPCID.Creeper),
+                [NPCID.SkeletronHead] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Hands"), NPCID.SkeletronHand),
+                [NPCID.SkeletronPrime] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Arms"), NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser),
+                [NPCID.MartianSaucerCore] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Guns"), NPCID.MartianSaucerTurret, NPCID.MartianSaucerCannon),
+                [NPCID.PirateShip] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Cannons"), NPCID.PirateShipCannon),
+                [NPCType<CeaselessVoid>()] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.DarkEnergy"), NPCType<DarkEnergy>()),
+                [NPCType<RavagerBody>()] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.BodyParts"), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>()),
             };
         }
 
@@ -329,17 +330,17 @@ namespace CalamityMod.UI
                 if (npc.ai[0] == 2f)
                     life = 0L;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    bool isMoonLordPiece = Main.npc[i].type == NPCID.MoonLordHand || Main.npc[i].type == NPCID.MoonLordHead;
-                    if (!Main.npc[i].active || !isMoonLordPiece || Main.npc[i].ai[3] != npc.whoAmI)
+                    bool isMoonLordPiece = n.type == NPCID.MoonLordHand || n.type == NPCID.MoonLordHead;
+                    if (!isMoonLordPiece || n.ai[3] != npc.whoAmI)
                         continue;
 
                     // Don't count HP towards the total if the NPC is in its dead state.
-                    if (Main.npc[i].Calamity().newAI[0] == 1f)
+                    if (n.Calamity().newAI[0] == 1f)
                         continue;
 
-                    life += checkingForMaxLife ? Main.npc[i].lifeMax : Main.npc[i].life;
+                    life += checkingForMaxLife ? n.lifeMax : n.life;
                 }
 
                 return life;
@@ -363,15 +364,15 @@ namespace CalamityMod.UI
 
         public override void Update(IBigProgressBar currentBar, ref BigProgressBarInfo info)
         {
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                // Ignore inactive NPCs and NPCs that should not be given a bar, even if it meets other criteria.
-                if (!Main.npc[i].active || BossExclusionList.Contains(Main.npc[i].type))
+                // Ignore NPCs that should not be given a bar, even if it meets other criteria.
+                if (BossExclusionList.Contains(n.type))
                     continue;
 
-                bool isEoWSegment = Main.npc[i].type == NPCID.EaterofWorldsBody || Main.npc[i].type == NPCID.EaterofWorldsTail;
-                if ((Main.npc[i].IsABoss() && !isEoWSegment) || MinibossHPBarList.Contains(Main.npc[i].type) || Main.npc[i].Calamity().CanHaveBossHealthBar)
-                    AttemptToAddBar(i);
+                bool isEoWSegment = n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail;
+                if ((n.IsABoss() && !isEoWSegment) || MinibossHPBarList.Contains(n.type) || n.Calamity().CanHaveBossHealthBar)
+                    AttemptToAddBar(n.whoAmI);
             }
 
             for (int i = 0; i < Bars.Count; i++)
@@ -406,7 +407,7 @@ namespace CalamityMod.UI
             if (npc.type == NPCType<Artemis>())
                 canAddBar = false;
             if (npc.type == NPCType<Apollo>())
-                overridingName = npc.ModNPC<Apollo>().exoMechdusa ? "Eyes of XB-∞ Hekate" : "XS-01 Artemis and XS-03 Apollo";
+                overridingName = CalamityUtils.GetTextValue("UI.ExoTwinsName" + (npc.ModNPC<Apollo>().exoMechdusa ? "Hekate" : "Normal"));
 
             if (canAddBar)
                 Bars.Add(new BossHPUI(index, overridingName));
@@ -465,12 +466,12 @@ namespace CalamityMod.UI
                         return life;
 
                     // Otherwise, check if any of said relationship NPCs are enraged.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        life += Main.npc[i].life;
+                        life += n.life;
                     }
 
                     return life;
@@ -497,12 +498,12 @@ namespace CalamityMod.UI
                         return maxLife;
 
                     // Otherwise, check if any of said relationship NPCs are enraged.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        maxLife += Main.npc[i].lifeMax;
+                        maxLife += n.lifeMax;
                     }
 
                     return maxLife;
@@ -523,12 +524,12 @@ namespace CalamityMod.UI
                         return false;
 
                     // Otherwise, check if any of said relationship NPCs are enraged.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        if (Main.npc[i].Calamity().CurrentlyEnraged)
+                        if (n.Calamity().CurrentlyEnraged)
                             return true;
                     }
                     return false;
@@ -549,12 +550,12 @@ namespace CalamityMod.UI
                         return false;
 
                     // Otherwise, check if any of said relationship NPCs are increasing their defense or DR.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        if (Main.npc[i].Calamity().CurrentlyIncreasingDefenseOrDR)
+                        if (n.Calamity().CurrentlyIncreasingDefenseOrDR)
                             return true;
                     }
                     return false;
@@ -694,10 +695,12 @@ namespace CalamityMod.UI
                     {
                         float pulse = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4.5f) * 0.5f + 0.5f;
                         float outwardness = EnrageTimer / (float)EnrageAnimationTime * 1.5f + pulse * 2f;
+                        Color color1 = Color.Red * 0.6f;
+                        Color color2 = Color.Black * 0.2f;
                         for (int i = 0; i < 4; i++)
                         {
                             Vector2 drawOffset = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * outwardness;
-                            CalamityUtils.DrawBorderStringEightWay(sb, FontAssets.MouseText.Value, name, new Vector2(x + BarMaxWidth - nameSize.X, y + 23 - nameSize.Y) + drawOffset, Color.Red * 0.6f, Color.Black * 0.2f);
+                            CalamityUtils.DrawBorderStringEightWay(sb, FontAssets.MouseText.Value, name, new Vector2(x + BarMaxWidth - nameSize.X, y + 23 - nameSize.Y) + drawOffset, color1, color2);
                         }
                     }
                 }
@@ -707,10 +710,12 @@ namespace CalamityMod.UI
                     {
                         float pulse = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4.5f) * 0.5f + 0.5f;
                         float outwardness = IncreasingDefenseOrDRTimer / (float)IncreasedDefenseOrDRAnimationTime * 1.5f + pulse * 2f;
+                        Color color1 = Color.LightGray * 0.6f;
+                        Color color2 = Color.Black * 0.2f;
                         for (int i = 0; i < 4; i++)
                         {
                             Vector2 drawOffset = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * outwardness;
-                            CalamityUtils.DrawBorderStringEightWay(sb, FontAssets.MouseText.Value, name, new Vector2(x + BarMaxWidth - nameSize.X, y + 23 - nameSize.Y) + drawOffset, Color.LightGray * 0.6f, Color.Black * 0.2f);
+                            CalamityUtils.DrawBorderStringEightWay(sb, FontAssets.MouseText.Value, name, new Vector2(x + BarMaxWidth - nameSize.X, y + 23 - nameSize.Y) + drawOffset, color1, color2);
                         }
                     }
                 }
@@ -725,7 +730,8 @@ namespace CalamityMod.UI
                     {
                         int totalExtraEntities = CalamityUtils.CountNPCsBetter(extraEntityData.TypesToSearchFor);
 
-                        string text = $"({extraEntityData.NameOfExtensions} left: {totalExtraEntities})";
+                        string extensionName = extraEntityData.NameOfExtensions.ToString();
+                        string text = CalamityUtils.GetText("UI.ExtensionDisplay").Format(extensionName, totalExtraEntities);
                         Vector2 textAreaSize = FontAssets.ItemStack.Value.MeasureString(text) * SmallTextScale;
                         float horizontalDrawPosition = Math.Max(x, x + mainBarWidth - textAreaSize.X);
                         float verticalDrawPosition = y + MainBarYOffset + 17;

@@ -1,16 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class EmpyreanGlob : ModProjectile
+    public class EmpyreanGlob : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Empyeran Glob");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -27,9 +24,9 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 62, 0f, 0f, 100, default, 1f);
-                Main.dust[num469].noGravity = true;
-                Main.dust[num469].velocity *= 0f;
+                int ourpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 1f);
+                Main.dust[ourpleDust].noGravity = true;
+                Main.dust[ourpleDust].velocity *= 0f;
             }
             CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 8f, 20f);
         }

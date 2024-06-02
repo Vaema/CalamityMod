@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ModLoader;
@@ -7,13 +7,13 @@ using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
-    public abstract class BaseShortswordProjectile : ModProjectile
+    public abstract class BaseShortswordProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public enum ShortswordType
         {
             TypicalShortsword
         }
-
 
         #region Virtual Values
         // Typical shortsword virtual values
@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public virtual ShortswordType ShortswordAIType => ShortswordType.TypicalShortsword;
         #endregion
 
-    public float CollisionWidth => 4f * Projectile.scale;
-    public float FullUse => Timer / 14f;
-    public Player Owner => Main.player[Projectile.owner];
+        public float CollisionWidth => 4f * Projectile.scale;
+        public float FullUse => Timer / 14f;
+        public Player Owner => Main.player[Projectile.owner];
 
 
         public int Timer
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
             if (ShortswordAIType == ShortswordType.TypicalShortsword && !player.frozen)
             {
-                player.direction = Projectile.direction;
+                player.ChangeDir(Projectile.direction);
                 player.heldProj = Projectile.whoAmI;
                 player.itemTime = player.itemAnimation;
 
@@ -122,8 +122,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLenght = 12f * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.MountedCenter + OffsetFromPlayer, Owner.MountedCenter + OffsetFromPlayer + (Projectile.velocity * bladeLenght), 24, ref collisionPoint);
+            float bladeLength = 12f * Projectile.scale;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.MountedCenter + OffsetFromPlayer, Owner.MountedCenter + OffsetFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint);
         }
     }
 }

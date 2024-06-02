@@ -4,17 +4,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools.ClimateChange
 {
-    public class TorrentialTear : ModItem
+    public class TorrentialTear : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Torrential Tear");
-            Tooltip.SetDefault("Summons the rain\n" +
-                "Rain will start some time after this item is used\n" +
-                "If used while it's raining, the rain will stop some time afterward");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -27,10 +19,10 @@ namespace CalamityMod.Items.Tools.ClimateChange
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -68,21 +60,21 @@ namespace CalamityMod.Items.Tools.ClimateChange
             {
                 if (Main.cloudBGActive >= 1f || (double)Main.numClouds > 150.0)
                 {
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                         Main.maxRaining = (float)Main.rand.Next(20, 90) * 0.01f;
                     else
                         Main.maxRaining = (float)Main.rand.Next(40, 90) * 0.01f;
                 }
                 else if ((double)Main.numClouds > 100.0)
                 {
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                         Main.maxRaining = (float)Main.rand.Next(10, 70) * 0.01f;
                     else
                         Main.maxRaining = (float)Main.rand.Next(20, 60) * 0.01f;
                 }
                 else
                 {
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                         Main.maxRaining = (float)Main.rand.Next(5, 40) * 0.01f;
                     else
                         Main.maxRaining = (float)Main.rand.Next(5, 30) * 0.01f;

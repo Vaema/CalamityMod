@@ -8,21 +8,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class ExoPrism : ModItem
+    public class ExoPrism : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Exo Prism");
-            Tooltip.SetDefault("Fractal energies shimmer across its surface");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 121;
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 121;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 52;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 60);
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -32,11 +31,13 @@ namespace CalamityMod.Items.Materials
             float outwardnessFactor = MathHelper.Lerp(0.9f, 1.3f, pulse);
             Color drawColor = Color.MintCream * (1f - pulse) * 0.27f;
             drawColor.A = 0;
+            float scale = baseScale * outwardnessFactor;
+            float velocity = Item.velocity.X * 0.2f;
+            Vector2 origin = frame.Size() * 0.5f;
             for (int i = 0; i < 4; i++)
             {
-                float scale = baseScale * outwardnessFactor;
                 Vector2 drawPosition = baseDrawPosition + (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 4f;
-                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, Item.velocity.X * 0.2f, frame.Size() * 0.5f, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, velocity, origin, scale, SpriteEffects.None, 0f);
             }
         }
 
@@ -54,7 +55,7 @@ namespace CalamityMod.Items.Materials
 
             if (Main.rand.NextBool(3))
             {
-                Dust exoShine = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), 204);
+                Dust exoShine = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), DustID.TreasureSparkle);
                 exoShine.velocity = Vector2.Lerp(Main.rand.NextVector2Unit(), -Vector2.UnitY, 0.5f) * Main.rand.NextFloat(1.2f, 1.8f);
                 exoShine.fadeIn = 0.7f;
                 exoShine.noGravity = true;

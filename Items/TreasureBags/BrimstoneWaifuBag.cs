@@ -19,34 +19,33 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags
 {
-    public class BrimstoneWaifuBag : ModItem
+    public class BrimstoneWaifuBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Bag (Brimstone Elemental)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
-			ItemID.Sets.BossBag[Item.type] = true;
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.expert = true;
             Item.rare = ItemRarityID.Cyan;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -57,11 +56,11 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<BrimstoneElemental>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<BrimstoneElemental>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 5, 9);
+            itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 10, 12);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
@@ -76,10 +75,8 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
                 ModContent.ItemType<RoseStone>(),
-                ModContent.ItemType<Abaddon>(),
-                ModContent.ItemType<Gehenna>()
             }));
-            itemLoot.Add(ModContent.ItemType<FlameLickedShell>(), 10);
+            itemLoot.Add(ModContent.ItemType<FlameLickedShell>());
             itemLoot.AddRevBagAccessories();
 
             // Vanity

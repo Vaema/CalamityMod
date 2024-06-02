@@ -7,8 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 {
-    public class AbyssalTreasure : ModItem
+    public class AbyssalTreasure : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         internal static readonly int[] AbyssalTreasurePotions = new int[]
         {
             ItemID.SpelunkerPotion,
@@ -30,24 +31,23 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Abyssal Treasure");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SulphuricTreasure>();
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Blue; //Blue for thematics
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        }
 
         public override bool CanRightClick() => true;
 

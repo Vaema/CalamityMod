@@ -1,14 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.Providence;
-using System;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class EternityBook : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Eternity>();
         public float Time
         {
             get => Projectile.ai[0];
@@ -16,7 +19,6 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eternity");
             Main.projFrames[Projectile.type] = 8;
         }
 
@@ -36,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
 
             // If the player is no longer able to hold the book, kill it (and by extension the other projectiles).
-            if (!player.channel || player.noItems || player.CCed)
+            if (player.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;

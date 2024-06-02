@@ -8,15 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.LabFinders
 {
-    public class GreenSeekingMechanism : ModItem
+    public class GreenSeekingMechanism : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Green Seeking Mechanism");
-            Tooltip.SetDefault("Moves swiftly towards a lab within the jungle");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 24;

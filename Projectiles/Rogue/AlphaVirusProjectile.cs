@@ -1,27 +1,23 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.StormWeaver;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.NPCs.StormWeaver;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class AlphaVirusProjectile : ModProjectile
+    public class AlphaVirusProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/AlphaVirus";
 
         public static int lifetime = 600;
         public static float finalVelocity = 2f;
         public static float decelerationRate = 0.07f;
         private const float radius = 100f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Alpha Virus");
-        }
 
         public override void SetDefaults()
         {
@@ -70,7 +66,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             float dist1 = Vector2.Distance(Projectile.Center, target.Hitbox.TopLeft());
             float dist2 = Vector2.Distance(Projectile.Center, target.Hitbox.TopRight());
@@ -91,7 +87,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             float dist1 = Vector2.Distance(Projectile.Center, target.Hitbox.TopLeft());
             float dist2 = Vector2.Distance(Projectile.Center, target.Hitbox.TopRight());
@@ -112,13 +108,8 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (target.type == ModContent.NPCType<StormWeaverHead>() || target.type == ModContent.NPCType<StormWeaverBody>() || target.type == ModContent.NPCType<StormWeaverTail>())
-            {
-                damage /= 5;
-            }
-
             float dist1 = Vector2.Distance(Projectile.Center, target.Hitbox.TopLeft());
             float dist2 = Vector2.Distance(Projectile.Center, target.Hitbox.TopRight());
             float dist3 = Vector2.Distance(Projectile.Center, target.Hitbox.BottomLeft());
@@ -134,8 +125,8 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (minDist > Projectile.width)
             {
-                damage /= 5;
-                knockback = 0f;
+                modifiers.SourceDamage *= 0.2f;
+                modifiers.Knockback *= 0f;
             }
         }
 
@@ -174,13 +165,13 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 velocity = -pos * 0.02f;
                 pos += Projectile.Center;
 
-                int dust = Dust.NewDust(pos, 1, 1, 89, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(pos, 1, 1, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velocity + Projectile.velocity;
             }
 
             // Main sprite
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -193,7 +184,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int numSeekers = 6;
             int damage = Projectile.damage;
@@ -215,7 +206,7 @@ namespace CalamityMod.Projectiles.Rogue
                 velocity = velocity.RotatedByRandom(MathHelper.TwoPi);
                 velocity *= 0.1f;
 
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 89, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velocity + Projectile.velocity;
             }

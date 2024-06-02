@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor
 {
     [AutoloadEquip(EquipType.Body)]
-    public class CirrusDress : ModItem
+    public class CirrusDress : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         /* How to obtain
          * 1 - Have alcohol poisoning
          * 2 - Visit the Stylist while Cirrus is alive in the world
@@ -21,14 +22,9 @@ namespace CalamityMod.Items.Armor
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/CirrusDress_Legs", EquipType.Legs, this);
             }
         }
-        
+
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cirrus' Dress");
-            Tooltip.SetDefault("Here, this should help you drink a lot more than usual!\n" +
-                "5% increased magic damage and critical strike chance\n" +
-                "You feel thick...");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -40,7 +36,7 @@ namespace CalamityMod.Items.Armor
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
             Item.defense = 8;

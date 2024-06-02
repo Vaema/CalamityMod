@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using Microsoft.Xna.Framework;
@@ -8,20 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class ChaosCandle : ModItem
+    public class ChaosCandle : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Chaos Candle");
-            Tooltip.SetDefault("The mere presence of this candle enrages surrounding enemies drastically");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 16;
             Item.height = 20;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -37,7 +31,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void HoldItem(Player player)
         {
             player.Calamity().chaosCandle = true;
-            if (Main.rand.Next(player.itemAnimation > 0 ? 10 : 20) == 0)
+            if (Main.rand.NextBool(player.itemAnimation > 0 ? 10 : 20))
             {
                 Dust.NewDust(new Vector2(player.itemLocation.X + 12f * player.direction, player.itemLocation.Y - 10f * player.gravDir), 4, 4, (int)CalamityDusts.Brimstone);
             }
@@ -51,14 +45,15 @@ namespace CalamityMod.Items.Placeables.Furniture
             Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 0.85f, 0.25f, 0.25f);
         }
 
-        public override void AutoLightSelect(ref bool dryTorch, ref bool wetTorch, ref bool glowstick)
-        {
-            wetTorch = true;
-        }
-
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.WaterCandle, 3).AddIngredient(ItemID.SoulofNight, 3).AddIngredient(ModContent.ItemType<CoreofHavoc>(), 2).AddIngredient(ModContent.ItemType<ZergPotion>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe().
+                AddIngredient(ItemID.WaterCandle, 3).
+                AddIngredient(ItemID.SoulofNight, 3).
+                AddIngredient<CoreofHavoc>(2).
+                AddIngredient<ZergPotion>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

@@ -1,23 +1,25 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class BlazingStarProj : ModProjectile
+    public class BlazingStarProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/BlazingStar";
 
-        public const int Lifetime = 1540;
-        public const int ReboundTime = 40;
+        public static int Lifetime = 1540;
+        public static int ReboundTime = 60;
+        public static float Speed = 13f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blazing Star");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -56,8 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[0] != 0f)
             {
                 Projectile.tileCollide = false;
-
-                float returnSpeed = BlazingStar.Speed * 2.5f;
+                float returnSpeed = 32.5f;
                 float acceleration = 2f;
                 Player owner = Main.player[Projectile.owner];
 
@@ -108,12 +109,12 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 180);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.OnFire3, 180);
         }

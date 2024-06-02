@@ -6,33 +6,23 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Plaguebringer
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class PlaguebringerPistons : ModItem
+    public class PlaguebringerPistons : ModItem, ILocalizedModType
     {
-        public int counter = 0;
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plaguebringer Pistons");
-            Tooltip.SetDefault("13% increased minion damage and 15% increased movement speed\n" +
-                "You grow flowers on the grass beneath you, chance to grow very random dye plants on grassless dirt\n" +
-                "You spawn bees while sprinting or dashing");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.defense = 8;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.13f;
+            player.GetDamage<SummonDamageClass>() += 0.15f;
             player.moveSpeed += 0.15f;
-            player.Calamity().plaguebringerPistons = true;
 
             //Flower Boots code
             if (player.whoAmI == Main.myPlayer && player.velocity.Y == 0f && player.grappling[0] == -1)
@@ -70,7 +60,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
                     //On grass, grow flowers
                     if (Main.tile[x, y + 1].TileType == TileID.Grass)
                     {
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             tile.Get<TileWallWireStateData>().HasTile = true;
                             tile.TileType = TileID.Plants;
@@ -98,7 +88,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
                     //On hallowed grass, grow hallowed flowers
                     else if (Main.tile[x, y + 1].TileType == TileID.HallowedGrass)
                     {
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             tile.Get<TileWallWireStateData>().HasTile = true;
                             tile.TileType = TileID.HallowedPlants;

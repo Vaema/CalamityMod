@@ -1,17 +1,14 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class Orbacle : ModProjectile
+    public class Orbacle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
+        public override string Texture => "CalamityMod/ExtraTextures/TinyGreyscaleCircle";
         private static int Lifetime = 40;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Auric Orb");
-        }
 
         public override void SetDefaults()
         {
@@ -35,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * 0.5f;
             Color color = new Color(83, 137, 230); // Auric Blue but slightly more blue. (#5389e6)

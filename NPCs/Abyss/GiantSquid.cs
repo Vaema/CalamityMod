@@ -1,12 +1,13 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -19,11 +20,15 @@ namespace CalamityMod.NPCs.Abyss
     public class GiantSquid : ModNPC
     {
         private bool hasBeenHit = false;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Giant Squid");
             Main.npcFrameCount[NPC.type] = 5;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -46,14 +51,17 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer3Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A massive squid, having gained its size from the abundance of prey and little competition in its habitat. Its eyes are specially adapted to seeking out prey in the darkness.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GiantSquid")
             });
         }
 
@@ -71,6 +79,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             if (NPC.direction == 0)
             {
                 NPC.TargetClosest(true);
@@ -127,20 +138,24 @@ namespace CalamityMod.NPCs.Abyss
             {
                 NPC.localAI[2] = 1f;
                 NPC.velocity *= 0.975f;
-                float num263 = 1.6f;
-                if (NPC.velocity.X > -num263 && NPC.velocity.X < num263 && NPC.velocity.Y > -num263 && NPC.velocity.Y < num263)
+
+                float lungeSpeed = CalamityWorld.death ? 24f : CalamityWorld.revenge ? 20f : 16f;
+                if (NPC.velocity.Length() > lungeSpeed * 0.4f)
+                    NPC.damage = NPC.defDamage;
+
+                float lungeThreshold = 1.6f;
+                if (NPC.velocity.X > -lungeThreshold && NPC.velocity.X < lungeThreshold && NPC.velocity.Y > -lungeThreshold && NPC.velocity.Y < lungeThreshold)
                 {
                     NPC.TargetClosest(true);
-                    float num264 = CalamityWorld.death ? 24f : CalamityWorld.revenge ? 20f : 16f;
-                    Vector2 vector31 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    float num265 = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2) - vector31.X;
-                    float num266 = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2) - vector31.Y;
-                    float num267 = (float)Math.Sqrt((double)(num265 * num265 + num266 * num266));
-                    num267 = num264 / num267;
-                    num265 *= num267;
-                    num266 *= num267;
-                    NPC.velocity.X = num265;
-                    NPC.velocity.Y = num266;
+                    Vector2 lungeNPCPos = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+                    float lungeTargetX = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2) - lungeNPCPos.X;
+                    float lungeTargetY = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2) - lungeNPCPos.Y;
+                    float lungeTargetDist = (float)Math.Sqrt((double)(lungeTargetX * lungeTargetX + lungeTargetY * lungeTargetY));
+                    lungeTargetDist = lungeSpeed / lungeTargetDist;
+                    lungeTargetX *= lungeTargetDist;
+                    lungeTargetY *= lungeTargetDist;
+                    NPC.velocity.X = lungeTargetX;
+                    NPC.velocity.Y = lungeTargetY;
                     return;
                 }
             }
@@ -168,15 +183,15 @@ namespace CalamityMod.NPCs.Abyss
                         NPC.ai[0] = -1f;
                     }
                 }
-                int num268 = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int num269 = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[num268, num269 - 1].LiquidAmount > 128)
+                int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
                 {
-                    if (Main.tile[num268, num269 + 1].HasTile)
+                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
-                    else if (Main.tile[num268, num269 + 2].HasTile)
+                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
@@ -213,11 +228,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/GiantSquidGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -226,38 +239,38 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer3 && spawnInfo.Water)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 1.2f;
+                return Main.remixWorld ? 10.8f : SpawnCondition.CaveJellyfish.Chance * 1.2f;
             }
             return 0f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
+            if (hurtInfo.Damage > 0)
             {
-                player.AddBuff(ModContent.BuffType<CrushDepth>(), 180, true);
-                player.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180, true);
+                target.AddBuff(BuffID.Darkness, 180, true);
             }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(ModContent.ItemType<Lumenyl>(), 2);
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 4, 3, 6));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(ModContent.ItemType<Lumenyl>(), 2);
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 4, 3, 6));
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 30; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

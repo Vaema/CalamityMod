@@ -9,35 +9,29 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("Seabow")]
-    public class ReedBlowgun : ModItem
+    public class ReedBlowgun : ModItem, ILocalizedModType
     {
-        public static readonly SoundStyle BubbleBurstSound = new ("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst") { PitchVariance = 0.15f, Volume = 0.2f};
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public static readonly SoundStyle BubbleBurstSound = new("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst") { PitchVariance = 0.15f, Volume = 0.2f };
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Reed Blowgun");
-            Tooltip.SetDefault("Fires a high-pressure stream of bubbles\n" +
-                //Lore tooltip time. King's field
-                "[c/5C95A1:The Old Sea Kingdom never truly sought to expand beyond its initial borders.]\n" +
-                "[c/5C95A1:However, they had a perfect track record of repelling any invasions, thanks to their insurmountable advantage in the water.]"
-                );
-
-            SacrificeTotal = 1;
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 21;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 22;
             Item.height = 46;
+            Item.damage = 21;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.holdStyle = 16;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.autoReuse = true;

@@ -1,17 +1,17 @@
 ﻿using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class MonkeyDart : ModProjectile
+    public class MonkeyDart : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Monkey Dart");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -43,22 +43,22 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity.Y = 16f;
             }
             //Dust trail
-            if (Main.rand.Next(25) == 0)
+            if (Main.rand.NextBool(25))
             {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 21, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.VilePowder, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
                 Main.dust[d].position = Projectile.Center;
                 Main.dust[d].noLight = true;
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             //Dust splash
             int dustsplash = 0;
             while (dustsplash < 4)
             {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 1, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 100, default, 0.9f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Stone, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 100, default, 0.9f);
                 Main.dust[d].position = Projectile.Center;
                 dustsplash += 1;
             }

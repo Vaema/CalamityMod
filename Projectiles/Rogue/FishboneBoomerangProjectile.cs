@@ -8,12 +8,12 @@ using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class FishboneBoomerangProjectile : ModProjectile
+    public class FishboneBoomerangProjectile : ModProjectile, ILocalizedModType
     {
-        internal PrimitiveTrail TrailRenderer;
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/FishboneBoomerang";
 
-        public static int ChargeupTime = 20;
+        public static int ChargeupTime = 10;
         public static int Lifetime = 240;
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
@@ -25,7 +25,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fishbone Boomerang");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -103,12 +102,12 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.numHits = 0;
             }
 
-            if (Returning == 0f && Bouncing == 0f && Projectile.velocity.Length() > 2f)
+            if (Returning == 0f && Bouncing == 0f && Projectile.velocity.Length() > 2f && Projectile.timeLeft < (205 + ChargeupTime))
             {
-                Projectile.velocity *= 0.97f;
+                Projectile.velocity *= 0.88f;
             }
 
-            if (Returning == 1f && Projectile.velocity.Length() < 17f)
+            if (Returning == 1f && Projectile.velocity.Length() < 20f)
             {
                 Projectile.velocity *= 1.1f;
             }
@@ -140,7 +139,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             ImpactEffects();
 
@@ -169,18 +168,18 @@ namespace CalamityMod.Projectiles.Rogue
                 float closestNPCDistance = 10000f;
                 float targettingDistance = 400f;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (i == target.whoAmI)
+                    if (n.whoAmI == target.whoAmI)
                         continue;
 
-                    if (Main.npc[i].CanBeChasedBy(Projectile))
+                    if (n.CanBeChasedBy(Projectile))
                     {
-                        float potentialNewDistance = (Projectile.Center - Main.npc[i].Center).Length();
+                        float potentialNewDistance = (Projectile.Center - n.Center).Length();
                         if (potentialNewDistance < targettingDistance && potentialNewDistance < closestNPCDistance)
                         {
                             closestNPCDistance = potentialNewDistance;
-                            newTarget = Main.npc[i];
+                            newTarget = n;
                         }
                     }
                 }

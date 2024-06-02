@@ -1,14 +1,10 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class NobodyKnows : ModProjectile
+    public class NobodyKnows : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nope");
-        }
 
         public override void SetDefaults()
         {

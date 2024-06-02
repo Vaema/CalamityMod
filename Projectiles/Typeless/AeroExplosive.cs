@@ -1,21 +1,16 @@
 ﻿using CalamityMod.Items.Weapons.Typeless;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class AeroExplosive : ModProjectile
+    public class AeroExplosive : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Items/Weapons/Typeless/Skynamite";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aeroboom");
-        }
 
         public override void SetDefaults()
         {
@@ -45,11 +40,11 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 187, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Flare_Blue, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
             }
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 16, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cloud, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
             if (Main.rand.NextBool())
@@ -59,7 +54,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Main.dust[smoke].fadeIn = 1.5f + Main.rand.NextFloat(0f, 0.5f);
                 Main.dust[smoke].noGravity = true;
                 Main.dust[smoke].position = Projectile.Center + new Vector2(0f, -Projectile.height / 2f).RotatedBy(Projectile.rotation, default) * 1.1f;
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Main.dust[fire].scale = 1f + Main.rand.NextFloat(0f, 0.5f);
                 Main.dust[fire].noGravity = true;
                 Main.dust[fire].position = Projectile.Center + new Vector2(0f, -Projectile.height / 2f).RotatedBy(Projectile.rotation, default) * 1.1f;
@@ -81,7 +76,7 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(200);
             Projectile.maxPenetrate = Projectile.penetrate = -1;
@@ -94,7 +89,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[smoke].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[smoke].scale = 0.5f;
                     Main.dust[smoke].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -102,10 +97,10 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int d = 0; d < 70; d++)
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[fire].noGravity = true;
                 Main.dust[fire].velocity *= 5f;
-                fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[fire].velocity *= 2f;
             }
 
@@ -157,7 +152,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Projectile.owner == Main.myPlayer)
             {
-                CalamityUtils.ExplodeandDestroyTiles(Projectile, 7, true, new List<int>() { }, new List<int>() { });
+                Projectile.ExplodeTiles(7, true);
             }
         }
     }

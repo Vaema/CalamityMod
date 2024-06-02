@@ -1,15 +1,16 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using System;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SulphuricNukesplosion : ModProjectile
+    public class SulphuricNukesplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public int frameX = 0;
         public int frameY = 0;
         public int currentFrame => frameY + frameX * 14;
@@ -18,11 +19,6 @@ namespace CalamityMod.Projectiles.Rogue
         private int boomerTime = -1;
 
         private int dustloop = 30;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nuke");
-        }
 
         public override void SetDefaults()
         {
@@ -35,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.alpha = 255;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 11;
+            Projectile.idStaticNPCHitCooldown = 15;
         }
 
         public override bool PreAI()
@@ -66,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
                     dustloop += Main.rand.Next(1, 3);
                 for (int i = 0; i < dustloop; ++i)
                 {
-                    int dustType = (int)CalamityDusts.SulfurousSeaAcid;
+                    int dustType = (int)CalamityDusts.SulphurousSeaAcid;
                     float scale = Main.rand.NextFloat(0.5f, 1.5f);
                     float randX = Main.rand.NextFloat(-30f, 30f);
                     float randY = Main.rand.NextFloat(-30f, 30f);
@@ -128,12 +124,12 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 10 * (stealthyNuke ? 60 : 30)); //5 sec if not stealthstrike, otherwise 10;
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 10 * (stealthyNuke ? 60 : 30)); //5 sec if not stealthstrike, otherwise 10;
         }

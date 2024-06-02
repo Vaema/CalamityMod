@@ -5,24 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class BloomStone : ModItem
+    public class BloomStone : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloom Stone");
-            Tooltip.SetDefault("One of the ancient relics\n" +
-                "You quickly regenerate life while on the ground\n" +
-                "This effect works best during daytime\n" +
-                "Flowers grow if you are standing on grass\n" +
-                "Random dye plants will grow while standing on grassless dirt");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 54;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -68,7 +58,7 @@ namespace CalamityMod.Items.Accessories
                     // On grass, grow flowers.
                     if (groundTile.TileType == TileID.Grass)
                     {
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             walkTile.Get<TileWallWireStateData>().HasTile = true;
                             walkTile.TileType = TileID.Plants;
@@ -94,7 +84,7 @@ namespace CalamityMod.Items.Accessories
                     // On hallowed grass, grow hallowed flowers.
                     else if (groundTile.TileType == TileID.HallowedGrass)
                     {
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             walkTile.Get<TileWallWireStateData>().HasTile = true;
                             walkTile.TileType = TileID.HallowedPlants;

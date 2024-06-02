@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,6 +7,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -19,6 +21,7 @@ namespace CalamityMod.Tiles.DraedonStructures
         public const int OriginOffsetY = 1;
         public const int SheetSquare = 18;
 
+        public override string Texture => "CalamityMod/Tiles/PlayerTurrets/PlayerLabTurret";
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -27,18 +30,21 @@ namespace CalamityMod.Tiles.DraedonStructures
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = false;
 
+            // Various data sets to protect this tile from unintentional death
+            TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsSandfall[Type] = true;
+
             // No need to set width, height, origin, etc. here, Style3x2 is exactly what we want.
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.LavaDeath = false;
 
             // When this tile is placed, it places the Draedon Lab Turret tile entity.
-            ModTileEntity te = ModContent.GetInstance<TEDraedonLabTurret>();
+            ModTileEntity te = ModContent.GetInstance<TEHostileLabTurret>();
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(te.Hook_AfterPlacement, -1, 0, true);
 
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Lab Turret");
-            AddMapEntry(new Color(67, 72, 81), name);
+            AddMapEntry(new Color(67, 72, 81), Language.GetText("MapObject.Turret"));
             HitSound = SoundID.Item14;
 
             // Has 500% durability.
@@ -49,7 +55,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
@@ -59,16 +65,11 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            // TODO -- Turrets have no items and can't be picked up and placed by players.
-            // Instead, drop some raw Draedon materials.
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ModContent.ItemType<DubiousPlating>(), 8);
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ModContent.ItemType<MysteriousCircuitry>(), 8);
-
             Tile t = Main.tile[i, j];
             int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
             int top = j - t.TileFrameY % (Height * SheetSquare) / SheetSquare;
 
-            TEDraedonLabTurret te = CalamityUtils.FindTileEntity<TEDraedonLabTurret>(i, j, Width, Height, SheetSquare);
+            TEHostileLabTurret te = CalamityUtils.FindTileEntity<TEHostileLabTurret>(i, j, Width, Height, SheetSquare);
             te?.Kill(left, top);
         }
 
@@ -79,7 +80,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             if (t.TileFrameX != 36 || t.TileFrameY != 0)
                 return;
 
-            TEDraedonLabTurret te = CalamityUtils.FindTileEntity<TEDraedonLabTurret>(i, j, Width, Height, SheetSquare);
+            TEHostileLabTurret te = CalamityUtils.FindTileEntity<TEHostileLabTurret>(i, j, Width, Height, SheetSquare);
             if (te is null)
                 return;
             int drawDirection = te.Direction;
@@ -93,6 +94,14 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             SpriteEffects sfx = drawDirection == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
             spriteBatch.Draw(tex, drawOffset, null, drawColor, te.Angle, tex.Size() * 0.5f, 1f, sfx, 0.0f);
+        }
+        public override IEnumerable<Item> GetItemDrops(int i, int j)
+        {
+            for (int itemCount = 0; itemCount < 8; itemCount++)
+            {
+                yield return new Item(ModContent.ItemType<DubiousPlating>());
+                yield return new Item(ModContent.ItemType<MysteriousCircuitry>());
+            }
         }
     }
 }

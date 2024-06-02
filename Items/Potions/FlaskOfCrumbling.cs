@@ -7,13 +7,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Potions
 {
     [LegacyName("CrumblingPotion")]
-    public class FlaskOfCrumbling : ModItem
+    public class FlaskOfCrumbling : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Flask of Crumbling");
-            Tooltip.SetDefault("Melee, Whip, and Rogue attacks inflict Armor Crunch on enemies");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;

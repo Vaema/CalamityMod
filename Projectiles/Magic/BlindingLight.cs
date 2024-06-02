@@ -1,22 +1,18 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class BlindingLight : ModProjectile
+    public class BlindingLight : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private const float Radius = 1400f;
         private const int Lifetime = 45;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Blinding Light");
-        }
 
         public override void SetDefaults()
         {
@@ -32,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Radius, targetHitbox);
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection) => crit = true;
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SetCrit();
 
         public override void AI()
         {
@@ -55,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.netMode != NetmodeID.Server)
                 Filters.Scene.Deactivate("CalamityMod:LightBurst");
@@ -65,10 +61,9 @@ namespace CalamityMod.Projectiles.Magic
         {
             int lightBlade = ModContent.ProjectileType<LightBlade>();
             int extraDamage = 0;
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile otherProj in Main.ActiveProjectiles)
             {
-                Projectile otherProj = Main.projectile[i];
-                if (otherProj is null || !otherProj.active || otherProj.owner != Projectile.owner || otherProj.type != lightBlade)
+                if (otherProj.owner != Projectile.owner || otherProj.type != lightBlade)
                     continue;
 
                 // Can only consume blades within the flash radius (which should be most if not all of them anyway)
@@ -83,10 +78,9 @@ namespace CalamityMod.Projectiles.Magic
         private void DivideDamageAmongstTargets()
         {
             int numTargets = 0;
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (var npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc is null || !npc.active || npc.friendly || npc.dontTakeDamage || npc.immortal)
+                if (npc.friendly || npc.dontTakeDamage || npc.immortal)
                     continue;
                 if (Projectile.Colliding(default, npc.Hitbox))
                     ++numTargets;

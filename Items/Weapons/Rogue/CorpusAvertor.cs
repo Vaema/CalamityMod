@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,18 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CorpusAvertor : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Corpus Avertor");
-            Tooltip.SetDefault("Seems like it has worn down over time\n" +
-                "Attacks grant lifesteal based on damage dealt\n" +
-                "The lower your HP the more damage this weapon does and heals the player on enemy hits\n" +
-                "Stealth strikes throw a single rainbow outlined dagger\n" +
-                "On enemy hits, this dagger boosts the damage and life regen of all members of your team\n" +
-                "However, there is a small chance it will cut your health in half instead");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -51,11 +39,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-			if (player.Calamity().StealthStrikeAvailable())
-				type = ModContent.ProjectileType<CorpusAvertorStealth>();
+            if (player.Calamity().StealthStrikeAvailable())
+                type = ModContent.ProjectileType<CorpusAvertorStealth>();
         }
 
-		public override float StealthDamageMultiplier => 3.5f;
+        public override float StealthDamageMultiplier => 3.5f;
         public override float StealthKnockbackMultiplier => 2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

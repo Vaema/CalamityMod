@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,15 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class MetalMonstrosity : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Metal Monstrosity");
-            Tooltip.SetDefault("This has to hurt\n" +
-                               "Hurls a heavy metal ball that shatters on impact\n" +
-                               "Stealth strikes cause the ball to release spikes as it travels");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -28,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.UseSound = SoundID.Item1;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
 
             Item.damage = 30;
             Item.useAnimation = 40;

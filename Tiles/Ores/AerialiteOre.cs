@@ -1,11 +1,13 @@
 ﻿
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria.Audio;
 using Terraria;
-using Terraria.ModLoader;
+using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
@@ -13,14 +15,15 @@ namespace CalamityMod.Tiles.Ores
     {
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/MagicalRockMine", 3);
         internal static Texture2D GlowTexture;
+
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
-                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Ores/AerialiteOreGlow", AssetRequestMode.ImmediateLoad).Value;
+                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Ores/AerialiteOre", AssetRequestMode.ImmediateLoad).Value;
             Main.tileOreFinderPriority[Type] = 450;
             Main.tileBlockLight[Type] = false;
             Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = true;
             Main.tileLighted[Type] = true;
             Main.tileNoSunLight[Type] = false;
 
@@ -37,31 +40,28 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = 33;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.AerialiteOre>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Aerialite");
-            AddMapEntry(new Color(145, 255, 255), name);
-            MineResist = 2f;
+            AddMapEntry(new Color(145, 255, 255), CreateMapEntryName());
             MinPick = 65;
             HitSound = MineSound;
             Main.tileSpelunker[Type] = true;
+
+            this.RegisterUniversalMerge(TileID.Cloud, "CalamityMod/Tiles/Merges/CloudMerge");
+            this.RegisterUniversalMerge(TileID.RainCloud, "CalamityMod/Tiles/Merges/RainCloudMerge");
+            this.RegisterUniversalMerge(TileID.SnowCloud, "CalamityMod/Tiles/Merges/SnowCloudMerge");
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
         }
         public override void PostSetDefaults()
         {
-        Main.tileNoSunLight[Type] = false;
+            Main.tileNoSunLight[Type] = false;
         }
 
-        int animationFrameWidth = 288;
+        int animationFrameWidth = 234;
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
         }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, TileID.Cloud, false, false, false);
-            return false;
-        }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.14f;
@@ -251,7 +251,7 @@ namespace CalamityMod.Tiles.Ores
                     }
                     break;
             }
-            xOffset *= 288;
+            xOffset *= 234;
             xPos += xOffset;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;

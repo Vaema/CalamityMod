@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.Metadata;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
 {
@@ -12,8 +13,9 @@ namespace CalamityMod.Tiles
     public class ScoriaBrick : ModTile
     {
         int subsheetHeight = 72;
-        int subsheetWidth = 216;
         internal static Texture2D GlowTexture;
+
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
@@ -24,9 +26,11 @@ namespace CalamityMod.Tiles
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             DustType = 105;
-            ItemDrop = ModContent.ItemType<Items.Placeables.ScoriaBrick>();
             AddMapEntry(new Color(85, 87, 101));
             HitSound = SoundID.Tink;
+
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -63,17 +67,22 @@ namespace CalamityMod.Tiles
             int xPos = tile.TileFrameX;
             int frameOffset = j % 2 * 72;
             int yPos = tile.TileFrameY + frameOffset;
+            Color drawColour = GetDrawColour(i, j, Color.White);
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-
-            if (!tile.IsHalfBlock && tile.Slope == 0)
+            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawPosition + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), GetDrawColour(i, j, drawColour), default);
+        }
+        private Color GetDrawColour(int i, int j, Color colour)
+        {
+            int colType = Main.tile[i, j].TileColor;
+            Color paintCol = WorldGen.paintColor(colType);
+            if (colType >= 13 && colType <= 24)
             {
-                spriteBatch.Draw(GlowTexture, drawPosition, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                colour.R = (byte)(paintCol.R / 255f * colour.R);
+                colour.G = (byte)(paintCol.G / 255f * colour.G);
+                colour.B = (byte)(paintCol.B / 255f * colour.B);
             }
-            else if (tile.IsHalfBlock)
-            {
-                spriteBatch.Draw(GlowTexture, drawPosition + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            }
+            return colour;
         }
     }
 }

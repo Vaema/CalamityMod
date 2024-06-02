@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,18 +9,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SpearofPaleolith : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Spear of Paleolith");
-            Tooltip.SetDefault("Throws an ancient spear that shatters enemy armor\n" +
-                "Spears rain fossil shards as they travel\n" +
-                "Stealth strikes travel slower but further, raining more fossil shards");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 54;
+            Item.height = 54;
             Item.damage = 65;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -30,8 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 54;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<SpearofPaleolithProj>();
             Item.shootSpeed = 35f;

@@ -1,26 +1,22 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class HolyBurnOrb : ModProjectile
+    public class HolyBurnOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/StarProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Holy Orb");
-        }
 
         public override void SetDefaults()
         {
@@ -45,6 +41,16 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.npc[CalamityGlobalNPC.holyBoss].active)
                     Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
             }
+            else if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
+            }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
@@ -59,7 +65,19 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.timeLeft = 160;
             }
 
-            if (Projectile.velocity.Length() < 16f)
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            {
+                if (Projectile.velocity.Length() < 12f && Projectile.ai[1] == 0f)
+                {
+                    Projectile.velocity *= 1.02f;
+                }
+                else
+                {
+                    Projectile.ai[1] += 0.05f;
+                    Projectile.velocity *= MathHelper.Lerp(0.95f, 1.05f, (float)Math.Abs(Math.Sin(Projectile.ai[1])));
+                }
+            }
+            else if (Projectile.velocity.Length() < 16f)
                 Projectile.velocity *= 1.01f;
         }
 
@@ -67,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             float lerpMult = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * (MathHelper.Pi * 2f) * 3f)) * 0.8f;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color baseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255);
             baseColor *= 0.5f;
@@ -99,7 +117,7 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(50);
@@ -109,7 +127,7 @@ namespace CalamityMod.Projectiles.Boss
                 int holy = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
                 Main.dust[holy].velocity *= 3f;
                 Main.dust[holy].noGravity = true;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[holy].scale = 0.5f;
                     Main.dust[holy].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -126,18 +144,22 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             //In GFB, "real damage" is replaced with negative healing
             if (Projectile.maxPenetrate >= (int)Providence.BossMode.Red)
-                damage = 0;
+                modifiers.SourceDamage *= 0f;
 
-            //If the player is dodging, don't apply debuffs
-            if (damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red || target.creativeGodMode)
+            Projectile.Kill();
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            // If the player is dodging, don't apply debuffs
+            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 180, 50);
-            Projectile.Kill();
+            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 120, 50);
         }
     }
 }

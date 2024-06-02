@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.Projectiles.Pets;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,26 +11,18 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Pets
 {
     [LegacyName("RotomRemote")]
-    public class TheEtomer : ModItem
+    public class TheEtomer : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("The Etomer");
-            Tooltip.SetDefault("Summons an electric troublemaker\n" +
-                "A little note is attached:\n" +
-                "Thank you, Aloe! Very much appreciated from Ben");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 34;
             Item.damage = 0;
             Item.useTime = Item.useAnimation = 20;
             Item.shoot = ModContent.ProjectileType<RotomPet>();
             Item.buffType = ModContent.BuffType<ElectricTroublemaker>();
 
-            Item.width = 30;
-            Item.height = 34;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item113;

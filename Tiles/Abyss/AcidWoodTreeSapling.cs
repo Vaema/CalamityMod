@@ -1,12 +1,13 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -24,8 +25,8 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileLavaDeath[Type] = true;
             TileID.Sets.CommonSapling[Type] = true;
             TileID.Sets.TreeSapling[Type] = true;
-			TileID.Sets.SwaysInWindBasic[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.SwaysInWindBasic[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             TileObjectData.newTile.Width = 1;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -41,10 +42,8 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("MapObject.Sapling");
-            AddMapEntry(new Color(113, 90, 71), name);
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            AddMapEntry(new Color(113, 90, 71), Language.GetText("MapObject.Sapling"));
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
             AdjTiles = new int[] { TileID.Saplings };
         }
 
@@ -55,7 +54,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void RandomUpdate(int i, int j)
         {
-            if (WorldGen.genRand.Next(20) == 0)
+            if (WorldGen.genRand.NextBool(20))
             {
                 int trueStartingPositionY = j;
                 while (TileID.Sets.TreeSapling[Main.tile[i, trueStartingPositionY].TileType])
@@ -102,11 +101,9 @@ namespace CalamityMod.Tiles.Abyss
                         if (frameY != frameYIdeal)
                         {
                             float heightRatio = k / (float)treeHeight;
-                            bool increaseFrameY = heightRatio >= 0.25f && ((heightRatio < 0.5f && WorldGen.genRand.Next(13) == 0) || (heightRatio < 0.7f && WorldGen.genRand.Next(9) == 0) || heightRatio >= 0.95f || WorldGen.genRand.Next(5) != 0 || true);
+                            bool increaseFrameY = heightRatio >= 0.25f && ((heightRatio < 0.5f && WorldGen.genRand.NextBool(13)) || (heightRatio < 0.7f && WorldGen.genRand.NextBool(9)) || heightRatio >= 0.95f || WorldGen.genRand.Next(5) != 0 || true);
                             if (increaseFrameY)
-                            {
                                 frameY += (short)(Math.Sign(frameYIdeal) * 2);
-                            }
                         }
                         tileAtPosition.Get<TileWallWireStateData>().HasTile = true;
                         tileAtPosition.TileType = TileID.PalmTree;
@@ -114,24 +111,20 @@ namespace CalamityMod.Tiles.Abyss
                         tileAtPosition.TileFrameY = frameY;
                     }
                 }
+
                 bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                 WorldGen.RangeFrame(i - 2, trueStartingPositionY - treeHeight - 1, i + 2, trueStartingPositionY + 1);
                 if (Main.netMode == NetmodeID.Server)
-                {
                     NetMessage.SendTileSquare(-1, i, (int)((double)trueStartingPositionY - (double)treeHeight * 0.5), treeHeight + 1, TileChangeType.None);
-                }
                 if (isPlayerNear)
-                {
                     WorldGen.TreeGrowFXCheck(i, j);
-                }
             }
         }
+
         public override void SetSpriteEffects(int i, int j, ref SpriteEffects effects)
         {
             if (i % 2 == 1)
-            {
                 effects = SpriteEffects.FlipHorizontally;
-            }
         }
     }
 }

@@ -6,19 +6,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class SausageMaker : ModItem
+    public class SausageMaker : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sausage Maker");
-            Tooltip.SetDefault("Sprays homing blood on hit");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 44;
+            Item.height = 42;
             Item.damage = 36;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.noMelee = true;
@@ -30,8 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 42;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<SausageMakerSpear>();
             Item.shootSpeed = 6f;
@@ -42,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 5).
-                AddIngredient<BloodSample>(8).
+                AddIngredient(ItemID.CrimtaneBar, 4).
+                AddIngredient<BloodSample>(12).
                 AddIngredient(ItemID.Vertebrae, 4).
                 AddTile(TileID.DemonAltar).
                 Register();

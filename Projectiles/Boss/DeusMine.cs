@@ -1,24 +1,23 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.NPCs.AstrumDeus;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DeusMine : ModProjectile
+    public class DeusMine : ModProjectile, ILocalizedModType
     {
+        public static readonly SoundStyle ExplodeSound = new("CalamityMod/Sounds/Custom/AstrumDeus/DeusMineExplode");
+
+        public new string LocalizationCategory => "Projectiles.Boss";
         private const int MaxTimeLeft = 600;
         private const int FadeTime = 85;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Astral Mine");
-        }
 
         public override void SetDefaults()
         {
@@ -50,7 +49,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item33, Projectile.Center);
+                SoundEngine.PlaySound(AstrumDeusHead.MineSound, Projectile.Center);
             }
 
             // Deal no damage if fading out and not set to explode
@@ -94,32 +93,32 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(255, 255, 255, Projectile.alpha);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Explode and split into accelerating lasers
             if (Projectile.ai[0] == 1f)
             {
-                SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+                SoundEngine.PlaySound(ExplodeSound, Projectile.Center);
                 Projectile.position = Projectile.Center;
                 Projectile.width = Projectile.height = 96;
                 Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
                 Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-                for (int num621 = 0; num621 < 5; num621++)
+                for (int i = 0; i < 5; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int purpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.2f);
+                    Main.dust[purpleDust].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[purpleDust].scale = 0.5f;
+                        Main.dust[purpleDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 10; num623++)
+                for (int j = 0; j < 10; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.7f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 1.5f;
-                    Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                    int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.7f);
+                    Main.dust[astralDust].noGravity = true;
+                    Main.dust[astralDust].velocity *= 1.5f;
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                 }
 
                 // Spawn diagonal lasers
@@ -142,12 +141,12 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.timeLeft > MaxTimeLeft - FadeTime || (Projectile.timeLeft < FadeTime && Projectile.ai[0] == 0f))
+            if (info.Damage <= 0 || Projectile.timeLeft > MaxTimeLeft - FadeTime || (Projectile.timeLeft < FadeTime && Projectile.ai[0] == 0f))
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75);
         }
     }
 }

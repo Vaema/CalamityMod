@@ -4,16 +4,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class BrimstoneSlag : ModItem
+    public class BrimstoneSlag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Brimstone Slag");
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<Tiles.Crags.BrimstoneSlag>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -21,11 +23,8 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = 1000;
-            Item.rare = ItemRarityID.Orange;
         }
 
         public override void AddRecipes()

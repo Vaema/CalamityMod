@@ -2,14 +2,10 @@
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class AMR2 : ModProjectile
+    public class AMR2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/AMRShot";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("AMR");
-        }
 
         public override void SetDefaults()
         {

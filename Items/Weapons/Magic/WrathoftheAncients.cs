@@ -6,28 +6,22 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class WrathoftheAncients : ModItem
+    public class WrathoftheAncients : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wrath of the Ancients");
-            Tooltip.SetDefault("Summons an energy pulse at the cursor to periodically summon homing spirits");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 30;
             Item.damage = 47;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
-            Item.width = 28;
-            Item.height = 30;
             Item.useTime = 38;
             Item.useAnimation = 38;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<GranitePulse>();

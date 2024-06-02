@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,8 +9,6 @@ namespace CalamityMod.Buffs.Summon
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mounted Scanner");
-            Description.SetDefault("Powerful machinery surrounds you");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
             //Main.persistentBuff[Type] = true;

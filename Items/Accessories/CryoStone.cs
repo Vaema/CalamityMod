@@ -1,19 +1,15 @@
 ﻿using Terraria;
 using Terraria.DataStructures;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class CryoStone : ModItem
+    public class CryoStone : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cryo Stone");
-            Tooltip.SetDefault("One of the ancient relics\n" +
-                "Multiplies all cold-based debuff damage by 1.5\n" +
-                "Creates a rotating ice shield around you that damages and slows down enemies on contact");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(4, 4));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
@@ -22,7 +18,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }

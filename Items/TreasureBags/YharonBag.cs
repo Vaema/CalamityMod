@@ -20,22 +20,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags
 {
-    public class YharonBag : ModItem
+    public class YharonBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Bag (Yharon)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
@@ -73,7 +72,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<DragonsBreath>(),
                 ModContent.ItemType<PhoenixFlameBarrage>(),
                 ModContent.ItemType<YharonsKindleStaff>(),
-                ModContent.ItemType<FinalDawn>(),
+                ModContent.ItemType<TheFinalDawn>(),
                 ModContent.ItemType<Wrathwing>(),
             }));
             itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);

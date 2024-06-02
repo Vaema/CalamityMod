@@ -1,20 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.Enums;
-using Terraria.ModLoader;
+﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using Terraria.GameContent.Events;
-using Terraria.Audio;
-using ReLogic.Content;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Enums;
+using Terraria.GameContent.Events;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class UniverseSplitterHugeBeam : ModProjectile
+    public class UniverseSplitterHugeBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         // Pretty self explanatory
         public const int TotalFadeoutTime = 25;
         public const int TimeLeft = 180;
@@ -24,16 +25,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Universe Splitter Ray");
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
+            ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = Projectile.height = 14;
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.timeLeft = TimeLeft;
@@ -197,9 +196,6 @@ namespace CalamityMod.Projectiles.Summon
             }
             return false;
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Electrified, 300);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 300);
     }
 }

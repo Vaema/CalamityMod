@@ -8,28 +8,22 @@ namespace CalamityMod.Items.Armor.Sulphurous
 {
     [AutoloadEquip(EquipType.Body)]
     [LegacyName("SulfurBreastplate")]
-    public class SulphurousBreastplate : ModItem
+    public class SulphurousBreastplate : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Sulphurous Breastplate");
-            Tooltip.SetDefault("8% increased rogue damage and 5% increased rogue critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.defense = 6;
             Item.rare = ItemRarityID.Green;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.08f;
-            player.GetCritChance<ThrowingDamageClass>() += 5;
+            player.GetDamage<ThrowingDamageClass>() += 0.06f;
+            player.GetCritChance<ThrowingDamageClass>() += 4;
         }
 
         public override void AddRecipes()

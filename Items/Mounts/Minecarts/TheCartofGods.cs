@@ -8,10 +8,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Mounts.Minecarts
 {
     [LegacyName("DoGCart")]
-    public class TheCartofGods : ModItem
+    public class TheCartofGods : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults() => DisplayName.SetDefault("The Cart of Gods");
-
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()
         {
             Item.width = 34;
@@ -27,7 +26,6 @@ namespace CalamityMod.Items.Mounts.Minecarts
             Item.UseSound = SoundID.Item68;
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<DoGCartMount>();
-            SacrificeTotal = 1;
         }
 
         public override void AddRecipes()

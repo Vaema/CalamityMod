@@ -3,14 +3,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class LaserFountain : ModProjectile
+    public class LaserFountain : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Fountain");
-        }
 
         public override void SetDefaults()
         {
@@ -34,11 +30,11 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.owner == Main.myPlayer)
                 {
                     int damage = (int)Main.player[Projectile.owner].GetTotalDamage<MeleeDamageClass>().ApplyTo(350f);
-                    int projectile1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, SpeedX, SpeedY, ModContent.ProjectileType<NebulaShot>(), damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                    if (projectile1.WithinBounds(Main.maxProjectiles))
+                    int laserShot = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, SpeedX, SpeedY, ModContent.ProjectileType<NebulaShot>(), damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    if (laserShot.WithinBounds(Main.maxProjectiles))
                     {
-                        Main.projectile[projectile1].DamageType = DamageClass.Melee;
-                        Main.projectile[projectile1].aiStyle = ProjAIStyleID.Arrow;
+                        Main.projectile[laserShot].DamageType = DamageClass.Melee;
+                        Main.projectile[laserShot].aiStyle = ProjAIStyleID.Arrow;
                     }
                 }
                 Projectile.localAI[0] = 0f;

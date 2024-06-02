@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System.IO;
+﻿using System.IO;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -7,19 +8,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ArtemisChargeTelegraph : ModProjectile
+    public class ArtemisChargeTelegraph : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public NPC ThingToAttachTo => Main.npc.IndexInRange((int)Projectile.ai[1]) ? Main.npc[(int)Projectile.ai[1]] : null;
 
         public Vector2 OldVelocity;
-        public PrimitiveTrail TelegraphDrawer = null;
         public const float TelegraphWidth = 2000f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artemis Charge Telegraph");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -89,9 +89,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TelegraphDrawer is null)
-                TelegraphDrawer = new PrimitiveTrail(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, specialShader: GameShaders.Misc["CalamityMod:Flame"]);
-
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:Flame"].UseSaturation(0.28f);
             Vector2[] drawPositions = new Vector2[]
@@ -99,8 +96,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Center,
                 Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * TelegraphWidth
             };
-
-            TelegraphDrawer.Draw(drawPositions, Projectile.Size * 0.5f - Main.screenPosition, 87);
+            PrimitiveRenderer.RenderTrail(drawPositions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:Flame"]), 87);
             return false;
         }
     }

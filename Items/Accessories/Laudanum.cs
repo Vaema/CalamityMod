@@ -5,23 +5,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class Laudanum : ModItem
+    public class Laudanum : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Laudanum");
-            Tooltip.SetDefault("Converts certain debuffs into buffs and extends their durations\n" +
-                               "Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,\n" +
-                               "Broken Armor, Armor Crunch, Chilled, Ichor, and Obstructed\n" +
-                               "Revengeance drop");
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HeartofDarkness>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

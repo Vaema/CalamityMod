@@ -5,11 +5,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class VirulentWave : ModProjectile
+    public class VirulentWave : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Virulent Wave");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 150;
             Projectile.alpha = 100;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
 
         public override void AI()
@@ -102,12 +104,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            // TODO -- Why are there so many incorrectly programmed i-frame sets
-            target.immune[Projectile.owner] = 5;
-            target.AddBuff(ModContent.BuffType<Plague>(), 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 120);
 
         public override bool PreDraw(ref Color lightColor)
         {

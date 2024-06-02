@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class BloodyMary : ModItem
+    public class BloodyMary : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Bloody Mary");
-            Tooltip.SetDefault(@"Extra spicy and bloody!
-Boosts damage and movement speed by 10% during a Blood Moon
-Reduces life regen by 4 and defense by 4%");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ Reduces life regen by 4 and defense by 4%");
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Lime;
             Item.useAnimation = 17;
             Item.useTime = 17;

@@ -1,24 +1,21 @@
 ﻿using System;
+using CalamityMod.Items.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
     public class WulfrumDrillProj : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<WulfrumDrill>();
         public override string Texture => "CalamityMod/Items/Tools/WulfrumDrill";
 
         public Player Owner => Main.player[Projectile.owner];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Drill");
-        }
-
 
         public override void SetDefaults()
         {
@@ -39,8 +36,8 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLenght = 54f * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (Projectile.velocity * bladeLenght), 24, ref collisionPoint);
+            float bladeLength = 54f * Projectile.scale;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (Projectile.velocity * bladeLength), 24, ref collisionPoint);
         }
 
         public override void AI()
@@ -76,7 +73,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Main.rand.NextBool(6))
             {
-                Dust whirrDust = Dust.NewDustDirect(Projectile.position + Projectile.velocity * Main.rand.Next(6, 10) * 0.1f, Projectile.width, Projectile.height, 31, 0f, 0f, 80, Scale: 1.4f) ;
+                Dust whirrDust = Dust.NewDustDirect(Projectile.position + Projectile.velocity * Main.rand.Next(6, 10) * 0.1f, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 80, Scale: 1.4f);
                 whirrDust.position.X -= 4f;
                 whirrDust.noGravity = true;
                 whirrDust.velocity *= 0.2f;
@@ -90,9 +87,9 @@ namespace CalamityMod.Projectiles.Typeless
             if (!Projectile.active)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
-            Vector2 shake = Main.rand.NextVector2Circular(1f, 1f) * ((float)Math.Sin(Main.GlobalTimeWrappedHourly ) * 0.25f + 0.75f);
+            Vector2 shake = Main.rand.NextVector2Circular(1f, 1f) * ((float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.25f + 0.75f);
             SpriteEffects effect = SpriteEffects.None;
             if (Owner.direction * Owner.gravDir < 0)
                 effect = SpriteEffects.FlipVertically;

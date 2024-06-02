@@ -7,17 +7,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class AquaticStarMinion : ModProjectile
+    public class AquaticStarMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public CalamityPlayer moddedOwner => Owner.Calamity();
 
         public ref float CheckForSpawning => ref Projectile.localAI[0];
-        
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aquatic Star");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }

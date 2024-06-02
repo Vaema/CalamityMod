@@ -6,22 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class NecklaceofVexation : ModItem
+    public class NecklaceofVexation : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Necklace of Vexation");
-            Tooltip.SetDefault("Revenge\n" +
-            "20% increased damage when under 50% life\n" +
-            "All attacks inflict acid venom while wearing Reaver armor");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }

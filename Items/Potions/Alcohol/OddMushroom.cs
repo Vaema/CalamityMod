@@ -5,23 +5,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class OddMushroom : ModItem
+    public class OddMushroom : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Odd Mushroom");
-            Tooltip.SetDefault("Causes you to see many fake, vibrant copies of all nearby entities\n" +
-                "These visual effects may be nauseating or otherwise bad for some\n" +
-                "Trippy");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 42;
-            Item.height = 48;
+            Item.width = 38;
+            Item.height = 50;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.rare = ItemRarityID.LightRed;
@@ -31,6 +28,12 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.buffType = ModContent.BuffType<Trippy>();
             Item.buffTime = CalamityUtils.SecondsToFrames(3600f);
             Item.value = Item.buyPrice(0, 50, 0, 0);
+        }
+
+        public override void OnConsumeItem(Player player)
+        {
+            if (player.Calamity().trippyLevel < 3)
+                player.Calamity().trippyLevel++;
         }
     }
 }

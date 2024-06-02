@@ -14,24 +14,13 @@ using static CalamityMod.CalamityUtils;
 namespace CalamityMod.Items.Weapons.Magic
 {
     [LegacyName("WulfrumStaff")]
-    public class WulfrumProsthesis : ModItem, IHideFrontArm
+    public class WulfrumProsthesis : ModItem, IHideFrontArm, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisShoot") { PitchVariance = 0.1f, Volume = 0.55f };
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisHit") { PitchVariance = 0.1f, Volume = 0.75f , MaxInstances = 3};
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisHit") { PitchVariance = 0.1f, Volume = 0.75f, MaxInstances = 3 };
         public static readonly SoundStyle SuckSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisSucc") { Volume = 0.5f };
         public static readonly SoundStyle SuckStopSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisSuccStop") { Volume = 0.5f };
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wulfrum Prosthesis");
-            Tooltip.SetDefault("Casts a wulfrum bolt\n" +
-                               "Right click to drain mana from creatures in front of you\n" +
-                               "[c/83B87E:Technology and magic have been forever locked in an arms race of imitation and retaliation]\n" +
-                               "[c/83B87E:At times they work in tandem, as seen in certain prosthetic limbs]");
-            //Lore about how magic is not always a given for everyone, and how some unlucky people sometimes resort to voluntarily cutting their limbs to use magic augmented prosthesis
-            //1 : Informs about magic as a narrative thing, 2 : Informs about wulfrum energy being partly magical.
-            SacrificeTotal = 1;
-        }
 
         internal static Asset<Texture2D> RealSprite;
 
@@ -39,17 +28,17 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 34;
+            Item.height = 42;
             Item.damage = 18;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 5;
-            Item.width = 34;
-            Item.height = 42;
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;

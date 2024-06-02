@@ -1,11 +1,11 @@
-﻿using CalamityMod.Sounds;
+﻿using System;
+using System.IO;
+using System.Linq;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,8 +13,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SeraphimBeamLarge : BaseLaserbeamProjectile
+    public class SeraphimBeamLarge : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public int OwnerIndex
@@ -43,7 +44,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Holy Beam");
             Main.projFrames[Projectile.type] = 10;
         }
 
@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         // Rapidly decrease damage every hit
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => Projectile.damage = Math.Max(1, (int)(Projectile.damage * 0.3));
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Projectile.damage = Math.Max(1, (int)(Projectile.damage * 0.3));
 
         public override bool PreDraw(ref Color lightColor)
         {

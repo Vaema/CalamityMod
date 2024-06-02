@@ -19,22 +19,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.TreasureBags
 {
     [LegacyName("SCalBag", "SupremeCalamitasCoffer")]
-    public class CalamitasCoffer : ModItem
+    public class CalamitasCoffer : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Coffer (Calamitas)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Purple;
             Item.expert = true;
         }

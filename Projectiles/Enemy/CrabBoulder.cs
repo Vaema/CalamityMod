@@ -1,15 +1,15 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class CrabBoulder : ModProjectile
+    public class CrabBoulder : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Boulder");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.tileCollide = Projectile.ai[0] > 70f;
             Projectile.rotation += Math.Sign(Projectile.velocity.X) * 0.08f;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Utils.PoofOfSmoke(Projectile.Center);
         }

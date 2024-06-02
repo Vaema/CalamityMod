@@ -8,14 +8,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class RedtideWhirlpool : ModProjectile
+    public class RedtideWhirlpool : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public Player Owner => Main.player[Projectile.owner];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Whirlpool");
-        }
 
         public override void SetDefaults()
         {
@@ -27,6 +23,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 40;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -47,9 +45,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
-            SpriteEffects flip = Math.Sign(Projectile.velocity.X) < 0? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            SpriteEffects flip = Math.Sign(Projectile.velocity.X) < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor * 0.3f, Projectile.rotation * 1.2f, texture.Size() / 2f, 1.5f, flip, 0);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor * 0.4f, Projectile.rotation, texture.Size() / 2f, 2f, flip, 0);
@@ -57,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath19, Projectile.position);
 

@@ -11,26 +11,22 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("Megafleet")]
-    public class Voidragon : ModItem
+    public class Voidragon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int shotType = 1;
 
         public override void SetStaticDefaults()
         {
             // Long live Megafleet. You will be missed. Maybe one day we can revive you.
-            DisplayName.SetDefault("Voidragon");
-            Tooltip.SetDefault("75% chance to not consume ammo\n" +
-                "Fires void blasts that explode every other shot\n" +
-                "Shoots demon flame tentacles alongside every shot");
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 200;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 96;
             Item.height = 38;
+            Item.damage = 240;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -42,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 18f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
             Item.Calamity().canFirePointBlankShots = true;

@@ -1,25 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("EbonianGel")]
-    public class BlightedGel : ModItem
+    public class BlightedGel : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Blighted Gel");
+            Item.ResearchUnlockCount = 25;
         }
 
         public override void SetDefaults()
         {
             Item.width = 16;
             Item.height = 18;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 6);
             Item.rare = ItemRarityID.Blue;
         }

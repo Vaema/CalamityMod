@@ -25,9 +25,10 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             TileObjectData.newTile.Origin = new Point16(1, 0);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile, 1, 1);
+            TileObjectData.newTile.StyleLineSkip = 2;
             TileObjectData.addTile(Type);
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(71, 95, 114), Language.GetText("MapObject.Chandelier"));
+            AddMapEntry(new Color(235, 166, 135), Language.GetText("MapObject.Chandelier"));
             AdjTiles = new int[] { TileID.Chandeliers };
         }
 
@@ -35,7 +36,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -58,11 +59,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
                 g = 0f;
                 b = 0f;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 48, 48, ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumChandelier>());
         }
 
         public override void HitWire(int i, int j)

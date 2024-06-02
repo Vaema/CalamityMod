@@ -1,45 +1,39 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("ProfanedSword")]
-    public class BrimstoneSword : ModItem
+    public class BrimstoneSword : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Brimstone Sword");
-            Tooltip.SetDefault("Summons brimstone geysers on hit\n" +
-                "Right click to throw like a javelin that explodes on hit\n" +
-                "Receives 33% benefit from melee speed bonuses");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
-            ItemID.Sets.BonusAttackSpeedMultiplier[Item.type] = 0.33f;
         }
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 52;
             Item.damage = 70;
             Item.DamageType = DamageClass.Melee;
-            Item.width = Item.height = 52;
-            Item.scale = 1.5f;
             Item.useAnimation = Item.useTime = 28;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<BrimstoneSwordProj>();
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.shootSpeed = 20f;
+            Item.shootSpeed = 10f;
         }
 
         public override bool AltFunctionUse(Player player) => true;
@@ -48,10 +42,12 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
+                Item.DamageType = DamageClass.MeleeNoSpeed;
                 Item.noMelee = true;
             }
             else
             {
+                Item.DamageType = DamageClass.Melee;
                 Item.noMelee = false;
             }
 
@@ -60,14 +56,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            if (player.altFunctionUse == 2)
-            {
-                type = ModContent.ProjectileType<BrimstoneSwordProj>();
-            }
-            else
-            {
+            if (player.altFunctionUse != 2)
                 type = ProjectileID.None;
-            }
         }
 
         public override void UseAnimation(Player player)
@@ -75,30 +65,22 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = false;
 
             if (player.altFunctionUse == 2)
-            {
                 Item.noUseGraphic = true;
-            }
         }
 
-
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
 
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Brimblast>(), damage, knockback, Main.myPlayer);
+            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Brimblast>(), Item.damage, Item.knockBack, Main.myPlayer);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
-
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Brimblast>(), damage, Item.knockBack, Main.myPlayer);
+            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Brimblast>(), Item.damage, Item.knockBack, Main.myPlayer);
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)

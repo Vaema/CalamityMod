@@ -11,14 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class TimeBolt : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Time Bolt");
-            Tooltip.SetDefault("There should be no boundary to human endeavor.\n" +
-            "Stealth strikes can hit more enemies and create a larger time field");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 24;
@@ -32,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<TimeBoltKnife>();
@@ -40,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.68f;
+        public override float StealthDamageMultiplier => 0.68f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -59,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<CosmicKunai>().
                 AddIngredient(ItemID.FastClock).
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Phantoplasm>(20).
+                AddIngredient<Necroplasm>(20).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -13,16 +13,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class CryoKey : ModItem
+    public class CryoKey : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cryo Key");
-            Tooltip.SetDefault("Summons Cryogen when used in the tundra\n" +
-                "Enrages outside the tundra\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 7; // Mechanical Eye
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 7; // Ocram's Razor (1 below Mechanical Eye)
         }
 
         public override void SetDefaults()
@@ -35,10 +31,10 @@ namespace CalamityMod.Items.SummonItems
             Item.useStyle = ItemUseStyleID.HoldUp;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -51,7 +47,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Cryogen>());
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<Cryogen>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Cryogen>());
 
             return true;
         }
@@ -59,7 +55,7 @@ namespace CalamityMod.Items.SummonItems
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/CryoKey").Value;
-            Color overlay = CalamityWorld.getFixedBoi ? Color.Red : Color.White;
+            Color overlay = Main.zenithWorld ? Color.Red : Color.White;
             spriteBatch.Draw(texture, position, null, overlay, 0f, origin, scale, 0, 0);
             return false;
         }
@@ -67,28 +63,18 @@ namespace CalamityMod.Items.SummonItems
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/CryoKey").Value;
-            Color overlay = CalamityWorld.getFixedBoi ? Color.Red : lightColor;
+            Color overlay = Main.zenithWorld ? Color.Red : lightColor;
             spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, overlay, 0f, Vector2.Zero, 1f, 0, 0);
             return false;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list)
+        public override void UpdateInventory(Player player)
         {
-            Player player = Main.LocalPlayer;
-            TooltipLine name = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "ItemName");
-            TooltipLine line0 = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip0");
-
-            if (CalamityWorld.getFixedBoi)
-            {
-                name.Text = "Pyro Key";
-                line0.Text = "Summons Cryogen when used in the tundra...?";
-            }
-            else
-            {
-                name.Text = "Cryo Key";
-                line0.Text = "Summons Cryogen when used in the tundra";
-            }
+            if (Main.zenithWorld)
+                Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
         }
+
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[SPAWN]", this.GetLocalizedValue(Main.zenithWorld ? "SpawnGFB" : "SpawnNormal"));
 
         public override void AddRecipes()
         {

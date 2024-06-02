@@ -11,22 +11,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class SDFMG : ModItem
+    public class SDFMG : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("SDFMG");
-            Tooltip.SetDefault("It came from the edge of Terraria\n" +
-                "50% chance to not consume ammo");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 100;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 74;
             Item.height = 34;
+            Item.damage = 100;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 2;
             Item.useAnimation = 2;
             Item.useStyle = ItemUseStyleID.Shoot;

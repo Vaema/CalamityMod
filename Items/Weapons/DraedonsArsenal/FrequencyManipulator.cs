@@ -1,11 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,36 +12,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class FrequencyManipulator : RogueWeapon
+    public class FrequencyManipulator : RogueWeapon, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Frequency Manipulator");
-            Tooltip.SetDefault("A long device, used in the tuning of some rather... original machines\n" +
-                               "Swings a spear around and then throws it\n" +
-                               "On collision, the spear releases a burst of homing energy\n" +
-                               "Stealth strikes release more energy and explode on collision");
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
+            Item.width = 26;
+            Item.height = 44;
             Item.damage = 80;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.width = 26;
-            Item.height = 44;
             Item.useTime = 56;
             Item.useAnimation = 56;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item1;
 
             Item.shootSpeed = 16f;
@@ -75,7 +65,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(12).
                 AddRecipeGroup("AnyMythrilBar", 10).
                 AddIngredient(ItemID.SoulofSight, 20).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

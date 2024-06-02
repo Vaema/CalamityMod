@@ -62,13 +62,6 @@ namespace CalamityMod.Systems
                     return true;
                 }, InterfaceScaleType.UI));
 
-                // Astral Arcanum overlay (if open)
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Astral Arcanum UI", delegate ()
-                {
-                    AstralArcanumUI.UpdateAndDraw(Main.spriteBatch);
-                    return true;
-                }, InterfaceScaleType.None));
-
                 // Speedrun Timer
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Speedrun Timer", delegate ()
                 {
@@ -94,6 +87,13 @@ namespace CalamityMod.Systems
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Sulphuric Water Poisoning UI", () =>
                 {
                     SulphurousWaterMeterUI.Draw(Main.spriteBatch, Main.LocalPlayer);
+                    return true;
+                }, InterfaceScaleType.None));
+
+                //Flight bar
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Flight UI", () =>
+                {
+                    FlightBar.Draw(Main.spriteBatch, Main.LocalPlayer);
                     return true;
                 }, InterfaceScaleType.None));
 

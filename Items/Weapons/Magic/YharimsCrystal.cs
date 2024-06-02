@@ -11,25 +11,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class YharimsCrystal : ModItem
+    public class YharimsCrystal : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Yharim's Crystal");
-            Tooltip.SetDefault("Fires draconic beams of total annihilation");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 85;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 15;
             Item.width = 16;
             Item.height = 16;
-            Item.useTime = 10;
-            Item.useAnimation = 10;
-            Item.reuseDelay = 5;
+            Item.damage = 65;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 10;
+            Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item13;
             Item.noMelee = true;
@@ -39,26 +31,23 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<YharimsCrystalPrism>();
             Item.shootSpeed = 30f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        public override void ModifyTooltips(List<TooltipLine> list)
+        public override void UpdateInventory(Player player)
         {
-            TooltipLine name = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "ItemName");
-            if (name != null && CalamityWorld.getFixedBoi)
-                name.Text = "yermes christal";
-
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip0");
-            if (line != null && CalamityWorld.getFixedBoi)
-                line.Text = "...throughs a pice of dnimite";
+            if (Main.zenithWorld)
+                Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
         }
+
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileID.Dynamite, 250, 0, player.whoAmI);
                 return false;

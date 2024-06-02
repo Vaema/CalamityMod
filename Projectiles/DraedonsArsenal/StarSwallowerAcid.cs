@@ -5,14 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class StarSwallowerAcid : ModProjectile
+    public class StarSwallowerAcid : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/Environment/AcidDrop";
 
         public const float Gravity = 0.25f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Acid");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -27,8 +27,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.ignoreWater = false;
             Projectile.timeLeft = 300;
             Projectile.alpha = 255;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.DamageType = DamageClass.Summon;
         }
         public override void AI()
@@ -50,7 +48,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Water drip
             for (int i = 0; i < 4; i++)
             {
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, 154, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, DustID.Rain, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
                 Dust dust = Main.dust[idx];
                 dust.position.X -= 2f;
                 Main.dust[idx].alpha = 38;

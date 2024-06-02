@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Mounts;
+﻿using CalamityMod.Items.Armor.MarniteArchitect;
+using CalamityMod.Items.Mounts;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Items.Armor.MarniteArchitect;
 
 namespace CalamityMod.Buffs.Mounts
 {
@@ -9,8 +9,6 @@ namespace CalamityMod.Buffs.Mounts
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marnite Lift");
-            Description.SetDefault("Do you even..?");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
         }

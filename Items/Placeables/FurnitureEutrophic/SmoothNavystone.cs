@@ -4,18 +4,19 @@ using Terraria.ModLoader; // If you are using c# 6, you can use: "using static T
 
 namespace CalamityMod.Items.Placeables.FurnitureEutrophic
 {
-    public class SmoothNavystone : ModItem
+    public class SmoothNavystone : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -27,8 +28,14 @@ namespace CalamityMod.Items.Placeables.FurnitureEutrophic
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<Navystone>(), 1).AddTile(TileID.WorkBenches).Register();
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<SmoothNavystoneWall>(), 4).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe().
+                AddIngredient<Navystone>().
+                AddTile(TileID.WorkBenches).
+                Register();
+            CreateRecipe().
+                AddIngredient<SmoothNavystoneWall>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

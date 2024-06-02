@@ -1,25 +1,20 @@
 ﻿using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Carnage : ModItem
+    public class Carnage : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Carnage");
-            Tooltip.SetDefault("Enemies explode into homing blood on death");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 50;
-            Item.damage = 70;
+            Item.height = 54;
+            Item.damage = 130;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 21;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -28,65 +23,68 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.height = 54;
-            Item.scale = 1.25f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
+            // Spawn occasional blood dust
             if (Main.rand.NextBool(3))
+                Dust.NewDust(hitbox.TopLeft(), hitbox.Width, hitbox.Height, DustID.Blood);
+        }
+
+        // Carnage's on-hits only occur on valid enemies. Specifically won't trigger on statues.
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (target.life > 0 || !target.IsAnEnemy(false))
+                return;
+            OnHitEffects(player, target, hit.Knockback);
+        }
+
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
+        {
+            if (target.statLife > 0)
+                return;
+            OnHitEffects(player, target, Item.knockBack);
+        }
+
+        private void OnHitEffects(Player player, Entity target, float kb)
+        {
+            var source = player.GetSource_ItemUse(Item);
+
+            // Play sound
+            SoundEngine.PlaySound(SoundID.Item74, target.Center);
+
+            // Dust loop 1
+            for (int i = 0; i < 15; i++)
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 5);
+                int idx = Dust.NewDust(target.position, target.width, target.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                Main.dust[idx].velocity *= 3f;
+                if (Main.rand.NextBool())
+                {
+                    Main.dust[idx].scale = 0.5f;
+                    Main.dust[idx].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                }
             }
-        }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
-        {
-            OnHitEffects(player, target.life <= 0, target.Center, target.width, target.height, knockback);
-        }
-
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
-        {
-            OnHitEffects(player, target.statLife <= 0, target.Center, target.width, target.height, Item.knockBack);
-        }
-
-        private void OnHitEffects(Player player, bool health, Vector2 targetPos, int targetWidth, int targetHeight, float kBack)
-        {
-            if (health)
+            // Dust loop 2
+            for (int i = 0; i < 25; i++)
             {
-                var source = player.GetSource_ItemUse(Item);
-                SoundEngine.PlaySound(SoundID.Item74, targetPos);
-                targetPos.X += (float)(targetWidth / 2);
-                targetPos.Y += (float)(targetHeight / 2);
-                targetPos.X -= (float)(targetWidth / 2);
-                targetPos.Y -= (float)(targetHeight / 2);
-                for (int i = 0; i < 15; i++)
-                {
-                    int idx = Dust.NewDust(targetPos, targetWidth, targetHeight, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[idx].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
-                    {
-                        Main.dust[idx].scale = 0.5f;
-                        Main.dust[idx].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                    }
-                }
-                for (int i = 0; i < 25; i++)
-                {
-                    int idx = Dust.NewDust(targetPos, targetWidth, targetHeight, 5, 0f, 0f, 100, default, 3f);
-                    Main.dust[idx].noGravity = true;
-                    Main.dust[idx].velocity *= 5f;
-                    idx = Dust.NewDust(targetPos, targetWidth, targetHeight, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[idx].velocity *= 2f;
-                }
-                int bloodAmt = Main.rand.Next(4, 6);
-                int bloodDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                for (int i = 0; i < bloodAmt; i++)
-                {
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                    Projectile.NewProjectile(source, targetPos, velocity, ModContent.ProjectileType<Blood>(), bloodDamage, kBack, player.whoAmI, 0f, 0f);
-                }
+                int idx = Dust.NewDust(target.position, target.width, target.height, DustID.Blood, 0f, 0f, 100, default, 3f);
+                Main.dust[idx].noGravity = true;
+                Main.dust[idx].velocity *= 5f;
+                idx = Dust.NewDust(target.position, target.width, target.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                Main.dust[idx].velocity *= 2f;
+            }
+
+            // 6-8 blood projectiles spawned on kill
+            int bloodAmt = Main.rand.Next(6, 9);
+            int bloodDamage = player.CalcIntDamage<MeleeDamageClass>(0.3f * Item.damage);
+            for (int i = 0; i < bloodAmt; i++)
+            {
+                Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                Projectile.NewProjectile(source, target.Center, velocity, ModContent.ProjectileType<Blood>(), bloodDamage, kb, player.whoAmI, 0f, 0f);
             }
         }
     }

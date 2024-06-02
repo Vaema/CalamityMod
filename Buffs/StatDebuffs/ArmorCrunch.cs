@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -7,13 +7,12 @@ namespace CalamityMod.Buffs.StatDebuffs
     public class ArmorCrunch : ModBuff
     {
         public static int DefenseReduction = 15;
-        public static float MultiplicativeDamageReductionPlayer = 0.33f;
+        public static float MultiplicativeDamageReductionPlayer = 0.5f;
+        // 15% DR reduction
         public static float MultiplicativeDamageReductionEnemy = 0.85f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Armor Crunch");
-            Description.SetDefault("Your armor is shredded");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;

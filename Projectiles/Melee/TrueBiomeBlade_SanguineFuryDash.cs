@@ -1,16 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class SanguineFuryDash : ModProjectile
+    public class SanguineFuryDash : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => 20 - Projectile.timeLeft;
@@ -20,7 +21,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shredding Lunge");
         }
         public override void SetDefaults()
         {
@@ -39,12 +39,9 @@ namespace CalamityMod.Projectiles.Melee
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), DashStart, DashEnd);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            crit = true;
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SetCrit();
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_DashProc)
                 sword.OnHitProc = true;
@@ -59,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(Spark);
             }
 
-            if (!target.canGhostHeal || Owner.moonLeech)
+            if (Owner.moonLeech)
                 return;
 
             Owner.statLife += OmegaBiomeBlade.SuperPogoAttunementSlashLifesteal;

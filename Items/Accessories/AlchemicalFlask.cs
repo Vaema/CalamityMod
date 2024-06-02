@@ -7,21 +7,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class AlchemicalFlask : ModItem
+    public class AlchemicalFlask : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Alchemical Flask");
-            Tooltip.SetDefault("All attacks inflict the Plague and grants immunity to the Plague\n" +
-                "Projectiles spawn plague seekers on enemy hits");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -30,15 +23,15 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.alchFlask = true;
-            player.buffImmune[ModContent.BuffType<Plague>()] = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient(ItemID.BeeWax, 5).
-                AddIngredient<PlagueCellCanister>(10).
+                AddIngredient(ItemID.HoneyComb).
+                AddIngredient(ItemID.BeeWax, 8).
+                AddIngredient<PlagueCellCanister>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

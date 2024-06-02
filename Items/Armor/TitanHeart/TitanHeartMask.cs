@@ -8,16 +8,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.TitanHeart
 {
     [AutoloadEquip(EquipType.Head)]
-    public class TitanHeartMask : ModItem
+    public class TitanHeartMask : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Titan Heart Mask");
-            Tooltip.SetDefault("5% increased rogue damage and knockback\n" +
-            "Rogue weapons inflict the Astral Infection debuff");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -34,10 +27,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "15% increased rogue damage and knockback\n" +
-					"+100 maximum stealth\n" +
-                    "Stealth strikes deal double knockback and cause an astral explosion\n" +
-                    "Grants immunity to knockback";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.titanHeartSet = true;
             player.GetDamage<ThrowingDamageClass>() += 0.15f;

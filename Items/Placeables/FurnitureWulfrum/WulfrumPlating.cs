@@ -1,24 +1,23 @@
-﻿using CalamityMod.Items.Placeables.Ores;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureWulfrum
 {
-    public class WulfrumPlating : ModItem
+    public class WulfrumPlating : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -31,15 +30,14 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
         public override void AddRecipes()
         {
             CreateRecipe(25).
-                AddIngredient<WulfrumMetalScrap>().
                 AddRecipeGroup("AnyStoneBlock", 25).
-                AddTile(TileID.Anvils).
+                AddIngredient<WulfrumMetalScrap>().
+                AddTile(TileID.HeavyWorkBench).
                 Register();
-
-            //CreateRecipe().
-                //AddIngredient<AstralBrickWall>(4).
-                //AddTile(TileID.WorkBenches).
-                //Register();
+            CreateRecipe().
+                AddIngredient<WulfrumPlatingWall>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

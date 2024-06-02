@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories.Vanity;
@@ -8,15 +11,12 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameInput;
 using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
@@ -24,33 +24,24 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Items.Armor.MarniteArchitect
 {
     [AutoloadEquip(EquipType.Head)]
-    public class MarniteArchitectHeadgear : ModItem
+    public class MarniteArchitectHeadgear : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
         public static readonly SoundStyle LiftSpawnSound = new("CalamityMod/Sounds/Item/MarniteLiftSummon");
         public static readonly SoundStyle LiftGoAwaySound = new("CalamityMod/Sounds/Item/MarniteLiftUnsummon");
-        public static readonly SoundStyle LiftHummSound = new("CalamityMod/Sounds/Item/MarniteLiftHumm") { IsLooped = true};
+        public static readonly SoundStyle LiftHummSound = new("CalamityMod/Sounds/Item/MarniteLiftHumm") { IsLooped = true };
 
         public static float LiftRaiseSpeed = 2f;
         public static float MaxLiftHeight = 138f;
 
         public override void Load()
         {
-            On.Terraria.Player.QuickMount += ActivateLift;
+            Terraria.On_Player.QuickMount += ActivateLift;
         }
-
-        public override void Unload()
-        {
-            On.Terraria.Player.QuickMount -= ActivateLift;
-        }
-
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Marnite Architect Headgear");
-            Tooltip.SetDefault("Increases block placement range by 5");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -62,12 +53,12 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 0;
         }
 
-        private void ActivateLift(On.Terraria.Player.orig_QuickMount orig, Player self)
+        private void ActivateLift(Terraria.On_Player.orig_QuickMount orig, Player self)
         {
             //Spoof the mount thing
             if (!self.mount.Active && HasArmorSet(self) && self.miscEquips[Player.miscSlotMount].IsAir)
@@ -82,7 +73,6 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                     self.mount.SetMount(liftMountType, self);
                     SoundEngine.PlaySound(LiftSpawnSound, self.Center);
                 }
-
             }
 
             else
@@ -96,7 +86,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Marnite Lift";
+            player.setBonus = "Marnite Lift"; //Replaced below
             player.GetModPlayer<MarniteArchitectPlayer>().setEquipped = true;
         }
 
@@ -106,7 +96,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             if (Main.myPlayer == player.whoAmI)
             {
                 Player.tileRangeX += 5;
-                Player.tileRangeY += 4; //Extendo grip also increases vertical tile range by one less than horizontal
+                Player.tileRangeY += 5; //Extendo grip also increases vertical tile range by one less than horizontal <-- This is silly lmao
             }
         }
 
@@ -118,17 +108,12 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
                 if (setBonusIndex != -1)
                 {
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", "Marnite Lift - You can summon a lift under your feet to reach higher up");
-                    setBonus1.OverrideColor = Color.Lerp(new Color(255, 243, 161), new Color(137, 162, 255), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
-                    tooltips[setBonusIndex] = setBonus1;
+                    tooltips[setBonusIndex].Text = CalamityUtils.GetTextValueFromModItem<MarniteArchitectHeadgear>("AbilityBrief");
+                    tooltips[setBonusIndex].OverrideColor = Color.Lerp(new Color(255, 243, 161), new Color(137, 162, 255), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
 
-                    TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", "The lift gets summoned when the mount hotkey gets pressed [c/D4C870:without any mounts equipped]");
-                    setBonus2.OverrideColor = new Color(145, 197, 239);
-                    tooltips.Insert(setBonusIndex + 1, setBonus2);
-
-                    TooltipLine setBonus3 = new TooltipLine(item.Mod, "CalamityMod:SetBonus3", "Using the Up and Down keys can change the lift's height");
-                    setBonus3.OverrideColor = new Color(145, 197, 239);
-                    tooltips.Insert(setBonusIndex + 2, setBonus3);
+                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextValueFromModItem<MarniteArchitectHeadgear>("AbilityDescription"));
+                    setBonus1.OverrideColor = new Color(145, 197, 239);
+                    tooltips.Insert(setBonusIndex + 1, setBonus1);
                 }
 
             }
@@ -148,8 +133,9 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
     }
 
     [AutoloadEquip(EquipType.Body)]
-    public class MarniteArchitectToga : ModItem
+    public class MarniteArchitectToga : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void Load()
         {
             if (Main.netMode == NetmodeID.Server)
@@ -159,10 +145,6 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Marnite Architect Toga");
-            Tooltip.SetDefault("Increases tile placement speed by 50%");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
         }
@@ -171,7 +153,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1;
         }
@@ -310,7 +292,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
                 if (distanceToGround >= 0)
                 {
-                    float newVelocity;  
+                    float newVelocity;
 
                     if (Player.controlUp || Player.controlJump)
                     {
@@ -400,7 +382,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                 if (Main.rand.NextFloat() > (centerDistance / MarniteArchitectHeadgear.MaxLiftHeight) * 0.6f && Main.rand.NextBool())
                 {
                     float scale = 1.2f - (centerDistance / MarniteArchitectHeadgear.MaxLiftHeight) * 0.7f;
-                    Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitY * centerDistance + Vector2.UnitX * Main.rand.Next(-16, 16), 31, new Vector2((Main.rand.NextFloat(-8, 8) * scale) - player.velocity.X, Main.rand.NextFloat(-1, 1)), 120, Scale : scale * 1.5f);
+                    Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitY * centerDistance + Vector2.UnitX * Main.rand.Next(-16, 16), 31, new Vector2((Main.rand.NextFloat(-8, 8) * scale) - player.velocity.X, Main.rand.NextFloat(-1, 1)), 120, Scale: scale * 1.5f);
                 }
             }
 
@@ -443,7 +425,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
-            rotation = MathHelper.Clamp(drawPlayer.velocity.X * 0.03f, - MathHelper.ToRadians(7f), MathHelper.ToRadians(7f));
+            rotation = MathHelper.Clamp(drawPlayer.velocity.X * 0.03f, -MathHelper.ToRadians(7f), MathHelper.ToRadians(7f));
             drawPlayer.fullRotation = rotation;
 
             // Draw is called for each mount texture we provide, so we check drawType to avoid duplicate draws.
@@ -465,7 +447,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
                     playerDrawData.Add(new DrawData(fireTex, drawPosition + new Vector2(0, 8), new Rectangle(0, 0, fireTex.Width, fireTex.Height), fireColor, drawPlayer.fullRotation, fireOrigin, fireScale * drawScale, SpriteEffects.None, 0));
                 }
-                    
+
                 playerDrawData.Add(new DrawData(platformTex, drawPosition, new Rectangle(0, 0, platformTex.Width, platformTex.Height), drawColor, drawPlayer.fullRotation, platformTex.Size() / 2f, drawScale, SpriteEffects.None, 0));
             }
 

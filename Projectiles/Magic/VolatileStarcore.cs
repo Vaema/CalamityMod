@@ -2,20 +2,20 @@
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class VolatileStarcore : ModProjectile
+    public class VolatileStarcore : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private static int Lifetime = 240;
         private static int NumAnimationFrames = 6;
         private static int AnimationFrameTime = 2;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Volatile Starcore");
             Main.projFrames[Projectile.type] = NumAnimationFrames;
         }
         public override void SetDefaults()
@@ -93,17 +93,17 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Daybreak, 180);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Daybreak, 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner != Main.myPlayer)
                 return;

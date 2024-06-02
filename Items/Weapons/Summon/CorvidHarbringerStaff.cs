@@ -10,16 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class CorvidHarbringerStaff : ModItem
+    public class CorvidHarbringerStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Corvid Harbinger Staff");
-            Tooltip.SetDefault("Nevermore.\n" +
-                               "Summons a powerful raven which teleports and dashes");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
             Item.width = 54;

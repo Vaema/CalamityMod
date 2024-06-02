@@ -1,21 +1,21 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
 using CalamityMod.Events;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AstralFlame : ModProjectile
+    public class AstralFlame : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Astral Homing Flame");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -62,14 +62,14 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
 
-            int num103 = Player.FindClosest(Projectile.Center, 1, 1);
-            Vector2 vector11 = Main.player[num103].Center - Projectile.Center;
-            if (vector11.Length() < 60f)
+            int targetPlayer = Player.FindClosest(Projectile.Center, 1, 1);
+            Vector2 playerDist = Main.player[targetPlayer].Center - Projectile.Center;
+            if (playerDist.Length() < 60f)
             {
                 Projectile.Kill();
                 return;
@@ -78,9 +78,9 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] > 15f)
             {
-                int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 0.8f);
-                Main.dust[num469].noGravity = true;
-                Main.dust[num469].velocity *= 0f;
+                int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 0.8f);
+                Main.dust[astralDust].noGravity = true;
+                Main.dust[astralDust].velocity *= 0f;
             }
 
             if (Projectile.ai[0] >= 120f)
@@ -88,9 +88,9 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.ai[1] < 180f)
                 {
                     float scaleFactor2 = Projectile.velocity.Length();
-                    vector11.Normalize();
-                    vector11 *= scaleFactor2;
-                    Projectile.velocity = (Projectile.velocity * 30f + vector11) / 31f;
+                    playerDist.Normalize();
+                    playerDist *= scaleFactor2;
+                    Projectile.velocity = (Projectile.velocity * 30f + playerDist) / 31f;
                     Projectile.velocity.Normalize();
                     Projectile.velocity *= scaleFactor2;
                 }
@@ -145,33 +145,33 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(255, 255, 255, Projectile.alpha);
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Zombie103, Projectile.Center);
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 96;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num193 = 0; num193 < 2; num193++)
+            for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
             }
-            for (int num194 = 0; num194 < 20; num194++)
+            for (int j = 0; j < 20; j++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 3f;
-                num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 50, default, 1f);
-                Main.dust[num195].velocity *= 2f;
-                Main.dust[num195].noGravity = true;
+                int deathAstralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
+                Main.dust[deathAstralDust].noGravity = true;
+                Main.dust[deathAstralDust].velocity *= 3f;
+                deathAstralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 50, default, 1f);
+                Main.dust[deathAstralDust].velocity *= 2f;
+                Main.dust[deathAstralDust].noGravity = true;
             }
             Projectile.Damage();
         }

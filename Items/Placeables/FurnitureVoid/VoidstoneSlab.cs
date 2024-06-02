@@ -5,18 +5,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureVoid
 {
-    public class VoidstoneSlab : ModItem
+    public class VoidstoneSlab : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,8 +29,14 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<SmoothVoidstone>()).AddTile(ModContent.TileType<VoidCondenser>()).Register();
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<VoidstoneSlabWall>(), 4).AddTile(ModContent.TileType<VoidCondenser>()).Register();
+            CreateRecipe().
+                AddIngredient<SmoothVoidstone>().
+                AddTile<VoidCondenser>().
+                Register();
+            CreateRecipe().
+                AddIngredient<VoidstoneSlabWall>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

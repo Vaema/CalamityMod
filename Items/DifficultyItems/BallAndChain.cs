@@ -4,16 +4,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DifficultyItems
 {
-    public class BallAndChain : ModItem
+    public class BallAndChain : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ball and Chain");
-            Tooltip.SetDefault("So heavy...\n" +
-                "Favorite this item to disable any dashes granted by equipment.");
-        }
-
+        public new string LocalizationCategory => "Items.Misc";
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -21,10 +14,10 @@ namespace CalamityMod.Items.DifficultyItems
             Item.rare = ItemRarityID.Blue;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override bool CanUseItem(Player player) => false;
 

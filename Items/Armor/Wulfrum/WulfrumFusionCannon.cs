@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,28 +15,22 @@ using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Armor.Wulfrum
 {
-    public class WulfrumFusionCannon : HeldOnlyItem, IHideFrontArm
+    public class WulfrumFusionCannon : HeldOnlyItem, IHideFrontArm, ILocalizedModType
     {
+        // This is a weapon, but not, I DNC
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisShoot") { PitchVariance = 0.1f, Volume = 0.4f };
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Experimental Wulfrum Fusion Array");
-            Tooltip.SetDefault("Fires quick bursts of medium-range pellets\n" + "Ignores 10 points of enemy Defense\n" +
-                "[c/878787:\"Who needs whips when you can simply become the summon yourself?\"]");
-            //Imaging hiding actually important/interesting/funny lore in there... :drool: that would be so dark souls
-        }
         public override string Texture => "CalamityMod/Items/Armor/Wulfrum/WulfrumFusionCannon";
 
         public bool noAnimation = false;
 
         public override void SetDefaults()
         {
+            Item.width = 34;
+            Item.height = 42;
             Item.damage = 6;
             Item.ArmorPenetration = 10;
             Item.DamageType = DamageClass.Summon;
-            Item.width = 34;
-            Item.height = 42;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2;
@@ -46,9 +41,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
             Item.shootSpeed = 18f;
             Item.holdStyle = 16; //Custom hold style
 
-            Item.useAnimation = 10;
             Item.useTime = 4;
+            Item.useAnimation = 10;
             Item.reuseDelay = 17;
+            Item.useLimitPerAnimation = 3;
 
             Item.noUseGraphic = false;
         }
@@ -67,7 +63,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             {
                 if (!WulfrumHat.HasArmorSet(player))
                 {
-                    Item.type = 0;
+                    Item.type = ItemID.None;
                     Item.SetDefaults(0);
                     Item.stack = 0;
 
@@ -77,13 +73,16 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             Item.noUseGraphic = false;
             if (!player.Calamity().cooldowns.TryGetValue(WulfrumBastion.ID, out var cd) || cd.timeLeft > WulfrumHat.BastionCooldown + WulfrumHat.BastionTime - WulfrumHat.BastionBuildTime)
-               Item.noUseGraphic = true;
+                Item.noUseGraphic = true;
 
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             velocity = velocity.RotatedByRandom(MathHelper.PiOver4 * 0.1f);
+
+            // This weapon is acquired through usage of an armor set bonus and thus counts as armor. This function must be used.
+            damage = player.ApplyArmorAccDamageBonusesTo(damage);
         }
 
         public override bool CanUseItem(Player player)
@@ -132,7 +131,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             //Shakezzz
             itemPosition += Main.rand.NextVector2Circular(2f, 2f) * (1 - animProgress);
-            
+
 
             Vector2 itemSize = new Vector2(38, 18);
             Vector2 itemOrigin = new Vector2(-12, 0);

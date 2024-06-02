@@ -2,17 +2,17 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class OldDukeGore : ModProjectile
+    public class OldDukeGore : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sulphurous Gore");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -52,22 +52,22 @@ namespace CalamityMod.Projectiles.Boss
             Main.dust[blood].noGravity = true;
             Main.dust[blood].velocity *= 0f;
 
-            int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 1f);
+            int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
             Main.dust[acid].noGravity = true;
             Main.dust[acid].velocity *= 0f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath12, Projectile.Center);
 
-            int num226 = 8;
-            for (int num227 = 0; num227 < num226; num227++)
+            int dustAmt = 8;
+            for (int i = 0; i < dustAmt; i++)
             {
-                Vector2 source = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                source = source.RotatedBy((double)((float)(num227 - (num226 / 2 - 1)) * 6.28318548f / (float)num226), default) + Projectile.Center;
-                Vector2 dustVel = source - Projectile.Center;
-                int blood = Dust.NewDust(source + dustVel, 0, 0, DustID.Blood, dustVel.X, dustVel.Y, 100, default, 1.2f);
+                Vector2 dustRotation = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
+                dustRotation = dustRotation.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
+                Vector2 dustVel = dustRotation - Projectile.Center;
+                int blood = Dust.NewDust(dustRotation + dustVel, 0, 0, DustID.Blood, dustVel.X, dustVel.Y, 100, default, 1.2f);
                 Main.dust[blood].noGravity = true;
                 Main.dust[blood].noLight = true;
                 Main.dust[blood].velocity = dustVel;
@@ -75,18 +75,18 @@ namespace CalamityMod.Projectiles.Boss
 
             for (int d = 0; d < 6; d++)
             {
-                int acid = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default(Color), 3f);
+                int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default(Color), 3f);
                 Main.dust[acid].noGravity = true;
                 Main.dust[acid].velocity *= 5f;
-                acid = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default(Color), 2f);
+                acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default(Color), 2f);
                 Main.dust[acid].velocity *= 2f;
                 Main.dust[acid].noGravity = true;
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<Irradiated>(), 180);

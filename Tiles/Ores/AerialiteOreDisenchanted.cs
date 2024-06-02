@@ -1,20 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
     public class AerialiteOreDisenchanted : ModTile
     {
+        private const int AnimationFrameWidth = 234;
+        
         public override void SetStaticDefaults()
         {
-            Main.tileOreFinderPriority[Type] = 445;
             Main.tileBlockLight[Type] = true;
             Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = true;
             Main.tileLighted[Type] = true;
             //Main.tileNoSunLight[Type] = false;
 
@@ -32,31 +32,31 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = 33;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.AerialiteOreDisenchanted>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Disenchanted Aerialite");
-            AddMapEntry(new Color(204, 170, 81), name);
-            MineResist = 2f;
+            AddMapEntry(new Color(204, 170, 81), CreateMapEntryName());
             MinPick = 110;
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
+
+            this.RegisterUniversalMerge(TileID.Cloud, "CalamityMod/Tiles/Merges/CloudMerge");
+            this.RegisterUniversalMerge(TileID.RainCloud, "CalamityMod/Tiles/Merges/RainCloudMerge");
+            this.RegisterUniversalMerge(TileID.SnowCloud, "CalamityMod/Tiles/Merges/SnowCloudMerge");
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
         }
         public override void PostSetDefaults()
         {
-        Main.tileNoSunLight[Type] = false;
+            Main.tileNoSunLight[Type] = false;
         }
-
-        int animationFrameWidth = 288;
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
         }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+
+        public override bool CanExplode(int i, int j)
         {
-            TileFraming.CustomMergeFrame(i, j, Type, TileID.Cloud, false, false, false);
             return false;
         }
+        
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
             int uniqueAnimationFrameX = 0;
@@ -145,20 +145,7 @@ namespace CalamityMod.Tiles.Ores
                     }
                     break;
             }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
-        }
-
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            frameXOffset = uniqueAnimationFrameX * AnimationFrameWidth;
         }
     }
 }

@@ -1,29 +1,25 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class StatisNinjaBelt : ModItem
+    public class StatisNinjaBelt : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statis' Ninja Belt");
-            Tooltip.SetDefault("6% increased jump speed and allows constant jumping\n" +
-                "Grants the ability to swim\n" +
-                "Increased fall damage resistance by 35 blocks\n" +
-                "Can climb walls, dash, and dodge attacks\n" +
-                "The dodge has a 90 second cooldown\n" +
-                "This cooldown is shared with all other dodges and reflects");
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 6));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.width = 30;
+            Item.height = 26;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }
@@ -31,7 +27,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.autoJump = true;
-            player.jumpSpeedBoost += 0.3f;
+            player.jumpSpeedBoost += 1.6f;
             player.extraFall += 35;
             player.blackBelt = true;
             player.dashType = 1;
@@ -42,11 +38,22 @@ namespace CalamityMod.Items.Accessories
 
         public override void AddRecipes()
         {
+            // 20FEB2024: Ozzatron: used to have one recipe which was MNG + Frog Gear. This requires 2 Tiger Climbing Gear.
+            // There are now two recipes depending on whether you made Frog Gear or Master Ninja Gear.
             CreateRecipe().
                 AddIngredient(ItemID.MasterNinjaGear).
+                AddIngredient(ItemID.FrogFlipper).
+                AddIngredient<PurifiedGel>(50).
+                AddIngredient<Necroplasm>(5).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+
+            CreateRecipe().
+                AddIngredient(ItemID.Tabi).
+                AddIngredient(ItemID.BlackBelt).
                 AddIngredient(ItemID.FrogGear).
                 AddIngredient<PurifiedGel>(50).
-                AddIngredient<Phantoplasm>(5).
+                AddIngredient<Necroplasm>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

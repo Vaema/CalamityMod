@@ -11,17 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class BloodsoakedCrasher : RogueWeapon //This weapon has been coded by Ben || Termi
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bloodsoaked Crasher");
-            Tooltip.SetDefault("Slows down when hitting an enemy. Speeds up otherwise\n" +
-            "Heals on enemy hits\n" +
-            "Stealth strikes spawn homing blood on enemy hits");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 64;
             Item.damage = 245;
             Item.knockBack = 3f;
             Item.autoReuse = true;
@@ -30,13 +23,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<BloodsoakedCrashax>();
 
-            Item.width = 66;
-            Item.height = 64;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

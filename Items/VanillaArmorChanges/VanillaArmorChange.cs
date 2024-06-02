@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Terraria;
 using Terraria.ID;
 
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public virtual string ArmorSetName => null;
 
-        public virtual bool NeedsToCreateSetBonusTextManually => false;
+        public virtual bool NeedsToCreateSetBonusTextManually => true;
 
         public virtual void UpdateSetBonusText(ref string setBonusText) { }
 

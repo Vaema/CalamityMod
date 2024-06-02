@@ -1,22 +1,22 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class MaelstromHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMaelstrom>();
         private Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
-        private ref float ArrowsLoaded => ref Projectile.ai[1];
         private ref float FramesToLoadNextArrow => ref Projectile.localAI[0];
 
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/TheMaelstrom";
-        public override void SetStaticDefaults() => DisplayName.SetDefault("The Maelstrom");
 
         public override void SetDefaults()
         {
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // Destroy the holdout projectile if the owner is no longer eligible to hold it.
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout() || !Owner.HasAmmo(Owner.ActiveItem()))
             {
                 Projectile.Kill();
                 return;
@@ -91,7 +91,6 @@ namespace CalamityMod.Projectiles.Ranged
             float shootSpeed = heldItem.shootSpeed;
             float knockback = heldItem.knockBack;
 
-            bool uselessFuckYou = OwnerCanShoot;
             int projectileType = 0;
             Owner.PickAmmo(heldItem, out projectileType, out shootSpeed, out arrowDamage, out knockback, out _);
             projectileType = ModContent.ProjectileType<TheMaelstromShark>();

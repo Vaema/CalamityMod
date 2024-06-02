@@ -20,9 +20,8 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Earth Elemental");
             Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.4f,
                 PortraitScale = 0.6f,
@@ -45,7 +44,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 3800;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.05f;
             NPC.value = Item.buyPrice(0, 1, 50, 0);
             NPC.dontTakeDamage = true;
             NPC.noGravity = true;
@@ -56,15 +55,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<EarthElementalBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Caverns,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("It is civilization's goal to wrest nature under its control. This is the result of one such conquest, an artificial elemental, run by clockwork gears.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Horse")
             });
         }
 
@@ -80,11 +82,13 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !Main.hardMode || spawnInfo.Player.Calamity().ZoneAbyss ||
-                spawnInfo.Player.Calamity().ZoneSunkenSea || NPC.AnyNPCs(NPC.type))
-            {
+            if (spawnInfo.PlayerSafe || !Main.hardMode || spawnInfo.Player.Calamity().ZoneAbyss || spawnInfo.Player.Calamity().ZoneSunkenSea || !spawnInfo.Player.ZoneRockLayerHeight)
                 return 0f;
-            }
+
+            // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.
+            if (NPC.AnyNPCs(NPC.type))
+                return 0f;
+
             return SpawnCondition.Cavern.Chance * 0.005f;
         }
 
@@ -112,11 +116,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             npcLoot.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 31, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
@@ -127,23 +131,23 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.height = 160;
                 NPC.position.X = NPC.position.X - (NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-                for (int num621 = 0; num621 < 40; num621++)
+                for (int i = 0; i < 40; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 31, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int earthDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
+                    Main.dust[earthDust].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[earthDust].scale = 0.5f;
+                        Main.dust[earthDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 70; num623++)
+                for (int j = 0; j < 70; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int earthDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 3f);
+                    Main.dust[earthDust2].noGravity = true;
+                    Main.dust[earthDust2].velocity *= 5f;
+                    earthDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 2f);
+                    Main.dust[earthDust2].velocity *= 2f;
                 }
 
                 if (Main.netMode != NetmodeID.Server)
@@ -202,7 +206,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (NPC.ai[0] == 0f)
                 {
-                    if (CalamityWorld.getFixedBoi)
+                    if (Main.zenithWorld)
                     {
                         SoundEngine.PlaySound(SoundID.ScaryScream, Main.player[NPC.target].Center);
                     }
@@ -228,41 +232,41 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.timeLeft = 60;
             }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            NPC.localAI[0] += 1f;
+            if (NPC.localAI[0] >= 300f)
             {
-                NPC.localAI[0] += 1f;
-                if (NPC.localAI[0] >= 300f)
+                NPC.localAI[0] = 0f;
+                SoundEngine.PlaySound(SoundID.NPCHit43, NPC.Center);
+                NPC.TargetClosest();
+                if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                 {
-                    NPC.localAI[0] = 0f;
-                    SoundEngine.PlaySound(SoundID.NPCHit43, NPC.Center);
-                    NPC.TargetClosest();
-                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                    float rockSpeed = 4f;
+                    int damage = Main.masterMode ? 18 : Main.expertMode ? 22 : 30;
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        float num179 = 4f;
-                        Vector2 value9 = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-                        float num180 = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - value9.X;
-                        float num181 = Math.Abs(num180) * 0.1f;
-                        float num182 = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - value9.Y - num181;
-                        float num183 = (float)Math.Sqrt(num180 * num180 + num182 * num182);
-                        num183 = num179 / num183;
-                        num180 *= num183;
-                        num182 *= num183;
-                        int num184 = 30;
-                        int num185 = ModContent.ProjectileType<EarthRockSmall>();
-                        value9.X += num180;
-                        value9.Y += num182;
-                        for (int num186 = 0; num186 < 4; num186++)
+                        Vector2 projPosition = NPC.Center;
+                        float targetXDist = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - projPosition.X;
+                        float absoluteTargetX = Math.Abs(targetXDist) * 0.1f;
+                        float targetYDist = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - projPosition.Y - absoluteTargetX;
+                        float targetDistance = (float)Math.Sqrt(targetXDist * targetXDist + targetYDist * targetYDist);
+                        targetDistance = rockSpeed / targetDistance;
+                        targetXDist *= targetDistance;
+                        targetYDist *= targetDistance;
+                        int rockType = ModContent.ProjectileType<EarthRockSmall>();
+                        projPosition.X += targetXDist;
+                        projPosition.Y += targetYDist;
+                        for (int k = 0; k < 4; k++)
                         {
-                            num185 = Main.rand.NextBool(4) ? ModContent.ProjectileType<EarthRockBig>() : ModContent.ProjectileType<EarthRockSmall>();
-                            num180 = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - value9.X;
-                            num182 = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - value9.Y;
-                            num183 = (float)Math.Sqrt(num180 * num180 + num182 * num182);
-                            num183 = num179 / num183;
-                            num180 += Main.rand.Next(-40, 41);
-                            num182 += Main.rand.Next(-40, 41);
-                            num180 *= num183;
-                            num182 *= num183;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), value9.X, value9.Y, num180, num182, num185, num184, 0f, Main.myPlayer, 0f, 0f);
+                            rockType = Main.rand.NextBool(4) ? ModContent.ProjectileType<EarthRockBig>() : ModContent.ProjectileType<EarthRockSmall>();
+                            targetXDist = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - projPosition.X;
+                            targetYDist = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - projPosition.Y;
+                            targetDistance = (float)Math.Sqrt(targetXDist * targetXDist + targetYDist * targetYDist);
+                            targetDistance = rockSpeed / targetDistance;
+                            targetXDist += Main.rand.Next(-40, 41);
+                            targetYDist += Main.rand.Next(-40, 41);
+                            targetXDist *= targetDistance;
+                            targetYDist *= targetDistance;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projPosition.X, projPosition.Y, targetXDist, targetYDist, rockType, damage, 0f, Main.myPlayer, 0f, 0f);
                         }
                     }
                 }
@@ -272,29 +276,43 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.direction = playerLocation < 0 ? 1 : -1;
             NPC.spriteDirection = NPC.direction;
 
-            Vector2 direction = Main.player[NPC.target].Center - NPC.Center;
-            direction.Normalize();
-            NPC.ai[1] += Main.expertMode ? 2f : 1f;
-            if (NPC.ai[1] >= 600f)
+            Vector2 direction = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
+            float chargeGateValue = Main.expertMode ? 300f : 600f;
+            NPC.ai[1] += 1f;
+            if (NPC.ai[1] >= chargeGateValue)
             {
-                direction *= 6f;
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
+                float chargeVelocity = Main.expertMode ? 9f : 6f;
+                direction *= chargeVelocity;
                 NPC.velocity = direction;
-                NPC.ai[1] = 0f;
+                NPC.ai[1] = -30f;
             }
 
-            if (Math.Sqrt((NPC.velocity.X * NPC.velocity.X) + (NPC.velocity.Y * NPC.velocity.Y)) > 1)
-                NPC.velocity *= 0.985f;
+            if (Math.Sqrt((NPC.velocity.X * NPC.velocity.X) + (NPC.velocity.Y * NPC.velocity.Y)) > 1D && NPC.ai[1] >= 0f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
 
-            if (Math.Sqrt((NPC.velocity.X * NPC.velocity.X) + (NPC.velocity.Y * NPC.velocity.Y)) <= 1 * 1.15)
-                NPC.velocity = direction * 1;
+                NPC.velocity *= 0.97f;
+            }
+
+            if (Math.Sqrt((NPC.velocity.X * NPC.velocity.X) + (NPC.velocity.Y * NPC.velocity.Y)) <= 1.15)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.velocity = direction;
+            }
 
             return false;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }
     }
 }

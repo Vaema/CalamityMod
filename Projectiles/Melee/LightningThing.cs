@@ -1,18 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Melee;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Melee;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class LightningThing : ModProjectile
+    public class LightningThing : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Lightning");
-        }
 
         public override void SetDefaults()
         {
@@ -22,7 +18,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 90;
             Projectile.DamageType = DamageClass.Melee;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int damage = (int)Main.player[Projectile.owner].GetTotalDamage<MeleeDamageClass>().ApplyTo(GaelsGreatsword.BaseDamage);
             for (int i = 0; i < 3; i++)

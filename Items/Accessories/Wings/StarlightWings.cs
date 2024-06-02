@@ -10,18 +10,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class StarlightWings : ModItem
+    public class StarlightWings : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories.Wings";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Starlight Wings");
-            Tooltip.SetDefault("Wings of the Nightingale\n" +
-                "Horizontal speed: 7.50\n" +
-                "Acceleration multiplier: 1.0\n" +
-                "Average vertical speed\n" +
-                "Flight time: 150\n" +
-                "5% increased damage and critical strike chance while wearing the Daedalus Armor");
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(150, 7.5f, 1f);
         }
 
@@ -29,7 +22,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
@@ -45,21 +38,21 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.GetCritChance<GenericDamageClass>() += 5;
             }
 
-            if (player.controlJump && player.wingTime > 0f && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
-                int num59 = 4;
+                int dustXOffset = 4;
                 if (player.direction == 1)
                 {
-                    num59 = -40;
+                    dustXOffset = -40;
                 }
-                int num60 = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)num59, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, 173, 0f, 0f, 100, default, 2.4f);
-                Main.dust[num60].noGravity = true;
-                Main.dust[num60].velocity *= 0.3f;
+                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2.4f);
+                Main.dust[flightDust].noGravity = true;
+                Main.dust[flightDust].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))
                 {
-                    Main.dust[num60].fadeIn = 2f;
+                    Main.dust[flightDust].fadeIn = 2f;
                 }
-                Main.dust[num60].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
+                Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
             player.noFallDmg = true;
         }

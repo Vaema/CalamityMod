@@ -1,25 +1,21 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class KylieBoomerang : ModProjectile
+    public class KylieBoomerang : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Kylie";
 
         //This variable will be used for the stealth strike
         public float ReboundTime = 0f;
         public float timer = 0f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Kylie");
-        }
-
         public override void SetDefaults()
         {
             Projectile.friendly = true;
@@ -42,9 +38,9 @@ namespace CalamityMod.Projectiles.Rogue
 
             timer++;
             //Dust trail
-            if (Main.rand.Next(15) == 0)
+            if (Main.rand.NextBool(15))
             {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 7, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 100, default, 0f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.WoodFurniture, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 100, default, 0f);
                 Main.dust[d].position = Projectile.Center;
             }
             //Constant sound effects
@@ -126,7 +122,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Start homing at player if you hit an enemy
             Projectile.ai[0] = 1;

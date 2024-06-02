@@ -6,19 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.DraedonStructures
 {
-    public class AgedSecurityChest : ModItem
+    public class AgedSecurityChest : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Aged Security Chest");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 26;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -32,12 +27,11 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-                AddIngredient(ModContent.ItemType<MysteriousCircuitry>(), 4).
-                AddIngredient(ModContent.ItemType<DubiousPlating>(), 4).
-                AddIngredient(ModContent.ItemType<RustedPlating>(), 10).
+            CreateRecipe().
+                AddIngredient<RustedPlating>(8).
                 AddRecipeGroup("IronBar", 2).
-                AddTile(TileID.Anvils).Register();
+                AddTile(TileID.Anvils).
+                Register();
         }
     }
 }

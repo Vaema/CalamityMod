@@ -5,11 +5,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class FrogGore4 : ModProjectile
+    public class FrogGore4 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gore from a not frog of the explosive variety");
             ProjectileID.Sets.SentryShot[Projectile.type] = true;
         }
 
@@ -18,8 +18,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.width = 14;
             Projectile.height = 16;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
             Projectile.timeLeft = 360;
@@ -38,14 +36,14 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += Projectile.velocity.X * 0.03f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<Irradiated>(), 720);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Irradiated>(), 720);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < Main.rand.Next(4, 8 + 1); i++)
             {
                 Dust.NewDustPerfect(Projectile.Center + Utils.NextVector2Unit(Main.rand) * Main.rand.NextFloat(10f),
-                    (int)CalamityDusts.SulfurousSeaAcid,
+                    (int)CalamityDusts.SulphurousSeaAcid,
                     Utils.NextVector2Unit(Main.rand) * Main.rand.NextFloat(1f, 4f));
             }
         }

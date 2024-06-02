@@ -1,8 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
+using CalamityMod.Enums;
 using CalamityMod.Items.SummonItems;
-using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.AdultEidolonWyrm;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
@@ -17,8 +19,6 @@ using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
-using ApolloBoss = CalamityMod.NPCs.ExoMechs.Apollo.Apollo;
-using ArtemisBoss = CalamityMod.NPCs.ExoMechs.Artemis.Artemis;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
@@ -36,18 +36,17 @@ using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Skies;
+using CalamityMod.Systems;
 using CalamityMod.UI.DraedonSummoning;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+using ApolloBoss = CalamityMod.NPCs.ExoMechs.Apollo.Apollo;
+using ArtemisBoss = CalamityMod.NPCs.ExoMechs.Artemis.Artemis;
 
 namespace CalamityMod.Events
 {
@@ -95,7 +94,7 @@ namespace CalamityMod.Events
             }
         }
 
-        internal static IEntitySource Source => new EntitySource_WorldEvent();
+        internal static IEntitySource Source => new EntitySource_WorldEvent("CalamityMod_BossRush");
 
         public static int HostileProjectileKillCounter;
         public static bool BossRushActive = false; // Whether Boss Rush is active or not.
@@ -108,7 +107,7 @@ namespace CalamityMod.Events
         public static int StartTimer;
         public static int EndTimer;
         public static float WhiteDimness;
-        public static readonly Color XerocTextColor = Color.LightCoral;
+        public static readonly Color XerocTextColor = new(250, 213, 77); // #FAD54D
         public const int StartEffectTotalTime = 120;
         public const int EndVisualEffectTime = 340;
         public static int ClosestPlayerToWorldCenter => Player.FindClosest(new Vector2(Main.maxTilesX, Main.maxTilesY) * 16f * 0.5f, 1, 1);
@@ -143,18 +142,25 @@ namespace CalamityMod.Events
             // TODO -- Multiple different lists might be ideal for this at some point instead of a god-struct? This is a lot of parameters.
             Bosses = new List<Boss>()
             {
-                new Boss(NPCID.KingSlime, permittedNPCs: new int[] { NPCID.BlueSlime, NPCID.YellowSlime, NPCID.PurpleSlime, NPCID.RedSlime, NPCID.GreenSlime, NPCID.RedSlime,
-                    NPCID.IceSlime, NPCID.UmbrellaSlime, NPCID.Pinky, NPCID.SlimeSpiked, NPCID.RainbowSlime, ModContent.NPCType<KingSlimeJewel>() }),
+                new Boss(NPCID.KingSlime, spawnContext: type => {
+                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
+
+                    // When King Slime spawns, Boss Rush is considered to be started at least once.
+                    // Xeroc will no longer give his full start monologue anymore for this world.
+                    DownedBossSystem.startedBossRushAtLeastOnce = true;
+                },
+                permittedNPCs: new int[] { NPCID.BlueSlime, NPCID.YellowSlime, NPCID.PurpleSlime, NPCID.RedSlime, NPCID.GreenSlime, NPCID.RedSlime,
+                    NPCID.IceSlime, NPCID.UmbrellaSlime, NPCID.Pinky, NPCID.SlimeSpiked, NPCID.RainbowSlime, ModContent.NPCType<KingSlimeJewelRuby>(),
+                    ModContent.NPCType<KingSlimeJewelSapphire>(), ModContent.NPCType<KingSlimeJewelEmerald>() }),
 
                 new Boss(ModContent.NPCType<DesertScourgeHead>(), spawnContext: type =>
                 {
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<DesertScourgeHead>());
-                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<DesertNuisanceHead>());
-                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<DesertNuisanceHead>());
                 }, permittedNPCs: new int[] { ModContent.NPCType<DesertScourgeBody>(), ModContent.NPCType<DesertScourgeTail>(), ModContent.NPCType<DesertNuisanceHead>(),
-                    ModContent.NPCType<DesertNuisanceBody>(), ModContent.NPCType<DesertNuisanceTail>() }),
+                    ModContent.NPCType<DesertNuisanceBody>(), ModContent.NPCType<DesertNuisanceTail>(), ModContent.NPCType<DesertNuisanceHeadYoung>(),
+                    ModContent.NPCType<DesertNuisanceBodyYoung>(), ModContent.NPCType<DesertNuisanceTailYoung>() }),
 
-                new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: NPCID.ServantofCthulhu),
+                new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu, ModContent.NPCType<BloodlettingServant>() }),
 
                 new Boss(ModContent.NPCType<Crabulon>(), TimeChangeContext.Day, type =>
                 {
@@ -174,7 +180,7 @@ namespace CalamityMod.Events
                     ModContent.NPCType<PerforatorHeadMedium>(), ModContent.NPCType<PerforatorBodyMedium>(), ModContent.NPCType<PerforatorTailMedium>(), ModContent.NPCType<PerforatorHeadSmall>(),
                     ModContent.NPCType<PerforatorBodySmall>() ,ModContent.NPCType<PerforatorTailSmall>() }),
 
-                new Boss(NPCID.QueenBee, permittedNPCs: new int[] { NPCID.Bee, NPCID.BeeSmall }),
+                new Boss(NPCID.QueenBee, permittedNPCs: new int[] { NPCID.Bee, NPCID.BeeSmall, NPCID.LittleHornetHoney, NPCID.HornetHoney, NPCID.BigHornetHoney }),
 
                 new Boss(NPCID.Deerclops),
 
@@ -186,7 +192,7 @@ namespace CalamityMod.Events
                     CalamityUtils.BossAwakenMessage(sans);
                 }, permittedNPCs: NPCID.SkeletronHand),
 
-                new Boss(ModContent.NPCType<SlimeGodCore>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<EbonianSlimeGod>(), ModContent.NPCType<CrimulanSlimeGod>(), ModContent.NPCType<SplitEbonianSlimeGod>(), ModContent.NPCType<SplitCrimulanSlimeGod>(),
+                new Boss(ModContent.NPCType<SlimeGodCore>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<EbonianPaladin>(), ModContent.NPCType<CrimulanPaladin>(), ModContent.NPCType<SplitEbonianPaladin>(), ModContent.NPCType<SplitCrimulanPaladin>(),
                     ModContent.NPCType<CorruptSlimeSpawn>(), ModContent.NPCType<CorruptSlimeSpawn2>(), ModContent.NPCType<CrimsonSlimeSpawn>(), ModContent.NPCType<CrimsonSlimeSpawn2>() }),
 
                 new Boss(NPCID.WallofFlesh, spawnContext: type =>
@@ -211,12 +217,12 @@ namespace CalamityMod.Events
 
                 new Boss(ModContent.NPCType<BrimstoneElemental>(), TimeChangeContext.Day, permittedNPCs: ModContent.NPCType<Brimling>()),
 
-                new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser, NPCID.Probe }),
+                new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<SkeletronPrime2>(), NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser, NPCID.Probe }),
 
                 new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, dimnessFactor: 0.6f, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
                     ModContent.NPCType<SoulSeeker>() }),
 
-                new Boss(NPCID.Plantera, TimeChangeContext.Day, permittedNPCs: new int[] { NPCID.PlanterasTentacle, NPCID.PlanterasHook, NPCID.Spore }),
+                new Boss(NPCID.Plantera, TimeChangeContext.Day, permittedNPCs: new int[] { NPCID.PlanterasTentacle, ModContent.NPCType<PlanterasFreeTentacle>(), NPCID.PlanterasHook, NPCID.Spore }),
 
                 new Boss(ModContent.NPCType<Anahita>(), specialSpawnCountdown: 120, permittedNPCs: new int[] { ModContent.NPCType<Leviathan>(), ModContent.NPCType<AquaticAberration>(),
                     ModContent.NPCType<AnahitasIceShield>(), NPCID.DetonatingBubble}),
@@ -295,7 +301,6 @@ namespace CalamityMod.Events
 
                 new Boss(ModContent.NPCType<ProfanedGuardianCommander>(), TimeChangeContext.Day, type =>
                 {
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.BossRushTierThreeEndText2", XerocTextColor);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, permittedNPCs: new int[] { ModContent.NPCType<ProfanedGuardianDefender>(), ModContent.NPCType<ProfanedGuardianHealer>(), ModContent.NPCType<ProfanedRocks>() }),
 
@@ -313,14 +318,10 @@ namespace CalamityMod.Events
 
                 new Boss(ModContent.NPCType<CeaselessVoid>(), spawnContext: type =>
                 {
-                    for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                    foreach (Player p in Main.ActivePlayers)
                     {
-                        Player p = Main.player[playerIndex];
-                        if (p is not null && p.active)
-                        {
-                            if (p.FindBuffIndex(ModContent.BuffType<IcarusFolly>()) > -1)
-                                p.ClearBuff(ModContent.BuffType<IcarusFolly>());
-                        }
+                        if (p.FindBuffIndex(ModContent.BuffType<IcarusFolly>()) > -1)
+                            p.ClearBuff(ModContent.BuffType<IcarusFolly>());
                     }
 
                     Player player = Main.player[ClosestPlayerToWorldCenter];
@@ -372,7 +373,6 @@ namespace CalamityMod.Events
 
                 new Boss(ModContent.NPCType<Yharon>(), spawnContext: type =>
                 {
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.BossRushTierFourEndText2", XerocTextColor);
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
                     SoundEngine.PlaySound(Yharon.FireSound, player.Center);
@@ -402,53 +402,50 @@ namespace CalamityMod.Events
 
             BossDeathEffects = new Dictionary<int, Action<NPC>>()
             {
+                // Wall of Flesh: End of Tier 1
                 [NPCID.WallofFlesh] = npc =>
                 {
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.BossRushTierOneEndText", XerocTextColor);
                     CreateTierAnimation(2);
+                    BossRushDialogueSystem.StartDialogue(BossRushDialoguePhase.TierOneComplete);
 
                     // Teleport players to where they came from
-                    for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                    foreach (Player p in Main.ActivePlayers)
                     {
-                        Player p = Main.player[playerIndex];
-                        if (p is not null && p.active)
+                        if (p.Calamity().BossRushReturnPosition.HasValue)
                         {
-                            if (p.Calamity().BossRushReturnPosition.HasValue)
-                            {
-                                CalamityPlayer.ModTeleport(p, p.Calamity().BossRushReturnPosition.Value, false, TeleportationStyleID.TeleportationPotion);
-                                p.Calamity().BossRushReturnPosition = null;
-                            }
+                            CalamityPlayer.ModTeleport(p, p.Calamity().BossRushReturnPosition.Value, false, TeleportationStyleID.TeleportationPotion);
                             p.Calamity().BossRushReturnPosition = null;
-                            SoundEngine.PlaySound(TeleportSound with { Volume = 1.6f }, p.Center);
                         }
+                        p.Calamity().BossRushReturnPosition = null;
+                        SoundEngine.PlaySound(TeleportSound with { Volume = 1.6f }, p.Center);
                     }
                 },
+                // Plantera: End of Tier 2
                 [NPCID.Plantera] = npc =>
                 {
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.BossRushTierTwoEndText", XerocTextColor);
                     CreateTierAnimation(3);
+                    BossRushDialogueSystem.StartDialogue(BossRushDialoguePhase.TierTwoComplete);
                 },
+                // Moon Lord: End of Tier 3
                 [NPCID.MoonLordCore] = npc =>
                 {
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.BossRushTierThreeEndText", XerocTextColor);
                     CreateTierAnimation(4);
+                    BossRushDialogueSystem.StartDialogue(BossRushDialoguePhase.TierThreeComplete);
                 },
+                // Devourer of Gods: End of Tier 4
                 [ModContent.NPCType<DevourerofGodsHead>()] = npc =>
                 {
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.BossRushTierFourEndText", XerocTextColor);
                     CreateTierAnimation(5);
+                    BossRushDialogueSystem.StartDialogue(BossRushDialoguePhase.TierFourComplete);
                 },
+                // Supreme Calamitas: Ends Boss Rush (also delete all hostile projectiles to be safe)
                 [ModContent.NPCType<SupremeCalamitas>()] = npc =>
                 {
                     CalamityUtils.KillAllHostileProjectiles();
                     HostileProjectileKillCounter = 3;
 
-                    // Mark Boss Rush as complete
-                    DownedBossSystem.downedBossRush = true;
-                    CalamityNetcode.SyncWorld();
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(Source, npc.Center, Vector2.Zero, ModContent.ProjectileType<BossRushEndEffectThing>(), 0, 0f, Main.myPlayer);
+                    // Display short dialogue if BR has been beaten before.
+                    BossRushDialogueSystem.StartDialogue(DownedBossSystem.downedBossRush ? BossRushDialoguePhase.EndRepeat : BossRushDialoguePhase.End);
                 }
             };
         }
@@ -482,12 +479,16 @@ namespace CalamityMod.Events
         {
             get
             {
+                if (!BossRushActive)
+                {
+                    return -1;
+                }
                 int tier = CurrentTier;
                 if (CalamityMod.Instance.musicMod != null)
                 {
-                    // Boss Rush music for tiers 4 and 5 don't exist
-                    if (tier > 3)
-                        tier = 3;
+                    // Boss Rush music for tier 5 doesn't exist
+                    if (tier > 4)
+                        tier = 4;
                     return CalamityMod.Instance.GetMusicFromMusicMod($"BossRushTier{tier}") ?? 0;
                 }
 
@@ -516,6 +517,9 @@ namespace CalamityMod.Events
         {
             if (!BossRushActive)
                 return;
+
+            // Handle dialogue as appropriate.
+            BossRushDialogueSystem.Tick();
 
             // Disable the stupid credits sequence.
             if (CreditsRollEvent.IsEventOngoing)
@@ -562,6 +566,7 @@ namespace CalamityMod.Events
                 return;
             }
 
+            // Projectile deletion, preventing Credits and ML from spawning naturally, and dialogue.
             MiscUpdateEffects();
 
             // Do boss rush countdown and shit if no boss is alive.
@@ -578,7 +583,7 @@ namespace CalamityMod.Events
 
                     // Increase cooldown post-Moon Lord.
                     if (BossRushStage >= Bosses.FindIndex(boss => boss.EntityID == NPCID.MoonLordCore))
-                        BossRushSpawnCountdown += 300;
+                        BossRushSpawnCountdown += 180;
 
                     // Override the spawn countdown if specified.
                     if (BossRushStage < Bosses.Count - 1 && Bosses[BossRushStage + 1].SpecialSpawnCountdown != -1)
@@ -613,13 +618,9 @@ namespace CalamityMod.Events
         public static void End()
         {
             // Reset BossRushReturnPosition
-            for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[playerIndex];
-                if (p is not null && p.active)
-                {
-                    p.Calamity().BossRushReturnPosition = null;
-                }
+                p.Calamity().BossRushReturnPosition = null;
             }
 
             if (Main.netMode == NetmodeID.SinglePlayer)
@@ -720,18 +721,14 @@ namespace CalamityMod.Events
                 CalamityUtils.KillAllHostileProjectiles();
                 HostileProjectileKillCounter = 3;
 
-                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                foreach (Player p in Main.ActivePlayers)
                 {
-                    Player p = Main.player[playerIndex];
-                    if (p is not null && p.active)
-                    {
-                        p.Calamity().BossRushReturnPosition = p.Center;
-                        Vector2? underworld = CalamityPlayer.GetUnderworldPosition(p);
-                        if (!underworld.HasValue)
-                            break;
-                        CalamityPlayer.ModTeleport(p, underworld.Value, false, TeleportationStyleID.TeleportationPotion);
-                        SoundEngine.PlaySound(TeleportSound with { Volume = 1.6f }, p.Center);
-                    }
+                    p.Calamity().BossRushReturnPosition = p.Center;
+                    Vector2? underworld = CalamityPlayer.GetUnderworldPosition(p);
+                    if (!underworld.HasValue)
+                        break;
+                    CalamityPlayer.ModTeleport(p, underworld.Value, false, TeleportationStyleID.TeleportationPotion);
+                    SoundEngine.PlaySound(TeleportSound with { Volume = 1.6f }, p.Center);
                 }
             }
 
@@ -744,7 +741,19 @@ namespace CalamityMod.Events
                 HostileProjectileKillCounter = 3;
 
                 if (BossDeathEffects.ContainsKey(npc.type))
+                {
                     BossDeathEffects[npc.type].Invoke(npc);
+                }
+
+                if (npc.type == Bosses[Bosses.Count - 1].EntityID)
+                {
+                    // Mark Boss Rush as complete
+                    DownedBossSystem.downedBossRush = true;
+                    CalamityNetcode.SyncWorld();
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        Projectile.NewProjectile(Source, npc.Center, Vector2.Zero, ModContent.ProjectileType<BossRushEndEffectThing>(), 0, 0f, Main.myPlayer);
+                }
             }
 
             // Sync the stage and progress of Boss Rush whenever a relevant boss dies.
@@ -767,12 +776,12 @@ namespace CalamityMod.Events
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player p in Main.ActivePlayers)
                 {
-                    if (!Main.player[i].active || Main.player[i].dead)
+                    if (p.dead)
                         continue;
 
-                    int animation = Projectile.NewProjectile(new EntitySource_WorldEvent(), Main.player[i].Center, Vector2.Zero, ModContent.ProjectileType<BossRushTierAnimation>(), 0, 0f, i);
+                    int animation = Projectile.NewProjectile(new EntitySource_WorldEvent(), p.Center, Vector2.Zero, ModContent.ProjectileType<BossRushTierAnimation>(), 0, 0f, p.whoAmI);
                     if (Main.projectile.IndexInRange(animation))
                         Main.projectile[animation].ai[0] = tier;
                 }

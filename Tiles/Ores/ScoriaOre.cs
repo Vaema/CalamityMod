@@ -1,10 +1,12 @@
-﻿using CalamityMod.Projectiles.Environment;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Environment;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
@@ -25,13 +27,13 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
 
             DustType = 105;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.ScoriaOre>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Scoria");
-            AddMapEntry(new Color(210, 101, 28), name);
-            MineResist = 4f;
+            AddMapEntry(new Color(210, 101, 28), CreateMapEntryName());
+            MineResist = 3f;
             MinPick = 210;
             HitSound = SoundID.Tink;
+
+            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<PyreMantle>(), "CalamityMod/Tiles/Merges/PyreMantleMerge");
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -41,27 +43,19 @@ namespace CalamityMod.Tiles.Ores
             if (closer && Main.rand.NextBool(30) && !up.HasTile && !up2.HasTile)
             {
                 Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 16, 16, 127, 0f, -10f, 47, new Color(255, 255, 255), 1.0465117f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 16, 16, DustID.Flare, 0f, -10f, 47, new Color(255, 255, 255), 1.0465117f)];
                 dust.noGravity = true;
                 dust.fadeIn = 1.2209302f;
 
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 16, 16, 31, 0f, -1.9069767f, 195, new Color(255, 255, 255), 1f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 16, 16, DustID.Smoke, 0f, -1.9069767f, 195, new Color(255, 255, 255), 1f)];
                 dust.noGravity = false;
                 dust.fadeIn = 1.4209302f;
 
             }
-            if (!closer && j < Main.maxTilesY - 205)
-            {
-                if (Main.tile[i, j].LiquidAmount <= 0)
-                {
-                    Main.tile[i, j].LiquidAmount = 255;
-                    Main.tile[i, j].Get<LiquidData>().LiquidType = LiquidID.Water;
-                }
-            }
+
             if (Main.gamePaused)
-            {
                 return;
-            }
+
             if (closer && Main.rand.NextBool(400))
             {
                 int tileLocationY = j + 1;
@@ -70,9 +64,7 @@ namespace CalamityMod.Tiles.Ores
                     if (!Main.tile[i, tileLocationY].HasTile)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Projectile.NewProjectile(new EntitySource_WorldEvent(), (float)(i * 16 + 16), (float)(tileLocationY * 16 + 16), 0f, 0.1f, ModContent.ProjectileType<LavaChunk>(), 25, 2f, Main.myPlayer, 0f, 0f);
-                        }
+                            Projectile.NewProjectile(new EntitySource_WorldEvent(), (float)(i * 16 + 16), (float)(tileLocationY * 16 + 16), 0f, 0.1f, ModContent.ProjectileType<LavaChunk>(), 25, 2f, Main.myPlayer);
                     }
                 }
             }
@@ -87,20 +79,14 @@ namespace CalamityMod.Tiles.Ores
         {
             num = fail ? 1 : 3;
         }
-        
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.04f;
             g = 0.00f;
             b = 0.00f;
         }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AbyssGravel>(), false, false, false, false, resetFrame);
-            return false;
-        }
-
+        
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             int xPos = Main.tile[i, j].TileFrameX;
@@ -111,14 +97,7 @@ namespace CalamityMod.Tiles.Ores
             Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
             Tile trackTile = Main.tile[i, j];
             double num6 = Main.time * 0.08;
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
-            {
-                Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            else if (trackTile.IsHalfBlock)
-            {
-                Main.spriteBatch.Draw(glowmask, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
+            TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

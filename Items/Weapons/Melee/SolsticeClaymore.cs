@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,19 +8,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class SolsticeClaymore : ModItem
+    public class SolsticeClaymore : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Solstice Claymore");
-            Tooltip.SetDefault("Changes projectile color based on the time of year\n" +
-                               "Inflicts daybroken during the day and nightwither during the night");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 86;
+            Item.height = 86;
             Item.damage = 300;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 16;
@@ -31,9 +24,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 86;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<SolsticeBeam>();
             Item.shootSpeed = 16f;
         }
@@ -60,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Main.dayTime)
             {
@@ -72,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             if (!Main.dayTime)
             {

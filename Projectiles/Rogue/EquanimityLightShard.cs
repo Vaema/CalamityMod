@@ -1,18 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class EquanimityLightShard : ModProjectile
+    public class EquanimityLightShard : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Light Shard");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -24,6 +20,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = true;
             Projectile.timeLeft = 120;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -34,18 +32,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.timeLeft < 51)
             {
                 Projectile.alpha += 5;
-            }
-        }
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (Projectile.timeLeft < 130)
-            {
-                return null;
-            }
-            else
-            {
-                return false;
             }
         }
 

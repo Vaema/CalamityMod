@@ -1,19 +1,16 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class NastyChollaBol : ModProjectile
+    public class NastyChollaBol : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/NastyCholla";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nasty Cholla");
-        }
 
         public override void SetDefaults()
         {
@@ -32,7 +29,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(12))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 157, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(15);
@@ -58,10 +55,8 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            Projectile.ModifyHitNPCSticky(3, false);
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(3);
+        public override bool? CanDamage() => Projectile.ai[0] == 1f ? false : base.CanDamage();
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -82,7 +77,7 @@ namespace CalamityMod.Projectiles.Rogue
             return null;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
             int needleAmt = Main.rand.Next(2, 4);

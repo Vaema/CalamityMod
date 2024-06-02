@@ -4,19 +4,19 @@ using Terraria.ModLoader; // If you are using c# 6, you can use: "using static T
 
 namespace CalamityMod.Items.Placeables
 {
-    public class PyreMantle : ModItem
+    public class PyreMantle : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Pyre Mantle");
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -24,14 +24,6 @@ namespace CalamityMod.Items.Placeables
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<Tiles.Abyss.PyreMantle>();
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-            AddIngredient(ItemID.LavaBucket).
-            AddTile(TileID.WorkBenches).
-            Register();
         }
     }
 }

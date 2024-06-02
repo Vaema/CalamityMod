@@ -3,39 +3,37 @@ using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TheBurningSky : ModItem
+    public class TheBurningSky : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         private const int ProjectilesPerBarrage = 6;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Burning Sky");
-            Tooltip.SetDefault("Hold the blade to the sky, and witness Armageddon");
 
             // Visually a sword, but with no true melee capability. The Burning Sky is held out like a staff.
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
             Item.width = 102;
             Item.height = 146;
-            Item.damage = 134;
+            Item.damage = 147;
             Item.knockBack = 2.5f;
 
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
 
-            Item.useTime = 9;
-            Item.useAnimation = 9;
+            Item.useTime = 8;
+            Item.useAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item105;
@@ -43,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<BurningMeteor>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
 
@@ -61,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Melee
             return false;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
     }
 }

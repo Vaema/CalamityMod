@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Balancing;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,15 +9,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class OmegaBlueTentacle : ModProjectile
+    public class OmegaBlueTentacle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public bool initSegments = false;
         public Vector2[] segment = new Vector2[6];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Omega Blue Tentacle");
-        }
 
         public override void SetDefaults()
         {
@@ -99,16 +96,15 @@ namespace CalamityMod.Projectiles.Typeless
                     Projectile.ai[0] = 10 + Main.rand.Next(10);
                     float maxDistance = hentai ? 900f : 600f;
                     int target = -1;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile))
                         {
                             float npcDistance = Projectile.Distance(npc.Center);
                             if (npcDistance < maxDistance)
                             {
                                 maxDistance = npcDistance;
-                                target = i;
+                                target = npc.whoAmI;
                             }
                         }
                     }
@@ -150,7 +146,7 @@ namespace CalamityMod.Projectiles.Typeless
                 int limit = (int)(tickVel.Length() / factor);
                 if (limit == 0)
                 {
-                    int d = Dust.NewDust(dustPos, 0, 0, 20, 0, 0, 100, Color.Transparent, 0.9f);
+                    int d = Dust.NewDust(dustPos, 0, 0, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 0.9f);
                     Main.dust[d].noGravity = true;
                     Main.dust[d].noLight = true;
                     Main.dust[d].fadeIn = 1f;
@@ -162,7 +158,7 @@ namespace CalamityMod.Projectiles.Typeless
                     tickVel *= factor;
                     for (int i = 0; i <= limit; i++)
                     {
-                        int d = Dust.NewDust(dustPos, 0, 0, 20, 0, 0, 100, Color.Transparent, 0.9f);
+                        int d = Dust.NewDust(dustPos, 0, 0, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 0.9f);
                         Main.dust[d].noGravity = true;
                         Main.dust[d].noLight = true;
                         Main.dust[d].fadeIn = 1f;
@@ -179,51 +175,26 @@ namespace CalamityMod.Projectiles.Typeless
             current /= 2;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Main.player[Projectile.owner].Calamity().omegaBlueHentai)
-                crit = true;
+                modifiers.SetCrit();
         }
 
-        public override void ModifyHitPvp(Player target, ref int damage, ref bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.player[Projectile.owner].Calamity().omegaBlueHentai)
-                crit = true;
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            if (Projectile.owner == Main.myPlayer && Main.player[Projectile.owner].lifeSteal > 0f && !Main.player[Projectile.owner].moonLeech)
+            if (Projectile.owner == Main.myPlayer && Main.player[Projectile.owner].lifeSteal > 0f && !Main.player[Projectile.owner].moonLeech && target.lifeMax > 5)
             {
-                int healAmount = 10 * damage / Projectile.damage; //should always be around max, less if enemy has defense/DR
+                int healAmount = 10 * damageDone / Projectile.damage; //should always be around max, less if enemy has defense/DR
+                if (healAmount > BalancingConstants.LifeStealCap)
+                    healAmount = BalancingConstants.LifeStealCap;
+
                 if (healAmount > 0)
                 {
                     Main.player[Projectile.owner].lifeSteal -= healAmount;
                     if (Main.player[Projectile.owner].Calamity().omegaBlueHentai) //hentai always crits, this makes it have same lifesteal delay
                         Main.player[Projectile.owner].lifeSteal += healAmount / 2;
-                    /*Main.player[projectile.owner].statLife += healAmount;
-                    if (Main.player[projectile.owner].statLife > Main.player[projectile.owner].statLifeMax2)
-                        Main.player[projectile.owner].statLife = Main.player[projectile.owner].statLifeMax2;
-                    Main.player[projectile.owner].HealEffect(healAmount, false);*/
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileID.SpiritHeal, 0, 0f, Projectile.owner, Projectile.owner, healAmount);
-                }
-            }
-        }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            if (Projectile.owner == Main.myPlayer && Main.player[Projectile.owner].lifeSteal > 0f && !Main.player[Projectile.owner].moonLeech)
-            {
-                int healAmount = 10 * damage / Projectile.damage; //should always be around max, less if enemy has defense/DR
-                if (healAmount > 0)
-                {
-                    Main.player[Projectile.owner].lifeSteal -= healAmount;
-                    if (Main.player[Projectile.owner].Calamity().omegaBlueHentai) //hentai always crits, this makes it have same lifesteal delay
-                        Main.player[Projectile.owner].lifeSteal += healAmount / 2;
-                    /*Main.player[projectile.owner].statLife += healAmount;
-                    if (Main.player[projectile.owner].statLife > Main.player[projectile.owner].statLifeMax2)
-                        Main.player[projectile.owner].statLife = Main.player[projectile.owner].statLifeMax2;
-                    Main.player[projectile.owner].HealEffect(healAmount, false);*/
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileID.SpiritHeal, 0, 0f, Projectile.owner, Projectile.owner, healAmount);
                 }
             }
@@ -235,13 +206,34 @@ namespace CalamityMod.Projectiles.Typeless
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             GameShaders.Armor.ApplySecondary(Main.player[Projectile.owner].cBody, Main.player[Projectile.owner], new DrawData?());
-            Projectile.rotation = (Projectile.Center - segment[5]).ToRotation();
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment").Value;
-            for (int i = 0; i < 6; i++)
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment1").Value;
+            for (int i = 0; i < 5; i++)
             {
-                Main.spriteBatch.Draw(segmentSprite, segment[i] - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), segmentSprite.Bounds, Projectile.GetAlpha(lightColor), 0f, segmentSprite.Bounds.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+                Projectile.rotation = (Projectile.Center - segment[i]).ToRotation();
+                switch (i)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment2").Value;
+                        break;
+                    case 2:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment3").Value;
+                        break;
+                    case 3:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment4").Value;
+                        break;
+                    case 4:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment5").Value;
+                        break;
+                    default:
+                        break;
+
+                }
+                Main.spriteBatch.Draw(segmentSprite, segment[i] - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), segmentSprite.Bounds, Projectile.GetAlpha(lightColor), Projectile.rotation, segmentSprite.Bounds.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             }
+            Projectile.rotation = (Projectile.Center - segment[5]).ToRotation();
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), texture2D13.Bounds, Projectile.GetAlpha(lightColor), Projectile.rotation, texture2D13.Bounds.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             Main.spriteBatch.End();

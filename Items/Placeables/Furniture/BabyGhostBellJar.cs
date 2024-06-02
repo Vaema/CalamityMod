@@ -1,23 +1,18 @@
+﻿using CalamityMod.Items.Critters;
 using CalamityMod.Tiles.Furniture;
-using CalamityMod.Items.Critters;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class BabyGhostBellJar : ModItem
+    public class BabyGhostBellJar : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Baby Ghost Bell Jar");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -29,7 +24,10 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<BabyGhostBellItem>()).AddIngredient(ItemID.Bottle).Register();
+            CreateRecipe().
+                AddIngredient<BabyGhostBellItem>().
+                AddIngredient(ItemID.BottledWater).
+                Register();
         }
     }
 }

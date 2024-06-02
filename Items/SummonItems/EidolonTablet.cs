@@ -1,5 +1,5 @@
-﻿using CalamityMod.Events;
-using System;
+﻿using System;
+using CalamityMod.Events;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -7,16 +7,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class EidolonTablet : ModItem
+    public class EidolonTablet : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Eidolon Tablet");
-            Tooltip.SetDefault("Summons the Lunatic Cultist\n" +
-                "Not consumable");
-			NPCID.Sets.MPAllowedEnemies[NPCID.CultistBoss] = true;
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 16; // Solar Tablet / Bloody Tear
+            NPCID.Sets.MPAllowedEnemies[NPCID.CultistBoss] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 18; // Bloody Tear (1 below Celestial Sigil fsr)
         }
 
         public override void SetDefaults()
@@ -30,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -50,7 +47,7 @@ namespace CalamityMod.Items.SummonItems
                 CalamityUtils.BossAwakenMessage(npc);
             }
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, NPCID.CultistBoss);
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, NPCID.CultistBoss);
 
             return true;
         }

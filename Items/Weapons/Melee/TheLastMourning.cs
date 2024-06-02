@@ -10,22 +10,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TheLastMourning : ModItem
+    public class TheLastMourning : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("The Last Mourning");
-            Tooltip.SetDefault("Summons flaming pumpkins and mourning skulls that split into fire orbs on enemy hits");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 94;
             Item.height = 94;
-            Item.scale = 1.5f;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 360;
+            Item.damage = 550;
             Item.knockBack = 8.5f;
             Item.useAnimation = 20;
             Item.useTime = 20;
@@ -35,31 +28,25 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (crit)
-                damage /= 2;
-
             bool isDoGSegment = target.type == ModContent.NPCType<DevourerofGodsBody>() || target.type == ModContent.NPCType<CosmicGuardianBody>();
             if (!isDoGSegment || Main.rand.NextBool(3))
             {
-                CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, damage, knockback, 0, ModContent.ProjectileType<MourningSkull>());
-                CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, damage, knockback, 1);
+                CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, Item.damage, Item.knockBack, 0, ModContent.ProjectileType<MourningSkull>());
+                CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, Item.damage, Item.knockBack, 1);
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            if (crit)
-                damage /= 2;
-
-            CalamityPlayer.HorsemansBladeOnHit(player, -1, damage, Item.knockBack, 0, ModContent.ProjectileType<MourningSkull>());
-            CalamityPlayer.HorsemansBladeOnHit(player, -1, damage, Item.knockBack, 1);
+            CalamityPlayer.HorsemansBladeOnHit(player, -1, Item.damage, Item.knockBack, 0, ModContent.ProjectileType<MourningSkull>());
+            CalamityPlayer.HorsemansBladeOnHit(player, -1, Item.damage, Item.knockBack, 1);
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)

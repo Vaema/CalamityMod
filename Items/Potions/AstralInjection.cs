@@ -7,14 +7,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class AstralInjection : ModItem
+    public class AstralInjection : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Astral Injection");
-            Tooltip.SetDefault("Gives mana sickness and hurts you when used, but you regenerate mana extremely quickly even while moving or casting spells");
-            SacrificeTotal = 30;
+            Item.ResearchUnlockCount = 30;
         }
 
         public override void SetDefaults()
@@ -22,7 +20,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Lime;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -44,7 +42,7 @@ namespace CalamityMod.Items.Potions
             }
             if (player.statLife <= 0)
             {
-                player.KillMe(PlayerDeathReason.ByCustomReason(player.name + "'s blood vessels burst from drug overdose."), 1000.0, 0, false);
+                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AstralInjection" + Main.rand.Next(1, 2 + 1)).Format(player.name)), 1000.0, 0, false);
             }
         }
 
@@ -52,10 +50,10 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe(15).
                 AddIngredient(ItemID.BottledWater, 15).
-                AddIngredient<Stardust>(4).
+                AddIngredient<StarblightSoot>(4).
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe(15).
@@ -63,7 +61,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<BloodOrb>(5).
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

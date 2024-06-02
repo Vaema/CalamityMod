@@ -1,18 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class FinalDawnHorizontalSlash : ModProjectile
+    public class FinalDawnHorizontalSlash : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Final Dawn");
             Main.projFrames[Projectile.type] = 9;
         }
         public override void SetDefaults()
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.ai[1] == 3)
                 {
                     Projectile.friendly = true;
-                    SoundEngine.PlaySound(SoundID.Item71, Projectile.position);
+                    SoundEngine.PlaySound(TheFinalDawn.UseSound, Projectile.position);
 
                     if (Projectile.owner == Main.myPlayer)
                     {
@@ -66,14 +67,14 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[1] < 2) player.bodyFrame.Y = 1 * player.bodyFrame.Height;
             else player.bodyFrame.Y = 3 * player.bodyFrame.Height;
 
-            if (Projectile.ai[1] == 4 || Projectile.ai[1] == 5) player.direction = -1 * Projectile.spriteDirection;
-            else player.direction = 1 * Projectile.spriteDirection;
+            if (Projectile.ai[1] == 4 || Projectile.ai[1] == 5) player.ChangeDir(-1 * Projectile.spriteDirection);
+            else player.ChangeDir(Projectile.spriteDirection);
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D scytheGlowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnHorizontalSlash_Glow").Value;
-            int height = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int height = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(scytheTexture,
                                   Projectile.Center - Main.screenPosition + Projectile.gfxOffY * Vector2.UnitY,
@@ -93,7 +94,7 @@ namespace CalamityMod.Projectiles.Rogue
                                   0f);
             return false;
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
         }

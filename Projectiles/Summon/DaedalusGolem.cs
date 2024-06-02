@@ -1,17 +1,18 @@
-﻿using CalamityMod.Buffs.Summon;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.Summon;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class DaedalusGolem : ModProjectile
+    public class DaedalusGolem : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int AttackTimer;
         public bool UsingChargedLaserAttack;
         public const int ChargedPelletAttackTime = 30;
@@ -24,7 +25,6 @@ namespace CalamityMod.Projectiles.Summon
         public ref float StuckJumpSpeed => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Daedalus Golem");
             Main.projFrames[Projectile.type] = 18;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -143,21 +143,17 @@ namespace CalamityMod.Projectiles.Summon
                         if (Main.myPlayer == Projectile.owner)
                         {
                             Vector2 initialVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 2f;
-                            if (Main.rand.NextBool(2))
+                            if (Main.rand.NextBool())
                                 initialVelocity = initialVelocity.RotatedByRandom(0.4f);
                             float initialAngle = initialVelocity.ToRotation();
-                            int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), ArmPosition, initialVelocity, ModContent.ProjectileType<DaedalusLightning>(), Projectile.damage, Projectile.knockBack, Projectile.owner, initialAngle, Main.rand.Next(100));
-                            if (Main.projectile.IndexInRange(p))
-                                Main.projectile[p].originalDamage = Projectile.originalDamage;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), ArmPosition, initialVelocity, ModContent.ProjectileType<DaedalusLightning>(), Projectile.damage, Projectile.knockBack, Projectile.owner, initialAngle, Main.rand.Next(100));
                         }
                     }
                 }
                 else if (!UsingChargedLaserAttack && AttackTimer == ChargedPelletAttackTime / 2 && Main.myPlayer == Projectile.owner)
                 {
                     Vector2 initialVelocity = Projectile.SafeDirectionTo(potentialTarget.Center + potentialTarget.velocity * 15f) * 19f;
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), ArmPosition, initialVelocity, ModContent.ProjectileType<DaedalusPellet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Projectile.originalDamage;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), ArmPosition, initialVelocity, ModContent.ProjectileType<DaedalusPellet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
             }
             else if (potentialTarget is null && AttackTimer != 0)

@@ -7,8 +7,9 @@ namespace CalamityMod.Items.Armor.Empyrean
 {
     [AutoloadEquip(EquipType.Body)]
     [LegacyName("XerocPlateMail")]
-    public class EmpyreanCloak : ModItem
+    public class EmpyreanCloak : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -20,11 +21,6 @@ namespace CalamityMod.Items.Armor.Empyrean
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Empyrean Cloak");
-            Tooltip.SetDefault("Armor of the cosmos\n" +
-                "+20 max life\n" +
-                "7% increased rogue damage and critical strike chance");
 
             if (Main.netMode != NetmodeID.Server)
             {
@@ -38,7 +34,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.defense = 27;
         }

@@ -12,20 +12,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaWireHemmedVisage : ModItem
+    public class AuricTeslaWireHemmedVisage : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Tesla Wire-Hemmed Visage");
-            Tooltip.SetDefault("30% increased magic damage, 20% increased magic critical strike chance, +100 max mana and 20% reduced mana usage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 24; //132
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -37,14 +31,12 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void ArmorSetShadows(Player player)
         {
-            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawOutlines = true;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Magic Tarragon, Bloodflare and Silva armor effects\n" +
-                "All projectiles spawn healing auric orbs on enemy hits\n" +
-                "Max run speed and acceleration boosted by 5%";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraMage = true;
@@ -54,7 +46,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.silvaMage = true;
             modPlayer.auricSet = true;
             player.thorns += 3f;
-            player.lavaMax += 240;
             player.ignoreWater = true;
             player.crimsonRegen = true;
         }

@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,9 +9,8 @@ namespace CalamityMod.Tiles
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpBar(new Color(47, 66, 90));
+            this.SetUpBar(ModContent.ItemType<Items.Materials.AstralBar>(), new Color(47, 66, 90));
             DustType = ModContent.DustType<AstralBlue>();
-            ItemDrop = ModContent.ItemType<Items.Placeables.AstralBar>();
         }
 
         public override bool CreateDust(int i, int j, ref int type)

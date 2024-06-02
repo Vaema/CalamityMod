@@ -1,35 +1,31 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class BorealisBomber : ModItem
+    public class BorealisBomber : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Borealis Bomber");
-            Tooltip.SetDefault("Summons aureus bombers to fight for you\n" +
-            "Aureus bombers explode on enemy impact\n" +
-            "Does not consume minion slots");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 35;
-            Item.mana = 10;
             Item.width = 48;
             Item.height = 56;
+            Item.damage = 35;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 19;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;

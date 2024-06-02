@@ -1,8 +1,10 @@
+﻿using System.Collections.Generic;
 using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Crags
 {
@@ -10,7 +12,7 @@ namespace CalamityMod.Tiles.Crags
     {
         private const short subsheetWidth = 450;
         private const short subsheetHeight = 198;
-
+        
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -21,16 +23,16 @@ namespace CalamityMod.Tiles.Crags
             CalamityUtils.SetMerge(Type, ModContent.TileType<InfernalSuevite>());
 
             HitSound = SoundID.Tink;
-            MineResist = 3f;
+            MineResist = 2f;
             MinPick = 100;
-            ItemDrop = ModContent.ItemType<Items.Placeables.BrimstoneSlag>();
             AddMapEntry(new Color(53, 33, 56));
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -44,7 +46,6 @@ namespace CalamityMod.Tiles.Crags
             frameXOffset = i % 2 * subsheetWidth;
             frameYOffset = j % 2 * subsheetHeight;
         }
-
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
             return TileFraming.BrimstoneFraming(i, j, resetFrame);
@@ -94,7 +95,7 @@ namespace CalamityMod.Tiles.Crags
                     Main.spriteBatch.Draw(sprite, new Vector2((float)(i * 16 - (int)Main.screenPosition.X) + (float)num10, (float)(j * 16 - (int)Main.screenPosition.Y + index4 * 2)) + zero, drawRectangle, drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                 }
             }
-        }*/
+        }
 
         private Color GetDrawColour(int i, int j, Color colour)
         {
@@ -107,6 +108,6 @@ namespace CalamityMod.Tiles.Crags
                 colour.B = (byte)(paintCol.B / 255f * colour.B);
             }
             return colour;
-        }
+        }*/
     }
 }

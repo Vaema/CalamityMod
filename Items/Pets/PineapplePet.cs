@@ -7,24 +7,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class PineapplePet : ModItem
+    public class PineapplePet : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Pineapple");
-            Tooltip.SetDefault("Summons a pineapple");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 32;
+            Item.height = 34;
             Item.damage = 0;
             Item.useTime = Item.useAnimation = 20;
             Item.shoot = ModContent.ProjectileType<PineapplePetProj>();
             Item.buffType = ModContent.BuffType<PineappleBuff>();
 
-            Item.width = 32;
-            Item.height = 34;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item2;

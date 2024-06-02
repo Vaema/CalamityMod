@@ -1,22 +1,22 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ManaMonster : ModProjectile
+    public class ManaMonster : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public ref float Time => ref Projectile.ai[0];
         public Player Target => Main.player[Projectile.owner];
         public const int NPCAttackTime = 50;
         public const int PlayerAttackRedirectTime = 45;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mana Monster");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -95,15 +95,15 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        // TODO -- this damage should be after Terraria vanilla multipliers, so it won't one shot people
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            if (Main.masterMode) damage = 540;
-            else if (Main.expertMode) damage = 450;
-            else damage = 360;
+            modifiers.SourceDamage *= 0f;
+            if (Main.masterMode) modifiers.SourceDamage.Flat += 540f;
+            else if (Main.expertMode) modifiers.SourceDamage.Flat += 450f;
+            else modifiers.SourceDamage.Flat += 360f;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
 
         public override bool? CanDamage() => Projectile.Opacity >= 1f ? null : false;
 

@@ -8,16 +8,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Plaguebringer
 {
     [AutoloadEquip(EquipType.Body)]
-    public class PlaguebringerCarapace : ModItem
+    public class PlaguebringerCarapace : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plaguebringer Carapace");
-            Tooltip.SetDefault("Grants immunity to the Plague\n" +
-                "12% increased minion damage\n" +
-                "Friendly bees inflict the plague");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -32,7 +27,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
             Item.width = 18;
             Item.height = 18;
             Item.defense = 17;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
@@ -40,7 +35,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         public override void UpdateEquip(Player player)
         {
             player.Calamity().plaguebringerCarapace = true;
-            player.GetDamage<SummonDamageClass>() += 0.12f;
+            player.GetDamage<SummonDamageClass>() += 0.15f;
             player.buffImmune[ModContent.BuffType<Plague>()] = true;
         }
 

@@ -1,19 +1,15 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class EclipseMirrorBurst : ModProjectile
+    public class EclipseMirrorBurst : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private int frameCounter = 0;
         private int frameX = 0;
         private int frameY = 0;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Eclipse Mirror Flash");
-        }
 
         public override void SetDefaults()
         {
@@ -51,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.spriteBatch.Draw
             (
                 texture,

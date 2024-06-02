@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,16 +14,10 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
     [LegacyName("LaserRifle")]
-    public class HeavyLaserRifle : ModItem
+    public class HeavyLaserRifle : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/LaserRifleFire");
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Heavy Laser Rifle");
-            Tooltip.SetDefault("Laser weapon used by heavy infantry units in Yharim's army");
-        }
 
         public override void SetDefaults()
         {
@@ -43,7 +37,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.rare = ModContent.RarityType<Turquoise>();
 
             Item.shoot = ModContent.ProjectileType<LaserRifleShot>();
             Item.shootSpeed = 5f;
@@ -83,7 +77,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

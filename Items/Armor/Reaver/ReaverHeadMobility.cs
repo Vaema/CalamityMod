@@ -8,16 +8,10 @@ namespace CalamityMod.Items.Armor.Reaver
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("ReaverVisage")]
-    public class ReaverHeadMobility : ModItem
+    public class ReaverHeadMobility : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         //Jump/Flight Boosts and Movement Speed Helm
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Reaver Visage");
-            Tooltip.SetDefault("10% increased jump speed and 15% increased movement speed");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 24;
@@ -43,10 +37,7 @@ namespace CalamityMod.Items.Armor.Reaver
             var modPlayer = player.Calamity();
             modPlayer.reaverSpeed = true;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = "Grants immunity to fall damage and allows constant jumping\n" +
-                "10% increased flight time and horizontal wing speed\n" +
-                "Hooks fly out and retract 10% faster\n" +
-                "Reduces the cooldown of dashes";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             player.noFallDmg = true;
             player.autoJump = true;
             if (player.miscCounter % 3 == 2 && player.dashDelay > 0)

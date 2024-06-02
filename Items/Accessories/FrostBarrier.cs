@@ -5,22 +5,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class FrostBarrier : ModItem
+    public class FrostBarrier : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Frost Barrier");
-            Tooltip.SetDefault("You will freeze enemies near you when you are struck\n" +
-                               "You are immune to the chilled debuff");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.defense = 4;
             Item.width = 20;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.defense = 10;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
@@ -30,6 +23,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.fBarrier = true;
             player.buffImmune[BuffID.Chilled] = true;
+            player.buffImmune[BuffID.Frostburn] = true;
         }
     }
 }

@@ -1,26 +1,19 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Armor.Victide;
+﻿using CalamityMod.Items.Armor.Victide;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ShieldoftheOcean : ModItem
+    public class ShieldoftheOcean : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Shield of the Ocean");
-            Tooltip.SetDefault("Increased defense by 5 when submerged in liquid\n" +
-            "Increases movement speed and life regen while wearing the Victide armor");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 28;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 2;
             Item.accessory = true;

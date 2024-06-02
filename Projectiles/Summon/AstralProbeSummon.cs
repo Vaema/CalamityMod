@@ -1,16 +1,17 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class AstralProbeSummon : ModProjectile
+    public class AstralProbeSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public CalamityPlayer moddedOwner => Owner.Calamity();
@@ -39,7 +40,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Astral Probe");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             NPC target = Projectile.Center.MinionHoming(2500f, Owner); // Detects a target at a certain distance.
-            
+
             Vector2 idleDestination = Owner.Center + ProbePositionAngle.ToRotationVector2() * 150f;
             Projectile.Center = Vector2.Lerp(Projectile.Center, idleDestination, 0.15f);
             AITimer++;
@@ -73,6 +73,8 @@ namespace CalamityMod.Projectiles.Summon
             SpawnEffect(); // Makes a dust spawn effect where the minion spawns.
             LookInCorrectDirection(target); // Looks at the target.
             ShootTarget(target); // Shoots at the target if there's one
+
+            Projectile.netUpdate = true;
         }
 
         #region Methods
@@ -134,17 +136,15 @@ namespace CalamityMod.Projectiles.Summon
                 if (TimerForShooting == 80f)
                 {
                     Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, target, 35f);
-                    
-                    int laser = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AstralProbeRound>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(laser))
-                        Main.projectile[laser].originalDamage = Projectile.originalDamage;
+
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AstralProbeRound>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
                     SoundEngine.PlaySound(SoundID.Item12 with { Volume = SoundID.Item12.Volume * 0.5f, PitchVariance = 1f }, Projectile.position);
 
-                    TimerForShooting = 0f; 
+                    TimerForShooting = 0f;
                     Projectile.netUpdate = true;
                 }
-                
+
                 if (TimerForShooting < 80f)
                     TimerForShooting++;
             }

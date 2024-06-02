@@ -1,15 +1,15 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PlateProjectile : ModProjectile
+    public class PlateProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Plate");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 5;
         }
@@ -19,8 +19,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 10;
             Projectile.height = 16;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.DamageType = DamageClass.Summon;
@@ -43,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Shatter, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)

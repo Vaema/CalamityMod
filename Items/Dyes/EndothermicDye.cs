@@ -12,12 +12,11 @@ namespace CalamityMod.Items.Dyes
 {
     public class EndothermicDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/EndothermicDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/EndothermicDyeShader"), "DyePass").
             UseColor(new Color(123, 205, 237)).UseSecondaryColor(new Color(85, 85, 171));
         public override void SafeSetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Endothermic Dye");
+            Item.ResearchUnlockCount = 3;
         }
 
         public override void SafeSetDefaults()

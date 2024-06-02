@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class FrequencyManipulatorProjectile : ModProjectile
+    public class FrequencyManipulatorProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/FrequencyManipulator";
 
         public float Time
@@ -17,11 +18,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public const int TotalSpins = 2;
         public const float SpinTime = 30f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Frequency Manipulator");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 34;
@@ -60,7 +56,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public void ManipulatePlayerItemValues(Player player)
         {
-            player.direction = Projectile.direction;
+            player.ChangeDir(Projectile.direction);
             player.heldProj = Projectile.whoAmI;
             player.itemRotation = Projectile.rotation;
             player.itemTime = player.itemAnimation;
@@ -111,7 +107,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             OnHitEffects();
         }

@@ -5,18 +5,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class DragonRage : ModItem
+    public class DragonRage : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dragon Rage");
-            Tooltip.SetDefault("Twirls a baton that causes explosions on enemy hits\n" +
-            "Every ten hits will summon a ring of fireballs");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
+            Item.width = 128;
+            Item.height = 140;
             Item.damage = 1075;
             Item.knockBack = 7.5f;
             Item.useAnimation = Item.useTime = 25;
@@ -27,12 +22,10 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<DragonRageStaff>();
 
-            Item.width = 128;
-            Item.height = 140;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.DD2_SkyDragonsFurySwing;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
     }

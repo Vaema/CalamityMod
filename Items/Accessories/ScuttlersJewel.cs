@@ -1,18 +1,15 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ScuttlersJewel : ModItem
+    public class ScuttlersJewel : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Scuttler's Jewel");
-            Tooltip.SetDefault("Stealth strike projectiles spawn a jewel spike when destroyed\n" +
-                "Can also be broken down at an extractinator");
             ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
         }
 
@@ -20,15 +17,10 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
-
-            Item.useStyle = ItemUseStyleID.HiddenAnimation;
-            Item.useAnimation = 10;
-            Item.useTime = 2;
-            Item.consumable = true;
-
+            Item.MakeUsableWithChlorophyteExtractinator();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -37,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.scuttlersJewel = true;
         }
 
-        public override void ExtractinatorUse(ref int resultType, ref int resultStack)
+        public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
         {
             float dropRand = Main.rand.Next(1, 8);
             resultStack = Main.rand.Next(1, 3);

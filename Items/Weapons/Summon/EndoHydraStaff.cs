@@ -10,16 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class EndoHydraStaff : ModItem
+    public class EndoHydraStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Endo Hydra Staff");
-            Tooltip.SetDefault("Summons a frigid entity with a head\n" +
-                               "If the entity already exists, using this item again will cause it to gain more heads");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
             Item.width = 58;
@@ -29,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.Item60;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.damage = 225;
+            Item.damage = 232;
             Item.knockBack = 3f;
             Item.autoReuse = true;
             Item.useTime = Item.useAnimation = 10;
@@ -46,11 +39,11 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 bool bodyExists = false;
                 int bodyIndex = -1;
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].type == type && Main.projectile[i].owner == player.whoAmI)
+                    if (p.type == type && p.owner == player.whoAmI)
                     {
-                        bodyIndex = i;
+                        bodyIndex = p.whoAmI;
                         bodyExists = true;
                         break;
                     }

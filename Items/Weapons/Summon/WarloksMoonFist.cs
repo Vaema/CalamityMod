@@ -10,26 +10,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class WarloksMoonFist : ModItem
+    public class WarloksMoonFist : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int SlotCount = 4;
 
         public const int PunchCooldownTime = 36;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Warloks' Moon Fist");
-            Tooltip.SetDefault("Summons a celestial fist to punch enemies for you\n" +
-                               $"Takes up {SlotCount} minion slots");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 450;
-            Item.mana = 10;
             Item.width = 50;
             Item.height = 50;
+            Item.damage = 450;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -43,6 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<MoonFist>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+            Item.Calamity().donorItem = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

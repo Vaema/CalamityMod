@@ -17,15 +17,13 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Sunskater : ModNPC
     {
-        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Sunskater") { Volume = 0.9f};
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Sunskater") { Volume = 0.9f };
 
         private bool hasBeenHit = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sunskater");
             Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
         }
 
         public override void SetDefaults()
@@ -41,7 +39,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit50;
-            NPC.DeathSound = CalamityWorld.getFixedBoi ? AresGaussNuke.NukeExplosionSound : DeathSound;
+            NPC.DeathSound = Main.zenithWorld ? AresGaussNuke.NukeExplosionSound : DeathSound;
             NPC.knockBackResist = 0.7f;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SunskaterBanner>();
@@ -49,15 +47,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Some creatures which skirt the edges of our atmosphere tend to absorb and channel the sun's rays better than others. At any rate, this is a passive creature that means you no harm. You should return the favor.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sunskater")
             });
         }
 
@@ -88,13 +89,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.chaseable = hasBeenHit;
             if (!NPC.wet)
             {
-                bool flag14 = hasBeenHit;
+                bool canAttack = hasBeenHit;
                 NPC.TargetClosest(false);
-                if ((Main.player[NPC.target].wet || Main.player[NPC.target].dead) && flag14)
+                if ((Main.player[NPC.target].wet || Main.player[NPC.target].dead) && canAttack)
                 {
-                    flag14 = false;
+                    canAttack = false;
                 }
-                if (!flag14)
+                if (!canAttack)
                 {
                     if (NPC.collideX)
                     {
@@ -119,7 +120,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                if (flag14)
+                if (canAttack)
                 {
                     NPC.TargetClosest(true);
                     NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.15f;
@@ -151,15 +152,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                int num258 = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int num259 = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[num258, num259 - 1].LiquidAmount < 128) //problem?
+                int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount < 128) //problem?
                 {
-                    if (Main.tile[num258, num259 + 1].HasTile)
+                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
-                    else if (Main.tile[num258, num259 + 2].HasTile)
+                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
@@ -224,27 +225,59 @@ namespace CalamityMod.NPCs.NormalNPCs
             return SpawnCondition.Sky.Chance * 0.15f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<HolyFlames>(), 120, true);
+            if (hurtInfo.Damage > 0)
+            {
+                if (Main.zenithWorld)
+                {
+                    target.AddBuff(ModContent.BuffType<HolyInferno>(), 150);
+
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire3, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.CursedInferno, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn2, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Burning, 60);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Dragonfire>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 90);
+                }
+                else
+                    target.AddBuff(BuffID.OnFire, 150, true);
+            }
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.AddIf(() => Main.hardMode, ModContent.ItemType<EssenceofSunlight>(), 3);
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.AddIf(() => Main.hardMode, ModContent.ItemType<EssenceofSunlight>(), 2);
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 64, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.YellowTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 64, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.YellowTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (CalamityWorld.getFixedBoi)
+                if (Main.zenithWorld)
                 {
                     float screenShakePower = 16 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
                     if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)

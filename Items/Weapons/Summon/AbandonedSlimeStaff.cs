@@ -1,27 +1,17 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class AbandonedSlimeStaff : ModItem
+    public class AbandonedSlimeStaff : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         int slimeSlots;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Abandoned Slime Staff");
-            Tooltip.SetDefault("Cast down from the heavens in disgust, this relic sings a song of quiet tragedy...\n" +
-                "Consumes all of the remaining minion slots on use\n" +
-                "Must be used from the hotbar\n" +
-                "Increased power and size based on the number of minion slots used\n" +
-                "Holding this weapon grants 10% increased jump speed");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 62;
@@ -38,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<AstrageldonSummon>();
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().donorItem = true;
         }
@@ -48,10 +38,9 @@ namespace CalamityMod.Items.Weapons.Summon
             player.jumpSpeedBoost += 0.5f;
 
             double minionCount = 0;
-            for (int j = 0; j < Main.projectile.Length; j++)
+            foreach (Projectile projectile in Main.ActiveProjectiles)
             {
-                Projectile projectile = Main.projectile[j];
-                if (projectile.active && projectile.owner == player.whoAmI && projectile.minion && projectile.type != ModContent.ProjectileType<AstrageldonSummon>())
+                if (projectile.owner == player.whoAmI && projectile.minion && projectile.type != ModContent.ProjectileType<AstrageldonSummon>())
                 {
                     minionCount += projectile.minionSlots;
                 }

@@ -1,19 +1,19 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Weapons.Melee;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class EnergyShell : ModProjectile
+    public class EnergyShell : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         private bool playedSound = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Energy Shell");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
             SoundEngine.PlaySound(SoundID.Item94, Projectile.position);

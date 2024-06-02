@@ -1,22 +1,23 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ElementalGlassStar : ModProjectile
+    public class ElementalGlassStar : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         const float MaxTime = 120;
         public float Timer => MaxTime - Projectile.timeLeft;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Glass Star");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Timer == 0)
             {
-                Particle spark = new FlareShine(Projectile.Center, Vector2.Zero, Color.White, Color.OrangeRed, 0f,new Vector2(0.5f, 1f), new Vector2(1.5f, 3f), 20, 0f, hueShift: 0.01f);
+                Particle spark = new FlareShine(Projectile.Center, Vector2.Zero, Color.White, Color.OrangeRed, 0f, new Vector2(0.5f, 1f), new Vector2(1.5f, 3f), 20, 0f, hueShift: 0.01f);
                 GeneralParticleHandler.SpawnParticle(spark);
 
                 for (int i = 0; i < 2; i++)
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity *= 0.95f;
             }
 
-            if (Main.rand.Next(3) == 0)
+            if (Main.rand.NextBool(3))
             {
                 int dustType = Main.rand.Next(3);
                 dustType = dustType == 0 ? 15 : dustType == 1 ? 57 : 58;
@@ -119,7 +120,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             var breakSound = SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath with { Volume = SoundID.DD2_WitherBeastDeath.Volume * 0.5f }, Projectile.Center);
 
@@ -137,6 +138,10 @@ namespace CalamityMod.Projectiles.Melee
                     Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, new Vector2(Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f), Main.rand.Next(16, 18), 1f);
                 }
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
         }
     }
 }

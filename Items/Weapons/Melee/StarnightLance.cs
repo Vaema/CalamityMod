@@ -6,19 +6,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class StarnightLance : ModItem
+    public class StarnightLance : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Starnight Lance");
-            Tooltip.SetDefault("Shoots a starnight beam");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 72;
+            Item.height = 72;
             Item.damage = 110;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -30,8 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 72;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<StarnightLanceProjectile>();
             Item.shootSpeed = 6f;

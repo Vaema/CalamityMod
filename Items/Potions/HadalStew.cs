@@ -1,26 +1,26 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
-using System.Collections.Generic;
+using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using System.Linq;
 
 namespace CalamityMod.Items.Potions
 {
     [LegacyName("SunkenStew")]
-    public class HadalStew : ModItem
+    public class HadalStew : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public static int BuffType = BuffID.WellFed2;
-        public static int BuffDuration = 216000;
+        public static int BuffDuration = 60 * 3600;
+        public static int SicknessDuration = 50 * 60;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDuration / 3600);
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hadal Stew");
-            Tooltip.SetDefault("Only gives 50 seconds of Potion Sickness\n" +
-               "{$CommonItemTooltip.MediumStats}\n" +
-               "60 minute duration");
-               SacrificeTotal = 30;
+            Item.ResearchUnlockCount = 30;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.value = Item.buyPrice(0, 2, 0, 0);
@@ -43,13 +43,8 @@ namespace CalamityMod.Items.Potions
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            if (Main.LocalPlayer.pStone)
-            {
-                TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip0");
-
-                if (line != null)
-                    line.Text = "Only gives 37 seconds of Potion Sickness";
-            }
+            string duration = Main.LocalPlayer.pStone ? (SicknessDuration / 60 * 0.75f).ToString("N1") : (SicknessDuration / 60).ToString();
+            list.FindAndReplace("[S]", duration);
         }
 
         public override bool CanUseItem(Player player)

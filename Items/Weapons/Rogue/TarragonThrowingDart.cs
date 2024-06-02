@@ -13,15 +13,13 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tarragon Throwing Dart");
-            Tooltip.SetDefault(@"Fires a piercing dart with reduced immunity frames
-Stealth strikes erupt into thorns on enemy hits");
-            SacrificeTotal = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
             Item.width = 34;
+            Item.height = 34;
             Item.damage = 380;
             Item.noMelee = true;
             Item.consumable = true;
@@ -32,8 +30,7 @@ Stealth strikes erupt into thorns on enemy hits");
             Item.knockBack = 4.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 34;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(copper: 30);
             Item.shoot = ModContent.ProjectileType<TarragonThrowingDartProjectile>();
             Item.shootSpeed = 15f;

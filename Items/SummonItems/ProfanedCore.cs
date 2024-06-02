@@ -1,26 +1,20 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs.Providence;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
     [LegacyName("ProfanedCoreUnlimited")]
-    public class ProfanedCore : ModItem
+    public class ProfanedCore : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Profaned Core");
-            Tooltip.SetDefault("The core of the unholy flame\n" +
-                "Summons Providence when used in the Hallow or Underworld\n" +
-                "Unique drop changes depending on the biome fought in\n" +
-                "Enrages when fought during nighttime or when outside the Hallow or Underworld\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -34,10 +28,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ItemRarityID.Purple;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -54,7 +48,7 @@ namespace CalamityMod.Items.SummonItems
                 CalamityUtils.BossAwakenMessage(npc);
             }
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<Providence>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Providence>());
 
             return true;
         }

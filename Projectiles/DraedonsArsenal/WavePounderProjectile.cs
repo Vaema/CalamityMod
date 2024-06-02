@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class WavePounderProjectile : ModProjectile
+    public class WavePounderProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/WavePounder";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wave Pounder");
-        }
 
         public override void SetDefaults()
         {
@@ -50,7 +46,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(TeslaCannon.FireSound, Projectile.Center);
             if (Main.myPlayer == Projectile.owner)

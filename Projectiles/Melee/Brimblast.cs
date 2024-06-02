@@ -1,18 +1,14 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class Brimblast : ModProjectile
+    public class Brimblast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Brimblast");
-        }
 
         public override void SetDefaults()
         {
@@ -56,17 +52,17 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity.Y = Projectile.velocity.Y + 0.2f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
-            Dust dust = Main.dust[num199];
+            int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
+            Dust dust = Main.dust[brimDust];
             dust.position.X -= 2f;
             dust.position.Y += 2f;
             dust.scale += (float)Main.rand.Next(50) * 0.01f;
             dust.noGravity = true;
             dust.velocity.Y -= 4f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
-                Dust dust2 = Main.dust[num200];
+                int brimDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
+                Dust dust2 = Main.dust[brimDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
                 dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
@@ -86,6 +82,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
     }
 }

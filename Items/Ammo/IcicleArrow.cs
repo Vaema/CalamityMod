@@ -5,29 +5,28 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class IcicleArrow : ModItem
+    public class IcicleArrow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Icicle Arrow");
-            Tooltip.SetDefault("Shatters into shards on impact");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 15;
-            Item.DamageType = DamageClass.Ranged;
-            Item.consumable = true;
             Item.width = 18;
             Item.height = 50;
+            Item.damage = 6;
+            Item.DamageType = DamageClass.Ranged;
+            Item.consumable = true;
             Item.knockBack = 2.5f;
             Item.value = Item.buyPrice(0, 0, 0, 80);
-            Item.rare = ItemRarityID.LightPurple;
+            Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<IcicleArrowProj>();
-            Item.shootSpeed = 1.0f;
+            Item.shootSpeed = 0.2f;
             Item.ammo = AmmoID.Arrow;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
         }
     }
 }

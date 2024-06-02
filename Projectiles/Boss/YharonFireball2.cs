@@ -1,22 +1,27 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class YharonFireball2 : ModProjectile
+    public class YharonFireball2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
+
         public override string Texture => "CalamityMod/Projectiles/Boss/YharonFireball";
 
         public static readonly SoundStyle FireballSound = new("CalamityMod/Sounds/Custom/Yharon/YharonFireball", 3);
 
+        private const float TimeBeforeFalling = 180f;
+        private const float MaxUpwardVelocity = -24f;
+        private const float MaxDownwardVelocity = 16f;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dragon Fireball");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -55,20 +60,20 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame >= Main.projFrames[Projectile.type])
                 Projectile.frame = 0;
 
-            if (Projectile.velocity.Y < -1f)
+            if (Projectile.ai[0] < TimeBeforeFalling)
             {
-                // 129 frames to get from -50 to -1
-                Projectile.velocity.Y *= 0.97f;
+                Projectile.ai[0] += 1f;
+                Projectile.velocity.Y -= 0.1f;
+                if (Projectile.velocity.Y < MaxUpwardVelocity)
+                    Projectile.velocity.Y = MaxUpwardVelocity;
             }
             else
             {
-                // 85 frames to get from -1 to 16
+                Projectile.velocity.X *= 0.8f;
                 Projectile.velocity.Y += 0.2f;
-                if (Projectile.velocity.Y > 16f)
-                    Projectile.velocity.Y = 16f;
+                if (Projectile.velocity.Y > MaxDownwardVelocity)
+                    Projectile.velocity.Y = MaxDownwardVelocity;
             }
-
-            Projectile.velocity.X *= 0.995f;
 
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
@@ -78,22 +83,13 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(FireballSound, Projectile.Center);
             }
 
-            if (Projectile.ai[0] >= 2f)
-            {
-                Projectile.alpha -= 25;
-                if (Projectile.alpha < 0)
-                    Projectile.alpha = 0;
-            }
-
             if (Main.rand.NextBool(16))
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 200, default, 1f);
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 200, default, 1f);
                 dust.scale *= 0.7f;
                 dust.velocity += Projectile.velocity * 0.25f;
             }
         }
-
-        public override bool CanHitPlayer(Player target) => Projectile.velocity.Y >= -16f;
 
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Projectile.alpha);
 
@@ -103,33 +99,32 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14 with { Volume = SoundID.Item14.Volume * 0.5f }, Projectile.Center);
             Projectile.ExpandHitboxBy(144);
             for (int d = 0; d < 2; d++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1.5f);
             }
             for (int d = 0; d < 20; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 0, default, 2.5f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 0, default, 2.5f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1.5f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1.5f);
                 Main.dust[idx].velocity *= 2f;
                 Main.dust[idx].noGravity = true;
             }
             Projectile.Damage();
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            if (Projectile.velocity.Y >= -16f)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 120);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 60);
         }
     }
 }

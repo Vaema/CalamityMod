@@ -1,29 +1,25 @@
-﻿using CalamityMod.NPCs.AstrumDeus;
+﻿using System;
+using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.AstrumDeus;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class WulfrumLureSignal : ModProjectile
+    public class WulfrumLureSignal : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public ref float Time => ref Projectile.ai[0];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Signal");
-        }
 
         public override void SetDefaults()
         {
@@ -47,13 +43,13 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
                     float closestPlayerDistance = (Main.LocalPlayer.Center - Projectile.Center).Length();
-                    for (int i = 0; i < Main.maxPlayers; i++)
+                    foreach (Player plr in Main.ActivePlayers)
                     {
-                        float newDistance = (Main.player[i].Center - Projectile.Center).Length();
+                        float newDistance = (plr.Center - Projectile.Center).Length();
                         if (newDistance < closestPlayerDistance)
                         {
                             closestPlayerDistance = newDistance;
-                            player = Main.player[i];
+                            player = plr;
                         }
                     }
                 }
@@ -81,8 +77,8 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (tries < 500)
                     {
-                        int npcToSpawn = Main.rand.NextBool(2) ? ModContent.NPCType<WulfrumDrone>() : Main.rand.NextBool() ? ModContent.NPCType<WulfrumHovercraft>() : ModContent.NPCType<WulfrumGyrator>() ;
-                        int index = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn, Target:player.whoAmI);
+                        int npcToSpawn = Main.rand.NextBool() ? ModContent.NPCType<WulfrumDrone>() : Main.rand.NextBool() ? ModContent.NPCType<WulfrumHovercraft>() : ModContent.NPCType<WulfrumGyrator>();
+                        int index = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn, Target: player.whoAmI);
 
                         for (int iy = 0; iy < 16; iy++)
                         {
@@ -93,7 +89,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            if (Time%2 == 0 && CalamityUtils.IntoMorseCode("perimeter breached", Time / WulfrumLureItem.SignalTime))
+            if (Time % 2 == 0 && CalamityUtils.IntoMorseCode("perimeter breached", Time / WulfrumLureItem.SignalTime))
             {
                 float dustCount = MathHelper.TwoPi * 300 / 8f;
                 for (int i = 0; i < dustCount; i++)
@@ -108,7 +104,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(WulfrumTreasurePinger.RechargeBeepSound, Projectile.Center);
         }

@@ -9,33 +9,24 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class CrackshotColt : ModItem
+    public class CrackshotColt : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         // Crackshot Colt uses the same sound as Midas Prime, just quieter.
-        private static SoundStyle ShootSound => MidasPrime.ShootSound with { Volume = 0.6f };
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Crackshot Colt");
-            Tooltip.SetDefault("Right click to toss a Copper Coin in the air\n" +
-                "Striking a coin with a bullet causes it to ricochet into the nearest enemy\n" +
-                "Up to 4 coins can be tossed simultaneously, and shots will ricochet off multiple coins if possible\n" +
-                "Ricocheted bullets always critically strike and do bonus damage based on the coins used");
-            SacrificeTotal = 1;
-        }
+        private static SoundStyle ShootSound => MidasPrime.ShootSound with { Volume = 0.4f };
 
         public override void SetDefaults()
         {
-            Item.damage = 18;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 23;
             Item.height = 8;
+            Item.damage = 18;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 35;
             Item.useAnimation = 35;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;
@@ -62,12 +53,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 // player.CanBuyItem() breaks if the player has more than 2,147 platinum coins and was never fixed
-                // This alternative method works no matter how much money the player has
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (cashAvailable < 1 && !overflow)
-                    return false;
-
-                return player.GetActiveRicoshotCoinCount() < 4;
+                // 20APR2024: Ozzatron: The method was instead replaced with player.CanAfford, which is immune to overflow
+                // Additionally, CanAfford checks your Piggy Bank, Safe, etc., meaning Crackshot Colt can use coins from there
+                bool hasAtLeastOneCopper = player.CanAfford(1);
+                return hasAtLeastOneCopper && player.GetActiveRicoshotCoinCount() < 4;
             }
             return true;
         }
@@ -123,7 +112,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         #region Firing Animation
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 7f;
@@ -137,7 +126,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseItemFrame(Player player)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
@@ -152,8 +141,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddRecipeGroup("AnyGoldBar", 8).
-                AddIngredient(ModContent.ItemType<DesertFeather>()).
-                AddIngredient(ModContent.ItemType<BloodOrb>()).
+                AddIngredient<StormlionMandible>().
+                AddIngredient<BloodOrb>().
                 AddIngredient(ItemID.CopperCoin, 4).
                 AddTile(TileID.Anvils).
                 Register();

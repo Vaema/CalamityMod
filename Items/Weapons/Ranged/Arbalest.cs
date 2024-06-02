@@ -1,39 +1,32 @@
-﻿using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Arbalest : ModItem
+    public class Arbalest : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int totalProjectiles = 1;
         private float arrowScale = 0.5f;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Arbalest");
-            Tooltip.SetDefault("Fires a volley of 10 high-speed arrows\n" +
-                "Arrows start off small and grow in size with continuous fire\n" +
-                "Arrow damage, spread and knockback scale with arrow size");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 28;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 82;
             Item.height = 34;
+            Item.damage = 28;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 7;
+            Item.useAnimation = 21;
             Item.reuseDelay = 30;
-            Item.useAnimation = 28;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = null;
             Item.autoReuse = true;
@@ -50,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             SoundEngine.PlaySound(SoundID.Item5, player.Center);
 
-            if (totalProjectiles > 4)
+            if (totalProjectiles > 3)
             {
                 totalProjectiles = 1;
 

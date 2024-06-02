@@ -1,31 +1,33 @@
-﻿using Terraria;
-using Terraria.ModLoader;
+﻿using System.Collections.Generic;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class GravistarSabaton : ModItem
+    public class GravistarSabaton : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Gravistar Sabaton");
-            Tooltip.SetDefault("Tap the DOWN key to increase your fall speed for 5 seconds\n" +
-                               "This has an 8 second cooldown\n" +
-                               "Striking the ground with increased fall speed will cause an astral explosion");
-        }
+        public new string LocalizationCategory => "Items.Accessories";
+
+        public static readonly int PassthroughDamage = 150;
+        public static readonly int SlamDamage = 300;
+        public static readonly int PassthroughIFrames = 5;
 
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Lime;
         }
 
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.GravistarSabatonHotkey);
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.noFallDmg = true;
+            player.jumpSpeedBoost += 1f;
             player.Calamity().gSabaton = true;
         }
     }

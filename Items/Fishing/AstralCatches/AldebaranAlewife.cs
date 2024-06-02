@@ -1,16 +1,15 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.AstralCatches
 {
-    public class AldebaranAlewife : ModItem
+    public class AldebaranAlewife : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Aldebaran Alewife");
-            Tooltip.SetDefault("A star-struck entity in the form of a fish");
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -18,14 +17,14 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         {
             Item.width = 38;
             Item.height = 36;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 8);
             Item.rare = ItemRarityID.Blue;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
+        }
     }
 }

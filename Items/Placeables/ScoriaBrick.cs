@@ -5,15 +5,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables
 {
     [LegacyName("ChaoticBrick")]
-    public class ScoriaBrick : ModItem
+    public class ScoriaBrick : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults() => SacrificeTotal = 100;
+        public new string LocalizationCategory => "Items.Placeables";
+        public override void SetStaticDefaults() => Item.ResearchUnlockCount = 100;
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 25;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = 0;
             Item.rare = ItemRarityID.Blue;
             Item.useTurn = true;

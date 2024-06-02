@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using static Terraria.ModLoader.ModContent;
@@ -345,7 +345,7 @@ namespace CalamityMod
             projectile.rotation = projectile.velocity.X * tiltFloat;
         }
 
-        public static void HealingProjectile(this Projectile projectile, int healing, int playerToHeal, float homingVelocity, float N, bool autoHomes = true, int timeCheck = 120)
+        public static void HealingProjectile(this Projectile projectile, int healing, int playerToHeal, float homingVelocity, float inertia, bool autoHomes = true, int timeCheck = 120)
         {
             int target = playerToHeal;
             Player player = Main.player[target];
@@ -375,16 +375,16 @@ namespace CalamityMod
                 playerDist = homingSpeed / playerDist;
                 playerVector.X *= playerDist;
                 playerVector.Y *= playerDist;
-                projectile.velocity.X = (projectile.velocity.X * N + playerVector.X) / (N + 1f);
-                projectile.velocity.Y = (projectile.velocity.Y * N + playerVector.Y) / (N + 1f);
+                projectile.velocity.X = (projectile.velocity.X * inertia + playerVector.X) / (inertia + 1f);
+                projectile.velocity.Y = (projectile.velocity.Y * inertia + playerVector.Y) / (inertia + 1f);
             }
             else if (player.lifeMagnet && projectile.timeLeft < timeCheck)
             {
                 playerDist = homingVelocity / playerDist;
                 playerVector.X *= playerDist;
                 playerVector.Y *= playerDist;
-                projectile.velocity.X = (projectile.velocity.X * N + playerVector.X) / (N + 1f);
-                projectile.velocity.Y = (projectile.velocity.Y * N + playerVector.Y) / (N + 1f);
+                projectile.velocity.X = (projectile.velocity.X * inertia + playerVector.X) / (inertia + 1f);
+                projectile.velocity.Y = (projectile.velocity.Y * inertia + playerVector.Y) / (inertia + 1f);
             }
         }
 
@@ -458,8 +458,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="projectile">The projectile you're giving sticky behaviour to</param>
         /// <param name="maxStick">How many projectiles of this type can stick to one enemy</param>
-        /// <param name="constantDamage">Decides if you want the projectile to deal damage while its sticked to enemies or not</param>
-        public static void ModifyHitNPCSticky(this Projectile projectile, int maxStick, bool constantDamage)
+        public static void ModifyHitNPCSticky(this Projectile projectile, int maxStick)
         {
             Player player = Main.player[projectile.owner];
             Rectangle myRect = projectile.Hitbox;
@@ -481,11 +480,11 @@ namespace CalamityMod
                             if (npc.type == NPCID.SolarCrawltipedeTail)
                             {
                                 Rectangle rect = npc.Hitbox;
-                                int num5 = 8;
-                                rect.X -= num5;
-                                rect.Y -= num5;
-                                rect.Width += num5 * 2;
-                                rect.Height += num5 * 2;
+                                int crawltipedeHitboxMod = 8;
+                                rect.X -= crawltipedeHitboxMod;
+                                rect.Y -= crawltipedeHitboxMod;
+                                rect.Width += crawltipedeHitboxMod * 2;
+                                rect.Height += crawltipedeHitboxMod * 2;
                                 stickingToNPC = projectile.Colliding(myRect, rect);
                             }
                             else
@@ -510,10 +509,6 @@ namespace CalamityMod
 
                                 projectile.netUpdate = true;
 
-                                //Set projectile damage to 0 if desired
-                                if (!constantDamage)
-                                    projectile.damage = 0;
-
                                 //Count how many projectiles are attached, delete as necessary
                                 Point[] array2 = new Point[maxStick];
                                 int projCount = 0;
@@ -531,15 +526,15 @@ namespace CalamityMod
                                 }
                                 if (projCount >= array2.Length)
                                 {
-                                    int num30 = 0;
+                                    int stuckProjAmt = 0;
                                     for (int m = 1; m < array2.Length; m++)
                                     {
-                                        if (array2[m].Y < array2[num30].Y)
+                                        if (array2[m].Y < array2[stuckProjAmt].Y)
                                         {
-                                            num30 = m;
+                                            stuckProjAmt = m;
                                         }
                                     }
-                                    Main.projectile[array2[num30].X].Kill();
+                                    Main.projectile[array2[stuckProjAmt].X].Kill();
                                 }
                             }
                         }

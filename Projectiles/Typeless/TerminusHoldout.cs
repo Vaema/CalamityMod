@@ -1,18 +1,20 @@
 ﻿using System;
 using CalamityMod.Events;
-using CalamityMod.World;
+using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Events;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
     public class TerminusHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Terminus>();
         public SlotId ActivationSoundSlot;
 
         public Player Owner => Main.player[Projectile.owner];
@@ -37,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             Time++;
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
             {
                 // Reset the boss rush timer to what it would normally be if disabling is done prematurely.
                 if (BossRushEvent.BossRushActive || BossRushEvent.StartTimer > 0)
@@ -159,7 +161,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = CalamityWorld.getFixedBoi ? ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/Terminus_GFB").Value : ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/Terminus_GFB").Value : Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * 0.5f;
             Color baseColor = Color.Lerp(Projectile.GetAlpha(lightColor), Color.White, Utils.GetLerpValue(40f, 120f, Time, true));

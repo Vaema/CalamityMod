@@ -1,13 +1,14 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.SlimeGod
@@ -15,10 +16,9 @@ namespace CalamityMod.NPCs.SlimeGod
     public class CrimsonSlimeSpawn2 : ModNPC
     {
         public float spikeTimer = 60f;
-
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.CrimsonSlimeSpawn.DisplayName");
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crimson Slime Spawn");
             Main.npcFrameCount[NPC.type] = 5;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
@@ -29,18 +29,18 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.GetNPCDamage();
             NPC.width = 40;
             NPC.height = 30;
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.scale = 2f;
+
             NPC.defense = 6;
-            NPC.lifeMax = 130;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax = 12000;
-            }
-            NPC.knockBackResist = 0f;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 12000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 260 : 130;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.knockBackResist = 0.7f;
             NPC.Opacity = 0.8f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
@@ -49,15 +49,14 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            int associatedNPCType = ModContent.NPCType<SplitCrimulanSlimeGod>();
+            int associatedNPCType = ModContent.NPCType<SplitCrimulanPaladin>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Embedded in these slime's bodies are shards of crimulan stone, which drip with a toxin meant to impair your vision.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CrimsonSlimeSpawn2")
             });
         }
 
@@ -97,17 +96,17 @@ namespace CalamityMod.NPCs.SlimeGod
 
             int type = ModContent.ProjectileType<CrimsonSpike>();
             int damage = NPC.GetProjectileDamage(type);
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
-                type = Main.rand.NextBool(2) ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
+                type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
             }
             if (!NPC.wet)
             {
-                Vector2 vector3 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                float num14 = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - vector3.X;
-                float num15 = Main.player[NPC.target].position.Y - vector3.Y;
-                float num16 = (float)Math.Sqrt((double)(num14 * num14 + num15 * num15));
-                if (Main.expertMode && num16 < 120f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height) && NPC.velocity.Y == 0f)
+                Vector2 faceDirection = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+                float targetX = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - faceDirection.X;
+                float targetY = Main.player[NPC.target].position.Y - faceDirection.Y;
+                float targetDistance = (float)Math.Sqrt((double)(targetX * targetX + targetY * targetY));
+                if (Main.expertMode && targetDistance < 120f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height) && NPC.velocity.Y == 0f)
                 {
                     NPC.ai[0] = -40f;
                     if (NPC.velocity.Y == 0f)
@@ -116,20 +115,20 @@ namespace CalamityMod.NPCs.SlimeGod
                     }
                     if (Main.netMode != NetmodeID.MultiplayerClient && spikeTimer == 0f)
                     {
-                        int projcount = CalamityWorld.getFixedBoi ? 12 : 5;
+                        int projcount = Main.zenithWorld ? 12 : 5;
                         for (int n = 0; n < projcount; n++)
                         {
-                            Vector2 vector4 = new Vector2((float)(n - 2), -4f);
-                            vector4.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                            vector4.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                            vector4.Normalize();
-                            vector4 *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vector3.X, vector3.Y, vector4.X, vector4.Y, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            Vector2 spikeDirection = new Vector2((float)(n - 2), -4f);
+                            spikeDirection.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
+                            spikeDirection.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
+                            spikeDirection.Normalize();
+                            spikeDirection *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), faceDirection.X, faceDirection.Y, spikeDirection.X, spikeDirection.Y, type, damage, 0f, Main.myPlayer, 0f, 0f);
                             spikeTimer = 30f;
                         }
                     }
                 }
-                else if (num16 < 360f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height) && NPC.velocity.Y == 0f)
+                else if (targetDistance < 360f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height) && NPC.velocity.Y == 0f)
                 {
                     NPC.ai[0] = -40f;
                     if (NPC.velocity.Y == 0f)
@@ -138,31 +137,31 @@ namespace CalamityMod.NPCs.SlimeGod
                     }
                     if (Main.netMode != NetmodeID.MultiplayerClient && spikeTimer == 0f)
                     {
-                        num15 = Main.player[NPC.target].position.Y - vector3.Y - (float)Main.rand.Next(0, 200);
-                        num16 = (float)Math.Sqrt((double)(num14 * num14 + num15 * num15));
-                        num16 = 6.5f / num16;
-                        num14 *= num16;
-                        num15 *= num16;
+                        targetY = Main.player[NPC.target].position.Y - faceDirection.Y - (float)Main.rand.Next(0, 200);
+                        targetDistance = (float)Math.Sqrt((double)(targetX * targetX + targetY * targetY));
+                        targetDistance = 6.5f / targetDistance;
+                        targetX *= targetDistance;
+                        targetY *= targetDistance;
                         spikeTimer = 50f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), vector3.X, vector3.Y, num14, num15, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), faceDirection.X, faceDirection.Y, targetX, targetY, type, damage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             Color dustColor = Color.Crimson;
             dustColor.A = 150;
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hitDirection, -1f, NPC.alpha, dustColor, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hitDirection, -1f, NPC.alpha, dustColor, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
                 }
             }
         }
@@ -176,15 +175,10 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Blindfold, 50);
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Darkness, 90, true);
-        }
-
-        public override Color? GetAlpha(Color drawColor)
-        {
-            return new Color(255, 255, 255, drawColor.A) * NPC.Opacity;
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Darkness, 90, true);
         }
     }
 }

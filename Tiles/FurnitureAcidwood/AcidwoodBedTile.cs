@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,19 +9,11 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
 {
     public class AcidwoodBedTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpBed();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Bed");
-            AddMapEntry(new Color(191, 142, 111), name);
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Beds };
-        }
+        public override void SetStaticDefaults() => this.SetUpBed(ModContent.ItemType<AcidwoodBed>());
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 7, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.WoodFurniture, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -32,11 +23,6 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 64, 32, ModContent.ItemType<AcidwoodBed>());
-        }
 
         public override bool RightClick(int i, int j) => CalamityUtils.BedRightClick(i, j);
 

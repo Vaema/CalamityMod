@@ -17,25 +17,25 @@ namespace CalamityMod.World
             string mapKey = MechanicShedKey;
             var schematic = TileMaps[mapKey];
 
-            int placementPositionX = WorldGen.genRand.Next(WorldGen.snowOriginLeft + 100, WorldGen.snowOriginRight - 100);
-            int placementPositionY = (int)Main.worldSurface - (Main.maxTilesY / 8);
+            int placementPositionX = WorldGen.genRand.Next(GenVars.snowOriginLeft + 100, GenVars.snowOriginRight - 100);
+            int placementPositionY = (int)Main.worldSurface - (Main.maxTilesY / 6);
 
             bool foundValidGround = false;
             int attempts = 0;
             while (!foundValidGround && attempts++ < 100000)
             {
                 while (!WorldGen.SolidTile(placementPositionX, placementPositionY) && placementPositionY <= Main.worldSurface)
-				{
+                {
                     placementPositionY++;
-				}
+                }
 
                 if (Main.tile[placementPositionX, placementPositionY].HasTile || Main.tile[placementPositionX, placementPositionY].WallType > 0)
-				{
+                {
                     foundValidGround = true;
-				}
+                }
             }
 
-            Point placementPoint = new Point(placementPositionX, placementPositionY + 6);
+            Point placementPoint = new Point(placementPositionX, placementPositionY + 5);
 
             Vector2 schematicSize = new Vector2(schematic.GetLength(0), schematic.GetLength(1));
             SchematicAnchor anchorType = SchematicAnchor.BottomCenter;
@@ -44,12 +44,12 @@ namespace CalamityMod.World
             PlaceSchematic(mapKey, placementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillMechanicChest));
 
             Rectangle protectionArea = CalamityUtils.GetSchematicProtectionArea(schematic, placementPoint, anchorType);
-            structures.AddProtectedStructure(protectionArea, 30);
+            CalamityUtils.AddProtectedStructure(protectionArea, 30);
         }
 
         public static void FillMechanicChest(Chest chest, int Type, bool place)
         {
-            int gizmoGoobabGadgets = Utils.SelectRandom(WorldGen.genRand, ItemID.Stopwatch, ItemID.LifeformAnalyzer, ItemID.DPSMeter);
+            int gizmoGoobabGadgets = Utils.SelectRandom(WorldGen.genRand, ItemID.BrickLayer, ItemID.ExtendoGrip, ItemID.PaintSprayer, ItemID.PortableCementMixer);
             List<ChestItem> contents = new List<ChestItem>()
             {
                 new ChestItem(ItemID.Toolbox, 1),
@@ -58,7 +58,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.BuilderPotion, WorldGen.genRand.Next(1, 3)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
             };
-            
+
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);

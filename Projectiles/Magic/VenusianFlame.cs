@@ -5,13 +5,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class VenusianFlame : ModProjectile
+    public class VenusianFlame : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private bool initialized = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Venusian Cinder");
             Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -107,8 +107,8 @@ namespace CalamityMod.Projectiles.Magic
             //Dust
             if (Main.rand.NextBool(4))
             {
-                int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1f);
-                Dust dust = Main.dust[num199];
+                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
+                Dust dust = Main.dust[venusDust];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
                 dust.scale += (float)Main.rand.Next(50) * 0.01f;
@@ -117,8 +117,8 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(10))
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1f);
-                Dust dust2 = Main.dust[num200];
+                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
+                Dust dust2 = Main.dust[venusDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
                 dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Daybreak, 150);
         }

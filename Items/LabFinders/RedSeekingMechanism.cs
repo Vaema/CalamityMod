@@ -8,15 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.LabFinders
 {
-    public class RedSeekingMechanism : ModItem
+    public class RedSeekingMechanism : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Red Seeking Mechanism");
-            Tooltip.SetDefault("Moves swiftly towards a lab within the underworld");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 24;

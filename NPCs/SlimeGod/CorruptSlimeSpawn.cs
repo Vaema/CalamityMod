@@ -13,9 +13,11 @@ namespace CalamityMod.NPCs.SlimeGod
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Corrupt Slime Spawn");
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
+            value.PortraitPositionYOverride = -32f;
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
         public override void SetDefaults()
@@ -24,40 +26,43 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.GetNPCDamage();
             NPC.width = 40;
             NPC.height = 30;
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.scale = 2f;
+
             NPC.defense = 6;
-            NPC.lifeMax = 180;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax = 10000;
-            }
-            NPC.knockBackResist = 0f;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 360 : 180;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.knockBackResist = 0.7f;
             AnimationType = 121;
             NPC.Opacity = 0.8f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            int associatedNPCType = ModContent.NPCType<SplitEbonianSlimeGod>();
+            int associatedNPCType = ModContent.NPCType<SplitEbonianPaladin>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("They rapidly flap their wings, created from membranes of gel and spines of hardened slime. They will incessantly hunt you down.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CorruptSlimeSpawn")
             });
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode != NetmodeID.MultiplayerClient && NPC.life <= 0)
             {
@@ -69,12 +74,12 @@ namespace CalamityMod.NPCs.SlimeGod
             dustColor.A = 150;
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hitDirection, -1f, NPC.alpha, dustColor, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
             }
         }
         public override void OnKill()
         {
-            if (CalamityWorld.getFixedBoi && Main.netMode != NetmodeID.MultiplayerClient)
+            if (Main.zenithWorld && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
                 int damage = NPC.GetProjectileDamage(type);
@@ -82,15 +87,10 @@ namespace CalamityMod.NPCs.SlimeGod
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Weak, 90, true);
-        }
-
-        public override Color? GetAlpha(Color drawColor)
-        {
-            return new Color(255, 255, 255, drawColor.A) * NPC.Opacity;
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Weak, 90, true);
         }
     }
 }

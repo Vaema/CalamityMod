@@ -1,19 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class ChaoticGeyser : ModProjectile
+    public class ChaoticGeyser : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Chaotic Geyser");
-        }
 
         public override void SetDefaults()
         {
@@ -27,17 +23,12 @@ namespace CalamityMod.Projectiles.Typeless
         }
 
         // Reduce damage of projectiles if more than the cap are active
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            int projectileCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
             int cap = 3;
-            int oldDamage = damage;
-            if (projectileCount > cap)
-            {
-                damage -= (int)(oldDamage * ((projectileCount - cap) * 0.05));
-                if (damage < 1)
-                    damage = 1;
-            }
+            float capDamageFactor = 0.05f;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
         }
 
         public override void AI()
@@ -75,17 +66,17 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 1f);
-            Dust dust = Main.dust[num199];
+            int flareDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1f);
+            Dust dust = Main.dust[flareDust];
             dust.position.X -= 2f;
             dust.position.Y += 2f;
             dust.scale += (float)Main.rand.Next(50) * 0.01f;
             dust.noGravity = true;
             dust.velocity.Y -= 16f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 1f);
-                Dust dust2 = Main.dust[num200];
+                int flareDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1f);
+                Dust dust2 = Main.dust[flareDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
                 dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
@@ -105,14 +96,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire3, 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire3, 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 180);
     }
 }

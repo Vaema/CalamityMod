@@ -7,20 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class BloodflareCuisses : ModItem
+    public class BloodflareCuisses : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Cuisses");
-            Tooltip.SetDefault("17% increased movement speed, 10% increased damage and 7% increased critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 29;
             Item.rare = ModContent.RarityType<PureGreen>();
         }

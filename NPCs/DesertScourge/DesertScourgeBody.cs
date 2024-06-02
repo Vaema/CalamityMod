@@ -1,30 +1,53 @@
 ﻿using CalamityMod.Events;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using System;
+using System.IO;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DesertScourge
 {
     public class DesertScourgeBody : ModNPC
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DesertScourgeHead.DisplayName");
+
+        public static Asset<Texture2D> BodyTexture2;
+        public static Asset<Texture2D> BodyTexture3;
+        public static Asset<Texture2D> BodyTexture4;
+
+        private const int ClosedFinFrame = 5;
+
         public override void SetStaticDefaults()
         {
+            Main.npcFrameCount[NPC.type] = 7;
+
             this.HideFromBestiary();
-            DisplayName.SetDefault("Desert Scourge");
+
+            if (!Main.dedServ)
+            {
+                BodyTexture2 = ModContent.Request<Texture2D>(Texture + "2", AssetRequestMode.AsyncLoad);
+                BodyTexture3 = ModContent.Request<Texture2D>(Texture + "3", AssetRequestMode.AsyncLoad);
+                BodyTexture4 = ModContent.Request<Texture2D>(Texture + "4", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.GetNPCDamage();
-            NPC.width = 32;
-            NPC.height = 36;
+            NPC.width = 104;
+            NPC.height = 104;
             NPC.defense = 6;
             NPC.DR_NERD(0.05f);
 
-            NPC.LifeMaxNERB(2500, 3000, 1650000);
+            NPC.LifeMaxNERB(4200, 5000, 1650000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
 
@@ -38,20 +61,10 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.netAlways = true;
             NPC.dontCountMe = true;
-
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
-                NPC.scale *= 1.2f;
-            else if (CalamityWorld.revenge)
-                NPC.scale *= 1.15f;
-            else if (Main.expertMode)
-                NPC.scale *= 1.1f;
 
             if (Main.getGoodWorld)
                 NPC.scale *= 0.4f;
@@ -61,28 +74,98 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
+
+        public override void SendExtraAI(BinaryWriter writer)
         {
-            return false;
+            writer.Write(NPC.alpha);
+            writer.Write(NPC.dontTakeDamage);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.alpha = reader.ReadInt32();
+            NPC.dontTakeDamage = reader.ReadBoolean();
         }
 
         public override void AI()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
+
+            if (NPC.ai[3] > 0f)
+            {
+                switch ((int)NPC.ai[3])
+                {
+                    default:
+                        break;
+
+                    case 10:
+
+                        NPC.ai[3] = 1f;
+
+                        NPC.position = NPC.Center;
+                        NPC.position -= NPC.Size * 0.5f;
+                        NPC.frame = new Rectangle(0, 0, BodyTexture2 is null ? 0 : BodyTexture2.Width(), BodyTexture2 is null ? 0 : BodyTexture2.Height());
+
+                        NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        NPC.netSpam = 0;
+
+                        break;
+
+                    case 20:
+
+                        NPC.ai[3] = 2f;
+
+                        NPC.position = NPC.Center;
+                        NPC.position -= NPC.Size * 0.5f;
+                        NPC.frame = new Rectangle(0, 0, BodyTexture3 is null ? 0 : BodyTexture3.Width(), BodyTexture3 is null ? 0 : BodyTexture3.Height());
+
+                        NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        NPC.netSpam = 0;
+
+                        break;
+
+                    case 30:
+
+                        NPC.ai[3] = 3f;
+
+                        NPC.position = NPC.Center;
+                        NPC.position -= NPC.Size * 0.5f;
+                        NPC.frame = new Rectangle(0, 0, BodyTexture4 is null ? 0 : BodyTexture4.Width(), BodyTexture4 is null ? 0 : BodyTexture4.Height());
+
+                        NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        NPC.netSpam = 0;
+
+                        break;
+                }
+            }
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
+
+            if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
+                NPC.life = Main.npc[(int)NPC.ai[1]].life;
+
+            NPC.dontTakeDamage = Main.npc[(int)NPC.ai[1]].dontTakeDamage;
+
+            // Percent life remaining
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+
+            // Phases
+            bool phase2 = lifeRatio < 0.5f;
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<DesertScourgeHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<DesertScourgeHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -104,75 +187,196 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
             }
+            else
+            {
+                NPC.alpha = Main.npc[(int)NPC.ai[1]].alpha;
+                if (NPC.alpha != 255 && NPC.dontTakeDamage)
+                {
+                    for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.UnusedBrown, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].noLight = true;
+                    }
+                }
+            }
 
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
 
-            Vector2 vector18 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float num191 = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float num192 = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
-            num191 = (float)((int)(num191 / 16f) * 16);
-            num192 = (float)((int)(num192 / 16f) * 16);
-            vector18.X = (float)((int)(vector18.X / 16f) * 16);
-            vector18.Y = (float)((int)(vector18.Y / 16f) * 16);
-            num191 -= vector18.X;
-            num192 -= vector18.Y;
-            float num193 = (float)System.Math.Sqrt((double)(num191 * num191 + num192 * num192));
-            if (NPC.ai[1] > 0f && NPC.ai[1] < (float)Main.npc.Length)
+            NPC aheadSegment = Main.npc[(int)NPC.ai[1]];
+            Vector2 directionToNextSegment = aheadSegment.Center - NPC.Center;
+            if (aheadSegment.rotation != NPC.rotation)
             {
-                try
-                {
-                    vector18 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    num191 = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - vector18.X;
-                    num192 = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - vector18.Y;
-                }
-                catch
-                {
-                }
-                NPC.rotation = (float)System.Math.Atan2((double)num192, (double)num191) + 1.57f;
-                num193 = (float)System.Math.Sqrt((double)(num191 * num191 + num192 * num192));
-                int num194 = NPC.width;
-                num193 = (num193 - (float)num194) / num193;
-                num191 *= num193;
-                num192 *= num193;
-                NPC.velocity = Vector2.Zero;
-                NPC.position.X = NPC.position.X + num191;
-                NPC.position.Y = NPC.position.Y + num192;
+                directionToNextSegment = directionToNextSegment.RotatedBy(MathHelper.WrapAngle(aheadSegment.rotation - NPC.rotation) * 0.08f);
+                directionToNextSegment = directionToNextSegment.MoveTowards((aheadSegment.rotation - NPC.rotation).ToRotationVector2(), 1f);
+            }
 
-                if (num191 < 0f)
-                    NPC.spriteDirection = 1;
-                else if (num191 > 0f)
-                    NPC.spriteDirection = -1;
+            // Decide segment offset stuff.
+            int segmentOffset = 70;
+            NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
+            NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * segmentOffset;
+            NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
+
+            NPC head = Main.npc[(int)NPC.ai[2]];
+            float burrowTimeGateValue = DesertScourgeHead.BurrowTimeGateValue;
+            bool burrow = head.Calamity().newAI[0] >= burrowTimeGateValue;
+            bool lungeUpward = burrow && head.Calamity().newAI[1] == 1f;
+            bool quickFall = head.Calamity().newAI[1] == 2f;
+
+            // Calculate contact damage based on velocity
+            float maxChaseSpeed = Main.zenithWorld ? DesertScourgeHead.SegmentVelocity_ZenithSeed :
+                Main.getGoodWorld ? DesertScourgeHead.SegmentVelocity_GoodWorld :
+                masterMode ? DesertScourgeHead.SegmentVelocity_Master :
+                expertMode ? DesertScourgeHead.SegmentVelocity_Expert :
+                DesertScourgeHead.SegmentVelocity_Normal;
+            if (burrow || lungeUpward)
+                maxChaseSpeed *= 1.5f;
+            if (expertMode)
+                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
+
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity || NPC.dontTakeDamage)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
-        public override bool CheckActive()
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return false;
+            Rectangle targetHitbox = target.Hitbox;
+
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
+
+            float hitDistance = 30f;
+            switch ((int)NPC.ai[3])
+            {
+                default:
+                case 1:
+                case 10:
+                    hitDistance = 45f;
+                    break;
+
+                case 2:
+                case 20:
+                    hitDistance = 45f;
+                    break;
+
+                case 3:
+                case 30:
+                    hitDistance = 30f;
+                    break;
+            }
+
+            return minDist <= hitDistance * NPC.scale && NPC.alpha <= 0;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void FindFrame(int frameHeight)
+        {
+            // Fin animation segment.
+            if (NPC.ai[3] == 0f)
+            {
+                // Close fins while head is in tiles.
+                NPC head = Main.npc[(int)NPC.ai[2]];
+                Point headTileCenter = head.Center.ToTileCoordinates();
+                Tile tileSafely = Framing.GetTileSafely(headTileCenter);
+                bool headInSolidTile = tileSafely.HasUnactuatedTile || tileSafely.LiquidAmount > 0;
+                if (headInSolidTile)
+                {
+                    NPC.frameCounter += 1D;
+                    if (NPC.frameCounter > 10D)
+                    {
+                        NPC.frame.Y += frameHeight;
+                        NPC.frameCounter = 0D;
+                    }
+                    if (NPC.frame.Y >= frameHeight * ClosedFinFrame)
+                        NPC.frame.Y = frameHeight * ClosedFinFrame;
+                }
+
+                // Open fins while head is outside tiles.
+                else
+                {
+                    if (NPC.frame.Y > 0)
+                    {
+                        NPC.frameCounter += 1D;
+                        if (NPC.frameCounter > 10D)
+                        {
+                            NPC.frame.Y += frameHeight;
+                            NPC.frameCounter = 0D;
+                        }
+                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                            NPC.frame.Y = 0;
+                    }
+                }
+            }
+        }
+
+        public override bool CheckActive() => false;
+
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    float randomSpread = Main.rand.Next(-200, 201) / 100f;
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("ScourgeBody").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("ScourgeBody2").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("ScourgeBody3").Type, NPC.scale);
+                    switch ((int)NPC.ai[3])
+                    {
+                        default:
+                        case 0:
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody2").Type, NPC.scale);
+                            break;
+
+                        case 1:
+                        case 10:
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody2").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody3").Type, NPC.scale);
+                            break;
+
+                        case 2:
+                        case 20:
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody2").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody4").Type, NPC.scale);
+                            break;
+
+                        case 3:
+                        case 30:
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody2").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeBody5").Type, NPC.scale);
+                            break;
+                    }
                 }
+
                 for (int k = 0; k < 10; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
-        public override void OnHitByProjectile(Projectile projectile, int damage, float knockback, bool crit)
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             // Sometimes "Deflect" projectiles in gfb into water blasts.
-            if (Main.rand.NextBool(20) && CalamityWorld.getFixedBoi)
+            if (Main.rand.NextBool(20) && Main.zenithWorld)
             {
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -183,25 +387,65 @@ namespace CalamityMod.NPCs.DesertScourge
             }
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * bossLifeScale);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Bleeding, 240, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Bleeding, 240);
         }
 
         public override Color? GetAlpha(Color drawColor)
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 Color lightColor = Color.MediumBlue * drawColor.A;
                 return lightColor * NPC.Opacity;
             }
             else return null;
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.ai[3] > 0f)
+            {
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (NPC.spriteDirection == 1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Texture2D texture = default;
+                switch ((int)NPC.ai[3])
+                {
+                    default:
+                    case 1:
+                    case 10:
+                        texture = BodyTexture2.Value;
+                        break;
+
+                    case 2:
+                    case 20:
+                        texture = BodyTexture3.Value;
+                        break;
+
+                    case 3:
+                    case 30:
+                        texture = BodyTexture4.Value;
+                        break;
+                }
+
+                Vector2 halfSizeTexture = new Vector2((float)(texture.Width / 2), (float)(texture.Height / 2));
+                Vector2 drawLocation = NPC.Center - screenPos;
+                drawLocation -= new Vector2((float)texture.Width, (float)(texture.Height)) * NPC.scale / 2f;
+                drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(texture, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+                return false;
+            }
+
+            return true;
         }
     }
 }

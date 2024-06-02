@@ -1,19 +1,20 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class AdamAcceleratorBeam : ModProjectile
+    public class AdamAcceleratorBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         private const int Lifetime = 24;
 
         private const float MaxBeamScale = 1.2f;
@@ -37,11 +38,6 @@ namespace CalamityMod.Projectiles.Ranged
         private Vector2 beamVector = Vector2.Zero;
         public ref float polarity => ref Projectile.ai[1];
         public Player Owner => Main.player[Projectile.owner];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Adamantite Particle Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -142,22 +138,21 @@ namespace CalamityMod.Projectiles.Ranged
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + beamVector * Projectile.ai[0], BeamHitboxCollisionWidth * Projectile.scale, ref _);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.PolarityNPC().applyPolarity(polarity, target); //applies a positive or negative polarity on the target for 120 frames
         }
 
-        
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Ensure that the hit direction is correct when hitting enemies.
-            hitDirection = (Projectile.Center.X < target.Center.X).ToDirectionInt();
+            modifiers.HitDirectionOverride = (Projectile.Center.X < target.Center.X).ToDirectionInt();
             float targetPolarity = target.PolarityNPC().CurPolarity;
             //If a polarity beam hits the target with the opposite polarity, the damage dealt increases by 20%
             if (polarity * targetPolarity < 0)
             {
-                double newDamage = damage * 1.2;
-                damage = (int)newDamage;
+                modifiers.SourceDamage *= 1.2f;
 
                 for (int i = 0; i < 4; i++)
                 {
@@ -186,7 +181,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (beamVector == Vector2.Zero || Projectile.velocity != Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + beamVector * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

@@ -1,19 +1,15 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class NanoPurgeLaser : ModProjectile
+    public class NanoPurgeLaser : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const float LaserLength = 40f;
         private const float LaserLengthChangeRate = 1.5f;
 
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nano Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -61,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(LaserLength, 2f, lightColor);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustID = 107;
             int dustAmt = Main.rand.Next(3, 7);

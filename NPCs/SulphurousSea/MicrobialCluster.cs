@@ -13,7 +13,6 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Microbial Cluster");
         }
 
         public override void SetDefaults()
@@ -51,7 +50,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             }
             if (NPC.ai[0] % 32f == 31f)
             {
-                Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(1f, 2f);
                 dust.noGravity = true;
                 dust.scale = 1.6f;
@@ -60,13 +59,13 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo) => spawnInfo.Player.InSulphur() && spawnInfo.Water ? 0.4f : 0f;
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 6; k++)
                 {
-                    Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(1f, 2f);
                     dust.scale = 1.2f;
                 }

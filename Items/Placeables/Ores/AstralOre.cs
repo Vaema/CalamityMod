@@ -1,20 +1,22 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Ores
 {
-    public class AstralOre : ModItem
+    public class AstralOre : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Astral Ore");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
+            Item.ResearchUnlockCount = 100;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
         }
 
         public override void SetDefaults()
         {
+            Item.width = 22;
+            Item.height = 22;
             Item.createTile = ModContent.TileType<Tiles.Ores.AstralOre>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -22,9 +24,7 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 22;
-            Item.height = 22;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 36);
             Item.rare = ItemRarityID.Cyan;
         }

@@ -11,19 +11,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class IceBarrage : ModItem
+    public class IceBarrage : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle CastSound = new("CalamityMod/Sounds/Item/IceBarrageCast");
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ice Barrage");
-            Tooltip.SetDefault("Oh dear, you are dead!\n" +
-                "Casts a deadly and powerful ice spell in the location of the cursor\n" +
-                "This ice spell locks itself to the position of nearby enemies\n" +
-                "Consumes 2 Blood Runes every time it's used");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -35,15 +26,15 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.UseSound = CastSound;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 
             Item.damage = 2250;
             Item.knockBack = 6f;
-            Item.useTime = 300;
-            Item.useAnimation = 300;
+            Item.useTime = Item.useAnimation = 300;
             Item.reuseDelay = 60;
+            Item.useLimitPerAnimation = 1;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
             Item.shootSpeed = 2f;
             Item.useAmmo = ModContent.ItemType<BloodRune>();
@@ -55,10 +46,10 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            vector2.X = Main.mouseX + Main.screenPosition.X;
-            vector2.Y = Main.mouseY + Main.screenPosition.Y;
-            Projectile.NewProjectile(source, vector2, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+            realPlayerPos.X = Main.mouseX + Main.screenPosition.X;
+            realPlayerPos.Y = Main.mouseY + Main.screenPosition.Y;
+            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
 
             CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 2);
 

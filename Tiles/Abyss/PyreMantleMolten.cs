@@ -1,10 +1,11 @@
-﻿using CalamityMod.Tiles.Abyss.AbyssAmbient;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria.Audio;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,6 +15,7 @@ namespace CalamityMod.Tiles.Abyss
     {
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
         internal static Texture2D GlowTexture;
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
@@ -31,15 +33,17 @@ namespace CalamityMod.Tiles.Abyss
             HitSound = MineSound;
             MineResist = 10f;
             MinPick = 180;
-            ItemDrop = ModContent.ItemType<Items.Placeables.PyreMantleMolten>();
             AddMapEntry(new Color(113, 49, 16));
-        }
 
-        int animationFrameWidth = 288;
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<PyreMantle>(), "CalamityMod/Tiles/Merges/PyreMantleMerge");
+        }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 162, 0f, 0f, 1, new Color(128, 128, 128), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.HeatRay, 0f, 0f, 1, new Color(128, 128, 128), 1f);
             return false;
         }
 
@@ -54,21 +58,19 @@ namespace CalamityMod.Tiles.Abyss
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
 
-            //place PhoviamareHalm
-            if (WorldGen.genRand.Next(12) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            // Place PhoviamareHalm
+            if (WorldGen.genRand.NextBool(12) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<PhoviamareHalm>();
                 up.HasTile = true;
                 up.TileFrameY = 0;
 
-                //16 different frames, choose a random one
+                // 16 different frames, choose a random one
                 up.TileFrameX = (short)(WorldGen.genRand.Next(16) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server) 
-                {
+                if (Main.netMode == NetmodeID.Server)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
-                }
             }
         }
 
@@ -76,6 +78,7 @@ namespace CalamityMod.Tiles.Abyss
         {
             if (GlowTexture is null)
                 return;
+
             int xPos = Main.tile[i, j].TileFrameX;
             int yPos = Main.tile[i, j].TileFrameY;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -87,34 +90,23 @@ namespace CalamityMod.Tiles.Abyss
             glowbrightness *= (float)MathF.Sin(i / 60f + glowspeed);
             drawColour *= glowbrightness;
             double num6 = Main.time * 0.08;
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
-            {
-                Main.spriteBatch.Draw(GlowTexture, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            else if (trackTile.IsHalfBlock)
-            {
-                Main.spriteBatch.Draw(GlowTexture, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
+
+            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
             glowbrightness += 0.3f;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.7f;
             float lightspeed = Main.GameUpdateCount * 0.01f;
             brightness *= (float)MathF.Sin(i / 60f + lightspeed);
             brightness += 0.3f;
-            r = 255f / 255f;
-            g = 83f / 255f;
-            b = 0f; // 255f;
+            r = 1f;
+            g = 0.33f;
+            b = 0f;
             r *= brightness;
             g *= brightness;
             b *= brightness;
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<PyreMantle>(), false, false, false, false, resetFrame);
-            return false;
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

@@ -9,11 +9,9 @@ namespace CalamityMod.Buffs.Summon
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Puff Warrior");
-            Description.SetDefault("It confidently and excitedly protects you");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
-		}
+        }
 
         public override void Update(Player player, ref int buffIndex)
         {

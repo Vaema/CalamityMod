@@ -6,22 +6,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class ElysianArrow : ModItem
+    public class ElysianArrow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Elysian Arrow");
-            Tooltip.SetDefault("Summons meteors from the sky on death");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 20;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 22;
             Item.height = 36;
-            Item.maxStack = 999;
+            Item.damage = 17;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.value = Item.sellPrice(copper: 24);

@@ -1,20 +1,17 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class SubmarineShockerProj: BaseShortswordProjectile
+    public class SubmarineShockerProj : BaseShortswordProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<SubmarineShocker>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/SubmarineShocker";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Submarine Shocker");
-        }
 
         public override void SetDefaults()
         {
@@ -28,6 +25,8 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.timeLeft = 360;
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void SetVisualOffsets()
@@ -49,20 +48,16 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Electric);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             var source = Projectile.GetSource_FromThis();
-            if (crit)
-                damage /= 2;
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(damage * 0.7f), knockback, Main.myPlayer);
+            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             var source = Projectile.GetSource_FromThis();
-            if (crit)
-                damage /= 2;
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(damage * 0.7f), Projectile.knockBack, Main.myPlayer);
+            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
         }
     }
 }

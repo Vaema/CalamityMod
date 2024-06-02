@@ -6,14 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class CoreofCalamity : ModItem
+    public class CoreofCalamity : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
+            Item.ResearchUnlockCount = 25;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
 
-            DisplayName.SetDefault("Core of Calamity");
             ItemID.Sets.SortingPriorityMaterials[Type] = 94; // Spectre Bar
         }
 
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 36;
             Item.height = 36;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 4);
             Item.rare = ItemRarityID.Yellow;
         }

@@ -1,17 +1,12 @@
-using CalamityMod.Rarities;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
 {
-    public class SacrilegiousWorkBench : ModItem
+    public class SacrilegiousWorkBench : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sacrilegious Work Bench");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -24,12 +19,14 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<SacrilegiousWorkBenchTile>();
-            Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<OccultBrickItem>(), 10).Register();
+            CreateRecipe().
+                AddIngredient<OccultBrickItem>(10).
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

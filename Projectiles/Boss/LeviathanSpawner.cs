@@ -1,6 +1,6 @@
-﻿using CalamityMod.World;
+﻿using System;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Shaders;
@@ -12,15 +12,15 @@ using LeviathanNPC = CalamityMod.NPCs.Leviathan.Leviathan;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class LeviathanSpawner : ModProjectile
+    public class LeviathanSpawner : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         internal ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public static readonly SoundStyle RumbleSound = new("CalamityMod/Sounds/Custom/LeviathanRumble");
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spawner");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 

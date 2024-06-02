@@ -9,18 +9,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class ParasiticSceptor : ModItem
+    public class ParasiticSceptor : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Parasitic Scepter");
-            Tooltip.SetDefault("Fires a spread of water leeches that latch onto enemies, dealing a stacking damage over time");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 52;
             Item.damage = 12;
             Item.knockBack = 3f;
             Item.mana = 10;
@@ -30,15 +29,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<WaterLeechProj>();
 
-            Item.width = Item.height = 52;
             Item.UseSound = SoundID.Item46;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float speed = Item.shootSpeed;
@@ -74,7 +72,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             if (Main.rand.NextBool(5))
             {
-                leechAmt ++;
+                leechAmt++;
             }
             for (int i = 0; i < leechAmt; i++)
             {

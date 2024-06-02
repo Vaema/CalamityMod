@@ -1,20 +1,20 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ShatteredSunKnife : ModProjectile
+    public class ShatteredSunKnife : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ShatteredSun";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shattered Sun");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -66,55 +66,54 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
                     Projectile.active = false;
-                    for (int num621 = 0; num621 < 8; num621++)
+                    for (int j = 0; j < 8; j++)
                     {
-                        int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 2f);
-                        Main.dust[num622].velocity *= 3f;
-                        if (Main.rand.NextBool(2))
+                        int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
+                        Main.dust[dusty].velocity *= 3f;
+                        if (Main.rand.NextBool())
                         {
-                            Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                            Main.dust[dusty].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                         }
                     }
-                    for (int num623 = 0; num623 < 16; num623++)
+                    for (int k = 0; k < 16; k++)
                     {
-                        int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 3f);
-                        Main.dust[num624].noGravity = true;
-                        Main.dust[num624].velocity *= 5f;
-                        num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 2f);
-                        Main.dust[num624].velocity *= 2f;
+                        int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 3f);
+                        Main.dust[dusty2].noGravity = true;
+                        Main.dust[dusty2].velocity *= 5f;
+                        dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
+                        Main.dust[dusty2].velocity *= 2f;
                     }
                 }
             }
 
             if (Projectile.Calamity().stealthStrike)
             {
-                float num472 = Projectile.Center.X;
-                float num473 = Projectile.Center.Y;
-                float num474 = 600f;
-                for (int num475 = 0; num475 < Main.maxNPCs; num475++)
+                float projX = Projectile.Center.X;
+                float projY = Projectile.Center.Y;
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[num475].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[num475].Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                    if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
                     {
-                        float npcCenterX = Main.npc[num475].position.X + (float)(Main.npc[num475].width / 2);
-                        float npcCenterY = Main.npc[num475].position.Y + (float)(Main.npc[num475].height / 2);
-                        float num478 = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
-                        if (num478 < num474)
+                        float npcCenterX = n.position.X + (float)(n.width / 2);
+                        float npcCenterY = n.position.Y + (float)(n.height / 2);
+                        float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
+                        if (targetDist < 600f)
                         {
-                            if (Main.npc[num475].position.X < num472)
+                            if (n.position.X < projX)
                             {
-                                Main.npc[num475].velocity.X += 0.25f;
+                                n.velocity.X += 0.25f;
                             }
                             else
                             {
-                                Main.npc[num475].velocity.X -= 0.25f;
+                                n.velocity.X -= 0.25f;
                             }
-                            if (Main.npc[num475].position.Y < num473)
+                            if (n.position.Y < projY)
                             {
-                                Main.npc[num475].velocity.Y += 0.25f;
+                                n.velocity.Y += 0.25f;
                             }
                             else
                             {
-                                Main.npc[num475].velocity.Y -= 0.25f;
+                                n.velocity.Y -= 0.25f;
                             }
                         }
                     }
@@ -137,9 +136,9 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => ShatteredExplosion();
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShatteredExplosion();
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => ShatteredExplosion();
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShatteredExplosion();
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -147,12 +146,12 @@ namespace CalamityMod.Projectiles.Rogue
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 246, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GoldCoin, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 1f);
             }
         }
     }

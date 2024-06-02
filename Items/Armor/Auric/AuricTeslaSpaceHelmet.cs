@@ -14,20 +14,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaSpaceHelmet : ModItem
+    public class AuricTeslaSpaceHelmet : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Tesla Space Helmet");
-            Tooltip.SetDefault("15% increased minion damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 12; //132
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -39,15 +33,12 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void ArmorSetShadows(Player player)
         {
-            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawOutlines = true;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Summoner Tarragon, Bloodflare and Silva armor effects\n" +
-                "All projectiles spawn healing auric orbs on enemy hits\n" +
-                "Max run speed and acceleration boosted by 5%\n" +
-                "+6 max minions and 75% increased minion damage";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraSummon = true;
@@ -58,7 +49,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.auricSet = true;
             modPlayer.WearingPostMLSummonerSet = true;
             player.thorns += 3f;
-            player.lavaMax += 240;
             player.ignoreWater = true;
             player.crimsonRegen = true;
             player.GetDamage<SummonDamageClass>() += 0.75f;
@@ -72,10 +62,10 @@ namespace CalamityMod.Items.Armor.Auric
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(1200);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(750);
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 1200;
+                        Main.projectile[p].originalDamage = 750;
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,8 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SolarElementalBeam : BaseLaserbeamProjectile
+    public class SolarElementalBeam : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override float MaxScale => 1f;
         public override float MaxLaserLength => 1000f;
         public override float Lifetime => 30f;
@@ -17,11 +19,6 @@ namespace CalamityMod.Projectiles.Magic
         public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayStart", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayMid", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayEnd", AssetRequestMode.ImmediateLoad).Value;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -70,11 +67,12 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
             int type = ModContent.ProjectileType<FuckYou>();
-            int boomDamage = (int)(damage * 1.1);
-            int boom = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, type, boomDamage, knockback, Projectile.owner, 0f, Main.rand.NextFloat(0.85f, 2f));
+            int boomDamage = (int)(hit.Damage * 1.1);
+            int boom = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, type, boomDamage, hit.Knockback, Projectile.owner, 0f, Main.rand.NextFloat(0.85f, 2f));
             Main.projectile[boom].DamageType = DamageClass.Magic;
         }
     }

@@ -1,17 +1,15 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
-    public class EldritchTentacle : ModProjectile
+    public class EldritchTentacle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tentacle");
-        }
 
         public override void SetDefaults()
         {
@@ -21,6 +19,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = 2;
             Projectile.MaxUpdates = 3;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -47,12 +47,12 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.Kill();
                 }
             }
-            Vector2 center10 = Projectile.Center;
+            Vector2 projCenter = Projectile.Center;
             Projectile.scale = 1f - Projectile.localAI[0];
             Projectile.width = (int)(20f * Projectile.scale);
             Projectile.height = Projectile.width;
-            Projectile.position.X = center10.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = center10.Y - (float)(Projectile.height / 2);
+            Projectile.position.X = projCenter.X - (float)(Projectile.width / 2);
+            Projectile.position.Y = projCenter.Y - (float)(Projectile.height / 2);
             if ((double)Projectile.localAI[0] < 0.1)
             {
                 Projectile.localAI[0] += 0.01f;
@@ -76,17 +76,17 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ai[1] *= 1.05f;
             if (Projectile.scale < 1f)
             {
-                int num897 = 0;
-                while ((float)num897 < Projectile.scale * 10f)
+                int scaleLoopCheck = 0;
+                while ((float)scaleLoopCheck < Projectile.scale * 10f)
                 {
-                    int num898 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 60, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
-                    Main.dust[num898].position = (Main.dust[num898].position + Projectile.Center) / 2f;
-                    Main.dust[num898].noGravity = true;
-                    Main.dust[num898].velocity *= 0.1f;
-                    Main.dust[num898].velocity -= Projectile.velocity * (1.3f - Projectile.scale);
-                    Main.dust[num898].fadeIn = (float)(100 + Projectile.owner);
-                    Main.dust[num898].scale += Projectile.scale * 0.75f;
-                    num897++;
+                    int eldritchRed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
+                    Main.dust[eldritchRed].position = (Main.dust[eldritchRed].position + Projectile.Center) / 2f;
+                    Main.dust[eldritchRed].noGravity = true;
+                    Main.dust[eldritchRed].velocity *= 0.1f;
+                    Main.dust[eldritchRed].velocity -= Projectile.velocity * (1.3f - Projectile.scale);
+                    Main.dust[eldritchRed].fadeIn = (float)(100 + Projectile.owner);
+                    Main.dust[eldritchRed].scale += Projectile.scale * 0.75f;
+                    scaleLoopCheck++;
                 }
             }
         }

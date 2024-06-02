@@ -1,20 +1,20 @@
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class MaulerAcidBubble : ModProjectile
+    public class MaulerAcidBubble : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Projectiles/Enemy/SulphuricAcidBubble";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Acid Bubble");
             Main.projFrames[Projectile.type] = 7;
         }
 
@@ -55,24 +55,24 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.localAI[1] < 1f)
+            if (info.Damage <= 0 || Projectile.localAI[1] < 1f)
                 return;
 
             target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item54, Projectile.Center);
         }
     }
 }

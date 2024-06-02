@@ -3,16 +3,21 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class PwnagehammerEcho : ModProjectile
+    public class PwnagehammerEcho : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
+        public static readonly SoundStyle BigSound = new("CalamityMod/Sounds/Item/PwnagehammerBigImpact") { Volume = 0.6f };
+        public static readonly SoundStyle Kunk = new("CalamityMod/Sounds/Item/TF2PanHit") { Volume = 1.1f };
+        public int Explodamage = 0;
+        public float speed = 0f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pwnagehammer Echo");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -30,16 +35,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.localAI[0]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.localAI[0] = reader.ReadSingle();
-        }
-
         public override Color? GetAlpha(Color lightColor)
         {
             return new Color(255, 248, 124, 255);
@@ -47,7 +42,12 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            speed = Projectile.velocity.Length();
             Projectile.ai[0] += 1f;
+            if (Projectile.ai[0] > 55f)
+            {
+                CalamityUtils.HomeInOnNPC(Projectile, Projectile.tileCollide, 2000f, speed, 12f);
+            }
             if (Projectile.ai[0] < 42f)
             {
                 Projectile.velocity.Y *= 0.9575f;
@@ -55,6 +55,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (Projectile.ai[0] < 44f)
             {
+                Projectile.extraUpdates = 2;
                 if (Projectile.ai[1] < 0f)
                 {
                     Projectile.Kill();
@@ -66,17 +67,17 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.Kill();
                 else
                 {
-                    float velConst = 3f;
+                    float velConst = 24f;
                     Projectile.velocity = new Vector2((target.Center.X - Projectile.Center.X) / velConst, (target.Center.Y - Projectile.Center.Y) / velConst);
                     Projectile.rotation += MathHelper.ToRadians(48f) * Projectile.localAI[0];
                 }
             }
 
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
                 dust.noGravity = true;
             }
 
@@ -84,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
                 dust.noGravity = true;
             }
         }
@@ -98,7 +99,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool CanHitPvp(Player target) => Projectile.ai[0] > 42f;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.localAI[0] = target.whoAmI;
         }
@@ -114,26 +115,20 @@ namespace CalamityMod.Projectiles.Melee
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(15f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(12.5f, 0).RotatedBy(rot);
-                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, 269, velOffset.X, velOffset.Y);
+                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, DustID.Sandnado, velOffset.X, velOffset.Y);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velOffset;
-                Main.dust[dust].scale = 2.5f;
+                Main.dust[dust].scale = 3f;
             }
 
-            float distance = 168f;
+            if (Main.zenithWorld)
+                SoundEngine.PlaySound(Kunk, Projectile.Center);
 
-            for (int k = 0; k < Main.maxNPCs; k++)
-            {
-                NPC npc = Main.npc[k];
-                Vector2 vec = npc.Center - Projectile.Center;
-                float distanceTo = (float)Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y);
-                if (distanceTo < distance && npc.CanBeChasedBy(Projectile, false) && k != Projectile.localAI[0])
-                {
-                    float alldamage = Projectile.damage * 0.5f;
-                    double damage = npc.StrikeNPC((int)alldamage, Projectile.knockBack, Projectile.velocity.X > 0f ? 1 : -1, true);
-                    player.addDPS((int)damage);
-                }
-            }
+            else
+                SoundEngine.PlaySound(BigSound, Projectile.Center);
+
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<PwnagehammerExplosionBig>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
+
             return false;
         }
 
@@ -142,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 origin = sourceRectangle.Size() / 2f;
 

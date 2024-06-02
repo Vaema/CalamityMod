@@ -1,22 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ImpactRound : ModProjectile
+    public class ImpactRound : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/AMRShot";
 
         private bool initialized = false;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Impact Round");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -46,17 +42,14 @@ namespace CalamityMod.Projectiles.Ranged
 
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    SoundEngine.PlaySound(CommonCalamitySounds.LargeWeaponFireSound with { Volume = CommonCalamitySounds.LargeWeaponFireSound.Volume * 0.45f}, Projectile.Center);
+                    SoundEngine.PlaySound(CommonCalamitySounds.LargeWeaponFireSound with { Volume = CommonCalamitySounds.LargeWeaponFireSound.Volume * 0.45f }, Projectile.Center);
                 }
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            double damageMult = 1D;
-            if (crit)
-                damageMult += 0.25;
-            damage = (int)(damage * damageMult);
+            modifiers.CritDamage += 0.25f;
         }
 
         public override bool PreDraw(ref Color lightColor) => Projectile.timeLeft < 600;

@@ -1,4 +1,4 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -9,16 +9,9 @@ namespace CalamityMod.Items.Armor.Statigel
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("StatigelCap")]
-    public class StatigelHeadMagic : ModItem
+    public class StatigelHeadMagic : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statigel Cap");
-            Tooltip.SetDefault("10% increased magic damage and 10% decreased mana cost\n" +
-                "7% increased magic critical strike chance and +30 max mana");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -35,12 +28,10 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "When you take over 100 damage in one hit you become immune to damage for an extended period of time\n" +
-                    "Grants an extra jump and increased jump height\n" +
-                    "12% increased jump speed";
+            player.setBonus = CalamityUtils.GetTextValueFromModItem<StatigelArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
-            modPlayer.statigelJump = true;
+            player.GetJumpState<StatigelJump>().Enable();
             Player.jumpHeight += 5;
             player.jumpSpeedBoost += 0.6f;
         }
@@ -50,7 +41,7 @@ namespace CalamityMod.Items.Armor.Statigel
             player.GetDamage<MagicDamageClass>() += 0.1f;
             player.GetCritChance<MagicDamageClass>() += 7;
             player.manaCost *= 0.9f;
-            player.statManaMax2 += 30;
+            player.statManaMax2 += 40;
         }
 
         public override void AddRecipes()

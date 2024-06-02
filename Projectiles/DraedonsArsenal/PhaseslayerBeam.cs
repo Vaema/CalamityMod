@@ -6,12 +6,12 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class PhaseslayerBeam : ModProjectile
+    public class PhaseslayerBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public const int Lifetime = 180;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Light Blade");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D bladeTexture = ModContent.Request<Texture2D>(Texture).Value   ;
+            Texture2D bladeTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

@@ -1,42 +1,21 @@
-﻿using CalamityMod.Buffs.StatBuffs;
+﻿using System;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Events;
-using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
 using CalamityMod.Items.Weapons.Typeless;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class YanmeisKnifeSlash : ModProjectile
+    public class YanmeisKnifeSlash : ModProjectile, ILocalizedModType
     {
-        // This is a rather weird thing, but it's what the patron asked for.
-        public static readonly Func<NPC, bool> CanRecieveCoolEffectsFrom = (npc) =>
-        {
-            bool validBoss = npc.boss && npc.type != ModContent.NPCType<DevourerofGodsBody>()
-                && npc.type != ModContent.NPCType<AstrumDeusBody>()
-                && npc.type != ModContent.NPCType<ThanatosHead>()
-                && npc.type != ModContent.NPCType<ThanatosBody1>()
-                && npc.type != ModContent.NPCType<ThanatosBody2>()
-                && npc.type != ModContent.NPCType<ThanatosTail>();
-            if (validBoss)
-                return true;
-            bool bossMinion = CalamityLists.bossMinionList.Contains(npc.type);
-            if (bossMinion)
-                return true;
-            bool miniboss = CalamityLists.minibossList.Contains(npc.type) || AcidRainEvent.AllMinibosses.Contains(npc.type);
-            return miniboss;
-        };
+        public new string LocalizationCategory => "Projectiles.Typeless";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Yanmei's Knife");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -109,16 +88,14 @@ namespace CalamityMod.Projectiles.Typeless
             }
             Projectile.velocity = newVelocity;
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!CanRecieveCoolEffectsFrom(target))
-                return;
             target.AddBuff(ModContent.BuffType<KamiFlu>(), 600);
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(Main.player[Projectile.owner].position, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height, 267);
+                    Dust dust = Dust.NewDustDirect(Main.player[Projectile.owner].position, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height, DustID.RainbowMk2);
                     dust.position.X += Main.rand.NextFloat(-16f, 16f);
                     dust.color = Main.hslToRgb(Main.rand.NextFloat(0.26f, 0.37f), 1f, 0.75f);
                     dust.velocity = Main.rand.NextVector2Circular(24f, 24f);

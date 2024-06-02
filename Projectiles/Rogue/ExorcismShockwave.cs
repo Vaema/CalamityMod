@@ -1,24 +1,21 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ExorcismShockwave : ModProjectile
+    public class ExorcismShockwave : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public static float radius = 100;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Exorcism Shockwave");
-        }
+        public static float Radius = 100;
+        public static float RadiusStealth = 200;
 
         public override void SetDefaults()
         {
-            Projectile.width = (int)radius * 2;
-            Projectile.height = (int)radius * 2;
+            Projectile.width = (int)(Projectile.Calamity().stealthStrike ? RadiusStealth * 2 : Radius * 2);
+            Projectile.height = (int)(Projectile.Calamity().stealthStrike ? RadiusStealth * 2 : Radius * 2);
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -35,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.alpha = (int)((1 - Projectile.ai[0]) * 255f);
 
-                // Blast wave should be brighter the higher the charge of the projectile when it is killed
+                // Blast wave should be brighter on stealth strikes
                 int numDust = (int)(40 * Projectile.ai[0]) + 10;
 
                 for (int i = 0; i < numDust; i++)
@@ -59,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
                     // Shockwave
                     Vector2 circleVelocity = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
                     circleVelocity.Normalize();
-                    circleVelocity *= radius / 10f;
+                    circleVelocity *= (Projectile.Calamity().stealthStrike ? RadiusStealth : Radius) / 10f;
 
                     int circle = Dust.NewDust(Projectile.Center, 1, 1, dustType, circleVelocity.X, circleVelocity.Y, 0, default, 1.5f);
                     Main.dust[circle].noGravity = true;
@@ -121,26 +118,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            float dist1 = Vector2.Distance(Projectile.Center, target.Hitbox.TopLeft());
-            float dist2 = Vector2.Distance(Projectile.Center, target.Hitbox.TopRight());
-            float dist3 = Vector2.Distance(Projectile.Center, target.Hitbox.BottomLeft());
-            float dist4 = Vector2.Distance(Projectile.Center, target.Hitbox.BottomRight());
-
-            float damageScale = dist1;
-            if (dist2 < damageScale)
-                damageScale = dist2;
-            if (dist3 < damageScale)
-                damageScale = dist3;
-            if (dist4 < damageScale)
-                damageScale = dist4;
-            damageScale /= radius;
-            damageScale = 1f - damageScale;
-
-            damage = (int)(damage * damageScale);
-        }
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, (Projectile.Calamity().stealthStrike ? RadiusStealth : Radius), targetHitbox);
     }
 }

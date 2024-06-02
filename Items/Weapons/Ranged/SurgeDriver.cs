@@ -8,25 +8,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class SurgeDriver : ModItem
+    public class SurgeDriver : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Surge Driver");
-            Tooltip.SetDefault("Left clicks release a laser ray that explodes on collision\n" +
-                "Right clicks release a barrage of laser beams that release homing energy on enemy hits");
-            SacrificeTotal = 1;
-
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 156;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 164;
             Item.height = 58;
-            Item.useTime = Item.useAnimation = 56;
+            Item.damage = 140;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = Item.useAnimation = 28;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.channel = true;
@@ -48,22 +44,15 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (Main.myPlayer == player.whoAmI)
                 player.Calamity().rightClickListener = true;
 
-
-            if (player.Calamity().mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<SurgeDriverHoldout>()] <= 0)
-            {
-                Item.noUseGraphic = false;
-                Item.reuseDelay = 0;
-            }
-            else
-            {
-                Item.noUseGraphic = true;
-                Item.reuseDelay = 28;
-            }
+            Item.noUseGraphic = !player.Calamity().mouseRight || player.ownedProjectileCounts[ModContent.ProjectileType<SurgeDriverHoldout>()] > 0;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<SurgeDriverHoldout>()] <= 0;
 
-        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2f ? 5f : 1f;
+        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2f ? 2.5f : 1f;
+
+        // Spawning the holdout cannot consume ammo
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.altFunctionUse == 2f || player.ownedProjectileCounts[ModContent.ProjectileType<SurgeDriverHoldout>()] > 0;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -79,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     Vector2 newShootVelocity = shootVelocity * Main.rand.NextFloat(1f, 1.45f);
                     newShootVelocity = newShootVelocity.RotatedByRandom(0.15f);
-                    Projectile.NewProjectile(source, gunTip, newShootVelocity, Item.shoot, (int)(damage * 1.08), knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, gunTip, newShootVelocity, Item.shoot, damage, knockback, player.whoAmI);
                 }
             }
 

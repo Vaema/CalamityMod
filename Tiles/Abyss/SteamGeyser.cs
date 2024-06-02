@@ -18,13 +18,11 @@ namespace CalamityMod.Tiles.Abyss
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
+            TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Geyser");
-            AddMapEntry(new Color(103, 65, 64), name);
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            AddMapEntry(new Color(103, 65, 64), CalamityUtils.GetText($"{LocalizationCategory}.SteamGeyser.MapEntry"));
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             base.SetStaticDefaults();
         }
@@ -44,11 +42,8 @@ namespace CalamityMod.Tiles.Abyss
             if (!Main.gamePaused && t.TileFrameX % 36 == 0 && t.TileFrameY % 36 == 0 && Collision.CanHitLine(spawnPosition, 1, 1, spawnPosition - Vector2.UnitY * 100f, 1, 1))
             {
                 steamTimer += Main.rand.Next(0, 2);
-
                 if (steamTimer >= 240)
-                {
                     steamTimer = 0;
-                }
             }
         }
 
@@ -56,7 +51,7 @@ namespace CalamityMod.Tiles.Abyss
         {
             Tile t = CalamityUtils.ParanoidTileRetrieval(i, j);
             Vector2 spawnPosition = new(i * 16f + 24f, j * 16f - 4f);
-            
+
             if (!Main.gamePaused && t.TileFrameX % 36 == 0 && t.TileFrameY % 36 == 0 && Collision.CanHitLine(spawnPosition, 1, 1, spawnPosition - Vector2.UnitY * 100f, 1, 1))
             {
                 float positionInterpolant = (i + j) * 0.041f % 1f;
@@ -65,9 +60,7 @@ namespace CalamityMod.Tiles.Abyss
                 smokeVelocity.Y -= Main.rand.Next(3, 6);
 
                 if (steamTimer >= 180 && Main.rand.NextBool(3))
-                {
-                    Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition, smokeVelocity, ModContent.ProjectileType<HotSteam>(), Main.expertMode ? 65 : 45, 0f);
-                }
+                    Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition, smokeVelocity, ModContent.ProjectileType<HotSteam>(), Main.expertMode ? 15 : 23, 0f);
             }
         }
     }

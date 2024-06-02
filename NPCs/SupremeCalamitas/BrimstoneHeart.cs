@@ -1,10 +1,11 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,30 +14,29 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 {
     public class BrimstoneHeart : ModNPC
     {
-        public PrimitiveTrail ChainDrawer = null;
         public int ChainHeartIndex => (int)NPC.ai[0];
         public List<Vector2> ChainEndpoints = new();
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Brimstone Heart");
             Main.npcFrameCount[NPC.type] = 6;
         }
 
         public override void SetDefaults()
         {
-            NPC.damage = 0;
+            NPC.damage = 50;
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 0;
-            NPC.LifeMaxNERB(24550, 29440, 20000);
+            NPC.lifeMax = 15000;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.alpha = 255;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.hide = true;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -61,12 +61,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             if (CalamityGlobalNPC.SCal < 0 || !Main.npc[CalamityGlobalNPC.SCal].active)
             {
-                NPC.life = 0;
-                NPC.HitEffect();
-                NPC.active = false;
-                NPC.netUpdate = true;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    NPC.StrikeInstantKill();
+
                 return;
             }
 
@@ -110,8 +112,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (ChainDrawer is null)
-                ChainDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction);
             if (NPC.IsABestiaryIconDummy)
                 return true;
 
@@ -122,7 +122,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     NPC.Center,
                     ChainEndpoints[i] + NPC.DirectionTo(ChainEndpoints[i]) * 25f
                 };
-                ChainDrawer.Draw(points, -screenPos, 40);
+                PrimitiveRenderer.RenderTrail(points, new(PrimitiveWidthFunction, PrimitiveColorFunction), 40);
             }
 
             return true;
@@ -139,7 +139,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
@@ -161,10 +161,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Main.instance.DrawCacheNPCsBehindNonSolidTiles.Add(index);
         }
 
-        public override void ModifyHitByProjectile(Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
         {
-            if (projectile.type == ModContent.ProjectileType<Celestus2>())
-                damage = (int)(damage * 0.66);
+            if (projectile.type == ModContent.ProjectileType<CelestusMiniScythe>())
+                modifiers.SourceDamage *= 0.66f;
         }
 
         public override bool CheckActive() => false;

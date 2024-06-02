@@ -1,11 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,56 +12,37 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class AsgardianAegis : ModItem
+    public class AsgardianAegis : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
+        public const int ShieldSlamDamage = 1000;
+        public const float ShieldSlamKnockback = 15f;
         public const int ShieldSlamIFrames = 12;
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Asgardian Aegis");
-            Tooltip.SetDefault("Grants immunity to knockback\n" +
-                "Immune to most debuffs\n" +
-                "+40 max life and increased life regeneration\n" +
-                "Grants a supreme god slayer flame dash\n" +
-                "Can be used to ram enemies\n" +
-                "TOOLTIP LINE HERE\n" +
-                "Activating this buff will reduce your movement speed and increase enemy aggro\n" +
-                "+20 defense while submerged in liquid");
-        }
+        public const int RamExplosionDamage = 1000;
+        public const float RamExplosionKnockback = 20f;
 
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 54;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.defense = 28;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.defense = 12;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<DarkBlue>();
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            string hotkey = CalamityKeybinds.AegisHotKey.TooltipHotkeyString();
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip5");
-
-            if (line != null)
-                line.Text = "Press " + hotkey + " to activate buffs to all damage, crit chance, and defense";
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
+
+            // Asgardian Aegis ram dash
             modPlayer.DashID = AsgardianAegisDash.ID;
             player.dashType = 0;
-            modPlayer.elysianAegis = true;
+
+            // Inherited Ankh Shield effects
             player.noKnockback = true;
             player.fireWalk = true;
-            player.statLifeMax2 += 40;
-            player.lifeRegen++;
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.Chilled] = true;
-            player.buffImmune[BuffID.Frostburn] = true;
             player.buffImmune[BuffID.Weak] = true;
             player.buffImmune[BuffID.BrokenArmor] = true;
             player.buffImmune[BuffID.Bleeding] = true;
@@ -74,10 +54,34 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[BuffID.Darkness] = true;
             player.buffImmune[BuffID.WindPushed] = true;
             player.buffImmune[BuffID.Stoned] = true;
+
+            // Additional debuff immunities (Counterparts, similar debuffs to vanilla Ankh Shield debuffs, or upgrades thereof)
+            player.buffImmune[ModContent.BuffType<ArmorCrunch>()] = true; // "Stronger" Broken Armor
+            player.buffImmune[ModContent.BuffType<BrainRot>()] = true; // Counterpart to Burning Blood
+            player.buffImmune[ModContent.BuffType<BurningBlood>()] = true; // "Stronger" Bleeding
+            player.buffImmune[BuffID.Venom] = true; // "Stronger" Poisoned
+            player.buffImmune[ModContent.BuffType<SulphuricPoisoning>()] = true; // "Stronger" Poisoned
+            player.buffImmune[BuffID.Webbed] = true; // "Stronger" Slow
+            player.buffImmune[BuffID.Blackout] = true; // "Stronger" Darkness
+
+            // Additional debuff immunities (Everything from Ornate Shield + Asgard's Valor)
+            player.buffImmune[BuffID.OnFire] = true;
+            player.buffImmune[BuffID.OnFire3] = true;
+            player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
+            player.buffImmune[BuffID.Chilled] = true;
+            player.buffImmune[BuffID.Frozen] = true;
+            player.buffImmune[BuffID.Frostburn] = true;
+            player.buffImmune[BuffID.Frostburn2] = true;
+
+            // Additional debuff immunities (Everything from Elysian Aegis + thematic counterparts)
+            player.buffImmune[BuffID.CursedInferno] = true;
+            player.buffImmune[BuffID.ShadowFlame] = true;
+            player.buffImmune[BuffID.Daybreak] = true;
+            player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
             player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+
+            // Immune to God Slayer Inferno itself
             player.buffImmune[ModContent.BuffType<GodSlayerInferno>()] = true;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-            { player.statDefense += 20; }
         }
 
         public override void AddRecipes()

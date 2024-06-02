@@ -1,21 +1,21 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class EXPLODINGFROG : ModProjectile
+    public class EXPLODINGFROG : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float MinExplodeDistance = 120f;
         public const float ExplodeWaitTime = 45f;
         public const float ExplosionAngleVariance = 0.8f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("A not frog of the explosive variety");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -59,32 +59,22 @@ namespace CalamityMod.Projectiles.Summon
                     // Goop projectiles
                     for (int i = 0; i < 3; i++)
                     {
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                             new Vector2(0f, -Main.rand.NextFloat(6f, 10f)).RotatedByRandom(ExplosionAngleVariance),
                             ModContent.ProjectileType<FrogGore1>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
-                        p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                             new Vector2(0f, -Main.rand.NextFloat(6f, 10f)).RotatedByRandom(ExplosionAngleVariance),
                             ModContent.ProjectileType<FrogGore2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
                     }
-                    int p2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                         new Vector2(0f, -Main.rand.NextFloat(6f, 10f)).RotatedByRandom(ExplosionAngleVariance),
                         ModContent.ProjectileType<FrogGore3>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(p2))
-                        Main.projectile[p2].originalDamage = Projectile.originalDamage;
-                    p2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                         new Vector2(0f, -Main.rand.NextFloat(6f, 10f)).RotatedByRandom(ExplosionAngleVariance),
                         ModContent.ProjectileType<FrogGore4>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(p2))
-                        Main.projectile[p2].originalDamage = Projectile.originalDamage;
-                    p2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                         new Vector2(0f, -Main.rand.NextFloat(6f, 10f)).RotatedByRandom(ExplosionAngleVariance),
                         ModContent.ProjectileType<FrogGore5>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(p2))
-                        Main.projectile[p2].originalDamage = Projectile.originalDamage;
                 }
                 // WoF vomit sound.
                 SoundEngine.PlaySound(SoundID.NPCDeath13, Projectile.Center);
@@ -96,13 +86,17 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.velocity.Y = 10f;
             }
-
-            Projectile.StickToTiles(false, false);
         }
 
         public override bool? CanDamage() => false;
 
         // Don't die on tile collision
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
     }
 }

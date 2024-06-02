@@ -1,4 +1,7 @@
-﻿using CalamityMod.Tiles.Abyss;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -7,8 +10,10 @@ using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FurnitureAshen;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
-using System.Collections.Generic;
-using System.Linq;
+using CalamityMod.Tiles.SunkenSea.Ambient;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,11 +24,41 @@ namespace CalamityMod
     // OnModLoad is guaranteed to be run after all content has autoloaded.
     public static class TileFraming
     {
+        public sealed class MergeFrameData
+        {
+            public byte[,] AdjacencyData { get; }
+
+            public int TileID { get; }
+
+            public int FrameOffsetX { get; }
+
+            public int FrameOffsetY { get; }
+
+            public Asset<Texture2D> BlendSheet { get; }
+
+            public MergeFrameData(byte[,] adjacencyData, int tileId, string blendSheetPath, int frameOffsetX = 0, int frameOffsetY = 0)
+            {
+                AdjacencyData = adjacencyData;
+                TileID = tileId;
+                FrameOffsetX = frameOffsetX;
+                FrameOffsetY = frameOffsetY;
+
+                if (!cachedBlendSheets.TryGetValue(blendSheetPath, out var blendSheet))
+                {
+                    blendSheet = cachedBlendSheets[blendSheetPath] = ModContent.Request<Texture2D>(blendSheetPath);
+                }
+                
+                BlendSheet = blendSheet;
+            }
+        }
+        
         private static int[][] PlantCheckAgainst;
         private static Dictionary<ushort, ushort> VineToGrass;
 
         // CONSIDER -- This is a triangle array, but does it need to be? Main.tileMerge is a triangle array as well
         public static bool[][] tileMergeTypes;
+
+        private static Dictionary<string, Asset<Texture2D>> cachedBlendSheets = new();
 
         #region Similarity Enum
         private enum Similarity
@@ -59,7 +94,7 @@ namespace CalamityMod
             PlantCheckAgainst[TileID.JunglePlants2] = new int[1] { TileID.JungleGrass };
             PlantCheckAgainst[TileID.HallowedPlants] = new int[1] { TileID.HallowedGrass };
             PlantCheckAgainst[TileID.HallowedPlants2] = new int[1] { TileID.HallowedGrass };
-            PlantCheckAgainst[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonPlants };
+            PlantCheckAgainst[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonGrass };
             PlantCheckAgainst[ModContent.TileType<AstralShortPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
             PlantCheckAgainst[ModContent.TileType<AstralTallPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
             PlantCheckAgainst[ModContent.TileType<CinderBlossomTallPlants>()] = new int[1] { ModContent.TileType<ScorchedRemainsGrass>() };
@@ -67,10 +102,12 @@ namespace CalamityMod
             PlantCheckAgainst[ModContent.TileType<AbyssKelp>()] = new int[1] { ModContent.TileType<AbyssGravel>() };
             PlantCheckAgainst[ModContent.TileType<TenebrisRemnant>()] = new int[1] { ModContent.TileType<Voidstone>() };
             PlantCheckAgainst[ModContent.TileType<PhoviamareHalm>()] = new int[2] { ModContent.TileType<PyreMantle>(), ModContent.TileType<PyreMantleMolten>() };
+            PlantCheckAgainst[ModContent.TileType<SmallCorals>()] = new int[1] { ModContent.TileType<EutrophicSand>() };
 
             VineToGrass = new Dictionary<ushort, ushort>
             {
                 [TileID.Vines] = TileID.Grass,
+                [TileID.Vines] = TileID.LeafBlock,
                 [TileID.CrimsonVines] = TileID.CrimsonGrass,
                 [TileID.HallowedVines] = TileID.HallowedGrass,
                 [(ushort)ModContent.TileType<AstralVines>()] = (ushort)ModContent.TileType<AstralGrass>()
@@ -116,6 +153,11 @@ namespace CalamityMod
         private static bool GetMerge(Tile myTile, Tile mergeTile)
         {
             return mergeTile.HasTile && (mergeTile.TileType == myTile.TileType || Main.tileMerge[myTile.TileType][mergeTile.TileType]);
+        }
+
+        private static bool GetBlendSpecific(Tile myTile, Tile mergeTile, int blendType, bool includeSame)
+        {
+            return mergeTile.HasTile && (mergeTile.TileType == blendType || (mergeTile.TileType == myTile.TileType && includeSame));
         }
 
         private static void GetAdjacentTiles(int x, int y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight)
@@ -197,8 +239,10 @@ namespace CalamityMod
                     return false;
 
                 for (int i = 0; i < PlantCheckAgainst[plant].Length; ++i)
+                {
                     if (PlantCheckAgainst[plant][i] == check)
                         return false;
+                }
 
                 return true;
             }
@@ -291,7 +335,7 @@ namespace CalamityMod
                     return;
                 }
             }
-            
+
             // If the tile above is an identical vine, nothing else needs to be done.
             if (northType == myType)
                 return;
@@ -305,7 +349,7 @@ namespace CalamityMod
                 {
                     tileMustDie = true;
                 }
-                else
+                else if (myType != TileID.Vines)
                 {
                     for (int i = 0; i < vines.Length; ++i)
                     {
@@ -569,16 +613,7 @@ namespace CalamityMod
             return true;
         }
 
-        // BRIMSTONE COMPATIBILITY IMPLEMENTATION
-        // Added parameters to force a merge in a direction for use in the merge frame function
         internal static bool BrimstoneFraming(int x, int y, bool resetFrame)
-        {
-            return BrimstoneFraming(x, y, resetFrame, false, false, false, false, false, false, false, false);
-        }
-
-        internal static bool BrimstoneFraming(int x, int y, bool resetFrame, 
-            bool forceSameDown, bool forceSameUp, bool forceSameRight, bool forceSameLeft, 
-            bool forceSameDR, bool forceSameDL, bool forceSameUR, bool forceSameUL)
         {
             if (x < 0 || x >= Main.maxTilesX)
                 return false;
@@ -587,21 +622,9 @@ namespace CalamityMod
 
             Tile tile = Main.tile[x, y];
             if (tile.Slope > 0 && TileID.Sets.HasSlopeFrames[tile.TileType])
-            {
                 return true;
-            }
 
             GetAdjacentTiles(x, y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight);
-
-            // Implement forced connections
-            up = forceSameUp || up;
-            down = forceSameDown || down;
-            left = forceSameLeft || left;
-            right = forceSameRight || right;
-            upLeft = forceSameUL || upLeft;
-            upRight = forceSameUR || upRight;
-            downLeft = forceSameDL || downLeft;
-            downRight = forceSameDR || downRight;
 
             // Reset the tile's random frame style if the frame is being reset.
             int randomFrame;
@@ -611,9 +634,9 @@ namespace CalamityMod
                 Main.tile[x, y].Get<TileWallWireStateData>().TileFrameNumber = randomFrame;
             }
             else
-            {
                 randomFrame = Main.tile[x, y].TileFrameNumber;
-            }
+
+            int randomFrameX54 = randomFrame * 54;
 
             /*
                 8 2 9
@@ -624,25 +647,28 @@ namespace CalamityMod
             #region L States
             if (!up && down && !left && right && !downRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((16 * 18) + randomFrameX54);
                 tile.TileFrameY = 0;
                 return false;
             }
+
             if (!up && down && left && !right && !downLeft)
             {
-                tile.TileFrameX = (short)((18 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((18 * 18) + randomFrameX54);
                 tile.TileFrameY = 0;
                 return false;
             }
+
             if (up && !down && !left && right && !upRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((16 * 18) + randomFrameX54);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
+
             if (up && !down && left && !right && !upLeft)
             {
-                tile.TileFrameX = (short)((18 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((18 * 18) + randomFrameX54);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
@@ -651,25 +677,28 @@ namespace CalamityMod
             #region T States
             if (!up && down && left && right && !downLeft && !downRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((17 * 18) + randomFrameX54);
                 tile.TileFrameY = 0;
                 return false;
             }
+
             if (up && !down && left && right && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((17 * 18) + randomFrameX54);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
+
             if (up && down && !left && right && !downRight && !upRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((16 * 18) + randomFrameX54);
                 tile.TileFrameY = 18;
                 return false;
             }
+
             if (up && down && left && !right && !downLeft && !upLeft)
             {
-                tile.TileFrameX = (short)((18 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((18 * 18) + randomFrameX54);
                 tile.TileFrameY = 18;
                 return false;
             }
@@ -678,7 +707,7 @@ namespace CalamityMod
             #region X State
             if (up && down && left && right && !downLeft && !downRight && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + (randomFrame * 54));
+                tile.TileFrameX = (short)((17 * 18) + randomFrameX54);
                 tile.TileFrameY = 18;
                 return false;
             }
@@ -691,18 +720,21 @@ namespace CalamityMod
                 tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && right && downLeft && !downRight && upLeft && upRight)
             {
                 tile.TileFrameX = 13 * 18;
                 tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && right && downLeft && downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = 14 * 18;
                 tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && right && downLeft && downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 13 * 18;
@@ -718,18 +750,21 @@ namespace CalamityMod
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
+
             if (up && down && left && right && downLeft && downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = (short)((6 * 18) + (randomFrame * 18));
                 tile.TileFrameY = 1 * 18;
                 return false;
             }
+
             if (up && down && left && right && !downLeft && downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = 10 * 18;
                 tile.TileFrameY = (short)(randomFrame * 18);
                 return false;
             }
+
             if (up && down && left && right && downLeft && !downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 11 * 18;
@@ -745,6 +780,7 @@ namespace CalamityMod
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
+
             if (up && down && left && right && downLeft && !downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = (short)((13 * 18) + (randomFrame * 18));
@@ -760,18 +796,21 @@ namespace CalamityMod
                 tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && right && !downLeft && downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 15 * 18;
                 tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && right && !downLeft && !downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 16 * 18;
                 tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && right && downLeft && !downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 16 * 18;
@@ -787,42 +826,49 @@ namespace CalamityMod
                 tile.TileFrameY = 3 * 18;
                 return false;
             }
+
             if (!up && down && left && right && downLeft && !downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = (short)((16 * 18) + (randomFrame * 36));
                 tile.TileFrameY = 3 * 18;
                 return false;
             }
+
             if (up && !down && left && right && !downLeft && !downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = (short)((17 * 18) + (randomFrame * 36));
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
+
             if (up && !down && left && right && !downLeft && !downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = (short)((16 * 18) + (randomFrame * 36));
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
+
             if (up && down && !left && right && !downLeft && !downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = 17 * 18;
                 tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && !left && right && !downLeft && downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 17 * 18;
                 tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && !right && !downLeft && !downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 18 * 18;
                 tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
                 return false;
             }
+
             if (up && down && left && !right && downLeft && !downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 18 * 18;
@@ -843,9 +889,7 @@ namespace CalamityMod
 
             Tile tile = Main.tile[x, y];
             if (tile.Slope > 0 && TileID.Sets.HasSlopeFrames[tile.TileType])
-            {
                 return;
-            }
 
             // Reset the tile's random frame style if the frame is being reset.
             int randomFrame;
@@ -855,9 +899,7 @@ namespace CalamityMod
                 Main.tile[x, y].Get<TileWallWireStateData>().TileFrameNumber = (byte)randomFrame;
             }
             else
-            {
                 randomFrame = Main.tile[x, y].TileFrameNumber;
-            }
 
             GetAdjacentTiles(x, y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight);
 
@@ -1185,17 +1227,118 @@ namespace CalamityMod
             }
             #endregion
         }
+
+        internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset, bool overrideTileFrame = false)
+        {
+            Tile tile = Main.tile[i, j];
+
+            int TileFrameX = tile.TileFrameX;
+            int TileFrameY = tile.TileFrameY;
+
+            if (overrideTileFrame)
+            {
+                TileFrameX = 0;
+                TileFrameY = 0;
+            }
+
+            int width = 16;
+            int height = 16;
+
+            if (sourceRectangle != null)
+            {
+                TileFrameX = ((Rectangle)sourceRectangle).X;
+                TileFrameY = ((Rectangle)sourceRectangle).Y;
+            }
+
+            int iX16 = i * 16;
+            int jX16 = j * 16;
+            Vector2 location = new Vector2(iX16, jX16);
+            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
+            if (Main.drawToScreen)
+                zero = Vector2.Zero;
+
+            Vector2 offsets = -Main.screenPosition + zero + positionOffset;
+            Vector2 drawCoordinates = location + offsets;
+            if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
+            {
+                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            }
+            else if (tile.IsHalfBlock)
+            {
+                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(TileFrameX, TileFrameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                byte b = (byte)tile.Slope;
+                Rectangle TileFrame;
+                Vector2 drawPos;
+                if (b == 1 || b == 2)
+                {
+                    int length;
+                    int height2;
+                    for (int a = 0; a < 8; ++a)
+                    {
+                        int aX2 = a * 2;
+                        if (b == 2)
+                        {
+                            length = 16 - aX2 - 2;
+                            height2 = 14 - aX2;
+                        }
+                        else
+                        {
+                            length = aX2;
+                            height2 = 14 - length;
+                        }
+
+                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY, 2, height2);
+                        drawPos = new Vector2(iX16 + length, jX16 + aX2) + offsets;
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+
+                    TileFrame = new Rectangle(TileFrameX, TileFrameY + 14, 16, 2);
+                    drawPos = new Vector2(iX16, jX16 + 14) + offsets;
+                    Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                }
+                else
+                {
+                    int length;
+                    int height2;
+                    for (int a = 0; a < 8; ++a)
+                    {
+                        int aX2 = a * 2;
+                        if (b == 3)
+                        {
+                            length = aX2;
+                            height2 = 16 - length;
+                        }
+                        else
+                        {
+                            length = 16 - aX2 - 2;
+                            height2 = 16 - aX2;
+                        }
+
+                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY + 16 - height2, 2, height2);
+                        drawPos = new Vector2(iX16 + length, jX16) + offsets;
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+
+                    drawPos = new Vector2(iX16, jX16) + offsets;
+                    if (tile.TileType != ModContent.TileType<EutrophicGlass>())
+                    {
+                        TileFrame = new Rectangle(TileFrameX, TileFrameY, 16, 2);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+                }
+            }
+            // Contribuited by Vortex
+        }
         #endregion
 
         #region Generic Custom Framing Code
 
-        // New Variables (rename as fitting):
-        // myTypeBrimFrame - Whether the tile that this function is framing should use brimstone framing
-        // overrideBrimStates - Used in a situation where a brimstone state and a merge state could each be used, setting this to true will use the merge state, and setting this to false will use the brimstone state
-
         internal static void CustomMergeFrameExplicit(int x, int y, int myType, int mergeType, out bool mergedUp,
             out bool mergedLeft, out bool mergedRight, out bool mergedDown, bool forceSameDown = false,
-            bool forceSameUp = false, bool forceSameLeft = false, bool forceSameRight = false, bool resetFrame = true, bool myTypeBrimFrame = false, bool overrideBrimStates = false)
+            bool forceSameUp = false, bool forceSameLeft = false, bool forceSameRight = false, bool resetFrame = true, bool myTypeBrimFrame = false)
         {
             if (x < 0 || x >= Main.maxTilesX || y < 0 || y >= Main.maxTilesY)
             {
@@ -1243,51 +1386,6 @@ namespace CalamityMod
             // Initialize all merged variables to false.
             mergedDown = mergedLeft = mergedRight = mergedUp = false;
 
-            // BRIMSTONE COMPATIBILITY IMPLEMENTATION
-            // Used when set to prioritize brimstone states over blend states
-            // This will try to preserve the brimstone tile's own tiling, though it might produce some strange blending with the tile it merges with
-            // Moved since last implementation since I think that fixes some minor issues
-            if (myTypeBrimFrame && !overrideBrimStates)
-            {
-                // Diagonals
-                //bool forceDownRight = forceSameDown || forceSameRight;
-                //bool forceDownLeft = forceSameDown || forceSameLeft;
-                //bool forceUpRight = forceSameUp || forceSameRight;
-                //bool forceUpLeft = forceSameUp || forceSameLeft;
-                // BrimstoneFraming returns false if the tile uses a custom tile state, and true if it should use default tile framing
-                bool usedBrimstoneFrame = BrimstoneFraming(x, y, resetFrame, forceSameDown, forceSameUp, forceSameRight, forceSameLeft, false, false, false, false);
-                if (!usedBrimstoneFrame)
-                {
-                    return;
-                }
-            }
-
-            // BRIMSTONE COMPATIBILITY IMPLEMENTATION
-            // Moved the custom merge conditional tree to a separate procedure. This was done so that the returns could be left in place as they seem to be needed
-            // This should leave the functionality unchanged (I hope) while allowing code to be run after this
-            CustomMergeConditionalTree(x, y, randomFrame, leftSim, rightSim, upSim, downSim, topLeftSim, topRightSim, bottomLeftSim, bottomRightSim, ref mergedLeft, ref mergedRight, ref mergedUp, ref mergedDown);
-
-            // BRIMSTONE COMPATIBILITY IMPLEMENTATION
-            // Used when set to prioritize blend states over brimstone states.
-            // This will create smoother blending with other tiles, though it will most likely result in unpleasant tiling between blend and non-blend states. Test to see if it looks good
-            // The tile frame checks are to see whether the tile that frame that has been picked out is a blend state (in which case a brimstone state isn't used) or a 'default' state (in which case a brimstone state might be used instead)
-            if (myTypeBrimFrame && overrideBrimStates && (Main.tile[x, y].TileFrameX < 234 && Main.tile[x, y].TileFrameY < 90))
-            {
-                // Diagonals
-                //bool forceDownRight = forceSameDown || forceSameRight;
-                //bool forceDownLeft = forceSameDown || forceSameLeft;
-                //bool forceUpRight = forceSameUp || forceSameRight;
-                //bool forceUpLeft = forceSameUp || forceSameLeft;
-                // This will only override the frame if it uses a brimstone frame, otherwise the tile frame will remain unchanged
-                BrimstoneFraming(x, y, resetFrame, forceSameDown, forceSameUp, forceSameRight, forceSameLeft, false, false, false, false);
-            }
-        }
-
-        private static void CustomMergeConditionalTree(int x, int y, int randomFrame, 
-            Similarity leftSim, Similarity rightSim, Similarity upSim, Similarity downSim, 
-            Similarity topLeftSim, Similarity topRightSim, Similarity bottomLeftSim, Similarity bottomRightSim,
-            ref bool mergedLeft, ref bool mergedRight, ref bool mergedUp, ref bool mergedDown)
-        {
             #region Custom Merge Conditional Tree
             if (leftSim == Similarity.None)
             {
@@ -1790,11 +1888,7 @@ namespace CalamityMod
             bool forceSameUp = false, bool forceSameLeft = false, bool forceSameRight = false, bool resetFrame = true)
             => CustomMergeFrameExplicit(x, y, myType, mergeType, out _, out _, out _, out _, forceSameDown, forceSameUp, forceSameLeft, forceSameRight, resetFrame);
 
-        // New Variables (rename as fitting):
-        // myTypeBrimFrame - Whether the tile that this function is framing uses brimstone framing
-        // mergeTypeBrimFrame - Whether the tile that this tile merges with uses brimstone framing
-        // overrideBrimStates - Used in a situation where a brimstone state and a merge state could each be used, setting this to true will use the merge state, and setting this to false will use the brimstone state
-        internal static void CustomMergeFrame(int x, int y, int myType, int mergeType, bool myTypeBrimFrame = false, bool mergeTypeBrimFrame = false, bool overrideBrimStates = false)
+        internal static void CustomMergeFrame(int x, int y, int myType, int mergeType)
         {
             if (x < 0 || x >= Main.maxTilesX)
                 return;
@@ -1811,8 +1905,6 @@ namespace CalamityMod
             Tile west = Main.tile[x - 1, y];
             Tile east = Main.tile[x + 1, y];
 
-            // Trying out what happens when setting the adjacent tiles to override brimstone states instead of overriding what happens with brimstone framing when forcing a merge in a given direction
-
             if (north != null && north.HasTile && tileMergeTypes[myType][north.TileType])
             {
                 // Register this tile as not automatically merging with the tile above it.
@@ -1820,7 +1912,7 @@ namespace CalamityMod
                 TileID.Sets.ChecksForMerge[myType] = true;
 
                 // Properly frame the adjacent tile given this constraint.
-                CustomMergeFrameExplicit(x, y - 1, north.TileType, myType, out _, out _, out _, out forceSameUp, false, false, false, false, false, mergeTypeBrimFrame, true);
+                CustomMergeFrameExplicit(x, y - 1, north.TileType, myType, out _, out _, out _, out forceSameUp, false, false, false, false, false);
             }
             if (west != null && west.HasTile && tileMergeTypes[myType][west.TileType])
             {
@@ -1829,7 +1921,7 @@ namespace CalamityMod
                 TileID.Sets.ChecksForMerge[myType] = true;
 
                 // Properly frame the adjacent tile given this constraint.
-                CustomMergeFrameExplicit(x - 1, y, west.TileType, myType, out _, out _, out forceSameLeft, out _, false, false, false, false, false, mergeTypeBrimFrame, true);
+                CustomMergeFrameExplicit(x - 1, y, west.TileType, myType, out _, out _, out forceSameLeft, out _, false, false, false, false, false);
             }
             if (east != null && east.HasTile && tileMergeTypes[myType][east.TileType])
             {
@@ -1838,7 +1930,7 @@ namespace CalamityMod
                 TileID.Sets.ChecksForMerge[myType] = true;
 
                 // Properly frame the adjacent tile given this constraint.
-                CustomMergeFrameExplicit(x + 1, y, east.TileType, myType, out _, out forceSameRight , out _, out _, false, false, false, false, false, mergeTypeBrimFrame, true);
+                CustomMergeFrameExplicit(x + 1, y, east.TileType, myType, out _, out forceSameRight, out _, out _, false, false, false, false, false);
             }
             if (south != null && south.HasTile && tileMergeTypes[myType][south.TileType])
             {
@@ -1847,11 +1939,490 @@ namespace CalamityMod
                 TileID.Sets.ChecksForMerge[myType] = true;
 
                 // Properly frame the adjacent tile given this constraint.
-                CustomMergeFrameExplicit(x, y + 1, south.TileType, myType, out forceSameDown, out _, out _, out _, false, false, false, false, false, mergeTypeBrimFrame, false);
+                CustomMergeFrameExplicit(x, y + 1, south.TileType, myType, out forceSameDown, out _, out _, out _, false, false, false, false, false);
             }
 
             // With all constraints determined, properly frame the tile a final time.
-            CustomMergeFrameExplicit(x, y, myType, mergeType, out _, out _, out _, out _, forceSameDown, forceSameUp, forceSameLeft, forceSameRight, true, myTypeBrimFrame, overrideBrimStates);
+            CustomMergeFrameExplicit(x, y, myType, mergeType, out _, out _, out _, out _, forceSameDown, forceSameUp, forceSameLeft, forceSameRight, true);
+        }
+        #endregion
+
+        #region Universal Merge Code
+        // Code responsible for the 'Universal Tile Merge' code created to get around the issues with merging brimstone tile framing
+        // It'll work for any tile regardless of framing and could in theory be added to vanilla tiles as well if desired
+        // A single tile could also be set to blend with multiple other tiles, though a new adjacency data array will be needed for each tile type it'll merge with as well as a new call of each function so it's probably not the best
+
+        // I chose to use bytes and byte masks to store and check the merge data so that the fully merge conditional tree wouldn't need to be called every frame for every tile
+        // Not sure if this is the best option, I thought it would minimise the amount of data required to store the adjacency info while being reasonably efficient
+        // Apologies for how unreadable this makes the code, I did my best to comment what each part of the merge tree in DrawUniversalMergeFrames is responsible for to compensate for this but it's still not ideal
+        // - Alta
+
+        /// <summary>
+        /// Call this in SetStaticDefaults. Used to set up the adjacency data array with the correct dimensions.
+        /// </summary>
+        internal static void SetUpUniversalMerge(int myType, int mergeType, string blendSheetPath, out MergeFrameData adjacencyData)
+        {
+            CalamityUtils.SetMerge(myType, mergeType, true);
+            adjacencyData = new MergeFrameData(new byte[Main.tile.Width, Main.tile.Height], mergeType, blendSheetPath);
+        }
+
+        /// <summary>
+        /// Call this in PostDraw. Uses adjacency data generated by GetAdjacencyData to draw the correct blend state over a given tile, regardless of what tile frame that tile is using
+        /// </summary>
+        internal static void DrawUniversalMergeFrames(int x, int y, List<MergeFrameData> mergeFrames)
+        {
+            Color shadingColour = Lighting.GetColor(x, y);
+            Tile myTile = Main.tile[x, y];
+            
+            foreach (var frame in mergeFrames)
+            {
+                // If it hasn't yet been initialized somehow... for some reason.
+                if (frame is null)
+                    continue;
+                
+                DrawUniversalMergeFrames(x, y, frame, shadingColour, myTile);
+            }
+        }
+        
+        internal static void DrawUniversalMergeFrames(int x, int y, MergeFrameData mergeFrameData, Color shadingColour, Tile myTile)
+        {
+            byte[,] adjacencyData = mergeFrameData.AdjacencyData;
+            var blendLayer = mergeFrameData.BlendSheet.Value;
+            int frameOffsetX = mergeFrameData.FrameOffsetX;
+            int frameOffsetY = mergeFrameData.FrameOffsetY;
+            
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 drawOffset = new Vector2(x * 16 - Main.screenPosition.X, y * 16 - Main.screenPosition.Y) + zero;
+
+            // Used for blending with metatiles/composite tiles (as in the tile being blended with is a metatile, not this tile)
+            int subFrameX = frameOffsetX * 270;
+            int subFrameY = frameOffsetY * 198;
+
+            byte thisTileData = adjacencyData[x, y];
+
+            // Get tile variant number
+            int randomFrame = myTile.TileFrameNumber;
+            int randomFrameX18 = randomFrame * 18;
+            int randomFrameX36 = randomFrame * 36;
+
+            // Couple of commonly used masks
+            // bit to relative tile pos for reference
+            // 4 0 5
+            // 3 X 1
+            // 7 2 6
+
+            byte maskAdjSides = 0b11110000;
+            byte maskAdjCorners = 0b00001111;
+
+            #region Merge Checks & Drawing
+            // Switch statement for the mutually exclusive states
+            switch (thisTileData & maskAdjSides)
+            {
+                case 0b11110000:
+                    // All sides
+                    Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX18 + subFrameX, 18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    return;
+
+                case 0b01110000:
+                    // All except north
+                    switch (thisTileData & 0b00001100)
+                    {
+                        case 0b00001100:
+                            // Extend to both north corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 90 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00001000:
+                            // Extend to northwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(198 + randomFrameX18 + subFrameX, 180 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000100:
+                            // Extend to northeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 180 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 144 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+
+                case 0b10110000:
+                    // All except east
+                    switch (thisTileData & 0b00000110)
+                    {
+                        case 0b00000110:
+                            // Extend to both east corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(108 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000100:
+                            // Extend to northeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(234 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000010:
+                            // Extend to southeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(198 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(162 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+
+                case 0b11010000:
+                    // All except south
+                    switch (thisTileData & 0b00000011)
+                    {
+                        case 0b00000011:
+                            // Extend to both south corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 72 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000010:
+                            // Extend to southeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 162 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000001:
+                            // Extend to southwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(198 + randomFrameX18 + subFrameX, 162 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 126 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+
+                case 0b11100000:
+                    // All except west
+                    switch (thisTileData & 0b00001001)
+                    {
+                        case 0b00001001:
+                            // Extend to both west corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(126 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000001:
+                            // Extend to southwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(216 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00001000:
+                            // Extend to northwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(252 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(180 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+
+                case 0b10010000:
+                    // North & West edges
+                    if ((thisTileData & 0b01100010) == 0b00000010)
+                    {
+                        // Blending tile at southeast corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 54 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+
+                    switch (thisTileData & 0b00000101)
+                    {
+                        case 0b00000101:
+                            // Extend to both corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 90 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000100:
+                            // Extend to northeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(234 + subFrameX, 54 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000001:
+                            // Extend to southwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(198 + subFrameX, 54 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 126 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+                case 0b11000000:
+                    // North & East edges
+                    if ((thisTileData & 0b00110001) == 0b00000001)
+                    {
+                        // Blending tile at southwest corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 54 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+
+                    switch (thisTileData & 0b00001010)
+                    {
+                        case 0b00001010:
+                            // Extend to both corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 90 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00001000:
+                            // Extend to northwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(252 + subFrameX, 54 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000010:
+                            // Extend to southeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(216 + subFrameX, 54 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 126 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+
+                case 0b01100000:
+                    // South & East edges
+                    if ((thisTileData & 0b10011000) == 0b00001000)
+                    {
+                        // Blending tile at northwest corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 72 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+
+                    switch (thisTileData & 0b00000101)
+                    {
+                        case 0b00000101:
+                            // Extend to both corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 108 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000100:
+                            // Extend to northeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(216 + subFrameX, 72 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000001:
+                            // Extend to southwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(252 + subFrameX, 72 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 144 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+
+                case 0b00110000:
+                    // South & West edges
+                    if ((thisTileData & 0b11000100) == 0b00000100)
+                    {
+                        // Blending tile at northeast corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 72 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    }
+
+                    switch (thisTileData & 0b00001010)
+                    {
+                        case 0b00001010:
+                            // Extend to both corners
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36, 108 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00001000:
+                            // Extend to northwest corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(198 + subFrameX, 72 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        case 0b00000010:
+                            // Extend to southeast corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(234 + subFrameX, 72 + randomFrameX36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                        default:
+                            // Extend to neither corner
+                            Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 144 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                            return;
+                    }
+            }
+
+            // Handle edges and corners, which due to how they can be overlayed in so many ways kind of need their own way of doing things
+            // North Edge
+            if ((thisTileData & 0b11010000) == 0b10000000)
+            {
+                switch (thisTileData & 0b00001100)
+                {
+                    case 0b00000000:
+                        // Narrow
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 108 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00001000:
+                        // Extends to Northwest corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(126 + subFrameX, 108 + randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00000100:
+                        // Extends to Northeast corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(108 + subFrameX, 108 + randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    default:
+                        // Extends to both corners
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX18 + subFrameX, 36 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                }
+            }
+
+            // East Edge
+            if ((thisTileData & 0b11100000) == 0b01000000)
+            {
+                switch (thisTileData & 0b00000110)
+                {
+                    case 0b00000000:
+                        // Narrow
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(90 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00000100:
+                        // Extends to Northeast corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX18 + subFrameX, 180 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00000010:
+                        // Extends to Southeast corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX18 + subFrameX, 162 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    default:
+                        // Extends to both corners
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(0 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                }
+            }
+
+            // South Edge
+            if ((thisTileData & 0b01110000) == 0b00100000)
+            {
+                switch (thisTileData & 0b00000011)
+                {
+                    case 0b00000000:
+                        // Narrow
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + randomFrameX18 + subFrameX, 54 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00000010:
+                        // Extends to Southeast corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(108 + subFrameX, 54 + randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00000001:
+                        // Extends to Southwest corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(126 + subFrameX, 54 + randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    default:
+                        // Extends to both corners
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX18 + subFrameX, 0 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                }
+            }
+
+            // West Edge
+            if ((thisTileData & 0b10110000) == 0b00010000)
+            {
+                switch (thisTileData & 0b00001001)
+                {
+                    case 0b00000000:
+                        // Narrow
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(144 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00000001:
+                        // Extends to Southwest corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(54 + randomFrameX18 + subFrameX, 162 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    case 0b00001000:
+                        // Extends to Northwest corner
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(54 + randomFrameX18 + subFrameX, 180 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                    default:
+                        // Extends to both corners
+                        Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(72 + subFrameX, randomFrameX18 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        break;
+                }
+            }
+
+            // Northwest Corner
+            if ((thisTileData & 0b10011000) == 0b00001000)
+            {
+                Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 72 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+
+            // Northeast Corner
+            if ((thisTileData & 0b11000100) == 0b00000100)
+            {
+                Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 72 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+
+            // Southeast Corner
+            if ((thisTileData & 0b01100010) == 0b00000010)
+            {
+                Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(randomFrameX36 + subFrameX, 54 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+
+            // Southwest Corner
+            if ((thisTileData & 0b00110001) == 0b00000001)
+            {
+                Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 54 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// Call this in TileFrame. Used to generate adjacency data used in DrawUniversalMergeFrames. Tiles using this need a 2d byte array
+        /// </summary>
+        internal static void GetAdjacencyData(int x, int y, MergeFrameData data)
+        {
+            int blendType = data.TileID;
+            
+            // bit to relative tile pos for reference
+            // 4 0 5
+            // 3 X 1
+            // 7 2 6
+            //                01234567
+            ref byte adjacencyData = ref data.AdjacencyData[x, y];
+            adjacencyData = 0b00000000;
+
+            if (x < 0 || x >= Main.maxTilesX)
+                return;
+            if (y < 0 || y >= Main.maxTilesY)
+                return;
+
+            Tile tile = Main.tile[x, y];
+            Tile north = Main.tile[x, y - 1];
+            Tile south = Main.tile[x, y + 1];
+            Tile west = Main.tile[x - 1, y];
+            Tile east = Main.tile[x + 1, y];
+            Tile southwest = Main.tile[x - 1, y + 1];
+            Tile southeast = Main.tile[x + 1, y + 1];
+            Tile northwest = Main.tile[x - 1, y - 1];
+            Tile northeast = Main.tile[x + 1, y - 1];
+
+            // North
+            if (GetBlendSpecific(tile, north, blendType, false) && (north.Slope == 0 || north.Slope == SlopeType.SlopeDownLeft || north.Slope == SlopeType.SlopeDownRight))
+                adjacencyData |= 0b10000000;
+            // East
+            if (GetBlendSpecific(tile, east, blendType, false) && (east.Slope == 0 || east.Slope == SlopeType.SlopeDownLeft || east.Slope == SlopeType.SlopeUpLeft))
+                adjacencyData |= 0b01000000;
+            // South
+            if (GetBlendSpecific(tile, south, blendType, false) && (south.Slope == 0 || south.Slope == SlopeType.SlopeUpLeft || south.Slope == SlopeType.SlopeUpRight))
+                adjacencyData |= 0b00100000;
+            // West
+            if (GetBlendSpecific(tile, west, blendType, false) && (west.Slope == 0 || west.Slope == SlopeType.SlopeDownRight || west.Slope == SlopeType.SlopeUpRight))
+                adjacencyData |= 0b00010000;
+            // Northwest
+            if (GetCornerBlendCondition(tile, northwest, north, west, blendType) && (northwest.Slope == 0 || northwest.Slope == SlopeType.SlopeDownRight) &&
+                (north.Slope == 0 || north.Slope == SlopeType.SlopeDownLeft || north.Slope == SlopeType.SlopeUpLeft) &&
+                (west.Slope == 0 || west.Slope == SlopeType.SlopeUpLeft || west.Slope == SlopeType.SlopeUpRight))
+                adjacencyData |= 0b00001000;
+            // Northeast
+            if (GetCornerBlendCondition(tile, northeast, north, east, blendType) && (northeast.Slope == 0 || northeast.Slope == SlopeType.SlopeDownLeft) &&
+                (north.Slope == 0 || north.Slope == SlopeType.SlopeDownRight || north.Slope == SlopeType.SlopeUpRight) &&
+                (east.Slope == 0 || east.Slope == SlopeType.SlopeUpLeft || east.Slope == SlopeType.SlopeUpRight))
+                adjacencyData |= 0b00000100;
+            // Southeast
+            if (GetCornerBlendCondition(tile, southeast, south, east, blendType) && !southeast.IsHalfBlock && (southeast.Slope == 0 || southeast.Slope == SlopeType.SlopeUpLeft) &&
+                (south.Slope == 0 || south.Slope == SlopeType.SlopeDownRight || south.Slope == SlopeType.SlopeUpRight) &&
+                (east.Slope == 0 || east.Slope == SlopeType.SlopeDownLeft || east.Slope == SlopeType.SlopeDownRight))
+                adjacencyData |= 0b00000010;
+            // Southwest
+            if (GetCornerBlendCondition(tile, southwest, south, west, blendType) && !southwest.IsHalfBlock && (southwest.Slope == 0 || southwest.Slope == SlopeType.SlopeUpRight) &&
+                (south.Slope == 0 || south.Slope == SlopeType.SlopeDownLeft || south.Slope == SlopeType.SlopeUpLeft) &&
+                (west.Slope == 0 || west.Slope == SlopeType.SlopeDownLeft || west.Slope == SlopeType.SlopeDownRight))
+                adjacencyData |= 0b00000001;
+        }
+
+        /// <summary>
+        /// Used to get the correct corner adjacency data because it's more complex than the simpler cardinal directions
+        /// </summary>
+        private static bool GetCornerBlendCondition(Tile myTile, Tile mergeTileCorner, Tile mergeTileEdgeA, Tile mergeTileEdgeB, int blendType)
+        {
+            int cornerType = mergeTileCorner.TileType;
+            int edgeAType = mergeTileEdgeA.TileType;
+            int edgeBType = mergeTileEdgeB.TileType;
+
+            bool isBlendTypeAdjacent = cornerType == blendType || edgeAType == blendType || edgeBType == blendType;
+            bool areAllAdjacentsBlendable = GetBlendSpecific(myTile, mergeTileCorner, blendType, true) && GetBlendSpecific(myTile, mergeTileEdgeA, blendType, true) && GetBlendSpecific(myTile, mergeTileEdgeB, blendType, true);
+
+            return isBlendTypeAdjacent && areAllAdjacentsBlendable;
         }
         #endregion
     }

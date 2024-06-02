@@ -7,17 +7,13 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class BobbitHead : ModProjectile
+    public class BobbitHead : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public const float PullSpeed = 24f;
         public const float ReelbackSpeed = 28f;
         public const float LaunchSpeed = 25f;
         public const float GrappleRangInTiles = 40f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bobbit Head");
-        }
-
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.GemHookAmethyst);

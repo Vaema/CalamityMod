@@ -1,34 +1,27 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class ViralSprout : ModItem
+    public class ViralSprout : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Viral Sprout");
-            Tooltip.SetDefault("Summons a sage spirit to fight for you\n" +
-                "Inflicts Sage Poison, a debuff that becomes stronger the more spirits you own");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 24;
-            Item.mana = 10;
             Item.width = 48;
             Item.height = 56;
+            Item.damage = 30;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 19;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
@@ -46,13 +39,13 @@ namespace CalamityMod.Items.Weapons.Summon
                     Main.projectile[p].originalDamage = Item.damage;
 
                 int minionCount = 0;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != type || !Main.projectile[i].active || Main.projectile[i].owner != player.whoAmI)
+                    if (pro.type != type || pro.owner != player.whoAmI)
                         continue;
 
-                    Main.projectile[i].localAI[0] = minionCount;
-                    Main.projectile[i].netUpdate = true;
+                    pro.localAI[0] = minionCount;
+                    pro.netUpdate = true;
                     minionCount++;
                 }
             }

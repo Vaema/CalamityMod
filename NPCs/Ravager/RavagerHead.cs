@@ -3,19 +3,20 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
     public class RavagerHead : ModNPC
     {
         public static readonly SoundStyle MissileSound = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileLaunch");
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Ravager");
         }
 
         public override void SetDefaults()
@@ -26,12 +27,11 @@ namespace CalamityMod.NPCs.Ravager
             NPC.height = 80;
             NPC.defense = 40;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 19182;
+            NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.alpha = 255;
             NPC.HitSound = RavagerBody.HitSound;
@@ -49,16 +49,19 @@ namespace CalamityMod.NPCs.Ravager
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
             if (CalamityGlobalNPC.scavenger < 0 || !Main.npc[CalamityGlobalNPC.scavenger].active)
             {
-                NPC.life = 0;
-                NPC.HitEffect();
-                NPC.active = false;
-                NPC.netUpdate = true;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    NPC.StrikeInstantKill();
+
                 return;
             }
 
@@ -108,18 +111,18 @@ namespace CalamityMod.NPCs.Ravager
 
         public override bool CheckActive() => false;
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life > 0)
             {
-                int num285 = 0;
-                while ((double)num285 < damage / (double)NPC.lifeMax * 100.0)
+                int dustCounter = 0;
+                while ((double)dustCounter < hit.Damage / (double)NPC.lifeMax * 100.0)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, (float)hitDirection, -1f, 0, default, 1f);
-                    num285++;
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, (float)hit.HitDirection, -1f, 0, default, 1f);
+                    dustCounter++;
                 }
             }
-            else if (Main.netMode != NetmodeID.MultiplayerClient && !CalamityWorld.getFixedBoi) //GFB does something else
+            else if (Main.netMode != NetmodeID.MultiplayerClient && !Main.zenithWorld) //GFB does something else
             {
                 NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.position.Y + NPC.height, ModContent.NPCType<RavagerHead2>(), NPC.whoAmI);
             }

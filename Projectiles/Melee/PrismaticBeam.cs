@@ -2,17 +2,18 @@
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class PrismaticBeam : BaseLaserbeamProjectile
+    public class PrismaticBeam : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Magic/YharimsCrystalBeam";
 
         public static readonly Color[] Colors = new Color[]
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
         public override Color LaserOverlayColor => CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly / ColorSet.Length % 1f, ColorSet);
         public override Color LightCastColor => LaserOverlayColor;
-        public override float Lifetime => 300f;
+        public override float Lifetime => 900f;
         public override float MaxScale => 1.5f;
         public override float MaxLaserLength => 2200f;
         public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayStart", AssetRequestMode.ImmediateLoad).Value;
@@ -55,23 +56,17 @@ namespace CalamityMod.Projectiles.Melee
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayEnd", AssetRequestMode.ImmediateLoad).Value;
         private const float AimResponsiveness = 0.8f; // Last Prism is 0.92f. Lower makes the laser turn faster.
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Prismatic Beam");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 6;
             Projectile.height = 6;
             Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = MeleeRangedHybridDamageClass.Instance;
             Projectile.scale = 1.5f;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.hide = true;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 900;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
@@ -119,7 +114,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 spawnPos = Projectile.Center;
                 for (int k = 0; k < dustCount + 1; k++)
                 {
-                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, 267, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
+                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, DustID.RainbowMk2, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
                     dust.position += Main.rand.NextVector2Square(-10f, 10f);
                     dust.velocity = Main.rand.NextVector2Unit() * (10f - dustCount * 2f) / 10f;
                     dust.color = Main.rand.Next(Colors);
@@ -163,13 +158,13 @@ namespace CalamityMod.Projectiles.Melee
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + unit * LaserLength, Projectile.width + 16, DelegateMethods.CutTiles);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Nightwither>(), 150);
             target.AddBuff(BuffID.Daybreak, 150);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Nightwither>(), 150);
             target.AddBuff(BuffID.Daybreak, 150);

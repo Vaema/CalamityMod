@@ -1,16 +1,15 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
 using Terraria.ID;
-using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Body)]
-    public class SCalRobes : ModItem
+    public class SCalRobes : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Calamitous Robes");
 
             if (Main.netMode != NetmodeID.Server)
             {

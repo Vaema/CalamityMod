@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class DWArrow : ModProjectile
+    public class DWArrow : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Death's Arrow");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -33,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = (Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi)) + MathHelper.ToRadians(90) *Projectile.direction;
+            Projectile.rotation = (Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi)) + MathHelper.ToRadians(90) * Projectile.direction;
 
             if (Projectile.ai[1] == 0f)
             {
@@ -42,20 +38,20 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             Lighting.AddLight(Projectile.Center, 0.4f, 0.2f, 0.4f);
-            for (int num121 = 0; num121 < 2; num121++)
+            for (int i = 0; i < 2; i++)
             {
-                Dust dust4 = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
-                dust4.velocity = Vector2.Zero;
-                dust4.position -= Projectile.velocity / 5f * (float)num121;
-                dust4.noGravity = true;
-                dust4.scale = 0.8f;
-                dust4.noLight = true;
+                Dust dusty = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
+                dusty.velocity = Vector2.Zero;
+                dusty.position -= Projectile.velocity / 5f * (float)i;
+                dusty.noGravity = true;
+                dusty.scale = 0.8f;
+                dusty.noLight = true;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
 
         public override bool PreDraw(ref Color lightColor)
         {

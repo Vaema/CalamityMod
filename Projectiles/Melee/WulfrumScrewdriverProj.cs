@@ -1,23 +1,25 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
-using static CalamityMod.CalamityUtils;
 using ReLogic.Content;
-using Terraria.Graphics.Shaders;
+using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class WulfrumScrewdriverProj : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<WulfrumScrewdriver>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/WulfrumScrewdriver";
         public float Timer => MaxTime - Projectile.timeLeft;
         public float LifetimeCompletion => Timer / (float)MaxTime;
@@ -29,10 +31,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public static Asset<Texture2D> SmearTex;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Screwdriver");
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -55,7 +53,7 @@ namespace CalamityMod.Projectiles.Melee
         public CurveSegment HoldSegment = new CurveSegment(SineBumpEasing, 0.2f, 1f, 0.2f);
         public CurveSegment RetractSegment = new CurveSegment(PolyOutEasing, 0.76f, 1f, -0.8f, 3);
         public CurveSegment BumpSegment = new CurveSegment(SineBumpEasing, 0.9f, 0.2f, 0.15f);
-        internal float DistanceFromPlayer => PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { ThrustSegment, HoldSegment,  RetractSegment, BumpSegment });
+        internal float DistanceFromPlayer => PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { ThrustSegment, HoldSegment, RetractSegment, BumpSegment });
         public Vector2 OffsetFromPlayer => Projectile.velocity * DistanceFromPlayer * 12f;
 
 
@@ -63,8 +61,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             //The hitbox is simplified into a line collision.
             float collisionPoint = 0f;
-            float bladeLenght = 78f * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.MountedCenter + OffsetFromPlayer, Owner.MountedCenter + OffsetFromPlayer + (Projectile.velocity * bladeLenght), 24, ref collisionPoint);
+            float bladeLength = 78f * Projectile.scale;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.MountedCenter + OffsetFromPlayer, Owner.MountedCenter + OffsetFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint);
         }
 
         public override void AI()
@@ -78,26 +76,25 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //Manage position and rotation
-            Projectile.Center = Owner.MountedCenter + OffsetFromPlayer ;
+            Projectile.Center = Owner.MountedCenter + OffsetFromPlayer;
             Projectile.scale = 1f + (float)Math.Sin(LifetimeCompletion * MathHelper.Pi) * 0.2f; //SWAGGER
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(Projectile.velocity.X);
+            Owner.ChangeDir(MathF.Sign(Projectile.velocity.X));
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.velocity.ToRotation() * Owner.gravDir - MathHelper.PiOver2);
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
 
 
             //Check for launchable screws.
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
                 if (proj.ModProjectile != null && proj.owner == Projectile.owner && proj.ModProjectile is WulfrumScrew screw && screw.BazingaTime == 0)
                 {
                     float collisionPoint = 0f;
-                    float bladeLenght = 86f * Projectile.scale;
-                    if (Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + OffsetFromPlayer, Owner.Center + OffsetFromPlayer + (Projectile.velocity * bladeLenght), 34, ref collisionPoint))
+                    float bladeLength = 86f * Projectile.scale;
+                    if (Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + OffsetFromPlayer, Owner.Center + OffsetFromPlayer + (Projectile.velocity * bladeLength), 34, ref collisionPoint))
                     {
                         Vector2 thudVelocity = TrueDirection.ToRotationVector2() * 6f;
                         NPC potentialAimAssist = FindTarget();
@@ -116,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
 
                         if (screw.AlreadyBazinged > 2)
                             SoundEngine.PlaySound(WulfrumScrewdriver.FunnyUltrablingSound, Projectile.Center);
-                        
+
 
                         if (Main.myPlayer == proj.owner)
                         {
@@ -134,10 +131,8 @@ namespace CalamityMod.Projectiles.Melee
             float bestScore = 0;
             NPC bestTarget = null;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC potentialTarget in Main.ActiveNPCs)
             {
-                NPC potentialTarget = Main.npc[i];
-
                 if (!potentialTarget.CanBeChasedBy(null, false))
                     continue;
 
@@ -171,7 +166,7 @@ namespace CalamityMod.Projectiles.Melee
             return score;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(WulfrumScrewdriver.ThudSound, target.Center);
             Projectile.timeLeft = 0;
@@ -196,10 +191,10 @@ namespace CalamityMod.Projectiles.Melee
             }
 
 
-            base.OnHitNPC(target, damage, knockback, crit);
+            base.OnHitNPC(target, hit, damageDone);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.numHits == 0)
             {
@@ -217,7 +212,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             if (SmearTex == null)
                 SmearTex = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumLongThrust");

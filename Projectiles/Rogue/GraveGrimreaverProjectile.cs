@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class GraveGrimreaverProjectile : ModProjectile
+    public class GraveGrimreaverProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/GraveGrimreaver";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Grave Grimreaver");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -38,10 +38,10 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item7, Projectile.position);
             }
 
-            //Spawn a skull every 30 frames
-            if (Projectile.timeLeft % 30 == 0)
+            //Spawn a skull every 90 frames
+            if (Projectile.timeLeft % 90 == 0)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0.2f, ModContent.ProjectileType<GrimreaverSkull>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0.2f, ModContent.ProjectileType<GrimreaverSkull>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner, 1f, 0f);
             }
 
             CalamityUtils.HomeInOnNPC(Projectile, true, 250f, 4f, 14f);
@@ -56,17 +56,11 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Confused, 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Confused, 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Confused, 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Confused, 180);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
             if (Projectile.Calamity().stealthStrike)
@@ -77,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
                 DustExplosion(15, 6, 12, 30, 2.4f);
                 for (int i = 0; i < 10; i++)
                 {
-                    CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 600f, 100f, 700f, 1000f, 20, ModContent.ProjectileType<GrimreaverSkull>(), (int)(Projectile.damage * 0.75f), 3f, Projectile.owner);
+                    CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 600f, 100f, 700f, 1000f, 20, ModContent.ProjectileType<GrimreaverSkull>(), (int)(Projectile.damage * 0.35f), 3f, Projectile.owner);
                 }
             }
             else
@@ -104,22 +98,22 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < amount; i++)
             {
-                float num463 = (float)Main.rand.Next(-spreadspeed, spreadspeed + 1);
-                float num464 = (float)Main.rand.Next(-spreadspeed, spreadspeed + 1);
-                float num465 = (float)Main.rand.Next(minspeed, maxspeed);
-                float num466 = (float)Math.Sqrt((double)(num463 * num463 + num464 * num464));
-                num466 = num465 / num466;
-                num463 *= num466;
-                num464 *= num466;
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 75, 0, 0, 0, default, size);
+                float random1 = (float)Main.rand.Next(-spreadspeed, spreadspeed + 1);
+                float random2 = (float)Main.rand.Next(-spreadspeed, spreadspeed + 1);
+                float random3 = (float)Main.rand.Next(minspeed, maxspeed);
+                float randomAdjust = (float)Math.Sqrt((double)(random1 * random1 + random2 * random2));
+                randomAdjust = random3 / randomAdjust;
+                random1 *= randomAdjust;
+                random2 *= randomAdjust;
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.CursedTorch, 0, 0, 0, default, size);
                 Dust dust = Main.dust[d];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;
                 dust.position.Y = Projectile.Center.Y;
                 dust.position.X += (float)Main.rand.Next(-spreadspeed, spreadspeed + 1);
                 dust.position.Y += (float)Main.rand.Next(-spreadspeed, spreadspeed + 1);
-                dust.velocity.X = num463;
-                dust.velocity.Y = num464;
+                dust.velocity.X = random1;
+                dust.velocity.Y = random2;
             }
         }
     }

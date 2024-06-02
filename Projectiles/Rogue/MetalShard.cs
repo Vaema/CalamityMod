@@ -1,20 +1,16 @@
 ﻿
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class MetalShard : ModProjectile
+    public class MetalShard : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Metal Shard");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.friendly = true;
@@ -40,10 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.StickyProjAI(15);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            Projectile.ModifyHitNPCSticky(8 , true);
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(8);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -62,18 +55,21 @@ namespace CalamityMod.Projectiles.Rogue
             switch (Projectile.localAI[1])
             {
 
-                case 2f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard2").Value;
-                         break;
-                case 3f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard3").Value;
-                         break;
-                default: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard").Value;
-                         break;
+                case 2f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard2").Value;
+                    break;
+                case 3f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard3").Value;
+                    break;
+                default:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard").Value;
+                    break;
             }
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 6; i++)
             {

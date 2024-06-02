@@ -3,18 +3,19 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.DraedonStructures
 {
-    public class LaboratoryPlating : ModItem
+    public class LaboratoryPlating : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -33,26 +34,26 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
                 Register();
 
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<RustedPlating>()).
+                AddIngredient<RustedPlating>().
                 AddTile(TileID.Anvils).
                 Register();
 
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<LaboratoryShelf>(), 2).
+                AddIngredient<LaboratoryShelf>(2).
                 Register();
 
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<LaboratoryPlatingWall>(), 4).
+                AddIngredient<LaboratoryPlatingWall>(4).
                 AddTile(TileID.WorkBenches).
                 Register();
 
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<LaboratoryPlateBeam>(), 4).
+                AddIngredient<LaboratoryPlateBeam>(4).
                 AddTile(TileID.WorkBenches).
                 Register();
 
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<LaboratoryPlatePillar>(), 4).
+                AddIngredient<LaboratoryPlatePillar>(4).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

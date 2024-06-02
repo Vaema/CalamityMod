@@ -1,12 +1,13 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class EternityCircle : ModProjectile
+    public class EternityCircle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public int TargetNPCIndex
@@ -32,11 +33,6 @@ namespace CalamityMod.Projectiles.Magic
         public const float TargetOffsetRadius = 490f;
         public const float SinusoidalOffsetAngleIncrement = 0.54f;
         public static readonly float SinusoidalPositionAngleIncrement = MathHelper.ToRadians(3.5f);
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Eternity");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 2;

@@ -1,14 +1,18 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Microsoft.Xna.Framework;
-using System.IO;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -50,9 +54,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wulfrum Drone");
             Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -78,16 +81,19 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumDroneBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("Rotating their small frames, they swoop at potential intruders into a predefined territory that no longer exists. They wander without purpose.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.WulfrumDrone")
             });
         }
 
@@ -102,18 +108,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             Player player = Main.player[NPC.target];
 
             bool farFromPlayer = NPC.Distance(player.Center) > 960f;
-            bool obstanceInFrontOfPlayer = !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+            bool obstacleInFrontOfPlayer = Main.remixWorld ? false : !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
 
-            if (NPC.target < 0 || NPC.target >= 255 || farFromPlayer || obstanceInFrontOfPlayer || player.dead || !player.active)
+            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || farFromPlayer || obstacleInFrontOfPlayer || player.dead || !player.active)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
                 farFromPlayer = NPC.Distance(player.Center) > 960f;
-                obstanceInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+                obstacleInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
                 // Fly away if there is no living target, or the closest target is too far away.
-                if (player.dead || !player.active || farFromPlayer || obstanceInFrontOfPlayer)
+                if (player.dead || !player.active || farFromPlayer || obstacleInFrontOfPlayer)
                 {
-                    if (FlyAwayTimer > 360)
+                    if (FlyAwayTimer > 420)
                     {
                         NPC.velocity = Vector2.Lerp(NPC.velocity, Vector2.UnitY * -8f, 0.1f);
                         NPC.rotation = NPC.rotation.AngleTowards(0f, MathHelper.ToRadians(15f));
@@ -140,16 +146,21 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (AIState == DroneAIState.Searching)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (NPC.direction == 0)
                     NPC.direction = 1;
 
+                float searchVelocity = CalamityWorld.death ? 10f : CalamityWorld.revenge ? 9f : Main.expertMode ? 8f : 6f;
                 Vector2 destination = player.Center + new Vector2(300f * NPC.direction, -90f);
-                NPC.velocity = Vector2.Lerp(NPC.velocity, NPC.SafeDirectionTo(destination) * 6f, 0.1f);
+                NPC.velocity = Vector2.Lerp(NPC.velocity, NPC.SafeDirectionTo(destination) * searchVelocity, searchVelocity / 60f);
                 if (NPC.Distance(destination) < 40f)
                 {
                     Time++;
                     NPC.velocity *= 0.95f;
-                    if (Time >= 40f)
+                    float chargeDelay = CalamityWorld.death ? 10f : CalamityWorld.revenge ? 15f : Main.expertMode ? 20f : 40f;
+                    if (Time >= chargeDelay)
                     {
                         AIState = DroneAIState.Charging;
                         NPC.netUpdate = true;
@@ -158,14 +169,36 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
             else
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
+                float chargeVelocity = CalamityWorld.death ? 10f : CalamityWorld.revenge ? 9f : Main.expertMode ? 8f : 6f;
                 if (HorizontalChargeTime < 25)
-                    NPC.velocity = Vector2.Lerp(NPC.velocity, NPC.SafeDirectionTo(player.Center) * 6f, 0.1f);
+                    NPC.velocity = Vector2.Lerp(NPC.velocity, NPC.SafeDirectionTo(player.Center) * chargeVelocity, chargeVelocity / 60f);
 
                 if (Supercharged && Main.netMode != NetmodeID.MultiplayerClient && HorizontalChargeTime % 30f == 29f)
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitX * 6f * NPC.spriteDirection, NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 6f, ProjectileID.SaucerLaser, 12, 0f);
+                {
+                    int damage = Main.masterMode ? 8 : Main.expertMode ? 9 : 12;
+                    if (Main.zenithWorld)
+                    {
+                        int spread = 15;
+                        for (int times = CalamityWorld.LegendaryMode ? 3 : 2; times > 0; times--)
+                        {
+                            Vector2 velocity = NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 6f;
+                            Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2, 3), velocity.Y + Main.rand.Next(-2, 3)).RotatedBy(MathHelper.ToRadians(spread));
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitX * 6f * NPC.spriteDirection, perturbedspeed, ProjectileID.SaucerLaser, damage, 0f);
+                            spread -= Main.rand.Next(5, 8);
+                        }
+                    }
+                    else
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitX * 6f * NPC.spriteDirection, NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 6f, ProjectileID.SaucerLaser, damage, 0f);
 
+                    SoundEngine.PlaySound(SoundID.Item12);
+                }
+
+                float totalChargeTime = TotalHorizontalChargeTime - (CalamityWorld.death ? 25f : CalamityWorld.revenge ? 20f : Main.expertMode ? 15f : 0f);
                 HorizontalChargeTime++;
-                if (HorizontalChargeTime > TotalHorizontalChargeTime)
+                if (HorizontalChargeTime > totalChargeTime)
                 {
                     AIState = DroneAIState.Searching;
                     HorizontalChargeTime = 0f;
@@ -198,24 +231,23 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            float pylonMult = NPC.AnyNPCs(ModContent.NPCType<WulfrumAmplifier>()) ? 5.5f : 1f;
-            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur)
+            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || (!spawnInfo.Player.ZoneOverworldHeight && !Main.remixWorld) || (!spawnInfo.Player.ZoneNormalCaverns && spawnInfo.Player.ZoneGlowshroom && Main.remixWorld))
                 return 0f;
 
-            return SpawnCondition.OverworldDaySlime.Chance * (Main.hardMode ? 0.010f : 0.1f) * pylonMult;
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDaySlime.Chance) * (Main.hardMode ? 0.010f : 0.135f) * (NPC.AnyNPCs(ModContent.NPCType<WulfrumAmplifier>()) ? 5.5f : 1f);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hit.HitDirection, -1f, 0, default, 1f);
                 }
 
                 if (!Main.dedServ)

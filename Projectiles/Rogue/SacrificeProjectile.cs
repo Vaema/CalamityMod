@@ -1,13 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using System.IO;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SacrificeProjectile : ModProjectile
+    public class SacrificeProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public Player Owner => Main.player[Projectile.owner];
         public bool StickingToAnything => Projectile.ai[0] == 1f;
         public bool ReturningToOwner => Projectile.ai[0] == 2f;
@@ -15,7 +16,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Sacrifice";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sacrificial Dagger");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
         }
@@ -40,9 +40,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            if (Projectile.Calamity().LocketClone)
+                AbleToHealOwner = false; // No healing you too much of your hp
+
             if (ReturningToOwner)
             {
-                Projectile.timeLeft = 15;
+                Projectile.timeLeft = 20;
                 Projectile.velocity = Projectile.SafeDirectionTo(Owner.Center) * 28f;
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi + MathHelper.PiOver4;
                 Projectile.damage = 0;
@@ -52,10 +55,17 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (!Owner.moonLeech && AbleToHealOwner)
                     {
-                        int healAmount = Projectile.Calamity().stealthStrike ? 35 : 3;
+                        int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
 
-                        Owner.HealEffect(healAmount);
-                        Owner.statLife += healAmount;
+                        if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                        {
+                            Projectile.Kill();
+                            return;
+                        }
+
+                        Main.player[Main.myPlayer].lifeSteal -= heal;
+                        Owner.HealEffect(heal);
+                        Owner.statLife += heal;
                         if (Owner.statLife > Owner.statLifeMax2)
                             Owner.statLife = Owner.statLifeMax2;
                     }
@@ -81,15 +91,15 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.timeLeft > 90 && !Projectile.Calamity().stealthStrike)
                     Projectile.timeLeft = 90;
-                else if (Projectile.timeLeft > 120 && Projectile.Calamity().stealthStrike)
-                    Projectile.timeLeft = 120;
+                else if (Projectile.timeLeft > 180 && Projectile.Calamity().stealthStrike)
+                    Projectile.timeLeft = 180;
             }
-                Projectile.StickyProjAI(50);
+            Projectile.StickyProjAI(50);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            Projectile.ModifyHitNPCSticky(15, true);
+            Projectile.ModifyHitNPCSticky(15);
             Projectile.velocity *= 0.5f;
         }
 
@@ -99,11 +109,11 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust blood = Dust.NewDustDirect(Projectile.Center, 1, 1, 5, 0, 0, 0, default, 1.5f);
+                Dust blood = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.Blood, 0, 0, 0, default, 1.5f);
                 blood.position += Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 42f;
                 blood.noGravity = true;
             }

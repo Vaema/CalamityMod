@@ -1,24 +1,24 @@
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TruePurityProjection : ModProjectile //The boring plain one. With cool homing now
+    public class TruePurityProjection : ModProjectile, ILocalizedModType //The boring plain one. With cool homing now
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public NPC target;
         public Player Owner => Main.player[Projectile.owner];
         public override string Texture => "CalamityMod/Projectiles/Melee/BrokenBiomeBlade_PurityProjection";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Purity Projection");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.tileCollide = true;
 
             Lighting.AddLight(Projectile.Center, 0.75f, 1f, 0.24f);
-            int dustParticle = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 75, 0f, 0f, 100, default, 0.9f);
+            int dustParticle = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CursedTorch, 0f, 0f, 100, default, 0.9f);
             Main.dust[dustParticle].noGravity = true;
             Main.dust[dustParticle].velocity *= 0.5f;
             Main.dust[dustParticle].velocity += Projectile.velocity * 0.1f;
@@ -78,19 +78,19 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
             for (int i = 0; i <= 15; i++)
             {
                 Vector2 displace = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (-0.5f + (i / 15f)) * 88f;
-                int dustParticle = Dust.NewDust(Projectile.Center + displace, Projectile.width, Projectile.height, 75, 0f, 0f, 100, default, 2f);
+                int dustParticle = Dust.NewDust(Projectile.Center + displace, Projectile.width, Projectile.height, DustID.CursedTorch, 0f, 0f, 100, default, 2f);
                 Main.dust[dustParticle].noGravity = true;
                 Main.dust[dustParticle].velocity = Projectile.oldVelocity;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             int debuffTime = 90;
             target.AddBuff(BuffType<ArmorCrunch>(), debuffTime);

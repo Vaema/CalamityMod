@@ -1,9 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,18 +10,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class RadiantStar : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Radiant Star");
-            Tooltip.SetDefault("Throws daggers that explode and split after a while\n" +
-                "Stealth strike splits more with a devastating explosion and sucks enemies in");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.width = 52;
-            Item.height = 48;
+            Item.width = 54;
+            Item.height = 54;
             Item.damage = 55; //33
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -31,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.shoot = ModContent.ProjectileType<RadiantStarKnife>();
             Item.shootSpeed = 20f;
@@ -58,9 +49,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<Prismalline>().
                 AddIngredient<AstralBar>(10).
-                AddIngredient<Stardust>(15).
+                AddIngredient<StarblightSoot>(15).
                 AddIngredient(ItemID.FallenStar, 10).
-                AddTile(TileID.LunarCraftingStation).Register();
+                AddTile(TileID.LunarCraftingStation).
+                Register();
         }
     }
 }

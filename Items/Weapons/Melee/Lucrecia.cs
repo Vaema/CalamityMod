@@ -1,53 +1,41 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee.Shortswords;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Lucrecia : ModItem
+    public class Lucrecia : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Lucrecia");
-            Tooltip.SetDefault("Finesse\n" +
-                "Striking an enemy makes you immune for a short time\n" +
-                "Fires a DNA chain\n" +
-                "Receives 33% benefit from melee speed bonuses");
-            SacrificeTotal = 1;
-            ItemID.Sets.BonusAttackSpeedMultiplier[Item.type] = 0.33f;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
-            Item.useStyle = ItemUseStyleID.Rapier;
-            Item.DamageType = TrueMeleeDamageClass.Instance;
-            Item.useTurn = false;
-            Item.useAnimation = 25;
-            Item.useTime = 25;
             Item.width = 58;
             Item.height = 58;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.autoReuse = true;
+            Item.useStyle = ItemUseStyleID.Rapier;
             Item.damage = 90;
+            Item.DamageType = DamageClass.Melee;
+            Item.useAnimation = Item.useTime = 30;
+            Item.shoot = ModContent.ProjectileType<LucreciaProj>();
+            Item.shootSpeed = 4.2f;
             Item.knockBack = 8.25f;
             Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<LucreciaProj>();
-            Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
+
+        public override bool MeleePrefix() => true;
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<LifeAlloy>(5).
+                AddIngredient<CoreofCalamity>().
                 AddIngredient(ItemID.SoulofLight, 5).
                 AddIngredient(ItemID.SoulofNight, 5).
                 AddTile(TileID.MythrilAnvil).

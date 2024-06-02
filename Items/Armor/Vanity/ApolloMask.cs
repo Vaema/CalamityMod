@@ -1,19 +1,17 @@
-﻿using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class ApolloMask : ModItem, IExtendedHat
+    public class ApolloMask : ModItem, IExtendedHat, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Apollo Mask");
-
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);

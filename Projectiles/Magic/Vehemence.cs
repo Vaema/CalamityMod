@@ -1,22 +1,22 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class Vehemence : ModProjectile
+    public class Vehemence : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public ref float Time => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blast of Vehemence");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -79,9 +79,9 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
             if (Main.myPlayer == Projectile.owner)
             {
                 int skullID = ModContent.ProjectileType<VehemenceSkull>();
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust brimstoneMagic = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(2) ? (int)CalamityDusts.Brimstone : 27);
+                    Dust brimstoneMagic = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? (int)CalamityDusts.Brimstone : 27);
                     brimstoneMagic.velocity = Main.rand.NextVector2Circular(18f, 18f);
                     brimstoneMagic.scale = 1.7f;
                     brimstoneMagic.noGravity = true;

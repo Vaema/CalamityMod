@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -9,7 +11,6 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -17,6 +18,7 @@ using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
@@ -25,8 +27,6 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Archmage");
-
             Main.npcFrameCount[NPC.type] = 25;
             NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
             NPCID.Sets.AttackFrameCount[NPC.type] = 4;
@@ -34,16 +34,17 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.AttackType[NPC.type] = 0;
             NPCID.Sets.AttackTime[NPC.type] = 90;
             NPCID.Sets.AttackAverageChance[NPC.type] = 30;
+            NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<SnowBiome>(AffectionLevel.Like)
-                .SetBiomeAffection<DesertBiome>(AffectionLevel.Dislike) 
-                .SetNPCAffection(NPCID.Wizard, AffectionLevel.Like) 
-                .SetNPCAffection(NPCID.Cyborg, AffectionLevel.Dislike)
-            ;
-			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0) {
-				Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
-			};
-			NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+                .SetBiomeAffection<DesertBiome>(AffectionLevel.Dislike)
+                .SetNPCAffection(NPCID.Wizard, AffectionLevel.Like)
+                .SetNPCAffection(NPCID.Cyborg, AffectionLevel.Dislike);
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
         }
 
         public override void SetDefaults()
@@ -65,12 +66,10 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,  
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("His face shows great age, but also great wisdom. The Archmage once served the Godslayer, but abandoned him later into the war. He sells various frosty wares, but keeps his most powerful spells to himself.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DILF")
             });
         }
 
@@ -82,53 +81,48 @@ namespace CalamityMod.NPCs.TownNPCs
             }
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money) => DownedBossSystem.downedCryogen;
+        public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCryogen;
 
-		public override List<string> SetNPCNameList() => new List<string>() { "Permafrost" };
+        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Permafrost") };
 
         public override string GetChat()
         {
             if (NPC.homeless && !CalamityWorld.foundHomePermafrost)
-            {
-                if (Main.rand.NextBool(2))
-                    return "I have not seen such a sky in decades. Who are you, to so brazenly march against that Tyrant?";
-                else
-                    return "I... deeply appreciate you rescuing me from being trapped within my frozen castle. It's been many, many years.";
-            }
+                return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
 
-            IList<string> dialogue = new List<string>();
+            WeightedRandom<string> dialogue = new WeightedRandom<string>();
+
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
 
             if (Main.dayTime && !Main.player[Main.myPlayer].ZoneSnow)
             {
-                dialogue.Add("The sun beats down harshly upon my creations here. If you would allow me to conjure a blizzard every now and then...");
-                dialogue.Add("I must admit, I'm not quite used to this weather. It's far too warm for my tastes...");
+                dialogue.Add(this.GetLocalizedValue("Chat.Day1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Day2"));
             }
-            else
+            else if (!Main.dayTime)
             {
-                dialogue.Add("Nightfall is a good time for practicing magic. We mages often rely on celestial bodies and their fragments to enhance our mana.");
-                dialogue.Add("Necromancy was never a field I found interesting. Why utilize the rotting corpses of people, when you could form far more elegant servants of ice?");
+                dialogue.Add(this.GetLocalizedValue("Chat.Night1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.Night2"));
             }
-
-            dialogue.Add("If you have a request, make it quick. I am in the process of weaving a spell, which requires great focus.");
-            dialogue.Add("You have the makings of a gifted mage. Tell me, what do you think of ice magic?");
-            dialogue.Add("Flowers and the like don't hold a candle to the beauty of intricately formed ice.");
 
             if (BirthdayParty.PartyIsUp)
-                dialogue.Add("Sometimes... I feel like all I'm good for during these events is making ice cubes and slushies.");
+                dialogue.Add(this.GetLocalizedValue("Chat.Party"));
 
             if (Main.bloodMoon)
             {
-                dialogue.Add("If your blood were to thoroughly freeze, it would be quite fatal.");
-                dialogue.Add("The undead which roam tonight are still monsters of blood and guts, but they seem... fresher.");
+                dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon2"));
             }
 
             if (NPC.downedMoonlord)
             {
-                dialogue.Add("It is shocking, to see you have come so far. I wish you the best of luck on your future endeavours.");
-                dialogue.Add("You, having bested so many beings, even deities, I wonder if I have anything left to offer you.");
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated2"));
             }
 
-            return dialogue[Main.rand.Next(dialogue.Count)];
+            return dialogue;
         }
 
         public override void SetChatButtons(ref string button, ref string button2)
@@ -136,82 +130,38 @@ namespace CalamityMod.NPCs.TownNPCs
             button = Language.GetTextValue("LegacyInterface.28");
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
             {
-                Main.LocalPlayer.Calamity().newPermafrostInventory = false;
-                shop = true;
+                shopName = "Shop";
             }
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void AddShops()
         {
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<FrostbiteBlaster>());
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<IcicleTrident>());
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<IceStar>());
-            nextSlot++;
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<ArcticBearPaw>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<CryogenicStaff>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<FrostyFlare>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<Cryophobia>());
-                nextSlot++;
-            }
-            if (NPC.downedChristmasIceQueen && NPC.downedChristmasTree && NPC.downedChristmasSantank)
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<AbsoluteZero>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<EternalBlizzard>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<WintersFury>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<IcyBullet>());
-                nextSlot++;
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<IcicleArrow>());
-                nextSlot++;
-            }
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<PermafrostsConcoction>());
-            nextSlot++;
-            if (CalamityConfig.Instance.PotionSelling)
-            {
-                shop.item[nextSlot].SetDefaults(ItemID.WarmthPotion);
-                shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-                if (Main.LocalPlayer.discount)
-                shop.item[nextSlot].shopCustomPrice = (int)(shop.item[nextSlot].shopCustomPrice * 0.8);
-                nextSlot++;
-            }
-            shop.item[nextSlot].SetDefaults(ItemID.SuperManaPotion);
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<DeliciousMeat>());
-            nextSlot++;
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<Popo>());
-            shop.item[nextSlot].shopCustomPrice = Item.buyPrice(5, 0, 0, 0);
-            if (Main.LocalPlayer.discount)
-              shop.item[nextSlot].shopCustomPrice = (int)(shop.item[nextSlot].shopCustomPrice * 0.8);
-            nextSlot++;
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<IceBarrage>()))
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<BloodRune>());
-                nextSlot++;
-            }
-
-            bool happy = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.8999999761581421;
-            if (happy)
-            {
-                if (Main.LocalPlayer.ZoneSnow)
-                {
-                    shop.item[nextSlot].SetDefaults(ItemID.IceCream);
-                    shop.item[nextSlot].shopCustomPrice = Item.buyPrice(0, 2, 0, 0);
-                    nextSlot++;
-                }
-            }
+            Condition potionSells = CalamityConditions.PotionSellingConfig;
+            NPCShop shop = new(Type);
+                shop.Add(ModContent.ItemType<FrostbiteBlaster>())
+                .Add(ModContent.ItemType<IcicleTrident>())
+                .Add(ModContent.ItemType<IceStar>())
+                .Add(ModContent.ItemType<ArcticBearPaw>(), Condition.DownedMechBossAll)
+                .Add(ModContent.ItemType<CryogenicStaff>(), Condition.DownedMechBossAll)
+                .Add(ModContent.ItemType<FrostyFlare>(), Condition.DownedMechBossAll)
+                .Add(ModContent.ItemType<Cryophobia>(), Condition.DownedMechBossAll)
+                .Add(ModContent.ItemType<AbsoluteZero>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add(ModContent.ItemType<EternalBlizzard>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add(ModContent.ItemType<WintersFury>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add(ModContent.ItemType<HailstormBullet>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add(ModContent.ItemType<IcicleArrow>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add(ModContent.ItemType<PermafrostsConcoction>())
+                .Add(ItemID.SuperManaPotion)
+                .Add(ModContent.ItemType<DeliciousMeat>())
+                .AddWithCustomValue(ModContent.ItemType<Popo>(), Item.buyPrice(5))
+                .AddWithCustomValue(ModContent.ItemType<FrigidMonolith>(), Item.buyPrice(5))
+                .Add(ModContent.ItemType<BloodRune>(), Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
+                .Add(ItemID.IceCream, Condition.HappyEnough, Condition.InSnow)
+                .Register();
         }
 
         // Make this Town NPC teleport to the King statue when triggered.

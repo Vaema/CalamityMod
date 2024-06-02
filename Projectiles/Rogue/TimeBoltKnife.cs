@@ -1,15 +1,16 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class TimeBoltKnife : ModProjectile
+    public class TimeBoltKnife : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/TimeBolt";
 
         private int maxPenetrate = 6;
@@ -18,7 +19,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Time Bolt");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -73,13 +73,13 @@ namespace CalamityMod.Projectiles.Rogue
                         229
                     });
                     Vector2 center = Projectile.Center;
-                    Vector2 vector74 = new Vector2(-4f, 4f);
-                    vector74 += new Vector2(-4f, 4f);
-                    vector74 = vector74.RotatedBy((double)Projectile.rotation, default);
-                    int dust = Dust.NewDust(center + vector74 + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 1f);
+                    Vector2 fourVector = new Vector2(-4f, 4f);
+                    fourVector += new Vector2(-4f, 4f);
+                    fourVector = fourVector.RotatedBy((double)Projectile.rotation, default);
+                    int dust = Dust.NewDust(center + fourVector + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 1f);
                     Dust dust2 = Main.dust[dust];
                     dust2.velocity *= 0.1f;
-                    if (Main.rand.Next(6) != 0)
+                    if (!Main.rand.NextBool(6))
                         dust2.noGravity = true;
                 }
                 float scalar = 0.01f;
@@ -132,9 +132,8 @@ namespace CalamityMod.Projectiles.Rogue
                     int whoAmI = -1;
                     Vector2 targetSpot = Projectile.Center;
                     float detectRange = 1000f;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
@@ -142,7 +141,7 @@ namespace CalamityMod.Projectiles.Rogue
                             {
                                 detectRange = targetDist;
                                 targetSpot = npc.Center;
-                                whoAmI = i;
+                                whoAmI = npc.whoAmI;
                             }
                         }
                     }
@@ -166,10 +165,10 @@ namespace CalamityMod.Projectiles.Rogue
                         229
                     });
                     Vector2 center = Projectile.Center;
-                    Vector2 vector75 = new Vector2(-4f, 4f);
-                    vector75 += new Vector2(-4f, 4f);
-                    vector75 = vector75.RotatedBy((double)Projectile.rotation, default);
-                    int dust = Dust.NewDust(center + vector75 + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 0.6f);
+                    Vector2 otherFourVector = new Vector2(-4f, 4f);
+                    otherFourVector += new Vector2(-4f, 4f);
+                    otherFourVector = otherFourVector.RotatedBy((double)Projectile.rotation, default);
+                    int dust = Dust.NewDust(center + otherFourVector + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 0.6f);
                     Dust dust2 = Main.dust[dust];
                     dust2.velocity *= 0.1f;
                     dust2.noGravity = true;
@@ -208,10 +207,10 @@ namespace CalamityMod.Projectiles.Rogue
                     229
                 });
                 Vector2 center = Projectile.Center;
-                Vector2 vector76 = new Vector2(-4f, 4f);
-                vector76 += new Vector2(-4f, 4f);
-                vector76 = vector76.RotatedBy((double)Projectile.rotation, default);
-                int dust = Dust.NewDust(center + vector76 + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 0.6f);
+                Vector2 thirdFourVector = new Vector2(-4f, 4f);
+                thirdFourVector += new Vector2(-4f, 4f);
+                thirdFourVector = thirdFourVector.RotatedBy((double)Projectile.rotation, default);
+                int dust = Dust.NewDust(center + thirdFourVector + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 0.6f);
                 Dust dust2 = Main.dust[dust];
                 dust2.velocity *= 0.1f;
                 dust2.noGravity = true;
@@ -252,7 +251,7 @@ namespace CalamityMod.Projectiles.Rogue
             return null;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (penetrationAmt == maxPenetrate)
                 SlowTime();
@@ -295,7 +294,7 @@ namespace CalamityMod.Projectiles.Rogue
                 });
                 int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType);
                 Main.dust[dust].position = Projectile.Center + dustOffset;
-                if (Main.rand.Next(6) != 0)
+                if (!Main.rand.NextBool(6))
                     Main.dust[dust].noGravity = true;
                 Main.dust[dust].fadeIn = 1f;
                 Main.dust[dust].velocity *= 0f;
@@ -304,10 +303,9 @@ namespace CalamityMod.Projectiles.Rogue
 
             int buffType = ModContent.BuffType<TimeDistortion>();
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc.active && !npc.dontTakeDamage && !npc.buffImmune[buffType] && Vector2.Distance(Projectile.Center, npc.Center) <= radius)
+                if (!npc.dontTakeDamage && !npc.buffImmune[buffType] && Vector2.Distance(Projectile.Center, npc.Center) <= radius)
                 {
                     if (npc.FindBuffIndex(buffType) == -1)
                         npc.AddBuff(buffType, 60, false);
@@ -315,7 +313,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.Calamity().stealthStrike)
                 target.AddBuff(ModContent.BuffType<TimeDistortion>(), 120);

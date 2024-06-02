@@ -8,15 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class McNuggets : ModItem
+    public class McNuggets : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("McNuggets");
-            Tooltip.SetDefault("These chicken nuggets aren't for you to eat!");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.ZephyrFish);

@@ -1,36 +1,34 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class BarracudaGun : ModItem
+    public class BarracudaGun : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Barracuda Gun");
-            Tooltip.SetDefault("Fires two barracudas that latch onto enemies");
-            SacrificeTotal = 1;
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
         }
-
         public override void SetDefaults()
         {
-            Item.damage = 63;
-            Item.channel = true;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 54;
             Item.height = 28;
+            Item.damage = 56;
+            Item.channel = true;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item10;
             Item.autoReuse = true;

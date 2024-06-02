@@ -1,21 +1,15 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
 
 namespace CalamityMod.Items.Fishing.FishingRods
 {
-    public class VerstaltiteFishingRod : ModItem
+    public class VerstaltiteFishingRod : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Verstaltite Fishing Rod");
-            Tooltip.SetDefault("Increased fishing power when in the tundra\n" +
-                "The ancient alloy's prismatic qualities are perfect for attracting fish");
-        }
-
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
             Item.width = 24;
@@ -27,10 +21,15 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 35;
             Item.shootSpeed = 15f;
             Item.shoot = ModContent.ProjectileType<VerstaltiteBobber>();
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
 
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(43f, -36f);
+            lineColor = new Color(95, 158, 160, 100);
+        }
         public override void AddRecipes()
         {
             CreateRecipe().

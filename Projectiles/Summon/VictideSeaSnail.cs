@@ -1,16 +1,17 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class VictideSeaSnail : ModProjectile
+    public class VictideSeaSnail : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float DustTimer => ref Projectile.localAI[0];
         public ref float FireCooldown => ref Projectile.localAI[1];
         public ref float PeekingOut => ref Projectile.ai[0];
@@ -23,15 +24,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sea Snail");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 7;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 30;
-            Projectile.height = 30;
+            Projectile.width = Projectile.height = 30;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -53,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int d = 0; d < 45; d++)
                 {
-                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 179, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                     dust.velocity *= 2f;
                     dust.scale *= 1.15f;
                 }
@@ -74,7 +73,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmount = Main.rand.Next(40, 50);
                 for (int d = 0; d < dustAmount; d++)
                 {
-                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 179, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                     dust.velocity *= 2f;
                     dust.scale *= 1.15f;
                 }
@@ -84,7 +83,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 PlayerStandStillTimer++;
                 //pop out the shell
-                if (PlayerStandStillTimer == timeToStandStillBeforePeekOut )
+                if (PlayerStandStillTimer == timeToStandStillBeforePeekOut)
                 {
                     DustTimer = 0;
                     float direction = Main.rand.NextBool() ? 1f : -1f;
@@ -113,7 +112,6 @@ namespace CalamityMod.Projectiles.Summon
             //Go back, in the shell
             if (player.velocity.Length() > 0 && CanComePeekOut)
             {
-
                 Projectile.frameCounter++;
                 if (Projectile.frameCounter > frameTime)
                 {
@@ -125,7 +123,6 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     PlayerStandStillTimer = 0f;
                 }
-
             }
 
             if (!CanComePeekOut)
@@ -151,15 +148,14 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (FireCooldown > 0f)
                 {
-                    FireCooldown --;
+                    FireCooldown--;
                     return;
                 }
 
                 bool foundTarget = false;
                 float maxDist = 300f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         if (Vector2.Distance(Projectile.Center, npc.Center) < maxDist && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
@@ -177,10 +173,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         Vector2 source = new Vector2(Projectile.Center.X - 4f, Projectile.Center.Y);
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        int spore = Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, velocity, ModContent.ProjectileType<UrchinSpike>(), Projectile.damage, 1f, Projectile.owner, 0f, 0f);
-                        Main.projectile[spore].minion = true;
-                        Main.projectile[spore].minionSlots = 0f;
-                        Main.projectile[spore].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, velocity, ModContent.ProjectileType<UrchinSpike>(), Projectile.damage, 1f, Projectile.owner);
                     }
 
                     SoundEngine.PlaySound(SoundID.Item42, Projectile.position);
@@ -199,11 +192,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool? CanDamage() => false;
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int d = 0; d < 45; d++)
             {
-                Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 179, 0f, 0f, 0, default, 1f);
+                Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                 dust.velocity *= 2f;
                 dust.scale *= 1.15f;
             }
@@ -223,7 +216,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = new Rectangle(0, 36 * Projectile.frame, 38, 34);
             Vector2 origin = !CanComePeekOut ? new Vector2(15, 23) : frame.Size() / 2f;
 

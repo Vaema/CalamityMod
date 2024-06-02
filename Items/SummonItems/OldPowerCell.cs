@@ -7,17 +7,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class OldPowerCell : ModItem
+    public class OldPowerCell : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
+        public override string Texture => $"Terraria/Images/Item_{ItemID.LihzahrdPowerCell}";
+
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Old Power Cell");
-            Tooltip.SetDefault("Summons the Golem when used in the Jungle Temple\n" +
-                "Enrages outside the Jungle Temple\n" +
-                "Not consumable");
-			NPCID.Sets.MPAllowedEnemies[NPCID.Golem] = true;
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 15; // Lihzahrd Power Cell
+            NPCID.Sets.MPAllowedEnemies[NPCID.Golem] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 16; // Lihzahrd Power Cell
         }
 
         public override void SetDefaults()
@@ -31,19 +29,19 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
             bool canSummon = false;
             if (player.Center.Y > Main.worldSurface * 16.0)
             {
-                int num = (int)player.Center.X / 16;
-                int num2 = (int)player.Center.Y / 16;
-                Tile tile = Framing.GetTileSafely(num, num2);
+                int playerTileX = (int)player.Center.X / 16;
+                int playerTileY = (int)player.Center.Y / 16;
+                Tile tile = Framing.GetTileSafely(playerTileX, playerTileY);
                 if (tile.WallType == 87)
                     canSummon = true;
             }
@@ -56,7 +54,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, NPCID.Golem);
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, NPCID.Golem);
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, NPCID.Golem);
 
             return true;
         }

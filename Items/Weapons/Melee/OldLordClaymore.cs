@@ -5,25 +5,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("OldLordOathsword")]
-    public class OldLordClaymore : ModItem
+    public class OldLordClaymore : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public bool RMBchannel = false;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Old Lord Claymore");
-            Tooltip.SetDefault("A relic of the ancient underworld\n" +
-            "Holding right click rapidly absorbs energy into the blade until it is charged\n" +
-            "Pressing left click while charged causes you to fly in the direction of the cursor\n" +
-            "After flying, the amount of charge the blade has is reduced to zero");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = 60;
             Item.width = 70;
             Item.height = 70;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 34;
             Item.useTime = 34;
@@ -35,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
 

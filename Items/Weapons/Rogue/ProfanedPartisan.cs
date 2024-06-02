@@ -11,21 +11,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ProfanedPartisan : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Profaned Partisan");
-            Tooltip.SetDefault(@"Fires an unholy spear that explodes on death
-Stealth strikes spawn smaller spears to fly along side it");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 322;
-            Item.knockBack = 8f;
-
             Item.width = 56;
             Item.height = 56;
+            Item.damage = 322;
+            Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -33,7 +24,7 @@ Stealth strikes spawn smaller spears to fly along side it");
             Item.useTime = 18;
             Item.useAnimation = 18;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.DamageType = RogueDamageClass.Instance;
 

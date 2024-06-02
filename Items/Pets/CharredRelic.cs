@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class CharredRelic : ModItem
+    public class CharredRelic : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Charred Relic");
-            Tooltip.SetDefault("Contains a small amount of brimstone");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.ZephyrFish);

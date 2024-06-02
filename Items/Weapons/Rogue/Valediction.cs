@@ -10,14 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Valediction : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Valediction");
-            Tooltip.SetDefault("Throws a homing reaper scythe\n" +
-                "Stealth strikes spawn razorblade typhoons on enemy hits");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 80;
@@ -35,9 +27,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
+
+        public override float StealthDamageMultiplier => 0.8f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

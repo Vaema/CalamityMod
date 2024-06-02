@@ -7,29 +7,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class StormDragoon : ModItem
+    public class StormDragoon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Storm Dragoon");
-            Tooltip.SetDefault("Fires a spray of bullets\n" +
-            "90% chance to not consume ammo");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 62;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 74;
             Item.height = 34;
+            Item.damage = 96;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 2;
-            Item.reuseDelay = 10;
             Item.useAnimation = 20;
+            Item.reuseDelay = 10;
+            Item.useLimitPerAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.25f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item31;
             Item.autoReuse = true;

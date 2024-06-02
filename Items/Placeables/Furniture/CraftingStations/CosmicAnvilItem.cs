@@ -8,21 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
 {
-    public class CosmicAnvilItem : ModItem
+    public class CosmicAnvilItem : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cosmic Anvil");
-            Tooltip.SetDefault("An otherworldly anvil capable of withstanding the pressures of stellar collapse\n" +
-                "Also functions as every previous tier of anvil");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -35,10 +28,10 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.value = Item.sellPrice(platinum: 2, gold: 50);
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {

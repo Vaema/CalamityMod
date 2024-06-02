@@ -8,30 +8,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class GruesomeEminence : ModItem
+    public class GruesomeEminence : ModItem, ILocalizedModType
     {
-        public const string PoeticTooltipLine = "The spirits of the amalgam could never pass on to their desired afterlife,\n" +
-            "Tainted and melded by rage as they were.";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gruesome Eminence");
-            Tooltip.SetDefault("Summons a gaseous conglomeration of spirits near the cursor\n" +
-                "At first, the spirits will fly wildly. This can hurt enemies and players\n" +
-                "However, over time they will begin to accumulate to create a single, controllable monstrosity\n" +
-                CalamityUtils.ColorMessage(PoeticTooltipLine, CalamityGlobalItem.ExhumedTooltipColor));
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 888;
+            Item.width = 42;
+            Item.height = 74;
+            Item.damage = 666;
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.mana = 8;
-            Item.width = 42;
-            Item.height = 74;
+            Item.mana = 400;
             Item.useTime = 27;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -40,8 +28,13 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<GruesomeEminenceHoldout>();
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
+        }
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GhastlyVisage>();
         }
 
         // This weapon uses a holdout projectile.

@@ -1,23 +1,19 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ApoctolithProj : ModProjectile
+    public class ApoctolithProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Apoctolith";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Apoctolith");
-        }
 
         public override void SetDefaults()
         {
@@ -40,22 +36,22 @@ namespace CalamityMod.Projectiles.Rogue
             //Dust trail
             if (Main.rand.NextBool(13))
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 180, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
 
-            if (crit)
+            if (hit.Crit)
                 target.Calamity().miscDefenseLoss = Math.Min(target.defense, 15);
 
             if (Projectile.Calamity().stealthStrike)
                 target.AddBuff(ModContent.BuffType<Eutrophication>(), 120);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
             if (Projectile.Calamity().stealthStrike)
@@ -64,14 +60,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Tink, Projectile.position);
             //Dust on impact
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 180, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
                 dust_splash += 1;
             }
             // This only triggers if stealth is full
@@ -103,7 +99,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = new Vector2(32f, 33f);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;

@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class BloodwormItem : ModItem
+    public class BloodwormItem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodworm");
-            Tooltip.SetDefault("Summons The Old Duke if used as bait in the Sulphurous Sea\n" +
-                "Enrages outside the Sulphurous Sea");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -31,12 +28,12 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = true;
             Item.noUseGraphic = true;
             Item.makeNPC = (short)ModContent.NPCType<BloodwormNormal>();
-            SacrificeTotal = 3;
+            Item.ResearchUnlockCount = 3;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
     }
 }

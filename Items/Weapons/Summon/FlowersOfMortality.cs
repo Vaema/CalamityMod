@@ -1,35 +1,28 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class FlowersOfMortality : ModItem
+    public class FlowersOfMortality : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Flowers of Mortality");
-            Tooltip.SetDefault("Summons five rainbow flowers over your head\n" +
-                               "The combined flowers consume three minion slots");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 36;
             Item.damage = 72;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.width = 36;
-            Item.height = 36;
             Item.useTime = Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item44;
             Item.shoot = ModContent.ProjectileType<FlowersOfMortalityPetal>();

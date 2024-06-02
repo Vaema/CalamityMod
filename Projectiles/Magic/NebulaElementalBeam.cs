@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -7,8 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class NebulaElementalBeam : BaseLaserbeamProjectile
+    public class NebulaElementalBeam : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override float MaxScale => 1.4f;
         public override float MaxLaserLength => 1000f;
         public override float Lifetime => 30f;
@@ -18,11 +20,6 @@ namespace CalamityMod.Projectiles.Magic
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayEnd", AssetRequestMode.ImmediateLoad).Value;
 
         public const float UniversalAngularSpeed = MathHelper.Pi / 400f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -61,6 +58,10 @@ namespace CalamityMod.Projectiles.Magic
             DrawBeamWithColor(Color.Lerp(new Color(254, 126, 229), Color.Transparent, 0.35f), Projectile.scale * 0.6f);
             DrawBeamWithColor(Color.Lerp(new Color(254, 190, 243), Color.Transparent, 0.35f), Projectile.scale * 0.6f);
             return false;
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
         }
     }
 }

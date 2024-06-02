@@ -1,17 +1,18 @@
-﻿using CalamityMod.Dusts;
+﻿using System.IO;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class GodSlayerSlugProj : ModProjectile
+    public class GodSlayerSlugProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         private const int Lifetime = 600;
         private const int NoDrawFrames = 2;
         // 25 instead of 24 because it is decremented once immediately after turning blue
@@ -27,7 +28,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("God Slayer Slug");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
 
@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // God Slayer Slugs explode on death, even if they never visually turned blue.
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Turn blue to set stats correctly, if not already done.
             if (!BlueMode)

@@ -1,22 +1,25 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Rarities;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CalamityMod.CalPlayer;
+using CalamityMod.Rarities;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ShatteredCommunity : ModItem
+    public class ShatteredCommunity : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         // The percentage of a full Rage bar that is gained every second with the Shattered Community equipped.
         public const float RagePerSecond = 0.02f;
 
@@ -41,18 +44,9 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Shattered Community");
-            Tooltip.SetDefault("Ruined by unknowable hatred, it still contains (most of) the power of The Community...\n" +
-                "Increases damage by 10% and critical strike chance by 5%\n" +
-                "Increases max health by 10%, damage reduction by 5%, defense by 10 and life regen by 2\n" +
-                "Increases movement speed by 10% and flight time by 20%\n" +
-                "You generate rage over time and rage does not fade away out of combat\n" +
-                "Taking damage gives rage, this effect is not hindered by your defensive stats\n" +
-                "While Rage Mode is active, taking damage gives only half as much rage\n" +
-                "Deal damage with Rage Mode to further empower your wrath\n");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(7, 5));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheCommunity>();
         }
 
         public override void SetDefaults()
@@ -109,42 +103,32 @@ namespace CalamityMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            // Stat tooltips are added dynamically.
-            StringBuilder sb = new StringBuilder(256);
+            // Add the proper description which changes depending on world difficulty
+            string desc = CalamityWorld.revenge ? this.GetLocalizedValue("RageModified") : this.GetLocalization("RageAdd").Format(CalamityKeybinds.RageHotKey.TooltipHotkeyString());
+            tooltips.FindAndReplace("[RAGEDESC]", desc);
 
-            // Line 5: If not on Rev+, note that the accessory enables Rage.
-            TooltipLine rageOverTimeLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip4");
-            if (rageOverTimeLine != null && !CalamityWorld.revenge)
-                rageOverTimeLine.Text = "Adds the Rage meter\n" + rageOverTimeLine.Text;
+            // Add the current level
+            tooltips.FindAndReplace("[LEVEL]", level.ToString());
 
-            // Line 9: Current level
-            sb.Append("Current level: ");
-            sb.Append(level);
-            sb.Append(" (+");
-            sb.Append(level);
-            sb.Append("% Rage Mode damage)");
-            tooltips.Add(new TooltipLine(Mod, "Tooltip8", sb.ToString()));
-            sb.Clear();
-
-            if (level < MaxLevel)
+            // Add the progress
+            string progressKey = "[PROGRESS]";
+            TooltipLine progressLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Text.Contains(progressKey));
+            if (progressLine != null)
             {
-                long progressToNextLevel = totalRageDamage - CumulativeLevelCost(level);
-                long totalToNextLevel = LevelCost(level + 1);
-                double ratio = (double)progressToNextLevel / totalToNextLevel;
-                string percent = (100D * ratio).ToString("0.00");
-
-                // Line 10: Progress to next level
-                sb.Append("Progress to next level: ");
-                sb.Append(percent);
-                sb.Append('%');
-                tooltips.Add(new TooltipLine(Mod, "Tooltip9", sb.ToString()));
-                sb.Clear();
+                if (level < MaxLevel)
+                {
+                    long progressToNextLevel = totalRageDamage - CumulativeLevelCost(level);
+                    long totalToNextLevel = LevelCost(level + 1);
+                    double ratio = (double)progressToNextLevel / totalToNextLevel;
+                    string percent = (100D * ratio).ToString("0.00");
+                    progressLine.Text = progressLine.Text.Replace(progressKey, percent);
+                }
+                else
+                    progressLine.Text = string.Empty;
             }
 
-            // Line 11: Total damage dealt
-            sb.Append("Total Rage Mode damage: ");
-            sb.Append(totalRageDamage);
-            tooltips.Add(new TooltipLine(Mod, "Tooltip10", sb.ToString()));
+            // Add the current cumulative damage
+            tooltips.FindAndReplace("[DAMAGE]", totalRageDamage.ToString());
         }
 
         public override void SaveData(TagCompound tag)
@@ -172,6 +156,24 @@ namespace CalamityMod.Items.Accessories
         {
             level = reader.ReadInt32();
             totalRageDamage = reader.ReadInt64();
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CalamityUtils.DrawInventoryCustomScale(
+                spriteBatch,
+                texture: TextureAssets.Item[Type].Value,
+                position,
+                frame,
+                drawColor,
+                itemColor,
+                origin,
+                scale,
+                wantedScale: 0.5f,
+                drawOffset: new(0f, 2f)
+            );
+            //return false;
+            return true; // For some reason, putting this item in an accessory slot hides it UNLESS this returns true.
         }
     }
 
@@ -217,7 +219,7 @@ namespace CalamityMod.Items.Accessories
             // Display a level up text notification.
             Rectangle textArea = new Rectangle((int)Player.Center.X, (int)Player.Center.Y, 1, 1);
             Color textColor = new Color(236, 209, 236);
-            CombatText.NewText(textArea, textColor, "The Community cracks...", false, false);
+            CombatText.NewText(textArea, textColor, CalamityUtils.GetTextValueFromModItem<ShatteredCommunity>("LevelUpText"), false, false);
         }
     }
 }

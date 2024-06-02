@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -9,177 +8,31 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MiniGuardianDefense : ModProjectile
+    public class MiniGuardianDefense : ModProjectile, ILocalizedModType
     {
-        private int ai = 3;
-        private void updateDamage(int type)
+        public enum MiniDefenderAIState
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            float baseDamage = (modPlayer.profanedCrystal && !modPlayer.profanedCrystalBuffs) ? 0f : (75f +
-                        (modPlayer.profanedCrystalBuffs ? 420f : 0f));
-            Projectile.damage = baseDamage == 0 ? 0 : (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
-            ai = type;
-            if (baseDamage >= 420f)
-            {
-                Projectile.localNPCHitCooldown = 6;
-            }
-            else if (baseDamage == 0)
-            {
-                Projectile.localNPCHitCooldown = 69;
-            }
-            else
-            {
-                Projectile.localNPCHitCooldown = 9;
-            }
+            ShieldActive,
+            ShieldInactive,
+            Vanity
         }
+        public new string LocalizationCategory => "Projectiles.Summon";
+        public Player Owner => Main.player[Projectile.owner];
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(ai);
-        }
+        public bool SpawnedFromPSC => Projectile.ai[0] == 1f;
+        public bool ForcedVanity => SpawnedFromPSC && !Owner.Calamity().profanedCrystalBuffs;
+        public bool shieldActive => !ForcedVanity && Owner.Calamity().pSoulShieldDurability > 0;
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            ai = reader.ReadInt32();
-        }
+        public bool shieldActiveBefore = false;
 
-        private void AI(int type, float num535, float num536, Player player)
-        {
-            updateDamage(type);
-            switch (ai)
-            {
-                case 1: //defensive bab (profaned soul artifact)
-                case 2: //Empowered bab WEEEEEEEEEE (profaned soul crystal)
-                    if (Projectile.ai[1] <= -1f)
-                    {
-                        Projectile.ai[1] = 17f;
-                    }
-                    if (Projectile.ai[1] > 0f)
-                    {
-                        Projectile.ai[1] -= type;
-                    }
-                    if (Projectile.ai[1] == 0f)
-                    {
-                        float num550 = 24f; //12
-                        Vector2 vector43 = Projectile.Center;
-                        float num551 = num535 - vector43.X;
-                        float num552 = num536 - vector43.Y;
-                        float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-                        if (num553 < 100f)
-                        {
-                            num550 = 28f; //14
-                        }
-                        if (type == 2)
-                            num550 *= 2f;
-                        else if (player.Calamity().gOffense)
-                            num550 *= 0.95f;
-                        num553 = num550 / num553;
-                        num551 *= num553;
-                        num552 *= num553;
-                        Projectile.velocity.X = (Projectile.velocity.X * (type == 1 ? 12f : 20f) + num551) / (type == 1 ? 13f : 21f);
-                        Projectile.velocity.Y = (Projectile.velocity.Y * (type == 1 ? 12f : 20f) + num552) / (type == 1 ? 13f : 21f);
-                    }
-                    else
-                    {
-                        if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < 10f)
-                        {
-                            Projectile.velocity *= 1.05f;
-                        }
-                    }
-                    break;
-                case 3: //bored bab - (idle)
-                    float num16 = 0.5f;
-                    Projectile.tileCollide = false;
-                    int num17 = 100;
-                    Vector2 vector3 = Projectile.Center;
-                    float num18 = player.Center.X - vector3.X;
-                    float num19 = player.Center.Y - vector3.Y;
-                    num19 += (float)Main.rand.Next(-10, 21);
-                    num18 += (float)Main.rand.Next(-10, 21);
-                    num18 += (float)(60 * -(float)player.direction);
-                    num19 -= 60f;
-                    float num20 = (float)Math.Sqrt((double)(num18 * num18 + num19 * num19));
-                    float num21 = 18f;
 
-                    if (num20 < (float)num17 && player.velocity.Y == 0f &&
-                        Projectile.position.Y + (float)Projectile.height <= player.position.Y + (float)player.height &&
-                        !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
-                    {
-                        Projectile.ai[0] = 0f;
-                        if (Projectile.velocity.Y < -6f)
-                        {
-                            Projectile.velocity.Y = -6f;
-                        }
-                    }
-                    if (num20 > 2000f)
-                    {
-                        Projectile.position = player.position;
-                        Projectile.netUpdate = true;
-                    }
-                    if (num20 < 50f)
-                    {
-                        if (Math.Abs(Projectile.velocity.X) > 2f || Math.Abs(Projectile.velocity.Y) > 2f)
-                        {
-                            Projectile.velocity *= 0.90f;
-                        }
-                        num16 = 0.01f;
-                    }
-                    else
-                    {
-                        if (num20 < 100f)
-                        {
-                            num16 = 0.1f;
-                        }
-                        if (num20 > 300f)
-                        {
-                            num16 = 1f;
-                        }
-                        num20 = num21 / num20;
-                        num18 *= num20;
-                        num19 *= num20;
-                    }
-
-                    if (Projectile.velocity.X < num18)
-                    {
-                        Projectile.velocity.X += num16;
-                        if (num16 > 0.05f && Projectile.velocity.X < 0f)
-                        {
-                            Projectile.velocity.X += num16;
-                        }
-                    }
-                    if (Projectile.velocity.X > num18)
-                    {
-                        Projectile.velocity.X -= num16;
-                        if (num16 > 0.05f && Projectile.velocity.X > 0f)
-                        {
-                            Projectile.velocity.X -= num16;
-                        }
-                    }
-                    if (Projectile.velocity.Y < num19)
-                    {
-                        Projectile.velocity.Y += num16;
-                        if (num16 > 0.05f && Projectile.velocity.Y < 0f)
-                        {
-                            Projectile.velocity.Y += num16 * 2f;
-                        }
-                    }
-                    if (Projectile.velocity.Y > num19)
-                    {
-                        Projectile.velocity.Y -= num16;
-                        if (num16 > 0.05f && Projectile.velocity.Y > 0f)
-                        {
-                            Projectile.velocity.Y -= num16 * 2f;
-                        }
-                    }
-                    break;
-            }
-        }
+        public MiniDefenderAIState AIState => ForcedVanity ? MiniDefenderAIState.Vanity : (shieldActive ? MiniDefenderAIState.ShieldActive : MiniDefenderAIState.ShieldInactive);
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Defensive Guardian");
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -190,145 +43,249 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.width = 62;
             Projectile.height = 80;
-            Projectile.minionSlots = 0f;
             Projectile.minion = true;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 18000;
-            Projectile.timeLeft *= 5;
-            Projectile.usesLocalNPCImmunity = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
-        public override bool? CanCutTiles()
-        {
-            if (Projectile.damage == 0)
-                return false;
-            return null;
-        }
 
-        public override bool PreDraw(ref Color lightColor)
+        private void HandleRocks(bool spawnRocks = false, bool yeetRocks = false)
         {
-            if (Main.player[Projectile.owner].Calamity().profanedCrystalBuffs && !Main.player[Projectile.owner].Calamity().endoCooper)
+            if (spawnRocks)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
-                return false;
+                //spawn rocks
+                bool psc = Owner.Calamity().profanedCrystalBuffs;
+                int rockCount = psc ? 10 : 5;
+                int[] validRockTypes = psc ? new int[] { 1, 3, 4, 5, 6 } : new int[] { 3, 5, 6 }; //1 and 4 are chonkier and psc pushes shield so it looks less weirdge
+                float angleVariance = MathHelper.TwoPi / rockCount;
+                float angle = 0f;
+                for (int i = 0; i < rockCount; i++)
+                {
+                    int rockType = validRockTypes[Main.rand.Next(0, validRockTypes.Length)];
+                    var rockyRoad = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.position,
+                        angle.ToRotationVector2() * 8f, ModContent.ProjectileType<MiniGuardianRock>(), 1, 2f, Owner.whoAmI, 0f, angle, rockType);
+                    rockyRoad.originalDamage = Projectile.originalDamage;
+                    angle += angleVariance;
+                }
             }
-            else
+            else if (yeetRocks)
             {
-                return true;
+                //flag the rocks for yeetage
+                int rock = ModContent.ProjectileType<MiniGuardianRock>();
+                foreach (var proj in Main.projectile)
+                {
+                    if (proj.active && proj.owner == Owner.whoAmI && proj.type == rock)
+                    {
+                        proj.ai[0] = 1f;
+                    }
+                }
             }
         }
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-
-            if (player.dead)
-            {
-                modPlayer.gDefense = false;
-            }
-            if (modPlayer.gDefense)
-            {
+            // Despawn properly
+            if (Owner.Calamity().pSoulGuardians)
                 Projectile.timeLeft = 2;
-            }
-            if (!modPlayer.pArtifact && !modPlayer.profanedCrystal)
+            if (!Owner.Calamity().pSoulArtifact || Owner.dead || !Owner.active)
             {
-                modPlayer.gDefense = false;
+                Owner.Calamity().pSoulGuardians = false;
                 Projectile.active = false;
                 return;
             }
-            Projectile.MinionAntiClump();
-            float num535 = Projectile.position.X;
-            float num536 = Projectile.position.Y;
-            float num537 = 3000f;
-            bool flag19 = false;
-            NPC ownerMinionAttackTargetNPC2 = Projectile.OwnerMinionAttackTargetNPC;
-            if (ownerMinionAttackTargetNPC2 != null && ownerMinionAttackTargetNPC2.CanBeChasedBy(Projectile, false))
+            //dust and framing
+            Projectile.frameCounter++;
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+
+            var psc = Owner.Calamity().profanedCrystal;
+            if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
             {
-                float num539 = ownerMinionAttackTargetNPC2.Center.X;
-                float num540 = ownerMinionAttackTargetNPC2.Center.Y;
-                float num541 = Math.Abs(Projectile.Center.X - num539) + Math.Abs(Projectile.Center.Y - num540);
-                if (num541 < num537)
+                int rock = ModContent.ProjectileType<MiniGuardianRock>();
+                foreach (var proj in Main.projectile)
                 {
-                    num537 = num541;
-                    num535 = num539;
-                    num536 = num540;
-                    flag19 = true;
+                    if (proj.active && proj.owner == Owner.whoAmI && proj.type == rock)
+                    {
+                        proj.active = false;
+                    }
+                }
+                Projectile.active = false;
+            }
+
+            var shieldIsActive = shieldActive; //avoid checkiing cooldowns multiple times per frame
+
+            bool shouldSpawnRocks = !shieldActiveBefore && shieldIsActive;
+            bool shouldYeetRocks = shieldActiveBefore && !shieldIsActive;
+            HandleRocks(shouldSpawnRocks, shouldYeetRocks);
+
+            bool shouldDust = shouldSpawnRocks || shouldYeetRocks;
+
+            if (shouldDust)
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    Vector2 dustPos = new Vector2(Owner.Center.X + Main.rand.NextFloat(-10, 10), Owner.Center.Y + Main.rand.NextFloat(-10, 10));
+                    Vector2 velocity = (Owner.Center - dustPos).SafeNormalize(Vector2.Zero);
+                    velocity *= (Main.dayTime || !SpawnedFromPSC) ? 3f : 6.9f;
+                    var dust = Dust.NewDustPerfect(Owner.Center, ProvUtils.GetDustID((float)((Main.dayTime || !SpawnedFromPSC) ? Providence.BossMode.Day : Providence.BossMode.Night)), velocity, 0, default(Color), 2f);
+                    if (!Main.dayTime && SpawnedFromPSC)
+                        dust.noGravity = true;
                 }
             }
-            if (!flag19)
+
+
+            // Doesn't deal damage directly, damage used for rocks
+            NPC potentialTarget = Projectile.Center.MinionHoming(1500f, Owner);
+            Vector2 playerDestination = Owner.Center - Projectile.Center;
+            switch (AIState)
             {
-                int num3;
-                for (int num542 = 0; num542 < Main.maxNPCs; num542 = num3 + 1)
-                {
-                    if (Main.npc[num542].CanBeChasedBy(Projectile, false))
+                case MiniDefenderAIState.ShieldActive:
+                case MiniDefenderAIState.ShieldInactive:
+                    if (AIState == MiniDefenderAIState.ShieldInactive) //dust only while inactive
                     {
-                        float num543 = Main.npc[num542].Center.X;
-                        float num544 = Main.npc[num542].Center.Y;
-                        float num545 = Math.Abs(Projectile.Center.X - num543) + Math.Abs(Projectile.Center.Y - num544);
-                        if (num545 < num537)
+                        for (int i = 0; i < 2; i++)
                         {
-                            num537 = num545;
-                            num535 = num543;
-                            num536 = num544;
-                            flag19 = true;
+                            if (!Main.rand.NextBool(3))
+                                continue;
+
+                            Dust dust = Dust.NewDustDirect(Owner.position, Owner.width, Owner.height, ProvUtils.GetDustID((float)((Main.dayTime || !SpawnedFromPSC) ? Providence.BossMode.Day : Providence.BossMode.Night)));
+                            dust.velocity = Main.rand.NextVector2Circular(3.5f, 3.5f);
+                            dust.velocity.Y -= Main.rand.NextFloat(1f, 3f);
+                            dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
+                            dust.noGravity = true;
                         }
                     }
-                    num3 = num542;
-                }
+
+                    if (potentialTarget != null)
+                    {
+                        Vector2 angle = Owner.Center + Owner.SafeDirectionTo(potentialTarget.Center) * (shieldIsActive ? (Owner.Calamity().profanedCrystalBuffs ? 125f : 75f) : -50f);
+                        playerDestination = angle;
+                        playerDestination.X += Main.rand.NextFloat(-5f, 5f);
+                        playerDestination.Y += Main.rand.NextFloat(-5f, 5f);
+                    }
+                    else
+                    {
+                        playerDestination.X += Main.rand.NextFloat(-10f, 10f) + (75f * (shieldIsActive ? Owner.direction : -Owner.direction));
+                        playerDestination.Y += Main.rand.NextFloat(-10f, 10f);
+                    }
+                    break;
+                case MiniDefenderAIState.Vanity:
+                    playerDestination.X += Main.rand.NextFloat(-10f, 20f) - (60f * Owner.direction);
+                    playerDestination.Y += Main.rand.NextFloat(-10f, 20f) - 60f;
+                    break;
             }
-            if (!flag19 || Projectile.damage == 0)
+
+            if (potentialTarget != null && AIState != MiniDefenderAIState.Vanity)
             {
-                AI(3, num535, num536, player);
+                float dist = Projectile.Center.Distance(playerDestination);
+                float num543 = playerDestination.X;
+                float num544 = playerDestination.Y;
+                float num550 = 40f;
+                Vector2 vector43 = Projectile.Center;
+                float num551 = num543 - vector43.X;
+                float num552 = num544 - vector43.Y;
+                float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
+                if (num553 < 100f)
+                {
+                    num550 = 28f; //14
+                }
+                num553 = num550 / num553;
+                num551 *= num553;
+                num552 *= num553;
+                Projectile.velocity.X = (Projectile.velocity.X * 14f + num551) / 13.5f;
+                Projectile.velocity.Y = (Projectile.velocity.Y * 14f + num552) / 13.5f;
+
+                Projectile.velocity *= dist > 10 ? 0.9f : 0.3f;
+                Projectile.spriteDirection = Projectile.DirectionTo(potentialTarget.Center).X > 0 ? 1 : -1;
             }
             else
             {
-                if (player.Calamity().profanedCrystalBuffs)
-                    AI(2, num535, num536, player);
-                else
-                    AI(1, num535, num536, player);
-            }
-            if (Projectile.velocity.X > 0.25f)
-            {
-                Projectile.direction = -1;
-            }
-            else if (Projectile.velocity.X < -0.25f)
-            {
-                Projectile.direction = 1;
-            }
+                float playerDist = playerDestination.Length();
+                float acceleration = 0.5f;
+                float returnSpeed = 28f;
 
-            if (Math.Abs(Projectile.velocity.X) > 0.2f)
-            {
-                Projectile.spriteDirection = -Projectile.direction;
-            }
-
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 5)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-                if (Projectile.frame % 2 == 0)
+                // Teleport if too far
+                if (playerDist > 2000f)
+                {
+                    Projectile.position = Owner.position;
                     Projectile.netUpdate = true;
+                }
+                // Slow down a lot when close
+                else if (playerDist < 50f)
+                {
+                    acceleration = 0.01f;
+                    if (Math.Abs(Projectile.velocity.X) > 2f || Math.Abs(Projectile.velocity.Y) > 2f)
+                        Projectile.velocity *= 0.9f;
+                }
+                else
+                {
+                    if (playerDist < 100f)
+                        acceleration = 0.1f;
+
+                    if (playerDist > 300f)
+                        acceleration = 1f;
+
+                    playerDist = returnSpeed / playerDist;
+                    playerDestination *= playerDist;
+                    // Turning (wtf is this) (idk ask phup lmao)
+                    if (Projectile.velocity.X < playerDestination.X)
+                    {
+                        Projectile.velocity.X += acceleration;
+                        if (acceleration > 0.05f && Projectile.velocity.X < 0f)
+                            Projectile.velocity.X += acceleration;
+                    }
+
+                    if (Projectile.velocity.X > playerDestination.X)
+                    {
+                        Projectile.velocity.X -= acceleration;
+                        if (acceleration > 0.05f && Projectile.velocity.X > 0f)
+                            Projectile.velocity.X -= acceleration;
+                    }
+
+                    if (Projectile.velocity.Y < playerDestination.Y)
+                    {
+                        Projectile.velocity.Y += acceleration;
+                        if (acceleration > 0.05f && Projectile.velocity.Y < 0f)
+                            Projectile.velocity.Y += acceleration * 2f;
+                    }
+
+                    if (Projectile.velocity.Y > playerDestination.Y)
+                    {
+                        Projectile.velocity.Y -= acceleration;
+                        if (acceleration > 0.05f && Projectile.velocity.Y > 0f)
+                            Projectile.velocity.Y -= acceleration * 2f;
+                    }
+                }
+
+                // Direction
+                if (Math.Abs(Projectile.velocity.X) > 0.2f)
+                    Projectile.direction = Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
             }
-            if (Projectile.frame > 3)
+
+            Projectile.netUpdate = Projectile.netUpdate || (shieldIsActive != shieldActiveBefore);
+            shieldActiveBefore = shieldIsActive;
+        }
+
+        public override bool? CanDamage() => false;
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(shieldActiveBefore);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            shieldActiveBefore = reader.ReadBoolean();
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // Has afterimages if maximum empowerment
+            if (SpawnedFromPSC && !ForcedVanity)
             {
-                Projectile.frame = 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                return false;
             }
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            if (Main.player[Projectile.owner].Calamity().angelicAlliance)
-                target.AddBuff(ModContent.BuffType<BanishingFire>(), 300);
-        }
-
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            if (Main.player[Projectile.owner].Calamity().angelicAlliance)
-                target.AddBuff(ModContent.BuffType<BanishingFire>(), 300);
+            return true;
         }
     }
 }

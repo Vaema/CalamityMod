@@ -11,30 +11,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class MagnomalyCannon : ModItem
+    public class MagnomalyCannon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Magnomaly Cannon");
-            Tooltip.SetDefault("Launches a powerful exo rocket to nuke anything and everything\n" +
-                "Rockets are surrounded by an invisible damaging aura and split into damaging beams on hit\n" +
-                "66% chance to not consume rockets");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 357;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 84;
             Item.height = 30;
+            Item.damage = 279;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 9.5f;
             Item.UseSound = SoundID.Item11;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<MagnomalyRocket>();
             Item.shootSpeed = 15f;

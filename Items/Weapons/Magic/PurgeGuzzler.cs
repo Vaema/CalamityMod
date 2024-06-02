@@ -9,16 +9,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class PurgeGuzzler : ModItem
+    public class PurgeGuzzler : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         private const float Spread = 0.025f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Purge Guzzler");
-            Tooltip.SetDefault("Emits three beams of holy energy in a tight spread");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -37,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<HolyLaser>();
             Item.shootSpeed = 6f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

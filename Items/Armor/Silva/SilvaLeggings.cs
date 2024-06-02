@@ -9,21 +9,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Silva
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class SilvaLeggings : ModItem
+    public class SilvaLeggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Silva Leggings");
-            Tooltip.SetDefault("10% increased movement speed\n" +
-                "12% increased damage and critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 39;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,33 +10,38 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class DuststormInABottle : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Duststorm in a Bottle");
-            Tooltip.SetDefault("Explodes into a dust cloud\n" +
-            "Stealth strikes form a more intense and longer lasting dust cloud");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 20;
-            Item.damage = 47;
+            Item.height = 24;
+            Item.damage = 74;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 25;
+            Item.useAnimation = 28;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 25;
-            Item.knockBack = 5f;
+            Item.useTime = 28;
+            Item.knockBack = 4f;
             Item.UseSound = SoundID.Item106;
             Item.autoReuse = true;
-            Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<DuststormInABottleProj>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
+
+        public static float StealthDmgMult = 0.6f; //So I can edit it directly via DragonLens instead of having to do math with CalTestHelpers
+        public override float StealthDamageMultiplier => StealthDmgMult;
+
+        public static int CloudLifetime = 200;
+        public static float DustRadius = 11f;
+        public static int StealthIframes = 9;
+
+        //Cloud hitbox size manipulation
+        public static float MaxSize = 3.2f;
+        public static float MaxSizeStealth = 3.6f;
+        public static float GrowthRate = 0.025f;
+        public static float StealthGrowhRate = 0.035f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -54,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.SandstorminaBottle).
-                AddIngredient(ItemID.HolyWater, 20).
+                AddIngredient<AncientBoneDust>(10).
                 AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();

@@ -1,3 +1,4 @@
+﻿using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
@@ -7,11 +8,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class EssenceScythe : ModProjectile
+    public class EssenceScythe : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Scythe");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -29,6 +30,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 300;
             Projectile.ignoreWater = true;
             AIType = ProjectileID.DeathSickle;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 2;
         }
 
         public override void AI()
@@ -37,7 +40,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
             CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 12f, 20f);
@@ -63,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, 1f, spriteEffects, 0);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, 1f, spriteEffects, 0);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -71,14 +74,13 @@ namespace CalamityMod.Projectiles.Melee
             return new Color(150, 0, 200, 0);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 2;
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
-            if (target.life <= 0)
+            if (target.life <= 0 && target.lifeMax > 5)
             {
                 if (Projectile.owner == Main.myPlayer)
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), 1200f, 0f);
+                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), BalancingConstants.LifeStealRange, 0f);
             }
         }
     }

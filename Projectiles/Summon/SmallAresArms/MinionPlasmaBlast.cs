@@ -1,33 +1,30 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
-    public class MinionPlasmaBlast : ModProjectile
+    public class MinionPlasmaBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Boss/AresPlasmaFireball";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Volatile Plasma Blast");
             Main.projFrames[Type] = 6;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 36;
-            Projectile.height = 36;
+            Projectile.width = Projectile.height = 36;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
             Projectile.tileCollide = true;
             Projectile.netImportant = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 420;
             Projectile.Opacity = 0f;
             Projectile.DamageType = DamageClass.Summon;
@@ -53,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 Projectile.velocity = Projectile.SuperhomeTowardsTarget(potentialTarget, 23f, 10f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item93, Projectile.Center);
 
@@ -64,9 +61,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 for (int i = 0; i < 15; i++)
                 {
                     Vector2 plasmaVelocity = Main.rand.NextVector2Circular(5f, 5f);
-                    int gas = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, plasmaVelocity, type, Projectile.damage, 0f, Main.myPlayer);
-                    if (Main.projectile.IndexInRange(gas))
-                        Main.projectile[gas].originalDamage = Projectile.originalDamage;
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, plasmaVelocity, type, Projectile.damage, 0f, Main.myPlayer);
                 }
             }
         }

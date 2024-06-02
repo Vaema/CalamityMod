@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
@@ -12,8 +12,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class YharimsCrystalBeam : ModProjectile
+    public class YharimsCrystalBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const float PiBeamDivisor = MathHelper.Pi / YharimsCrystalPrism.NumBeams;
 
         private const float MaxDamageMultiplier = 3f;
@@ -37,11 +38,6 @@ namespace CalamityMod.Projectiles.Magic
         private const float SidewaysDustBeamEndOffset = 4f;
         private const float BeamRenderTileOffset = 10.5f;
         private const float BeamLengthReductionFactor = 14.5f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Yharim's Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -152,7 +148,7 @@ namespace CalamityMod.Projectiles.Magic
             // If the host crystal is fully charged, the interpolation starts at the host crystal's center instead.
             // Overriding that, if the player shoves the crystal into or through a wall, the interpolation starts at the player's center.
             Vector2 samplingPoint = Projectile.Center;
-            if(hostCrystal.ai[0] >= YharimsCrystalPrism.MaxCharge)
+            if (hostCrystal.ai[0] >= YharimsCrystalPrism.MaxCharge)
                 samplingPoint = hostCrystal.Center;
             if (!Collision.CanHitLine(Main.player[Projectile.owner].Center, 0, 0, hostCrystal.Center, 0, 0))
                 samplingPoint = Main.player[Projectile.owner].Center;
@@ -204,9 +200,9 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         // Inflict Dragonfire.
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
 
         // Determines whether the specified target hitbox is intersecting with the beam.
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -225,7 +221,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float beamLength = Projectile.localAI[1];
             Vector2 centerFloored = Projectile.Center.Floor() + Projectile.velocity * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);
@@ -262,7 +258,7 @@ namespace CalamityMod.Projectiles.Magic
                 float dustAngle = Projectile.rotation + (Main.rand.NextBool() ? 1f : -1f) * MathHelper.PiOver2;
                 float dustStartDist = Main.rand.NextFloat(1f, 1.8f);
                 Vector2 dustVel = dustAngle.ToRotationVector2() * dustStartDist;
-                int d = Dust.NewDust(laserEndPos, 0, 0, 244, dustVel.X, dustVel.Y, 0, beamColor, 3.3f);
+                int d = Dust.NewDust(laserEndPos, 0, 0, DustID.CopperCoin, dustVel.X, dustVel.Y, 0, beamColor, 3.3f);
                 Main.dust[d].color = beamColor;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].scale = 1.2f;

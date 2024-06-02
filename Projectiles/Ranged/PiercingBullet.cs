@@ -1,20 +1,16 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PiercingBullet : ModProjectile
+    public class PiercingBullet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/AMRShot";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Piercing Blow");
-        }
 
         public override void SetDefaults()
         {
@@ -34,19 +30,14 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             //Avoid touching things that you probably aren't meant to damage
-            if (target.defense > 999 || target.Calamity().DR >= 0.95f || target.Calamity().unbreakableDR)
+            if (modifiers.SuperArmor || target.defense > 999 || target.Calamity().DR >= 0.95f || target.Calamity().unbreakableDR)
                 return;
 
-            //DR applies after defense, so undo it first
-            damage = (int)(damage * (1 / (1 - target.Calamity().DR)));
-
-            //Then proceed to ignore all defense
-            int penetratableDefense = (int)Math.Max(target.defense - Main.player[Projectile.owner].GetArmorPenetration<GenericDamageClass>(), 0);
-            int penetratedDefense = Math.Min(penetratableDefense, target.defense);
-            damage += (int)(0.5f * penetratedDefense);
+            //Bypass defense
+            modifiers.DefenseEffectiveness *= 0f;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -56,16 +47,16 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            OnHitEffects(target.Center, crit);
-            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 600);
+            OnHitEffects(target.Center, hit.Crit);
+            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 300);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            OnHitEffects(target.Center, crit);
-            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 600);
+            OnHitEffects(target.Center, true);
+            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 300);
         }
 
         private void OnHitEffects(Vector2 targetPos, bool crit)
@@ -73,12 +64,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (crit)
             {
                 var source = Projectile.GetSource_FromThis();
-                int bulletCount = 10;
+                int bulletCount = 6;
                 for (int x = 0; x < bulletCount; x++)
                 {
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, x < bulletCount / 2, 500f, 500f, 0f, 500f, 12f, ModContent.ProjectileType<AMR2>(), (int)(Projectile.damage * 0.2), Projectile.knockBack, Projectile.owner);
+                        CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, x < bulletCount / 2, 500f, 500f, 0f, 500f, 12f, ModContent.ProjectileType<AMR2>(), (int)(Projectile.damage * 0.175), Projectile.knockBack, Projectile.owner);
                     }
                 }
             }

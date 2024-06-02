@@ -7,14 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
 {
-    public class GazeOfCrysthamyr : ModItem
+    public class GazeOfCrysthamyr : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gaze of Crysthamyr");
-            Tooltip.SetDefault("Summons a shadow dragon\n" +
-                "Hold W to ascend faster");
-            SacrificeTotal = 1;
 
         }
 
@@ -26,7 +23,7 @@ namespace CalamityMod.Items.Mounts
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.HoldUp;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 

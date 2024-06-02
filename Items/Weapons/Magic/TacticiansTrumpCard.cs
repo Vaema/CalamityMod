@@ -8,16 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class TacticiansTrumpCard : ModItem
+    public class TacticiansTrumpCard : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tactician's Trump Card");
-            Tooltip.SetDefault("Faint memories of a Princess from the future cross your mind...\n" +
-                "Fires a sword beam that electrifies enemies on hit");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
             Item.width = 74;
@@ -33,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<TacticiansTrumpCardProj>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
@@ -48,9 +41,9 @@ namespace CalamityMod.Items.Weapons.Magic
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit) => target.AddBuff(BuffID.Electrified, 300);
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 300);
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit) => target.AddBuff(BuffID.Electrified, 300);
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => target.AddBuff(BuffID.Electrified, 300);
 
         public override void AddRecipes()
         {

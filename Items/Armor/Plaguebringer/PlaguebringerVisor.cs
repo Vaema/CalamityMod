@@ -1,32 +1,26 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.Projectiles.Summon;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
 
 namespace CalamityMod.Items.Armor.Plaguebringer
 {
     [AutoloadEquip(EquipType.Head)]
-    public class PlaguebringerVisor : ModItem
+    public class PlaguebringerVisor : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public const int PlagueDashIFrames = 12;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plaguebringer Visor");
-            Tooltip.SetDefault("15% increased minion damage\n" +
-            "+20 max life");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.defense = 7; // 32 total
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
@@ -49,9 +43,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Grants a plague dash to ram enemies and afflict them with the plague\n" +
-            "Summons a lil' plaguebringer to protect you and empower nearby minions\n" +
-            "+3 max minions";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
 
             player.Calamity().plaguebringerPatronSet = true;
             player.Calamity().DashID = PlaguebringerArmorDash.ID;
@@ -66,10 +58,13 @@ namespace CalamityMod.Items.Armor.Plaguebringer
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<PlaguebringerSummon>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(80);
+                    // 08DEC2023: Ozzatron: Plaguebringer armor dudes spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(25);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<PlaguebringerSummon>(), damage, 0f, player.whoAmI, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 80;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -13,7 +14,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Super Dummy");
             Main.npcFrameCount[NPC.type] = 11;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
@@ -45,14 +45,14 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override bool PreAI()
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 deathCounter++;
                 // If you don't attack the Dummy for a minute in gfb, it becomes sentient
                 if (deathCounter >= 6000)
                 {
                     NPC.damage = NPC.lifeMax;
-                    CalamityGlobalAI.BuffedMimicAI(NPC, Mod);
+                    RevengeanceAndDeathAI.BuffedMimicAI(NPC, Mod);
                     return false;
                 }
             }
@@ -64,15 +64,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeRegen += 2000000;
         }
 
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
-        {
-            return false;
-        }
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => Main.zenithWorld;
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
+
+        public override void HitEffect(NPC.HitInfo hit)
         {
             // Dummy AI, no way
-            NPC.ai[0] = hitDirection * -NPC.direction;
+            NPC.ai[0] = hit.HitDirection * -NPC.direction;
             // Reset hit timer if it isn't enraged
             if (deathCounter > 0 && deathCounter < 6000)
             {
@@ -99,7 +98,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if ((NPC.justHit || deathCounter > 6000) && NPC.frame.Y > frameHeight * 2)
                 {
                     NPC.frame.Y = frameHeight;
-                }    
+                }
                 else if (NPC.frame.Y > frameHeight * 3)
                 {
                     NPC.frame.Y = 0;

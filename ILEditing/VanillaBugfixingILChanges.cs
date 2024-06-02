@@ -1,106 +1,17 @@
-﻿using CalamityMod.NPCs;
-using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.NPCs;
+using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Terraria;
-using Terraria.GameContent;
-using Terraria.GameInput;
+using Terraria.DataStructures;
+using Terraria.Graphics.Renderers;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
-        public struct OrderedProjectileEntry
-        {
-            public int OriginalIndex;
-            public Projectile Proj;
-        }
-
-        // This list should contain all vanilla NPCs present in Boss Rush which ARE NOT bosses and whose health is boosted over 32,767.
-        private static List<int> NeedsFourLifeBytes => new()
-        {
-            // King Slime
-            NPCID.BlueSlime,
-            NPCID.SlimeSpiked,
-            NPCID.RedSlime,
-            NPCID.PurpleSlime,
-            NPCID.YellowSlime,
-            NPCID.IceSlime,
-            NPCID.UmbrellaSlime,
-            NPCID.RainbowSlime,
-            NPCID.Pinky,
-
-            // Eye of Cthulhu
-            NPCID.ServantofCthulhu,
-
-            // Eater of Worlds
-            NPCID.EaterofWorldsHead,
-            NPCID.EaterofWorldsBody,
-            NPCID.EaterofWorldsTail,
-
-            // Brain of Cthulhu
-            NPCID.Creeper,
-
-            // Skeletron
-            NPCID.SkeletronHand,
-
-            // Wall of Flesh
-            NPCID.WallofFleshEye,
-
-            // The Destroyer
-            NPCID.Probe,
-
-            // Skeletron Prime
-            NPCID.PrimeVice,
-            NPCID.PrimeSaw,
-            NPCID.PrimeLaser,
-            NPCID.PrimeCannon,
-
-            // Plantera
-            NPCID.PlanterasTentacle,
-
-            // Golem
-            NPCID.GolemHead,
-            NPCID.GolemHeadFree,
-            NPCID.GolemFistLeft,
-            NPCID.GolemFistRight,
-
-            // Cultist
-            NPCID.CultistDragonHead,
-            NPCID.CultistDragonBody1,
-            NPCID.CultistDragonBody2,
-            NPCID.CultistDragonBody3,
-            NPCID.CultistDragonBody4,
-            NPCID.CultistDragonTail,
-            NPCID.AncientCultistSquidhead,
-        };
-
-        public static List<OrderedProjectileEntry> OrderedProjectiles = new();
-
-        /*
-        #region Fixing NPC HP Sync Byte Counts in Boss Rush
-        // CONTEXT FOR FIX: When NPCs sync they have a pre-determined amount of bytes that are used to store HP/Max NPC information in packets for efficiency.
-        // However, this may not always coincide with the true HP of the NPC when it's created if it has more HP than the allocated bytes can sufficiently store, which can
-        // happen for various minor enemies in boss rush, as the byte count is only reset by specific, unpredictable events, such as players respawning or entering the world.
-        // To give an example, the Ancient Visions in the culst fight have a few thousand HP to work with, placing it in the 2-life-bytes category, and thusly allowing HP values
-        // of up to 2^15 - 1 (32767). However, in Boss Rush, as of writing this, it has 50000 HP. In order to mitigate this, it must be placed in the 4-byte category, which allows
-        // values up to the integer limit.
-        // NOTE -- This mechanic appears to have been removed in 1.4.
-        private static void BossRushLifeBytes(On.Terraria.Main.orig_InitLifeBytes orig)
-        {
-            orig();
-            foreach (int npcType in NeedsFourLifeBytes)
-                Main.npcLifeBytes[npcType] = 4;
-        }
-        #endregion Fixing NPC HP Sync Byte Counts in Boss Rush
-        */
-
         #region Fixing Splitting Worm Banner Spam in Deathmode
         // CONTEXT FOR FIX: In Death Mode, normal worms are capable of splitting similarly to the Eater of Worlds. This, as expected, comes with problems with loot dropping, as you can kill multiple
         // head segments from the same original worm. TML allows us to safely handle this with its drop hooks. Unfortunately, however, this does not apply to banner dropping logic based on total kills or
@@ -135,122 +46,88 @@ namespace CalamityMod.ILEditing
         }
         #endregion Fixing Splitting Worm Banner Spam in Deathmode
 
-        #region Let Rogue Items Be Reforgeable
-        private static bool LetRogueItemsBeReforgeable(On.Terraria.Item.orig_Prefix orig, Item self, int pre)
+        #region Fixing Splitting Worm Interaction in Deathmode
+        // CONTEXT FOR FIX: In Death Mode, normal worms are capable of splitting similarly to the Eater of Worlds. This comes with problems with bestiary entries. The entries are incremented only when
+        // the killed npc is the head segment and it has been interacted at least once. These two conditions may be violated because NPC.NPCLoot only triggers once because of the above fix.
+        // The fix for former condition is in CalamityGlobalNPCLoot.OnKill. For the latter condition, NPC.PlayerInteraction should broadcast interaction to every other worm segments.
+        // This is already done for vanilla worm enemies like EOW.
+        private static void FixSplittingWormInteraction(On_NPC.orig_PlayerInteraction orig, NPC npc, int player)
         {
-            if (self.CountsAsClass<RogueDamageClass>() && self.maxStack == 1 && pre == -3)
-            {
-                PrefixLoader.Roll(self, ref pre, 40, WorldGen.gen ? WorldGen.genRand : Main.rand, PrefixCategory.AnyWeapon);
-                return true;
-            }
-
-            return orig(self, pre);
+            orig(npc, player);
+            CalamityGlobalNPC.SplittingWormBroadcastInteractionWrapper(npc, player);
         }
-        #endregion Let Rogue Items Be Reforgeable
+        #endregion
 
-        #region Fix Projectile Update Priority Problems
-
-        // This IL edit is commented out because it seems to be causing issues, sometimes creating errors preventing Terraria from updating
-        // CONTEXT FOR FIX: The way projectile updating works is via looping, starting from 0 and ending at 999. For most cases this works sufficiently.
-        // However, in contexts where two projectile's update logic are dependent on each-other in some way (such as mechworm segment movement) it is possible
-        // that one projectile will update unexpectedly before the other, creating gaps. By making the update logic ordered based on a priority system, this can be
-        // alleviated.
-        private static void FixProjectileUpdatePriorityProblems(ILContext il)
+        #region Fixing Vanilla Not Accounting For Spritebatch Modification in Held Projectiles
+        private static bool HasLoggedHeldProjectileBlendStateCatch = false;
+        private void FixHeldProjectileBlendState(On_PlayerDrawLayers.orig_DrawHeldProj orig, PlayerDrawSet drawinfo, Projectile proj)
         {
-            var cursor = new ILCursor(il);
+            orig(drawinfo, proj);
 
-            // Locate the location where the projectile loop starts.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<LockOnHelper>("SetUP")))
+            // Vanilla uses a worse quality sampler state for mounts when moving for some reason. Really couldn't say why.
+            var sampler = (drawinfo.drawPlayer.mount.Active && drawinfo.drawPlayer.fullRotation != 0f) ? LegacyPlayerRenderer.MountedSamplerState : Main.DefaultSamplerState;
+
+            try
             {
-                LogFailure("Projectile Update Priority fix", "Could not locate the LockOnHelper.SetUP method.");
-                return;
+                // Restart the spritebatch, to ensure that modifications made to it are properly restored.
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, sampler, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             }
-
-            // Before doing anything else, prepare the list of ordered projectiles.
-            cursor.EmitDelegate<Func<List<OrderedProjectileEntry>>>(() =>
+            catch
             {
-                List<OrderedProjectileEntry> cache = new List<OrderedProjectileEntry>();
-                for (int i = 0; i < Main.maxProjectiles; i++)
-                {
-                    cache.Add(new OrderedProjectileEntry()
-                    {
-                        Proj = Main.projectile[i] ?? new(),
-                        OriginalIndex = i
-                    });
-                }
-                return cache.OrderByDescending(p => p.Proj.active ? p.Proj.Calamity().UpdatePriority : 0f).ToList();
-            });
-            cursor.Emit(OpCodes.Stsfld, typeof(ILChanges).GetField("OrderedProjectiles", BindingFlags.Static | BindingFlags.Public));
+                if (!HasLoggedHeldProjectileBlendStateCatch)
+                    LogFailure("FixHeldProjectileBlendState", "The spritebatch was not left properly by another mod! The game will now most likely crash.");
 
-            // Find the update loop update local index.
-            int updateLoopLocalIndex = -1;
-            cursor.GotoNext(i => i.MatchStloc(out updateLoopLocalIndex));
-
-            // Go before the declaration of the projectile loop index and declare the ordered projectile.
-            cursor.Goto(0);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStsfld<Main>("ProjectileUpdateLoopIndex")))
-            {
-                LogFailure("Projectile Update Priority fix", "Could not locate the ProjectileUpdateLoopIndex field.");
-                return;
+                HasLoggedHeldProjectileBlendStateCatch = true;
             }
-            int updateIndexPosition = cursor.Index;
-
-            // Replace the projectile reference on the Projectile.Update call.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdelemRef()))
-            {
-                LogFailure("Projectile Update Priority fix", $"Could not locate the Main.projectile index load reference.");
-                return;
-            }
-
-            // Pop the Main.projectile[i] reference and replace it with OrderedProjectiles[i].Proj.
-            cursor.Emit(OpCodes.Pop);
-            cursor.Emit(OpCodes.Ldsfld, typeof(ILChanges).GetField("OrderedProjectiles", BindingFlags.Static | BindingFlags.Public));
-            cursor.Emit(OpCodes.Ldloc, updateLoopLocalIndex);
-            cursor.Emit(OpCodes.Callvirt, typeof(List<OrderedProjectileEntry>).GetMethod("get_Item"));
-            cursor.Emit(OpCodes.Ldfld, typeof(OrderedProjectileEntry).GetField("Proj"));
-
-            // Pop the direct i reference in the Update call and replace it with the original index in the cache, to prevent update ID
-            // mismatches.
-            cursor.Goto(updateIndexPosition);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall<Projectile>("Call")))
-            {
-                LogFailure("Projectile Update Priority fix", "Could not locate the projectile Update call.");
-                return;
-            }
-            cursor.Emit(OpCodes.Pop);
-            cursor.Emit(OpCodes.Ldloc, updateLoopLocalIndex);
-            cursor.EmitDelegate<Func<int, int>>(i => OrderedProjectiles[i].OriginalIndex);
         }
-        #endregion Fix Projectile Update Priority Problems
+        #endregion
 
-        #region Make Mouse Hover Items Work with Animated Items
-        private static void MakeMouseHoverItemsSupportAnimations(ILContext il)
+        #region Fix Vanilla Not Accounting For Multiple Bobbers When Fishing With Truffle Worm
+        private void FixTruffleWormFishing(ILContext il)
         {
             var cursor = new ILCursor(il);
 
-            // Locate the location where the frame rectangle is created.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchNewobj<Rectangle?>()))
-                return;
+            // Initialize a flag variable whether truffle worm was used.
+            il.Method.Body.Variables.Add(new VariableDefinition(il.Module.TypeSystem.Boolean));
+            byte truffleWormUsed = (byte) (il.Method.Body.Variables.Count - 1);
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.Stloc_S, truffleWormUsed);
 
-            int endIndex = cursor.Index;
-
-            // And then go back to where it began, right after the draw position vector.
-            if (!cursor.TryGotoPrev(MoveType.After, i => i.MatchNewobj<Vector2>()))
+            // Move after beq.s, which is before Player.ItemCheck_CheckFishingBobber_PickAndConsumeBait gets called
+            if (!cursor.TryGotoNext(MoveType.After, i => i.Match(OpCodes.Beq_S)))
             {
-                LogFailure("HoverItem Animation Support", "Could not locate the creation of the draw position vector.");
+                LogFailure("FixTruffleWormFishing", "Could not locate beq.s before Player.ItemCheck_CheckFishingBobber_PickAndConsumeBait.");
                 return;
             }
 
-            // And delete the range that creates the rectangle with intent to replace it.
-            cursor.RemoveRange(Math.Abs(endIndex - cursor.Index));
+            // Skip if truffle worm was already used.
+            var loopEnd = il.DefineLabel();
+            cursor.Emit(OpCodes.Ldloc_S, truffleWormUsed);
+            cursor.Emit(OpCodes.Brtrue_S, loopEnd);
 
-            cursor.Emit(OpCodes.Ldloc_0);
-            cursor.EmitDelegate<Func<int, Rectangle?>>(itemType =>
+            // Find the call to Player.ItemCheck_CheckFishingBobber_PickAndConsumeBait.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Player>("ItemCheck_CheckFishingBobber_PickAndConsumeBait")))
             {
-                return Main.itemAnimations[itemType]?.GetFrame(TextureAssets.Item[itemType].Value) ?? null;
-            });
+                LogFailure("FixTruffleWormFishing", "Could not locate the call to Player.ItemCheck_CheckFishingBobber_PickAndConsumeBait.");
+                return;
+            }
+
+            // Retrive baitTypeUsed, compare with truffle worm, and save it.
+            cursor.Emit(OpCodes.Ldloc_S, (byte)4);
+            cursor.Emit(OpCodes.Ldc_I4, ItemID.TruffleWorm);
+            cursor.Emit(OpCodes.Ceq);
+            cursor.Emit(OpCodes.Stloc_S, truffleWormUsed);
+
+            // Move before next ldloc.0, which is the end of the loop
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc0()))
+            {
+                LogFailure("FixTruffleWormFishing", "Could not find the end of the loop.");
+                return;
+            }
+
+            cursor.MarkLabel(loopEnd);
         }
-        #endregion Make Mouse Hover Items Work with Animated Items
+        #endregion
     }
 }

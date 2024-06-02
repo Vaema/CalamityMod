@@ -7,14 +7,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class SilvaHornedHelm : ModItem
+    public class SilvaHornedHelm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Silva Horned Helm");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetDefaults()
         {
             Item.width = 26;

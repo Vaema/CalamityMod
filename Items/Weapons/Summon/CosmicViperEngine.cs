@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,25 +12,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class CosmicViperEngine : ModItem
+    public class CosmicViperEngine : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cosmic Viper Engine");
-            Tooltip.SetDefault("Summons a cosmic gunship to shoot down your foes\n" +
-                               "Gunships will fire bullets from your inventory\n" +
-                               "50% chance to not consume ammo\n" +
-                               "Alternates firing rockets and bullets\n" +
-                               "Rockets do not consume ammo");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 321;
-            Item.mana = 10;
             Item.width = 46;
             Item.height = 28;
+            Item.damage = 321;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 9;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
@@ -41,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f; // Affects bullet speed
             Item.DamageType = DamageClass.Summon;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
@@ -50,7 +40,6 @@ namespace CalamityMod.Items.Weapons.Summon
             if (player.altFunctionUse != 2)
             {
                 float speed = Item.shootSpeed;
-                player.itemTime = Item.useTime;
                 Vector2 spawnPos = player.RotatedRelativePoint(player.MountedCenter, true);
                 float xPos = (float)Main.mouseX + Main.screenPosition.X - spawnPos.X;
                 float yPos = (float)Main.mouseY + Main.screenPosition.Y - spawnPos.Y;

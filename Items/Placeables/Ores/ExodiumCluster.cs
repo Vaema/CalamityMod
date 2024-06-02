@@ -6,18 +6,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Ores
 {
     [LegacyName("ExodiumClusterOre")]
-    public class ExodiumCluster : ModItem
+    public class ExodiumCluster : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Exodium Cluster");
-            Tooltip.SetDefault("A cold cluster from the great unknown.");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 101;
+            Item.ResearchUnlockCount = 100;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 101;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<ExodiumOre>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -25,19 +26,9 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 1, silver: 60);
             Item.rare = ItemRarityID.Red;
         }
-
-        // removed recipe for exodium because it shouldn't be necessary
-        /*
-        public override void AddRecipes()
-        {
-            CreateRecipe(1).AddIngredient(ItemID.LunarOre, 3).AddIngredient(ItemID.FragmentStardust).AddIngredient(ItemID.FragmentSolar).AddIngredient(ItemID.FragmentVortex).AddIngredient(ItemID.FragmentNebula).AddTile(TileID.LunarCraftingStation).Register();
-        }
-        */
     }
 }

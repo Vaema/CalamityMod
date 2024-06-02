@@ -10,23 +10,16 @@ namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("BloodflareHornedHelm")]
-    public class BloodflareHeadRanged : ModItem
+    public class BloodflareHeadRanged : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/BloodflareRangerActivation");
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Horned Helm");
-            Tooltip.SetDefault("You can move freely through liquids and have temporary immunity to lava\n" +
-                "10% increased ranged damage and critical strike chance");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 34; //85
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -46,20 +39,13 @@ namespace CalamityMod.Items.Armor.Bloodflare
             var modPlayer = player.Calamity();
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareRanged = true;
-            var hotkey = CalamityKeybinds.SetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = "Greatly increases life regen\n" +
-                "Enemies below 50% life drop a heart when struck\n" +
-                "This effect has a 5 second cooldown\n" +
-                "Press " + hotkey + " to unleash the lost souls of polterghast to destroy your enemies\n" +
-                "This effect has a 30 second cooldown\n" +
-                "Ranged weapons fire bloodsplosion orbs every 2.5 seconds";
+            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey) + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
             player.crimsonRegen = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.lavaMax += 240;
-            player.ignoreWater = true;
             player.GetDamage<RangedDamageClass>() += 0.1f;
             player.GetCritChance<RangedDamageClass>() += 10;
         }

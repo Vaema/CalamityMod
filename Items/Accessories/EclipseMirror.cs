@@ -8,29 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class EclipseMirror : ModItem
+    public class EclipseMirror : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Eclipse Mirror");
-            Tooltip.SetDefault("Its reflection shows naught but darkness\n" +
-                "+10 maximum stealth\n" +
-                "6% increased rogue damage, and 6% increased rogue crit chance\n" +
-                "Vastly reduces enemy aggression, even in the abyss\n" +
-                "Stealth generates 25% faster when standing still\n" +
-                "Mobile stealth generation exponentially accelerates while not attacking\n" +
-                "Stealth strikes only expend 50% of your max stealth\n" +
-                "Grants the ability to evade attacks in a blast of darksun light, which inflicts extreme damage in a wide area\n" +
-                "Evading an attack grants full stealth but has a 90 second cooldown\n" +
-                "This cooldown is shared with all other dodges and reflects");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.accessory = true;
         }
@@ -51,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<AbyssalMirror>().
-                AddIngredient<DarkGodsSheath>().
+                AddIngredient<DarkMatterSheath>().
                 AddIngredient<DarksunFragment>(20).
                 AddTile<CosmicAnvil>().
                 Register();

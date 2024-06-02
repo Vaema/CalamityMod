@@ -1,16 +1,16 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.ID;
+using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using Terraria.ID;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
     [LegacyName("AstralFossilWall")]
-    public class CelestialRemainsWall : ModItem
+    public class CelestialRemainsWall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
-            DisplayName.SetDefault("Celestial Remains Wall");
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
@@ -24,12 +24,15 @@ namespace CalamityMod.Items.Placeables.Walls
             Item.consumable = true;
             Item.width = 16;
             Item.height = 16;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddTile(TileID.WorkBenches).AddIngredient(ModContent.ItemType<CelestialRemains>()).Register();
+            CreateRecipe(4).
+                AddIngredient<CelestialRemains>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

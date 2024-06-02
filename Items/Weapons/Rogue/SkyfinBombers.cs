@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,18 +9,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SkyfinBombers : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Skyfin Bombers");
-            Tooltip.SetDefault("Fishy bombers inbound!\n" +
-            "Launches a skyfin nuke that homes in on enemies below it\n" +
-            "Stealth strikes rapidly home in regardless of enemy position");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 28;
+            Item.height = 30;
             Item.damage = 46;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -30,8 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
-            Item.height = 30;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<SkyfinNuke>();
             Item.shootSpeed = 12f;

@@ -8,17 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Nadir : ModItem
+    public class Nadir : ModItem, ILocalizedModType
     {
-        public static int BaseDamage = 280;
-        public static float ShootSpeed = 12f;
+        public new string LocalizationCategory => "Items.Weapons.Melee";
+        public static float ProjShootSpeed = 20f;
+        public static int FadeoutSpeed = 20;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nadir");
-            Tooltip.SetDefault("Fires void essences which flay nearby enemies with tentacles\n" + "Ignores immunity frames\n" +
-                "'The abyss has stared back at you long enough. It now speaks, and it does not speak softly.'");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
@@ -28,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 144;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = BaseDamage;
+            Item.damage = 365;
             Item.knockBack = 8f;
             Item.useAnimation = 18;
             Item.useTime = 18;
@@ -38,12 +35,12 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<NadirSpear>();
-            Item.shootSpeed = ShootSpeed;
+            Item.shootSpeed = 12f; // This isn't the projectile's speed, it's the spear's.
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -52,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<ElementalLance>().
+                AddIngredient<AuricBar>(5).
                 AddIngredient<TwistingNether>(5).
-                AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddTile<CosmicAnvil>().
                 Register();

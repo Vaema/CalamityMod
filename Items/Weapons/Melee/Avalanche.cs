@@ -1,26 +1,19 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Avalanche : ModItem
+    public class Avalanche : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Avalanche");
-            Tooltip.SetDefault("Spawns ice bombs that explode after 3 seconds into ice shards on hit");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 64;
             Item.height = 64;
-            Item.scale = 1.5f;
             Item.damage = 100;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 35;
@@ -30,11 +23,11 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             var source = player.GetSource_ItemUse(Item);
             int totalProjectiles = 4;
@@ -48,12 +41,12 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
             for (int k = 0; k < totalProjectiles; k++)
             {
-                Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                Projectile.NewProjectile(source, target.Center, vector255, type, bombDamage, knockback, Main.myPlayer);
+                Vector2 projRotation = spinningPoint.RotatedBy(radians * k);
+                Projectile.NewProjectile(source, target.Center, projRotation, type, bombDamage, hit.Knockback * 0.5f, Main.myPlayer);
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             var source = player.GetSource_ItemUse(Item);
             int totalProjectiles = 4;
@@ -67,8 +60,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
             for (int k = 0; k < totalProjectiles; k++)
             {
-                Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                Projectile.NewProjectile(source, target.Center, vector255, type, bombDamage, 0f, Main.myPlayer);
+                Vector2 projRotation = spinningPoint.RotatedBy(radians * k);
+                Projectile.NewProjectile(source, target.Center, projRotation, type, bombDamage, 0f, Main.myPlayer);
             }
         }
 
@@ -76,8 +69,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                int num250 = Dust.NewDust(new Vector2((float)hitbox.X, (float)hitbox.Y), hitbox.Width, hitbox.Height, 67, (float)(player.direction * 2), 0f, 150, default, 1.5f);
-                Main.dust[num250].velocity *= 0.2f;
+                int iceDust = Dust.NewDust(new Vector2((float)hitbox.X, (float)hitbox.Y), hitbox.Width, hitbox.Height, DustID.IceRod, (float)(player.direction * 2), 0f, 150, default, 1.5f);
+                Main.dust[iceDust].velocity *= 0.2f;
             }
         }
     }

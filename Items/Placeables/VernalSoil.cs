@@ -3,16 +3,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class VernalSoil : ModItem
+    public class VernalSoil : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vernal Soil");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             Item.createTile = ModContent.TileType<Tiles.VernalSoil>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -20,9 +22,7 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
         }
     }
 }

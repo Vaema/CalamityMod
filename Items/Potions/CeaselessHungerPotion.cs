@@ -7,13 +7,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class CeaselessHungerPotion : ModItem
+    public class CeaselessHungerPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Ceaseless Hunger Potion");
-            Tooltip.SetDefault("Causes you to suck up all items in the world");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -40,7 +39,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<DarkPlasma>().
                 AddIngredient<GalacticaSingularity>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe(4).
@@ -48,7 +47,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<BloodOrb>(20).
                 AddIngredient<DarkPlasma>().
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

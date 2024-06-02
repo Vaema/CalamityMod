@@ -1,7 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Vanity;
+using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
@@ -15,25 +19,31 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
 
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
     public class PerforatorHive : ModNPC
     {
+        public static readonly SoundStyle GeyserShoot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveShoot", 3);
+        public static readonly SoundStyle IchorShoot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveIchorShoot");
+        public static readonly SoundStyle WormSpawn = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveWormSpawn");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfHiveHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfHiveDeath");
+
+        public static Asset<Texture2D> GlowTexture;
+
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool small = false;
         private bool medium = false;
@@ -42,12 +52,15 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Perforator Hive");
             Main.npcFrameCount[NPC.type] = 10;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -58,7 +71,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 110;
             NPC.height = 100;
             NPC.defense = 4;
-            NPC.LifeMaxNERB(5000, 6000, 270000);
+            NPC.LifeMaxNERB(6000, 7200, 270000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -68,8 +81,8 @@ namespace CalamityMod.NPCs.Perforator
             NPC.boss = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit13;
-            NPC.DeathSound = SoundID.NPCDeath19;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -77,12 +90,11 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCrimson,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Though birthed by the crimson, it is unknown whether they fully serve that creator. The worms of the hive frequently carve huge tunnels in the crimson's flesh.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.PerforatorHive")
             });
         }
 
@@ -126,16 +138,6 @@ namespace CalamityMod.NPCs.Perforator
             // Variables for ichor blob phase
             float blobPhaseGateValue = bossRush ? 450f : 600f;
             bool floatAboveToFireBlobs = NPC.ai[2] >= blobPhaseGateValue - 120f;
-
-            // Don't deal damage for 3 seconds after spawning or while firing blobs
-            NPC.damage = NPC.defDamage;
-            if (NPC.ai[1] < 180f || floatAboveToFireBlobs)
-            {
-                if (NPC.ai[1] < 180f)
-                    NPC.ai[1] += 1f;
-
-                NPC.damage = 0;
-            }
 
             Player player = Main.player[NPC.target];
 
@@ -195,7 +197,7 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.localAI[1] >= 6f)
             {
                 //Leak projectiles everywhere and start healing
-                int type = Main.rand.NextBool(2) ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
+                int type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
                 int damage = NPC.GetProjectileDamage(type);
                 int spread = Main.rand.Next(-45, 46);
                 Vector2 baseVelocity = Vector2.UnitY * Main.rand.NextFloat(-12.5f, -5f);
@@ -235,13 +237,13 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.ai[3] == 0f && NPC.life > 0)
                 NPC.ai[3] = NPC.lifeMax;
 
-            bool canSpawnWorms = !small || !medium || !large;
+            bool canSpawnWorms = !small || !medium || !large || Main.getGoodWorld;
             if (NPC.life > 0 && canSpawnWorms)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int num660 = (int)(NPC.lifeMax * (Main.getGoodWorld ? 0.15 : 0.25));
-                    if ((NPC.life + num660) < NPC.ai[3])
+                    int wormSpawnGateValue = (int)(NPC.lifeMax * (Main.getGoodWorld ? 0.15 : 0.25));
+                    if ((NPC.life + wormSpawnGateValue) < NPC.ai[3])
                     {
                         NPC.ai[3] = NPC.life;
                         int wormType = ModContent.NPCType<PerforatorHeadSmall>();
@@ -274,26 +276,26 @@ namespace CalamityMod.NPCs.Perforator
 
                         NPC.TargetClosest();
 
-                        SoundEngine.PlaySound(SoundID.NPCDeath23, NPC.Center);
+                        SoundEngine.PlaySound(WormSpawn, NPC.Center);
 
-                        for (int num621 = 0; num621 < 16; num621++)
+                        for (int i = 0; i < 16; i++)
                         {
-                            int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 170, 0f, 0f, 100, default, 1f);
-                            Main.dust[num622].velocity *= 2f;
-                            if (Main.rand.NextBool(2))
+                            int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                            Main.dust[ichorDust].velocity *= 2f;
+                            if (Main.rand.NextBool())
                             {
-                                Main.dust[num622].scale = 0.25f;
-                                Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                                Main.dust[ichorDust].scale = 0.25f;
+                                Main.dust[ichorDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                             }
                         }
 
-                        for (int num623 = 0; num623 < 32; num623++)
+                        for (int j = 0; j < 32; j++)
                         {
-                            int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 1.5f);
-                            Main.dust[num624].noGravity = true;
-                            Main.dust[num624].velocity *= 3f;
-                            num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 1f);
-                            Main.dust[num624].velocity *= 2f;
+                            int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                            Main.dust[bloodDust].noGravity = true;
+                            Main.dust[bloodDust].velocity *= 3f;
+                            bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
+                            Main.dust[bloodDust].velocity *= 2f;
                         }
                     }
                 }
@@ -311,7 +313,7 @@ namespace CalamityMod.NPCs.Perforator
             // Emit ichor blobs
             if (phase2)
             {
-                if (wormsAlive == 0 || bossRush || floatAboveToFireBlobs)
+                if (wormsAlive == 0 || bossRush || floatAboveToFireBlobs || (CalamityWorld.LegendaryMode && CalamityWorld.revenge))
                 {
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= blobPhaseGateValue)
@@ -327,18 +329,18 @@ namespace CalamityMod.NPCs.Perforator
                         {
                             NPC.ai[2] = 0f;
 
-                            SoundEngine.PlaySound(SoundID.NPCDeath23, NPC.Center);
+                            SoundEngine.PlaySound(IchorShoot, NPC.Center);
 
-                            for (int num621 = 0; num621 < 32; num621++)
+                            for (int i = 0; i < 32; i++)
                             {
-                                int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 170, 0f, 0f, 100, default, 1f);
-                                float dustVelocityYAdd = Math.Abs(Main.dust[num622].velocity.Y) * 0.5f;
-                                if (Main.dust[num622].velocity.Y < 0f)
-                                    Main.dust[num622].velocity.Y = 2f + dustVelocityYAdd;
-                                if (Main.rand.NextBool(2))
+                                int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                                float dustVelocityYAdd = Math.Abs(Main.dust[ichorDust].velocity.Y) * 0.5f;
+                                if (Main.dust[ichorDust].velocity.Y < 0f)
+                                    Main.dust[ichorDust].velocity.Y = 2f + dustVelocityYAdd;
+                                if (Main.rand.NextBool())
                                 {
-                                    Main.dust[num622].scale = 0.25f;
-                                    Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                                    Main.dust[ichorDust].scale = 0.25f;
+                                    Main.dust[ichorDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                                 }
                             }
 
@@ -354,6 +356,9 @@ namespace CalamityMod.NPCs.Perforator
                                 Vector2 blobVelocity = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
                                 blobVelocity.Normalize();
                                 blobVelocity *= Main.rand.Next(400, 801) * (bossRush ? 0.02f : 0.01f);
+
+                                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                                    blobVelocity *= Main.rand.NextFloat() + 1f;
 
                                 float blobVelocityYAdd = Math.Abs(blobVelocity.Y) * 0.5f;
                                 if (blobVelocity.Y < 2f)
@@ -374,6 +379,9 @@ namespace CalamityMod.NPCs.Perforator
             // When firing blobs, float above the target and don't call any other projectile firing or movement code
             if (floatAboveToFireBlobs)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (revenge)
                     Movement(player, 6f + velocityEnrageIncrease, 0.3f, 450f);
                 else
@@ -388,29 +396,29 @@ namespace CalamityMod.NPCs.Perforator
                 if (NPC.localAI[0] >= (revenge ? 200f : 250f) + wormsAlive * 150f && NPC.position.Y + NPC.height < player.position.Y && Vector2.Distance(player.Center, NPC.Center) > 80f)
                 {
                     NPC.localAI[0] = 0f;
-                    SoundEngine.PlaySound(SoundID.NPCHit20, NPC.Center);
+                    SoundEngine.PlaySound(GeyserShoot, NPC.Center);
 
-                    for (int num621 = 0; num621 < 8; num621++)
+                    for (int i = 0; i < 8; i++)
                     {
-                        int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 170, 0f, 0f, 100, default, 1f);
-                        Main.dust[num622].velocity *= 3f;
-                        if (Main.rand.NextBool(2))
+                        int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                        Main.dust[ichorDust].velocity *= 3f;
+                        if (Main.rand.NextBool())
                         {
-                            Main.dust[num622].scale = 0.25f;
-                            Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            Main.dust[ichorDust].scale = 0.25f;
+                            Main.dust[ichorDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                         }
                     }
 
-                    for (int num623 = 0; num623 < 16; num623++)
+                    for (int j = 0; j < 16; j++)
                     {
-                        int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 1.5f);
-                        Main.dust[num624].noGravity = true;
-                        Main.dust[num624].velocity *= 5f;
-                        num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 1f);
-                        Main.dust[num624].velocity *= 2f;
+                        int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                        Main.dust[bloodDust].noGravity = true;
+                        Main.dust[bloodDust].velocity *= 5f;
+                        bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
+                        Main.dust[bloodDust].velocity *= 2f;
                     }
 
-                    int type = Main.rand.NextBool(2) ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
+                    int type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
                     int damage = NPC.GetProjectileDamage(type);
                     int numProj = death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
                     if (Main.getGoodWorld)
@@ -435,6 +443,10 @@ namespace CalamityMod.NPCs.Perforator
                 switch (wormsAlive)
                 {
                     case 0:
+
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+
                         if (large || death)
                             Movement(player, 11f + velocityEnrageIncrease, death ? 0.1125f : 0.0975f, 20f);
                         else if (medium)
@@ -443,23 +455,44 @@ namespace CalamityMod.NPCs.Perforator
                             Movement(player, 9f + velocityEnrageIncrease, death ? 0.0975f : 0.0825f, 40f);
                         else
                             Movement(player, 8f + velocityEnrageIncrease, death ? 0.09f : 0.075f, 50f);
+
                         break;
 
                     case 1:
+
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         Movement(player, 6f + velocityEnrageIncrease, 0.15f, 350f);
+
                         break;
 
                     case 2:
+
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         Movement(player, 6f + velocityEnrageIncrease, 0.15f, 275f);
+
                         break;
 
                     case 3:
+
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         Movement(player, 6f + velocityEnrageIncrease, 0.15f, 200f);
+
                         break;
                 }
             }
             else
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 Movement(player, 6f + velocityEnrageIncrease, 0.075f, 350f);
+            }
         }
 
         private void Movement(Player target, float velocity, float acceleration, float y)
@@ -484,24 +517,24 @@ namespace CalamityMod.NPCs.Perforator
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector11 = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
 
-            Vector2 vector43 = NPC.Center - screenPos;
-            vector43 -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
-            vector43 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            Vector2 drawLocation = NPC.Center - screenPos;
+            drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorHiveGlow").Value;
-            Color color37 = Color.Lerp(Color.White, Color.Yellow, 0.5f);
+            texture2D15 = GlowTexture.Value;
+            Color glowmaskColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, color37, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * bossLifeScale);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
@@ -519,9 +552,9 @@ namespace CalamityMod.NPCs.Perforator
             // If neither The Hive Mind nor The Perforator Hive have been killed yet, notify players of Aerialite Ore
             if (!DownedBossSystem.downedHiveMind && !DownedBossSystem.downedPerforator)
             {
-                string key = "Mods.CalamityMod.SkyOreText";
+                string key = "Mods.CalamityMod.Status.Progression.SkyOreText";
                 Color messageColor = Color.Cyan;
-                AerialiteOreGen.Generate(true);
+                AerialiteOreGen.Enchant();
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }
@@ -539,16 +572,16 @@ namespace CalamityMod.NPCs.Perforator
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
             {
                 // Weapons and such
-				normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, new WeightedItemStack[]
-				{
+                normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, new WeightedItemStack[]
+                {
                     ModContent.ItemType<VeinBurster>(),
                     ModContent.ItemType<SausageMaker>(),
                     ModContent.ItemType<Aorta>(),
                     ModContent.ItemType<Eviscerator>(),
                     ModContent.ItemType<BloodBath>(),
-                    ModContent.ItemType<BloodClotStaff>(),
-					new WeightedItemStack(ModContent.ItemType<ToothBall>(), 1f, 30, 50),
-				}));
+                    ModContent.ItemType<FleshOfInfidelity>(),
+                    new WeightedItemStack(ModContent.ItemType<ToothBall>(), 1f, 30, 50),
+                }));
 
                 // Materials
                 normalOnly.Add(ItemID.CrimtaneBar, 1, 10, 15);
@@ -558,7 +591,7 @@ namespace CalamityMod.NPCs.Perforator
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.Hardmode(), ItemID.Ichor, 1, 10, 20));
 
                 // Equipment
-				normalOnly.Add(ModContent.ItemType<BloodstainedGlove>(), DropHelper.NormalWeaponDropRateFraction);
+                normalOnly.Add(ModContent.ItemType<BloodstainedGlove>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodyWormTooth>()));
 
                 // Vanity
@@ -572,21 +605,24 @@ namespace CalamityMod.NPCs.Perforator
             // Relic
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<PerforatorsRelic>());
 
+            // GFB Bloodfin drop
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<Bloodfin>(), 1, 1, 9999, true);
+
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedPerforator, ModContent.ItemType<LorePerforators>(), desc: DropHelper.FirstKillText);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<BurningBlood>(), 180, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 180, true);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
-            for (int k = 0; k < damage / NPC.lifeMax * 100.0; k++)
+            for (int k = 0; k < hit.Damage / NPC.lifeMax * 100.0; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
@@ -603,23 +639,23 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.height = 100;
                 NPC.position.X = NPC.position.X - (float)(NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
-                for (int num621 = 0; num621 < 40; num621++)
+                for (int i = 0; i < 40; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[ichorDust].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                        Main.dust[ichorDust].scale = 0.5f;
+                        Main.dust[ichorDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 70; num623++)
+                for (int j = 0; j < 70; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
+                    Main.dust[bloodDust].noGravity = true;
+                    Main.dust[bloodDust].velocity *= 5f;
+                    bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[bloodDust].velocity *= 2f;
                 }
             }
         }

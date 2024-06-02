@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.LoreItems;
+﻿using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
@@ -9,19 +10,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 {
-    public class StarterBag : ModItem
+    public class StarterBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Starter Bag");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            Item.ResearchUnlockCount = 0;
         }
 
         public override void SetDefaults()
         {
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Blue;
         }
 
@@ -79,6 +80,55 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
                 return playerName == "Aleksh" || playerName == "Shark Lad";
             };
             itemLoot.AddIf(getsLadPet, ModContent.ItemType<JoyfulHeart>());
+
+            // HPU dev item
+            // Name specific: "Heart Plus Up"
+            static bool getsHapuFruit(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Heart Plus Up";
+            };
+            itemLoot.AddIf(getsHapuFruit, ModContent.ItemType<HapuFruit>());
+
+            // Apelusa dev item
+            // Name specific: "Pelusa"
+            static bool getsRedBow(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Pelusa";
+            }
+
+            itemLoot.AddIf(getsRedBow, ModContent.ItemType<RedBow>());
+
+            // Mishiro dev vanity
+            // Name specific: "Amber" or "Mishiro"
+            static bool getsOracleHeadphones(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName is "Amber" or "Mishiro";
+            }
+
+            itemLoot.AddIf(getsOracleHeadphones, ModContent.ItemType<OracleHeadphones>());
+
+            // Bird dev item
+            // Name specific: "bird"
+            static bool getsSakuraFeather(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "bird";
+            }
+
+            itemLoot.AddIf(getsSakuraFeather, ModContent.ItemType<CocosFeather>());
+
+            // Fabsol dev item
+            // Name specific: "Fabsol" or "Cirrus"
+            static bool getsCrystalHeartVodka(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName is "Fabsol" or "Cirrus";
+            }
+
+            itemLoot.AddIf(getsCrystalHeartVodka, ModContent.ItemType<CrystalHeartVodka>());
         }
     }
 }

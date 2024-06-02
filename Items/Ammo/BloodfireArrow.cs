@@ -7,22 +7,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class BloodfireArrow : ModItem
+    public class BloodfireArrow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Bloodfire Arrow");
-            Tooltip.SetDefault("Heals you a small amount on enemy hits");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 29;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 14;
             Item.height = 36;
-            Item.maxStack = 999;
+            Item.damage = 30;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3.5f;
             Item.value = Item.sellPrice(copper: 24);

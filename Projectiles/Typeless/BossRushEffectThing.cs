@@ -1,5 +1,7 @@
-﻿using CalamityMod.Events;
+﻿using CalamityMod.Enums;
+using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Events;
@@ -8,8 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class BossRushEffectThing : ModProjectile
+    public class BossRushEffectThing : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
         public ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -40,7 +43,7 @@ namespace CalamityMod.Projectiles.Typeless
             Time++;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             BossRushEvent.SyncStartTimer(BossRushEvent.StartEffectTotalTime);
             for (int doom = 0; doom < Main.maxNPCs; doom++)
@@ -60,8 +63,9 @@ namespace CalamityMod.Projectiles.Typeless
 
             BossRushEvent.BossRushStage = 0;
             BossRushEvent.BossRushActive = true;
-            string key = "Mods.CalamityMod.BossRushStartText";
-            CalamityUtils.DisplayLocalizedText(key, BossRushEvent.XerocTextColor);
+
+            // Play startup dialogue
+            BossRushDialogueSystem.StartDialogue(DownedBossSystem.startedBossRushAtLeastOnce ? BossRushDialoguePhase.StartRepeat : BossRushDialoguePhase.Start);
 
             CalamityNetcode.SyncWorld();
             if (Main.netMode == NetmodeID.Server)

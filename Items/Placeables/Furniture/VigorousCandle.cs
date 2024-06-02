@@ -5,30 +5,22 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture
 {
     [LegacyName("PinkCandle")]
-    public class VigorousCandle : ModItem
+    public class VigorousCandle : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Vigorous Candle");
-            Tooltip.SetDefault("When placed, nearby players regenerate 0.4% of their maximum health per second\n" +
-                "This regeneration is at full power even while moving and bypasses Revengeance Mode caps\n" +
-                "'Its brilliant light suffuses those nearby with hope'");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 40;
-            Item.maxStack = 99;
+            Item.width = 26;
+            Item.height = 38;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.value = Item.buyPrice(0, 25, 0, 0);
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = Item.buyPrice(platinum: 2);
+            Item.rare = ItemRarityID.Pink;
             Item.createTile = ModContent.TileType<Tiles.Furniture.PinkCandle>();
         }
     }

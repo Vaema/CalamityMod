@@ -1,28 +1,24 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class FrostBeam : ModProjectile
+    public class FrostBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Beam");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
+            Projectile.width = Projectile.height = 4;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
-            Projectile.penetrate = 1;
             Projectile.extraUpdates = 220;
             Projectile.timeLeft = 200;
             Projectile.coldDamage = true;
@@ -38,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 spawnPosition = Projectile.position;
                     spawnPosition -= Projectile.velocity * i * 0.25f;
-                    int idx = Dust.NewDust(spawnPosition, 1, 1, 113, 0f, 0f, 0, default, 1.25f);
+                    int idx = Dust.NewDust(spawnPosition, 1, 1, DustID.Clentaminator_Blue, 0f, 0f, 0, default, 1.25f);
                     Main.dust[idx].position = spawnPosition;
                     Main.dust[idx].scale = Main.rand.NextFloat(0.75f, 0.85f);
                     Main.dust[idx].velocity *= 0.1f;
@@ -46,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 70;

@@ -11,15 +11,14 @@ namespace CalamityMod.Tiles.Pylons
     public class AstralPylonTile : BasePylonTile
     {
         public override Color LightColor => new Color(0.8f, 0.5f, 0.8f);
-        public override string PylonMapText => "Mods.CalamityMod.ItemName.AstralPylon";
         public override int AssociatedItem => ModContent.ItemType<AstralPylon>();
         public override Color PylonMapColor => Color.Coral;
         public override Color DustColor => Main.rand.NextBool() ? Color.Coral : Color.MediumTurquoise;
 
 
-        public override int? IsPylonForSale(int npcType, Player player, bool isNPCHappyEnough)
+        public override NPCShop.Entry GetNPCShopEntry()
         {
-            return isNPCHappyEnough && player.Calamity().ZoneAstral ? AssociatedItem : null;
+            return new NPCShop.Entry(AssociatedItem, Condition.AnotherTownNPCNearby, CalamityConditions.InAstral);
         }
 
 

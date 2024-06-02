@@ -6,16 +6,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class VoidEssence : ModProjectile
+    public class VoidEssence : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private const int NumAnimationFrames = 4;
         private const int AnimationFrameTime = 12;
         private const float TentacleRange = 140f;
         private const float TentacleCooldown = 25f;
+        public bool StartFading = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Void Essence");
             Main.projFrames[Projectile.type] = NumAnimationFrames;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -26,13 +27,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 24;
             Projectile.width = 24;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.timeLeft = 100;
+            Projectile.timeLeft = 180;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.alpha = 80;
 
-            Projectile.penetrate = 8;
+            Projectile.penetrate = 4;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 4;
             Projectile.extraUpdates = 1;
@@ -76,13 +77,9 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] == 0f)
                 HomingAI();
 
-            // Fade out if about to despawn
-            if (Projectile.timeLeft <= 40 && Projectile.timeLeft % 5 == 0)
-            {
-                Projectile.alpha += 20;
-                if (Projectile.alpha > 255)
-                    Projectile.alpha = 255;
-            }
+            // Fade-out.
+            if (StartFading)
+                Projectile.alpha += Nadir.FadeoutSpeed;
         }
 
         private void HomingAI()
@@ -91,19 +88,15 @@ namespace CalamityMod.Projectiles.Melee
             int targetIdx = -1;
             float maxHomingRange = 400f;
             bool hasHomingTarget = false;
-            for (int i = 0; i < Main.npc.Length; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc == null || !npc.active)
-                    continue;
-
                 // Won't home in through walls and won't chase invulnerable targets.
                 if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1))
                 {
                     float dist = (Projectile.Center - npc.Center).Length();
                     if (dist < maxHomingRange)
                     {
-                        targetIdx = i;
+                        targetIdx = npc.whoAmI;
                         maxHomingRange = dist;
                         hasHomingTarget = true;
                     }
@@ -114,7 +107,7 @@ namespace CalamityMod.Projectiles.Melee
             if (hasHomingTarget)
             {
                 NPC target = Main.npc[targetIdx];
-                Vector2 homingVector = (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * Nadir.ShootSpeed;
+                Vector2 homingVector = (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * Nadir.ProjShootSpeed;
                 float homingRatio = 35f;
                 Projectile.velocity = (Projectile.velocity * homingRatio + homingVector) / (homingRatio + 1f);
 
@@ -132,23 +125,18 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 95)
-                return false;
-
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Rapidly screech to a halt upon touching an enemy and disable homing.
             Projectile.velocity *= 0.4f;
             Projectile.ai[1] = 1f;
 
-            // Fade out a bit with every hit
-            Projectile.alpha += 20;
-            if (Projectile.alpha > 255)
-                Projectile.alpha = 255;
+            // Start fading after hitting the target.
+            StartFading = true;
 
             // Explode into dust (as if being shredded apart on contact)
             int onHitDust = Main.rand.Next(6, 11);
@@ -165,7 +153,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Create a burst of dust
             int killDust = Main.rand.Next(30, 41);

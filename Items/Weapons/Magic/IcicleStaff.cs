@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -8,29 +8,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class IcicleStaff : ModItem
+    public class IcicleStaff : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Icicle Staff");
-            Tooltip.SetDefault("Casts icicles from the sky");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 38;
+            Item.height = 42;
             Item.damage = 10;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 6;
-            Item.width = 44;
-            Item.height = 44;
             Item.useTime = 7;
             Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
@@ -38,53 +36,52 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 11f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int i = Main.myPlayer;
-            float num72 = velocity.Length();
-            int num73 = damage;
-            float num74 = knockback;
-            num74 = player.GetWeaponKnockback(Item, num74);
+            float icicleSpeed = velocity.Length();
+            float playerKnockback = knockback;
+            playerKnockback = player.GetWeaponKnockback(Item, playerKnockback);
             player.itemTime = Item.useTime;
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            float num78 = (float)Main.mouseX - Main.screenPosition.X - vector2.X;
-            float num79 = (float)Main.mouseY - Main.screenPosition.Y - vector2.Y;
+            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+            float mouseXDist = (float)Main.mouseX - Main.screenPosition.X - realPlayerPos.X;
+            float mouseYDist = (float)Main.mouseY - Main.screenPosition.Y - realPlayerPos.Y;
             if (player.gravDir == -1f)
             {
-                num79 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - vector2.Y;
+                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
             }
-            float num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-            if ((float.IsNaN(num78) && float.IsNaN(num79)) || (num78 == 0f && num79 == 0f))
+            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
             {
-                num78 = (float)player.direction;
-                num79 = 0f;
-                num80 = num72;
+                mouseXDist = (float)player.direction;
+                mouseYDist = 0f;
+                mouseDistance = icicleSpeed;
             }
             else
             {
-                num80 = num72 / num80;
+                mouseDistance = icicleSpeed / mouseDistance;
             }
 
-			vector2 = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-			vector2.X = (vector2.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-			num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-			num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
-			if (num79 < 0f)
-			{
-				num79 *= -1f;
-			}
-			if (num79 < 20f)
-			{
-				num79 = 20f;
-			}
-			num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-			num80 = num72 / num80;
-			num78 *= num80;
-			num79 *= num80;
-			float speedX4 = num78;
-			float speedY5 = num79 + (float)Main.rand.Next(-40, 41) * 0.02f;
-			Projectile.NewProjectile(source, vector2.X, vector2.Y, speedX4, speedY5, ModContent.ProjectileType<IcicleStaffProj>(), num73, num74, i, 0f, (float)Main.rand.Next(10));
+            realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+            realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
+            mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+            mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
+            if (mouseYDist < 0f)
+            {
+                mouseYDist *= -1f;
+            }
+            if (mouseYDist < 20f)
+            {
+                mouseYDist = 20f;
+            }
+            mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            mouseDistance = icicleSpeed / mouseDistance;
+            mouseXDist *= mouseDistance;
+            mouseYDist *= mouseDistance;
+            float speedX4 = mouseXDist;
+            float speedY5 = mouseYDist + (float)Main.rand.Next(-40, 41) * 0.02f;
+            Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<IcicleStaffProj>(), damage, playerKnockback, i, 0f, (float)Main.rand.Next(10));
             return false;
         }
 

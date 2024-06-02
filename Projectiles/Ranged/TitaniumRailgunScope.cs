@@ -1,18 +1,19 @@
-﻿using Terraria.DataStructures;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Particles;
-using Terraria.Graphics.Effects;
-using System;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class TitaniumRailgunScope : ModProjectile
+    public class TitaniumRailgunScope : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public ref float Charge => ref Projectile.ai[0];
         // Stores the max charge before firing, then stores the target post-recoil rotation after firing
         public ref float MaxChargeOrTargetRotation => ref Projectile.ai[1];
@@ -29,11 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
         public Color ScopeColor => Color.White;
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Titanium Scope");
-        }
 
         public override void SetDefaults()
         {
@@ -77,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Play a sound to let the player know they're at max charge
                 if (Charge == MaxChargeOrTargetRotation)
                     SoundEngine.PlaySound(SoundID.Item82 with { Volume = SoundID.Item82.Volume * 0.7f }, Owner.MountedCenter);
-                
+
                 // Idly emit particles every other frame while at max charge
                 if (ChargePercent == 1f && Charge % 2 == 0)
                 {
@@ -155,7 +151,7 @@ namespace CalamityMod.Projectiles.Ranged
                 float newRotation = UpdateAimPostShotRecoil(MaxChargeOrTargetRotation.ToRotationVector2());
                 Owner.heldProj = Projectile.whoAmI;
                 Owner.itemRotation = newRotation;
-            }    
+            }
         }
 
         // Gently adjusts the aim vector of the cannon to point towards the mouse.
@@ -173,7 +169,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Converge the sights
             float spread = (1f - ChargePercent) * MaxSightAngle;
             float halfAngle = spread / 2f;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color sightsColor = Color.Lerp(Color.LightBlue, Color.Crimson, ChargePercent);
 
@@ -184,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
             spreadEffect.Parameters["halfSpreadAngle"].SetValue(halfAngle);
             spreadEffect.Parameters["edgeColor"].SetValue(sightsColor.ToVector3());
             spreadEffect.Parameters["centerColor"].SetValue(sightsColor.ToVector3());
-            spreadEffect.Parameters["edgeBlendLenght"].SetValue(0.07f);
+            spreadEffect.Parameters["edgeBlendLength"].SetValue(0.07f);
             spreadEffect.Parameters["edgeBlendStrength"].SetValue(8f);
 
             Main.spriteBatch.End();
@@ -219,7 +215,7 @@ namespace CalamityMod.Projectiles.Ranged
 
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             return false;
         }

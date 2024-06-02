@@ -5,22 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class MirageMirror : ModItem
+    public class MirageMirror : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Mirage Mirror");
-            Tooltip.SetDefault("Bend light around you\n" +
-                "Reduces enemy aggression outside of the abyss\n" +
-                "Stealth generates 25% faster when standing still and 12% faster while moving");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

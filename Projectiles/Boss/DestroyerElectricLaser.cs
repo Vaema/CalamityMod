@@ -1,18 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DestroyerElectricLaser : ModProjectile
+    public class DestroyerElectricLaser : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Electric Laser");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.ignoreWater = true;
@@ -21,7 +17,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.hostile = true;
             Projectile.penetrate = 1;
             Projectile.alpha = 255;
-            Projectile.scale = 1.2f;
+            Projectile.scale = 1.1f;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 2;
         }
@@ -58,9 +54,9 @@ namespace CalamityMod.Projectiles.Boss
             return Color.Transparent;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.Electrified, 60);

@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PhantomicDagger : ModProjectile
+    public class PhantomicDagger : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private bool homing = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phantom Dagger");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
         }
@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
             Projectile.alpha = 200;
-            Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -51,33 +50,29 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         // Reduce damage of projectiles if more than the cap are active
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Avoid touching things that you probably aren't meant to damage
             if (target.defense > 999 || target.Calamity().DR >= 0.95f || target.Calamity().unbreakableDR)
                 return;
 
-            int cap = (int)(damage * 1.05f); // Capped at 5% dr ignoring
-            damage = Math.Min((int)(damage * (1 / (1 - target.Calamity().DR))), cap);
+            int cap = 3;
+            float capDamageFactor = 0.05f;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
 
-            int projectileCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
-            int cap2 = 3;
-            int oldDamage = damage;
-            if (projectileCount > cap2)
-            {
-                damage -= (int)(oldDamage * ((projectileCount - cap2) * 0.05));
-                if (damage < 1)
-                    damage = 1;
-            }
+            // Bypass a portion of the target's DR
+            float maxDRPenetration = 1.05f; // 5% extra damage
+            modifiers.FinalDamage *= MathHelper.Clamp(1f / (1f - target.Calamity().DR), 1f, maxDRPenetration);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             for (int d = 0; d < 4; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 2f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 2f);
                 Main.dust[shadow].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[shadow].scale = 0.5f;
                     Main.dust[shadow].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -85,10 +80,10 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (int d = 0; d < 12; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 3f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 3f);
                 Main.dust[shadow].noGravity = true;
                 Main.dust[shadow].velocity *= 5f;
-                shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 2f);
+                shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 2f);
                 Main.dust[shadow].velocity *= 2f;
             }
 
@@ -109,7 +104,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 3f); //new Color(99, 54, 84)
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 3f); //new Color(99, 54, 84)
                     Main.dust[dust].noGravity = true;
                 }
             }
@@ -131,20 +126,20 @@ namespace CalamityMod.Projectiles.Summon
                 NPC target = CalamityUtils.MinionHoming(Projectile.Center, 1500f, Main.player[Projectile.owner]);
                 if (target != null)
                 {
-                    float num550 = 40f;
-                    Vector2 vector43 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-                    float num551 = target.Center.X - vector43.X;
-                    float num552 = target.Center.Y - vector43.Y;
-                    float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-                    if (num553 < 100f)
+                    float projVel = 40f;
+                    Vector2 projDirection = Projectile.Center;
+                    float targetXDist = target.Center.X - projDirection.X;
+                    float targetYDist = target.Center.Y - projDirection.Y;
+                    float targetDist = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                    if (targetDist < 100f)
                     {
-                        num550 = 28f; //14
+                        projVel = 28f; //14
                     }
-                    num553 = num550 / num553;
-                    num551 *= num553;
-                    num552 *= num553;
-                    Projectile.velocity.X = (Projectile.velocity.X * 25f + num551) / 26f;
-                    Projectile.velocity.Y = (Projectile.velocity.Y * 25f + num552) / 26f;
+                    targetDist = projVel / targetDist;
+                    targetXDist *= targetDist;
+                    targetYDist *= targetDist;
+                    Projectile.velocity.X = (Projectile.velocity.X * 25f + targetXDist) / 26f;
+                    Projectile.velocity.Y = (Projectile.velocity.Y * 25f + targetYDist) / 26f;
                 }
                 else
                 {

@@ -1,12 +1,13 @@
-﻿using CalamityMod.Projectiles.Environment;
+﻿using System;
+using CalamityMod.Projectiles.Environment;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using System;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
@@ -30,9 +31,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Thermal Vent");
-            AddMapEntry(new Color(132, 56, 42), name);
+            AddMapEntry(new Color(132, 56, 42), CalamityUtils.GetText($"{LocalizationCategory}.ThermalVent.MapEntry"));
             DustType = 162;
 
             base.SetStaticDefaults();
@@ -47,8 +46,8 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 145f / 350f;
-            g = 75f / 350f;
+            r = 0.41f;
+            g = 0.21f;
             b = 0f;
         }
 
@@ -60,11 +59,8 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             if (!Main.gamePaused && t.TileFrameX % 36 == 0 && t.TileFrameY % 36 == 0 && Collision.CanHitLine(spawnPosition, 1, 1, spawnPosition - Vector2.UnitY * 100f, 1, 1))
             {
                 steamTimer += Main.rand.Next(0, 2);
-
                 if (steamTimer >= 600)
-                {
                     steamTimer = 0;
-                }
             }
         }
 
@@ -72,7 +68,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
         {
             Tile t = CalamityUtils.ParanoidTileRetrieval(i, j);
             Vector2 spawnPosition = new(i * 16f + 24f, j * 16f - 4f);
-            
+
             if (!Main.gamePaused && t.TileFrameX % 36 == 0 && t.TileFrameY % 36 == 0 && Collision.CanHitLine(spawnPosition, 1, 1, spawnPosition - Vector2.UnitY * 100f, 1, 1))
             {
                 float positionInterpolant = (i + j) * 0.041f % 1f;
@@ -81,9 +77,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
                 smokeVelocity.Y -= Main.rand.Next(3, 6);
 
                 if (steamTimer >= 450 && Main.rand.NextBool(3))
-                {
-                    Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition, smokeVelocity, ModContent.ProjectileType<ThermalSteam>(), Main.expertMode ? 85 : 60, 0f);
-                }
+                    Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition, smokeVelocity, ModContent.ProjectileType<ThermalSteam>(), Main.expertMode ? 20 : 30, 0f);
             }
         }
     }

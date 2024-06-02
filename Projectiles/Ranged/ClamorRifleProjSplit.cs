@@ -1,16 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ClamorRifleProjSplit : ModProjectile
+    public class ClamorRifleProjSplit : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/ClamorRifleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Energy Bolt");
-        }
 
         public override void SetDefaults()
         {
@@ -30,15 +28,14 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Projectile.rotation += 0.15f;
 
-            Lighting.AddLight(Projectile.Center, new Vector3(44, 191, 232) * (1.3f/255));
+            Lighting.AddLight(Projectile.Center, new Vector3(44, 191, 232) * (1.3f / 255));
 
             for (int num151 = 0; num151 < 2; num151++)
             {
-                int num154 = 14;
-                int num155 = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - num154 * 2, Projectile.height - num154 * 2, 68, 0f, 0f, 100, default, 1f);
-                Main.dust[num155].noGravity = true;
-                Main.dust[num155].velocity *= 0.1f;
-                Main.dust[num155].velocity += Projectile.velocity * 0.5f;
+                int blueDust = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - 28, Projectile.height - 28, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1f);
+                Main.dust[blueDust].noGravity = true;
+                Main.dust[blueDust].velocity *= 0.1f;
+                Main.dust[blueDust].velocity += Projectile.velocity * 0.5f;
             }
 
             if (Projectile.timeLeft < 150)

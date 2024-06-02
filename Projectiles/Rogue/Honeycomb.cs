@@ -1,23 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Rogue;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class Honeycomb : ModProjectile
+    public class Honeycomb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/HardenedHoneycomb";
 
         private const float radius = 15f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Honeycomb");
-        }
 
         public override void SetDefaults()
         {
@@ -25,99 +21,87 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 30;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
             Projectile.timeLeft = 300;
-            AIType = ProjectileID.ThrowingKnife;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
+            Projectile.ai[0]++;
+
+            Projectile.rotation += MathHelper.ToRadians(Projectile.velocity.X * 1.25f);
+            if (Projectile.ai[0] > 45)
+            {
+                Projectile.velocity.X *= 0.97f;
+                Projectile.velocity.Y += 0.28f;
+                if (Projectile.velocity.Y > 18f)
+                    Projectile.velocity.Y = 18f;
+            }
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
             Player player = Main.player[Main.myPlayer];
-            Vector2 posDiff = player.Center - Projectile.Center;
-            if (posDiff.Length() <= radius)
+            if (Projectile.Calamity().stealthStrike)
+                player.AddBuff(BuffID.Honey, 600);
+            SpawnProjectiles();
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            Player player = Main.player[Main.myPlayer];
+            if (Projectile.Calamity().stealthStrike)
+                player.AddBuff(BuffID.Honey, 600);
+            SpawnProjectiles();
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.position);
+            SpawnProjectiles();
+
+            //Dust on impact
+            int dust_splash = 0;
+            while (dust_splash < 9)
             {
-                player.AddBuff(BuffID.Honey, 300);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 159, default, 1.5f);
+                dust_splash += 1;
             }
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public void SpawnProjectiles()
         {
-            SpawnFragments();
-            Projectile.penetrate--;
-            if (Projectile.penetrate <= 0)
-            {
-                Projectile.Kill();
-            }
-            else
-            {
-                if (Projectile.velocity.X != oldVelocity.X)
-                {
-                    Projectile.velocity.X = -oldVelocity.X;
-                }
-                if (Projectile.velocity.Y != oldVelocity.Y)
-                {
-                    Projectile.velocity.Y = -oldVelocity.Y;
-                }
-            }
-            return false;
-        }
+            // If it's already spawned projectiles, don't do anything. Prevents it from spawning double the projectile amount when hitting enemies.
+            if (Projectile.ai[1] == 1f)
+                return;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            SpawnFragments();
-            Projectile.velocity.X = -Projectile.velocity.X;
-            Projectile.velocity.Y = -Projectile.velocity.Y;
-        }
-
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            SpawnFragments();
-            Projectile.velocity.X = -Projectile.velocity.X;
-            Projectile.velocity.Y = -Projectile.velocity.Y;
-        }
-
-        public void SpawnFragments()
-        {
-            int split = 0;
-            while (split < 2)
+            Projectile.ai[1] = 1f;
+            Player player = Main.player[Main.myPlayer];
+            int fragAmt = 2;
+            for (int i = 0; i < fragAmt; i++)
             {
                 //Calculate the velocity of the projectile
-                float shardspeedX = -Projectile.velocity.X * Main.rand.NextFloat(.5f, .7f) + Main.rand.NextFloat(-3f, 3f);
-                float shardspeedY = -Projectile.velocity.Y * Main.rand.Next(50, 70) * 0.01f + Main.rand.Next(-8, 9) * 0.2f;
-                //Prevents the projectile speed from being too low
-                if (shardspeedX < 2f && shardspeedX > -2f)
-                {
-                    shardspeedX += -Projectile.velocity.X;
-                }
-                if (shardspeedY > 2f && shardspeedY < 2f)
-                {
-                    shardspeedY += -Projectile.velocity.Y;
-                }
+                Vector2 shardVelocity = CalamityUtils.RandomVelocity(100f, 35f, 55f);
 
                 //Spawn the projectile
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X + shardspeedX, Projectile.position.Y + shardspeedY, shardspeedX, shardspeedY, ModContent.ProjectileType<HoneycombFragment>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
-                split += 1;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<HoneycombFragment>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
+            }
+            if (Projectile.Calamity().stealthStrike)
+            {
+                int beeAmt = 4;
+                for (int j = 0; j < beeAmt; j++)
+                {
+                    Vector2 beeVelocity = CalamityUtils.RandomVelocity(100f, 35f, 55f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, beeVelocity, player.beeType(), player.beeDamage(Projectile.damage), player.beeKB(0.25f), player.whoAmI);
+                }
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
-        }
-
-        public override void Kill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.position);
-            //Dust on impact
-            int dust_splash = 0;
-            while (dust_splash < 9)
-            {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 9, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 159, default, 1.5f);
-                dust_splash += 1;
-            }
         }
     }
 }

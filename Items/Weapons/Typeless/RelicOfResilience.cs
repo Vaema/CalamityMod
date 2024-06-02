@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Damageable;
+﻿using System.Linq;
+using CalamityMod.Projectiles.Damageable;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,22 +9,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Typeless
 {
-    public class RelicOfResilience : ModItem
+    public class RelicOfResilience : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Typeless";
         public const int CooldownSeconds = 5;
         public const float WeaknessDR = 0.45f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Relic of Resilience");
-            Tooltip.SetDefault("Summons a bulwark at the mouse position\n" +
-                               "The bulwark is killed by enemies and all projectiles.\n" +
-                               "On death, the bulwark explodes into a rotating burst of shards\n" +
-                               "If an enemy is in the area of the shards, its next attack is much weaker. This effect has a cooldown\n" +
-                               "After a bit of time, the shards come together to reform the original bulwark.\n" +
-                               $"This reformation can only happen {ArtifactOfResilienceBulwark.MaxReformations} times.\n" +
-                               "You gain a small cooldown when summoning a new bulwark.\n" +
-                               "If a bulwark already exists, using this item will relocate it");
-            SacrificeTotal = 1;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -37,16 +28,16 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<ArtifactOfResilienceBulwark>();
             Item.shootSpeed = 0f;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override bool CanUseItem(Player player) => !player.HasCooldown(Cooldowns.RelicOfResilience.ID);
         public override bool? UseItem(Player player) => true;
@@ -65,12 +56,12 @@ namespace CalamityMod.Items.Weapons.Typeless
             };
             if (player.ownedProjectileCounts[Item.shoot] > 0)
             {
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type == Item.shoot)
+                    if (p.type == Item.shoot)
                     {
-                        Main.projectile[i].Center = Main.MouseWorld;
-                        Main.projectile[i].netUpdate = true;
+                        p.Center = Main.MouseWorld;
+                        p.netUpdate = true;
                     }
                 }
             }

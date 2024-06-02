@@ -5,20 +5,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class BloodstoneCore : ModItem
+    public class BloodstoneCore : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Bloodstone Core");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 113;
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 113;
         }
 
         public override void SetDefaults()
         {
             Item.width = 15;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 4);
             Item.rare = ModContent.RarityType<Turquoise>();
         }
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(2).
                 AddIngredient<Bloodstone>(5).
                 AddIngredient<BloodOrb>().
-                AddIngredient<Phantoplasm>().
+                AddIngredient<Necroplasm>().
                 AddTile(TileID.AdamantiteForge).
                 Register();
         }

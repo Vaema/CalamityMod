@@ -1,19 +1,20 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class AnomalysNanogunHoldout : ModProjectile
+    public class AnomalysNanogunHoldout : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         #region Properties
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public static Texture2D ScopeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/AnomalysNanogunScope", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -37,19 +38,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const float MaxMPFBPropellableSpeed = 14f;
 
         public const int PlasmaChargeupTimer = 40;
-        public const int PlasmaCooldownTimer = 20;
-        public const int PlasmaShotCooldown = 16;
+        public const int PlasmaCooldownTimer = 24;
+        public const int PlasmaShotCooldown = 15;
         public const int PlasmaShotCount = 5;
         public static int PlasmaFireTimer
         {
             get => PlasmaChargeupTimer + PlasmaCooldownTimer + (PlasmaShotCooldown * PlasmaShotCount);
         }
         #endregion
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("The Anomaly's Nanogun");
-        }
 
         public override void SetDefaults()
         {
@@ -94,7 +90,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     int proj = Projectile.NewProjectile(new EntitySource_ItemUse_WithAmmo(Owner, Owner.HeldItem, -1),
                         Projectile.Center + Projectile.rotation.ToRotationVector2() * GunLength,
-                        Projectile.velocity * (1f - i * 0.18f),
+                        Projectile.velocity * (1.5f - i * 0.24f),
                         ModContent.ProjectileType<AnomalysNanogunMPFBDevastator>(),
                         Projectile.damage,
                         Projectile.knockBack,

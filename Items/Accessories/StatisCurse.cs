@@ -1,24 +1,21 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Neck)]
-    public class StatisCurse : ModItem
+    public class StatisCurse : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statis' Curse");
-            Tooltip.SetDefault("Increases max minions by 3, does not stack with downgrades\n" +
-                "10% increased minion damage\n" +
-                "Increased minion knockback\n" +
-                "Minions inflict holy flames and shadowflames on hit\n" +
-                "Grants immunity to Shadowflame");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 4));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
@@ -27,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
@@ -38,7 +35,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.shadowMinions = true;
             modPlayer.holyMinions = true;
             player.GetKnockback<SummonDamageClass>() += 2.75f;
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<SummonDamageClass>() += 0.12f;
             player.buffImmune[ModContent.BuffType<Shadowflame>()] = true;
         }
 
@@ -50,6 +47,23 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.FragmentStardust, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CalamityUtils.DrawInventoryCustomScale(
+                spriteBatch,
+                texture: TextureAssets.Item[Type].Value,
+                position,
+                frame,
+                drawColor,
+                itemColor,
+                origin,
+                scale,
+                wantedScale: 1f,
+                drawOffset: new(0f, 0f)
+            );
+            return false;
         }
     }
 }

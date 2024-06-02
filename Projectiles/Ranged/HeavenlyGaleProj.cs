@@ -1,19 +1,20 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
-using CalamityMod.Sounds;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Particles;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class HeavenlyGaleProj : BaseIdleHoldoutProjectile
+    public class HeavenlyGaleProj : BaseIdleHoldoutProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public bool OwnerCanShoot => Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
 
         public float StringReelbackInterpolant
@@ -27,29 +28,25 @@ namespace CalamityMod.Projectiles.Ranged
                 return firstHalf + secondHalf;
             }
         }
+        public float StringReelbackDistance => Projectile.width * StringReelbackInterpolant * 0.3f;
+
+        // Where the string should go, relative to the center of the projectile
+        public Vector2 topStringOffset => new Vector2(-40f, -56f);
+        public Vector2 bottomStringOffset => new Vector2(-40f, 46f);
+        public float StringHalfHeight => (Math.Abs(topStringOffset.Y) + Math.Abs(bottomStringOffset.Y)) * 0.5f;
 
         public float ChargeupInterpolant => Utils.GetLerpValue(HeavenlyGale.ShootDelay, HeavenlyGale.MaxChargeTime, ChargeTimer, true);
-
-        public float StringHalfHeight => Projectile.height * 0.36f;
-
-        public float StringReelbackDistance => Projectile.width * StringReelbackInterpolant * 0.25f;
-
         public ref float CurrentChargingFrames => ref Projectile.ai[0];
-
         public ref float ChargeTimer => ref Projectile.ai[1];
 
         public ref float ShootDelay => ref Projectile.localAI[0];
 
         public override int AssociatedItemID => ModContent.ItemType<HeavenlyGale>();
-
         public override int IntendedProjectileType => ModContent.ProjectileType<HeavenlyGaleProj>();
-
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Heavenly Gale");
 
         public override void SetDefaults()
         {
-            Projectile.width = 138;
-            Projectile.height = 138;
+            Projectile.width = Projectile.height = 176;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -64,7 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 tipPosition = armPosition + Projectile.velocity * Projectile.width * 0.45f;
 
             // Activate shot behavior if the owner stops channeling or otherwise cannot use the weapon.
-            bool activatingShoot = ShootDelay <= 0 && Main.mouseLeft && !Main.mapFullscreen && !Main.blockMouse;
+            bool activatingShoot = ShootDelay <= 0 && Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface;
             if (Main.myPlayer == Projectile.owner && OwnerCanShoot && activatingShoot)
             {
                 SoundEngine.PlaySound(HeavenlyGale.FireSound, Projectile.Center);
@@ -99,12 +96,16 @@ namespace CalamityMod.Projectiles.Ranged
                     // Update the tip position for one frame.
                     tipPosition = armPosition + arrowDirection * Projectile.width * 0.45f;
 
-                    if (Main.myPlayer == Projectile.owner)
+                    if (Main.myPlayer == Projectile.owner && Owner.HasAmmo(Owner.ActiveItem()))
                     {
-                        int arrowDamage = (int)(Projectile.damage * damageFactor);
+                        Item heldItem = Owner.ActiveItem();
+                        Owner.PickAmmo(heldItem, out int projectileType, out float shootSpeed, out int damage, out float knockback, out _);
+                        damage = (int)(damage * damageFactor);
+                        projectileType = ModContent.ProjectileType<ExoCrystalArrow>();
+
                         bool createLightning = ChargeTimer / HeavenlyGale.MaxChargeTime >= HeavenlyGale.ChargeLightningCreationThreshold;
-                        Vector2 arrowVelocity = arrowDirection * 20f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, arrowVelocity, ModContent.ProjectileType<ExoCrystalArrow>(), arrowDamage, Projectile.knockBack, Projectile.owner, createLightning.ToInt());
+                        Vector2 arrowVelocity = arrowDirection * shootSpeed;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, arrowVelocity, projectileType, damage, knockback, Projectile.owner, createLightning.ToInt());
                     }
                 }
 
@@ -169,7 +170,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.UnitY) * 36f;
+            Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.UnitY) * 44f;
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.spriteDirection = Projectile.direction;
             Projectile.timeLeft = 2;
@@ -195,17 +196,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D textureGlow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/HeavenlyGaleProjGlow").Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
 
             // Draw the string of the bow. It reels back in the initial frames.
-            float stringNeckOffset = 40f;
-            Vector2 aimDirection = Projectile.rotation.ToRotationVector2();
-            Vector2 center = Projectile.Center - aimDirection * 12f;
-            Vector2 topOfBow = center + Vector2.UnitY.RotatedBy(Projectile.rotation) * StringHalfHeight;
-            Vector2 bottomOfBow = center - Vector2.UnitY.RotatedBy(Projectile.rotation) * StringHalfHeight;
-            Vector2 endOfString = center - aimDirection * (StringReelbackDistance + (1f - StringReelbackInterpolant) * stringNeckOffset * 0.5f);
+            Vector2 topOfBow = Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation + topStringOffset.ToRotation()) * topStringOffset.Length();
+            Vector2 bottomOfBow = Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation + bottomStringOffset.ToRotation()) * bottomStringOffset.Length();
+            Vector2 endOfString = Projectile.Center - Projectile.rotation.ToRotationVector2() * (StringReelbackDistance + (1f - StringReelbackInterpolant) * 25f);
 
             float chargeOffset = ChargeupInterpolant * Projectile.scale * 3f;
             Color chargeColor = Color.Lerp(Color.Lime, Color.Cyan, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 7.1f) * 0.5f + 0.5f) * ChargeupInterpolant * 0.6f;
@@ -217,10 +216,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 direction = SpriteEffects.FlipHorizontally;
                 rotation += MathHelper.Pi;
-                topOfBow -= aimDirection * stringNeckOffset;
             }
-            else
-                bottomOfBow -= aimDirection * stringNeckOffset;
 
             Color stringColor = new(105, 239, 145);
             Main.spriteBatch.DrawLineBetter(topOfBow, endOfString, stringColor, 2f);
@@ -233,6 +229,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.spriteBatch.Draw(texture, drawPosition + drawOffset, null, chargeColor, rotation, origin, Projectile.scale, direction, 0f);
             }
             Main.spriteBatch.Draw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), rotation, origin, Projectile.scale, direction, 0f);
+            Main.spriteBatch.Draw(textureGlow, drawPosition, null, Color.White, rotation, origin, Projectile.scale, direction, 0f);
             return false;
         }
 

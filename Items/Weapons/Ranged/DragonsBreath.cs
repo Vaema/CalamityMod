@@ -1,6 +1,8 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -9,164 +11,123 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class DragonsBreath : ModItem
+    public class DragonsBreath : ModItem, ILocalizedModType
     {
-        public const int BetweenShotsPause = 15;
-        public const int PelletsPerShot = 6;
-        public const float FullAutoFireRateMult = 0.8f;
-        public const float FullAutoDamageMult = 0.8f;
-        // note this is extremely low because it's per pellet
-        public const float Spread = 0.018f;
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dragon's Breath");
-            Tooltip.SetDefault("Left click fires in two-shot bursts\n" +
-                "The first shot is a spread of 6 normal bullets\n" +
-                "The second shot is a tight spread of 6 Dragon's Breath rounds\n" +
-                "Right click fires full auto and mixes the bullets randomly, but does 20% less damage\n" +
-                "This weapon has no randomness to its spread pattern\n" +
-                "66% chance to not consume ammo");
-            SacrificeTotal = 1;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
-        }
+        public static readonly SoundStyle FireballSound = new("CalamityMod/Sounds/Custom/Yharon/YharonFireball", 3) { PitchVariance = 0.3f, Volume = 0.75f };
+        public static readonly SoundStyle WeldingStart = new("CalamityMod/Sounds/Item/DragonsBreathStrongStart") { Volume = 1.75f };
+        public static readonly SoundStyle WeldingBurn = new("CalamityMod/Sounds/Item/WeldingBurn") { Volume = 0.65f };
+        public static readonly SoundStyle WeldingShoot = new("CalamityMod/Sounds/Item/WeldingShoot") { Volume = 0.45f };
+
+        public SlotId WeldSoundSlot;
+
+        public static int BaseReuseDelay = 14;
+        public static int MinReuseDelay = 4;
+        public static int ShotsToMaxFirerate = 20;
+        public static int ShotsToFireBeams = ShotsToMaxFirerate + 20;
+        public static int ShotsToReset = ShotsToFireBeams + 50;
+
+        public int Counter = 0;
 
         public override void SetDefaults()
         {
-            Item.damage = 198;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 124;
-            Item.height = 78;
-
-            Item.useTime = 9;
-            Item.useAnimation = 18;
-            Item.reuseDelay = BetweenShotsPause;
+            Item.height = 72;
+            Item.damage = 478;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 5;
+            Item.useAnimation = 9;
+            Item.reuseDelay = BaseReuseDelay;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Shoot;
 
             Item.noMelee = true;
-            Item.knockBack = 6.5f;
-            // item.UseSound = SoundID.Item38;
-            Item.shoot = ModContent.ProjectileType<DragonsBreathRound>();
-            Item.shootSpeed = 12f;
-            Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.knockBack = 4.5f;
+            Item.UseSound = null;
+            Item.shoot = ModContent.ProjectileType<DragonsBreathFlames>();
+            Item.shootSpeed = 3.5f;
+            Item.useAmmo = AmmoID.Gel;
 
             Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.66f;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Counter < ShotsToFireBeams && Main.rand.NextFloat() > 0.80f;
 
-        public override Vector2? HoldoutOffset() => new Vector2(-5, 5);
-
-        public override bool AltFunctionUse(Player player) => true;
-
-        public override bool CanUseItem(Player player)
-        {
-            Item.reuseDelay = player.altFunctionUse == 2 ? 0 : BetweenShotsPause;
-            return base.CanUseItem(player);
-        }
-
-        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? FullAutoFireRateMult : 1f;
+        public override Vector2? HoldoutOffset() => new Vector2(27, 6);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            SoundEngine.PlaySound(SoundID.Item38, position);
-            bool doDust = false;
-            Vector2 vel = velocity;
-            int[] bulletIDs = new int[PelletsPerShot];
-            float spreadFactor = 1f;
-
-            // Right click full auto: Randomly intermix three regular bullets and three Dragon's Breath Rounds in a wider spread
-            if (player.altFunctionUse == 2)
+            Counter++;
+            if (Counter < ShotsToFireBeams)
             {
-                damage = (int)(damage * FullAutoDamageMult);
+                if (Counter % 2 == 1)
+                    SoundEngine.PlaySound(FireballSound, player.Center);
 
-                for (int i = 0; i < PelletsPerShot; ++i)
-                    bulletIDs[i] = type;
-                int dragonsBreathAdded = 0;
-                while (dragonsBreathAdded < PelletsPerShot / 2)
-                {
-                    int i = Main.rand.Next(PelletsPerShot);
-                    if (bulletIDs[i] == Item.shoot)
-                        continue;
-                    bulletIDs[i] = Item.shoot;
-                    ++dragonsBreathAdded;
-                }
+                Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(2.5f));
+                Projectile.NewProjectile(source, position, newVel * Main.rand.NextFloat(1.2f, 0.8f), type, damage, knockback, player.whoAmI);
 
-                spreadFactor = 1.52f;
+                Item.reuseDelay = (int)Utils.Remap(Counter, 0, ShotsToMaxFirerate, BaseReuseDelay, MinReuseDelay);
             }
-            // Left click first shot: Six regular bullets, low spread
-            else if (player.itemAnimation == player.itemAnimationMax - 1)
-            {
-                for (int i = 0; i < PelletsPerShot; ++i)
-                    bulletIDs[i] = type;
-            }
-            // Left click second shot: Six Dragon's Breath Rounds, very low spread. Extra sound and dust blast.
             else
             {
-                SoundEngine.PlaySound(SoundID.Item74, position);
-                for (int i = 0; i < PelletsPerShot; ++i)
-                    bulletIDs[i] = Item.shoot;
+                if (Counter == ShotsToFireBeams)
+                    SoundEngine.PlaySound(WeldingStart, player.Center);
 
-                spreadFactor = 0.5f;
-                doDust = true;
-            }
+                if (SoundEngine.TryGetActiveSound(WeldSoundSlot, out var WeldSound) && WeldSound.IsPlaying)
+                    WeldSound.Position = player.Center;
+                if (player.Calamity().DragonsBreathAudioCooldown2 == 0 && Counter >= ShotsToFireBeams + 5)
+                {
+                    player.Calamity().DragonsBreathAudioCooldown2 = 30;
+                    WeldSoundSlot = SoundEngine.PlaySound(WeldingShoot, player.Center);
+                }
 
-            // Actually fire the chosen bullets.
-            float angleOffset = Spread * -0.5f * (PelletsPerShot - 1) * spreadFactor;
-            for (int i = 0; i < PelletsPerShot; ++i)
-            {
-                Vector2 rotatedVel = vel.RotatedBy(angleOffset);
-                Projectile.NewProjectile(source, position, rotatedVel, bulletIDs[i], damage, knockback, player.whoAmI);
-                angleOffset += Spread * spreadFactor;
+                Projectile.NewProjectile(source, position, velocity * 2f, type, damage, knockback, player.whoAmI, 1);
+                Item.reuseDelay = 0;
 
-                if (doDust)
-                    SpawnDragonsBreathDust(position, rotatedVel);
+                if (Counter >= ShotsToReset)
+                {
+                    Counter = 0;
+                    Item.reuseDelay = BaseReuseDelay;
+                    SoundEngine.PlaySound(SpeedBlaster.Empty, player.Center);
+                    Projectile.NewProjectile(source, player.Center, new Vector2(5 * -player.direction, -5), ModContent.ProjectileType<DragonsBreathMag>(), Main.zenithWorld ? 250000 : 1, knockback, player.whoAmI);
+                    WeldSound?.Stop();
+                }
             }
             return false;
         }
 
-        private void SpawnDragonsBreathDust(Vector2 pos, Vector2 velocity)
+        public override void UpdateInventory(Player player)
         {
-            pos += velocity.SafeNormalize(Vector2.Zero) * Item.width * Item.scale * 0.71f;
-            for (int i = 0; i < 30; ++i)
-            {
-                // Pick a random type of smoke (there's a little fire mixed in)
-                int dustID;
-                switch (Main.rand.Next(6))
-                {
-                    case 0:
-                        dustID = 262;
-                        break;
-                    case 1:
-                    case 2:
-                        dustID = 54;
-                        break;
-                    default:
-                        dustID = 53;
-                        break;
-                }
+            // Reset speed back to initial once swapped to another item (including one of itself)
+            if (player.ActiveItem() != Item)
+                Counter = 0;
+        }
 
-                // Choose a random speed and angle to belch out the smoke
-                float dustSpeed = Main.rand.NextFloat(3.0f, 13.0f);
-                float angleRandom = 0.06f;
-                Vector2 dustVel = new Vector2(dustSpeed, 0.0f).RotatedBy(velocity.ToRotation());
-                dustVel = dustVel.RotatedBy(-angleRandom);
-                dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
-                // Sometimes make smoke fly upward instead of outward.
-                if (Main.rand.NextBool(4))
-                    dustVel = Vector2.Lerp(dustVel, -Vector2.UnitY * dustVel.Length(), Main.rand.NextFloat(0.6f, 0.85f)) * 0.6f;
+            Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 7f;
+            Vector2 itemSize = new Vector2(124, 72);
+            Vector2 itemOrigin = new Vector2(-17, 3);
 
-                // Pick a size for the smoke particle
-                float scale = Main.rand.NextFloat(0.5f, 1.6f);
+            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
 
-                // Actually spawn the smoke
-                int idx = Dust.NewDust(pos, 1, 1, dustID, dustVel.X, dustVel.Y, 0, default, scale);
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].position = pos;
-            }
+            base.UseStyle(player, heldItemFrame);
+        }
+
+        public override void UseItemFrame(Player player)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+
+            float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
+            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            if (animProgress < 0.4f)
+                rotation += Counter == 0 ? -0.25f * (float)Math.Pow((0.6f - animProgress) / 0.6f, 2) * player.direction : 0;
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
         }
     }
 }

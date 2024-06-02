@@ -1,20 +1,16 @@
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class SolsticeBeam : ModProjectile
+    public class SolsticeBeam : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Beam");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -28,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0.5f);
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
@@ -134,12 +130,12 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft > 595)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustType = 0;
 
@@ -179,20 +175,20 @@ namespace CalamityMod.Projectiles.Melee
                     break;
             }
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
-            for (int num795 = 0; num795 < 27; num795++)
+            for (int i = 0; i < 27; i++)
             {
-                float num796 = Projectile.oldVelocity.X * (30f / (float)num795);
-                float num797 = Projectile.oldVelocity.Y * (30f / (float)num795);
-                int num798 = Dust.NewDust(new Vector2(Projectile.oldPosition.X - num796, Projectile.oldPosition.Y - num797), 8, 8, dustType, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.8f);
-                Dust dust = Main.dust[num798];
+                float oldXVel = Projectile.oldVelocity.X * (30f / (float)i);
+                float oldYVel = Projectile.oldVelocity.Y * (30f / (float)i);
+                int solsticeDust = Dust.NewDust(new Vector2(Projectile.oldPosition.X - oldXVel, Projectile.oldPosition.Y - oldYVel), 8, 8, dustType, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.8f);
+                Dust dust = Main.dust[solsticeDust];
                 dust.noGravity = true;
                 dust.velocity *= 0.5f;
-                num798 = Dust.NewDust(new Vector2(Projectile.oldPosition.X - num796, Projectile.oldPosition.Y - num797), 8, 8, dustType, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.4f);
+                solsticeDust = Dust.NewDust(new Vector2(Projectile.oldPosition.X - oldXVel, Projectile.oldPosition.Y - oldYVel), 8, 8, dustType, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.4f);
                 dust.velocity *= 0.05f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             int buff = Main.dayTime ? BuffID.Daybreak : ModContent.BuffType<Nightwither>();
             target.AddBuff(buff, 180);

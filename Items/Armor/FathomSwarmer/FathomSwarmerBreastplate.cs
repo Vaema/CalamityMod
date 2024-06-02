@@ -7,16 +7,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.FathomSwarmer
 {
     [AutoloadEquip(EquipType.Body)]
-    public class FathomSwarmerBreastplate : ModItem
+    public class FathomSwarmerBreastplate : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fathom Swarmer Breastplate");
-            Tooltip.SetDefault("6% increased damage reduction\n" +
-                "6% increased minion damage\n" +
-                "Boosted defense and regen increased while submerged in liquid\n" +
-                "Reduces defense loss within the Abyss");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -33,18 +28,14 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 22;
+            Item.defense = 20;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.06f;
+            player.GetDamage<SummonDamageClass>() += 0.1f;
             player.endurance += 0.06f;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-            {
-                player.statDefense += 10;
-                player.lifeRegen += 5;
-            }
+            player.maxMinions += 1;
             player.Calamity().fathomSwarmerBreastplate = true;
         }
 

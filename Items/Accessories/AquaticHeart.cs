@@ -1,13 +1,14 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("SirensHeart")]
-    public class AquaticHeart : ModItem
+    public class AquaticHeart : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
             // All code below runs only if we're not loading on a server
@@ -22,17 +23,6 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Aquatic Heart");
-            Tooltip.SetDefault("Transforms the holder into a water elemental\n" +
-                "Going underwater gives you a buff\n" +
-                "Greatly reduces breath loss and provides a small amount of light in the abyss\n" +
-                "Enemies become frozen when they touch you\n" +
-                "You have a layer of ice around you that absorbs 20% damage but breaks after one hit\n" +
-                "After 30 seconds the ice shield will regenerate\n" +
-                "Wow, you can swim now!\n" +
-                "Most of these effects are only active after Skeletron has been defeated");
-
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
@@ -50,7 +40,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 18;
             Item.height = 18;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
 

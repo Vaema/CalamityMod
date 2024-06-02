@@ -1,16 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.AndromedaUI
 {
-    public class AndromedaUI_Background : ModProjectile
+    public class AndromedaUI_Background : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int FadeoutTime = -1;
         public Vector2 PlayerOffset = Vector2.Zero;
         public static readonly int FadeoutTimeMax = 40;
@@ -57,11 +58,6 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
 
         // Mouse calculations are done primarily in a World context, not Screen, in this file.
         public static Rectangle MouseRectangle => new((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, 2, 2);
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("UI");
-        }
 
         public override void SetDefaults()
         {
@@ -139,7 +135,7 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, Main.Rasterizer, null, perspective);
 
                 // Draw the background UI
-                Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value,
+                Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
                                  Projectile.Center - Main.screenPosition,
                                  null,
                                  Color.White * Projectile.Opacity,

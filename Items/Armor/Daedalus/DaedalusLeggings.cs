@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Daedalus
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class DaedalusLeggings : ModItem
+    public class DaedalusLeggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daedalus Leggings");
-            Tooltip.SetDefault("3% increased critical strike chance\n" +
-                "10% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 15; //41
         }

@@ -1,14 +1,15 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class PartySparkle : ModProjectile
+    public class PartySparkle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public float Time
         {
             get => Projectile.ai[0];
@@ -22,11 +23,6 @@ namespace CalamityMod.Projectiles.Magic
         public const int Lifetime = 90;
         public const int FadeinTime = 18;
         public const int FadeoutTime = 18;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Pretty Sparkle");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 72;
@@ -64,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sparkleTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sparkleTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color sparkleColor = CalamityUtils.MulticolorLerp(ColorSpectrumHue, RainbowPartyCannon.ColorSet) * Projectile.Opacity * 0.5f;
             sparkleColor.A = 0;

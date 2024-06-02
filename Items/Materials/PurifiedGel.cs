@@ -1,24 +1,25 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class PurifiedGel : ModItem
+    public class PurifiedGel : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Purified Gel");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
         }
 
         public override void SetDefaults()
         {
-            Item.width = 16;
-            Item.height = 14;
-            Item.maxStack = 999;
+            Item.width = 20;
+            Item.height = 36;
+            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 2, 50, 0);
             Item.rare = ItemRarityID.LightRed;
-        }    }
+        }
+    }
 }

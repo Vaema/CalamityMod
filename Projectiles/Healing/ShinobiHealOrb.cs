@@ -1,16 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Healing
 {
-    public class ShinobiHealOrb : ModProjectile
+    public class ShinobiHealOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Healing";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Blue Healing Orb");
-        }
 
         public override void SetDefaults()
         {
@@ -27,11 +25,11 @@ namespace CalamityMod.Projectiles.Healing
         {
             Projectile.HealingProjectile((int)Projectile.ai[1], Projectile.owner, 6f, 15f);
 
-            for (int num468 = 0; num468 < 3; num468++)
+            for (int i = 0; i < 3; i++)
             {
-                int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 15, 0f, 0f, 100, default, 1.3f);
-                Main.dust[num469].noGravity = true;
-                Main.dust[num469].velocity *= 0f;
+                int magicHeal = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.MagicMirror, 0f, 0f, 100, default, 1.3f);
+                Main.dust[magicHeal].noGravity = true;
+                Main.dust[magicHeal].velocity *= 0f;
             }
         }
     }

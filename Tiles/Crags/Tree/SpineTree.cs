@@ -1,15 +1,11 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Utilities;
-using Terraria.DataStructures;
-using Terraria.Audio;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Items.Placeables;
-using CalamityMod.Tiles.Crags;
-using System;
-using System.Linq;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Crags.Tree
 {
@@ -34,18 +30,16 @@ namespace CalamityMod.Tiles.Crags.Tree
         public override void SetStaticDefaults()
         {
             TileID.Sets.IsATreeTrunk[Type] = true;
-			Main.tileFrameImportant[Type] = true;
+            Main.tileFrameImportant[Type] = true;
             Main.tileAxe[Type] = true;
             Main.tileMergeDirt[Type] = false;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = false;
             Main.tileBlockLight[Type] = false;
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Giant Spine");
-            AddMapEntry(new Color(38, 25, 27), name);
+            AddMapEntry(new Color(38, 25, 27), CreateMapEntryName());
             DustType = 155;
-			HitSound = SoundID.DD2_SkeletonHurt;
-            ItemDrop = ModContent.ItemType<Items.Placeables.ScorchedBone>();
+            HitSound = SoundID.DD2_SkeletonHurt;
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedBone>());
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
@@ -55,14 +49,14 @@ namespace CalamityMod.Tiles.Crags.Tree
             return false;
         }
 
-        public static bool SolidTile(int i, int j) 
+        public static bool SolidTile(int i, int j)
         {
             return Framing.GetTileSafely(i, j).HasTile && Main.tileSolid[Framing.GetTileSafely(i, j).TileType];
         }
 
-        public static bool SolidTopTile(int i, int j) 
+        public static bool SolidTopTile(int i, int j)
         {
-            return Framing.GetTileSafely(i, j).HasTile && (Main.tileSolidTop[Framing.GetTileSafely(i, j).TileType] || 
+            return Framing.GetTileSafely(i, j).HasTile && (Main.tileSolidTop[Framing.GetTileSafely(i, j).TileType] ||
             Main.tileSolid[Framing.GetTileSafely(i, j).TileType]);
         }
 
@@ -86,49 +80,21 @@ namespace CalamityMod.Tiles.Crags.Tree
                 }
             }
 
-            if (height < 4 || height < minSize) 
+            if (height < minSize)
             {
                 return false;
             }
 
-            //this places the base, probably a bit weird looking here but it works
-            //problem is messing around with this completely broke the hell out of the tree so i refuse to modify it for now
-            //if someone else by some miracle can figure out how to change it, please let me know :)
-            bool[] extraPlaces = new bool[5];
-            for (int k = -2; k <= 2; k++)
+            //make sure the block is valid for the tree to place on
+            if ((SolidTopTile(i, j + 1) || SolidTile(i, j + 1)) && !Framing.GetTileSafely(i, j).HasTile)
             {
-                extraPlaces[k + 2] = false;
-
-                if ((SolidTopTile(i + k, j + 1) || SolidTile(i + k, j + 1)) && !Framing.GetTileSafely(i + k, j).HasTile)
-                {
-                    extraPlaces[k + 2] = true;
-                }
+                WorldGen.PlaceTile(i, j, ModContent.TileType<SpineTree>(), true);
+                Framing.GetTileSafely(i, j).TileFrameY = (short)(WorldGen.genRand.Next(3) * 18);
             }
-
-            if (!extraPlaces[1]) extraPlaces[0] = false;
-            if (!extraPlaces[3]) extraPlaces[4] = false;
-
-            if (!extraPlaces[2]) 
+            //otherwise dont allow the tree to grow
+            else
             {
                 return false;
-            }
-
-            extraPlaces = new bool[5] { false, false, true, false, false };
-
-            //place the actual base
-            for (int k = -2; k <= 2; k++)
-            {
-                if (extraPlaces[k + 2])
-                {
-                    WorldGen.PlaceTile(i + k, j, ModContent.TileType<SpineTree>(), true);
-
-                    Framing.GetTileSafely(i + k, j).TileFrameX = 0;
-                    Framing.GetTileSafely(i, j - k).TileFrameY = (short)(Main.rand.Next(3) * 18);
-                }
-                else
-                {
-                    continue;
-                }
             }
 
             int branchSegmentDelay = 0;
@@ -144,10 +110,8 @@ namespace CalamityMod.Tiles.Crags.Tree
 
                 //chance to place a branch segment
                 //also dont place branches below a certain threshold
-                if (Main.rand.Next(2) == 0 && branchSegmentDelay == 0 && k > 5)
+                if (Main.rand.NextBool() && branchSegmentDelay == 0 && k > 5)
                 {
-                    float divide = 1.65f;
-
                     if (k > 1 && k < 10)
                     {
                         Framing.GetTileSafely(i, j - k).TileFrameX = 3 * 18;
@@ -192,7 +156,8 @@ namespace CalamityMod.Tiles.Crags.Tree
             }
         }
 
-        public override bool Drop(int i, int j)
+
+        public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
             //drop seeds from the top of the tree
             if (Framing.GetTileSafely(i, j).TileFrameX == 36)
@@ -200,40 +165,36 @@ namespace CalamityMod.Tiles.Crags.Tree
                 int totalSeeds = Main.rand.Next(1, 3);
                 for (int numSeed = 0; numSeed < totalSeeds; numSeed++)
                 {
-                    Item.NewItem(new EntitySource_TileBreak(i, j), (new Vector2(i, j) * 16) + new Vector2(Main.rand.Next(-46, 46), 
-                    Main.rand.Next(-40, 40) - 66), ModContent.ItemType<Items.Placeables.SpineSapling>(), Main.rand.Next(1, 5));
+                    yield return new Item(ModContent.ItemType<Items.Placeables.SpineSapling>());
                 }
             }
 
             //chance to drop extra wood
             if (Main.rand.NextBool())
             {
-                Item.NewItem(new EntitySource_TileBreak(i, j), (new Vector2(i, j) * 16) + new Vector2(Main.rand.Next(-46, 46), 
-                Main.rand.Next(-40, 40) - 66), ModContent.ItemType<Items.Placeables.ScorchedBone>(), Main.rand.Next(1, 2));
+                yield return new Item(ModContent.ItemType<Items.Placeables.ScorchedBone>());
             }
-
-            return true;
         }
 
         //this checks the entire tree from bottom to top
-        private void CheckEntireTree(ref int x, ref int y)
+        /*private void CheckEntireTree(ref int x, ref int y)
         {
             while (Main.tile[x, y].TileType == Type)
-			{
+            {
                 y--;
-			}
+            }
 
             y++;
 
             if (Main.tile[x, y].TileFrameX == 16)
             {
                 for (int k = 0; k < WorldGen.numTreeShakes; k++)
-				{
+                {
                     if (WorldGen.treeShakeX[k] == x && WorldGen.treeShakeY[k] == y)
-					{
+                    {
                         return;
-					}
-				}
+                    }
+                }
 
                 WorldGen.treeShakeX[WorldGen.numTreeShakes] = x;
                 WorldGen.treeShakeY[WorldGen.numTreeShakes] = y;
@@ -242,17 +203,17 @@ namespace CalamityMod.Tiles.Crags.Tree
                 //this is where you can make stuff happen when the tree is shaken like in vanilla
                 //for example, when trees drop a fruit when you begin to break it
             }
-        }
+        }*/
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             Tile tile = Framing.GetTileSafely(i, j);
 
-            if (fail && !effectOnly && !noItem)
+            /*if (fail && !effectOnly && !noItem)
             {
                 (int x, int y) = (i, j);
                 CheckEntireTree(ref x, ref y);
-            }
+            }*/
 
             if (fail)
             {
@@ -304,7 +265,7 @@ namespace CalamityMod.Tiles.Crags.Tree
             }
         }
 
-        public static Vector2 TileOffset => Lighting.LegacyEngine.Mode > 1 ? Vector2.Zero : Vector2.One * 12;
+        public static Vector2 TileOffset => Lighting.LegacyEngine.Mode > 1 && Main.GameZoomTarget == 1 ? Vector2.Zero : Vector2.One * 12;
 
         public static Vector2 TileCustomPosition(int i, int j, Vector2? off = null)
         {
@@ -313,7 +274,6 @@ namespace CalamityMod.Tiles.Crags.Tree
 
         internal static void DrawTreeSegments(int i, int j, Texture2D tex, Rectangle? source, Vector2? offset = null, Vector2? origin = null, bool Glow = false)
         {
-            Tile tile = Main.tile[i, j];
             Vector2 drawPos = new Vector2(i, j).ToWorldCoordinates() - Main.screenPosition + (offset ?? new Vector2(0, -2));
             Color color = Lighting.GetColor(i, j);
 
@@ -323,7 +283,6 @@ namespace CalamityMod.Tiles.Crags.Tree
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Framing.GetTileSafely(i, j);
-            Color col = Lighting.GetColor(i, j);
             float xOff = (float)Math.Sin((j * 19) * 0.04f) * 1.2f;
 
             if (xOff == 1 && (j / 4f) == 0)
@@ -331,13 +290,7 @@ namespace CalamityMod.Tiles.Crags.Tree
                 xOff = 0;
             }
 
-            int frameSizeX = 16;
-            int frameSizeY = 16;
-            int frameSize = 16;
             int frameOff = 0;
-
-            Vector2 offset = new((xOff * 2) - (frameOff / 2), 0);
-            Vector2 pos = TileCustomPosition(i, j) - offset;
 
             Vector2 baseSegmentOffset = new Vector2((xOff * 2) - (frameOff / 2) + 26, 14);
             Vector2 treeSegmentOffset = new Vector2((xOff * 2) - (frameOff / 2) + 25, 14);

@@ -18,19 +18,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         // Attacks must be within 40 frames of each other to count as "consecutive" hits
         // This is a little less than double the use time
         public static int ConsecutiveHitOpening = 40;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seared Pan");
-            Tooltip.SetDefault("dAMaGe iS rAthEr cOnSisTeNT\n" +
-                "Fires a frying pan at high velocity\n" +
-                "Enemy hits summon fireballs that linger around the target\n" +
-                "Landing three consecutive hits grants will launch a golden pan\n" +
-                "Golden pans cause all fireballs to aggressively home in on their target\n" +
-                "Stealth strikes act similar to golden pans but also explode into golden sparks\n" +
-                "Stealth strikes also summon additional fireballs on hit");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 60;
@@ -43,9 +30,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 25;
             Item.reuseDelay = 1;
+            Item.useLimitPerAnimation = 1;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.shoot = ModContent.ProjectileType<SearedPanProjectile>();
             Item.shootSpeed = 15f;

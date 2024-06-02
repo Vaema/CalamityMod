@@ -1,20 +1,16 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class UnstableCrimulanGlob : ModProjectile
+    public class UnstableCrimulanGlob : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Unstable Crimulan Glob");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -63,7 +59,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Color dustColor = Color.Crimson;
                 dustColor.A = 150;
-                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 4, 0f, 0f, Projectile.alpha, dustColor);
+                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TintableDust, 0f, 0f, Projectile.alpha, dustColor);
                 Main.dust[dust].noGravity = true;
             }
 
@@ -74,9 +70,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.timeLeft >= 60;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.timeLeft < 60)
+            if (info.Damage <= 0 || Projectile.timeLeft < 60)
                 return;
 
             target.AddBuff(BuffID.Darkness, 180);

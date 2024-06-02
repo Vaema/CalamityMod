@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
@@ -10,21 +11,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("AtaxiaHelmet")]
-    public class HydrothermicHeadSummon : ModItem
+    public class HydrothermicHeadSummon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hydrothermic Helmet");
-            Tooltip.SetDefault("5% increased minion damage and increased minion knockback\n" +
-                "Temporary immunity to lava and immunity to fire damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 6; //40
         }
@@ -42,10 +36,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "40% increased minion damage and +2 max minions\n" +
-                "Inferno effect when below 50% life\n" +
-                "Summons a hydrothermic vent to protect you\n" +
-                "You emit a blazing explosion when you are hit";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<HydrothermicArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.chaosSpirit = true;
@@ -58,10 +49,13 @@ namespace CalamityMod.Items.Armor.Hydrothermic
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<HydrothermicVent>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(190);
+                    // 08DEC2023: Ozzatron: Hydrothermic Vents spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(190);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<HydrothermicVent>(), damage, 0f, Main.myPlayer, 38f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 190;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 0.4f;
@@ -72,7 +66,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         {
             player.GetDamage<SummonDamageClass>() += 0.05f;
             player.GetKnockback<SummonDamageClass>() += 1.5f;
-            player.lavaMax += 240;
+            player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
         }
 

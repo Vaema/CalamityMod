@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,10 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Feather Knife");
-            Tooltip.SetDefault(@"Throws a knife which summons homing feathers
-Stealth strike throws a volley of knives");
-            SacrificeTotal = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
@@ -32,7 +29,7 @@ Stealth strike throws a volley of knives");
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.shoot = ModContent.ProjectileType<FeatherKnifeProjectile>();
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -40,6 +37,8 @@ Stealth strike throws a volley of knives");
             Item.value = Item.sellPrice(copper: 60);
             Item.rare = ItemRarityID.Orange;
         }
+
+        public override float StealthDamageMultiplier => 0.80f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

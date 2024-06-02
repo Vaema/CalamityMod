@@ -1,16 +1,15 @@
-﻿using CalamityMod.Rarities;
-using CalamityMod.Tiles.FurnitureSacrilegious;
+﻿using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
 {
-    public class OccultPlatformItem : ModItem
+    public class OccultPlatformItem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Occult Platform");
-            SacrificeTotal = 200;
+            Item.ResearchUnlockCount = 200;
         }
 
         public override void SetDefaults()
@@ -25,12 +24,13 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<OccultPlatformTile>();
-            Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).AddIngredient(ModContent.ItemType<OccultBrickItem>()).Register();
+            CreateRecipe(2).
+                AddIngredient<OccultBrickItem>().
+                Register();
         }
     }
 }

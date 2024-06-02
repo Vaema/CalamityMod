@@ -6,20 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Aerospec
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class AerospecLeggings : ModItem
+    public class AerospecLeggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Aerospec Leggings");
-            Tooltip.SetDefault("12% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 6;
         }

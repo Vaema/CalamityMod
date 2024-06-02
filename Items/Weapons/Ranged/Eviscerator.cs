@@ -1,34 +1,28 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Eviscerator : ModItem
+    public class Eviscerator : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Eviscerator");
-            Tooltip.SetDefault("Converts musket balls into fast-moving blood clots");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 65;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 58;
             Item.height = 22;
+            Item.damage = 70;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 60;
             Item.useAnimation = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item40;
             Item.autoReuse = true;
@@ -57,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(8).
+                AddIngredient<BloodSample>(12).
                 AddIngredient(ItemID.Vertebrae, 4).
                 AddTile(TileID.DemonAltar).
                 Register();

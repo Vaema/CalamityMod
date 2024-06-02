@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
@@ -6,34 +7,36 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class VeinBurster : ModItem
+    public class VeinBurster : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Vein Burster");
-            Tooltip.SetDefault("Fires a blood ball that sticks to tiles and explodes");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 52;
-            Item.damage = 71;
+            Item.height = 50;
+            Item.damage = 47;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 25;
+            Item.useAnimation = 41;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 37;
+            Item.useTime = 41;
             Item.useTurn = true;
             Item.knockBack = 4.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 50;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<BloodBall>();
-            Item.shootSpeed = 10f;
+            Item.shootSpeed = 16f;
+        }
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
         }
 
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
+        {
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
+        }
         public override void AddRecipes()
         {
             CreateRecipe().

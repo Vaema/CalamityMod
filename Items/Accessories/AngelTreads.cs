@@ -7,26 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shoes)]
-    public class AngelTreads : ModItem
+    public class AngelTreads : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Angel Treads");
-            Tooltip.SetDefault("Extreme speed!\n" +
-                               "36% increased running acceleration\n" +
-                               "Increased flight time\n" +
-                               "Greater mobility on ice\n" +
-                               "Water and lava walking\n" +
-                               "Immunity to the On Fire! debuff\n" +
-                               "Temporary immunity to lava");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.accessory = true;
         }

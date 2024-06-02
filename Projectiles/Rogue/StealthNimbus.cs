@@ -4,13 +4,13 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class StealthNimbus : ModProjectile
+    public class StealthNimbus : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Boss/ShadeNimbusHostile";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nimbus");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == 1f)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/StealthNimbus2").Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
@@ -66,9 +66,9 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        int num414 = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
-                        int num415 = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)num414, (float)num415, 0f, 5f, ModContent.ProjectileType<StealthRain>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[0], 0f);
+                        int rainSpawnX = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
+                        int rainSpawnY = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)rainSpawnX, (float)rainSpawnY, 0f, 5f, ModContent.ProjectileType<StealthRain>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[0], 0f);
                     }
                 }
             }

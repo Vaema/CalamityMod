@@ -4,11 +4,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class MiniSharkron : ModProjectile
+    public class MiniSharkron : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mini Sharkron");
             Main.projFrames[Projectile.type] = 2;
         }
 
@@ -25,13 +25,13 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int d = 0; d < 15; ++d)
             {
-              int idx = Dust.NewDust(Projectile.Center - Vector2.One * 10f, 50, 50, DustID.Blood, 0f, -2f, 0, default, 1f);
-              Dust dust = Main.dust[idx];
-              dust.velocity /= 2f;
+                int idx = Dust.NewDust(Projectile.Center - Vector2.One * 10f, 50, 50, DustID.Blood, 0f, -2f, 0, default, 1f);
+                Dust dust = Main.dust[idx];
+                dust.velocity /= 2f;
             }
             if (Main.netMode != NetmodeID.Server)
             {

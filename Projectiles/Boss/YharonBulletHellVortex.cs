@@ -9,14 +9,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class YharonBulletHellVortex : ModProjectile
+    public class YharonBulletHellVortex : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public ref float TimeCountdown => ref Projectile.ai[0];
         public int victim = 0;
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bullet Hell Vortex");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            if ((Main.npc[(int)Projectile.ai[1]].active && Main.npc[(int)Projectile.ai[1]].type == ModContent.NPCType<Yharon>()) || CalamityWorld.getFixedBoi)
+            if ((Main.npc[(int)Projectile.ai[1]].active && Main.npc[(int)Projectile.ai[1]].type == ModContent.NPCType<Yharon>()) || Main.zenithWorld)
             {
                 if (TimeCountdown > 0f)
                 {
@@ -56,12 +56,12 @@ namespace CalamityMod.Projectiles.Boss
                     TimeCountdown--;
 
                     // chase players in the zenith seed
-                    if (CalamityWorld.getFixedBoi)
+                    if (Main.zenithWorld)
                     {
                         Projectile.hostile = true;
                         Projectile.width = Projectile.height = (int)(408f * Projectile.scale);
                         float inertia = 5f;
-                        float speed = 5.35f;
+                        float speed = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10.7f : 5.35f;
                         float minDist = 160f;
                         if (victim >= 0 && Main.player[victim].active && !Main.player[victim].dead)
                         {
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Boss
                         }
 
                         // Fly away from other vortices
-                        float pushForce = 0.05f;
+                        float pushForce = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.1f : 0.05f;
                         for (int k = 0; k < Main.maxProjectiles; k++)
                         {
                             Projectile otherProj = Main.projectile[k];

@@ -1,22 +1,18 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ValkyrieRayStaff : ModProjectile
+    public class ValkyrieRayStaff : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Items/Weapons/Magic/ValkyrieRay";
 
         private const float AimResponsiveness = 0.66f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Valkyrie Ray");
-        }
 
         public override void SetDefaults()
         {
@@ -24,7 +20,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 52;
             // This projectile has no hitboxes and no damage type.
             Projectile.friendly = false;
-            // projectile.melee = false /* tModPorter - this is redundant, for more info see https://github.com/tModLoader/tModLoader/wiki/Update-Migration-Guide#damage-classes */ ;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 900;

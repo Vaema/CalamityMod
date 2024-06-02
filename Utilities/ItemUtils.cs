@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent.Prefixes;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
@@ -30,7 +31,7 @@ namespace CalamityMod
 
         #region Color Constants
         internal static readonly Color DevItemColor = new Color(255, 0, 255);
-        internal static readonly Color DonatorItemColor = new Color(139, 0, 0);
+        internal static readonly Color DonatorItemColor = new Color(196, 35, 44);
         #endregion
 
         // TODO -- This probably isn't the best place to put this but it needs to be somewhere easily accessible.
@@ -46,13 +47,13 @@ namespace CalamityMod
                 // This makes sense to be here but also not
                 case -1:
                     if (DownedBossSystem.downedDoG)
-                        return 20;
+                        return 14;
                     else if (NPC.downedMoonlord)
-                        return 16;
-                    else if (Main.hardMode)
                         return 12;
+                    else if (Main.hardMode)
+                        return 10;
                     return 8;
-                
+
                 case PrefixID.Hard:
                     if (DownedBossSystem.downedDoG)
                         return 4;
@@ -64,7 +65,7 @@ namespace CalamityMod
 
                 case PrefixID.Guarding:
                     if (DownedBossSystem.downedDoG)
-                        return 6;
+                        return 5;
                     else if (NPC.downedMoonlord)
                         return 4;
                     else if (Main.hardMode)
@@ -73,20 +74,20 @@ namespace CalamityMod
 
                 case PrefixID.Armored:
                     if (DownedBossSystem.downedDoG)
-                        return 8;
-                    else if (NPC.downedMoonlord)
                         return 6;
-                    else if (Main.hardMode)
+                    else if (NPC.downedMoonlord)
                         return 5;
+                    else if (Main.hardMode)
+                        return 4;
                     return 3;
 
                 case PrefixID.Warding:
                     if (DownedBossSystem.downedDoG)
-                        return 10;
+                        return 7;
                     else if (NPC.downedMoonlord)
-                        return 8;
-                    else if (Main.hardMode)
                         return 6;
+                    else if (Main.hardMode)
+                        return 5;
                     return 4;
             }
         }
@@ -108,6 +109,7 @@ namespace CalamityMod
             // ACCESSORIES
             if (item.accessory)
             {
+                int accRerolls = 0;
                 int[][] accessoryReforgeTiers = new int[][]
                 {
                     /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild, GetCalPrefix("Quiet") },
@@ -115,14 +117,26 @@ namespace CalamityMod
                     /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane, GetCalPrefix("Camouflaged") },
                     /* 3 */ new int[] { PrefixID.Warding, PrefixID.Menacing, PrefixID.Lucky, PrefixID.Quick2, PrefixID.Violent, GetCalPrefix("Silent") },
                 };
-                prefix = IteratePrefix(rand, accessoryReforgeTiers, currentPrefix);
+
+                // Try to prevent the player from rolling the same modifier twice
+                do
+                {
+                    int newPrefix = IteratePrefix(rand, accessoryReforgeTiers, currentPrefix);
+                    if (newPrefix != currentPrefix)
+                    {
+                        prefix = newPrefix;
+                        break;
+                    }
+                    accRerolls++;
+                } while (accRerolls < 20);
             }
 
             // MELEE (includes tools and whips)
-            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
+            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MeleeRangedHybridDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
-                if (item.type == ItemID.Terrarian)
+                // Other items that want to use Legendary2 are also compatible
+                if (PrefixLegacy.ItemSets.ItemsThatCanHaveLegendary2[item.type])
                 {
                     int[][] terrarianReforgeTiers = new int[][]
                     {
@@ -133,24 +147,9 @@ namespace CalamityMod
                     };
                     prefix = IteratePrefix(rand, terrarianReforgeTiers, currentPrefix);
                 }
-                
-                // Yoyos, Flails, Spears, etc.
-                // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
-                // Zenith, rapiers, and whips are specifically excluded from this, so they get broadsword reforges despite not scaling with melee speed.
-                else if ((item.channel || item.noMelee) && item.type != ItemID.Zenith && item.useStyle != ItemUseStyleID.Rapier && !item.CountsAsClass<SummonMeleeSpeedDamageClass>())
-                {
-                    int[][] meleeNoSpeedReforgeTiers = new int[][]
-                    {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
-                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
-                        /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
-                        /* 3 */ new int[] { PrefixID.Godly }
-                    };
-                    prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
-                }
 
-                // All other melee weapons
-                else
+                // Swords, Whips, Tools, other items that support the Legendary modifier
+                else if (PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix()))
                 {
                     int[][] meleeReforgeTiers = new int[][]
                     {
@@ -163,7 +162,7 @@ namespace CalamityMod
                     };
                     int[][] toolReforgeTiers = new int[][]
                     {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Heavy, PrefixID.Light, PrefixID.Forceful, PrefixID.Strong },
+                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Heavy, PrefixID.Forceful, PrefixID.Strong },
                         /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, PrefixID.Pointy, PrefixID.Bulky },
                         /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Large, PrefixID.Dangerous, PrefixID.Sharp },
                         /* 3 */ new int[] { PrefixID.Massive, PrefixID.Unpleasant, PrefixID.Savage, PrefixID.Superior },
@@ -173,6 +172,20 @@ namespace CalamityMod
 
                     var tierListToUse = (item.pick > 0 || item.axe > 0 || item.hammer > 0) ? toolReforgeTiers : meleeReforgeTiers;
                     prefix = IteratePrefix(rand, tierListToUse, currentPrefix);
+                }
+
+                // Yoyos, Flails, Spears, etc.
+                // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
+                else
+                {
+                    int[][] meleeNoSpeedReforgeTiers = new int[][]
+                    {
+                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
+                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
+                        /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
+                        /* 3 */ new int[] { PrefixID.Godly }
+                    };
+                    prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
                 }
             }
 
@@ -290,6 +303,34 @@ namespace CalamityMod
                     sb.Append(" / ").Append(keys[i]);
                 return sb.ToString();
             }
+        }
+
+        /// <summary>
+        /// Shortcut for finding a specific string in the tooltip and replacing it with a new string<br/>
+        /// Typically used for dynamic tooltip updating. Consider overriding Tooltip or using String.Format for applying constants.
+        /// </summary>
+        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
+        /// <param name="replacedKey">The key to be replaced.</param>
+        /// <param name="replacedKey">The new key.</param>
+        public static void FindAndReplace(this List<TooltipLine> tooltips, string replacedKey, string newKey)
+        {
+            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Text.Contains(replacedKey));
+            if (line != null)
+                line.Text = line.Text.Replace(replacedKey, newKey);
+        }
+
+        /// <summary>
+        /// Shortcut for automatically placing one keybind within a tooltip. Requires the "[KEY]" string to be replaced.
+        /// </summary>
+        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
+        /// <param name="mhk">The ModKeybind to integrate into the tooltip.</param>
+        public static void IntegrateHotkey(this List<TooltipLine> tooltips, ModKeybind mhk)
+        {
+            if (Main.dedServ || mhk is null)
+                return;
+
+            string finalKey = mhk.TooltipHotkeyString();
+            tooltips.FindAndReplace("[KEY]", finalKey);
         }
 
         // Original code lifted from Iban's extended armor tooltips.
@@ -642,7 +683,7 @@ namespace CalamityMod
             {
                 SoundEngine.PlaySound(item.UseSound.GetValueOrDefault(), player.Center);
 
-                int healAmt = (int)(item.healLife * player.Calamity().healingPotBonus);
+                int healAmt = (int)(item.healLife * player.Calamity().healingPotionMultiplier);
                 if (healAmt > 0 && player.QuickHeal_GetItemToUse() != null)
                 {
                     if (player.QuickHeal_GetItemToUse().type != item.type)
@@ -730,29 +771,29 @@ namespace CalamityMod
                 mod.Find<ModPrefix>("Flimsy").Type,
                 mod.Find<ModPrefix>("Unbalanced").Type,
                 mod.Find<ModPrefix>("Atrocious").Type,
-				PrefixID.Keen,
-				PrefixID.Superior,
-				PrefixID.Forceful,
-				PrefixID.Broken,
-				PrefixID.Damaged,
-				PrefixID.Hurtful,
-				PrefixID.Strong,
-				PrefixID.Unpleasant,
-				PrefixID.Weak,
-				PrefixID.Ruthless,
-				PrefixID.Godly,
-				PrefixID.Demonic,
-				PrefixID.Zealous,
-				PrefixID.Quick,
-				PrefixID.Deadly2,
-				PrefixID.Agile,
-				PrefixID.Nimble,
-				PrefixID.Murderous,
-				PrefixID.Slow,
-				PrefixID.Sluggish,
-				PrefixID.Lazy,
-				PrefixID.Annoying,
-				PrefixID.Nasty
+                PrefixID.Keen,
+                PrefixID.Superior,
+                PrefixID.Forceful,
+                PrefixID.Broken,
+                PrefixID.Damaged,
+                PrefixID.Hurtful,
+                PrefixID.Strong,
+                PrefixID.Unpleasant,
+                PrefixID.Weak,
+                PrefixID.Ruthless,
+                PrefixID.Godly,
+                PrefixID.Demonic,
+                PrefixID.Zealous,
+                PrefixID.Quick,
+                PrefixID.Deadly2,
+                PrefixID.Agile,
+                PrefixID.Nimble,
+                PrefixID.Murderous,
+                PrefixID.Slow,
+                PrefixID.Sluggish,
+                PrefixID.Lazy,
+                PrefixID.Annoying,
+                PrefixID.Nasty
             });
             return roguePrefix;
         }

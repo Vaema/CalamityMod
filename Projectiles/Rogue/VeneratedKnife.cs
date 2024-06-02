@@ -7,13 +7,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class VeneratedKnife : ModProjectile
+    public class VeneratedKnife : ModProjectile, ILocalizedModType
     {
-        int lifetime = 150;
+        public new string LocalizationCategory => "Projectiles.Rogue";
+        int lifetime = 120;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Venerated Knife");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -37,16 +37,15 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float minDist = 999f;
                 int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }
@@ -58,10 +57,10 @@ namespace CalamityMod.Projectiles.Rogue
                     velocityNew.Normalize();
                     velocityNew *= 5f;
                     Projectile.velocity += velocityNew;
-                    if (Projectile.velocity.Length() > 15f)
+                    if (Projectile.velocity.Length() > 14f)
                     {
                         Projectile.velocity.Normalize();
-                        Projectile.velocity *= 15f;
+                        Projectile.velocity *= 14f;
                     }
                 }
             }
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0f)
             {
-                Texture2D knife1 = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D knife1 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife1);
             }
             else if (Projectile.ai[0] == 1f)
@@ -99,12 +98,12 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 150);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {

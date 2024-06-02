@@ -1,10 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -25,8 +25,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Oarfish");
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/Oarfish_Bestiary",
                 PortraitPositionYOverride = 20
@@ -60,6 +59,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<AbyssLayer2Biome>().Type, ModContent.GetInstance<AbyssLayer3Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -67,7 +70,7 @@ namespace CalamityMod.NPCs.Abyss
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
 
 				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A peculiar bony fish many have only ever seen as corpses washed up on a beach, but in their natural habitat, their red fins stream behind them, as they drift in the water column.")
+				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Oarfish")
             });
         }
 
@@ -94,7 +97,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
@@ -117,10 +120,10 @@ namespace CalamityMod.NPCs.Abyss
                 if (!TailSpawned && NPC.ai[0] == 0f)
                 {
                     int Previous = NPC.whoAmI;
-                    for (int num36 = 0; num36 < maxLength; num36++)
+                    for (int segments = 0; segments < maxLength; segments++)
                     {
                         int lol;
-                        if (num36 >= 0 && num36 < minLength)
+                        if (segments >= 0 && segments < minLength)
                         {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<OarfishBody>(), NPC.whoAmI);
                         }
@@ -152,156 +155,160 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.alpha = 0;
 
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
-                NPC.active = false;
+            {
+                NPC.TargetClosest(false);
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
+                    NPC.active = false;
+            }
 
-            float num188 = speed;
-            float num189 = turnSpeed;
-            Vector2 vector18 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+            float currentSpeed = speed;
+            float currentTurnSpeed = turnSpeed;
+            Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
 
             if (patrolSpot == Vector2.Zero)
                 patrolSpot = Main.player[NPC.target].Center;
 
-            float num191 = detectsPlayer ? Main.player[NPC.target].Center.X : patrolSpot.X;
-            float num192 = detectsPlayer ? Main.player[NPC.target].Center.Y : patrolSpot.Y;
+            float targetXDirection = detectsPlayer ? Main.player[NPC.target].Center.X : patrolSpot.X;
+            float targetYDirection = detectsPlayer ? Main.player[NPC.target].Center.Y : patrolSpot.Y;
 
             if (!detectsPlayer)
             {
-                num192 += 300;
-                if (Math.Abs(NPC.Center.X - num191) < 250f) //500
+                targetYDirection += 300;
+                if (Math.Abs(NPC.Center.X - targetXDirection) < 250f) //500
                 {
                     if (NPC.velocity.X > 0f)
                     {
-                        num191 += 300f;
+                        targetXDirection += 300f;
                     }
                     else
                     {
-                        num191 -= 300f;
+                        targetXDirection -= 300f;
                     }
                 }
             }
             else
             {
-                num188 *= 1.5f;
-                num189 *= 1.5f;
+                currentSpeed *= 1.5f;
+                currentTurnSpeed *= 1.5f;
             }
-            float num48 = num188 * 1.3f;
-            float num49 = num188 * 0.7f;
-            float num50 = NPC.velocity.Length();
-            if (num50 > 0f)
+            float maxCurrentSpeed = currentSpeed * 1.3f;
+            float minCurrentSpeed = currentSpeed * 0.7f;
+            float currentSpeedCheck = NPC.velocity.Length();
+            if (currentSpeedCheck > 0f)
             {
-                if (num50 > num48)
+                if (currentSpeedCheck > maxCurrentSpeed)
                 {
                     NPC.velocity.Normalize();
-                    NPC.velocity *= num48;
+                    NPC.velocity *= maxCurrentSpeed;
                 }
-                else if (num50 < num49)
+                else if (currentSpeedCheck < minCurrentSpeed)
                 {
                     NPC.velocity.Normalize();
-                    NPC.velocity *= num49;
+                    NPC.velocity *= minCurrentSpeed;
                 }
             }
-            num191 = (float)((int)(num191 / 16f) * 16);
-            num192 = (float)((int)(num192 / 16f) * 16);
-            vector18.X = (float)((int)(vector18.X / 16f) * 16);
-            vector18.Y = (float)((int)(vector18.Y / 16f) * 16);
-            num191 -= vector18.X;
-            num192 -= vector18.Y;
-            float num193 = (float)System.Math.Sqrt((double)(num191 * num191 + num192 * num192));
-            float num196 = System.Math.Abs(num191);
-            float num197 = System.Math.Abs(num192);
-            float num198 = num188 / num193;
-            num191 *= num198;
-            num192 *= num198;
-            if ((NPC.velocity.X > 0f && num191 > 0f) || (NPC.velocity.X < 0f && num191 < 0f) || (NPC.velocity.Y > 0f && num192 > 0f) || (NPC.velocity.Y < 0f && num192 < 0f))
+            targetXDirection = (float)((int)(targetXDirection / 16f) * 16);
+            targetYDirection = (float)((int)(targetYDirection / 16f) * 16);
+            segmentPosition.X = (float)((int)(segmentPosition.X / 16f) * 16);
+            segmentPosition.Y = (float)((int)(segmentPosition.Y / 16f) * 16);
+            targetXDirection -= segmentPosition.X;
+            targetYDirection -= segmentPosition.Y;
+            float targetDistance = (float)System.Math.Sqrt((double)(targetXDirection * targetXDirection + targetYDirection * targetYDirection));
+            float absoluteTargetX = System.Math.Abs(targetXDirection);
+            float absoluteTargetY = System.Math.Abs(targetYDirection);
+            float timeToReachTarget = currentSpeed / targetDistance;
+            targetXDirection *= timeToReachTarget;
+            targetYDirection *= timeToReachTarget;
+            if ((NPC.velocity.X > 0f && targetXDirection > 0f) || (NPC.velocity.X < 0f && targetXDirection < 0f) || (NPC.velocity.Y > 0f && targetYDirection > 0f) || (NPC.velocity.Y < 0f && targetYDirection < 0f))
             {
-                if (NPC.velocity.X < num191)
+                if (NPC.velocity.X < targetXDirection)
                 {
-                    NPC.velocity.X = NPC.velocity.X + num189;
+                    NPC.velocity.X = NPC.velocity.X + currentTurnSpeed;
                 }
                 else
                 {
-                    if (NPC.velocity.X > num191)
+                    if (NPC.velocity.X > targetXDirection)
                     {
-                        NPC.velocity.X = NPC.velocity.X - num189;
+                        NPC.velocity.X = NPC.velocity.X - currentTurnSpeed;
                     }
                 }
-                if (NPC.velocity.Y < num192)
+                if (NPC.velocity.Y < targetYDirection)
                 {
-                    NPC.velocity.Y = NPC.velocity.Y + num189;
+                    NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed;
                 }
                 else
                 {
-                    if (NPC.velocity.Y > num192)
+                    if (NPC.velocity.Y > targetYDirection)
                     {
-                        NPC.velocity.Y = NPC.velocity.Y - num189;
+                        NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed;
                     }
                 }
-                if ((double)System.Math.Abs(num192) < (double)num188 * 0.2 && ((NPC.velocity.X > 0f && num191 < 0f) || (NPC.velocity.X < 0f && num191 > 0f)))
+                if ((double)System.Math.Abs(targetYDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDirection < 0f) || (NPC.velocity.X < 0f && targetXDirection > 0f)))
                 {
                     if (NPC.velocity.Y > 0f)
                     {
-                        NPC.velocity.Y = NPC.velocity.Y + num189 * 2f;
+                        NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed * 2f;
                     }
                     else
                     {
-                        NPC.velocity.Y = NPC.velocity.Y - num189 * 2f;
+                        NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 2f;
                     }
                 }
-                if ((double)System.Math.Abs(num191) < (double)num188 * 0.2 && ((NPC.velocity.Y > 0f && num192 < 0f) || (NPC.velocity.Y < 0f && num192 > 0f)))
+                if ((double)System.Math.Abs(targetXDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDirection < 0f) || (NPC.velocity.Y < 0f && targetYDirection > 0f)))
                 {
                     if (NPC.velocity.X > 0f)
                     {
-                        NPC.velocity.X = NPC.velocity.X + num189 * 2f; //changed from 2
+                        NPC.velocity.X = NPC.velocity.X + currentTurnSpeed * 2f; //changed from 2
                     }
                     else
                     {
-                        NPC.velocity.X = NPC.velocity.X - num189 * 2f; //changed from 2
+                        NPC.velocity.X = NPC.velocity.X - currentTurnSpeed * 2f; //changed from 2
                     }
                 }
             }
             else
             {
-                if (num196 > num197)
+                if (absoluteTargetX > absoluteTargetY)
                 {
-                    if (NPC.velocity.X < num191)
+                    if (NPC.velocity.X < targetXDirection)
                     {
-                        NPC.velocity.X = NPC.velocity.X + num189 * 1.1f; //changed from 1.1
+                        NPC.velocity.X = NPC.velocity.X + currentTurnSpeed * 1.1f; //changed from 1.1
                     }
-                    else if (NPC.velocity.X > num191)
+                    else if (NPC.velocity.X > targetXDirection)
                     {
-                        NPC.velocity.X = NPC.velocity.X - num189 * 1.1f; //changed from 1.1
+                        NPC.velocity.X = NPC.velocity.X - currentTurnSpeed * 1.1f; //changed from 1.1
                     }
-                    if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)num188 * 0.5)
+                    if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
                     {
                         if (NPC.velocity.Y > 0f)
                         {
-                            NPC.velocity.Y = NPC.velocity.Y + num189;
+                            NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed;
                         }
                         else
                         {
-                            NPC.velocity.Y = NPC.velocity.Y - num189;
+                            NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed;
                         }
                     }
                 }
                 else
                 {
-                    if (NPC.velocity.Y < num192)
+                    if (NPC.velocity.Y < targetYDirection)
                     {
-                        NPC.velocity.Y = NPC.velocity.Y + num189 * 1.1f;
+                        NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed * 1.1f;
                     }
-                    else if (NPC.velocity.Y > num192)
+                    else if (NPC.velocity.Y > targetYDirection)
                     {
-                        NPC.velocity.Y = NPC.velocity.Y - num189 * 1.1f;
+                        NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 1.1f;
                     }
-                    if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)num188 * 0.5)
+                    if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
                     {
                         if (NPC.velocity.X > 0f)
                         {
-                            NPC.velocity.X = NPC.velocity.X + num189;
+                            NPC.velocity.X = NPC.velocity.X + currentTurnSpeed;
                         }
                         else
                         {
-                            NPC.velocity.X = NPC.velocity.X - num189;
+                            NPC.velocity.X = NPC.velocity.X - currentTurnSpeed;
                         }
                     }
                 }
@@ -321,43 +328,41 @@ namespace CalamityMod.NPCs.Abyss
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer2 && spawnInfo.Water && !NPC.AnyNPCs(ModContent.NPCType<OarfishHead>()))
-            {
                 return SpawnCondition.CaveJellyfish.Chance * 0.3f;
-            }
+
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer3 && spawnInfo.Water && !NPC.AnyNPCs(ModContent.NPCType<OarfishHead>()))
-            {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
-            }
+                return Main.remixWorld ? 5.4f : SpawnCondition.CaveJellyfish.Chance * 0.6f;
+
             return 0f;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 3, 5, 4, 7));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 3, 5, 4, 7));
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OarfishHead").Type, 1f);
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<CrushDepth>(), 90);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 90);
         }
     }
 }

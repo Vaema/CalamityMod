@@ -1,19 +1,12 @@
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
 {
-    public class SacrilegiousLamp : ModItem
+    public class SacrilegiousLamp : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sacrilegious Lamp");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 16;
@@ -26,16 +19,15 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<SacrilegiousLampTile>();
-            Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-				AddIngredient(ModContent.ItemType<OccultBrickItem>(), 3).
-				AddIngredient(ModContent.ItemType<AshesofCalamity>()).
-				AddTile(ModContent.TileType<SCalAltar>()).
-				Register();
+            CreateRecipe().
+                AddIngredient<OccultBrickItem>(3).
+                AddIngredient(ItemID.Torch).
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

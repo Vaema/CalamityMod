@@ -1,15 +1,18 @@
-﻿using CalamityMod.Tiles.Crags;
+﻿using System.Collections.Generic;
+using CalamityMod.Tiles.Crags;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Crags
 {
     public class BrimstoneSlab : ModTile
     {
-        private int sheetWidth = 450;
-        private int sheetHeight = 270;
+        private int subsheetWidth = 450;
+        private int subsheetHeight = 198;
 
         public override void SetStaticDefaults()
         {
@@ -19,14 +22,14 @@ namespace CalamityMod.Tiles.Crags
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithHell(Type);
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.BrimstoneSlab>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Brimstone Slab");
-            AddMapEntry(new Color(79, 55, 70), name);
-            MineResist = 3f;
+            AddMapEntry(new Color(79, 55, 70));
+            MineResist = 2f;
             MinPick = 100;
             HitSound = SoundID.Tink;
             DustType = 235;
+
+            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -41,8 +44,8 @@ namespace CalamityMod.Tiles.Crags
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            frameXOffset = i % 2 * sheetWidth;
-            frameYOffset = j % 2 * sheetHeight;
+            frameXOffset = i % 2 * subsheetWidth;
+            frameYOffset = j % 2 * subsheetHeight;
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

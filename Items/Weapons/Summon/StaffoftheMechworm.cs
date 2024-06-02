@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using System.Linq;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,28 +9,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class StaffoftheMechworm : ModItem
+    public class StaffoftheMechworm : ModItem, ILocalizedModType
     {
-        // This value is also referenced by the God Slayer and Auric summoner helmets.
-        public const int BaseDamage = 100; // originally 325
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Staff of the Mechworm");
-            Tooltip.SetDefault("Summons an aerial mechworm to fight for you");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
-            Item.mana = 10;
             Item.width = 68;
             Item.height = 68;
+            Item.damage = 100;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.UseSound = SoundID.Item113;
             Item.autoReuse = true;
@@ -43,10 +35,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             float neededSlots = 1;
             float foundSlotsCount = 0;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p.active && p.minion && p.owner == player.whoAmI)
+                if (p.minion && p.owner == player.whoAmI)
                 {
                     foundSlotsCount += p.minionSlots;
                     if (foundSlotsCount + neededSlots > player.maxMinions)
@@ -108,17 +99,17 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             int head = -1;
             int tail = -1;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer)
+                if (p.owner == Main.myPlayer)
                 {
-                    if (head == -1 && Main.projectile[i].type == ModContent.ProjectileType<MechwormHead>())
+                    if (head == -1 && p.type == ModContent.ProjectileType<MechwormHead>())
                     {
-                        head = i;
+                        head = p.whoAmI;
                     }
-                    if (tail == -1 && Main.projectile[i].type == ModContent.ProjectileType<MechwormTail>())
+                    if (tail == -1 && p.type == ModContent.ProjectileType<MechwormTail>())
                     {
-                        tail = i;
+                        tail = p.whoAmI;
                     }
                     if (head != -1 && tail != -1)
                     {

@@ -1,17 +1,17 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class DustProjectile : ModProjectile
+    public class DustProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dust");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 30 * Projectile.MaxUpdates; // 30 effectively, 120 total
             Projectile.usesLocalNPCImmunity = true;
@@ -67,9 +67,9 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.Opacity = MathHelper.Lerp(0f, 1f, (float)Projectile.timeLeft / 5f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
 
         public override bool? CanDamage() => Projectile.timeLeft > 5;
 
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustPos = dustCircle.RandomPointInCircle();
                 if ((dustPos - Projectile.Center).Length() > 48)
                 {
-                    int dustIndex = Dust.NewDust(dustPos, 1, 1, 22);
+                    int dustIndex = Dust.NewDust(dustPos, 1, 1, DustID.Pot);
                     Main.dust[dustIndex].noGravity = true;
                     Main.dust[dustIndex].fadeIn = 1f;
                     Vector2 dustVelocity = Projectile.Center - Main.dust[dustIndex].position;

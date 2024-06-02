@@ -1,16 +1,12 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class GhastlyExplosionShard : ModProjectile
+    public class GhastlyExplosionShard : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ghastly Fragment");
-        }
 
         public override void SetDefaults()
         {
@@ -18,20 +14,21 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 8;
             Projectile.friendly = true;
             Projectile.alpha = 255;
-            Projectile.timeLeft = 80;
+            Projectile.timeLeft = 120;
             Projectile.penetrate = 1;
+            Projectile.MaxUpdates = 3;
             Projectile.DamageType = DamageClass.Magic;
         }
 
-        public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 50 && target.CanBeChasedBy(Projectile);
+        public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 90 && target.CanBeChasedBy(Projectile);
 
         public override void AI()
         {
-            int num332 = (int)Projectile.ai[0];
+            int dustType = (int)Projectile.ai[0];
 
             Projectile.ai[1] += 1f;
-            float num333 = (120f - Projectile.ai[1]) / 120f;
-            if (Projectile.ai[1] > 80f)
+            float dustScale = (120f - Projectile.ai[1]) / 120f;
+            if (Projectile.ai[1] > 120f)
                 Projectile.Kill();
 
             Projectile.velocity.Y += 0.2f;
@@ -40,50 +37,50 @@ namespace CalamityMod.Projectiles.Magic
 
             Projectile.velocity.X *= 0.98f;
 
-            int num3;
-            for (int num334 = 0; num334 < 2; num334 = num3 + 1)
+            int inc;
+            for (int i = 0; i < 2; i = inc + 1)
             {
-                int num335 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, num332, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 1.1f);
-                Main.dust[num335].position = (Main.dust[num335].position + Projectile.Center) / 2f;
-                Main.dust[num335].noGravity = true;
-                Dust dust = Main.dust[num335];
+                int explodeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 1.1f);
+                Main.dust[explodeDust].position = (Main.dust[explodeDust].position + Projectile.Center) / 2f;
+                Main.dust[explodeDust].noGravity = true;
+                Dust dust = Main.dust[explodeDust];
                 dust.velocity *= 0.3f;
-                dust = Main.dust[num335];
-                dust.scale *= num333;
-                num3 = num334;
+                dust = Main.dust[explodeDust];
+                dust.scale *= dustScale;
+                inc = i;
             }
 
-            for (int num336 = 0; num336 < 1; num336 = num3 + 1)
+            for (int j = 0; j < 1; j = inc + 1)
             {
-                int num335 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, num332, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
-                Main.dust[num335].position = (Main.dust[num335].position + Projectile.Center * 5f) / 6f;
-                Dust dust = Main.dust[num335];
+                int explodeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                Main.dust[explodeDust].position = (Main.dust[explodeDust].position + Projectile.Center * 5f) / 6f;
+                Dust dust = Main.dust[explodeDust];
                 dust.velocity *= 0.1f;
-                Main.dust[num335].noGravity = true;
-                Main.dust[num335].fadeIn = 0.9f * num333;
-                dust = Main.dust[num335];
-                dust.scale *= num333;
-                num3 = num336;
+                Main.dust[explodeDust].noGravity = true;
+                Main.dust[explodeDust].fadeIn = 0.9f * dustScale;
+                dust = Main.dust[explodeDust];
+                dust.scale *= dustScale;
+                inc = j;
             }
 
-            if (Projectile.timeLeft < 50)
+            if (Projectile.timeLeft < 90)
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 600f, 12f, 20f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            int num3;
-            for (int num114 = 0; num114 < 10; num114 = num3 + 1)
+            int inc;
+            for (int i = 0; i < 10; i = inc + 1)
             {
-                int num115 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 0.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 0.5f);
                 Dust dust;
-                Main.dust[num115].scale = 1f + Main.rand.Next(-10, 11) * 0.01f;
-                Main.dust[num115].noGravity = true;
-                dust = Main.dust[num115];
+                Main.dust[killDust].scale = 1f + Main.rand.Next(-10, 11) * 0.01f;
+                Main.dust[killDust].noGravity = true;
+                dust = Main.dust[killDust];
                 dust.velocity *= 1.25f;
-                dust = Main.dust[num115];
+                dust = Main.dust[killDust];
                 dust.velocity -= Projectile.oldVelocity / 10f;
-                num3 = num114;
+                inc = i;
             }
         }
     }

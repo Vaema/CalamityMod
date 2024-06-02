@@ -7,16 +7,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Tools
 {
     [LegacyName("ChaoswarpedSlashaxe")]
-    public class TectonicTruncator : ModItem
+    public class TectonicTruncator : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Tectonic Truncator");
-        }
-
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
+            Item.width = 50;
+            Item.height = 50;
             Item.damage = 68;
             Item.knockBack = 7f;
             Item.useTime = 6;
@@ -25,11 +22,9 @@ namespace CalamityMod.Items.Tools
             Item.tileBoost += 2;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 50;
-            Item.height = 50;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -56,7 +51,7 @@ namespace CalamityMod.Items.Tools
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 300);
         }

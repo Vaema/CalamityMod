@@ -9,21 +9,14 @@ namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("BloodflareHornedMask")]
-    public class BloodflareHeadMagic : ModItem
+    public class BloodflareHeadMagic : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Hydra Hood");
-            Tooltip.SetDefault("You can move freely through liquids and have temporary immunity to lava\n" +
-                "20% increased magic damage, 10% increased magic critical strike chance, +100 max mana and 17% reduced mana usage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 22; //85
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -43,19 +36,13 @@ namespace CalamityMod.Items.Armor.Bloodflare
             var modPlayer = player.Calamity();
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareMage = true;
-            player.setBonus = "Greatly increases life regen\n" +
-                "Enemies below 50% life drop a heart when struck\n" +
-                "This effect has a 5 second cooldown\n" +
-                "Magic weapons fire ghostly bolts every 1.67 seconds\n" +
-                "Magic critical strikes cause flame explosions every 2 seconds";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
             player.crimsonRegen = true;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.manaCost *= 0.83f;
-            player.lavaMax += 240;
-            player.ignoreWater = true;
             player.GetDamage<MagicDamageClass>() += 0.2f;
             player.GetCritChance<MagicDamageClass>() += 10;
             player.statManaMax2 += 100;

@@ -1,36 +1,34 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
     [LegacyName("EnergyStaff")]
-    public class SanctifiedSpark : ModItem
+    public class SanctifiedSpark : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sanctified Spark");
-            Tooltip.SetDefault("Summons a profaned energy turret to fight for you");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 68;
             Item.damage = 128;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
             Item.mana = 10;
-            Item.width = 66;
-            Item.height = 68;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ProfanedEnergy>();

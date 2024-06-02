@@ -1,33 +1,27 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.GodSlayer;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Items.Armor.Bloodflare;
-using CalamityMod.Items.Armor.GodSlayer;
-using CalamityMod.Items.Armor.Tarragon;
 
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("AuricTeslaHelm")]
-    public class AuricTeslaRoyalHelm : ModItem
+    public class AuricTeslaRoyalHelm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Tesla Royal Helm");
-            Tooltip.SetDefault("20% increased melee damage and critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 54; //132
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -39,15 +33,14 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void ArmorSetShadows(Player player)
         {
-            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawOutlines = true;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Melee Tarragon, Bloodflare and God Slayer effects\n" +
-                "Enemies are more likely to target you\n" +
-                "All projectiles spawn healing auric orbs on enemy hits";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
+            player.GetAttackSpeed<MeleeDamageClass>() += 0.28f;
             modPlayer.tarraSet = true;
             modPlayer.tarraMelee = true;
             modPlayer.bloodflareSet = true;
@@ -56,7 +49,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayerDamage = true;
             modPlayer.auricSet = true;
             player.thorns += 3f;
-            player.lavaMax += 240;
             player.ignoreWater = true;
             player.crimsonRegen = true;
             player.aggro += 1200;
@@ -70,7 +62,7 @@ namespace CalamityMod.Items.Armor.Auric
             var modPlayer = player.Calamity();
             modPlayer.auricBoost = true;
             player.GetDamage<MeleeDamageClass>() += 0.2f;
-            player.GetCritChance<MeleeDamageClass>() += 20;
+            player.GetCritChance<MeleeDamageClass>() += 10;
         }
 
         public override void AddRecipes()

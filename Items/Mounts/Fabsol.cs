@@ -5,16 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
 {
-    public class Fabsol : ModItem
+    public class Fabsol : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Princess Spirit in a Bottle");
-            Tooltip.SetDefault("Summons the spirit of Cirrus, the Drunk Princess, in her alicorn form\n" +
-                "Mounting will transform Cirrus, dismounting transforms her back");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()
         {
             Item.width = 16;

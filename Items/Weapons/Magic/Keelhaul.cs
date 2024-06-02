@@ -4,16 +4,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Keelhaul : ModItem
+    public class Keelhaul : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Keelhaul");
-            Tooltip.SetDefault("Summons a geyser upon hitting an enemy\n" +
-                "Crumple 'em like paper");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -30,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
 

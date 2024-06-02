@@ -1,21 +1,21 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PowerfulRaven : ModProjectile
+    public class PowerfulRaven : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float DistanceToCheck = 3200f;
         public const float TeleportDistance = 2700f;
         public const float SeparationAnxietyDistance = 2000f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Super Raven");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;

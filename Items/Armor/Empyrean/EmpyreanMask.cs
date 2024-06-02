@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
@@ -8,8 +9,9 @@ namespace CalamityMod.Items.Armor.Empyrean
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("XerocMask")]
-    public class EmpyreanMask : ModItem
+    public class EmpyreanMask : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -23,10 +25,6 @@ namespace CalamityMod.Items.Armor.Empyrean
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Empyrean Mask");
-            Tooltip.SetDefault("11% increased rogue damage and critical strike chance, 5% increased movement speed\n" +
-                "Temporary immunity to lava");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -45,7 +43,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.defense = 20; //71
         }
@@ -68,14 +66,11 @@ namespace CalamityMod.Items.Armor.Empyrean
             var modPlayer = player.Calamity();
             modPlayer.xerocSet = true;
             modPlayer.rogueStealthMax += 1.15f;
-            player.setBonus = "9% increased rogue damage and velocity\n" +
-				"+115 maximum stealth\n" +
-                "Rogue projectiles have special effects on enemy hits\n" +
-                "Imbued with cosmic wrath and rage when you are damaged";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             if (player.statLife <= (int)(player.statLifeMax2 * 0.5))
             {
-                player.AddBuff(BuffID.Wrath, 2);
-                player.AddBuff(BuffID.Rage, 2);
+                player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
+                player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 2);
             }
             player.GetDamage<ThrowingDamageClass>() += 0.09f;
             modPlayer.rogueVelocity += 0.09f;
@@ -87,7 +82,6 @@ namespace CalamityMod.Items.Armor.Empyrean
             player.GetDamage<ThrowingDamageClass>() += 0.11f;
             player.GetCritChance<ThrowingDamageClass>() += 11;
             player.moveSpeed += 0.05f;
-            player.lavaMax += 240;
         }
 
         public override void AddRecipes()

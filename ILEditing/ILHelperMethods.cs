@@ -1,14 +1,15 @@
-﻿using CalamityMod.Waters;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Systems;
+using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoMod.Cil;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
-using CalamityMod.Systems;
 using Terraria.Graphics;
-using System.Collections.Generic;
-using System.Linq;
+using Terraria.ID;
 
 namespace CalamityMod.ILEditing
 {
@@ -63,7 +64,7 @@ namespace CalamityMod.ILEditing
             SoundEngine.PlaySound(SoundID.DoorClosed, new Vector2(doorX * 16, doorY * 16));
             return true;
         }
-
+        
         private static Texture2D SelectLavaTexture(Texture2D initialTexture, LiquidTileType type)
         {
             // Use the initial texture if it isn't lava.
@@ -72,23 +73,42 @@ namespace CalamityMod.ILEditing
                 initialTexture != CustomLavaManagement.LavaSlopeTexture)
                 return initialTexture;
 
-            foreach (CustomLavaStyle lavaStyle in CustomLavaManagement.CustomLavaStyles)
+            if (cachedLavaStyle == default)
+                return initialTexture;
+
+            switch (type)
             {
-                if (lavaStyle.ChooseLavaStyle())
-                {
-                    switch (type)
-                    {
-                        case LiquidTileType.Block:
-                            return lavaStyle.BlockTexture;
-                        case LiquidTileType.Waterflow:
-                            return lavaStyle.LavaTexture;
-                        case LiquidTileType.Slope:
-                            return lavaStyle.SlopeTexture;
-                    }
-                }
+                case LiquidTileType.Block:
+                    return cachedLavaStyle.BlockTexture;
+                case LiquidTileType.Waterflow:
+                    return cachedLavaStyle.LavaTexture;
+                case LiquidTileType.Slope:
+                    return cachedLavaStyle.SlopeTexture;
             }
 
             return initialTexture;
+        }
+
+        private static VertexColors SelectLavaQuadColor(Texture2D initialTexture, ref VertexColors initialColor, bool forceTrue = false)
+        {
+            // We should handle the 'forceTrue' flag at this level to prevent us from checking the same thing four times.
+            if (!forceTrue)
+            {
+                if (initialTexture != CustomLavaManagement.LavaTexture &&
+                    initialTexture != CustomLavaManagement.LavaBlockTexture &&
+                    initialTexture != CustomLavaManagement.LavaSlopeTexture)
+                    return initialColor;
+            }
+
+            // No lava style to draw? Then skip.
+            if (cachedLavaStyle == default)
+                return initialColor;
+
+            cachedLavaStyle.SelectLightColor(ref initialColor.TopLeftColor);
+            cachedLavaStyle.SelectLightColor(ref initialColor.TopRightColor);
+            cachedLavaStyle.SelectLightColor(ref initialColor.BottomLeftColor);
+            cachedLavaStyle.SelectLightColor(ref initialColor.BottomRightColor);
+            return initialColor;
         }
 
         private static Color SelectLavaColor(Texture2D initialTexture, Color initialLightColor, bool forceTrue = false)
@@ -128,18 +148,32 @@ namespace CalamityMod.ILEditing
                     new Vector2(x + 0.5f, y + 0.5f),
                 };
 
+                float lerpAmt = (1f - SulphuricWaterSafeZoneSystem.NearbySafeTiles[closestSafeZone]) * 21f;
                 for (int i = 0; i < 4; i++)
                 {
                     float distanceToClosest = points[i].Distance(closestSafeZone.ToVector2());
-                    float acidicWaterInterpolant = Utils.GetLerpValue(12f, 20.5f, distanceToClosest + (1f - SulphuricWaterSafeZoneSystem.NearbySafeTiles[closestSafeZone]) * 21f, true);
-                    if (i == 0)
-                        initialColor.TopLeftColor = Color.Lerp(initialColor.TopLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                    if (i == 1)
-                        initialColor.TopRightColor = Color.Lerp(initialColor.TopRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                    if (i == 2)
-                        initialColor.BottomLeftColor = Color.Lerp(initialColor.BottomLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                    if (i == 3)
-                        initialColor.BottomRightColor = Color.Lerp(initialColor.BottomRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
+                    float acidicWaterInterpolant = Utils.GetLerpValue(12f, 20.5f, distanceToClosest + lerpAmt, true);
+                    switch (i)
+                    {
+                        case 0:
+                            initialColor.TopLeftColor = Color.Lerp(initialColor.TopLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
+                            break;
+
+                        case 1:
+                            initialColor.TopRightColor = Color.Lerp(initialColor.TopRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
+                            break;
+
+                        case 2:
+                            initialColor.BottomLeftColor = Color.Lerp(initialColor.BottomLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
+                            break;
+
+                        case 3:
+                            initialColor.BottomRightColor = Color.Lerp(initialColor.BottomRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
             }
 

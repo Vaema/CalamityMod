@@ -1,19 +1,14 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SeasSearingSecondary : ModProjectile
+    public class SeasSearingSecondary : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Hydroshower");
-        }
 
         public override void SetDefaults()
         {
@@ -33,23 +28,23 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.width = (int)(16f * Projectile.scale);
                 Projectile.height = (int)(32f * Projectile.scale);
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                for (int num468 = 0; num468 < 3; num468++)
+                for (int i = 0; i < 3; i++)
                 {
-                    int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 217, 0f, 0f, 100, new Color(60, Main.DiscoG, 190), Projectile.scale);
-                    Main.dust[num469].noGravity = true;
-                    Main.dust[num469].velocity *= 0f;
-                    int num470 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 202, 0f, 0f, 100, new Color(60, Main.DiscoG, 190), Projectile.scale);
-                    Main.dust[num470].noGravity = true;
-                    Main.dust[num470].velocity *= 0f;
+                    int aquaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FishronWings, 0f, 0f, 100, new Color(60, Main.DiscoG, 190), Projectile.scale);
+                    Main.dust[aquaDust].noGravity = true;
+                    Main.dust[aquaDust].velocity *= 0f;
+                    int waterDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GlowingSnail, 0f, 0f, 100, new Color(60, Main.DiscoG, 190), Projectile.scale);
+                    Main.dust[waterDust].noGravity = true;
+                    Main.dust[waterDust].velocity *= 0f;
                 }
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {
@@ -58,10 +53,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Frostburn, 180);
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 180);
     }
 }

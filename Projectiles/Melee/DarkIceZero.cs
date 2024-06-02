@@ -1,15 +1,17 @@
+﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class DarkIceZero : ModProjectile
+    public class DarkIceZero : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 28;
@@ -23,11 +25,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.extraUpdates = 1;
             Projectile.coldDamage = true;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dark Ice");
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -46,11 +43,11 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //make pretty dust
-            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.25f);
-            Main.dust[index2].noGravity = true;
+            int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.25f);
+            Main.dust[dustSpawns].noGravity = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
@@ -61,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
             return new Color(198, 197, 246);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (timeLeft > 0)
             {
@@ -78,15 +75,15 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
                 for (int i = 0; i < 30; i++)
                 {
-                    int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, 0f, 0f, 0, default, Main.rand.NextFloat(1f, 2f));
-                    Main.dust[index2].noGravity = true;
-                    Main.dust[index2].velocity *= 4f;
+                    int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, 0f, 0f, 0, default, Main.rand.NextFloat(1f, 2f));
+                    Main.dust[dustSpawns].noGravity = true;
+                    Main.dust[dustSpawns].velocity *= 4f;
                 }
-                for (int index1 = 0; index1 < 20; ++index1)
+                for (int j = 0; j < 20; ++j)
                 {
-                    int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 68, 0f, 0f, 0, new Color(), 1.3f);
-                    Main.dust[index2].noGravity = true;
-                    Main.dust[index2].velocity *= 1.5f;
+                    int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 0, new Color(), 1.3f);
+                    Main.dust[dustSpawns].noGravity = true;
+                    Main.dust[dustSpawns].velocity *= 1.5f;
                 }
             }
         }

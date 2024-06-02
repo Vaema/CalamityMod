@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class SystemBaneLightning : ModProjectile
+    public class SystemBaneLightning : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/LightningProj";
 
         public int ElectrocutionTarget
@@ -25,7 +26,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public static readonly Color InnerLightningColor = Color.White;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 60;
         }
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Immediately stop moving on touching an enemy to make it look like they're being electrocuted.
             if (ElectrocutionTarget == -1)
@@ -113,11 +113,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 Vector2 start = oldPositions[i] + Projectile.Size * 0.5f - Main.screenPosition;
                 Vector2 end = oldPositions[i + 1] + Projectile.Size * 0.5f - Main.screenPosition;
-                Utils.DrawLaser(Main.spriteBatch, ModContent.Request<Texture2D>(Texture).Value, start, end, new Vector2(OuterLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
+                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, start, end, new Vector2(OuterLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
 
                 DelegateMethods.f_1 = InnerLightningOpacity;
                 DelegateMethods.c_1 = InnerLightningColor;
-                Utils.DrawLaser(Main.spriteBatch, ModContent.Request<Texture2D>(Texture).Value, start, end, new Vector2(InnerLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
+                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, start, end, new Vector2(InnerLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
             }
             return false;
         }

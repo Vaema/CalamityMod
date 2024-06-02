@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
-using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Dusts;
-using CalamityMod.Events;
 
 namespace CalamityMod.NPCs.OldDuke
 {
@@ -16,7 +16,6 @@ namespace CalamityMod.NPCs.OldDuke
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Tooth Ball");
         }
 
         public override void SetDefaults()
@@ -33,15 +32,22 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 NPC.lifeMax = 16000;
             }
-            NPC.knockBackResist = 0f;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.knockBackResist = 0.2f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath11;
+            NPC.chaseable = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -114,18 +120,18 @@ namespace CalamityMod.NPCs.OldDuke
                 velocity += Vector2.Distance(player.Center, NPC.Center) * speedUpMult;
             }
 
-            Vector2 vector167 = new Vector2(NPC.Center.X + NPC.direction * 20, NPC.Center.Y + 6f);
-            float num1373 = player.position.X + player.width * 0.5f - vector167.X;
-            float num1374 = player.Center.Y - vector167.Y;
-            float num1375 = (float)Math.Sqrt(num1373 * num1373 + num1374 * num1374);
-            float num1376 = velocity / num1375;
-            num1373 *= num1376;
-            num1374 *= num1376;
+            Vector2 toothBallDirection = new Vector2(NPC.Center.X + NPC.direction * 20, NPC.Center.Y + 6f);
+            float targetXDist = player.position.X + player.width * 0.5f - toothBallDirection.X;
+            float targetYDist = player.Center.Y - toothBallDirection.Y;
+            float targetDistance = (float)Math.Sqrt(targetXDist * targetXDist + targetYDist * targetYDist);
+            float toothBallSpeed = velocity / targetDistance;
+            targetXDist *= toothBallSpeed;
+            targetYDist *= toothBallSpeed;
 
             NPC.ai[2] -= Main.rand.Next(6);
-            if (num1375 < 300f || NPC.ai[2] > 0f)
+            if (targetDistance < 300f || NPC.ai[2] > 0f)
             {
-                if (num1375 < 300f)
+                if (targetDistance < 300f)
                     NPC.ai[2] = 100f;
 
                 if (NPC.velocity.X < 0f)
@@ -137,28 +143,25 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             float inertia = 50f;
-            NPC.velocity.X = (NPC.velocity.X * inertia + num1373) / (inertia + 1f);
-            NPC.velocity.Y = (NPC.velocity.Y * inertia + num1374) / (inertia + 1f);
+            NPC.velocity.X = (NPC.velocity.X * inertia + targetXDist) / (inertia + 1f);
+            NPC.velocity.Y = (NPC.velocity.Y * inertia + targetYDist) / (inertia + 1f);
 
-            float num1247 = bossRush ? 0.65f : 0.5f;
-            for (int num1248 = 0; num1248 < Main.maxNPCs; num1248++)
+            float toothBallAccel = bossRush ? 0.65f : 0.5f;
+            foreach (var n in Main.ActiveNPCs)
             {
-                if (Main.npc[num1248].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (num1248 != NPC.whoAmI && Main.npc[num1248].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < 48f)
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[num1248].Center) < 48f)
-                        {
-                            if (NPC.position.X < Main.npc[num1248].position.X)
-                                NPC.velocity.X -= num1247;
-                            else
-                                NPC.velocity.X += num1247;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X -= toothBallAccel;
+                        else
+                            NPC.velocity.X += toothBallAccel;
 
-                            if (NPC.position.Y < Main.npc[num1248].position.Y)
-                                NPC.velocity.Y -= num1247;
-                            else
-                                NPC.velocity.Y += num1247;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y -= toothBallAccel;
+                        else
+                            NPC.velocity.Y += toothBallAccel;
                     }
                 }
             }
@@ -183,8 +186,8 @@ namespace CalamityMod.NPCs.OldDuke
                 Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
                 for (int k = 0; k < totalProjectiles; k++)
                 {
-                    Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, vector255 * 0.1f, type, damage, 0f, Main.myPlayer, vector255.X, vector255.Y);
+                    Vector2 toothSpikeRotation = spinningPoint.RotatedBy(radians * k);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, toothSpikeRotation * 0.1f, type, damage, 0f, Main.myPlayer, toothSpikeRotation.X, toothSpikeRotation.Y);
                 }
 
                 if (Main.expertMode)
@@ -195,7 +198,7 @@ namespace CalamityMod.NPCs.OldDuke
                 }
             }
 
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -208,7 +211,7 @@ namespace CalamityMod.NPCs.OldDuke
             }
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)/* tModPorter Note: bossLifeScale -> balance (bossAdjustment is different, see the docs for details) */
         {
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
@@ -219,21 +222,21 @@ namespace CalamityMod.NPCs.OldDuke
             return true;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<Irradiated>(), 240);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
 
                 NPC.position.X = NPC.position.X + NPC.width / 2;
                 NPC.position.Y = NPC.position.Y + NPC.height / 2;
@@ -241,26 +244,26 @@ namespace CalamityMod.NPCs.OldDuke
                 NPC.position.X = NPC.position.X - NPC.width / 2;
                 NPC.position.Y = NPC.position.Y - NPC.height / 2;
 
-                for (int num621 = 0; num621 < 15; num621++)
+                for (int i = 0; i < 15; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int bloody = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[bloody].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[bloody].scale = 0.5f;
+                        Main.dust[bloody].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
-                    Main.dust[num622].noGravity = true;
+                    Main.dust[bloody].noGravity = true;
                 }
 
-                for (int num623 = 0; num623 < 30; num623++)
+                for (int j = 0; j < 30; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
-                    Main.dust[num624].noGravity = true;
+                    int toxicDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 3f);
+                    Main.dust[toxicDust].noGravity = true;
+                    Main.dust[toxicDust].velocity *= 5f;
+                    toxicDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 2f);
+                    Main.dust[toxicDust].velocity *= 2f;
+                    Main.dust[toxicDust].noGravity = true;
                 }
 
                 if (Main.netMode != NetmodeID.Server)

@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BurningMeteor : ModProjectile
+    public class BurningMeteor : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private int noTileHitCounter = 120;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Meteor");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -54,39 +54,39 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.localAI[0] = 0f;
                 for (int l = 0; l < 12; l++)
                 {
-                    Vector2 vector3 = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
-                    vector3 += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
-                    vector3 = vector3.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int num9 = Dust.NewDust(Projectile.Center, 0, 0, 244, 0f, 0f, 160, default, 1f);
-                    Main.dust[num9].scale = 1.1f;
-                    Main.dust[num9].noGravity = true;
-                    Main.dust[num9].position = Projectile.Center + vector3;
-                    Main.dust[num9].velocity = Projectile.velocity * 0.1f;
-                    Main.dust[num9].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[num9].position) * 1.25f;
+                    Vector2 dustRotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
+                    dustRotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
+                    dustRotate = dustRotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
+                    int burntDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.CopperCoin, 0f, 0f, 160, default, 1f);
+                    Main.dust[burntDust].scale = 1.1f;
+                    Main.dust[burntDust].noGravity = true;
+                    Main.dust[burntDust].position = Projectile.Center + dustRotate;
+                    Main.dust[burntDust].velocity = Projectile.velocity * 0.1f;
+                    Main.dust[burntDust].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[burntDust].position) * 1.25f;
                 }
             }
             Projectile.alpha -= 15;
-            int num58 = 150;
+            int alphaControl = 150;
             if (Projectile.Center.Y >= Projectile.ai[1])
             {
-                num58 = 0;
+                alphaControl = 0;
             }
-            if (Projectile.alpha < num58)
+            if (Projectile.alpha < alphaControl)
             {
-                Projectile.alpha = num58;
+                Projectile.alpha = alphaControl;
             }
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, 0f, 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f);
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }

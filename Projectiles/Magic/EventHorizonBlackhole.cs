@@ -5,13 +5,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class EventHorizonBlackhole : ModProjectile
+    public class EventHorizonBlackhole : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public int killCounter = 21;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blackhole");
             Main.projFrames[Projectile.type] = 8;
         }
 

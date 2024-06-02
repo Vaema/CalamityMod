@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureAshen
@@ -14,16 +13,14 @@ namespace CalamityMod.Tiles.FurnitureAshen
 
         public override void SetStaticDefaults()
         {
-            this.SetUpChandelier(true);
-            AddMapEntry(new Color(191, 142, 111), Language.GetText("MapObject.Chandelier"));
+            this.SetUpChandelier(ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenChandelier>(), true);
             AnimationFrameHeight = 54;
-            AdjTiles = new int[] { TileID.Chandeliers };
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -57,11 +54,6 @@ namespace CalamityMod.Tiles.FurnitureAshen
                 g = 0f;
                 b = 0f;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 48, 48, ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenChandelier>());
         }
 
         public override void HitWire(int i, int j)

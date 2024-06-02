@@ -2,23 +2,19 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.AstrumAureus;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class AstralChunk : ModItem
+    public class AstralChunk : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Astral Chunk");
-            Tooltip.SetDefault("Summons Astrum Aureus when used in the Astral Infection during nighttime\n" +
-                "Enrages during the day\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 14; // Frost Moon
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Truffle Worm
         }
 
         public override void SetDefaults()
@@ -32,14 +28,14 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.dayTime && player.Calamity().ZoneAstral && !NPC.AnyNPCs(ModContent.NPCType<AstrumAureus>()) && !BossRushEvent.BossRushActive;
+            return player.Calamity().ZoneAstral && !NPC.AnyNPCs(ModContent.NPCType<AstrumAureus>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
@@ -52,7 +48,7 @@ namespace CalamityMod.Items.SummonItems
                 CalamityUtils.BossAwakenMessage(npc);
             }
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<AstrumAureus>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<AstrumAureus>());
 
             return true;
         }
@@ -60,9 +56,9 @@ namespace CalamityMod.Items.SummonItems
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Stardust>(30).
+                AddIngredient<StarblightSoot>(30).
                 AddIngredient(ItemID.FallenStar, 20).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

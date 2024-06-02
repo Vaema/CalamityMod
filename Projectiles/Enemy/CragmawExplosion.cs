@@ -1,24 +1,20 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class CragmawExplosion : ModProjectile
+    public class CragmawExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public int FrameX = 0;
         public int FrameY = 0;
         public int CurrentFrame => FrameY + FrameX * 14;
 
         public override string Texture => "CalamityMod/Projectiles/Rogue/SulphuricNukesplosion";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nuclear Explosion");
-        }
 
         public override void SetDefaults()
         {
@@ -47,9 +43,9 @@ namespace CalamityMod.Projectiles.Enemy
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);

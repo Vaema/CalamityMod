@@ -1,17 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class SandTooth : ModProjectile
+    public class SandTooth : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sand Tooth");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -24,18 +20,18 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            int num103 = Player.FindClosest(Projectile.Center, 1, 1);
+            int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] < 150f && Projectile.ai[1] > 30f)
             {
                 float inertia = 30f;
-                float scaleFactor2 = Projectile.velocity.Length();
-                Vector2 vector11 = Main.player[num103].Center - Projectile.Center;
-                vector11.Normalize();
-                vector11 *= scaleFactor2;
-                Projectile.velocity = (Projectile.velocity * (inertia - 1f) + vector11) / inertia;
+                float projVelocity = Projectile.velocity.Length();
+                Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
+                playerDirection.Normalize();
+                playerDirection *= projVelocity;
+                Projectile.velocity = (Projectile.velocity * (inertia - 1f) + playerDirection) / inertia;
                 Projectile.velocity.Normalize();
-                Projectile.velocity *= scaleFactor2;
+                Projectile.velocity *= projVelocity;
             }
             else if (Projectile.ai[0] == 1f)
             {

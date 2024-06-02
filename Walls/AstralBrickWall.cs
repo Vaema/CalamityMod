@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -11,7 +11,6 @@ namespace CalamityMod.Walls
         {
             Main.wallHouse[Type] = true;
             Main.wallLargeFrames[Type] = 2;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Walls.AstralBrickWall>();
             AddMapEntry(new Color(74, 74, 97));
         }
 

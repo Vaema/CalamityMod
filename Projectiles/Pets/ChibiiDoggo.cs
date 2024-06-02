@@ -2,16 +2,16 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Pets
 {
-    public class ChibiiDoggo : ModProjectile
+    public class ChibiiDoggo : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public int trueType;
         public bool previousCollide = false;
         public bool yFlip = false; //used to suppress y velocity (pet fastfalls with an extra update per tick otherwise)
@@ -20,11 +20,13 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chibii Devourer");
             Main.projFrames[Projectile.type] = 11; //same as black cat
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            .WithOffset(-7f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()
@@ -49,40 +51,38 @@ namespace CalamityMod.Projectiles.Pets
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Color color25 = Lighting.GetColor((int)(Projectile.Center.X / 16), (int)(Projectile.Center.Y / 16));
+            Color colorArea = Lighting.GetColor((int)(Projectile.Center.X / 16), (int)(Projectile.Center.Y / 16));
             Texture2D texture2D3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/ChibiiDoggoMonochrome").Value;
-            int num156 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y3 = num156 * Projectile.frame;
-            Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, num156);
-            Vector2 origin2 = rectangle.Size() / 2f;
-            int num157 = 8;
-            int num158 = 2;
-            int num159 = 1;
-            float num160 = 0f;
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y3 = textureArea * Projectile.frame;
+            Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
+            Vector2 halfRect = rectangle.Size() / 2f;
+            int eightCompare = 8;
+            int twoConst = 2;
 
-            int num161 = num159;
-            while ((num158 > 0 && num161 < num157) || (num158 < 0 && num161 > num157))
+            int counter = 1;
+            while ((twoConst > 0 && counter < eightCompare) || (twoConst < 0 && counter > eightCompare))
             {
-                Color color26 = color25;
-                color26 = Projectile.GetAlpha(color26);
+                Color colorAlpha = colorArea;
+                colorAlpha = Projectile.GetAlpha(colorAlpha);
                 goto IL_6899;
-                IL_6881:
-                num161 += num158;
+IL_6881:
+                counter += twoConst;
                 continue;
-                IL_6899:
-                float num164 = (float)(num157 - num161);
-                if (num158 < 0)
+IL_6899:
+                float trailColorChange = (float)(eightCompare - counter);
+                if (twoConst < 0)
                 {
-                    num164 = (float)(num159 - num161);
+                    trailColorChange = (float)(1 - counter);
                 }
-                color26 *= num164 / ((float)ProjectileID.Sets.TrailCacheLength[Projectile.type] * 1.5f);
-                Vector2 value4 = Projectile.oldPos[num161];
-                float num165 = Projectile.rotation;
+                colorAlpha *= trailColorChange / ((float)ProjectileID.Sets.TrailCacheLength[Projectile.type] * 1.5f);
+                Vector2 oldDrawPos = Projectile.oldPos[counter];
+                float projRotate = Projectile.rotation;
                 SpriteEffects effects = spriteEffects;
-                Main.spriteBatch.Draw(texture2D3, value4 + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), color26, num165 + Projectile.rotation * num160 * (float)(num161 - 1) * Projectile.spriteDirection, origin2, Projectile.scale, effects, 0f);
+                Main.spriteBatch.Draw(texture2D3, oldDrawPos + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), colorAlpha, projRotate + Projectile.rotation * 0f * (float)(counter - 1) * Projectile.spriteDirection, halfRect, Projectile.scale, effects, 0f);
                 goto IL_6881;
             }
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, origin2, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
             return false;
         }
 
@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Pets
 
                 for (int i = 0; i < 77; i++) //loop to make lots of dust
                 {
-                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 182, Projectile.velocity.X * 0.7f, Projectile.velocity.Y * 0.7f, 100, default, 2.5f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TheDestroyer, Projectile.velocity.X * 0.7f, Projectile.velocity.Y * 0.7f, 100, default, 2.5f);
 
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 1.5f;
@@ -173,6 +173,11 @@ namespace CalamityMod.Projectiles.Pets
             }
 
             //companion cube lighting check and stab
+
+            // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
+            if (Main.netMode == NetmodeID.Server)
+                return;
+
             Color color;
             color = Lighting.GetColor((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16);
             Vector3 vector3_1 = color.ToVector3();
@@ -194,13 +199,13 @@ namespace CalamityMod.Projectiles.Pets
             {
                 if (Main.rand.NextBool(3))
                 {
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
-                        SoundEngine.PlaySound(SoundID.Meowmere with { Volume = SoundID.Meowmere.Volume * 4f}, Projectile.position); //nya
+                        SoundEngine.PlaySound(SoundID.Meowmere with { Volume = SoundID.Meowmere.Volume * 4f }, Projectile.position); //nya
                     }
                     else
                     {
-                        SoundEngine.PlaySound(SoundID.ScaryScream with { Volume = SoundID.ScaryScream.Volume * 2f}, player.position); //REEEEEEE
+                        SoundEngine.PlaySound(SoundID.ScaryScream with { Volume = SoundID.ScaryScream.Volume * 2f }, player.position); //REEEEEEE
                     }
                     notlocalai1 = -600f;
                 }
@@ -208,13 +213,13 @@ namespace CalamityMod.Projectiles.Pets
                 {
                     notlocalai1 = (float)(Main.rand.Next(30) * -10 - 300);
                     SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
-                        player.Hurt(PlayerDeathReason.ByOther(6), 500, 0, false, false, false, -1);
+                        player.Hurt(PlayerDeathReason.ByOther(6), 500, 0);
                     }
                     else
                     {
-                        player.Hurt(PlayerDeathReason.ByCustomReason(player.name + " couldn't stand the sharp objects."), 500, 0, false, false, false, -1);
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChibiiDoggo").Format(player.name)), 500, 0);
                     }
                     player.RemoveAllIFrames();
                 }

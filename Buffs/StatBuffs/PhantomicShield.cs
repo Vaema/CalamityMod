@@ -7,9 +7,6 @@ namespace CalamityMod.Buffs.StatBuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phantomic Shield");
-            Description.SetDefault("Defense boosted by 10 and damage reduction boosted by 5%\n" +
-                "An ephemeral bulwark protects you");
             Main.debuff[Type] = false;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
@@ -18,7 +15,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.endurance += 0.05f;
+            player.endurance += 0.05f; // TODO -- is this applied too late to be affected by the DR softcap?
             player.statDefense += 10;
         }
     }

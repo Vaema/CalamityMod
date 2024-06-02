@@ -1,24 +1,25 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ThanatosBeamStart : BaseLaserbeamProjectile
+    public class ThanatosBeamStart : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public int OwnerIndex
         {
             get => (int)Projectile.ai[1];
@@ -32,16 +33,14 @@ namespace CalamityMod.Projectiles.Boss
         public override float Lifetime => 180;
         public override Color LaserOverlayColor => new(250, 250, 250, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 
         public override void SetStaticDefaults()
         {
             // Thanatos' mouth laser
-            DisplayName.SetDefault("T Hanos Beam");
             // This is its serious name
-            // DisplayName.SetDefault("Gamma Disintegration Beam");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
@@ -138,7 +137,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Periodically fire beams along the laser perpendicular to its direction.
-            float laserFireRate = expertMode ? 80f : 160f;
+            float laserFireRate = (CalamityWorld.LegendaryMode && revenge) ? 60f : expertMode ? 80f : 160f;
             if (Main.npc[OwnerIndex].Calamity().newAI[2] % laserFireRate == 0f)
             {
                 // Play a laser sound to go with the beams.
@@ -150,7 +149,7 @@ namespace CalamityMod.Projectiles.Boss
                     float distanceBetweenProjectiles = bossRush ? 160f : death ? 256f : revenge ? 288f : 320f;
                     Vector2 laserFirePosition = Main.npc[OwnerIndex].Center + beamDirection * distanceBetweenProjectiles;
                     int laserCount = (int)(LaserLength / distanceBetweenProjectiles);
-                    int type = ModContent.ProjectileType<ThanatosLaser>();
+                    int type = ModContent.ProjectileType<THanosSideLaser>();
                     int damage = Projectile.GetProjectileDamage(Main.npc[OwnerIndex].type);
                     for (int i = 0; i < laserCount; i++)
                     {
@@ -158,7 +157,7 @@ namespace CalamityMod.Projectiles.Boss
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         for (int j = 0; j < totalProjectiles; j++)
                         {
-                            Vector2 projVelocity = Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2) * 12f;
+                            Vector2 projVelocity = (CalamityWorld.LegendaryMode && revenge) ? new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(-12, 12)) : Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2) * 12f;
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, damage, 0f, Main.myPlayer, 0f, -1f);
                         }
                         laserFirePosition += beamDirection * distanceBetweenProjectiles;
@@ -238,12 +237,12 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 360);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 240);
         }
 
         public override bool CanHitPlayer(Player target) => OwnerIsValid && Projectile.scale >= 0.5f;

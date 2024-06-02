@@ -1,14 +1,15 @@
 ﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PlanarRipperBolt : ModProjectile
+    public class PlanarRipperBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Rogue/ShockGrenadeBolt";
 
         public static int frameWidth = 12;
@@ -16,7 +17,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bolt");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             CalamityPlayer modPlayer = Main.player[Projectile.owner].Calamity();
             target.AddBuff(BuffID.Electrified, 180);
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<PlanarRipperExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
                 }
-                if (crit)
+                if (hit.Crit)
                 {
                     if (modPlayer.planarSpeedBoost < 20)
                     {
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             CalamityPlayer modPlayer = Main.player[Projectile.owner].Calamity();
             target.AddBuff(BuffID.Electrified, 180);
@@ -79,12 +79,9 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<PlanarRipperExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
                 }
-                if (crit)
+                if (modPlayer.planarSpeedBoost < 20)
                 {
-                    if (modPlayer.planarSpeedBoost < 20)
-                    {
-                        modPlayer.planarSpeedBoost++;
-                    }
+                    modPlayer.planarSpeedBoost++;
                 }
             }
         }
@@ -95,7 +92,7 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 10;
@@ -108,20 +105,20 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
 
-            SoundStyle sound = Main.rand.NextBool(2) ? SoundID.Item93 : SoundID.Item92;
-            SoundEngine.PlaySound(sound with { Volume = sound.Volume * 0.5f}, Projectile.position);
+            SoundStyle sound = Main.rand.NextBool() ? SoundID.Item93 : SoundID.Item92;
+            SoundEngine.PlaySound(sound with { Volume = sound.Volume * 0.5f }, Projectile.position);
 
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 132, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 0.5f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.Firework_Blue, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 0.5f);
                 Main.dust[dust].noGravity = true;
             }
-            int num212 = Main.rand.Next(10, 20);
-            for (int num213 = 0; num213 < num212; num213++)
+            int rando = Main.rand.Next(10, 20);
+            for (int i = 0; i < rando; i++)
             {
-                int num214 = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
-                Main.dust[num214].velocity *= 2f;
-                Main.dust[num214].noGravity = true;
+                int dusty = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
+                Main.dust[dusty].velocity *= 2f;
+                Main.dust[dusty].noGravity = true;
             }
         }
     }

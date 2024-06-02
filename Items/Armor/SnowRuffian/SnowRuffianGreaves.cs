@@ -5,20 +5,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.SnowRuffian
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class SnowRuffianGreaves : ModItem
+    public class SnowRuffianGreaves : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Snow Ruffian Greaves");
-            Tooltip.SetDefault("5% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 3; //9
         }

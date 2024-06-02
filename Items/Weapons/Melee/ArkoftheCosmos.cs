@@ -1,13 +1,13 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,16 +16,18 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class ArkoftheCosmos : ModItem
+    public class ArkoftheCosmos : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public float Combo = 0f;
         public float Charge = 0f;
 
         public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
-        public static float MaxThrowReach = 650;
+        public static float MaxThrowReach = 760;
         public static float snapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
 
-        public static float chargeDamageMultiplier = 1.2f; //Extra damage from charge
+        public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
+        public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
 
         public static int DashIframes = 10;
@@ -39,29 +41,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during hte swirl attack
         public static float SwirlBoltDamageMultiplier = 0.7f; //This is the damage multiplier for ALL THE BOLTS: Aka, said damage multiplier is divided by the amount of bolts in a swirl and the full damage multiplier is gotten if you hit all the bolts
 
-        const string ComboTooltip = "Using left click performs a 5-swing combo that ends by throwing the blade\n" +
-        "The thrown blade will follow your cursor\n" +
-        "Releasing left click while the blade is out will cause an exploding snap";
-
-        const string ParryTooltip = "Using right click will snip out the scissor blades in front of you\n" +
-        "Hitting an enemy with it will parry them, granting you brief invulnerability\n" +
-        "You can parry projectiles to make them deal 200 less damage for a short period\n" +
-        "Parrying anything will empower the next 10 swings of the sword";
-
-        const string BlastTooltip = "Using right click while pressing UP with empowered charges will provoke a Big Rip in spacetime and use all charges\n" +
-        "If more than 5 charges were used, you can dash across the rip by holding UP";
-
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ark of the Cosmos");
-            Tooltip.SetDefault("This line gets set in ModifyTooltips\n" +
-            "This line also gets set in ModifyTooltips\n" +
-            "This line also gets set in ModifyTooltips\n" +
-            "The physical culmination of your journey, capable of rending gods asunder");
-            SacrificeTotal = 1;
-        }
-
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             if (tooltips == null)
@@ -71,24 +50,24 @@ namespace CalamityMod.Items.Weapons.Melee
             if (player is null)
                 return;
 
-            var comboTooltip = tooltips.FirstOrDefault(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
+            var comboTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[COMBO]") && x.Mod == "Terraria");
             if (comboTooltip != null)
             {
-                comboTooltip.Text = ComboTooltip;
+                comboTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ComboInfo"));
                 comboTooltip.OverrideColor = Color.Lerp(Color.Gold, Color.Goldenrod, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.5f);
             }
 
-            var parryTooltip = tooltips.FirstOrDefault(x => x.Name == "Tooltip1" && x.Mod == "Terraria");
+            var parryTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[PARRY]") && x.Mod == "Terraria");
             if (parryTooltip != null)
             {
-                parryTooltip.Text = ParryTooltip;
+                parryTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ParryInfo"));
                 parryTooltip.OverrideColor = Color.Lerp(Color.Cyan, Color.DeepSkyBlue, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.75f);
             }
 
-            var blastTooltip = tooltips.FirstOrDefault(x => x.Name == "Tooltip2" && x.Mod == "Terraria");
+            var blastTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[BLAST]") && x.Mod == "Terraria");
             if (blastTooltip != null)
             {
-                blastTooltip.Text = BlastTooltip;
+                blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
                 blastTooltip.OverrideColor = Color.Lerp(Color.HotPink, Color.Crimson, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.625f);
             }
         }
@@ -96,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 136;
-            Item.damage = 1770;
+            Item.damage = 1700;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -107,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 9.5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 28f;
             Item.rare = ModContent.RarityType<Violet>();
@@ -221,13 +200,14 @@ namespace CalamityMod.Items.Weapons.Melee
             var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
 
             float barScale = 3f;
-
-            Vector2 drawPos = position + Vector2.UnitY * (frame.Height - 8) * scale + Vector2.UnitX * (frame.Width - barBG.Width * barScale) * scale * 0.5f;
-            Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / 10f * barFG.Width), barFG.Height);
+            Vector2 barOrigin = barBG.Size() * 0.5f;
+            float yOffset = 50f;
+            Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
+            Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / MaxCharge * barFG.Width), barFG.Height);
             Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.75f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
 
-            spriteBatch.Draw(barBG, drawPos, null, color, 0f, origin, scale * barScale, 0f, 0f);
-            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, origin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, barOrigin, scale * barScale, 0f, 0f);
         }
 
         public override void AddRecipes()

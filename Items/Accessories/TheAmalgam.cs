@@ -14,19 +14,11 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Items.Accessories
 {
     // TODO -- this item includes a dodge accessory, Brain of Cthulhu
-    public class TheAmalgam : ModItem
+    public class TheAmalgam : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("The Amalgam");
-            Tooltip.SetDefault("Extends the duration of potion buffs by 100% and potion buffs remain active even after you die\n" +
-                            "15% increased damage\n" +
-                            "Shade rains down when you are hit\n" +
-                            "Grants the ability to dodge attacks\n" +
-                            $"The dodge has a {BalancingConstants.AmalgamDodgeCooldown / 60} second cooldown which is shared with all other dodges and reflects\n" +
-                            "Temporarily increases critical strike chance and summon damage after a dodge\n" +
-                            "Nearby enemies receive a variety of sickness-related debuffs when you are hit");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(9, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
@@ -36,7 +28,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 34;
             Item.height = 34;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = RarityType<DarkBlue>();
         }
 
@@ -73,7 +65,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<AmalgamatedBrain>().
                 AddIngredient<UnholyCore>(5).
                 AddIngredient<MolluskHusk>(10).
-                AddIngredient<SulphuricScale>(15).
+                AddIngredient<CorrodedFossil>(15).
                 AddIngredient<PlagueCellCanister>(15).
                 AddIngredient<CosmiliteBar>(5).
                 AddIngredient<AscendantSpiritEssence>(4).

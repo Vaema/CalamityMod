@@ -1,15 +1,18 @@
-﻿using CalamityMod.Tiles.Ores;
+﻿using System.Collections.Generic;
+using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Crags
 {
     public class ScorchedRemains : ModTile
     {
-        private int sheetWidth = 288;
-        private int sheetHeight = 270;
+        private int sheetWidth = 234;
+        private int sheetHeight = 90;
+
 
         public override void SetStaticDefaults()
         {
@@ -22,10 +25,11 @@ namespace CalamityMod.Tiles.Crags
 
             DustType = 155;
             HitSound = SoundID.Dig;
-            MineResist = 1f;
             MinPick = 100;
-            ItemDrop = ModContent.ItemType<Items.Placeables.ScorchedRemains>();
             AddMapEntry(new Color(57, 52, 72));
+
+            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
         }
 
         public override void RandomUpdate(int i, int j)
@@ -34,7 +38,7 @@ namespace CalamityMod.Tiles.Crags
             Tile left = Main.tile[i - 1, j];
             Tile right = Main.tile[i + 1, j];
 
-            if (WorldGen.genRand.Next(3) == 0 && !up.HasTile && (left.TileType == ModContent.TileType<ScorchedRemainsGrass>() || 
+            if (WorldGen.genRand.NextBool(3)&& !up.HasTile && (left.TileType == ModContent.TileType<ScorchedRemainsGrass>() ||
             right.TileType == ModContent.TileType<ScorchedRemainsGrass>()))
             {
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemainsGrass>();
@@ -43,7 +47,7 @@ namespace CalamityMod.Tiles.Crags
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -56,11 +60,6 @@ namespace CalamityMod.Tiles.Crags
         {
             frameXOffset = i % 3 * sheetWidth;
             frameYOffset = j % 3 * sheetHeight;
-        }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<BrimstoneSlag>(), false, false, false, false, resetFrame);
-            return false;
         }
     }
 }

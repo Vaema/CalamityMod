@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.Localization;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
@@ -12,7 +14,7 @@ namespace CalamityMod.Cooldowns
     {
         public static new string ID => "PlagueBlackout";
         public override bool ShouldDisplay => instance.timeLeft <= 1500;
-        public override string DisplayName => "Plague Blackout Cooldown";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
         public override string Texture => "CalamityMod/Cooldowns/PlagueBlackout";
         public override Color OutlineColor => new Color(174, 237, 122);
         public override Color CooldownStartColor => Color.DarkSlateGray;
@@ -26,7 +28,7 @@ namespace CalamityMod.Cooldowns
             int h = instance.player.height;
             for (int i = 0; i < 66; i++)
             {
-                int d = Dust.NewDust(pos, w, h, 89, 0, 0, 100, default, 1.5f);
+                int d = Dust.NewDust(pos, w, h, DustID.GemEmerald, 0, 0, 100, default, 1.5f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].velocity *= 6.6f;
             }

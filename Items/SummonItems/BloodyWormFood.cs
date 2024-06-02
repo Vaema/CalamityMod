@@ -2,22 +2,18 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.Perforator;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class BloodyWormFood : ModItem
+    public class BloodyWormFood : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloody Worm Food");
-            Tooltip.SetDefault("Summons the Perforator Hive when used in the Crimson\n" +
-                "Enrages outside the Underground Crimson\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 5; // Abeemination / Deer Thing
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 5; // Abeemination / Deer Thing
         }
 
         public override void SetDefaults()
@@ -31,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -47,19 +43,20 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<PerforatorHive>());
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<PerforatorHive>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<PerforatorHive>());
 
             return true;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(7).
-                AddIngredient(ItemID.Vertebrae, 13).
-                AddTile(TileID.DemonAltar).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.CrimtaneBar, 3)
+                .AddIngredient<BloodSample>(7)
+                .AddIngredient(ItemID.Vertebrae, 13)
+                .AddTile(TileID.DemonAltar)
+                .AddDecraftCondition(CalamityConditions.DownedPerforator)
+                .Register();
         }
     }
 }

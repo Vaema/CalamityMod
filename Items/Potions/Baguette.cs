@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class Baguette : ModItem
+    public class Baguette : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Baguette");
-            Tooltip.SetDefault("{$CommonItemTooltip.MinorStats}\n" +
-            "Boosts the effects of Red Wine\n" +
-            "[c/FCE391:je suis Monte]");
-            SacrificeTotal = 5;
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 52;
             Item.height = 38;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.EatFood;
@@ -36,10 +33,10 @@ namespace CalamityMod.Items.Potions
             Item.buffTime = CalamityUtils.SecondsToFrames(300f);
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Food;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Food;
+        }
 
         public override void OnConsumeItem(Player player)
         {

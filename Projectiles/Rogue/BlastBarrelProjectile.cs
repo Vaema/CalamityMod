@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class BlastBarrelProjectile : ModProjectile
+    public class BlastBarrelProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/BlastBarrel";
 
         public float BounceEffectCooldown = 0f;
@@ -21,7 +22,6 @@ namespace CalamityMod.Projectiles.Rogue
         public bool CollideX => Projectile.oldPosition.X == Projectile.position.X;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Barrel");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

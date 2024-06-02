@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class PulsePistolShot : ModProjectile
+    public class PulsePistolShot : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public NPC Target
@@ -24,7 +25,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public List<NPC> NPCsAlreadyHit = new List<NPC>();
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pulse Bolt");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
         }
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
         public override bool? CanDamage() => Time > Projectile.MaxUpdates;
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (!NPCsAlreadyHit.Contains(target))
                 NPCsAlreadyHit.Add(target);
@@ -90,15 +90,15 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             float minDistance = 600f;
             List<NPC> potentialTargets = new List<NPC>();
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                bool legalTarget = Main.npc[i] != target && Main.npc[i].active && Main.npc[i].CanBeChasedBy(null);
-                float distanceToTarget = Projectile.Distance(Main.npc[i].Center);
-                if (legalTarget && distanceToTarget < minDistance && !NPCsAlreadyHit.Contains(Main.npc[i]))
+                bool legalTarget = n != target && n.CanBeChasedBy(null);
+                float distanceToTarget = Projectile.Distance(n.Center);
+                if (legalTarget && distanceToTarget < minDistance && !NPCsAlreadyHit.Contains(n))
                 {
                     minDistance = distanceToTarget;
                     // The NPCs at the bottom will always be at the bottom of the list because it works via a minimum distance.
-                    potentialTargets.Add(Main.npc[i]);
+                    potentialTargets.Add(n);
                 }
             }
 

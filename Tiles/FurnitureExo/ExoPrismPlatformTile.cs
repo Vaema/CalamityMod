@@ -19,11 +19,7 @@ namespace CalamityMod.Tiles.FurnitureExo
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoPrismPlatformTileGlow", AssetRequestMode.ImmediateLoad).Value;
             }
 
-            this.SetUpPlatform(true);
-            AddMapEntry(new Color(52, 67, 78));
-            ItemDrop = ModContent.ItemType<ExoPrismPlatform>();
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Platforms };
+            this.SetUpPlatform(ModContent.ItemType<ExoPrismPlatform>(), true);
             AnimationFrameHeight = 18;
         }
 
@@ -31,7 +27,7 @@ namespace CalamityMod.Tiles.FurnitureExo
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 

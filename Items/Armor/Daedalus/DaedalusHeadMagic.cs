@@ -8,21 +8,14 @@ namespace CalamityMod.Items.Armor.Daedalus
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("DaedalusHat")]
-    public class DaedalusHeadMagic : ModItem
+    public class DaedalusHeadMagic : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daedalus Hood");
-            Tooltip.SetDefault("13% increased magic damage and 7% increased magic critical strike chance\n" +
-                "10% decreased mana usage and +60 max mana");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 5; //35
         }
@@ -40,9 +33,7 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased magic damage\n" +
-                "You have a 10% chance to absorb physical attacks and projectiles when hit\n" +
-                "If you absorb an attack you are healed for 1/2 of that attack's damage";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.daedalusAbsorb = true;
             player.GetDamage<MagicDamageClass>() += 0.05f;

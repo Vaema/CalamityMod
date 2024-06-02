@@ -1,9 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
@@ -19,8 +19,9 @@ namespace CalamityMod.Items.Accessories.Vanity
     [LegacyName("WulfrumHeadMelee")]
     [LegacyName("WulfrumHood")]
     [LegacyName("WulfrumHeadMagic")]
-    public class AbandonedWulfrumHelmet : ModItem
+    public class AbandonedWulfrumHelmet : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -33,13 +34,6 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Abandoned Wulfrum Helmet");
-            Tooltip.SetDefault("A worn and rusty helmet resembling older models of wulfrum armor\n" +
-                "Transforms the holder into a wulfrum robot\n" +
-                "Can also be worn in the helmet slot as a regular helm\n" +
-                "[c/83B87E:This rather flimsy armor was commonly worn by scavengers and looters]\n" +
-                "[c/83B87E:Its versatility and common nature led it to be used as currency in trades]");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -60,7 +54,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 26;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
         }

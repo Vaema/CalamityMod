@@ -3,17 +3,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Tools.ClimateChange
 {
-    public class AridArtifact : ModItem
+    public class AridArtifact : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Arid Artifact");
-            Tooltip.SetDefault("Summons a sandstorm\n" +
-                               "The sandstorm will happen shortly after the item is used\n" +
-                               "If used during a sandstorm, the sandstorm will stop some time afterward.");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -25,14 +17,14 @@ namespace CalamityMod.Items.Tools.ClimateChange
             Item.UseSound = SoundID.Item66;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return DownedBossSystem.downedDesertScourge;
+            return DownedBossSystem.downedDesertScourge || Main.hardMode;
         }
 
         // this is extremely ugly and has to be fully qualified because we add an item called Sandstorm

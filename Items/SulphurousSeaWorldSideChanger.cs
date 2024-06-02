@@ -1,20 +1,20 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Rarities;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
-using System;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items
 {
-    public class SulphurousSeaWorldSideChanger : ModItem
+    public class SulphurousSeaWorldSideChanger : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sulphurous Sea World Side Changer");
-            Tooltip.SetDefault("Spawn and use this if your regular ocean counts as a Sulphurous Sea\n"+"This will also fix the Abyss if it is broken");
+            Item.ResearchUnlockCount = 0;
         }
 
         public override void SetDefaults()
@@ -26,18 +26,18 @@ namespace CalamityMod.Items
             Item.rare = ModContent.RarityType<HotPink>();
             Item.value = 0;
             Item.autoReuse = false;
-            Item.useStyle = 4;
+            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item111;
         }
 
         public override bool? UseItem(Player player)
         {
             CalamityNetcode.SyncWorld();
-            string key = "Mods.CalamityMod.SulphurSwitchLeft";
+            string key = "Mods.CalamityMod.Misc.SulphurSwitchLeft";
             if (Abyss.AtLeftSideOfWorld)
             {
                 Abyss.AtLeftSideOfWorld = false;
-                key = "Mods.CalamityMod.SulphurSwitchRight";
+                key = "Mods.CalamityMod.Misc.SulphurSwitchRight";
             }
             else
             {

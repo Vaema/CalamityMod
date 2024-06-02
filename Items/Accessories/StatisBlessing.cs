@@ -7,23 +7,15 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Neck)]
-    public class StatisBlessing : ModItem
+    public class StatisBlessing : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statis' Blessing");
-            Tooltip.SetDefault("Increased max minions by 2 and 10% increased minion damage\n" +
-                "Increased minion knockback\n" +
-                "Minions inflict holy flames on hit");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
 
@@ -32,7 +24,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.holyMinions = true;
             player.GetKnockback<SummonDamageClass>() += 2.5f;
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<SummonDamageClass>() += 0.12f;
         }
 
         public override void AddRecipes()

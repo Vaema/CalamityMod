@@ -1,13 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExobeamSlashCreator : ModProjectile
+    public class ExobeamSlashCreator : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public NPC Target => Main.npc[(int)Projectile.ai[0]];
         public float SlashDirection
         {
@@ -21,11 +22,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Anime Sword Effect");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -35,6 +31,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.timeLeft = 45;
             Projectile.MaxUpdates = 2;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()

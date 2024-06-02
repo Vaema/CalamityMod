@@ -6,17 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Aorta : ModItem
+    public class Aorta : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aorta");
-            Tooltip.SetDefault("Fires homing blood when enemies are near\n" +
-                "An exceptionally agile yoyo");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -24,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 30;
             Item.height = 26;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 29;
+            Item.damage = 31;
             Item.knockBack = 4.25f;
             Item.useTime = 22;
             Item.useAnimation = 22;
@@ -40,14 +37,14 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 8f;
 
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(6).
+                AddIngredient<BloodSample>(9).
                 AddIngredient(ItemID.Vertebrae, 3).
                 AddTile(TileID.DemonAltar).
                 Register();

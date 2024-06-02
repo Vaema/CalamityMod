@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Dusts.Furniture;
+using CalamityMod.Items.Placeables.FurnitureBotanic;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureBotanic
@@ -13,11 +12,8 @@ namespace CalamityMod.Tiles.FurnitureBotanic
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpDoorOpen(true);
-            AddMapEntry(new Color(191, 142, 111), Language.GetText("MapObject.Door"));
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.OpenDoor };
-            CloseDoorID = ModContent.TileType<BotanicDoorClosed>();
+            this.SetUpDoorOpen(ModContent.ItemType<BotanicDoor>(), true);
+            TileID.Sets.CloseDoorID[Type] = ModContent.TileType<BotanicDoorClosed>();
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -34,17 +30,12 @@ namespace CalamityMod.Tiles.FurnitureBotanic
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicDoor>());
-        }
-
         public override void MouseOver(int i, int j)
         {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicDoor>();
+            player.cursorItemIconID = ModContent.ItemType<BotanicDoor>();
         }
     }
 }

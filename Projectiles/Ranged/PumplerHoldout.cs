@@ -1,13 +1,14 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System.IO;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 //TY dom for coding condemnation, great reference, would steal code from again :)
 //                  - Iban
@@ -16,23 +17,20 @@ namespace CalamityMod.Projectiles.Ranged
 {
     public class PumplerHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Pumpler>();
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pumpler");
             Main.projFrames[Projectile.type] = 9;
         }
 
         private Player Owner => Main.player[Projectile.owner];
 
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
         private ref float PumpkinsCharge => ref Projectile.ai[1];
         private ref float FramesToLoadNextPumpkin => ref Projectile.localAI[0];
         private ref float Overfilled => ref Projectile.localAI[1]; //This functionally is a "IsPlayingShootAnim" variable
         private float angularSpread = MathHelper.ToRadians(15);
-
-        public override string Texture => "CalamityMod/Projectiles/Ranged/PumplerHoldout";
 
         public override void SetDefaults()
         {
@@ -51,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 tipPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // Unloads all pumpkins if you can't shoot/stop holding out the projectile or if the gun is overfilled
-            if (!OwnerCanShoot || Overfilled == 1f)
+            if (Owner.CantUseHoldout() || Overfilled == 1f)
             {
 
                 if (PumpkinsCharge <= 0f && Overfilled == 0f) //If the projectile isnt playing its animation and if there arent any pumpkins loaded, kill it
@@ -217,7 +215,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.spriteBatch.EnterShaderRegion();
             if (PumpkinsCharge > 0 && Overfilled == 0f)
             {
-                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(MathHelper.Clamp(1f - 0.20f * CurrentChargingFrames - 0.1f*(5f-PumpkinsCharge) , 0f, 1f));
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(MathHelper.Clamp(1f - 0.20f * CurrentChargingFrames - 0.1f * (5f - PumpkinsCharge), 0f, 1f));
                 //tint effect is visible if its charging. The more pumpkins are loaded, the more opacity
             }
             else
@@ -228,8 +226,8 @@ namespace CalamityMod.Projectiles.Ranged
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frameRectangle = ModContent.Request<Texture2D>(Texture).Value.Frame(1, 9, 0, Projectile.frame);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Rectangle frameRectangle = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Frame(1, 9, 0, Projectile.frame);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             Main.spriteBatch.ExitShaderRegion();
 

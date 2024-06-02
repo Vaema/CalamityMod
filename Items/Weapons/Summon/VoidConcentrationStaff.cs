@@ -9,19 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class VoidConcentrationStaff : ModItem
+    public class VoidConcentrationStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Void Concentration Staff");
-            Tooltip.SetDefault("Summons a foreboding aura that attacks by firing void orbs\n" +
-                               "Minion damage is increased by 5% while the aura is active\n" +
-                               "Requires three minion slots to use\n" +
-                               "Only one may exist\n" +
-                               "Right click to launch a black hole that grows in size");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
             Item.width = 52;
@@ -36,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useTime = Item.useAnimation = 15; // 14 because of useStyle 1
             Item.shoot = ModContent.ProjectileType<VoidConcentrationAura>();
             Item.shootSpeed = 10f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

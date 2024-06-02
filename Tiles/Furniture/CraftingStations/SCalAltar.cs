@@ -1,17 +1,21 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.CraftingStations;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
 
 namespace CalamityMod.Tiles.Furniture.CraftingStations
 {
@@ -26,6 +30,12 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
+
+            // Various data sets to protect this tile from unintentional death
+            TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            //TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true; Since this is a furniture item this may be unnecessary?
+            TileID.Sets.PreventsSandfall[Type] = true;
+
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.Width = 4;
             TileObjectData.newTile.Height = 3;
@@ -36,10 +46,9 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Altar");
-            AddMapEntry(new Color(43, 19, 42), name);
+            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.AltarOfTheAccursedItem>());
             TileID.Sets.DisableSmartCursor[Type] = true;
+            RegisterItemDrop(ModContent.ItemType<AltarOfTheAccursedItem>());
         }
 
         public override bool CanExplode(int i, int j) => false;
@@ -51,12 +60,31 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             return true;
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+        public override bool RightClick(int i, int j) => AttemptToSummonSCal(i, j);
+        public override void MouseOver(int i, int j) => HoverItemIcon();
+        public override void MouseOverFar(int i, int j) => HoverItemIcon();
+
+        public static void HoverItemIcon()
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, Width * 16, Height * 16, ModContent.ItemType<AltarOfTheAccursedItem>());
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<FabsolsVodka>() && Main.zenithWorld;
+            if (vodka)
+            {
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<FabsolsVodka>();
+            }
+            else if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
+            {
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CeremonialUrn>();
+            }
+            else
+            {
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<AshesofCalamity>();
+            }
+
+            Main.LocalPlayer.noThrow = 2;
+            Main.LocalPlayer.cursorItemIconEnabled = true;
         }
 
-        public override bool RightClick(int i, int j)
+        public static bool AttemptToSummonSCal(int i, int j)
         {
             Tile tile = Main.tile[i, j];
 
@@ -64,10 +92,12 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             int top = j - tile.TileFrameY / 18;
 
             if (!Main.LocalPlayer.HasItem(ModContent.ItemType<AshesofCalamity>()) &&
-                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
+                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<FabsolsVodka>() && Main.zenithWorld))
             {
                 return true;
             }
+
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<FabsolsVodka>() && Main.zenithWorld;
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) || BossRushEvent.BossRushActive)
                 return true;
@@ -78,37 +108,71 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             bool usingSpecialItem = Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>());
 
             Vector2 ritualSpawnPosition = new Vector2(left + Width / 2, top).ToWorldCoordinates();
-            ritualSpawnPosition += new Vector2(-10f, -24f);
+            ritualSpawnPosition += new Vector2(0f, -24f);
 
             SoundEngine.PlaySound(SummonSound, ritualSpawnPosition);
-            Projectile.NewProjectile(new EntitySource_WorldEvent(), ritualSpawnPosition, Vector2.Zero, ModContent.ProjectileType<SCalRitualDrama>(), 0, 0f, Main.myPlayer);
+            Projectile.NewProjectile(new EntitySource_WorldEvent(), ritualSpawnPosition, Vector2.Zero, ModContent.ProjectileType<SCalRitualDrama>(), 0, 0f, Main.myPlayer, 0, vodka.ToInt());
 
-            if (!usingSpecialItem)
+            if (vodka)
+            {
+                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<FabsolsVodka>(), true);
+                for (int f = 0; f < Main.maxNPCs; f++)
+                {
+                    if (Main.npc[f].type == ModContent.NPCType<FAP>() && Main.npc[f].active)
+                    {
+                        Main.npc[f].active = false;
+                    }
+                }
+            }
+            else if (!usingSpecialItem)
+            {
                 Main.LocalPlayer.ConsumeItem(ModContent.ItemType<AshesofCalamity>(), true);
+            }
+            return true;
+        }
+    }
 
+    public class SCalAltarLarge : ModTile
+    {
+        public const int Width = 5;
+        public const int Height = 3;
+        public override void SetStaticDefaults()
+        {
+            Main.tileFrameImportant[Type] = true;
+            Main.tileNoAttach[Type] = true;
+            Main.tileLavaDeath[Type] = false;
+
+            // Various data sets to protect this tile from unintentional death
+            TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            //TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true; Since this is a furniture item this may be unnecessary?
+            TileID.Sets.PreventsSandfall[Type] = true;
+
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
+            TileObjectData.newTile.Width = 5;
+            TileObjectData.newTile.Height = 3;
+            TileObjectData.newTile.Origin = new Point16(1, 2);
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
+            TileObjectData.newTile.DrawYOffset = 2;
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.LavaDeath = false;
+            TileObjectData.addTile(Type);
+            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.AltarOfTheAccursedItem>());
+            TileID.Sets.DisableSmartCursor[Type] = true;
+            AdjTiles = new int[] { ModContent.TileType<SCalAltar>() };
+        }
+
+        public override bool CanExplode(int i, int j) => false;
+
+        public override bool CreateDust(int i, int j, ref int type)
+        {
+            // Red torch dust.
+            type = 60;
             return true;
         }
 
-        public override void MouseOver(int i, int j)
-        {
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CeremonialUrn>();
-            else
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<AshesofCalamity>();
-
-            Main.LocalPlayer.noThrow = 2;
-            Main.LocalPlayer.cursorItemIconEnabled = true;
-        }
-
-        public override void MouseOverFar(int i, int j)
-        {
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CeremonialUrn>();
-            else
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<AshesofCalamity>();
-
-            Main.LocalPlayer.noThrow = 2;
-            Main.LocalPlayer.cursorItemIconEnabled = true;
-        }
+        public override bool RightClick(int i, int j) => SCalAltar.AttemptToSummonSCal(i, j);
+        public override void MouseOver(int i, int j) => SCalAltar.HoverItemIcon();
+        public override void MouseOverFar(int i, int j) => SCalAltar.HoverItemIcon();
     }
 }

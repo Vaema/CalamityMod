@@ -1,14 +1,12 @@
 ﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
-    public class AtaraxiaSplit : ModProjectile
+    public class AtaraxiaSplit : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Still Not Exoblade");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -16,6 +14,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = -1;
+            Projectile.extraUpdates = 2;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 6;
             Projectile.timeLeft = 25;
@@ -42,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             // Spawn dust, with less dust as it fades away
             if (Main.rand.Next(256) > Projectile.alpha - 60)
             {
-                int idx = Dust.NewDust(Projectile.Center, 1, 1, 71);
+                int idx = Dust.NewDust(Projectile.Center, 1, 1, DustID.UndergroundHallowedEnemies);
                 Main.dust[idx].position = Projectile.Center - Projectile.velocity * 0.7f;
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 0.3f;

@@ -1,10 +1,10 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -18,7 +18,6 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Overloaded Soldier");
             Main.npcFrameCount[NPC.type] = 14;
         }
 
@@ -32,7 +31,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 18;
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = NPC.downedMoonlord ? 1350 : 135;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.3f;
             NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.HitSound = SoundID.NPCHit2;
             NPC.DeathSound = SoundID.NPCDeath2;
@@ -40,15 +39,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<OverloadedSoldierBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Underground,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Phantoplasm bulges through the corroded armor in the place of rotting flesh, as this creature reanimated by vengeful spirits treks the caverns of the world.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.OverloadedSoldier")
             });
         }
 
@@ -100,29 +102,29 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.frame.Y > frameHeight * 13)
                         NPC.frame.Y = frameHeight;
                 }
-            }            
+            }
         }
 
         public override void AI()
         {
             Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.35f, 0f, 0.15f);
-            bool flag3 = false;
+            bool noXMovement = false;
             if (NPC.velocity.X == 0f)
             {
-                flag3 = true;
+                noXMovement = true;
             }
             if (NPC.justHit)
             {
-                flag3 = false;
+                noXMovement = false;
             }
-            bool flag4 = false;
-            bool flag5 = false;
-            int num35 = 60;
+            bool isWalking = false;
+            bool unusedFlag = false;
+            int backUpTimer = 60;
             if (NPC.velocity.Y == 0f && ((NPC.velocity.X > 0f && NPC.direction < 0) || (NPC.velocity.X < 0f && NPC.direction > 0)))
             {
-                flag4 = true;
+                isWalking = true;
             }
-            if ((NPC.position.X == NPC.oldPosition.X || NPC.ai[3] >= (float)num35) | flag4)
+            if ((NPC.position.X == NPC.oldPosition.X || NPC.ai[3] >= (float)backUpTimer) | isWalking)
             {
                 NPC.ai[3] += 1f;
             }
@@ -130,7 +132,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.ai[3] -= 1f;
             }
-            if (NPC.ai[3] > (float)(num35 * 10))
+            if (NPC.ai[3] > (float)(backUpTimer * 10))
             {
                 NPC.ai[3] = 0f;
             }
@@ -138,11 +140,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.ai[3] = 0f;
             }
-            if (NPC.ai[3] == (float)num35)
+            if (NPC.ai[3] == (float)backUpTimer)
             {
                 NPC.netUpdate = true;
             }
-            if (NPC.ai[3] < (float)num35)
+            if (NPC.ai[3] < (float)backUpTimer)
             {
                 NPC.TargetClosest(true);
             }
@@ -170,88 +172,88 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.direction = 1;
                 }
             }
-            float num65 = 1.5f;
-            float num66 = 0.1f;
+            float maxVelocity = 1.5f;
+            float acceleration = 0.1f;
             if (CalamityWorld.death)
             {
-                num65 *= 1.5f;
-                num66 *= 1.5f;
+                maxVelocity *= 1.5f;
+                acceleration *= 1.5f;
             }
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) < 400f)
             {
-                num65 += (CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f) - ((Main.player[NPC.target].Center - NPC.Center).Length() * 0.01f);
-             }
-            if (NPC.velocity.X < -num65 || NPC.velocity.X > num65)
+                maxVelocity += (CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f) - ((Main.player[NPC.target].Center - NPC.Center).Length() * 0.01f);
+            }
+            if (NPC.velocity.X < -maxVelocity || NPC.velocity.X > maxVelocity)
             {
                 if (NPC.velocity.Y == 0f)
                     NPC.velocity *= 0.7f;
             }
-            else if (NPC.velocity.X < num65 && NPC.direction == 1)
+            else if (NPC.velocity.X < maxVelocity && NPC.direction == 1)
             {
-                NPC.velocity.X = NPC.velocity.X + num66;
-                if (NPC.velocity.X > num65)
-                    NPC.velocity.X = num65;
+                NPC.velocity.X = NPC.velocity.X + acceleration;
+                if (NPC.velocity.X > maxVelocity)
+                    NPC.velocity.X = maxVelocity;
             }
-            else if (NPC.velocity.X > -num65 && NPC.direction == -1)
+            else if (NPC.velocity.X > -maxVelocity && NPC.direction == -1)
             {
-                NPC.velocity.X = NPC.velocity.X - num66;
-                if (NPC.velocity.X < -num65)
-                    NPC.velocity.X = -num65;
+                NPC.velocity.X = NPC.velocity.X - acceleration;
+                if (NPC.velocity.X < -maxVelocity)
+                    NPC.velocity.X = -maxVelocity;
             }
-            bool flag22 = false;
+            bool isOnSolidTile = false;
             if (NPC.velocity.Y == 0f)
             {
-                int num161 = (int)(NPC.position.Y + (float)NPC.height + 7f) / 16;
-                int arg_A8FB_0 = (int)NPC.position.X / 16;
-                int num162 = (int)(NPC.position.X + (float)NPC.width) / 16;
-                for (int num163 = arg_A8FB_0; num163 <= num162; num163++)
+                int yTile = (int)(NPC.position.Y + (float)NPC.height + 7f) / 16;
+                int initialXTile = (int)NPC.position.X / 16;
+                int maxXTile = (int)(NPC.position.X + (float)NPC.width) / 16;
+                for (int xTile = initialXTile; xTile <= maxXTile; xTile++)
                 {
-                    if (Main.tile[num163, num161] == null)
+                    if (Main.tile[xTile, yTile] == null)
                     {
                         return;
                     }
-                    if (Main.tile[num163, num161].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num163, num161].TileType])
+                    if (Main.tile[xTile, yTile].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[xTile, yTile].TileType])
                     {
-                        flag22 = true;
+                        isOnSolidTile = true;
                         break;
                     }
                 }
             }
             if (NPC.velocity.Y >= 0f)
             {
-                int num164 = 0;
+                int fallFaceDirection = 0;
                 if (NPC.velocity.X < 0f)
                 {
-                    num164 = -1;
+                    fallFaceDirection = -1;
                 }
                 if (NPC.velocity.X > 0f)
                 {
-                    num164 = 1;
+                    fallFaceDirection = 1;
                 }
-                Vector2 position2 = NPC.position;
-                position2.X += NPC.velocity.X;
-                int num165 = (int)((position2.X + (float)(NPC.width / 2) + (float)((NPC.width / 2 + 1) * num164)) / 16f);
-                int num166 = (int)((position2.Y + (float)NPC.height - 1f) / 16f);
-                if ((float)(num165 * 16) < position2.X + (float)NPC.width && (float)(num165 * 16 + 16) > position2.X && ((Main.tile[num165, num166].HasUnactuatedTile && !Main.tile[num165, num166].TopSlope && !Main.tile[num165, num166 - 1].TopSlope && Main.tileSolid[(int)Main.tile[num165, num166].TileType] && !Main.tileSolidTop[(int)Main.tile[num165, num166].TileType]) || (Main.tile[num165, num166 - 1].IsHalfBlock && Main.tile[num165, num166 - 1].HasUnactuatedTile)) && (!Main.tile[num165, num166 - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num165, num166 - 1].TileType] || Main.tileSolidTop[(int)Main.tile[num165, num166 - 1].TileType] || (Main.tile[num165, num166 - 1].IsHalfBlock && (!Main.tile[num165, num166 - 4].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num165, num166 - 4].TileType] || Main.tileSolidTop[(int)Main.tile[num165, num166 - 4].TileType]))) && (!Main.tile[num165, num166 - 2].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num165, num166 - 2].TileType] || Main.tileSolidTop[(int)Main.tile[num165, num166 - 2].TileType]) && (!Main.tile[num165, num166 - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num165, num166 - 3].TileType] || Main.tileSolidTop[(int)Main.tile[num165, num166 - 3].TileType]) && (!Main.tile[num165 - num164, num166 - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num165 - num164, num166 - 3].TileType]))
+                Vector2 ghostPosition = NPC.position;
+                ghostPosition.X += NPC.velocity.X;
+                int xTileBelow = (int)((ghostPosition.X + (float)(NPC.width / 2) + (float)((NPC.width / 2 + 1) * fallFaceDirection)) / 16f);
+                int yTileBelow = (int)((ghostPosition.Y + (float)NPC.height - 1f) / 16f);
+                if ((float)(xTileBelow * 16) < ghostPosition.X + (float)NPC.width && (float)(xTileBelow * 16 + 16) > ghostPosition.X && ((Main.tile[xTileBelow, yTileBelow].HasUnactuatedTile && !Main.tile[xTileBelow, yTileBelow].TopSlope && !Main.tile[xTileBelow, yTileBelow - 1].TopSlope && Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow].TileType] && !Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow].TileType]) || (Main.tile[xTileBelow, yTileBelow - 1].IsHalfBlock && Main.tile[xTileBelow, yTileBelow - 1].HasUnactuatedTile)) && (!Main.tile[xTileBelow, yTileBelow - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 1].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 1].TileType] || (Main.tile[xTileBelow, yTileBelow - 1].IsHalfBlock && (!Main.tile[xTileBelow, yTileBelow - 4].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 4].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 4].TileType]))) && (!Main.tile[xTileBelow, yTileBelow - 2].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 2].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 2].TileType]) && (!Main.tile[xTileBelow, yTileBelow - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 3].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 3].TileType]) && (!Main.tile[xTileBelow - fallFaceDirection, yTileBelow - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow - fallFaceDirection, yTileBelow - 3].TileType]))
                 {
-                    float num167 = (float)(num166 * 16);
-                    if (Main.tile[num165, num166].IsHalfBlock)
+                    float yPixelDistance = (float)(yTileBelow * 16);
+                    if (Main.tile[xTileBelow, yTileBelow].IsHalfBlock)
                     {
-                        num167 += 8f;
+                        yPixelDistance += 8f;
                     }
-                    if (Main.tile[num165, num166 - 1].IsHalfBlock)
+                    if (Main.tile[xTileBelow, yTileBelow - 1].IsHalfBlock)
                     {
-                        num167 -= 8f;
+                        yPixelDistance -= 8f;
                     }
-                    if (num167 < position2.Y + (float)NPC.height)
+                    if (yPixelDistance < ghostPosition.Y + (float)NPC.height)
                     {
-                        float num168 = position2.Y + (float)NPC.height - num167;
-                        float num169 = 16.1f;
-                        if (num168 <= num169)
+                        float percentageTileRisen = ghostPosition.Y + (float)NPC.height - yPixelDistance;
+                        float fullTileAmt = 16.1f;
+                        if (percentageTileRisen <= fullTileAmt)
                         {
-                            NPC.gfxOffY += NPC.position.Y + (float)NPC.height - num167;
-                            NPC.position.Y = num167 - (float)NPC.height;
-                            if (num168 < 9f)
+                            NPC.gfxOffY += NPC.position.Y + (float)NPC.height - yPixelDistance;
+                            NPC.position.Y = yPixelDistance - (float)NPC.height;
+                            if (percentageTileRisen < 9f)
                             {
                                 NPC.stepSpeed = 1f;
                             }
@@ -263,57 +265,57 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
                 }
             }
-            if (flag22)
+            if (isOnSolidTile)
             {
-                int num170 = (int)((NPC.position.X + (float)(NPC.width / 2) + (float)(15 * NPC.direction)) / 16f);
-                int num171 = (int)((NPC.position.Y + (float)NPC.height - 15f) / 16f);
-                if ((Main.tile[num170, num171 - 1].HasUnactuatedTile && (Main.tile[num170, num171 - 1].TileType == 10 || Main.tile[num170, num171 - 1].TileType == 388)) & flag5)
+                int doorCheckX = (int)((NPC.position.X + (float)(NPC.width / 2) + (float)(15 * NPC.direction)) / 16f);
+                int doorCheckY = (int)((NPC.position.Y + (float)NPC.height - 15f) / 16f);
+                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10 || Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)) & unusedFlag)
                 {
                     NPC.ai[2] += 1f;
                     NPC.ai[3] = 0f;
                     if (NPC.ai[2] >= 60f)
                     {
                         NPC.velocity.X = 0.5f * (float)-(float)NPC.direction;
-                        int num172 = 5;
-                        if (Main.tile[num170, num171 - 1].TileType == 388)
+                        int doorOpenInc = 5;
+                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
                         {
-                            num172 = 2;
+                            doorOpenInc = 2;
                         }
-                        NPC.ai[1] += (float)num172;
+                        NPC.ai[1] += (float)doorOpenInc;
                         NPC.ai[2] = 0f;
-                        bool flag23 = false;
+                        bool letMeIn = false;
                         if (NPC.ai[1] >= 10f)
                         {
-                            flag23 = true;
+                            letMeIn = true;
                             NPC.ai[1] = 10f;
                         }
-                        WorldGen.KillTile(num170, num171 - 1, true, false, false);
-                        if ((Main.netMode != NetmodeID.MultiplayerClient || !flag23) && flag23 && Main.netMode != NetmodeID.MultiplayerClient)
+                        WorldGen.KillTile(doorCheckX, doorCheckY - 1, true, false, false);
+                        if ((Main.netMode != NetmodeID.MultiplayerClient || !letMeIn) && letMeIn && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.tile[num170, num171 - 1].TileType == 10)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10)
                             {
-                                bool flag24 = WorldGen.OpenDoor(num170, num171 - 1, NPC.direction);
-                                if (!flag24)
+                                bool canOpenDoor = WorldGen.OpenDoor(doorCheckX, doorCheckY - 1, NPC.direction);
+                                if (!canOpenDoor)
                                 {
-                                    NPC.ai[3] = (float)num35;
+                                    NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & flag24)
+                                if (Main.netMode == NetmodeID.Server & canOpenDoor)
                                 {
-                                    NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)num170, (float)(num171 - 1), (float)NPC.direction, 0, 0, 0);
+                                    NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)doorCheckX, (float)(doorCheckY - 1), (float)NPC.direction, 0, 0, 0);
                                 }
                             }
-                            if (Main.tile[num170, num171 - 1].TileType == 388)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
                             {
-                                bool flag25 = WorldGen.ShiftTallGate(num170, num171 - 1, false);
-                                if (!flag25)
+                                bool canOpenTallGate = WorldGen.ShiftTallGate(doorCheckX, doorCheckY - 1, false);
+                                if (!canOpenTallGate)
                                 {
-                                    NPC.ai[3] = (float)num35;
+                                    NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & flag25)
+                                if (Main.netMode == NetmodeID.Server & canOpenTallGate)
                                 {
-                                    NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)num170, (float)(num171 - 1), 0f, 0, 0, 0);
+                                    NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)doorCheckX, (float)(doorCheckY - 1), 0f, 0, 0, 0);
                                 }
                             }
                         }
@@ -321,12 +323,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
                 else
                 {
-                    int num173 = NPC.spriteDirection;
-                    if ((NPC.velocity.X < 0f && num173 == -1) || (NPC.velocity.X > 0f && num173 == 1))
+                    int faceDirection = NPC.spriteDirection;
+                    if ((NPC.velocity.X < 0f && faceDirection == -1) || (NPC.velocity.X > 0f && faceDirection == 1))
                     {
-                        if (NPC.height >= 32 && Main.tile[num170, num171 - 2].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num170, num171 - 2].TileType])
+                        if (NPC.height >= 32 && Main.tile[doorCheckX, doorCheckY - 2].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[doorCheckX, doorCheckY - 2].TileType])
                         {
-                            if (Main.tile[num170, num171 - 3].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num170, num171 - 3].TileType])
+                            if (Main.tile[doorCheckX, doorCheckY - 3].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[doorCheckX, doorCheckY - 3].TileType])
                             {
                                 NPC.velocity.Y = -8f;
                                 NPC.netUpdate = true;
@@ -337,35 +339,35 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 NPC.netUpdate = true;
                             }
                         }
-                        else if (Main.tile[num170, num171 - 1].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num170, num171 - 1].TileType])
+                        else if (Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[doorCheckX, doorCheckY - 1].TileType])
                         {
                             NPC.velocity.Y = -6f;
                             NPC.netUpdate = true;
                         }
-                        else if (NPC.position.Y + (float)NPC.height - (float)(num171 * 16) > 20f && Main.tile[num170, num171].HasUnactuatedTile && !Main.tile[num170, num171].TopSlope && Main.tileSolid[(int)Main.tile[num170, num171].TileType])
+                        else if (NPC.position.Y + (float)NPC.height - (float)(doorCheckY * 16) > 20f && Main.tile[doorCheckX, doorCheckY].HasUnactuatedTile && !Main.tile[doorCheckX, doorCheckY].TopSlope && Main.tileSolid[(int)Main.tile[doorCheckX, doorCheckY].TileType])
                         {
                             NPC.velocity.Y = -5f;
                             NPC.netUpdate = true;
                         }
-                        else if (NPC.directionY < 0 && (!Main.tile[num170, num171 + 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num170, num171 + 1].TileType]) && (!Main.tile[num170 + NPC.direction, num171 + 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[num170 + NPC.direction, num171 + 1].TileType]))
+                        else if (NPC.directionY < 0 && (!Main.tile[doorCheckX, doorCheckY + 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[doorCheckX, doorCheckY + 1].TileType]) && (!Main.tile[doorCheckX + NPC.direction, doorCheckY + 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[doorCheckX + NPC.direction, doorCheckY + 1].TileType]))
                         {
                             NPC.velocity.Y = -8f;
                             NPC.velocity.X = NPC.velocity.X * 1.5f;
                             NPC.netUpdate = true;
                         }
-                        else if (flag5)
+                        else if (unusedFlag)
                         {
                             NPC.ai[1] = 0f;
                             NPC.ai[2] = 0f;
                         }
-                        if ((NPC.velocity.Y == 0f & flag3) && NPC.ai[3] == 1f)
+                        if ((NPC.velocity.Y == 0f & noXMovement) && NPC.ai[3] == 1f)
                         {
                             NPC.velocity.Y = -5f;
                         }
                     }
                 }
             }
-            else if (flag5)
+            else if (unusedFlag)
             {
                 NPC.ai[1] = 0f;
                 NPC.ai[2] = 0f;
@@ -382,23 +384,23 @@ namespace CalamityMod.NPCs.NormalNPCs
             return SpawnCondition.Underground.Chance * 0.02f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Phantoplasm, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Phantoplasm, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
@@ -407,7 +409,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ModContent.ItemType<AncientBoneDust>());
             LeadingConditionRule postML = npcLoot.DefineConditionalDropSet(DropHelper.PostML());
-            postML.Add(ModContent.ItemType<Phantoplasm>());
+            postML.Add(ModContent.ItemType<Necroplasm>());
         }
     }
 }

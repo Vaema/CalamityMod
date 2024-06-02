@@ -1,12 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SeraphimAngelicLight2 : ModProjectile
+    public class SeraphimAngelicLight2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public bool FireSmallLaser => Projectile.ai[0] == 1f;
         public ref float Time => ref Projectile.ai[1];
         public const int Lifetime = SeraphimProjectile.SlowdownTime + SeraphimDagger.SlowdownTime;
@@ -14,7 +15,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Projectiles/Rogue/SeraphimAngelicLight";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Light Orb");
             Main.projFrames[Projectile.type] = 10;
         }
 
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.frame = (int)(Utils.GetLerpValue(Lifetime, 0f, Projectile.timeLeft, true) * Main.projFrames[Projectile.type]);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Release a puff of golden light dust.
             for (int i = 0; i < 16; i++)

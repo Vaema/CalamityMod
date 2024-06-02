@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class DraedonsLogSnowBiome : ModItem
+    public class DraedonsLogSnowBiome : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cryonic Material Log");
-            Tooltip.SetDefault("[Material Science Report] - Archmage's 'Cryonic Metal'\nClick to view its contents");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 28;

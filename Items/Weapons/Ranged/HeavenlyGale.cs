@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -10,11 +11,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class HeavenlyGale : ModItem
+    public class HeavenlyGale : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public const int ShootDelay = 32;
 
-        public const int ArrowsPerBurst = 9;
+        public const int ArrowsPerBurst = 10;
 
         public const int ArrowShootRate = 4;
 
@@ -24,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public const float ArrowTargetingRange = 1100f;
 
-        public const float MaxChargeDamageBoost = 4.5f;
+        public const float MaxChargeDamageBoost = 3.5f;
 
         public const float LightningDamageFactor = 0.36f;
 
@@ -34,23 +36,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static readonly SoundStyle LightningStrikeSound = new("CalamityMod/Sounds/Custom/HeavenlyGaleLightningStrike");
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Heavenly Gale");
-            Tooltip.SetDefault("Fires a rapid stream of supercharged exo-crystals\n" +
-                "Holding the bow and waiting for some time before firing causes the crystals to become more powerful\n" +
-                "If the crystals are sufficiently powerful enough they will summon torrents of exo-lightning above whatever target they hit");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 334;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 138;
-            Item.height = 138;
-            Item.useTime = 42;
-            Item.useAnimation = 42;
+            Item.height = 176;
+            Item.damage = 256;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useAnimation = Item.useTime = ArrowShootTime; // 40
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
@@ -66,7 +58,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.Calamity().canFirePointBlankShots = true;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo spawnSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => false;
+        // Shoot via the projectile only
+        public override bool CanShoot(Player player) => false;
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        => Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/HeavenlyGaleGlow").Value);
 
         public override void AddRecipes()
         {

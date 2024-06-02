@@ -10,18 +10,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class ExodusWings : ModItem
+    public class ExodusWings : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories.Wings";
+
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Exodus Wings");
-            Tooltip.SetDefault("Pulsing with an alien heartbeat\n" +
-                "Horizontal speed: 9.00\n" +
-                "Acceleration multiplier: 2.5\n" +
-                "Great vertical speed\n" +
-                "Flight time: 180\n" +
-                "5% increased rogue damage and critical strike chance while wearing the Empyrean Armor");
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 9f, 2.5f);
         }
 
@@ -29,7 +23,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
@@ -42,14 +36,14 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.GetCritChance<ThrowingDamageClass>() += 5;
             }
 
-            if (player.controlJump && player.wingTime > 0f && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 float xOffset = 4f;
                 if (player.direction == 1)
                 {
                     xOffset = -40f;
                 }
-                int index = Dust.NewDust(new Vector2(player.Center.X + xOffset, player.Center.Y - 15f), 30, 30, 62, 0f, 0f, 100, default, 2.4f);
+                int index = Dust.NewDust(new Vector2(player.Center.X + xOffset, player.Center.Y - 15f), 30, 30, DustID.PurpleTorch, 0f, 0f, 100, default, 2.4f);
                 Main.dust[index].noGravity = true;
                 Main.dust[index].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))
@@ -75,7 +69,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient(ItemID.SoulofFlight, 20).
-				AddIngredient<MeldConstruct>(14).
+                AddIngredient<MeldConstruct>(14).
                 AddIngredient(ItemID.LunarBar, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

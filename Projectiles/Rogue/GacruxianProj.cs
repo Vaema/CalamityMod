@@ -7,14 +7,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class GacruxianProj : ModProjectile
+    public class GacruxianProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/GacruxianMollusk";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mollusk");
-        }
 
         public override void SetDefaults()
         {
@@ -50,7 +46,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 10; i++)
             {

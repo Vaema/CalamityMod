@@ -1,24 +1,25 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ModLoader;
 using static CalamityMod.Events.BossRushEvent;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class BossRushTierAnimation : ModProjectile
+    public class BossRushTierAnimation : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int Tier => (int)Projectile.ai[0];
 
         public Player Owner => Main.player[Projectile.owner];
-        
+
         public const int FrameChangeRate = 4;
 
         public const int TotalFrames = 56;
 
         public override string Texture => "CalamityMod/Projectiles/Typeless/BossRushTier2Animation";
-        
+
         public override void SetDefaults()
         {
             Projectile.width = 76;

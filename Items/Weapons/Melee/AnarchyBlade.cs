@@ -11,23 +11,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class AnarchyBlade : ModItem
+    public class AnarchyBlade : ModItem, ILocalizedModType
     {
-        private static int BaseDamage = 150;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Anarchy Blade");
-            Tooltip.SetDefault("The lower your life the more damage this blade does\n" +
-                "Your hits will generate a large explosion\n" +
-                "If you're below 50% life your hits have a chance to instantly kill regular enemies");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
             Item.width = 114;
-            Item.damage = BaseDamage;
+            Item.height = 122;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 19;
             Item.useTime = 19;
@@ -36,8 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 122;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -53,17 +44,13 @@ namespace CalamityMod.Items.Weapons.Melee
             int lifeAmount = player.statLifeMax2 - player.statLife;
             damage.Base += lifeAmount * 0.1f;
         }
-
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
-
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneBoom>(), damage, knockback, Main.myPlayer);
+            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneBoom>(), Item.damage, Item.knockBack, Main.myPlayer);
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
 
-            if (player.statLife < (player.statLifeMax2 * 0.5f) && Main.rand.NextBool(5))
+            if (player.statLife <= (player.statLifeMax2 * 0.5f) && Main.rand.NextBool(5))
             {
                 if (!CalamityPlayer.areThereAnyDamnBosses && CalamityGlobalNPC.ShouldAffectNPC(target))
                 {
@@ -75,13 +62,10 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
-
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneBoom>(), damage, Item.knockBack, Main.myPlayer);
+            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneBoom>(), Item.damage, Item.knockBack, Main.myPlayer);
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
         }
 

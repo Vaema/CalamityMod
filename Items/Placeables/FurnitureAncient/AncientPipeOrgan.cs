@@ -4,25 +4,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAncient
 {
     [LegacyName("AncientPiano")]
-    public class AncientPipeOrgan : ModItem
+    public class AncientPipeOrgan : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Ancient Pipe Organ");
             Item.width = 26;
             Item.height = 26;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.rare = ItemRarityID.Orange;
             Item.consumable = true;
             Item.value = 0;
             Item.createTile = ModContent.TileType<Tiles.FurnitureAncient.AncientPipeOrgan>();
@@ -30,7 +24,12 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.Bone, 4).AddIngredient(ModContent.ItemType<BrimstoneSlag>(), 15).AddIngredient(ItemID.Book).AddTile(ModContent.TileType<AncientAltar>()).Register();
+            CreateRecipe().
+                AddIngredient<BrimstoneSlag>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile<AncientAltar>().
+                Register();
         }
     }
 }

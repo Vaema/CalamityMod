@@ -1,4 +1,4 @@
-using CalamityMod.Items.Mounts;
+﻿using CalamityMod.Items.Mounts;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.Mounts
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gaze of Crysthamyr");
-            Description.SetDefault("You are riding a shadow dragon");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
         }

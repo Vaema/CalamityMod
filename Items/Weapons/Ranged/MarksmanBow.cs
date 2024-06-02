@@ -1,27 +1,20 @@
-﻿using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class MarksmanBow : ModItem
+    public class MarksmanBow : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Marksman Bow");
-            Tooltip.SetDefault("Fires three arrows at once\n" +
-            "Wooden arrows are converted into Jester's arrows");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 30;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 36;
             Item.height = 110;
+            Item.damage = 35;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 18;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -62,6 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     Main.projectile[arrow].localNPCHitCooldown = 10 * (randomExtraUpdates + 1);
                     Main.projectile[arrow].usesLocalNPCImmunity = true;
+                    Main.projectile[arrow].tileCollide = false;
                 }
             }
             return false;

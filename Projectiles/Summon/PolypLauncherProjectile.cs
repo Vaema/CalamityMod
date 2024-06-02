@@ -1,32 +1,29 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PolypLauncherProjectile : ModProjectile
+    public class PolypLauncherProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float Gravity = 0.4f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Polyp Chunk");
             ProjectileID.Sets.SentryShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 18;
-            Projectile.height = 18;
+            Projectile.width = Projectile.height = 18;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 300;
             Projectile.alpha = 255;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -44,18 +41,18 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.1f * Projectile.direction;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             //Dust on impact
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 225, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Coralstone, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1f);
                 dust_splash += 1;
             }
             int split = 0;
-            int shardAmt = Main.rand.Next(1,5);
+            int shardAmt = Main.rand.Next(1, 5);
             while (split < shardAmt)
             {
                 //Calculate the velocity of the projectile
@@ -73,9 +70,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 shardSpeed = new Vector2(shardspeedX, shardspeedY);
 
                 //Spawn the projectile
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + shardSpeed, shardSpeed, ModContent.ProjectileType<PolypLauncherShrapnel>(), (int)(Projectile.damage * 0.5), Projectile.knockBack / 2f, Projectile.owner, Main.rand.Next(3));
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + shardSpeed, shardSpeed, ModContent.ProjectileType<PolypLauncherShrapnel>(), (int)(Projectile.damage * 0.5), Projectile.knockBack / 2f, Projectile.owner, Main.rand.Next(3));
                 split += 1;
             }
         }

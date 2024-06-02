@@ -1,18 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ScourgeoftheCosmosMini : ModProjectile
+    public class ScourgeoftheCosmosMini : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private int bounce = 3;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Miniature Cosmic Scourge");
             Main.projFrames[Projectile.type] = 2;
         }
 
@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
-            Projectile.extraUpdates = 3;
+            Projectile.timeLeft = 375;
+            Projectile.extraUpdates = 4;
         }
 
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 270 && target.CanBeChasedBy(Projectile);
@@ -50,84 +50,83 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.frame > 1)
                 Projectile.frame = 0;
 
-            for (int num369 = 0; num369 < 1; num369++)
+            for (int i = 0; i < 1; i++)
             {
                 int dustType = Main.rand.NextBool(3) ? 56 : 242;
-                float num370 = Projectile.velocity.X / 3f * num369;
-                float num371 = Projectile.velocity.Y / 3f * num369;
-                int num372 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
-                Dust dust = Main.dust[num372];
-                dust.position.X = Projectile.Center.X - num370;
-                dust.position.Y = Projectile.Center.Y - num371;
+                float dustX = Projectile.velocity.X / 3f * i;
+                float dustY = Projectile.velocity.Y / 3f * i;
+                int scourgeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
+                Dust dust = Main.dust[scourgeDust];
+                dust.position.X = Projectile.Center.X - dustX;
+                dust.position.Y = Projectile.Center.Y - dustY;
                 dust.velocity *= 0f;
                 dust.scale = 0.5f;
             }
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - MathHelper.PiOver2;
 
-            float num373 = Projectile.position.X;
-            float num374 = Projectile.position.Y;
-            float num375 = 100000f;
-            bool flag10 = false;
+            float projX = Projectile.position.X;
+            float projY = Projectile.position.Y;
+            float homingRange = 100000f;
+            bool isHoming = false;
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] > 30f)
             {
                 Projectile.ai[0] = 30f;
-                for (int num376 = 0; num376 < Main.maxNPCs; num376++)
+                for (int enemy = 0; enemy < Main.maxNPCs; enemy++)
                 {
-                    if (Main.npc[num376].CanBeChasedBy(Projectile, false))
+                    if (Main.npc[enemy].CanBeChasedBy(Projectile, false))
                     {
-                        float num377 = Main.npc[num376].position.X + Main.npc[num376].width / 2;
-                        float num378 = Main.npc[num376].position.Y + Main.npc[num376].height / 2;
-                        float num379 = Math.Abs(Projectile.position.X + Projectile.width / 2 - num377) + Math.Abs(Projectile.position.Y + Projectile.height / 2 - num378);
-                        if (num379 < 800f && num379 < num375 && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[num376].position, Main.npc[num376].width, Main.npc[num376].height))
+                        float enemyX = Main.npc[enemy].position.X + Main.npc[enemy].width / 2;
+                        float enemyY = Main.npc[enemy].position.Y + Main.npc[enemy].height / 2;
+                        float enemyDistance = Math.Abs(Projectile.position.X + Projectile.width / 2 - enemyX) + Math.Abs(Projectile.position.Y + Projectile.height / 2 - enemyY);
+                        if (enemyDistance < 800f && enemyDistance < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[enemy].position, Main.npc[enemy].width, Main.npc[enemy].height))
                         {
-                            num375 = num379;
-                            num373 = num377;
-                            num374 = num378;
-                            flag10 = true;
+                            homingRange = enemyDistance;
+                            projX = enemyX;
+                            projY = enemyY;
+                            isHoming = true;
                         }
                     }
                 }
             }
-            if (!flag10)
+            if (!isHoming)
             {
-                num373 = Projectile.position.X + Projectile.width / 2 + Projectile.velocity.X * 100f;
-                num374 = Projectile.position.Y + Projectile.height / 2 + Projectile.velocity.Y * 100f;
+                projX = Projectile.position.X + Projectile.width / 2 + Projectile.velocity.X * 100f;
+                projY = Projectile.position.Y + Projectile.height / 2 + Projectile.velocity.Y * 100f;
             }
 
-            float num380 = 10f;
-            float num381 = 0.16f;
-            Vector2 vector30 = new Vector2(Projectile.position.X + Projectile.width * 0.5f, Projectile.position.Y + Projectile.height * 0.5f);
-            float num382 = num373 - vector30.X;
-            float num383 = num374 - vector30.Y;
-            float num384 = (float)Math.Sqrt(num382 * num382 + num383 * num383);
-            num384 = num380 / num384;
-            num382 *= num384;
-            num383 *= num384;
-            if (Projectile.velocity.X < num382)
+            float projVelModifier = 0.16f;
+            Vector2 projDirection = new Vector2(Projectile.position.X + Projectile.width * 0.5f, Projectile.position.Y + Projectile.height * 0.5f);
+            float projDirectX = projX - projDirection.X;
+            float projDirectY = projY - projDirection.Y;
+            float projDistance = (float)Math.Sqrt(projDirectX * projDirectX + projDirectY * projDirectY);
+            projDistance = 10f / projDistance;
+            projDirectX *= projDistance;
+            projDirectY *= projDistance;
+            if (Projectile.velocity.X < projDirectX)
             {
-                Projectile.velocity.X = Projectile.velocity.X + num381;
-                if (Projectile.velocity.X < 0f && num382 > 0f)
-                    Projectile.velocity.X = Projectile.velocity.X + num381 * 2f;
+                Projectile.velocity.X = Projectile.velocity.X + projVelModifier;
+                if (Projectile.velocity.X < 0f && projDirectX > 0f)
+                    Projectile.velocity.X = Projectile.velocity.X + projVelModifier * 2f;
             }
-            else if (Projectile.velocity.X > num382)
+            else if (Projectile.velocity.X > projDirectX)
             {
-                Projectile.velocity.X = Projectile.velocity.X - num381;
-                if (Projectile.velocity.X > 0f && num382 < 0f)
-                    Projectile.velocity.X = Projectile.velocity.X - num381 * 2f;
+                Projectile.velocity.X = Projectile.velocity.X - projVelModifier;
+                if (Projectile.velocity.X > 0f && projDirectX < 0f)
+                    Projectile.velocity.X = Projectile.velocity.X - projVelModifier * 2f;
             }
-            if (Projectile.velocity.Y < num383)
+            if (Projectile.velocity.Y < projDirectY)
             {
-                Projectile.velocity.Y = Projectile.velocity.Y + num381;
-                if (Projectile.velocity.Y < 0f && num383 > 0f)
-                    Projectile.velocity.Y = Projectile.velocity.Y + num381 * 2f;
+                Projectile.velocity.Y = Projectile.velocity.Y + projVelModifier;
+                if (Projectile.velocity.Y < 0f && projDirectY > 0f)
+                    Projectile.velocity.Y = Projectile.velocity.Y + projVelModifier * 2f;
             }
-            else if (Projectile.velocity.Y > num383)
+            else if (Projectile.velocity.Y > projDirectY)
             {
-                Projectile.velocity.Y = Projectile.velocity.Y - num381;
-                if (Projectile.velocity.Y > 0f && num383 < 0f)
-                    Projectile.velocity.Y = Projectile.velocity.Y - num381 * 2f;
+                Projectile.velocity.Y = Projectile.velocity.Y - projVelModifier;
+                if (Projectile.velocity.Y > 0f && projDirectY < 0f)
+                    Projectile.velocity.Y = Projectile.velocity.Y - projVelModifier * 2f;
             }
         }
 
@@ -148,11 +147,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
             Vector2 origin = new Vector2(9f, 10f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ScourgeoftheCosmosMiniGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, num214)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ScourgeoftheCosmosMiniGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
     }
 }

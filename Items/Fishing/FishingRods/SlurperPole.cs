@@ -1,20 +1,17 @@
 ﻿using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.FishingRods
 {
-    public class SlurperPole : ModItem
+    public class SlurperPole : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
             ItemID.Sets.CanFishInLava[Item.type] = true;
-
-            DisplayName.SetDefault("Slurper Pole");
-            Tooltip.SetDefault("Can fish in lava.\n" + //Charles Spurgeon quote
-                "It is the burning lava of the soul that has a furnace within--a very volcano of grief and sorrow.");
         }
 
         public override void SetDefaults()
@@ -28,8 +25,14 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 25;
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<SlurperBobber>();
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(45f, -43f);
+            lineColor = new Color(227, 79, 79, 100);
         }
     }
 }

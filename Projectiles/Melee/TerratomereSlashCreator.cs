@@ -7,10 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TerratomereSlashCreator : ModProjectile
+    public class TerratomereSlashCreator : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public NPC Target => Main.npc[(int)Projectile.ai[0]];
-        
+
         public float SlashDirection
         {
             get
@@ -23,11 +24,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Anime Sword Effect");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -35,8 +31,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 45;
+            Projectile.timeLeft = 36;
             Projectile.MaxUpdates = 2;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()

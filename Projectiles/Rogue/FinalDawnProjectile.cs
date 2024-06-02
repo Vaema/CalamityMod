@@ -7,12 +7,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class FinalDawnProjectile : ModProjectile
+    public class FinalDawnProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public const float MaxChargeTime = 20f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Final Dawn");
             Main.projFrames[Projectile.type] = 2;
         }
         public override void SetDefaults()
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity = Main.MouseWorld - player.Center;
                 Projectile.velocity.Normalize();
             }
-            player.direction = Projectile.direction;
+            player.ChangeDir(Projectile.direction);
             player.heldProj = Projectile.whoAmI;
             Projectile.Center = player.Center;
             Projectile.position.Y -= 44;
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!player.channel || player.noItems || player.CCed)
+                if (player.CantUseHoldout())
                 {
                     AttemptExecuteAttacks(player);
                     Projectile.Kill();
@@ -100,13 +100,16 @@ namespace CalamityMod.Projectiles.Rogue
                     if (player.Calamity().StealthStrikeAvailable() && Projectile.ai[1] != 1f)
                     {
                         int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center,
-                                                 player.SafeDirectionTo(Main.MouseWorld) * 38f,
+                                                 player.SafeDirectionTo(Main.MouseWorld) * 28f,
                                                  ModContent.ProjectileType<FinalDawnThrow2>(),
-                                                 (int)(Projectile.damage * 1.05f),
+                                                 (int)(Projectile.damage * 1f),
                                                  Projectile.knockBack,
                                                  Projectile.owner);
                         Main.projectile[stealth].Calamity().stealthStrike = true;
                         player.Calamity().ConsumeStealthByAttacking();
+                        //This seems to have stopped working while testing somehow, even without changing Main[projectileOwner] to player
+                        player.immuneNoBlink = true;
+                        player.immuneTime += 20; //Adding iframes in case they get hit before the dash so those iframes are not wasted
                     }
                     else
                     {
@@ -136,12 +139,14 @@ namespace CalamityMod.Projectiles.Rogue
                     else
                     {
                         //This one doesn't consume stealth since it replenishes stealth on hits
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                                                  Projectile.velocity,
                                                  ModContent.ProjectileType<FinalDawnFireSlash>(),
                                                  Projectile.damage,
                                                  Projectile.knockBack,
                                                  Projectile.owner);
+                        if (p.WithinBounds(Main.maxProjectiles) && Projectile.Calamity().LocketClone)
+                            Main.projectile[p].Calamity().LocketClone = true; // NO STEALTH GEN OK?
                     }
                 }
             }
@@ -151,9 +156,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnProjectile_Glow").Value;
-            int height = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int height = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(scytheTexture,
                                   Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
@@ -176,7 +181,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
         }

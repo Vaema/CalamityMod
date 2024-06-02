@@ -1,8 +1,8 @@
-﻿using CalamityMod.Cooldowns;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Cooldowns;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 
 namespace CalamityMod.UI
@@ -32,7 +32,7 @@ namespace CalamityMod.UI
         public const float ExpandedXScaling = 46f;
         public static Vector2 Spacing => CompactIcons ? Vector2.UnitX * CompactXSpacing : Vector2.UnitX * ExpandedXScaling;
 
-        public static Vector2 BaseDrawPosition => new Vector2(32, 100) + Spacing / 2f + (Main.LocalPlayer.CountBuffs() > 0 ? Vector2.UnitY * 50 : Vector2.Zero) + (Main.LocalPlayer.CountBuffs() > 11 ? Vector2.UnitY * 50  : Vector2.Zero);
+        public static Vector2 BaseDrawPosition => new Vector2(32, 100) + Spacing / 2f + Vector2.UnitY * 50 * MathF.Ceiling(Main.LocalPlayer.CountBuffs() / 11f);
 
         public static bool DebugFullDisplay = false;
         public static float DebugForceCompletion = 0f;
@@ -57,19 +57,22 @@ namespace CalamityMod.UI
             Rectangle mouse = new Rectangle((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y, 8, 8);
 
             string mouseHover = "";
+            float iconOpacityScale = (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f + 0.6f;
+            Vector2 mouseCenter = mouse.Center.ToVector2();
+            float opacity = MathHelper.Clamp((float)Math.Sin(Main.GlobalTimeWrappedHourly % MathHelper.Pi) * 2f, 0, 1) * 0.1f + 0.9f;
 
             foreach (CooldownInstance instance in cooldownsToDraw)
             {
                 CooldownHandler handler = instance.handler;
-                float iconOpacity = (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f + 0.6f;
+                float iconOpacity = iconOpacityScale;
 
                 // Icons get brighter if the mouse gets closer
-                iconOpacity += 0.3f * (1 - MathHelper.Clamp(Vector2.Distance(mouse.Center.ToVector2(), iconRectangle.Center.ToVector2()), 0f, 80f) / 80f);
+                iconOpacity += 0.3f * (1 - MathHelper.Clamp(Vector2.Distance(mouseCenter, iconRectangle.Center.ToVector2()), 0f, 80f) / 80f);
 
                 if (iconRectangle.Intersects(mouse))
                 {
-                    mouseHover = handler.DisplayName;
-                    iconOpacity = MathHelper.Clamp((float)Math.Sin(Main.GlobalTimeWrappedHourly % MathHelper.Pi) * 2f, 0, 1) * 0.1f + 0.9f;
+                    mouseHover = handler.DisplayName.ToString();
+                    iconOpacity = opacity;
                 }
 
                 if (DebugFullDisplay)

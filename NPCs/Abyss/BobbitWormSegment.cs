@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 
@@ -8,10 +9,10 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class BobbitWormSegment : ModNPC
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.BobbitWormHead.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Bobbit Worm");
         }
 
         public override void SetDefaults()
@@ -46,11 +47,11 @@ namespace CalamityMod.NPCs.Abyss
                 }
             }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            if (NPC.ai[1] == 0f)
             {
-                if (NPC.ai[1] == 0f)
+                NPC.ai[1] = 1f;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    NPC.ai[1] = 1f;
                     int spawnedNPC = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BobbitWormHead>(), NPC.whoAmI, 0f, 0f, 0f, 0f, 255);
                     Main.npc[spawnedNPC].ai[2] = (float)CalamityGlobalNPC.bobbitWormBottom[(int)NPC.ai[0]];
                     NPC.ai[2] = (float)spawnedNPC;
@@ -69,7 +70,7 @@ namespace CalamityMod.NPCs.Abyss
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer4 && spawnInfo.Water)
             {
                 if (CalamityGlobalNPC.bobbitWormBottom.Contains(-1))
-                    return SpawnCondition.CaveJellyfish.Chance * 0.85f;
+                    return Main.remixWorld ? 8.25f : SpawnCondition.CaveJellyfish.Chance * 0.85f;
             }
             return 0f;
         }

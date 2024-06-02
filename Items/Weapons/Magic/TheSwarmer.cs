@@ -6,27 +6,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class TheSwarmer : ModItem
+    public class TheSwarmer : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("The Swarmer");
-            Tooltip.SetDefault("Fires a swarm of bees and wasps");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 40;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 7;
             Item.width = 60;
             Item.height = 52;
-            Item.useTime = 8;
-            Item.useAnimation = 8;
+            Item.damage = 36;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 14;
+            Item.useTime = 12;
+            Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;

@@ -1,21 +1,19 @@
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System;
-
-using CalamityMod.Projectiles.BaseProjectiles;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class ElementalShivProj: BaseShortswordProjectile
+    public class ElementalShivProj : BaseShortswordProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<ElementalShiv>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/ElementalShiv";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Elemental Shiv"); // TODO: Make this one function like PiercingStarlight
-        }
 
         public override void SetDefaults()
         {
@@ -30,6 +28,8 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.extraUpdates = 1;
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override Action<Projectile> EffectBeforePullback => (proj) =>
@@ -54,10 +54,14 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             if (Main.rand.NextBool(5))
             {
-                int num250 = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 66, (float)(Projectile.direction * 2), 0f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.3f);
-                Main.dust[num250].velocity *= 0.2f;
-                Main.dust[num250].noGravity = true;
+                int rainbowDust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.RainbowTorch, (float)(Projectile.direction * 2), 0f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.3f);
+                Main.dust[rainbowDust].velocity *= 0.2f;
+                Main.dust[rainbowDust].noGravity = true;
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
         }
     }
 }

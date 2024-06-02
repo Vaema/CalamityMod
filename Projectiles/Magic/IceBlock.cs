@@ -1,18 +1,14 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class IceBlock : ModProjectile
+    public class IceBlock : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ice Barrage");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 58;
@@ -35,13 +31,12 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.alpha -= 12;
             }
-            if(Projectile.alpha < 20)
+            if (Projectile.alpha < 20)
             {
                 Projectile.alpha = 20;
             }
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
                 if (proj.type == ModContent.ProjectileType<IceBarrageMain>() && proj.owner == Main.myPlayer)
                 {
                     Vector2 pos1 = new Vector2(proj.Center.X, proj.Center.Y - (proj.height * 0.5f) - 44f);
@@ -50,35 +45,42 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 pos4 = new Vector2(proj.Center.X - (proj.width * 0.5f) - 49f, proj.Center.Y);
                     switch (Projectile.ai[0])
                     {
-                        case 0: Projectile.Center = pos1;
-                                break;
-                        case 1: Projectile.Center = pos2;
-                                break;
-                        case 2: Projectile.Center = pos3;
-                                break;
-                        case 3: Projectile.Center = pos4;
-                                break;
+                        case 0:
+                            Projectile.Center = pos1;
+                            break;
+                        case 1:
+                            Projectile.Center = pos2;
+                            break;
+                        case 2:
+                            Projectile.Center = pos3;
+                            break;
+                        case 3:
+                            Projectile.Center = pos4;
+                            break;
                         default: break;
                     }
                 }
             }
             switch (Projectile.ai[0])
             {
-                case 1: Projectile.rotation = (MathHelper.Pi * 0.5f);
-                        break;
-                case 2: Projectile.rotation = MathHelper.Pi;
-                        break;
-                case 3: Projectile.rotation = (MathHelper.Pi * 1.5f);
-                        break;
+                case 1:
+                    Projectile.rotation = (MathHelper.Pi * 0.5f);
+                    break;
+                case 2:
+                    Projectile.rotation = MathHelper.Pi;
+                    break;
+                case 3:
+                    Projectile.rotation = (MathHelper.Pi * 1.5f);
+                    break;
                 default: break;
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 40; i++)
             {
-                int dustType = Main.rand.NextBool(2) ? 68 : 67;
+                int dustType = Main.rand.NextBool() ? 68 : 67;
                 if (Main.rand.NextBool(4))
                 {
                     dustType = 80;
@@ -88,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[dust].noGravity = true;
             }
             SoundEngine.PlaySound(SoundID.NPCHit5, Projectile.Center);
-            for (int i = 0; i< 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Vector2 projdir = new Vector2(Main.rand.NextFloat(-10f, 10f), Main.rand.NextFloat(-10f, 10f));
                 Vector2 projpos = Projectile.Center + new Vector2(Main.rand.NextFloat(-50f, 50f), Main.rand.NextFloat(-50f, 50f));

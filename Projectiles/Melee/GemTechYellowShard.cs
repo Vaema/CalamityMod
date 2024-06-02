@@ -1,20 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class GemTechYellowShard : ModProjectile
+    public class GemTechYellowShard : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public const int IntangibleFrames = 12;
 
         public ref float Time => ref Projectile.ai[0];
 
         public override string Texture => "CalamityMod/Projectiles/Typeless/GemTechYellowGem";
-
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Trireme's Yellow Gem");
 
         public override void SetDefaults()
         {

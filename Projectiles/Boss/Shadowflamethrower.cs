@@ -5,14 +5,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class Shadowflamethrower : ModProjectile
+    public class Shadowflamethrower : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shadowflame Breath");
-        }
 
         public override void SetDefaults()
         {
@@ -30,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] > 7f)
             {
                 int[] dustTypes = new int[] { 27, 27, 112, 173 };
-                if(true)
+                if (true)
                 {
                     int dustType = dustTypes[Main.rand.Next(4)];
                     int dustID;
@@ -68,12 +64,12 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation += 0.3f * (float)Projectile.direction;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 300, true);
+            target.AddBuff(ModContent.BuffType<Shadowflame>(), 120, true);
         }
     }
 }

@@ -1,33 +1,26 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.TileEntities;
-using CalamityMod.CustomRecipes;
-using System.Collections.Generic;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class LongRangedSensorArray : ModItem
+    public class LongRangedSensorArray : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         public static readonly SoundStyle InstallSound = new("CalamityMod/Sounds/Custom/Codebreaker/LongRangeSensorArrayInstall");
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Long Ranged Sensor Array");
-            Tooltip.SetDefault("Can be placed on the Codebreaker\n" +
-                "Allows you to decrypt the Jungle schematic");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 52;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ItemRarityID.Pink;
@@ -67,7 +60,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<DubiousPlating>(10).
                 AddRecipeGroup("AnyMythrilBar", 10).
                 AddIngredient(ItemID.Wire, 50).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

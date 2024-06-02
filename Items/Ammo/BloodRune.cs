@@ -5,22 +5,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class BloodRune : ModItem
+    public class BloodRune : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Blood Rune");
-            Tooltip.SetDefault("Used with the Ice Barrage \n" +
-                "Found in some sort of runic landscape");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 1;
             Item.width = 22;
             Item.height = 24;
-            Item.maxStack = 999;
+            Item.damage = 1;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 10f;
             Item.value = Item.buyPrice(gold: 1);

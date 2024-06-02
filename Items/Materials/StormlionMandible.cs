@@ -1,16 +1,16 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class StormlionMandible : ModItem
+    public class StormlionMandible : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Stormlion Mandible");
+            Item.ResearchUnlockCount = 5;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 8));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 36;
             Item.height = 38;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 1, copper: 40);
             Item.rare = ItemRarityID.Blue;
         }

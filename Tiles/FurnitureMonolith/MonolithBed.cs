@@ -2,23 +2,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithBed : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpBed(true);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Bed");
-            AddMapEntry(new Color(191, 142, 111), name);
-            AdjTiles = new int[] { TileID.Beds };
-        }
+        public override void SetStaticDefaults() => this.SetUpBed(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithBed>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -56,11 +47,6 @@ namespace CalamityMod.Tiles.FurnitureMonolith
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 64, 32, ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithBed>());
-        }
 
         public override bool RightClick(int i, int j) => CalamityUtils.BedRightClick(i, j);
 

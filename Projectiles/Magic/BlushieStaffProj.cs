@@ -1,22 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using rail;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class BlushieStaffProj : ModProjectile
+    public class BlushieStaffProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private const int xRange = 600;
         private const int yRange = 320;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Staff of Blushie");
-        }
 
         public override void SetDefaults()
         {
@@ -33,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!player.channel || player.noItems || player.CCed || Projectile.ai[0] > 3600f)
+                if (player.CantUseHoldout() || Projectile.ai[0] > 3600f)
                 {
                     Projectile.Kill();
                 }
@@ -87,12 +84,13 @@ namespace CalamityMod.Projectiles.Magic
             hitbox.Height += 2 * yRange;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            damage += target.defense * 2;
+            // holy crap this is kinda broken??
+            modifiers.DefenseEffectiveness *= 0f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.penetrate++;
             target.AddBuff(BuffID.Daybreak, 300);

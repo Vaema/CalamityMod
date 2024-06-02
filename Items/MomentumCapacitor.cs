@@ -6,24 +6,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items
 {
-    public class MomentumCapacitor : ModItem
+    public class MomentumCapacitor : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
         internal const float MomentumChargePerFrame = 0.02f;
         internal const float MaxMomentumCharge = 5.8f; // +580% movemnt speed
         internal const int TotalFadeTime = 16;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Momentum Capacitor");
-            Tooltip.SetDefault("While using the Momentum Capacitor,\n" + "your top speed will continuously and uncontrollably increase\n" + "This effect only works if there are no bosses alive");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -34,10 +28,10 @@ namespace CalamityMod.Items
             Item.useTurn = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override bool? UseItem(Player player)
         {

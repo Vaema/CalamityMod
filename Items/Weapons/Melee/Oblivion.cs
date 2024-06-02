@@ -6,17 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("TheEyeofCalamitas")]
-    public class Oblivion : ModItem
+    public class Oblivion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Oblivion");
-            Tooltip.SetDefault("Fires brimstone lasers when enemies are near\n" +
-            "A very agile yoyo");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()

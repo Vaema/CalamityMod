@@ -7,18 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class RedLightningContainer : ModItem
+    public class RedLightningContainer : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
         public int frameCounter = 0;
         public int frame = 0;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Red Lightning Container");
-            Tooltip.SetDefault("Permanently increases the duration of Rage Mode by 1 second\n" +
-                "Revengeance drop");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;

@@ -6,21 +6,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class AerialiteBar : ModItem
+    public class AerialiteBar : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Aerialite Bar");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 69; // Hellstone
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 69; // Hellstone
         }
 
         public override void SetDefaults()
         {
-            Item.createTile = ModContent.TileType<AerialiteBarTile>();
             Item.width = 30;
             Item.height = 24;
-            Item.maxStack = 999;
+            Item.createTile = ModContent.TileType<AerialiteBarTile>();
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.Orange;
             Item.useStyle = ItemUseStyleID.Swing;

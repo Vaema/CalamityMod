@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PrecisionBolt : ModProjectile
+    public class PrecisionBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         NPC potentialTarget = null;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Precision Bolt");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 72;
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Release a burst of magic dust on death.
             if (Main.dedServ)

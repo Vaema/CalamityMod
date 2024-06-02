@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Astral
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class AstralLeggings : ModItem
+    public class AstralLeggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Astral Leggings");
-            Tooltip.SetDefault("10% increased movement speed\n" +
-                               "Treasure and ore detection");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.defense = 21;
         }

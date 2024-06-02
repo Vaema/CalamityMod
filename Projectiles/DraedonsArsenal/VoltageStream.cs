@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class VoltageStream : ModProjectile
+    public class VoltageStream : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
@@ -20,11 +21,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             get => Main.npc[(int)Projectile.ai[1]];
             set => Projectile.ai[1] = value.whoAmI;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Voltage Stream");
         }
 
         public override void SetDefaults()
@@ -90,7 +86,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     float angle = MathHelper.TwoPi / 120f * i;
                     Dust dust = Dust.NewDustPerfect(Target.Center + angle.ToRotationVector2() * 25f, 226);
-                    dust.velocity = angle.ToRotationVector2() * Main.rand.NextFloat(2f, 9f) * Main.rand.NextBool(2).ToDirectionInt();
+                    dust.velocity = angle.ToRotationVector2() * Main.rand.NextFloat(2f, 9f) * Main.rand.NextBool().ToDirectionInt();
                     dust.velocity = dust.velocity.RotatedBy(dust.velocity.ToRotation() * -0.02f);
                     dust.velocity *= 2.1f;
                     dust.noGravity = true;
@@ -104,12 +100,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.Kill();
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.damage = (int)(Projectile.damage * 0.75);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             Projectile.damage = (int)(Projectile.damage * 0.75);
         }

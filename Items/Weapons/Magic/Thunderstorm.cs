@@ -7,28 +7,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Thunderstorm : ModItem
+    public class Thunderstorm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Thunderstorm");
-            Tooltip.SetDefault("Make it rain");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 48;
+            Item.height = 22;
             Item.damage = 132;
             Item.mana = 50;
             Item.DamageType = DamageClass.Magic;
-            Item.width = 48;
-            Item.height = 22;
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
             Item.autoReuse = true;

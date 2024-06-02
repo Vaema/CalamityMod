@@ -1,22 +1,22 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class AstralMonolithWall : ModItem
+    public class AstralMonolithWall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,7 +28,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<AstralMonolith>(), 1).AddTile(ModContent.TileType<MonolithAmalgam>()).Register();
+            CreateRecipe(4).
+                AddIngredient<AstralMonolith>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

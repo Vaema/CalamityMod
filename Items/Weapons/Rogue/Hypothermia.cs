@@ -15,14 +15,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         // For more consistent DPS, always alternates between throwing 1 and 2 instead of picking randomly
         private bool throwTwo = true;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Hypothermia");
-            Tooltip.SetDefault("Throws a constant barrage of black ice shards\n" +
-                               "Stealth strikes hurl a set of razor sharp ice chunks that shatter on impact");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 46;
@@ -35,9 +27,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
 
             Item.damage = 200;
-            Item.useAnimation = 21;
             Item.useTime = 3;
+            Item.useAnimation = 21;
             Item.reuseDelay = 1;
+            Item.useLimitPerAnimation = 7;
             Item.knockBack = 3f;
             Item.shoot = ModContent.ProjectileType<HypothermiaShard>();
             Item.shootSpeed = 8f;
@@ -49,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
 
-		public override float StealthDamageMultiplier => 1.2f;
+        public override float StealthDamageMultiplier => 1.1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

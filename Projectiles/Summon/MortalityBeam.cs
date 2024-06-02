@@ -1,19 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MortalityBeam : ModProjectile
+    public class MortalityBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Beam");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
@@ -25,9 +26,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.minionSlots = 0f;
-            Projectile.minion = true;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -55,8 +53,11 @@ namespace CalamityMod.Projectiles.Summon
             if (potentialTarget != null)
                 Projectile.velocity = (Projectile.velocity * 5f + Projectile.SafeDirectionTo(potentialTarget.Center) * 13f) / 6f;
         }
-
-        public override void Kill(int timeLeft)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
+        }
+        public override void OnKill(int timeLeft)
         {
             if (Main.myPlayer == Projectile.owner)
             {
@@ -65,7 +66,6 @@ namespace CalamityMod.Projectiles.Summon
                 float blueHue = Main.rgbToHsl(Color.Blue).X;
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2CircularEdge(10f, 10f);
                 Projectile bolt = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPosition, Main.rand.NextVector2CircularEdge(9f, 9f), ModContent.ProjectileType<MortalityBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                bolt.originalDamage = Projectile.originalDamage;
                 bolt.localAI[0] = Utils.SelectRandom(Main.rand, redHue, greenHue, blueHue);
             }
         }

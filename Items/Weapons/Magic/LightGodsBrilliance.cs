@@ -9,22 +9,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class LightGodsBrilliance : ModItem
+    public class LightGodsBrilliance : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Light God's Brilliance");
-            Tooltip.SetDefault("Casts small, homing light beads along with explosive light balls");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 100;
+            Item.width = 42;
+            Item.height = 48;
+            Item.damage = 111;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 4;
-            Item.width = 34;
-            Item.height = 36;
+            Item.mana = 6;
             Item.useTime = Item.useAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -52,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ShadecrystalTome>().
+                AddIngredient<ShadecrystalBarrage>().
                 AddIngredient<AbyssalTome>().
                 AddIngredient(ItemID.HolyWater, 10).
                 AddIngredient(ItemID.SoulofLight, 30).

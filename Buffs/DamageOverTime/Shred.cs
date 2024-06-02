@@ -1,4 +1,6 @@
-﻿using CalamityMod.NPCs;
+﻿using System;
+using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,8 +18,6 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shred");
-            Description.SetDefault("Someone built ten Tri-Tip Daggers...");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
@@ -59,11 +59,58 @@ namespace CalamityMod.Buffs.DamageOverTime
                 // Only deal damage once every several frames.
                 if (applicator.miscCounter % FramesPerDamageTick == 0)
                 {
+                    // This cannot be done with SimpleStrikeNPC because that would not allow for supercrits.
                     int bleedTickDamage = (int)applicator.GetTotalDamage<RangedDamageClass>().ApplyTo(BaseDamage * cgn.somaShredStacks);
                     Projectile tick = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), bleedTickDamage, 0f, applicator.whoAmI, target.whoAmI);
                     tick.DamageType = DamageClass.Ranged; // Uncommon for DirectStrikes, but it needs to be able to crit.
-                    tick.Calamity().supercritHits  = -1;
+                    tick.Calamity().supercritHits = -1;
                 }
+            }
+        }
+
+        internal static void DrawEffects(Player player)
+        {
+
+        }
+
+        // Enemies suffering from Soma Prime's Shred spray blood like Violence
+        internal static void DrawEffects(NPC npc, CalamityGlobalNPC cgn, ref Color drawColor)
+        {
+            // The amount of blood particles spawned by Soma Prime's Shred scales loosely with the number of stacks.
+            float roughBloodCount = (float)Math.Sqrt(0.8f * cgn.somaShredStacks);
+            int exactBloodCount = (int)roughBloodCount;
+            // Chance for the final blood particle
+            if (Main.rand.NextFloat() < roughBloodCount - exactBloodCount)
+                ++exactBloodCount;
+
+            // Velocity of the spurting blood also slightly increases with stacks.
+            float velStackMult = 1f + (float)Math.Log(cgn.somaShredStacks);
+
+            // Code copied from Violence.
+            for (int i = 0; i < exactBloodCount; ++i)
+            {
+                int bloodLifetime = Main.rand.Next(22, 36);
+                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
+                Color bloodColor = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat());
+                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
+
+                if (Main.rand.NextBool(20))
+                    bloodScale *= 2f;
+
+                float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
+                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * velStackMult * randomSpeedMultiplier;
+                bloodVelocity.Y -= 5f;
+                BloodParticle blood = new BloodParticle(npc.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
+                GeneralParticleHandler.SpawnParticle(blood);
+            }
+            for (int i = 0; i < exactBloodCount / 3; ++i)
+            {
+                float bloodScale = Main.rand.NextFloat(0.2f, 0.33f);
+                Color bloodColor = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat(0.5f, 1f));
+                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * velStackMult * Main.rand.NextFloat(1f, 2f);
+                bloodVelocity.Y -= 2.3f;
+                BloodParticle2 blood = new BloodParticle2(npc.Center, bloodVelocity, 20, bloodScale, bloodColor);
+                GeneralParticleHandler.SpawnParticle(blood);
             }
         }
     }

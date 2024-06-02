@@ -1,18 +1,14 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class OrthoceraStream : ModProjectile
+    public class OrthoceraStream : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Acid Stream");
-        }
 
         public override void SetDefaults()
         {
@@ -47,7 +43,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Vector2 positionDelta = Projectile.velocity / 3f * i;
                 int spawnDelta = 14;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 1f);
+                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[dustIdx];
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
@@ -57,15 +53,15 @@ namespace CalamityMod.Projectiles.Enemy
             if (Main.rand.NextBool(8))
             {
                 int spawnDelta = 16;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 0.5f);
+                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 0.5f);
                 Main.dust[dustIdx].velocity *= 0.25f;
                 Main.dust[dustIdx].velocity += Projectile.velocity * 0.5f;
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<Irradiated>(), 60);

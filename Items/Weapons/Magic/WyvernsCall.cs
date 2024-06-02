@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -8,61 +8,57 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class WyvernsCall : ModItem
+    public class WyvernsCall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wyvern's Call");
-            Tooltip.SetDefault(@"I call upon the mythical Wyvern to shower the lands with its grace
-Fires wyverns and colored feathers from the sky that stick to enemies and tiles and explode");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 45;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
             Item.width = 52;
             Item.height = 74;
+            Item.damage = 65;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 10;
             Item.useTime = 23;
             Item.useAnimation = 23;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.75f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<WyvernFeatherPurple>();
-            Item.shootSpeed = 18f;
+            Item.shootSpeed = 35f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float num72 = Item.shootSpeed;
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            float num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-            float num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
+            float projSpeed = Item.shootSpeed;
+            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
             if (player.gravDir == -1f)
             {
-                num79 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - vector2.Y;
+                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
             }
-            float num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-            if ((float.IsNaN(num78) && float.IsNaN(num79)) || (num78 == 0f && num79 == 0f))
+            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
             {
-                num78 = (float)player.direction;
-                num79 = 0f;
-                num80 = num72;
+                mouseXDist = (float)player.direction;
+                mouseYDist = 0f;
+                mouseDistance = projSpeed;
             }
             else
             {
-                num80 = num72 / num80;
+                mouseDistance = projSpeed / mouseDistance;
             }
 
-            int num107 = 3;
-            for (int num108 = 0; num108 < num107; num108++)
+            for (int i = 0; i < 3; i++)
             {
                 float damageMult = 1f;
                 float kbMult = 1f;
@@ -74,40 +70,37 @@ Fires wyverns and colored feathers from the sky that stick to enemies and tiles 
                 {
                     type = ModContent.ProjectileType<WyvernFeatherGreen>();
                 }
-                else if (Main.rand.NextBool(2))
+                else if (Main.rand.NextBool())
                 {
                     type = ModContent.ProjectileType<WyvernFeatherPink>();
                 }
                 if (type == ModContent.ProjectileType<WyvernProjectile>())
                 {
-                    damageMult = 20f;
+                    damageMult = 15f;
                     kbMult = 1.5f;
                 }
                 if (type == ModContent.ProjectileType<WyvernFeatherPink>())
                 {
-                    damageMult = 1.2f;
                     kbMult = 2f;
                 }
-                vector2 = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                vector2.X = (vector2.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                vector2.Y -= (float)(100 * num108);
-                num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-                num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
-                if (num79 < 0f)
+                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
+                realPlayerPos.Y -= (float)(100 * i);
+                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
+                if (mouseYDist < 0f)
                 {
-                    num79 *= -1f;
+                    mouseYDist *= -1f;
                 }
-                if (num79 < 20f)
+                if (mouseYDist < 20f)
                 {
-                    num79 = 20f;
+                    mouseYDist = 20f;
                 }
-                num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-                num80 = num72 / num80;
-                num78 *= num80;
-                num79 *= num80;
-                float speedX4 = num78 + (float)Main.rand.Next(-30, 31) * 0.02f;
-                float speedY5 = num79 + (float)Main.rand.Next(-30, 31) * 0.02f;
-                int feather = Projectile.NewProjectile(source, vector2.X, vector2.Y, speedX4, speedY5, type, (int)(damage * damageMult), (int)(knockback * kbMult), player.whoAmI, 0f, (float)Main.rand.Next(15));
+                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+                mouseDistance = projSpeed / mouseDistance;
+                mouseXDist *= mouseDistance;
+                mouseYDist *= mouseDistance;
+                int feather = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, mouseXDist, mouseYDist, type, (int)(damage * damageMult), (int)(knockback * kbMult), player.whoAmI, 0f, (float)Main.rand.Next(15));
             }
             return false;
         }
@@ -117,7 +110,7 @@ Fires wyverns and colored feathers from the sky that stick to enemies and tiles 
             CreateRecipe().
                 AddIngredient<SkyGlaze>().
                 AddRecipeGroup("AnyMythrilBar", 5).
-                AddIngredient(ItemID.SoulofFlight, 15). 
+                AddIngredient(ItemID.SoulofFlight, 15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

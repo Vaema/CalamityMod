@@ -1,17 +1,17 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class HydrasBlood : ModProjectile
+    public class HydrasBlood : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Magic/VitriolicViperSpit";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hydra's Blood");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -35,29 +35,29 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.timeLeft < 85 && Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, 171);
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.Venom);
                 dust.velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(5f)) * -0.5f;
                 dust.scale = Main.rand.NextFloat(0.3f, 1.6f);
                 dust.noGravity = true;
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 14; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 14, 14, 171);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 14, 14, DustID.Venom);
                 dust.scale = Main.rand.NextFloat(0.3f, 1.6f);
                 dust.noGravity = true;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Venom, 300);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Venom, 300);
         }

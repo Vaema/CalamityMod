@@ -8,22 +8,13 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class WulfrumCandle : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpCandle();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Candle");
-            AddMapEntry(new Color(253, 221, 3), name);
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Candles };
-            ItemDrop = ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumCandle>();
-        }
+        public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumCandle>());
 
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 7, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.WoodFurniture, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 using Terraria.ID;
-using ReLogic.Content;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Plates
 {
@@ -32,7 +32,6 @@ namespace CalamityMod.Tiles.Plates
             HitSound = MinePlatingSound;
             MineResist = 1f;
             DustType = 173;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Plates.Onyxplate>();
             AddMapEntry(new Color(182, 28, 232));
         }
 
@@ -57,14 +56,7 @@ namespace CalamityMod.Tiles.Plates
             //Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
 
             Tile trackTile = Main.tile[i, j];
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
-            {
-                Main.spriteBatch.Draw(GlowTexture, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            else if (trackTile.IsHalfBlock)
-            {
-                Main.spriteBatch.Draw(GlowTexture, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
+            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

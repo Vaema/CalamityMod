@@ -6,29 +6,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class AlulaAustralis : ModItem
+    public class AlulaAustralis : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Alula Australis");
-            Tooltip.SetDefault("Fires a beautiful aurora trailed by a star shower");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 52;
+            Item.height = 52;
             Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 8;
-            Item.width = 52;
-            Item.height = 52;
             Item.useTime = 17;
             Item.useAnimation = 17;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item9;
             Item.autoReuse = true;

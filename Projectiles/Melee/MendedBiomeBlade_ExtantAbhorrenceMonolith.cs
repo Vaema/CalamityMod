@@ -1,20 +1,21 @@
-﻿using CalamityMod.Particles;
+﻿using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExtantAbhorrenceMonolith : ModProjectile
+    public class ExtantAbhorrenceMonolith : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_ExtantAbhorrenceMonolith";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => (100f - Projectile.timeLeft) / 100f;
@@ -39,7 +40,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Abhorrent Monolith");
         }
         public override void SetDefaults()
         {
@@ -128,12 +128,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Projectile.Center + Projectile.velocity * 40f;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)
-                damage = (int)(damage * TrueBiomeBlade.AstralAttunement_MonolithDamageFalloff);
+                modifiers.SourceDamage *= TrueBiomeBlade.AstralAttunement_MonolithDamageFalloff;
         }
-
 
         public override bool PreDraw(ref Color lightColor)
         {

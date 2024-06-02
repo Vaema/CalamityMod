@@ -1,247 +1,173 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+using static CalamityMod.Projectiles.Ranged.TheHiveHoldout;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class HiveMissile : ModProjectile
+    public class HiveMissile : ModProjectile, ILocalizedModType
     {
-        public static Item FalseLauncher = null;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bomb");
-        }
+        public new string LocalizationCategory => "Projectiles.Ranged";
+        public ref float RocketID => ref Projectile.ai[0];
+        public ref float ProjectileSpeed => ref Projectile.ai[1];
+        public ref float Time => ref Projectile.ai[2];
+        public bool HasHit = false;
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.scale = 0.75f;
+            Projectile.width = 25;
+            Projectile.height = 25;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 95;
+            Projectile.timeLeft = 100;
             Projectile.DamageType = DamageClass.Ranged;
-        }
-
-        private static void DefineFalseLauncher()
-        {
-            int rocketID = ItemID.RocketLauncher;
-            FalseLauncher = new Item();
-            FalseLauncher.SetDefaults(rocketID, true);
+            Projectile.extraUpdates = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            if (Math.Abs(Projectile.velocity.X) >= 8f || Math.Abs(Projectile.velocity.Y) >= 8f)
+            // Rotates towards its velocity.
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+
+            if (Projectile.wet && RocketID == ItemID.DryRocket && RocketID == ItemID.WetRocket && RocketID == ItemID.LavaRocket && RocketID == ItemID.HoneyRocket)
             {
-                for (int num246 = 0; num246 < 2; num246++)
+                HasHit = true;
+                Projectile.Kill();
+            }
+
+            Time++;
+
+            if (Projectile.timeLeft <= 50)
+            {
+                Projectile.velocity *= 0.965f;
+                if (Time % 5 == 0)
                 {
-                    float num247 = 0f;
-                    float num248 = 0f;
-                    if (num246 == 1)
-                    {
-                        num247 = Projectile.velocity.X * 0.5f;
-                        num248 = Projectile.velocity.Y * 0.5f;
-                    }
-                    int num249 = Dust.NewDust(new Vector2(Projectile.position.X + 3f + num247, Projectile.position.Y + 3f + num248) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 6, 0f, 0f, 100, default, 1f);
-                    Main.dust[num249].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
-                    Main.dust[num249].velocity *= 0.2f;
-                    Main.dust[num249].noGravity = true;
-                    num249 = Dust.NewDust(new Vector2(Projectile.position.X + 3f + num247, Projectile.position.Y + 3f + num248) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 31, 0f, 0f, 100, default, 0.5f);
-                    Main.dust[num249].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
-                    Main.dust[num249].velocity *= 0.05f;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10) - Projectile.velocity * 3.5f, Main.rand.NextBool(3) ? DustEffectsID : 303, Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.4f, 0.9f), 0, default, Main.rand.NextFloat(0.5f, 0.9f));
+                    dust.noGravity = false;
+                    if (dust.type != DustEffectsID)
+                        dust.color = Main.rand.NextBool(3) ? EffectsColor : StaticEffectsColor;
                 }
             }
-            if (Math.Abs(Projectile.velocity.X) < 15f && Math.Abs(Projectile.velocity.Y) < 15f)
-            {
-                Projectile.velocity *= 1.5f;
-            }
-            else if (Main.rand.NextBool(2))
-            {
-                int num252 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 1f);
-                Main.dust[num252].scale = 0.1f + (float)Main.rand.Next(5) * 0.1f;
-                Main.dust[num252].fadeIn = 1.5f + (float)Main.rand.Next(5) * 0.1f;
-                Main.dust[num252].noGravity = true;
-                Main.dust[num252].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
-                Main.rand.Next(2);
-                num252 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
-                Main.dust[num252].scale = 1f + (float)Main.rand.Next(5) * 0.1f;
-                Main.dust[num252].noGravity = true;
-                Main.dust[num252].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
-            }
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90);
 
-            // Construct a fake item to use with vanilla code for the sake of picking ammo.
-            if (FalseLauncher is null)
-                DefineFalseLauncher();
-            Player player = Main.player[Projectile.owner];
-            int projID = ProjectileID.RocketI;
-            float shootSpeed = 0f;
-            int damage = 0;
-            float kb = 0f;
-            player.PickAmmo(FalseLauncher, out projID, out shootSpeed, out damage, out kb, out _, true);
-			if (projID == ProjectileID.DryRocket || projID == ProjectileID.WetRocket || projID == ProjectileID.LavaRocket || projID == ProjectileID.HoneyRocket)
-			{
-				if (Projectile.wet)
-					Projectile.timeLeft = 1;
-			}
+            if (Main.dedServ)
+                return;
+
+            // The projectile will fade away as its time alive is ending.
+            Projectile.alpha = (int)Utils.Remap(Projectile.timeLeft, 40f, 0f, 0f, 255f);
+
+            if (Time % 3 == 0)
+            {
+                Dust trailDust = Dust.NewDustDirect(Projectile.Center, Projectile.width, Projectile.height, Main.rand.NextBool() ? 303 : DustEffectsID, Scale: Main.rand.NextFloat(0.3f, 0.6f));
+                trailDust.noGravity = true;
+                trailDust.noLight = true;
+                trailDust.noLightEmittence = true;
+                trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f);
+                if (trailDust.type != DustEffectsID)
+                    trailDust.color = Main.rand.NextBool(3) ? EffectsColor : StaticEffectsColor;
+            }
+            if (Time > 5f)
+            {
+                float sizeBonus = Projectile.timeLeft < 30 ? Time * 0.003f : 0;
+                Color smokeColor = Color.Lerp(Color.Black, Color.Lime, 0.25f);
+                Particle smoke = new HeavySmokeParticle(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity.RotatedByRandom(sizeBonus) * Main.rand.NextFloat(0.2f, 0.6f), smokeColor * 0.65f, 6, Main.rand.NextFloat(0.3f, 0.45f) + sizeBonus, 0.23f - (sizeBonus * 0.3f), Main.rand.NextFloat(-0.2f, 0.2f), false);
+                GeneralParticleHandler.SpawnParticle(smoke);
+
+                if (Main.rand.NextBool())
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10) - Projectile.velocity * 2.5f, 303, -Projectile.velocity.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.8f, 1.4f));
+                    dust.noGravity = false;
+                    dust.color = Color.Black;
+                    dust.alpha = Main.rand.Next(90, 220 + 1);
+                }
+            }
+
+            Lighting.AddLight(Projectile.Center, StaticEffectsColor.ToVector3() * 0.7f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
-
-        public override void Kill(int timeLeft)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.ExpandHitboxBy(80);
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
-            if (Projectile.owner == Main.myPlayer)
+            HasHit = true;
+            target.AddBuff(ModContent.BuffType<Plague>(), 90);
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            HasHit = true;
+            return true;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 1)
+                Projectile.damage = (int)(Projectile.damage * 0.6f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
+        public override void OnKill(int timeLeft)
+        {
+            if (HasHit == true)
             {
-                int num516 = 3;
-                for (int num517 = 0; num517 < num516; num517++)
+                var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID)
                 {
-                    if (num517 % 2 != 1 || Main.rand.NextBool(3))
+                    // Since we use our own spawning method for the cluster rockets, we don't need them to shoot anything,
+                    // we'll do it ourselves.
+                    clusterProjectileID = ProjectileID.None,
+                    destructiveClusterProjectileID = ProjectileID.None,
+                };
+
+                bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
+                SoundStyle fire = new("CalamityMod/Sounds/Custom/PlagueSounds/PlagueBoom", 4);
+                SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = -0.3f }, Projectile.Center);
+
+                int blastRadius = (int)(Projectile.RocketBehavior(info) * 0.7f);
+                Projectile.ExpandHitboxBy((float)blastRadius);
+                Projectile.damage = (int)(Projectile.damage * 0.5f);
+                Projectile.penetrate = -1;
+                Projectile.Damage();
+
+                Particle blastRing = new CustomPulse(
+                Projectile.Center,
+                Vector2.Zero,
+                StaticEffectsColor * 0.8f,
+                "CalamityMod/Particles/FlameExplosion",
+                Vector2.One,
+                Main.rand.NextFloat(-10, 10),
+                Projectile.width / 22815f,
+                Projectile.width / 2275f,
+                10);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+
+                for (int k = 0; k < 15; k++)
+                {
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
+                    dust2.scale = Main.rand.NextFloat(0.75f, 0.95f);
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool(3) ? EffectsColor : StaticEffectsColor;
+                }
+
+                for (int k = 0; k < (isClusterRocket ? 3f : 2f); k++)
+                {
+                    int BEES = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(4, 10).RotatedByRandom(4) * Main.rand.NextFloat(0.2f, 0.8f), ModContent.ProjectileType<BasicPlagueBee>(), (int)(Projectile.damage * (isClusterRocket ? 0.2f : 0.3f)), 0f, Projectile.owner, 0f, 0f, isClusterRocket ? 2f : 1f);
+                    if (BEES.WithinBounds(Main.maxProjectiles))
                     {
-                        Vector2 value20 = Projectile.position;
-                        Vector2 value21 = Projectile.oldVelocity;
-                        value21.Normalize();
-                        value21 *= 8f;
-                        float num518 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                        float num519 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                        value20 -= value21 * (float)num517;
-                        num518 += Projectile.oldVelocity.X / 6f;
-                        num519 += Projectile.oldVelocity.Y / 6f;
-                        int bee = Projectile.NewProjectile(Projectile.GetSource_FromThis(), value20.X, value20.Y, num518, num519, Main.player[Projectile.owner].beeType(), Main.player[Projectile.owner].beeDamage(Projectile.damage / 2), Main.player[Projectile.owner].beeKB(0f), Main.myPlayer);
-                        if (bee.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[bee].penetrate = 2;
-                            Main.projectile[bee].DamageType = DamageClass.Ranged;
-                        }
+                        Main.projectile[BEES].penetrate = 1;
+                        Main.projectile[BEES].DamageType = DamageClass.Ranged;
                     }
                 }
             }
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int num621 = 0; num621 < 20; num621++)
-            {
-                int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 90, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
-                {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                }
-            }
-            for (int num623 = 0; num623 < 30; num623++)
-            {
-                int num624 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 90, 0f, 0f, 100, default, 3f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 90, 0f, 0f, 100, default, 2f);
-                Main.dust[num624].velocity *= 2f;
-            }
-
-            if (Main.netMode != NetmodeID.Server)
-            {
-                Vector2 goreSource = Projectile.Center;
-                int goreAmt = 3;
-                Vector2 source = new Vector2(goreSource.X - 24f, goreSource.Y - 24f);
-                for (int goreIndex = 0; goreIndex < goreAmt; goreIndex++)
-                {
-                    float velocityMult = 0.33f;
-                    if (goreIndex < (goreAmt / 3))
-                    {
-                        velocityMult = 0.66f;
-                    }
-                    if (goreIndex >= (2 * goreAmt / 3))
-                    {
-                        velocityMult = 1f;
-                    }
-                    Mod mod = ModContent.GetInstance<CalamityMod>();
-                    int type = Main.rand.Next(61, 64);
-                    int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    Gore gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y -= 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y -= 1f;
-                }
-            }
-
-            // Construct a fake item to use with vanilla code for the sake of picking ammo.
-            if (FalseLauncher is null)
-                DefineFalseLauncher();
-            Player player = Main.player[Projectile.owner];
-            int projID = ProjectileID.RocketI;
-            float shootSpeed = 0f;
-            int damage = 0;
-            float kb = 0f;
-            player.PickAmmo(FalseLauncher, out projID, out shootSpeed, out damage, out kb, out _, true);
-            int blastRadius = 0;
-            if (projID == ProjectileID.RocketII || projID == ProjectileID.ClusterRocketII)
-                blastRadius = 5;
-            else if (projID == ProjectileID.RocketIV)
-                blastRadius = 8;
-            else if (projID == ProjectileID.MiniNukeRocketII)
-                blastRadius = 11;
-
-            Projectile.ExpandHitboxBy(14);
-
-            if (Projectile.owner == Main.myPlayer && blastRadius > 0)
-            {
-                CalamityUtils.ExplodeandDestroyTiles(Projectile, blastRadius, true, new List<int>() { }, new List<int>() { });
-            }
-			if (Projectile.owner == Main.myPlayer)
-			{
-				Point center = Projectile.Center.ToTileCoordinates();
-				DelegateMethods.v2_1 = center.ToVector2();
-				DelegateMethods.f_1 = 3f;
-				if (projID == ProjectileID.DryRocket)
-				{
-					DelegateMethods.f_1 = 3.5f;
-					Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadDry);
-				}
-				else if (projID == ProjectileID.WetRocket)
-				{
-					Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadWater);
-				}
-				else if (projID == ProjectileID.LavaRocket)
-				{
-					Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadLava);
-				}
-				else if (projID == ProjectileID.HoneyRocket)
-				{
-					Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadHoney);
-				}
-			}
         }
     }
 }

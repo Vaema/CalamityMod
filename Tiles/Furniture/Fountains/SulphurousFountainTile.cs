@@ -1,38 +1,30 @@
 ﻿using CalamityMod.Items.Placeables.Furniture.Fountains;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Furniture.Fountains
 {
     public class SulphurousFountainTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpFountain();
-            AddMapEntry(new Color(141, 121, 77), Language.GetText("MapObject.WaterFountain"));
-            AnimationFrameHeight = 72;
-        }
+        public override void SetStaticDefaults() => this.SetUpFountain(ModContent.ItemType<SulphurousFountainItem>(), new Color(141, 121, 77));
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            string waterColor = CalamityWorld.getFixedBoi ? "CalamityMod/PissWater" : "CalamityMod/SulphuricWater";
-            if (Main.tile[i, j].TileFrameX >= 36)
-                CalamityGlobalTile.SetActiveFountainColor(ModContent.Find<ModWaterStyle>(waterColor).Slot);
+            string waterColor = Main.zenithWorld ? "CalamityMod/PissWater" : "CalamityMod/SulphuricWater";
+            if (!Main.dedServ && Main.tile[i, j].TileFrameX >= 36)
+                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>(waterColor).Slot;
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(119, 102, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 33, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(119, 102, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Water, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -49,11 +41,6 @@ namespace CalamityMod.Tiles.Furniture.Fountains
                 frame = (frame + 1) % 4;
                 frameCounter = 0;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<SulphurousFountainItem>());
         }
 
         public override void HitWire(int i, int j)

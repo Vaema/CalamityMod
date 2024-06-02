@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Accessories.Vanity;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer.DrawLayers
@@ -21,6 +22,9 @@ namespace CalamityMod.CalPlayer.DrawLayers
 
             if (drawPlayer.armor[10].type > ItemID.None)
                 headItem = drawPlayer.armor[10];
+
+            if (drawPlayer.Calamity().cocosFeather)
+                headItem = new Item(ModContent.ItemType<CocosFeather>());
 
             if (ModContent.GetModItem(headItem.type) is IExtendedHat extendedHatDrawer)
             {

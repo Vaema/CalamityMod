@@ -1,27 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class StellarStriker : ModItem
+    public class StellarStriker : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Stellar Striker");
-            Tooltip.SetDefault("Summons a swarm of lunar flares from the sky on enemy hits");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
-            Item.width = 84;
-            Item.height = 90;
-            Item.scale = 1.5f;
-            Item.damage = 480;
+            Item.width = 90;
+            Item.height = 100;
+            Item.damage = 450;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,74 +24,65 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.shootSpeed = 12f;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        // Stellar Striker is classed as a regular melee weapon, so despite being a true melee on-hit, these scale with regular melee.
+        private int GetOnHitDamage(Player player) => (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(0.5f * Item.damage);
+
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (player.whoAmI == Main.myPlayer)
-                SpawnFlares(player, knockback, damage, crit);
+                SpawnFlaresNPC(player, Item.knockBack, GetOnHitDamage(player), target);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             if (player.whoAmI == Main.myPlayer)
-                SpawnFlares(player, Item.knockBack, damage, crit);
+                SpawnFlaresPvp(player, Item.knockBack, GetOnHitDamage(player), target);
         }
 
-        private void SpawnFlares(Player player, float knockback, int damage, bool crit)
+        private void SpawnFlaresNPC(Player player, float knockback, int damage, NPC target)
         {
             var source = player.GetSource_ItemUse(Item);
             SoundEngine.PlaySound(SoundID.Item88, player.Center);
             int i = Main.myPlayer;
-            float num72 = Item.shootSpeed;
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            float num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-            float num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
-            if (player.gravDir == -1f)
-            {
-                num79 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - vector2.Y;
-            }
-            float num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-            if ((float.IsNaN(num78) && float.IsNaN(num79)) || (num78 == 0f && num79 == 0f))
-            {
-                num78 = (float)player.direction;
-                num79 = 0f;
-                num80 = num72;
-            }
-            else
-            {
-                num80 = num72 / num80;
-            }
+            float cometSpeed = Item.shootSpeed;
+            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
 
-            if (crit)
-                damage /= 2;
-
-            int num112 = 2;
-            for (int num113 = 0; num113 < num112; num113++)
+            for (int j = 0; j < 2; j++)
             {
-                vector2 = new Vector2(player.Center.X + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                vector2.X = (vector2.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                vector2.Y -= (float)(100 * num113);
-                num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X + (float)Main.rand.Next(-40, 41) * 0.03f;
-                num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
-                if (num79 < 0f)
-                {
-                    num79 *= -1f;
-                }
-                if (num79 < 20f)
-                {
-                    num79 = 20f;
-                }
-                num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-                num80 = num72 / num80;
-                num78 *= num80;
-                num79 *= num80;
-                float num114 = num78;
-                float num115 = num79 + (float)Main.rand.Next(-80, 81) * 0.02f;
-                int proj = Projectile.NewProjectile(source, vector2.X, vector2.Y, num114, num115, ProjectileID.LunarFlare, (int)(damage * 0.5), knockback, i, 0f, (float)Main.rand.Next(3));
+                realPlayerPos = new Vector2(player.Center.X + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
+                realPlayerPos.Y -= (float)(100 * j);
+
+                Vector2 flareVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(realPlayerPos, target, cometSpeed, 6);
+
+                int proj = Projectile.NewProjectile(source, realPlayerPos, flareVelocity, ProjectileID.LunarFlare, damage, knockback, i, 0f, (float)Main.rand.Next(3));
+                if (proj.WithinBounds(Main.maxProjectiles))
+                    Main.projectile[proj].DamageType = DamageClass.Melee;
+            }
+        }
+
+        private void SpawnFlaresPvp(Player player, float knockback, int damage, Player target)
+        {
+            var source = player.GetSource_ItemUse(Item);
+            SoundEngine.PlaySound(SoundID.Item88, player.Center);
+            int i = Main.myPlayer;
+            float cometSpeed = Item.shootSpeed;
+            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+
+            for (int j = 0; j < 2; j++)
+            {
+                realPlayerPos = new Vector2(player.Center.X + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
+                realPlayerPos.Y -= (float)(100 * j);
+
+                Vector2 flareVelocity = Vector2.Normalize(target.Center - realPlayerPos) * cometSpeed;
+
+                int proj = Projectile.NewProjectile(source, realPlayerPos, flareVelocity, ProjectileID.LunarFlare, damage, knockback, i, 0f, (float)Main.rand.Next(3));
                 if (proj.WithinBounds(Main.maxProjectiles))
                     Main.projectile[proj].DamageType = DamageClass.Melee;
             }
@@ -107,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 229);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Vortex);
             }
         }
 

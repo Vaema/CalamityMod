@@ -10,32 +10,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class HandheldTank : ModItem
+    public class HandheldTank : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/TankCannon") { PitchVariance = 0.5f };
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Handheld Tank");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
             Item.width = 110;
             Item.height = 46;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 940;
+            Item.damage = 740;
             Item.knockBack = 16f;
-            Item.useTime = 71;
-            Item.useAnimation = 71;
+            Item.useTime = 84;
+            Item.useAnimation = 84;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = UseSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 
@@ -49,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<HandheldTankShell>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position + player.DirectionTo(Main.MouseWorld) * 48f, velocity, ModContent.ProjectileType<HandheldTankShell>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 

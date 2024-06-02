@@ -1,19 +1,19 @@
 ﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class HydrothermicVent : ModProjectile
+    public class HydrothermicVent : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int dust = 3;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hydrothermic Vent");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            bool flag64 = Projectile.type == ModContent.ProjectileType<HydrothermicVent>();
+            bool isMinion = Projectile.type == ModContent.ProjectileType<HydrothermicVent>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             if (!modPlayer.chaosSpirit)
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.active = false;
                 return;
             }
-            if (flag64)
+            if (isMinion)
             {
                 if (player.dead)
                 {
@@ -59,12 +59,11 @@ namespace CalamityMod.Projectiles.Summon
             dust--;
             if (dust >= 0)
             {
-                int num501 = 50;
-                for (int num502 = 0; num502 < num501; num502++)
+                for (int i = 0; i < 50; i++)
                 {
-                    int num503 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, Main.rand.NextBool(3) ? 16 : 127, 0f, 0f, 0, default, 1f);
-                    Main.dust[num503].velocity *= 2f;
-                    Main.dust[num503].scale *= 1.15f;
+                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, Main.rand.NextBool(3) ? 16 : 127, 0f, 0f, 0, default, 1f);
+                    Main.dust[dust].velocity *= 2f;
+                    Main.dust[dust].scale *= 1.15f;
                 }
             }
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 1f / 255f, (255 - Projectile.alpha) * 0.35f / 255f, (255 - Projectile.alpha) * 0f / 255f);
@@ -154,9 +153,7 @@ namespace CalamityMod.Projectiles.Summon
                         targetDist = speed / targetDist;
                         velocity.X *= targetDist;
                         velocity.Y *= targetDist;
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, velocity, projectileType, Projectile.damage, 5f, Projectile.owner, 0f, 0f);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, velocity, projectileType, Projectile.damage, 5f, Projectile.owner, 0f, 0f);
                         SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
                         Projectile.ai[0] = 10f;
                     }
@@ -166,13 +163,11 @@ namespace CalamityMod.Projectiles.Summon
                         int amount = Main.rand.Next(2, 4); //2 to 3
                         for (int i = 0; i < amount; i++)
                         {
-                            float velocityX = Main.rand.NextFloat(-10f, 10f);
-                            float velocityY = Main.rand.NextFloat(-10f, -7f);
+                            Vector2 velocity = new Vector2(Main.rand.NextFloat(-10f, 10f), Main.rand.NextFloat(-10f, -7f));
                             if (reversedGravity)
-                                velocityY *= -1f;
-                            int flame = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.oldPosition.X + (Projectile.width / 2), Projectile.oldPosition.Y + (Projectile.height / 2), velocityX, velocityY, projectileType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                            Main.projectile[flame].aiStyle = ProjAIStyleID.Arrow;
-                            Main.projectile[flame].originalDamage = Projectile.originalDamage;
+                                velocity.Y *= -1f;
+                            Projectile flame = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.oldPosition + Projectile.Size * 0.5f, velocity, projectileType, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            flame.aiStyle = ProjAIStyleID.Arrow;
                         }
                         SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
                         Projectile.ai[0] = 20f;

@@ -1,14 +1,15 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class InfectedRemote : ModItem
+    public class InfectedRemote : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int DefaultIframes = 10;
 
         public const int ChargeIframes = 2;
@@ -31,24 +32,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float EnemyTargetingRange = 1300f;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Infected Remote");
-            Tooltip.SetDefault("Summons a humanoid-hybrid Plaguebringer, codenamed 'Virili', to aid you in battle\n" +
-                $"Virili requires {MinionSlotRequirement} minion slots to summon, and can only be summoned once\n" +
-                "Virili uses a variety of attacks which she cycles through on a timer\n" +
-                "All attacks spread the plague, as was her original design intention\n" +
-                "'A single note graces the back:'\n" +
-                "'WARNING: Subject is extremely corrosive and contagious. Avoid direct contact.'");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 50;
-            Item.mana = 10;
             Item.width = 46;
             Item.height = 28;
+            Item.damage = 50;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 19;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
@@ -58,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
@@ -68,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             CalamityUtils.KillShootProjectiles(true, type, player);
-            
+
             int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;

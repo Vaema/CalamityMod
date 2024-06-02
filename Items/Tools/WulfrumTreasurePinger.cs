@@ -13,8 +13,9 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Tools
 {
-    public class WulfrumTreasurePinger : ModItem
+    public class WulfrumTreasurePinger : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         public static readonly SoundStyle ScanBeepSound = new("CalamityMod/Sounds/Item/WulfrumPing") { PitchVariance = 0.1f };
         public static readonly SoundStyle ScanBeepBreakSound = new("CalamityMod/Sounds/Item/WulfrumPingBreak");
         public static readonly SoundStyle RechargeBeepSound = new("CalamityMod/Sounds/Item/WulfrumPingReady") { PitchVariance = 0.1f };
@@ -23,15 +24,6 @@ namespace CalamityMod.Items.Tools
         public const int maxUses = 20;
         public static int breakTime = 90;
         public int timeBeforeBlast = 90;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wulfrum Treasure Pinger");
-            Tooltip.SetDefault("Helps you find metal that's hopefully more valuable than wulfrum\n" +
-            "This contraption seems incredibly shoddy. [c/fc4903:It'll break sooner than later for sure]"
-            );
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -49,10 +41,10 @@ namespace CalamityMod.Items.Tools
             timeBeforeBlast = breakTime;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override void HoldItem(Player player)
         {
@@ -67,7 +59,7 @@ namespace CalamityMod.Items.Tools
 
                 float breakProgress = 1 - timeBeforeBlast / (float)breakTime;
 
-                int smokeLikelyhood = (int)Math.Floor(1 + timeBeforeBlast / (float)breakTime * 4);
+                int smokeLikelyhood = 1 + (int)Math.Floor(timeBeforeBlast / (float)breakTime * 4);
                 if (Main.rand.NextBool(smokeLikelyhood))
                 {
                     Vector2 smokePos = player.GetBackHandPosition(player.compositeBackArm.stretch, player.compositeBackArm.rotation).Floor();
@@ -87,7 +79,7 @@ namespace CalamityMod.Items.Tools
             {
                 int scrapRefund = Main.rand.Next(0, 4);
                 if (scrapRefund > 0)
-                    player.QuickSpawnItem(Item.GetSource_ItemUse(Item), ModContent.ItemType<WulfrumMetalScrap>(), scrapRefund);
+                    player.QuickSpawnItem(Item.GetSource_FromThis(), ModContent.ItemType<WulfrumMetalScrap>(), scrapRefund);
 
                 Item.TurnToAir();
 
@@ -117,7 +109,7 @@ namespace CalamityMod.Items.Tools
                         Vector2 shrapnelVelocity = Main.rand.NextVector2Circular(9f, 9f);
                         float shrapnelScale = Main.rand.NextFloat(0.8f, 1f);
 
-                        Gore.NewGore(Item.GetSource_ItemUse(Item), centerPosition, shrapnelVelocity, Mod.Find<ModGore>("WulfrumPinger" + Main.rand.Next(1, 5).ToString()).Type, shrapnelScale);
+                        Gore.NewGore(Item.GetSource_FromThis(), centerPosition, shrapnelVelocity, Mod.Find<ModGore>("WulfrumPinger" + Main.rand.Next(1, 5).ToString()).Type, shrapnelScale);
                     }
                 }
 
@@ -290,9 +282,10 @@ namespace CalamityMod.Items.Tools
             //Intentionally craftable anywhere.
             CreateRecipe().
                 AddIngredient<WulfrumMetalScrap>(6).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 
-    
+
 }

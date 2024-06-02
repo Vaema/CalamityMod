@@ -1,18 +1,20 @@
-﻿using CalamityMod.Sounds;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Ranged;
-using ReLogic.Utilities;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class SevensStrikerHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheSevensStriker>();
         public bool rolling = true; // If the slot machine is currently rolling
         public bool shotonce = false; // So that the first shot doesn't consume two ammo
         public int shottimer = 0; // Solely exists so that the Platinum shots aren't instantaneous
@@ -23,7 +25,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sevens Striker");
             Main.projFrames[Projectile.type] = 19;
         }
 
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Player player = Main.player[Projectile.owner];
             Vector2 playerpos = player.RotatedRelativePoint(player.MountedCenter, true);
-            bool shouldBeHeld = player.channel && !player.noItems && !player.CCed;
+            bool shouldBeHeld = !player.CantUseHoldout();
 
             int shot;
             float scaleFactor = 14f;
@@ -134,17 +135,17 @@ namespace CalamityMod.Projectiles.Ranged
                             if (shottimer == 1)
                             {
                                 SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
-                                CombatText.NewText(player.getRect(), Color.Gold, "Jackpot!!!", true);
+                                CombatText.NewText(player.getRect(), Color.Gold, CalamityUtils.GetTextValue("Misc.SevensJackpot"), true);
                             }
-                            // Every 5 frames, shoot 7 coins. The first 5 frames are excluded for timing purposes
-                            if (shottimer % 5 == 0 && shottimer > 5)
+                            // Every 7 frames, shoot 7 coins. The first 7 frames are excluded for timing purposes
+                            if (shottimer % 7 == 0 && shottimer > 7)
                             {
                                 int jackpotDamage = (int)(weaponDamage * TheSevensStriker.JackpotMultiplier);
                                 Shoot(7, ModContent.ProjectileType<SevensStrikerPlatinumCoin>(), jackpotDamage, weaponKnockback, (int)scaleFactor * 2f, 0.2f);
                                 SoundEngine.PlaySound(TheSevensStriker.CoinSound, Projectile.Center);
                             }
                             // After 7 waves have been shot, reset the gun and roll again
-                            if (shottimer > 40)
+                            if (shottimer > 56)
                             {
                                 soundtimer = 0;
                                 rolling = true;
@@ -164,14 +165,14 @@ namespace CalamityMod.Projectiles.Ranged
                                     // A single brick with 100% damage
                                     case 1:
                                         Shoot(1, ModContent.ProjectileType<SevensStrikerBrick>(), weaponDamage, 0, 2f, 0);
-                                        CombatText.NewText(player.getRect(), Color.Gray, "Bust!", true);
+                                        CombatText.NewText(player.getRect(), Color.Gray, CalamityUtils.GetTextValue("Misc.SevensBust"), true);
                                         SoundEngine.PlaySound(TheSevensStriker.BustSound, Projectile.Center);
                                         break;
-                                    // 7 exploding oranges with 200% damage
+                                    // 7 exploding oranges with 100% damage
                                     case 2:
                                         int doublesDamage = (int)(weaponDamage * TheSevensStriker.DoublesMultiplier);
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerOrange>(), doublesDamage, weaponKnockback, 2f, 0.1f);
-                                        CombatText.NewText(player.getRect(), Color.Orange, "Doubles!", true);
+                                        CombatText.NewText(player.getRect(), Color.Orange, CalamityUtils.GetTextValue("Misc.SevensDoubles"), true);
                                         SoundEngine.PlaySound(TheSevensStriker.DoublesSound, Projectile.Center);
                                         break;
                                     // 7 piercing grapes with X% damage
@@ -181,7 +182,7 @@ namespace CalamityMod.Projectiles.Ranged
                                         int grapeDamage = (int)(weaponDamage * TheSevensStriker.TriplesGrapeMultiplier);
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerCherry>(), cherryDamage, weaponKnockback, 1.5f, 0.1f);
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerGrape>(), grapeDamage, weaponKnockback, 2f, 0.2f);
-                                        CombatText.NewText(player.getRect(), Color.Red, "Triples!", true);
+                                        CombatText.NewText(player.getRect(), Color.Red, CalamityUtils.GetTextValue("Misc.SevensTriples"), true);
                                         SoundEngine.PlaySound(TheSevensStriker.TriplesSound, Projectile.Center);
                                         break;
                                 }
@@ -197,6 +198,9 @@ namespace CalamityMod.Projectiles.Ranged
                             }
                         }
                     }
+                    // Update the roll sound position
+                    if (SoundEngine.TryGetActiveSound(RouletteSoundSlot, out var rouletteSound) && rouletteSound.IsPlaying)
+                        rouletteSound.Position = Projectile.Center;
                 }
                 // If the player can't use the gun, KILL it
                 else
@@ -219,7 +223,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Holdout stuff
-            Projectile.position = player.RotatedRelativePoint(player.MountedCenter, true) - Projectile.Size / 2f;
+            Projectile.position = (player.RotatedRelativePoint(player.MountedCenter, true) - Projectile.Size / 2f) + Projectile.velocity * 95;
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.spriteDirection = Projectile.direction;
             Projectile.timeLeft = 2;
@@ -333,7 +337,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // When the gun disappears, stop any in-progress slots sounds and set a cooldown of 12 frames.
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (SoundEngine.TryGetActiveSound(RouletteSoundSlot, out var dringdring))
                 dringdring.Stop();

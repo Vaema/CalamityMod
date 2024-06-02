@@ -3,24 +3,25 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class HolyExplosionBoom : BaseMassiveExplosionProjectile
+    public class HolyExplosionBoom : BaseMassiveExplosionProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override int Lifetime => 60;
         public override bool UsesScreenshake => true;
         public override float GetScreenshakePower(float pulseCompletionRatio) => CalamityUtils.Convert01To010(pulseCompletionRatio) * 16f;
         public override Color GetCurrentExplosionColor(float pulseCompletionRatio)
         {
-            Color explosionColor = CalamityWorld.getFixedBoi ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : (Main.dayTime ? Color.Orange : Color.BlueViolet);
+            Color explosionColor = Main.zenithWorld ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : (Main.IsItDay() ? Color.Orange : Color.BlueViolet);
             return Color.Lerp(explosionColor * 1.6f, Color.White, MathHelper.Clamp(pulseCompletionRatio * 2.2f, 0f, 1f));
         }
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Holy Explosion");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 

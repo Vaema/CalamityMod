@@ -1,6 +1,6 @@
+﻿using System.Collections.Generic;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -10,8 +10,6 @@ namespace CalamityMod.Buffs.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Furtastic Duo");
-            Description.SetDefault("They just did! The Furtastic Duo will accompany you!");
             Main.buffNoTimeDisplay[Type] = true;
             Main.vanityPet[Type] = true;
         }

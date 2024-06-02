@@ -6,22 +6,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Ammo
 {
     [LegacyName("FlashBullet")]
-    public class FlashRound : ModItem
+    public class FlashRound : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Flash Round");
-            Tooltip.SetDefault("Gives off a concussive blast that confuses enemies in a large area for a short time");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 5;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 12;
             Item.height = 18;
-            Item.maxStack = 999;
+            Item.damage = 5;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 1.15f;
             Item.value = Item.sellPrice(copper: 2);

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
@@ -6,37 +7,31 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class DeificAmulet : ModItem
+    public class DeificAmulet : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Deific Amulet");
-            Tooltip.SetDefault("Causes stars to fall and grants increased immune time when damaged\n" +
-                "Provides life regeneration and reduces the cooldown of healing potions\n");
-        }
+        public new string LocalizationCategory => "Items.Accessories";
+
+        public static readonly int MaxBonusIFrames = 30;
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
             Item.rare = ItemRarityID.Cyan;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.dAmulet = true;
             player.longInvince = true;
-            player.lifeRegen += 1;
+            modPlayer.dAmulet = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.CharmofMyths).
                 AddIngredient(ItemID.StarVeil).
                 AddIngredient<AstralBar>(10).
                 AddIngredient<SeaPrism>(15).

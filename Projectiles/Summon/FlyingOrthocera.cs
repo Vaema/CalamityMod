@@ -5,13 +5,13 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class FlyingOrthocera : ModProjectile
+    public class FlyingOrthocera : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float SearchDistance = 850f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flying Orthocera");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Summon
                 for (int i = 0; i < 56; i++)
                 {
                     float angle = MathHelper.TwoPi / 56f * i;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.scale = 1.5f;
                     dust.velocity = angle.ToRotationVector2() * 7f;
                     dust.noGravity = true;
@@ -61,9 +61,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(potentialTarget.Center, Vector2.UnitY) * 11f, ModContent.ProjectileType<FlyingOrthoceraStream>(), Projectile.damage, 4f, Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(potentialTarget.Center, Vector2.UnitY) * 11f, ModContent.ProjectileType<FlyingOrthoceraStream>(), Projectile.damage, 4f, Projectile.owner);
                     }
                 }
             }

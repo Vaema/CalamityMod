@@ -7,17 +7,15 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.DraedonMisc
 {
     [LegacyName("PowerCell")]
-    public class DraedonPowerCell : ModItem
+    public class DraedonPowerCell : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         // This is how much Charge each Power Cell is worth when charging. Leave this at 1.
         public const float ChargeValue = 1f;
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Draedon Power Cell");
-            Tooltip.SetDefault("Used to charge Draedon's weaponry at a Charging Station\n" +
-                               "Also can be processed by the Extractinator for spare parts");
+            Item.ResearchUnlockCount = 100;
             ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
         }
 
@@ -26,18 +24,14 @@ namespace CalamityMod.Items.DraedonMisc
             Item.width = 26;
             Item.height = 14;
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
 
-            Item.consumable = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 10;
+            Item.MakeUsableWithChlorophyteExtractinator();
             Item.useTime = 2;
-            Item.autoReuse = true;
-            Item.useTurn = true;
             Item.value = Item.sellPrice(0, 0, 0, 20);
         }
 
-        public override void ExtractinatorUse(ref int resultType, ref int resultStack)
+        public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
         {
             float dropRand = Main.rand.NextFloat();
             resultStack = 1;

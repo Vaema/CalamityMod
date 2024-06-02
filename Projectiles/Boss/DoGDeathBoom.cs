@@ -2,11 +2,13 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGDeathBoom : BaseMassiveExplosionProjectile
+    public class DoGDeathBoom : BaseMassiveExplosionProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override int Lifetime => 180;
         public override bool UsesScreenshake => true;
         public override float GetScreenshakePower(float pulseCompletionRatio) => CalamityUtils.Convert01To010(pulseCompletionRatio) * 28f;
@@ -16,9 +18,8 @@ namespace CalamityMod.Projectiles.Boss
         }
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public override void SetStaticDefaults() 
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cosmic Explosion");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 

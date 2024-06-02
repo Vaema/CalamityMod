@@ -1,15 +1,20 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
-    public class Akato : ModProjectile
+    public class Akato : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Akato");
             Main.projFrames[Projectile.type] = 6;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            .WithOffset(-38f, 0f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

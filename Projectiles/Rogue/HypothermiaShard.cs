@@ -6,14 +6,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class HypothermiaShard : ModProjectile
+    public class HypothermiaShard : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private float counter = 0f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ice Shard");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -35,9 +31,9 @@ namespace CalamityMod.Projectiles.Rogue
             counter += 0.25f;
             if (Main.rand.NextBool(10))
             {
-                int num300 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 191, 0f, 0f, 0, default, 0.8f);
-                Main.dust[num300].noGravity = true;
-                Main.dust[num300].velocity *= 0.2f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 318, 0f, 0f, 0, default, 0.8f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 0.2f;
             }
             Projectile.velocity *= 0.996f;
             if (counter > 100f)
@@ -66,28 +62,22 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 191, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 0.8f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 318, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 0.8f);
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Frostburn, 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 120);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Frostburn, 120);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Frostburn2, 120);
 
         public override bool PreDraw(ref Color lightColor)
         {
             //Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == 1f)
             {
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard2").Value;

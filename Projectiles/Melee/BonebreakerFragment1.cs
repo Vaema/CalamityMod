@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Buffs.StatDebuffs;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BonebreakerFragment1 : ModProjectile
+    public class BonebreakerFragment1 : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shrapnel");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -44,13 +40,13 @@ namespace CalamityMod.Projectiles.Melee
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Venom, 60);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 60);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Venom, 60);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 60);

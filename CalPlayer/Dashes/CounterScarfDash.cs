@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
@@ -19,11 +20,11 @@ namespace CalamityMod.CalPlayer.Dashes
         {
             for (int d = 0; d < 20; d++)
             {
-                Dust redDashDust = Dust.NewDustDirect(player.position, player.width, player.height, 235, 0f, 0f, 100, default, 2f);
+                Dust redDashDust = Dust.NewDustDirect(player.position, player.width, player.height, DustID.LifeDrain, 0f, 0f, 100, default, 2f);
                 redDashDust.position += Main.rand.NextVector2Square(-5f, 5f);
                 redDashDust.velocity *= 0.2f;
                 redDashDust.scale *= Main.rand.NextFloat(1f, 1.2f);
-                redDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShoe, player);
+                redDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cNeck, player);
             }
         }
 
@@ -41,10 +42,10 @@ namespace CalamityMod.CalPlayer.Dashes
                 }
                 Vector2 dustSpawnPosition = new Vector2(player.position.X, dustSpawnTop);
 
-                Dust redDashDust = Dust.NewDustDirect(dustSpawnPosition, player.width, dustSpawnHeight, 235, 0f, 0f, 100, default, 1.4f);
+                Dust redDashDust = Dust.NewDustDirect(dustSpawnPosition, player.width, dustSpawnHeight, DustID.LifeDrain, 0f, 0f, 100, default, 1.4f);
                 redDashDust.velocity *= 0.1f;
                 redDashDust.scale *= Main.rand.NextFloat(1f, 1.2f);
-                redDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShoe, player);
+                redDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cNeck, player);
             }
         }
     }

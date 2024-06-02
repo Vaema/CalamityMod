@@ -2,8 +2,9 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -33,10 +34,8 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.WaterDeath = false;
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            AddMapEntry(new Color(150, 100, 50), name);
-            name.SetDefault("Column");
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            AddMapEntry(new Color(150, 100, 50), CalamityUtils.GetText("Tiles.Column"));
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             base.SetStaticDefaults();
         }
@@ -64,6 +63,7 @@ namespace CalamityMod.Tiles.Abyss
                 Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16f, Main.rand.NextVector2Unit() * WorldGen.genRand.NextFloat(1.4f, 3.2f), goreID);
             }
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 2;

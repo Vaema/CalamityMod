@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
@@ -12,18 +12,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class CragmawBeam : ModProjectile
+    public class CragmawBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         // How long this laser can exist before it is deleted.
         public const int Lifetime = 120;
 
         // Pretty self explanatory
         private const float maximumLength = 1200f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gamma Ray");
-        }
 
         public override void SetDefaults()
         {
@@ -118,24 +114,24 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    float theta = Projectile.velocity.ToRotation() + Main.rand.NextBool(2).ToDirectionInt() * MathHelper.PiOver2;
+                    float theta = Projectile.velocity.ToRotation() + Main.rand.NextBool().ToDirectionInt() * MathHelper.PiOver2;
                     float speed = (float)Main.rand.NextDouble() * 2f + 2f;
                     Vector2 velocity = theta.ToRotationVector2() * speed;
-                    Dust dust = Dust.NewDustDirect(beamEndPosiiton, 0, 0, (int)CalamityDusts.SulfurousSeaAcid, velocity.X, velocity.Y, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(beamEndPosiiton, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, velocity.X, velocity.Y, 0, default, 1f);
                     dust.noGravity = true;
                     dust.scale = 2.1f;
                 }
 
                 for (int i = 0; i < 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(55f)).RotatedBy(Projectile.rotation);
                     dust.noGravity = true;
                     dust.scale = 1.8f;
                 }
                 for (int i = 0; i < 16; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.velocity = (i / 16f * MathHelper.TwoPi).ToRotationVector2() * 3f;
                     dust.noGravity = true;
                     dust.scale = 2.4f;
@@ -215,9 +211,9 @@ namespace CalamityMod.Projectiles.Enemy
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);

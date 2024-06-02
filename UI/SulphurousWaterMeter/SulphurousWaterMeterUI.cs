@@ -33,7 +33,7 @@ namespace CalamityMod.UI.SulphurousWaterMeter
         }
 
         private static void Reset() => dragOffset = null;
-        
+
         public static void Draw(SpriteBatch spriteBatch, Player player)
         {
             // Sanity check the planned position before drawing. This is done relative.
@@ -89,7 +89,7 @@ namespace CalamityMod.UI.SulphurousWaterMeter
                 if (modPlayer.SulphWaterPoisoningLevel > 0f && modPlayer.SulphWaterUIOpacity >= 0f)
                 {
                     string poisonText = (modPlayer.SulphWaterPoisoningLevel * 100f).ToString("n2");
-                    string textToDisplay = $"Sulphuric Poisoning: {poisonText}/100";
+                    string textToDisplay = $"{CalamityUtils.GetTextValue("UI.SulphurousWater")}: {poisonText}/100";
                     Main.instance.MouseText(textToDisplay, 0, 0, -1, -1, -1, -1);
                     modPlayer.SulphWaterUIOpacity = MathHelper.Lerp(modPlayer.SulphWaterUIOpacity, 0.25f, 0.035f);
                 }
@@ -135,7 +135,7 @@ namespace CalamityMod.UI.SulphurousWaterMeter
             float uiScale = Main.UIScale;
             float offset = (edgeTexture.Width - barTexture.Width) * 0.5f;
             spriteBatch.Draw(edgeTexture, screenPos, null, Color.White * modPlayer.SulphWaterUIOpacity, 0f, edgeTexture.Size() * 0.5f, uiScale, SpriteEffects.None, 0);
-            
+
             float completionRatio = MathHelper.Clamp(modPlayer.SulphWaterPoisoningLevel, 0f, 1f);
             Rectangle barRectangle = new Rectangle(0, 0, (int)(barTexture.Width * completionRatio), barTexture.Width);
             spriteBatch.Draw(barTexture, screenPos + new Vector2(offset * uiScale, 0), barRectangle, Color.White * modPlayer.SulphWaterUIOpacity, 0f, edgeTexture.Size() * 0.5f, uiScale, SpriteEffects.None, 0);

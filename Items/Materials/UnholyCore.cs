@@ -5,20 +5,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class UnholyCore : ModItem
+    public class UnholyCore : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Unholy Core");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 90; // Chlorophyte Ore
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 90; // Chlorophyte Ore
         }
 
         public override void SetDefaults()
         {
-            Item.width = 15;
-            Item.height = 12;
-            Item.maxStack = 999;
+            Item.width = 26;
+            Item.height = 46;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Pink;
         }

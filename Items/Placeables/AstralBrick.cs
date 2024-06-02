@@ -5,18 +5,19 @@ using Terraria.ModLoader; // If you are using c# 6, you can use: "using static T
 
 namespace CalamityMod.Items.Placeables
 {
-    public class AstralBrick : ModItem
+    public class AstralBrick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;

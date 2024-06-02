@@ -8,24 +8,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Prismatic
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class PrismaticGreaves : ModItem
+    public class PrismaticGreaves : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Prismatic Greaves");
-            Tooltip.SetDefault("10% increased magic damage and 12% increased magic crit\n" +
-                "20% decreased non-magic damage\n" +
-                "10% increased flight time and 2% increased jump speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.defense = 21;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }

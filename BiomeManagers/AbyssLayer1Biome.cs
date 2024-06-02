@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.World;
+using CalamityMod.Items.Placeables.FurnitureAbyss;
 using CalamityMod.Systems;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -10,7 +11,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class AbyssLayer1Biome : ModBiome
     {
-        //keep this here even though layer one now uses a tile check, cannot be bothered to move it for now
+        // Keep this here even though layer one now uses a tile check, cannot be bothered to move it for now
         public static bool MeetsBaseAbyssRequirement(Player player, out int playerYTileCoords)
         {
             Point point = player.Center.ToTileCoordinates();
@@ -36,14 +37,18 @@ namespace CalamityMod.BiomeManagers
             if (WeakReferenceSupport.InAnySubworld())
                 return false;
 
-            int abyssStartHeight = (SulphurousSea.YStart + (int)Main.worldSurface) / 2 + 90;
+            int abyssStartHeight = Main.remixWorld ? SulphurousSea.YStart : ((SulphurousSea.YStart + (int)Main.worldSurface) / 2 + 90);
 
-            return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords >= abyssStartHeight && playerYTileCoords <= Main.maxTilesY - 200;
+            if (Main.remixWorld)
+                return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords < abyssStartHeight;
+
+            return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords >= abyssStartHeight && playerYTileCoords <= Main.UnderworldLayer;
         }
 
-        //temporarily use sulphur for now
+        // Temporarily use sulphur for now
         public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater");
-        public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
+        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer1Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer1";
         public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer1";
@@ -54,24 +59,23 @@ namespace CalamityMod.BiomeManagers
             {
                 if (CalamityPlayer.areThereAnyDamnBosses)
                     return Main.curMusic;
-                return !Main.dayTime
-                ? CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaNight") ?? MusicID.Desert // Nighttime
-                : CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaDay") ?? MusicID.Desert; // Daytime
+                return CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer1") ?? MusicID.Desert;
             }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sulphuric Depths");
         }
 
         public override bool IsBiomeActive(Player player)
         {
             Point point = player.Center.ToTileCoordinates();
 
-            int abyssStartHeight = (SulphurousSea.YStart + (int)Main.worldSurface) / 2 + 90;
+            int abyssStartHeight = Main.remixWorld ? SulphurousSea.YStart : ((SulphurousSea.YStart + (int)Main.worldSurface) / 2 + 90);
 
-            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && point.Y >= abyssStartHeight &&
+            if (Main.remixWorld)
+            {
+                return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && point.Y < abyssStartHeight &&
+                BiomeTileCounterSystem.Layer1Tiles >= 200 && !player.Calamity().ZoneAbyssLayer2 && !player.Calamity().ZoneAbyssLayer3 && !player.Calamity().ZoneAbyssLayer4;
+            }
+
+            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && point.Y >= abyssStartHeight &&
             BiomeTileCounterSystem.Layer1Tiles >= 200 && !player.Calamity().ZoneAbyssLayer2 && !player.Calamity().ZoneAbyssLayer3 && !player.Calamity().ZoneAbyssLayer4;
         }
     }

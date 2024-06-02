@@ -1,23 +1,19 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.NPCs.Cryogen;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class IceRain : ModProjectile
+    public class IceRain : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ice Rain");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -50,11 +46,11 @@ namespace CalamityMod.Projectiles.Boss
 
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-                for (int num322 = 0; num322 < 2; num322++)
+                for (int i = 0; i < 2; i++)
                 {
-                    int num323 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 92, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
-                    Main.dust[num323].noGravity = true;
-                    Dust dust = Main.dust[num323];
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                    Main.dust[icyDust].noGravity = true;
+                    Dust dust = Main.dust[icyDust];
                     dust.velocity *= 0.3f;
                 }
             }
@@ -65,11 +61,11 @@ namespace CalamityMod.Projectiles.Boss
 
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-                for (int num322 = 0; num322 < 2; num322++)
+                for (int i = 0; i < 2; i++)
                 {
-                    int num323 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 92, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
-                    Main.dust[num323].noGravity = true;
-                    Dust dust = Main.dust[num323];
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                    Main.dust[icyDust].noGravity = true;
+                    Dust dust = Main.dust[icyDust];
                     dust.velocity *= 0.3f;
                 }
             }
@@ -92,21 +88,21 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27 with { Volume = SoundID.Item27.Volume * 0.25f }, Projectile.Center);
-            for (int num373 = 0; num373 < 3; num373++)
+            //SoundEngine.PlaySound(SoundID.Item27 with { Volume = SoundID.Item27.Volume * 0.25f }, Projectile.Center);
+            for (int j = 0; j < 3; j++)
             {
-                int num374 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 76, 0f, 0f, 0, default, 1f);
-                Main.dust[num374].noGravity = true;
-                Main.dust[num374].noLight = true;
-                Main.dust[num374].scale = 0.7f;
+                int snowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Snow, 0f, 0f, 0, default, 1f);
+                Main.dust[snowDust].noGravity = true;
+                Main.dust[snowDust].noLight = true;
+                Main.dust[snowDust].scale = 0.7f;
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.Frostburn, 120, true);

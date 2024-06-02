@@ -1,16 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class DivineHatchetBoomerang : ModProjectile
+    public class DivineHatchetBoomerang : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Items/Weapons/Melee/SeekingScorcher";
 
         private bool hasHitEnemy = false;
@@ -21,7 +22,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Scorching Seeker");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 60;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = Lifetime;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.extraUpdates = 1;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             //holy dust
             if (Main.rand.NextBool(8))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
             // Boomerang rotation
@@ -155,7 +155,7 @@ namespace CalamityMod.Projectiles.Melee
         //glowmask effect
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 200);
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //inflict Holy Flames for 6 seconds
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
@@ -165,21 +165,20 @@ namespace CalamityMod.Projectiles.Melee
                 //find a nearby NPC to track
                 float minDist = 999f;
                 int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
                     bool hasHitNPC = false;
                     for (int j = 0; j < previousNPCs.Count; j++)
                     {
-                        if (previousNPCs[j] == i)
+                        if (previousNPCs[j] == npc.whoAmI)
                         {
                             hasHitNPC = true;
                         }
                     }
 
-                    NPC npc = Main.npc[i];
                     if (npc == target)
                     {
-                        previousNPCs.Add(i);
+                        previousNPCs.Add(npc.whoAmI);
                     }
                     if (npc.CanBeChasedBy(Projectile, false) && npc != target && !hasHitNPC)
                     {
@@ -187,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }

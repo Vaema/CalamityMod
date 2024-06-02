@@ -7,23 +7,15 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Tarragon
 {
     [AutoloadEquip(EquipType.Body)]
-    public class TarragonBreastplate : ModItem
+    public class TarragonBreastplate : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Tarragon Breastplate");
-            Tooltip.SetDefault("Breastplate of the exiler\n" +
-                    "10% increased damage and 5% increased critical strike chance\n" +
-                    "+2 life regen and +40 max life");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.lifeRegen = 2;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.lifeRegen = 3;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.defense = 37;
             Item.rare = ModContent.RarityType<Turquoise>();
         }

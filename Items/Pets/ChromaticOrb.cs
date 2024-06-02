@@ -7,17 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class ChromaticOrb : ModItem
+    public class ChromaticOrb : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Chromatic Orb");
-            Tooltip.SetDefault("It glows warmly in your hand\n" +
-                "Summons an ancient dragon light pet that highlights nearby enemies and danger sources\n" +
-                "Provides a small amount of light in the abyss");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.WispinaBottle);

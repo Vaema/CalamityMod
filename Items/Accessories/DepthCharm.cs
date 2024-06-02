@@ -1,26 +1,23 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Waist)]
-    public class DepthCharm : ModItem
+    public class DepthCharm : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Depths Charm");
-            Tooltip.SetDefault("Reduces the damage caused by the pressure of the abyss while out of breath\n" +
-                "Removes the bleed effect caused by the upper layers of the abyss");
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<IronBoots>();
         }
-
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

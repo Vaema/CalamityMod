@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,18 +12,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("RoyalKnives", "RoyalKnivesMelee", "RoyalKnivesRogue")]
-    public class IllustriousKnives : ModItem
+    public class IllustriousKnives : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Illustrious Knives");
-            Tooltip.SetDefault("Throws a flurry of homing knives that can heal the user");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 44;
+            Item.height = 62;
             Item.damage = 400;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
@@ -34,9 +29,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
-            Item.height = 62;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -46,60 +40,58 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float num72 = Item.shootSpeed;
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            Vector2 value = Vector2.UnitX.RotatedBy((double)player.fullRotation, default);
-            Vector2 vector3 = Main.MouseWorld - vector2;
-            float num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-            float num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
+            float knifeSpeed = Item.shootSpeed;
+            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
             if (player.gravDir == -1f)
             {
-                num79 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - vector2.Y;
+                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
             }
-            float num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-            if ((float.IsNaN(num78) && float.IsNaN(num79)) || (num78 == 0f && num79 == 0f))
+            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
             {
-                num78 = (float)player.direction;
-                num79 = 0f;
-                num80 = num72;
+                mouseXDist = (float)player.direction;
+                mouseYDist = 0f;
+                mouseDistance = knifeSpeed;
             }
             else
             {
-                num80 = num72 / num80;
+                mouseDistance = knifeSpeed / mouseDistance;
             }
-            num78 *= num80;
-            num79 *= num80;
-            int num146 = 4;
-            if (Main.rand.NextBool(2))
+            mouseXDist *= mouseDistance;
+            mouseYDist *= mouseDistance;
+            int knifeAmt = 4;
+            if (Main.rand.NextBool())
             {
-                num146++;
+                knifeAmt++;
             }
             if (Main.rand.NextBool(4))
             {
-                num146++;
+                knifeAmt++;
             }
             if (Main.rand.NextBool(6))
             {
-                num146++;
+                knifeAmt++;
             }
             if (Main.rand.NextBool(8))
             {
-                num146++;
+                knifeAmt++;
             }
-            for (int num147 = 0; num147 < num146; num147++)
+            for (int i = 0; i < knifeAmt; i++)
             {
-                float num148 = num78;
-                float num149 = num79;
-                float num150 = 0.05f * (float)num147;
-                num148 += (float)Main.rand.Next(-35, 36) * num150;
-                num149 += (float)Main.rand.Next(-35, 36) * num150;
-                num80 = (float)Math.Sqrt((double)(num148 * num148 + num149 * num149));
-                num80 = num72 / num80;
-                num148 *= num80;
-                num149 *= num80;
-                float x4 = vector2.X;
-                float y4 = vector2.Y;
-                Projectile.NewProjectile(source, x4, y4, num148, num149, type, damage, knockback, player.whoAmI, 0f, 0f);
+                float knifeSpawnXPos = mouseXDist;
+                float knifeSpawnYPos = mouseYDist;
+                float randOffsetDampener = 0.05f * (float)i;
+                knifeSpawnXPos += (float)Main.rand.Next(-35, 36) * randOffsetDampener;
+                knifeSpawnYPos += (float)Main.rand.Next(-35, 36) * randOffsetDampener;
+                mouseDistance = (float)Math.Sqrt((double)(knifeSpawnXPos * knifeSpawnXPos + knifeSpawnYPos * knifeSpawnYPos));
+                mouseDistance = knifeSpeed / mouseDistance;
+                knifeSpawnXPos *= mouseDistance;
+                knifeSpawnYPos *= mouseDistance;
+                float x4 = realPlayerPos.X;
+                float y4 = realPlayerPos.Y;
+                Projectile.NewProjectile(source, x4, y4, knifeSpawnXPos, knifeSpawnYPos, type, damage, knockback, player.whoAmI, 0f, 0f);
             }
             return false;
         }

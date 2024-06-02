@@ -1,21 +1,22 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TrueBitingEmbrace : ModProjectile
+    public class TrueBitingEmbrace : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_BitingEmbrace";
 
         private bool initialized = false;
@@ -59,7 +60,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Biting Embrace");
         }
         public override void SetDefaults()
         {
@@ -76,27 +76,27 @@ namespace CalamityMod.Projectiles.Melee
         {
             //The hitbox is simplified into a line collision.
             float collisionPoint = 0f;
-            float bladeLenght = 0f;
+            float bladeLength = 0f;
             Vector2 displace = Vector2.Zero;
             switch (SwingMode)
             {
                 case 0:
                 case 1:
-                    bladeLenght = 150 * Projectile.scale;
+                    bladeLength = 150 * Projectile.scale;
                     break;
                 case 2:
-                    bladeLenght = 225f; //In awe e
-                    bladeLenght *= Projectile.scale;
+                    bladeLength = 225f; //In awe e
+                    bladeLength *= Projectile.scale;
                     displace = direction * ThrustDisplaceRatio() * 60f;
                     break;
 
             }
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + displace, Owner.Center + displace + (rotation.ToRotationVector2() * bladeLenght), 26, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + displace, Owner.Center + displace + (rotation.ToRotationVector2() * bladeLength), 26, ref collisionPoint);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            base.OnHitNPC(target, damage, knockback, crit);
+            base.OnHitNPC(target, hit, damageDone);
             if (SwingMode == 2)
                 target.AddBuff(BuffType<GlacialState>(), 40);
         }
@@ -116,7 +116,6 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.width = Projectile.height = 100;
                         Projectile.width = Projectile.height = 100;
                         SoundEngine.PlaySound(SoundID.DD2_OgreSpit, Projectile.Center);
-                        Projectile.damage = (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_SecondSwingBoost);
                         break;
                     case 2:
                         Projectile.width = Projectile.height = 170;
@@ -175,11 +174,11 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(rotation.ToRotationVector2().X);
+            Owner.ChangeDir(Math.Sign(rotation.ToRotationVector2().X));
             Owner.itemRotation = rotation;
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
         }

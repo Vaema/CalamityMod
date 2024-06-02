@@ -7,14 +7,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.SummonItems
 {
     [LegacyName("EyeofExtinction")]
-    public class CeremonialUrn : ModItem
+    public class CeremonialUrn : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ceremonial Urn");
-            Tooltip.SetDefault("Use at the Altar of the Accursed to summon the Supreme Witch, Calamitas\n" + "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -24,10 +22,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override void AddRecipes()
         {

@@ -1,17 +1,13 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class CrystalPiercerShard : ModProjectile
+    public class CrystalPiercerShard : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private bool initialized = false;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Crystal Shard");
-        }
 
         public override void SetDefaults()
         {

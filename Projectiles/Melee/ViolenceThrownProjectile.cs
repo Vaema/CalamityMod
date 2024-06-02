@@ -1,24 +1,26 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class ViolenceThrownProjectile : ModProjectile
     {
-        internal PrimitiveTrail StreakDrawer = null;
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Violence>();
         internal Player Owner => Main.player[Projectile.owner];
         internal ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Violence";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Violence");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
         }
@@ -34,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
+            Projectile.localNPCHitCooldown = 8;
             Projectile.tileCollide = false;
         }
 
@@ -99,14 +101,14 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemAnimation = 2;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Main.netMode != NetmodeID.Server)
             {
                 // Play a splatter and impact sound.
                 SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
 
-                float damageInterpolant = Utils.GetLerpValue(950f, 2000f, damage, true);
+                float damageInterpolant = Utils.GetLerpValue(950f, 2000f, hit.Damage, true);
                 float impactAngularVelocity = MathHelper.Lerp(0.08f, 0.2f, damageInterpolant);
                 float impactParticleScale = MathHelper.Lerp(0.6f, 1f, damageInterpolant);
                 impactAngularVelocity *= Main.rand.NextBool().ToDirectionInt() * Main.rand.NextFloat(0.75f, 1.25f);
@@ -195,12 +197,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (StreakDrawer is null)
-                StreakDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
 
-            Texture2D spearProjectile = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             // Not cloning the points causes the below operations to be applied to the original oldPos value by reference
             // and thus causes it to be consistently added over and over, which is not intended behavior.
@@ -216,7 +215,12 @@ namespace CalamityMod.Projectiles.Melee
                 drawPoints[i] -= (Projectile.oldRot[i] + MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.5f;
 
             if (Time > Projectile.oldPos.Length)
-                StreakDrawer.Draw(drawPoints, Projectile.Size * 0.5f - Main.screenPosition, 88);
+            {
+                // Violence trakcs 36 positions in oldPos.
+                // Provide all 36 points for smoothing, but only render 24.
+                int numPointsRendered = 24;
+                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), numPointsRendered);
+            }
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             for (int i = 0; i < 6; i++)

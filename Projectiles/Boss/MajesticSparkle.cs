@@ -1,24 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class MajesticSparkle : ModProjectile
+    public class MajesticSparkle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public ref float Time => ref Projectile.ai[0];
         public ref float ColorSpectrumHue => ref Projectile.ai[1];
         public const int Lifetime = 90;
         public const int FadeinTime = 18;
         public const int FadeoutTime = 18;
         public override string Texture => "CalamityMod/Projectiles/StarProj";
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Majestic Sparkle");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 72;
@@ -55,7 +51,7 @@ namespace CalamityMod.Projectiles.Boss
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sparkleTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sparkleTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
             Color sparkleColor = Main.hslToRgb(ColorSpectrumHue, 1f, 0.5f) * Projectile.Opacity * 0.5f;
@@ -71,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 orthogonalsparkleScale = new Vector2(0.3f, 2f) * Projectile.Opacity * Projectile.scale;
 
             Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, sparkleColor, MathHelper.PiOver2 + Projectile.rotation, origin, orthogonalsparkleScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(sparkleTexture, drawPosition, null,sparkleColor, Projectile.rotation, origin, sparkleScale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, sparkleColor, Projectile.rotation, origin, sparkleScale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, orthogonalSparkleColor, MathHelper.PiOver2 + Projectile.rotation, origin, orthogonalsparkleScale * 0.6f, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, orthogonalSparkleColor, Projectile.rotation, origin, sparkleScale * 0.6f, SpriteEffects.None, 0);
             return false;

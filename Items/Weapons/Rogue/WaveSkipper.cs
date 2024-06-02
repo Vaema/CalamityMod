@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,17 +13,12 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("DuneHopper")]
     public class WaveSkipper : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wave Skipper"); // This will drop from the Sunken Sea Scourge miniboss once it's implemented.
-            Tooltip.SetDefault(@"Throws a spear that bounces a lot
-Stealth strikes throw three high speed spears");
-            SacrificeTotal = 1;
-        }
+        public static int SpreadAngle = 8;
 
         public override void SetDefaults()
         {
             Item.width = 44;
+            Item.height = 44;
             Item.damage = 80;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -32,10 +27,9 @@ Stealth strikes throw three high speed spears");
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 44;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.shoot = ModContent.ProjectileType<DuneHopperProjectile>();
+            Item.shoot = ModContent.ProjectileType<WaveSkipperProjectile>();
             Item.shootSpeed = 12f;
             Item.DamageType = RogueDamageClass.Instance;
         }
@@ -44,12 +38,10 @@ Stealth strikes throw three high speed spears");
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
-                int numProj = 3;
-                float rotation = MathHelper.ToRadians(3);
-                for (int i = 0; i < numProj; i++)
+                for (int i = -SpreadAngle; i < SpreadAngle * 2; i += SpreadAngle)
                 {
-                    Vector2 perturbedSpeed = new Vector2(velocity.X - 3f, velocity.Y - 3f).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                    int stealth = Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<DuneHopperProjectile>(), damage, knockback, player.whoAmI);
+                    Vector2 spreadVelocity = player.SafeDirectionTo(Main.MouseWorld).RotatedBy(MathHelper.ToRadians(i)) * Item.shootSpeed;
+                    int stealth = Projectile.NewProjectile(source, position, spreadVelocity, ModContent.ProjectileType<WaveSkipperProjectile>(), damage, knockback, player.whoAmI);
                     if (stealth.WithinBounds(Main.maxProjectiles))
                         Main.projectile[stealth].Calamity().stealthStrike = true;
                 }

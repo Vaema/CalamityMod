@@ -8,13 +8,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Potions
 {
     [LegacyName("CalamitasBrew")]
-    public class FlaskOfBrimstone : ModItem
+    public class FlaskOfBrimstone : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Flask of Brimstone");
-            Tooltip.SetDefault("Melee, Whip, and Rogue attacks inflict Brimstone Flames");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -22,7 +21,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 30;
             Item.height = 34;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 17;
             Item.useTime = 17;

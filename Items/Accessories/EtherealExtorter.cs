@@ -1,26 +1,19 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class EtherealExtorter : ModItem
+    public class EtherealExtorter : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ethereal Extorter");
-            Tooltip.SetDefault(@"Rogue projectiles explode into homing souls on death
-8% increased rogue damage and +10 maximum stealth");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -29,7 +22,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.etherealExtorter = true;
             player.GetDamage<ThrowingDamageClass>() += 0.08f;
-            modPlayer.rogueStealthMax += 0.1f;
+            modPlayer.rogueStealthMax += 0.05f;
         }
     }
 }

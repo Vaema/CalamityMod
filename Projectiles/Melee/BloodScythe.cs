@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BloodScythe : ModProjectile
+    public class BloodScythe : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Blood Scythe");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 28;
@@ -41,8 +37,8 @@ namespace CalamityMod.Projectiles.Melee
             if (potentialTarget != null && Projectile.timeLeft >= 480)
             {
                 float flySpeed = Projectile.velocity.Length();
-                if (flySpeed < 8f)
-                    flySpeed = 8f;
+                if (flySpeed < 10f)
+                    flySpeed = 10f;
 
                 Projectile.Center = Projectile.Center.MoveTowards(potentialTarget.Center, 1.75f);
                 Projectile.velocity = (Projectile.velocity * 14f + Projectile.SafeDirectionTo(potentialTarget.Center) * flySpeed) / 15f;
@@ -50,17 +46,17 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (Main.rand.NextBool(5))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 5, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire, 180);
         }

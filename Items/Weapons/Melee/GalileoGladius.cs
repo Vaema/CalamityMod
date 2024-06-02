@@ -8,39 +8,30 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class GalileoGladius : ModItem
+    public class GalileoGladius : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Galileo Gladius");
-            Tooltip.SetDefault("Don't underestimate the power of small space swords\n" +
-                "Shoots a homing crescent moon\n" +
-                "Spawns planetoids on enemy hits\n" +
-                "Receives 33% benefit from melee speed bonuses");
-            SacrificeTotal = 1;
-            ItemID.Sets.BonusAttackSpeedMultiplier[Item.type] = 0.33f;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
-            Item.useStyle = ItemUseStyleID.Rapier;
-            Item.DamageType = TrueMeleeDamageClass.Instance;
-            Item.useAnimation = 8;
-            Item.useTime = 8;
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 110;
-            Item.knockBack = 10f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
             Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.autoReuse = true;
+            Item.useStyle = ItemUseStyleID.Rapier;
+            Item.damage = 92;
+            Item.DamageType = DamageClass.Melee;
+            Item.useAnimation = Item.useTime = 12;
             Item.shoot = ModContent.ProjectileType<GalileoGladiusProj>();
             Item.shootSpeed = 0.9f;
-
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.knockBack = 10f;
+            Item.UseSound = SoundID.Item1;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
+
+        public override bool MeleePrefix() => true;
 
         public override void AddRecipes()
         {

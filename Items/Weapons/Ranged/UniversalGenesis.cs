@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,20 +12,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class UniversalGenesis : ModItem
+    public class UniversalGenesis : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Universal Genesis");
-            Tooltip.SetDefault("Let the starry sky fall upon your enemies\n" +
-                "Fires a spread of bullets from the gun and a flurry of stars to rain down on the cursor\n" +
-                "Converts musket balls into starcaller shots that summon additional stars on enemy hits\n" +
-                "50% chance to not consume ammo");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 158;
+            Item.height = 60;
             Item.damage = 192;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 26;
@@ -36,12 +29,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.Calamity().canFirePointBlankShots = true;
 
-            Item.width = 158;
-            Item.height = 60;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;

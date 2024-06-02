@@ -5,16 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class ElectrolyteGelPack : ModItem
+    public class ElectrolyteGelPack : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Electrolyte Gel Pack");
-            Tooltip.SetDefault("Permanently increases Adrenaline Mode damage by 15% and damage reduction by 5%\n" +
-                "Revengeance drop");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Misc";
         public override void SetDefaults()
         {
             Item.width = 20;

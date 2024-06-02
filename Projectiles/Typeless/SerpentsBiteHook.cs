@@ -7,17 +7,13 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class SerpentsBiteHook : ModProjectile
+    public class SerpentsBiteHook : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public const float PullSpeed = 12f;
         public const float ReelbackSpeed = 14f;
         public const float LaunchSpeed = 18f;
         public const float GrappleRangInTiles = 28.125f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Serpent's Bite");
-        }
-
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.GemHookAmethyst);

@@ -13,15 +13,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         private const float FlexMultMax = 5f;
         private float flexMult = 1f;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Deep Sea Dumbbell");
-            Tooltip.SetDefault("Throws a dumbbell that bounces and flings weights with each bounce\n" +
-                "Right click to flex, increasing the damage of your next attack up to 5 times damage\n" +
-                "Flexes can hit enemies directly");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 38;
@@ -40,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
         }
@@ -76,10 +67,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         }
 
         // Reset flex multiplier on direct hits.
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit) => flexMult = 1f;
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit) => flexMult = 1f;
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) => flexMult = 1f;
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => flexMult = 1f;
 
-		public override float StealthDamageMultiplier => 0.4f;
+        public override float StealthDamageMultiplier => 0.4f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

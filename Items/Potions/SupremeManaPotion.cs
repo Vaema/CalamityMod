@@ -5,12 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class SupremeManaPotion : ModItem
+    public class SupremeManaPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Supreme Mana Potion");
-            SacrificeTotal = 30;
+            Item.ResearchUnlockCount = 30;
         }
 
         public override void SetDefaults()
@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.healMana = 400;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -33,9 +33,10 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe(15).
                 AddIngredient(ItemID.SuperManaPotion, 15).
-                AddIngredient<Phantoplasm>().
+                AddIngredient<Necroplasm>().
                 AddTile(TileID.Bottles).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

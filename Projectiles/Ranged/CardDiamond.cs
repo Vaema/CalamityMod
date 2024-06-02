@@ -1,16 +1,16 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class CardDiamond : ModProjectile
+    public class CardDiamond : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Diamond");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -34,11 +34,11 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0f / 255f);
             Projectile.rotation -= (MathHelper.ToRadians(90) * Projectile.direction);
             Projectile.spriteDirection = Projectile.direction;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
-                int num137 = Dust.NewDust(Projectile.position, 1, 1, 30, 0f, 0f, 0, default, 0.5f);
-                Main.dust[num137].velocity *= 0f;
-                Main.dust[num137].noGravity = true;
+                int dust = Dust.NewDust(Projectile.position, 1, 1, DustID.Web, 0f, 0f, 0, default, 0.5f);
+                Main.dust[dust].velocity *= 0f;
+                Main.dust[dust].noGravity = true;
             }
         }
 
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 50;
@@ -61,9 +61,9 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int d = 0; d < 10; d++)
             {
-                int paper = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 30, 0f, 0f, 100, default, 2f);
+                int paper = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Web, 0f, 0f, 100, default, 2f);
                 Main.dust[paper].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[paper].scale = 0.5f;
                     Main.dust[paper].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -71,10 +71,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int d = 0; d < 15; d++)
             {
-                int paper = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 30, 0f, 0f, 100, default, 3f);
+                int paper = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Web, 0f, 0f, 100, default, 3f);
                 Main.dust[paper].noGravity = true;
                 Main.dust[paper].velocity *= 5f;
-                paper = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 30, 0f, 0f, 100, default, 2f);
+                paper = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Web, 0f, 0f, 100, default, 2f);
                 Main.dust[paper].velocity *= 2f;
             }
 

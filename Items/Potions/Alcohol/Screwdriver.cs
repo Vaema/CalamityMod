@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Screwdriver : ModItem
+    public class Screwdriver : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Screwdriver");
-            Tooltip.SetDefault(@"Do you have a screw loose?
-Multiplies piercing projectile damage by 1.05
-Reduces life regen by 1");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ Reduces life regen by 1");
             Item.width = 16;
             Item.height = 26;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.LightPurple;
             Item.useAnimation = 17;
             Item.useTime = 17;

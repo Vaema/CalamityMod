@@ -1,12 +1,12 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Projectiles.Melee;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -14,31 +14,18 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Items.Weapons.Melee
 {
     // TODO -- CANNOT RENAME THIS to ArkoftheAncients without corrupting existing items
-    public class TrueArkoftheAncients : ModItem
+    public class TrueArkoftheAncients : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public float Combo = 1f;
         public float Charge = 0f;
-        public static float chargeDamageMultiplier = 1.45f; //Extra damage from charge
-        public static float beamDamageMultiplier = 0.8f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
-        public static float glassStarDamageMultiplier = 0.4f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
+        public static float chargeDamageMultiplier = 1.25f; //Extra damage from charge
+        public static float beamDamageMultiplier = 1f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
+        public static float glassStarDamageMultiplier = 0.6f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
 
         public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
         public static float blastFalloffSpeed = 0.1f; //How much the blast damage falls off as you hit more and more targets
         public static float blastFalloffStrenght = 0.75f; //Value between 0 and 1 that determines how much falloff increases affect the damage : Closer to 0 = damage falls off less intensely, closer to 1 : damage falls off way harder
-
-        const string ParryTooltip = "Using right click will extend the Ark out in front of you." +
-        "Hitting an enemy with it will parry them, granting you brief invulnerability\n" +
-        "You can also parry projectiles to make them deal 160 less damage for a short period\n" +
-        "Parrying empowers the next 10 swings of the sword, letting them throw stronger projectiles\n" +
-        "Using right click and pressing UP will release all empowered charges in a powerful burst of energy";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ark of the Ancients");
-            Tooltip.SetDefault("This line gets set in ModifyTooltips\n" +
-            "A heavenly blade forged to vanquish all evil");
-            SacrificeTotal = 1;
-        }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -49,10 +36,10 @@ namespace CalamityMod.Items.Weapons.Melee
             if (player is null)
                 return;
 
-            var tooltip = tooltips.FirstOrDefault(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
+            var tooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[PARRY]") && x.Mod == "Terraria");
             if (tooltip != null)
             {
-                tooltip.Text = ParryTooltip;
+                tooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ParryInfo"));
                 tooltip.OverrideColor = Color.CornflowerBlue;
             }
         }
@@ -60,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 72;
-            Item.damage = 188;
+            Item.damage = 194;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noUseGraphic = true;
             Item.noMelee = true;
@@ -71,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 12f;
@@ -128,7 +115,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
                 Vector2 Shift = Utils.SafeNormalize(velocity.RotatedBy(MathHelper.PiOver2), Vector2.Zero) * 30;
 
-                Projectile.NewProjectile(source, player.Center + Shift, velocity.RotatedBy(MathHelper.PiOver4 * 0.3f) , ProjectileType<AncientStar>(), (int)(damage * glassStarDamageMultiplier), knockback, player.whoAmI, Charge > 0 ? 1 : 0);
+                Projectile.NewProjectile(source, player.Center + Shift, velocity.RotatedBy(MathHelper.PiOver4 * 0.3f), ProjectileType<AncientStar>(), (int)(damage * glassStarDamageMultiplier), knockback, player.whoAmI, Charge > 0 ? 1 : 0);
                 Projectile.NewProjectile(source, player.Center - Shift, velocity.RotatedBy(-MathHelper.PiOver4 * 0.3f), ProjectileType<AncientStar>(), (int)(damage * glassStarDamageMultiplier), knockback, player.whoAmI, Charge > 0 ? 1 : 0);
             }
 
@@ -168,14 +155,15 @@ namespace CalamityMod.Items.Weapons.Melee
             var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
             var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
 
-            float barScale = 1.5f;
-
-            Vector2 drawPos = position + Vector2.UnitY * ( frame.Height - 2f ) * scale + Vector2.UnitX * (frame.Width - barBG.Width * barScale) * scale * 0.5f;
+            float barScale = 1.625f;
+            Vector2 barOrigin = barBG.Size() * 0.5f;
+            float yOffset = 27f;
+            Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
             Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / 10f * barFG.Width), barFG.Height);
             Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.85f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
 
-            spriteBatch.Draw(barBG, drawPos, null, color, 0f, origin, scale * barScale, 0f, 0f);
-            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, origin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, barOrigin, scale * barScale, 0f, 0f);
         }
 
         public override void AddRecipes()

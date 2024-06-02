@@ -4,22 +4,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class HallowedRune : ModItem
+    public class HallowedRune : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hallowed Rune");
-            Tooltip.SetDefault("Whenever your minions hit an enemy you will gain a random buff, does not stack with downgrades\n" +
-                "These buffs will either boost your defense, summon damage, or life regen for a while\n" +
-                "If you have the offensive boost, enemies hit by minions will sometimes be hit by stars");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }

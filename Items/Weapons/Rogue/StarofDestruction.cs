@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,15 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class StarofDestruction : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Star of Destruction");
-            Tooltip.SetDefault("Fires a huge destructive mine that explodes into destruction bolts\n" +
-            "Amount of bolts scales with enemies hit, up to 16\n" +
-            "Stealth strikes always explode into the max amount of bolts");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = Item.height = 94;
@@ -30,14 +21,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 10f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<DestructionStar>();
             Item.shootSpeed = 5f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.8f;
+        public override float StealthDamageMultiplier => 0.8f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

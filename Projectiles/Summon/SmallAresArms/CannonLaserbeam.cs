@@ -1,18 +1,19 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
-    public class CannonLaserbeam : BaseLaserbeamProjectile
+    public class CannonLaserbeam : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public Player Owner => Main.player[Projectile.owner];
@@ -31,7 +32,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exothermal Deathray");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
@@ -39,8 +39,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         {
             Projectile.width = Projectile.height = 38;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.penetrate = -1;
             Projectile.alpha = 255;
             Projectile.localNPCHitCooldown = 10;
@@ -50,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Projectile.DamageType = DamageClass.Summon;
             Projectile.Calamity().UpdatePriority = 1f;
         }
-        
+
         public override float DetermineLaserLength()
         {
             float[] samples = new float[4];

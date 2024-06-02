@@ -1,18 +1,18 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class DormantBrimseekerSummoner : ModProjectile
+    public class DormantBrimseekerSummoner : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Items/Weapons/Summon/DormantBrimseeker";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dormant Brimseeker");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitY * 7f, ModContent.ProjectileType<DormantBrimseekerBab>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             if (Main.projectile.IndexInRange(p))

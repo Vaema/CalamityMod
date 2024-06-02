@@ -1,11 +1,17 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
-using CalamityMod.ForegroundDrawing;
+using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
+using CalamityMod.ForegroundDrawing;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
@@ -13,39 +19,34 @@ using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Tiles.Abyss;
 using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
-using CalamityMod.World;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
-using System;
-using System.Linq;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Achievements;
+using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Events;
 using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.Graphics;
+using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.IO;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
-using Terraria.Utilities;
-using Terraria.Graphics.Light;
-using Terraria.GameContent.Events;
-using CalamityMod.DataStructures;
-using CalamityMod.Particles.Metaballs;
-using Terraria.GameContent.Drawing;
-using CalamityMod.Tiles.Abyss;
-using System.Collections.Generic;
-using CalamityMod.BiomeManagers;
 
 namespace CalamityMod.ILEditing
 {
@@ -57,6 +58,8 @@ namespace CalamityMod.ILEditing
         private static int aLabDoorClosed = -1;
         private static int exoDoorOpen = -1;
         private static int exoDoorClosed = -1;
+        // Cached for use in ChangeWaterQuadColors.
+        private static CustomLavaStyle cachedLavaStyle = default;
 
         // Holds the vanilla game function which spawns town NPCs, wrapped in a delegate for reflection purposes.
         // This function is (optionally) invoked manually in an IL edit to enable NPCs to spawn at night.
@@ -82,7 +85,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Emit a delegate which calls the Calamity utility to consistently provide iframes.
-            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveIFrames(p, frames, false));
+            // 17APR2024: Ozzatron: Consistent shield slam iframes are not boosted by Cross Necklace at all and are fixed.
+            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveUniversalIFrames(p, frames, false));
         }
 
         private static readonly Func<Player, int> CalamityDashEquipped = (Player p) => p.Calamity().HasCustomDash ? 1 : 0;
@@ -146,18 +150,6 @@ namespace CalamityMod.ILEditing
 
             // Replace vanilla's base damage of 150 with Calamity's custom base damage.
             cursor.Next.Operand = BalancingConstants.SolarFlareBaseDamage;
-
-            // Now that the new base damage has been applied to the direct contact strike, also apply it to the Solar Counter projectile.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(150)))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate Solar Flare Armor \"Solar Counter\" base damage.");
-                return;
-            }
-
-            // Replace vanilla's flat 150 damage (doesn't even scale with melee stats!) with the already-calculated base damage, then cast it to int.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldloc, 13);
-            cursor.Emit(OpCodes.Conv_I4);
 
             // Move to the immunity frame setting code for the Solar Flare set bonus. Find the constant 4 given as iframes.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(4)))
@@ -245,10 +237,28 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, 10 - BalancingConstants.ShieldOfCthulhuBonkNoCollideFrames);
         }
 
-        private static void ApplyDashKeybind(On.Terraria.Player.orig_DoCommonDashHandle orig, Player self, out int dir, out bool dashing, Player.DashStartAction dashStartAction)
+        private static void ApplyDashKeybind(Terraria.On_Player.orig_DoCommonDashHandle orig, Player self, out int dir, out bool dashing, Player.DashStartAction dashStartAction)
         {
+            // we feasting multiplayer bugs
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, out dir, out dashing, dashStartAction);
+                return;
+            }
+
             if (CalamityKeybinds.DashHotkey.JustPressed)
             {
+                // Out of safety in the steps following, set the player direction itself here.
+                // If you are holding D but not A, then always dash right.
+                if (self.controlRight && !self.controlLeft)
+                    self.direction = 1;
+                // If you are holding A but not D, then always dash left.
+                else if (self.controlLeft && !self.controlRight)
+                    self.direction = -1;
+                // If you are moving, set dash in the direction the player is moving.
+                else if (MathF.Abs(self.velocity.X) > 0.01f)
+                    self.direction = self.velocity.X > 0f ? 1 : -1;
+
                 dir = self.direction;
                 dashing = true;
                 if (self.dashTime > 0)
@@ -261,7 +271,7 @@ namespace CalamityMod.ILEditing
                     self.dashTime = 15;
                     return;
                 }
-                
+
                 dashing = true;
                 self.dashTime = 0;
                 self.timeSinceLastDashStarted = 0;
@@ -277,34 +287,34 @@ namespace CalamityMod.ILEditing
                 dashing = false;
             }
         }
-        #endregion Dash Fixes and Improvements
+        #endregion
 
         #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(On.Terraria.NPC.orig_ShouldEmpressBeEnraged orig)
+        private static bool AllowEmpressToEnrageInBossRush(Terraria.On_NPC.orig_ShouldEmpressBeEnraged orig)
         {
-            if (Main.dayTime || BossRushEvent.BossRushActive)
+            if (BossRushEvent.BossRushActive)
                 return true;
 
             return orig();
         }
-        #endregion Allow Empress to Enrage in Boss Rush
+        #endregion
 
         #region Enabling of Triggered NPC Platform Fallthrough
         // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
-        private static void AllowTriggeredFallthrough(On.Terraria.NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
+        private static void AllowTriggeredFallthrough(Terraria.On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
         {
             if (self.active && self.type == ModContent.NPCType<FusionFeeder>())
             {
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-
-            if (self.active && self.Calamity().ShouldFallThroughPlatforms)
+            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
+            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
                 fall = true;
 
             orig(self, fall, cPosition, cWidth, cHeight);
         }
-        #endregion Enabling of Triggered NPC Platform Fallthrough
+        #endregion
 
         #region Town NPC Spawning Improvements
         private static void PermitNighttimeTownNPCSpawning(ILContext il)
@@ -329,124 +339,85 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ret);
         }
 
-        private static void AlterTownNPCSpawnRate(On.Terraria.Main.orig_UpdateTime_SpawnTownNPCs orig)
+        private static void AlterTownNPCSpawnRate(Terraria.On_Main.orig_UpdateTime_SpawnTownNPCs orig)
         {
             double oldWorldRate = Main.desiredWorldTilesUpdateRate;
             Main.desiredWorldTilesUpdateRate *= CalamityConfig.Instance.TownNPCSpawnRateMultiplier;
             orig();
             Main.desiredWorldTilesUpdateRate = oldWorldRate;
         }
-        #endregion Town NPC Spawning Improvements
+        #endregion
 
-        #region Removal of Dodge RNG
-        private static readonly Func<Player, int> CalamityDodgeAvailable = (Player p) =>
+        #region Dodge Mechanic Adjustments
+        private static void DodgeMechanicAdjustments(ILContext il)
         {
-            CalamityPlayer mp = p.Calamity();
-            // If your dodges are universally disabled, then they simply "never come off cooldown" and always have 1 frame left.
-            if (mp.disableAllDodges)
-                return 1;
-
-            bool dodgeCooldownActive = p.HasCooldown(GlobalDodge.ID);
-            return dodgeCooldownActive ? 1 : 0;
-        };
-
-        private static void RemoveRNGFromDodges(ILContext il)
-        {
-            //
-            // BLACK BELT
-            //
-
-            // Change the random chance of the Black Belt to 100%, but don't let it work if Calamity's cooldown is active.
             var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(10))) // 1 in 10 Main.rand call for Black Belt activation.
-            {
-                LogFailure("No RNG Black Belt", "Could not locate the dodge chance.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4_1); // Replace with Main.rand.Next(1), aka 100% chance.
 
-            // Move forwards past the Main.rand.Next call now that it has been edited.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCallvirt<UnifiedRandom>("Next")))
-            {
-                LogFailure("No RNG Black Belt", "Could not locate the Random.Next call.");
-                return;
-            }
-
-            // Load the player itself onto the stack so that it becomes an argument for the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit a delegate which places the player's dodge availability onto the stack.
-            // This is typically the Calamity dodge cooldown -- zero lets you dodge, anything else doesn't.
-            cursor.EmitDelegate<Func<Player, int>>(CalamityDodgeAvailable);
-
-            // Bitwise OR the "RNG result" (always zero) with the dodge cooldown. This will only return zero if both values were zero.
-            // The code path which calls NinjaDodge can ONLY occur if the result of this operation is zero,
-            // because it is now the value checked by the immediately following branch-if-true.
-            cursor.Emit(OpCodes.Or);
-
-            // Move forwards past the NinjaDodge call. We need to set the dodge cooldown here.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Player>("NinjaDodge")))
-            {
-                LogFailure("No RNG Black Belt", "Could not locate the Player.NinjaDodge call.");
-                return;
-            }
-
-            // Load the player itself onto the stack so that it becomes an argument for the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit a delegate which sets the player's Calamity dodge cooldown and sends a sync packet appropriately.
-            cursor.EmitDelegate<Action<Player>>((Player p) => p.AddCooldown(GlobalDodge.ID, BalancingConstants.BeltDodgeCooldown));
-
+            // Skip past the first half of the function. We do not care about the following opening steps of Player.Hurt:
+            // 1. AllowShimmerDodge
+            // 2. Journey's god mode
+            // 3. TML PlayerLoader.ImmuneTo
+            // 4. vanilla iframe check
+            // 5. ModifyHurt
+            // 6. ogre knockback
             //
-            // BRAIN OF CONFUSION
-            //
-
-            // Change the random chance of the Brain of Confusion to 100%, but don't let it work if Calamity's cooldown is active.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(6))) // 1 in 6 Main.rand call for Brain of Confusion activation.
+            // To skip to the part we care about, go after the one and only call to HurtModifiers.ToHurtInfo.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall(typeof(Player.HurtModifiers), nameof(Player.HurtModifiers.ToHurtInfo))))
             {
-                LogFailure("No RNG Brain of Confusion", "Could not locate the dodge chance.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4_1); // Replace with Main.rand.Next(1), aka 100% chance.
-
-            // Move forwards past the Main.rand.Next call now that it has been edited.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCallvirt<UnifiedRandom>("Next")))
-            {
-                LogFailure("No RNG Brain of Confusion", "Could not locate the Random.Next call.");
+                LogFailure("Dodge Mechanic Adjustments", "Could not locate the call to HurtModifiers.ToHurtInfo.");
                 return;
             }
 
-            // Load the player itself onto the stack so that it becomes an argument for the following delegate.
+            // The load for the dodgeable boolean is impossible to decipher due to being an ldarg_s (optional parameter).
+            // This is used to make Day Empress' attacks undodgeable.
+            // Instead, find the immediately following brfalse.
+            // If Calamity's old Armageddon bool which "Disables all dodges" is enabled, EVERY attack is considered undodgeable.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchBrfalse(out ILLabel branchEnd)))
+            {
+                LogFailure("Dodge Mechanic Adjustments", "Could not locate the dodgeable boolean branch.");
+                return;
+            }
+
+            // AND with an emitted delegate which takes the player and gets whether Calamity is allowing dodges for them right now
             cursor.Emit(OpCodes.Ldarg_0);
+            cursor.EmitDelegate((Player p) => !p.Calamity().disableAllDodges);
+            cursor.Emit(OpCodes.And);
 
-            // Emit a delegate which places the player's dodge availability onto the stack.
-            // This is typically the Calamity dodge cooldown -- zero lets you dodge, anything else doesn't.
-            cursor.EmitDelegate<Func<Player, int>>(CalamityDodgeAvailable);
-
-            // Bitwise OR the "RNG result" (always zero) with the dodge cooldown. This will only return zero if both values were zero.
-            // The code path which calls BrainOfConfusionDodge can ONLY occur if the result of this operation is zero,
-            // because it is now the value checked by the immediately following branch-if-true.
-            cursor.Emit(OpCodes.Or);
-
-            // Move forwards past the BrainOfConfusionDodge call. We need to set the dodge cooldown here.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Player>("BrainOfConfusionDodge")))
+            // Skip ahead to Black Belt
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("blackBelt")))
             {
-                LogFailure("No RNG Brain of Confusion", "Could not locate the Player.BrainOfConfusionDodge call.");
+                LogFailure("Dodge Mechanic Adjustments", "Could not locate the Black Belt equipped boolean.");
                 return;
             }
 
-            // Load the player itself onto the stack so that it becomes an argument for the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
+            // Destroy the value, utterly, and in its place put zero.
+            // The player is never considered to have Black Belt equipped from the perspective of vanilla code.
+            // Calamity re-implements Black Belt in CalamityPlayer.ConsumableDodge
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldc_I4_0);
 
-            // Emit a delegate which sets the player's Calamity dodge cooldown and sends a sync packet appropriately.
-            cursor.EmitDelegate<Action<Player>>((Player p) => p.AddCooldown(GlobalDodge.ID, p.Calamity().amalgam ? BalancingConstants.AmalgamDodgeCooldown : BalancingConstants.BrainDodgeCooldown));
+            // Skip ahead to Brain of Confusion
+            // Here the part we skip to is actually
+            // brainOfConfusionItem != null
+            // This is implemented as a brfalse, so just do the same thing as above.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("brainOfConfusionItem")))
+            {
+                LogFailure("Dodge Mechanic Adjustments", "Could not locate the Brain of Confusion tracked equipped item.");
+                return;
+            }
+
+            // The player is never considered to have Brain of Confusion equipped from the perspective of vanilla code.
+            // Calamity re-implements Brain of Confusion in CalamityPlayer.ConsumableDodge
+            // Instead of being limited by its buff, it is limited by the Global Dodge Cooldown.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldc_I4_0);
+
+            // No interference with ShadowDodge (previously Titanium armor, now Hallowed armor)
         }
-        #endregion Removal of Dodge RNG
+        #endregion
 
         #region Custom Gate Door Logic
-        private static bool OpenDoor_LabDoorOverride(On.Terraria.WorldGen.orig_OpenDoor orig, int i, int j, int direction)
+        private static bool OpenDoor_LabDoorOverride(Terraria.On_WorldGen.orig_OpenDoor orig, int i, int j, int direction)
         {
             Tile tile = Main.tile[i, j];
 
@@ -462,7 +433,7 @@ namespace CalamityMod.ILEditing
             return orig(i, j, direction);
         }
 
-        private static bool CloseDoor_LabDoorOverride(On.Terraria.WorldGen.orig_CloseDoor orig, int i, int j, bool forced)
+        private static bool CloseDoor_LabDoorOverride(Terraria.On_WorldGen.orig_CloseDoor orig, int i, int j, bool forced)
         {
             Tile tile = Main.tile[i, j];
 
@@ -477,10 +448,10 @@ namespace CalamityMod.ILEditing
             // If it's anything else, let vanilla and/or TML handle it.
             return orig(i, j, forced);
         }
-        #endregion Custom Gate Door Logic
+        #endregion
 
         #region Platform Collision Checks for Grounded Bosses
-        private static bool EnableCalamityBossPlatformCollision(On.Terraria.NPC.orig_Collision_DecideFallThroughPlatforms orig, NPC self)
+        private static bool EnableCalamityBossPlatformCollision(Terraria.On_NPC.orig_Collision_DecideFallThroughPlatforms orig, NPC self)
         {
             if ((self.type == ModContent.NPCType<AstrumAureus>() || self.type == ModContent.NPCType<Crabulon>() || self.type == ModContent.NPCType<RavagerBody>() ||
                 self.type == ModContent.NPCType<RockPillar>() || self.type == ModContent.NPCType<FlamePillar>()) &&
@@ -489,29 +460,40 @@ namespace CalamityMod.ILEditing
 
             return orig(self);
         }
-        #endregion Platform Collision Checks for Grounded Bosses
+        #endregion
 
         #region Incorporate Enchantments in Item Names
-        private static string IncorporateEnchantmentInAffix(On.Terraria.Item.orig_AffixName orig, Item self)
+        private static string IncorporateEnchantmentInAffix(Terraria.On_Item.orig_AffixName orig, Item self)
         {
             string result = orig(self);
-            if (!self.IsAir && self.Calamity().AppliedEnchantment.HasValue)
-                result = $"{self.Calamity().AppliedEnchantment.Value.Name} {result}";
+
+            // This hook could occur before CalamityGlobalItem is loaded and throw an error.
+            try
+            {
+                if (!self.IsAir && self.Calamity().AppliedEnchantment.HasValue)
+                    result = $"{self.Calamity().AppliedEnchantment.Value.Name} {result}";
+            }
+            catch { }
             return result;
         }
-        #endregion Incorporate Enchantments in Item Names
+        #endregion
 
         #region Hellbound Enchantment Projectile Creation Effects
-        private static int IncorporateMinionExplodingCountdown(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1)
+        private static int IncorporateMinionExplodingCountdown(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
         {
             // This is unfortunately not something that can be done via SetDefaults since owner is set
             // after that method is called. Doing it directly when the projectile is spawned appears to be the only reasonable way.
-            int proj = orig(spawnSource, x, y, xSpeed, ySpeed, type, damage, knockback, owner, ai0, ai1);
+            int proj = orig(spawnSource, x, y, xSpeed, ySpeed, type, damage, knockback, owner, ai0, ai1, ai2);
             Projectile projectile = Main.projectile[proj];
             if (projectile.minion)
             {
                 Player player = Main.player[projectile.owner];
                 if (Main.gameMenu || !player.active)
+                    return proj;
+
+                // Do not apply Hellbound effects to minions not spawned by the item itself, if it came out of an item
+                // This prevent minions like Luxor's Gift getting it, but minions spawned out of minions such as Temporal Umbrella will work fine
+                if (spawnSource is EntitySource_ItemUse && player.ActiveItem().shoot != projectile.type)
                     return proj;
 
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
@@ -520,12 +502,60 @@ namespace CalamityMod.ILEditing
             }
             return proj;
         }
-        #endregion Hellbound Enchantment Projectile Creation Effects
+        #endregion
 
-        #region Mana Sickness Replacement for Chaos Stone
-        private static void ConditionallyReplaceManaSickness(ILContext il)
+        #region Chaos Stone and Chalice of the Blood God
+        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
+
+            //
+            // The following section enables Chalice of the Blood God's feature of healing potions clearing 50% of its bleedout buffer.
+            //
+
+            // Start by finding the moment where health is restored from a healing item.
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchStfld<Player>("statLife")))
+            {
+                LogFailure("Chalice of the Blood God Bleedout Heal", "Could not locate the player's health being restored");
+                return;
+            }
+
+            // Load the player and the healing potion used onto the stack for use in the following delegate.
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldarg_1);
+
+            // Insert a delegate which applies Chalice of the Blood God's function as appropriate.
+            cursor.EmitDelegate<Action<Player, Item>>((player, potion) =>
+            {
+                // If the consumed item heals 0 health, don't bother.
+                if (!player.active || player.dead || potion.healLife <= 0)
+                    return;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer is null)
+                    return;
+
+                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D)
+                {
+                    // 20FEB2024: Ozzatron: to prevent abuse, buffer clearing is now 50% of the potion instead of 50% of your buffer
+                    float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * player.GetHealLife(potion, true);
+
+                    // Actually clear the buffer
+                    modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
+
+                    // Display text indicating that healing was applied to the bleedout buffer.
+                    if (Main.netMode != NetmodeID.Server)
+                    {
+                        string text = $"(+{amountOfBleedToClear})";
+                        Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
+                        CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
+                    }
+                }
+            });
+
+            //
+            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
+            //
 
             // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
             if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
@@ -548,10 +578,10 @@ namespace CalamityMod.ILEditing
                 return ModContent.BuffType<ManaBurn>();
             });
         }
-        #endregion Mana Sickness Replacement for Chaos Stone
+        #endregion
 
         #region Fire Cursor Effect for the Calamity Accessory
-        private static void UseCoolFireCursorEffect(On.Terraria.Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
+        private static void UseCoolFireCursorEffect(Terraria.On_Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
         {
             Player player = Main.LocalPlayer;
 
@@ -619,9 +649,12 @@ namespace CalamityMod.ILEditing
                         if (player.Calamity().CalamityFireDyeShader is not null)
                             color = Color.Lerp(color, Color.White, 0.75f);
 
+                        float offsetAngleValue = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6.7f) * 0.99f;
+                        int origin = size / 2;
+
                         for (int i = -horizontalArea; i <= horizontalArea; i++)
                         {
-                            float offsetAngle = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6.7f) * 0.99f;
+                            float offsetAngle = offsetAngleValue;
                             offsetAngle += i / (float)horizontalArea * 0.34f;
                             Vector2 velocity = Main.MouseWorld - UIManagementSystem.PreviousMouseWorld;
                             if (velocity.Length() < 64f)
@@ -639,7 +672,7 @@ namespace CalamityMod.ILEditing
                             velocity *= Main.rand.NextFloat(0.9f, 1.1f);
 
                             for (int j = -verticalArea; j <= verticalArea; j++)
-                                player.Calamity().CalamityFireDrawer.CreateSource(x + size / 2 + i, y + size / 2 + j, 1f, color, i == 0 && j == 0 ? velocity : Vector2.Zero);
+                                player.Calamity().CalamityFireDrawer.CreateSource(x + origin + i, y + origin + j, 1f, color, i == 0 && j == 0 ? velocity : Vector2.Zero);
                         }
                     };
 
@@ -690,7 +723,7 @@ namespace CalamityMod.ILEditing
             Texture2D crosshairTexture = TextureAssets.Cursors[15].Value;
             Main.spriteBatch.Draw(crosshairTexture, baseDrawPosition, null, cursorColor, 0f, crosshairTexture.Size() * 0.5f, Main.cursorScale, SpriteEffects.None, 0f);
         }
-        #endregion Fire Cursor Effect for the Calamity Accessory
+        #endregion
 
         #region Fog Effect in Floral Paradise
         private static void DrawFloralParadiseFog(ILContext il)
@@ -740,35 +773,28 @@ namespace CalamityMod.ILEditing
                 Main.spriteBatch.SetBlendState(BlendState.Additive);
 
                 // Draw Projectiles.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active)
-                        continue;
-
-                    if (Main.projectile[i].ModProjectile is IAdditiveDrawer d)
+                    if (p.ModProjectile is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
                 // Draw NPCs.
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (!Main.npc[i].active)
-                        continue;
-
-                    if (Main.npc[i].ModNPC is IAdditiveDrawer d)
+                    if (n.ModNPC is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             });
         }
-        #endregion Custom Draw Layers
+        #endregion
 
         #region General Particle Rendering
-        private static void DrawFusableParticles(On.Terraria.Main.orig_SortDrawCacheWorms orig, Main self)
+        private static void DrawFusableParticles(Terraria.On_Main.orig_SortDrawCacheWorms orig, Main self)
         {
             DeathAshParticle.DrawAll();
-            FusableParticleManager.RenderAllFusableParticles();
 
             if (Main.LocalPlayer.dye.Any(dyeItem => dyeItem.type == ModContent.ItemType<ProfanedMoonlightDye>()))
                 Main.LocalPlayer.Calamity().ProfanedMoonlightAuroraDrawer?.Draw(Main.LocalPlayer.Center - Main.screenPosition, false, Main.GameViewMatrix.TransformationMatrix, Matrix.Identity);
@@ -776,59 +802,66 @@ namespace CalamityMod.ILEditing
             orig(self);
         }
 
-        private static void DrawForegroundParticles(On.Terraria.Main.orig_DrawInfernoRings orig, Main self)
+        private static void DrawForegroundParticles(Terraria.On_Main.orig_DrawInfernoRings orig, Main self)
         {
             GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
             orig(self);
         }
-
-        private static void ResetRenderTargetSizes(On.Terraria.Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
-        {
-            if (FusableParticleManager.HasBeenFormallyDefined)
-                FusableParticleManager.LoadParticleRenderSets(true, width, height);
-            orig(width, height, fullscreen);
-        }
-        #endregion General Particle Rendering
+        #endregion
 
         #region Custom Lava Visuals
-        private static void DrawCustomLava(On.Terraria.GameContent.Drawing.TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, Tile tileCache, Vector2 position, Rectangle liquidSize, int liquidType, Color aColor)
+
+        private static void CacheLavaStyle(Terraria.On_Main.orig_RenderWater orig, Main self)
+        {
+            // Immediately cache the lava drawing style.
+            // This will pay off in SPADES when we go to draw the tiles.
+            foreach (CustomLavaStyle style in CustomLavaManagement.CustomLavaStyles)
+            {
+                if (style.ChooseLavaStyle())
+                {
+                    cachedLavaStyle = style;
+                    orig(self);
+                    return;
+                }
+            }
+
+            cachedLavaStyle = default;
+            orig(self);
+        }
+
+        private static void DrawCustomLava(Terraria.GameContent.Drawing.On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
         {
             if (liquidType != 1)
             {
-                orig(self, tileCache, position, liquidSize, liquidType, aColor);
+                orig(self, behindBlocks, tileCache, ref position, ref liquidSize, liquidType, ref colors);
                 return;
             }
-            
-            Texture2D initialTexture = TextureAssets.LiquidSlope[liquidType].Value;
-            Texture2D slopeTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaSlopeTexture : initialTexture, LiquidTileType.Slope);
-            aColor = SelectLavaColor(initialTexture, aColor, liquidType == 1);
 
             int slope = (int)tileCache.Slope;
-            if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.TileType] || slope == 0)
+            colors = SelectLavaQuadColor(TextureAssets.LiquidSlope[liquidType].Value, ref colors, true);
+            if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.TileType] || behindBlocks || slope == 0)
             {
                 Texture2D liquidTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaBlockTexture : TextureAssets.Liquid[liquidType].Value, LiquidTileType.Block);
-                Main.spriteBatch.Draw(liquidTexture, position, liquidSize, aColor, 0f, default, 1f, 0, 0f);
+                Main.tileBatch.Draw(liquidTexture, position, liquidSize, colors, default(Vector2), 1f, SpriteEffects.None);
                 return;
             }
+
+            Texture2D slopeTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaSlopeTexture : TextureAssets.LiquidSlope[liquidType].Value, LiquidTileType.Slope);
             liquidSize.X += 18 * (slope - 1);
-            if (tileCache.Slope == SlopeType.SlopeDownLeft)
+            switch (slope)
             {
-                Main.spriteBatch.Draw(slopeTexture, position, liquidSize, aColor, 0f, Vector2.Zero, 1f, 0, 0f);
-                return;
-            }
-            if (tileCache.Slope == SlopeType.SlopeDownRight)
-            {
-                Main.spriteBatch.Draw(slopeTexture, position, liquidSize, aColor, 0f, Vector2.Zero, 1f, 0, 0f);
-                return;
-            }
-            if (tileCache.Slope == SlopeType.SlopeUpLeft)
-            {
-                Main.spriteBatch.Draw(slopeTexture, position, liquidSize, aColor, 0f, Vector2.Zero, 1f, 0, 0f);
-                return;
-            }
-            if (tileCache.Slope == SlopeType.SlopeUpRight)
-            {
-                Main.spriteBatch.Draw(slopeTexture, position, liquidSize, aColor, 0f, Vector2.Zero, 1f, 0, 0f);
+                case 1:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
+                case 2:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
+                case 3:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
+                case 4:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
             }
         }
 
@@ -866,19 +899,36 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 8);
             cursor.Emit(OpCodes.Ldloc, 3);
             cursor.Emit(OpCodes.Ldloc, 4);
+
+            // Caching these values can save a LOT of overhead at runtime.
+            ModWaterStyle basaltWater = ModContent.GetInstance<BasaltGullyWater>();
+            ModWaterStyle burrowsWater = ModContent.GetInstance<SunkenSeaBurrowsWater>();
+            ModWaterStyle polypWater = ModContent.GetInstance<SunkenSeaPolypWater>();
+            ModWaterStyle reefsWater = ModContent.GetInstance<SunkenSeaReefsWater>();
+            ModWaterStyle shoresWater = ModContent.GetInstance<SunkenSeaShoresWater>();
+            ModWaterStyle sulphuricWater = ModContent.GetInstance<SulphuricWater>();
+            ModWaterStyle sulphuricDepthsWater = ModContent.GetInstance<SulphuricDepthsWater>();
+            ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
+            ModWaterStyle middleAbyssWater = ModContent.GetInstance<MiddleAbyssWater>();
+            ModWaterStyle voidWater = ModContent.GetInstance<VoidWater>();
+
             cursor.EmitDelegate<Func<VertexColors, Texture2D, int, int, int, VertexColors>>((initialColor, initialTexture, liquidType, x, y) =>
             {
-                initialColor.TopLeftColor = SelectLavaColor(initialTexture, initialColor.TopLeftColor, liquidType == 1);
-                initialColor.TopRightColor = SelectLavaColor(initialTexture, initialColor.TopRightColor, liquidType == 1);
-                initialColor.BottomLeftColor = SelectLavaColor(initialTexture, initialColor.BottomLeftColor, liquidType == 1);
-                initialColor.BottomRightColor = SelectLavaColor(initialTexture, initialColor.BottomRightColor, liquidType == 1);
-
-                if (liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot || 
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/UpperAbyssWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/MiddleAbyssWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/VoidWater").Slot)
+                // Don't bother changing the color if the cached drawing style is null.
+                if (cachedLavaStyle != default)
+                {
+                    initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
+                }
+                if (liquidType == burrowsWater.Slot ||
+                liquidType == basaltWater.Slot ||
+                liquidType == polypWater.Slot ||
+                liquidType == shoresWater.Slot ||
+                liquidType == reefsWater.Slot ||
+                liquidType == sulphuricWater.Slot ||
+                liquidType == sulphuricDepthsWater.Slot ||
+                liquidType == upperAbyssWater.Slot ||
+                liquidType == middleAbyssWater.Slot ||
+                liquidType == voidWater.Slot)
                 {
                     SelectSulphuricWaterColor(x, y, ref initialColor);
                 }
@@ -977,45 +1027,30 @@ namespace CalamityMod.ILEditing
             }
         }
 
-        private static void DrawCustomLavafalls(ILContext il)
+        private static void DrawCustomLavafalls(Terraria.On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
         {
-            ILCursor cursor = new ILCursor(il);
+            waterfallType = CustomLavaManagement.SelectLavafallStyle(waterfallType);
+            color = CustomLavaManagement.SelectLavafallColor(waterfallType, color);
 
-            // Search for the color and alter it based on the same conditions as the lava.
-            if (!cursor.TryGotoNext(c => c.MatchCallOrCallvirt(typeof(Color).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) }))))
-            {
-                LogFailure("Custom Lavafall Drawing", "Could not locate the waterfall color.");
-                return;
-            }
-
-            // Determine the waterfall type. This happens after all the "If Lava do blahblahblah" color checks, meaning it will have the same
-            // color properties as lava.
-            cursor.Emit(OpCodes.Ldloc, 12);
-            cursor.EmitDelegate<Func<int, int>>(initialWaterfallStyle => CustomLavaManagement.SelectLavafallStyle(initialWaterfallStyle));
-            cursor.Emit(OpCodes.Stloc, 12);
-
-            cursor.Emit(OpCodes.Ldloc, 12);
-            cursor.Emit(OpCodes.Ldloc, 54);
-            cursor.EmitDelegate<Func<int, Color, Color>>((initialWaterfallStyle, initialLavafallColor) => CustomLavaManagement.SelectLavafallColor(initialWaterfallStyle, initialLavafallColor));
-            cursor.Emit(OpCodes.Stloc, 54);
+            orig(self, waterfallType, x, y, opacity, position, sourceRect, color, effects);
         }
-        #endregion Custom Lava Visuals
+        #endregion
 
         #region Water Visuals
-        private static void MakeSulphSeaWaterBetter(On.Terraria.Graphics.Light.TileLightScanner.orig_GetTileLight orig, TileLightScanner self, int x, int y, out Vector3 outputColor)
+        private static void MakeSulphSeaWaterBetter(Terraria.Graphics.Light.On_TileLightScanner.orig_GetTileLight orig, TileLightScanner self, int x, int y, out Vector3 outputColor)
         {
             orig(self, x, y, out outputColor);
             if (outputColor == Vector3.One || outputColor == new Vector3(0.25f, 0.25f, 0.25f) || outputColor == new Vector3(0.5f, 0.5f, 0.5f))
                 return;
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-            if (tile.LiquidAmount <= 0 || tile.HasTile || (Main.waterStyle != SulphuricWater.Type &&
-            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaWater.Type))
+            if (tile.LiquidAmount <= 0 || tile.HasTile || tile.Get<LiquidData>().LiquidType != LiquidID.Water || (Main.waterStyle != SulphuricWater.Type &&
+            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaBurrowsWater.Type && Main.waterStyle != SunkenSeaPolypWater.Type && 
+            Main.waterStyle != SunkenSeaReefsWater.Type && Main.waterStyle != SunkenSeaShoresWater.Type && Main.waterStyle != BasaltGullyWater.Type))
                 return;
 
             Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) && 
-            Main.waterStyle == SulphuricWater.Type)
+            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) && Main.waterStyle == SulphuricWater.Type)
             {
                 MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
                 GeneralParticleHandler.SpawnParticle(acidFoam);
@@ -1023,9 +1058,9 @@ namespace CalamityMod.ILEditing
 
             if (tile.TileType != (ushort)ModContent.TileType<RustyChestTile>())
             {
-                if (Main.waterStyle == SulphuricWater.Type && Main.dayTime == true && !Main.raining)
+                if (Main.waterStyle == SulphuricWater.Type && Main.dayTime && !Main.raining)
                 {
-                    float brightness = MathHelper.Clamp(0.2f - (y / 680), 0.0f, 0.2f);
+                    float brightness = MathHelper.Clamp(0.2f - (y / 680), 0f, 0.2f);
                     if (y > 580)
                         brightness *= 1f - (y - 580) / 100f;
 
@@ -1046,9 +1081,9 @@ namespace CalamityMod.ILEditing
                     outputColor *= brightness;
                 }
 
-                if (Main.waterStyle == SulphuricWater.Type && Main.dayTime == false && !Main.raining)
+                if (Main.waterStyle == SulphuricWater.Type && !Main.dayTime && !Main.raining)
                 {
-                    float brightness = MathHelper.Clamp(0.17f - (y / 680), 0.0f, 0.17f);
+                    float brightness = MathHelper.Clamp(0.17f - (y / 680), 0f, 0.17f);
                     if (y > 580)
                         brightness *= 1f - (y - 580) / 100f;
 
@@ -1071,7 +1106,7 @@ namespace CalamityMod.ILEditing
 
                 if (Main.waterStyle == SulphuricWater.Type && Main.raining)
                 {
-                    float brightness = MathHelper.Clamp(1f - (y / 680), 0.0f, 1f);
+                    float brightness = MathHelper.Clamp(1f - (y / 680), 0f, 1f);
                     if (y > 580)
                         brightness *= 1f - (y - 580) / 100f;
 
@@ -1082,8 +1117,34 @@ namespace CalamityMod.ILEditing
                 if (Main.waterStyle == SulphuricDepthsWater.Type)
                     outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
 
-                if (Main.waterStyle == SunkenSeaWater.Type)
+                if (Main.waterStyle == SunkenSeaBurrowsWater.Type || Main.waterStyle == SunkenSeaPolypWater.Type || Main.waterStyle == SunkenSeaReefsWater.Type || 
+                Main.waterStyle == SunkenSeaShoresWater.Type || Main.waterStyle == BasaltGullyWater.Type)
                 {
+                    //default to white
+                    Color waterGlowColor = Color.White;
+
+                    //set the glow colors for each sunken sea biome water style
+                    if (Main.waterStyle == SunkenSeaShoresWater.Type)
+                    {
+                        waterGlowColor = new Color(233, 170, 184);
+                    }
+                    if (Main.waterStyle == SunkenSeaPolypWater.Type)
+                    {
+                        waterGlowColor = new Color(213, 185, 178);
+                    }
+                    if (Main.waterStyle == SunkenSeaReefsWater.Type)
+                    {
+                        waterGlowColor = new Color(140, 222, 239);
+                    }
+                    if (Main.waterStyle == SunkenSeaBurrowsWater.Type)
+                    {
+                        waterGlowColor = new Color(76, 211, 231);
+                    }
+                    if (Main.waterStyle == BasaltGullyWater.Type)
+                    {
+                        waterGlowColor = new Color(144, 174, 200);
+                    }
+
                     float brightness = MathHelper.Clamp(0.07f, 0f, 0.07f);
                     float waveScale1 = Main.GameUpdateCount * 0.028f;
                     float waveScale2 = Main.GameUpdateCount * 0.1f;
@@ -1103,12 +1164,12 @@ namespace CalamityMod.ILEditing
                     float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
-                    outputColor = Vector3.Lerp(outputColor, Color.DeepSkyBlue.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
+                    outputColor = Vector3.Lerp(outputColor, Color.DarkSlateGray.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
                     outputColor *= brightness;
                 }
             }
         }
-        #endregion Water Visuals
+        #endregion
 
         #region Statue Additions
         /// <summary>
@@ -1194,7 +1255,7 @@ namespace CalamityMod.ILEditing
             // couldn't find the right place to insert
             throw new Exception("Hook location not found, switch(*) { case 54: ...");
         }
-        #endregion Statue Additions
+        #endregion
 
         #region Make Tax Collector Worth it
         private static void MakeTaxCollectorUseful(ILContext il)
@@ -1216,17 +1277,17 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Pop);
             cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, "get_TaxesToCollectLimit");
         }
-        #endregion Make Tax Collector Worth it
+        #endregion
 
         #region Foreground tiles drawing
-        private static void DrawForegroundStuff(On.Terraria.Main.orig_DrawGore orig, Main self)
+        private static void DrawForegroundStuff(Terraria.On_Main.orig_DrawGore orig, Main self)
         {
             orig(self);
             if (Main.PlayerLoaded && !Main.gameMenu)
                 ForegroundManager.DrawTiles();
         }
 
-        private static void ClearForegroundStuff(On.Terraria.GameContent.Drawing.TileDrawing.orig_PreDrawTiles orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
+        private static void ClearForegroundStuff(Terraria.GameContent.Drawing.On_TileDrawing.orig_PreDrawTiles orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
         {
             orig(self, solidLayer, forRenderTargets, intoRenderTargets);
 
@@ -1236,7 +1297,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Tile ping overlay
-        private static void ClearTilePings(On.Terraria.GameContent.Drawing.TileDrawing.orig_Draw orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
+        private static void ClearTilePings(Terraria.GameContent.Drawing.On_TileDrawing.orig_Draw orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
             //Retro & Trippy light modes are fine. Just reset the cache before every time stuff gets drawn.
             if (Lighting.UpdateEveryFrame)
@@ -1269,7 +1330,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// Determines if the custom grapple movement should take place or not. Useful for hooks that only do movement tricks in some cases
         /// </summary>
-        private static void CustomGrappleMovementCheck(On.Terraria.Player.orig_GrappleMovement orig, Player self)
+        private static void CustomGrappleMovementCheck(Terraria.On_Player.orig_GrappleMovement orig, Player self)
         {
             WulfrumPackPlayer mp = self.GetModPlayer<WulfrumPackPlayer>();
 
@@ -1282,7 +1343,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// This is called right before the game decides wether or not to update the players velocity based on "real" physics (aka not tongued or hooked or with a pulley)
         /// </summary>
-        private static void CustomGrapplePreDefaultMovement(On.Terraria.Player.orig_UpdatePettingAnimal orig, Player self)
+        private static void CustomGrapplePreDefaultMovement(Terraria.On_Player.orig_UpdatePettingAnimal orig, Player self)
         {
             orig(self);
 
@@ -1306,7 +1367,7 @@ namespace CalamityMod.ILEditing
         /// Used before the player steps up a half tile. If we don't do that, players that are grappled but don't use hook movement won't be able to go over tiles.
         /// The hook cache is reset in PreUpdateMovement
         /// </summary>
-        private static void CustomGrapplePreStepUp(On.Terraria.Player.orig_SlopeDownMovement orig, Player self)
+        private static void CustomGrapplePreStepUp(Terraria.On_Player.orig_SlopeDownMovement orig, Player self)
         {
             orig(self);
 
@@ -1322,7 +1383,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// This is done to put the hook if it was cacehd during the frame instruction.
         /// </summary>
-        private static void CustomGrapplePostFrame(On.Terraria.Player.orig_PlayerFrame orig, Player self)
+        private static void CustomGrapplePostFrame(Terraria.On_Player.orig_PlayerFrame orig, Player self)
         {
             orig(self);
             WulfrumPackPlayer mp = self.GetModPlayer<WulfrumPackPlayer>();
@@ -1339,13 +1400,13 @@ namespace CalamityMod.ILEditing
 
         #region Find Calamity Item Dye Shader
 
-        internal static void FindCalamityItemDyeShader(On.Terraria.Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
+        internal static void FindCalamityItemDyeShader(Terraria.On_Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
         {
             orig(self, isNotInVanitySlot, isSetToHidden, armorItem, dyeItem);
             if (armorItem.type == ModContent.ItemType<Calamity>())
                 self.Calamity().CalamityFireDyeShader = GameShaders.Armor.GetShaderFromItemId(dyeItem.type);
         }
-        #endregion Find Calamity Item Dye Shader
+        #endregion
 
         #region Scopes Require Visibility to Zoom
         private static void ScopesRequireVisibilityToZoom(ILContext il)
@@ -1368,6 +1429,70 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate<Func<bool, bool>>((x) => !x);
 
             // The next (untouched) instruction stores this value into Player.scope.
+        }
+        #endregion
+
+        #region Custom world selection difficulties
+        internal static void GetDifficultyOverride(Terraria.GameContent.UI.Elements.On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
+        {
+            // Run the original code and pull out the original text and text color
+            orig(self, out expertText, out gameModeColor);
+
+            string difficultyText = expertText;
+            Color difficultyColor = gameModeColor;
+
+            // Journey Mode takes ultimate priority
+            if (difficultyColor == Main.creativeModeColor)
+            {
+                return;
+            }
+            
+            // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
+            for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
+            {
+                WorldSelectionDifficultySystem.WorldDifficulty d = WorldSelectionDifficultySystem.WorldDifficulties[i];
+                {
+                    if (d.function(self))
+                    {
+                        difficultyText = d.name;
+                        difficultyColor = d.color;
+                        break;
+                    }
+                }
+            }
+
+            // Set the text and text color
+            expertText = difficultyText;
+            gameModeColor = difficultyColor;
+        }
+        #endregion
+
+        #region Shimmer effect edits
+        public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
+        {
+            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            {
+                self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
+                self.shimmered = true;
+                self.shimmerWet = true;
+                self.wet = true;
+                self.velocity *= 0.1f;
+                if (Main.netMode == 0)
+                {
+                    Item.ShimmerEffect(self.Center);
+                }
+                else
+                {
+                    NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                    NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                }
+                AchievementsHelper.NotifyProgressionEvent(27);
+            }
+            else
+            {
+                orig(self);
+            }
         }
         #endregion
     }

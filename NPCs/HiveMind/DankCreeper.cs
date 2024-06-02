@@ -1,8 +1,9 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,11 +15,7 @@ namespace CalamityMod.NPCs.HiveMind
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dank Creeper");
-            NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
-            value.Position.X += 1f;
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            this.HideFromBestiary();
         }
 
         public override void SetDefaults()
@@ -29,44 +26,46 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.height = 70;
             NPC.defense = 6;
 
-            NPC.lifeMax = 90;
+            NPC.lifeMax = 120;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 2000;
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
+
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+
+            if ((CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+                NPC.reflectsProjectiles = true;
 
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.3f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-        }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            int associatedNPCType = ModContent.NPCType<HiveMind>();
-            bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
-
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCorruption,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Though their core is the same as a hive blob, their armored shell of shadow scale prevents them from dying quite as easily. They also carry a noxious gas within them.")
-            });
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            NPC.TargetClosest();
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
+
+            bool masterMode = Main.masterMode;
             bool revenge = CalamityWorld.revenge;
-            float speed = revenge ? 12f : 11f;
+            float speed = masterMode ? 15f : revenge ? 13f : 11f;
             if (BossRushEvent.BossRushActive)
                 speed = 18f;
 
@@ -77,56 +76,67 @@ namespace CalamityMod.NPCs.HiveMind
 
             NPC.rotation = NPC.velocity.X * 0.05f;
 
-            Vector2 vector167 = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
-            float num1373 = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - vector167.X;
-            float num1374 = Main.player[NPC.target].Center.Y - vector167.Y;
-            float num1375 = (float)Math.Sqrt(num1373 * num1373 + num1374 * num1374);
-            float num1376 = speed / num1375;
-            num1373 *= num1376;
-            num1374 *= num1376;
-            NPC.ai[0] -= 1f;
-            if (num1375 < 200f || NPC.ai[0] > 0f)
+            Vector2 targetDirection = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
+            Vector2 targetLocation = Main.player[NPC.target].Center;
+
+            // Fly above if below 25% HP and burst to spawn a Rain Cloud when high enough
+            bool killYourself = NPC.life / (float)NPC.lifeMax < 0.25f;
+            if (killYourself && (Main.expertMode || BossRushEvent.BossRushActive))
             {
-                if (num1375 < 200f)
+                targetLocation -= Vector2.UnitY * 400f;
+                if (NPC.Distance(targetLocation) < 80f)
                 {
-                    NPC.ai[0] = 20f;
+                    NPC.life = 0;
+                    NPC.HitEffect();
+                    NPC.checkDead();
+                    return;
                 }
-                if (NPC.velocity.X < 0f)
-                {
-                    NPC.direction = -1;
-                }
-                else
-                {
-                    NPC.direction = 1;
-                }
-                return;
             }
-            NPC.velocity.X = (NPC.velocity.X * 50f + num1373) / 51f;
-            NPC.velocity.Y = (NPC.velocity.Y * 50f + num1374) / 51f;
-            if (num1375 < 350f)
+
+            if (!killYourself)
             {
-                NPC.velocity.X = (NPC.velocity.X * 10f + num1373) / 11f;
-                NPC.velocity.Y = (NPC.velocity.Y * 10f + num1374) / 11f;
+                NPC.ai[0] -= 1f;
+                bool dash = NPC.Distance(targetLocation) < 200f;
+                if (dash || NPC.ai[0] > 0f)
+                {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
+                    if (dash)
+                        NPC.ai[0] = 20f;
+
+                    if (NPC.velocity.X < 0f)
+                        NPC.direction = -1;
+                    else
+                        NPC.direction = 1;
+
+                    return;
+                }
             }
-            if (num1375 < 300f)
-            {
-                NPC.velocity.X = (NPC.velocity.X * 7f + num1373) / 8f;
-                NPC.velocity.Y = (NPC.velocity.Y * 7f + num1374) / 8f;
-            }
+
+            float inertia = (NPC.Distance(targetLocation) < 300f || killYourself) ? 8f : NPC.Distance(targetLocation) < 400f ? 20f : 50f;
+            Vector2 idealVelocity = (targetLocation - targetDirection).SafeNormalize(Vector2.UnitX * NPC.direction) * speed;
+            NPC.velocity = (NPC.velocity * inertia + idealVelocity) / (inertia + 1f);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage < 0)
+                return;
+
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 180);
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 13, hitDirection, -1f, 0, default, 1f);
-            }
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Glass, hit.HitDirection, -1f, 0, default, 1f);
+
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 13, hitDirection, -1f, 0, default, 1f);
-                }
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Glass, hit.HitDirection, -1f, 0, default, 1f);
+
                 if (Main.netMode != NetmodeID.Server)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DankCreeperGore").Type, 1f);

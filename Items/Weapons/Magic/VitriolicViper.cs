@@ -8,23 +8,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class VitriolicViper : ModItem
+    public class VitriolicViper : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vitriolic Viper");
-            Tooltip.SetDefault("Releases a volley of venomous fangs and spit");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 60;
+            Item.height = 62;
             Item.damage = 93;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
-            Item.width = 60;
-            Item.height = 62;
             Item.useTime = Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -34,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<VitriolicViperSpit>();
             Item.shootSpeed = 20f;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

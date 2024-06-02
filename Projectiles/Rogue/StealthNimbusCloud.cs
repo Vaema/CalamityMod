@@ -4,13 +4,13 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class StealthNimbusCloud : ModProjectile
+    public class StealthNimbusCloud : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Magic/ShadeNimbusCloud";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nimbus");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == 1f)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/StealthNimbusCloud2").Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {

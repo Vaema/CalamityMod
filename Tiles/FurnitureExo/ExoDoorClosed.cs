@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -36,13 +37,11 @@ namespace CalamityMod.Tiles.FurnitureExo
             TileObjectData.addTile(Type);
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Exo Door");
-            AddMapEntry(new Color(71, 95, 114), name);
+            AddMapEntry(new Color(119, 105, 79), Language.GetText("MapObject.Door"));
             TileID.Sets.DisableSmartCursor[Type] = true;
             AdjTiles = new int[] { TileID.ClosedDoor };
             DustType = 8;
-            OpenDoorID = ModContent.TileType<ExoDoorOpen>();
+            TileID.Sets.OpenDoorID[Type] = ModContent.TileType<ExoDoorOpen>();
         }
 
         public override bool Slope(int i, int j) => false;
@@ -54,11 +53,6 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 48, ModContent.ItemType<ExoDoor>());
         }
 
         public override void MouseOver(int i, int j)

@@ -1,22 +1,23 @@
-﻿using CalamityMod.Dusts;
+﻿using System.Linq;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.SummonItems;
-using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Terraria.ID;
-using ReLogic.Content;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Projectiles.Typeless;
-using System.Linq;
 
 namespace CalamityMod.Tiles.Furniture
 {
@@ -34,17 +35,10 @@ namespace CalamityMod.Tiles.Furniture
             Main.tileNoAttach[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Wulfrum Lure");
-            AddMapEntry(new Color(194, 255, 67), name);
+            AddMapEntry(new Color(194, 255, 67), CalamityUtils.GetItemName<WulfrumLureItem>());
             TileID.Sets.DisableSmartCursor[Type] = true;
 
             DustType = 83;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, Width * 16, Height * 16, ModContent.ItemType<WulfrumLureItem>());
         }
 
         public override bool RightClick(int i, int j)
@@ -80,7 +74,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
-            if (drawData.tileFrameX % (Width * 18) == 0 && drawData.tileFrameY % (Height * 18 ) == 0)
+            if (drawData.tileFrameX % (Width * 18) == 0 && drawData.tileFrameY % (Height * 18) == 0)
             {
                 Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }

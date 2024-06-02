@@ -1,15 +1,16 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.NPCs.Yharon;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class DragonPow : ModItem
+    public class DragonPow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public static float Speed = 13f;
         public static float ReturnSpeed = 20f;
         public static float SparkSpeed = 0.6f;
@@ -17,14 +18,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float MaxPetalSpeed = 30f;
         public static float MinWaterfallSpeed = 12f;
         public static float MaxWaterfallSpeed = 15.5f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dragon Pow");
-            Tooltip.SetDefault(@"Fires a dragon head that releases draconic sparks
-Summons a barrage of petals and waterfalls on enemy hits");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -43,7 +36,7 @@ Summons a barrage of petals and waterfalls on enemy hits");
             Item.UseSound = Yharon.ShortRoarSound;
             Item.channel = true;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
 

@@ -9,26 +9,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class DarksunFragment : ModItem
+    public class DarksunFragment : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Darksun Fragment");
-            Tooltip.SetDefault("An impacted crystal suffused with opposing celestial energies");
+            Item.ResearchUnlockCount = 100;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 8));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 117;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 117;
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 12);
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

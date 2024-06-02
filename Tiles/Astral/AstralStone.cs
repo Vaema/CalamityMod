@@ -1,6 +1,8 @@
 ﻿
+using System.Collections.Generic;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +11,7 @@ namespace CalamityMod.Tiles.Astral
 {
     public class AstralStone : ModTile
     {
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -20,7 +23,6 @@ namespace CalamityMod.Tiles.Astral
             CalamityUtils.MergeWithOres(Type);
 
             DustType = ModContent.DustType<AstralBasic>();
-            ItemDrop = ModContent.ItemType<Items.Placeables.AstralStone>();
 
             HitSound = SoundID.Tink;
 
@@ -29,17 +31,21 @@ namespace CalamityMod.Tiles.Astral
             TileID.Sets.Stone[Type] = true;
             TileID.Sets.Conversion.Stone[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
-        }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AstralDirt>(), false, false, false);
-            return false;
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
+        }
+
+        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+        {
+            sightColor = Color.Cyan;
+            return true;
         }
     }
 }

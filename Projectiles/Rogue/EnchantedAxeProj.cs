@@ -1,14 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class EnchantedAxeProj : ModProjectile
+    public class EnchantedAxeProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/EnchantedAxe";
 
         private bool recall = false;
@@ -16,7 +17,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Enchanted Axe");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Rogue
                 else
                 {
                     Projectile.timeLeft = 0;
-                    Kill(Projectile.timeLeft);
+                    OnKill(Projectile.timeLeft);
                 }
 
                 if (summonAxe)
@@ -73,16 +73,15 @@ namespace CalamityMod.Projectiles.Rogue
                     float minDist = 999f;
                     int index = 0;
                     // Get the closest enemy to the axe
-                    for (int i = 0; i < Main.npc.Length; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float dist = (Projectile.Center - npc.Center).Length();
                             if (dist < minDist)
                             {
                                 minDist = dist;
-                                index = i;
+                                index = npc.whoAmI;
                             }
                         }
                     }
@@ -121,14 +120,14 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.position == Main.player[Projectile.owner].position)
             {
-                Kill(Projectile.timeLeft);
+                OnKill(Projectile.timeLeft);
             }
             return;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;

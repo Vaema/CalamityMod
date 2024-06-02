@@ -5,13 +5,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class TotalityFire : ModProjectile
+    public class TotalityFire : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private bool initialized = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fire");
             Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
             //dust
             if (Main.rand.NextBool(4))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Main.rand.NextBool(10))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -126,15 +126,9 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire3, 150);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 150);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire3, 150);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 150);
 
         public override bool PreDraw(ref Color lightColor)
         {

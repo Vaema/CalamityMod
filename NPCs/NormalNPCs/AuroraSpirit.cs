@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using System;
+﻿using System;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -12,9 +12,8 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aurora Spirit");
             Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = -1,
                 PortraitPositionYOverride = -20f
@@ -41,26 +40,29 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("The souls of those who passed on in the heart of a blizzard. They now seek out others to freeze to death, to die as they did.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AuroraSpirit")
             });
         }
 
         public override void FindFrame(int frameHeight)
         {
-            int num1 = 1;
+            int currentFrame = 1;
             if (!Main.dedServ)
             {
                 if (TextureAssets.Npc[NPC.type].Value == null)
                     return;
-                num1 = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
+                currentFrame = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
             }
 
             if (!NPC.IsABestiaryIconDummy)
@@ -79,11 +81,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.frameCounter++;
             if (NPC.frameCounter > 4)
             {
-              NPC.frame.Y += num1;
-              NPC.frameCounter = 0;
+                NPC.frame.Y += currentFrame;
+                NPC.frameCounter = 0;
             }
-            if (NPC.frame.Y / num1 >= Main.npcFrameCount[NPC.type])
-              NPC.frame.Y = 0;
+            if (NPC.frame.Y / currentFrame >= Main.npcFrameCount[NPC.type])
+                NPC.frame.Y = 0;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -96,31 +98,31 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Main.hardMode && !spawnInfo.PlayerInTown && !spawnInfo.Player.ZoneOldOneArmy && !Main.snowMoon && !Main.pumpkinMoon ? 0.03f : 0f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
+            if (hurtInfo.Damage > 0)
             {
-                player.AddBuff(BuffID.Frostburn, 90, true);
-                player.AddBuff(BuffID.Chilled, 60, true);
+                target.AddBuff(BuffID.Frostburn, 90, true);
+                target.AddBuff(BuffID.Chilled, 60, true);
             }
         }
 
         public override void AI()
         {
-            Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.02f, 0.7f, 0.7f);
+            Lighting.AddLight(NPC.Center, 0.02f, 0.7f, 0.7f);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 67, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 67, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -129,6 +131,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<EssenceofEleum>(), 4);
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
     }
 }

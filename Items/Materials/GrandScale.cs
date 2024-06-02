@@ -1,23 +1,22 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class GrandScale : ModItem
+    public class GrandScale : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Grand Scale");
-            Tooltip.SetDefault("Large scale of an apex predator");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 15;
-            Item.height = 12;
-            Item.maxStack = 999;
+            Item.width = 28;
+            Item.height = 32;
+            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 4, 50, 0);
             Item.rare = ItemRarityID.Lime;
         }

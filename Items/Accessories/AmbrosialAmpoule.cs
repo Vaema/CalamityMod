@@ -1,56 +1,49 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class AmbrosialAmpoule : ModItem
+    public class AmbrosialAmpoule : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ambrosial Ampoule");
-            Tooltip.SetDefault("You emit light\n" +
-                "5% increased damage reduction and increased life regen\n" +
-                "Grants immunity to the Frozen, Chilled, Frostburn, Cursed Inferno and Burning Blood debuffs");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.defense = 6;
             Item.width = 20;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
-            Item.rare = ItemRarityID.Pink;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
+            player.statLifeMax2 += 50;
+
+            // bool left in for abyss light purposes and life regen effects
             modPlayer.aAmpoule = true;
-            modPlayer.rOoze = true;
+
+            // Inherits all effects of Honey Dew and Living Dew (except standing regen is not honey exclusive anymore)
+            modPlayer.alwaysHoneyRegen = true;
+            modPlayer.honeyDewHalveDebuffs = true;
+            modPlayer.livingDewHalveDebuffs = true;
+
+            // Add light if the other accessories aren't equipped and visibility is turned on
+            if (!(modPlayer.rOoze || modPlayer.purity) && !hideVisual)
+                Lighting.AddLight(player.Center, new Vector3(1.2f, 1.2f, 0.72f));
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CorruptFlask>().
+                AddIngredient<LivingDew>().
                 AddIngredient<RadiantOoze>().
-                AddIngredient<CryonicBar>(5).
-                AddIngredient<SeaPrism>(10).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-
-            CreateRecipe().
-                AddIngredient<CrimsonFlask>().
-                AddIngredient<RadiantOoze>().
-                AddIngredient<CryonicBar>(5).
-                AddIngredient<SeaPrism>(10).
-                AddTile(TileID.MythrilAnvil).
+                AddIngredient<LifeAlloy>(3).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

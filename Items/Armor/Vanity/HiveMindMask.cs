@@ -1,16 +1,15 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class HiveMindMask : ModItem
+    public class HiveMindMask : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hive Mind Mask");
 
             if (Main.netMode != NetmodeID.Server)
                 ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;

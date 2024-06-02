@@ -1,20 +1,21 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.NPCs.Other;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Buffs.Summon;
+using CalamityMod.NPCs.Other;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SepulcherMinion : ModProjectile
+    public class SepulcherMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public struct SepulcherSegment
         {
             public Vector2 CurrentPosition;
@@ -104,11 +105,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sepulcher");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
         }
 
         public override void SetDefaults()
@@ -406,9 +407,7 @@ namespace CalamityMod.Projectiles.Summon
                 int segmentToFireFrom = 60 - AttackTimer % 60;
                 Vector2 spawnPosition = Segments[segmentToFireFrom].CurrentPosition;
                 Vector2 shootVelocity = (target.Center - spawnPosition).SafeNormalize(Vector2.UnitY) * 8f;
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, shootVelocity, ModContent.ProjectileType<BrimstoneDartMinion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, shootVelocity, ModContent.ProjectileType<BrimstoneDartMinion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
             }
 
             if (Main.myPlayer == Projectile.owner && AttackTimer > 430)
@@ -504,16 +503,16 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             float distance = searchDistance * searchDistance;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy() && Main.npc[i].type != heartType)
+                if (n.CanBeChasedBy() && n.type != heartType)
                 {
-                    float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                    float extraDistance = (n.width / 2) + (n.height / 2);
 
-                    if (Main.npc[i].WithinRange(Projectile.Center, distance + extraDistance))
+                    if (n.WithinRange(Projectile.Center, distance + extraDistance))
                     {
-                        distance = Main.npc[i].DistanceSQ(Projectile.Center);
-                        closestTarget = Main.npc[i];
+                        distance = n.DistanceSQ(Projectile.Center);
+                        closestTarget = n;
                     }
                 }
             }
@@ -673,12 +672,12 @@ namespace CalamityMod.Projectiles.Summon
         #endregion
 
         #region Damage Stuff
-        // TODO -- this damage should be after Terraria vanilla multipliers, so it won't one shot people
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            if (Main.masterMode) damage = 450;
-            else if (Main.expertMode) damage = 375;
-            else damage = 300;
+            modifiers.SourceDamage *= 0f;
+            if (Main.masterMode) modifiers.SourceDamage.Flat += 450f;
+            else if (Main.expertMode) modifiers.SourceDamage.Flat += 375f;
+            else modifiers.SourceDamage.Flat += 300f;
         }
 
         public override bool? CanHitNPC(NPC target)

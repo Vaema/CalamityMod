@@ -1,20 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ConsecratedWaterProjectile : ModProjectile
+    public class ConsecratedWaterProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ConsecratedWater";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Consecrated Water");
-        }
 
         public override void SetDefaults()
         {
@@ -41,10 +37,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             Projectile.rotation += MathHelper.ToRadians(Projectile.velocity.Length());
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Dust
-            for (int i = 0; i< 30;i++)
+            for (int i = 0; i < 30; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f));
                 Dust.NewDust(Projectile.Center, 1, 1, DustID.BlueCrystalShard, dspeed.X, dspeed.Y, 0, default, 1.1f);

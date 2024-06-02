@@ -1,4 +1,7 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
@@ -14,23 +17,21 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
-using System.Collections.Generic;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.NPCs.Abyss;
 
 namespace CalamityMod.NPCs.Polterghast
 {
@@ -51,18 +52,21 @@ namespace CalamityMod.NPCs.Polterghast
             phase3IconIndex = ModContent.GetModBossHeadSlot(phase3IconPath);
         }
 
-        private int despawnTimer = 600;
+        private const int DespawnTimerMax = 900;
+        private int despawnTimer = DespawnTimerMax;
         private int soundTimer = 0;
         private bool reachedChargingPoint = false;
         private bool threeAM = false;
-        private int nameStage = 1;
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PolterghastHit");
-        public static readonly SoundStyle P2Sound = new("CalamityMod/Sounds/Custom/PolterghastP2Transition");
-        public static readonly SoundStyle P3Sound = new("CalamityMod/Sounds/Custom/PolterghastP3Transition");
-        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/PolterghastSpawn");
-        public static readonly SoundStyle PhantomSound = new("CalamityMod/Sounds/Custom/PolterghastPhantomSpawn");
+        public static readonly SoundStyle P2Sound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastP2Transition");
+        public static readonly SoundStyle P3Sound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastP3Transition");
+        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastSpawn");
+        public static readonly SoundStyle PhantomSound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastPhantomSpawn");
 
-        public List<SoundStyle> creepySounds = new List<SoundStyle>
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> Texture_Glow2;
+
+        public static List<SoundStyle> creepySounds = new List<SoundStyle>
         {
             NPCs.DevourerofGods.DevourerofGodsHead.AttackSound,
             NPCs.Providence.Providence.HolyRaySound,
@@ -80,20 +84,26 @@ namespace CalamityMod.NPCs.Polterghast
             NPCs.Abyss.ReaperShark.EnragedRoarSound,
             NPCs.Abyss.LuminousCorvina.ScreamSound,
             NPCs.Abyss.DevilFish.MaskBreakSound,
-            NPCs.AdultEidolonWyrm.AdultEidolonWyrmHead.RoarSound,
+            NPCs.PrimordialWyrm.PrimordialWyrmHead.ChargeSound,
             NPCs.GreatSandShark.GreatSandShark.RoarSound,
             NPCs.AcidRain.Mauler.RoarSound,
             NPCs.AstrumDeus.AstrumDeusHead.DeathSound,
-            NPCs.AstrumAureus.AstrumAureus.HitSound
+            NPCs.AstrumAureus.AstrumAureus.HitSound,
+            SoundID.ScaryScream,
+            SoundID.DD2_KoboldFlyerHurt
         };
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Polterghast");
             Main.npcFrameCount[NPC.type] = 12;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -123,22 +133,11 @@ namespace CalamityMod.NPCs.Polterghast
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("Screaming and crying, a cacophony of spirits in anguish tear through the narrow hallways of the dungeon, searching for more—alive or dead—to add to their numbers.")
-            });
-        }
-
-        public override void ModifyTypeName(ref string typeName)
-        {
-            typeName = nameStage switch
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                2 => "Necroghast",
-                3 => "Necroplasm",
-                _ => "Polterghast",
-            };
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Polterghast")
+            });
         }
 
         public override void BossHeadSlot(ref int index)
@@ -229,26 +228,25 @@ namespace CalamityMod.NPCs.Polterghast
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = calamityGlobalNPC.newAI[0] >= chargePhaseGateValue;
-            int chargeAmt = getPissed ? 4 : phase3 ? 3 : phase2 ? 2 : 1; 
-            if (CalamityWorld.getFixedBoi)
-            {
+            int chargeAmt = getPissed ? 4 : phase3 ? 3 : phase2 ? 2 : 1;
+            if (Main.zenithWorld)
                 chargeAmt = phase4 ? int.MaxValue : getPissed ? 6 : phase3 ? 4 : phase2 ? 3 : 2;
-            }
+
             float chargeVelocity = getPissed ? 28f : phase3 ? 24f : phase2 ? 22f : 20f;
             float chargeAcceleration = getPissed ? 0.7f : phase3 ? 0.6f : phase2 ? 0.55f : 0.5f;
             float chargeDistance = 480f;
             bool charging = NPC.ai[2] >= chargePhaseGateValue - 180f;
             bool reset = NPC.ai[2] >= chargePhaseGateValue + 120f;
-            float speedUpDistance = 480f - 360f * (1f - lifeRatio);
 
-            if ((Main.time >= 27000 && Main.time < 30600 && Main.dayTime == false && CalamityWorld.getFixedBoi) || threeAM)
+            if ((Main.time >= 27000 && Main.time < 30600 && Main.dayTime == false && Main.zenithWorld) || threeAM)
             {
                 threeAM = true;
                 chargeVelocity *= 2;
                 chargeAcceleration *= 2;
                 chargeDistance *= 3;
+
                 if (!phase4)
-                chargeAmt *= 2;
+                    chargeAmt *= 2;
             }
 
             // Only get a new target while not charging
@@ -264,9 +262,8 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             Player player = Main.player[NPC.target];
-            bool speedUp = Vector2.Distance(player.Center, vector) > speedUpDistance; // 30 or 40 tile distance
-            float velocity = 10f; // Max should be 21
-            float acceleration = 0.05f; // Max should be 0.13
+            float velocity = 15f;
+            float acceleration = 0.075f;
 
             if (!player.active || player.dead)
             {
@@ -296,7 +293,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             // Play a random creepy sound every once in a while in the zenith seed
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 soundTimer++;
                 int gate = threeAM ? 60 : phase4 ? 300 : phase3 ? 420 : phase2 ? 540 : 600;
@@ -304,7 +301,7 @@ namespace CalamityMod.NPCs.Polterghast
                 {
                     SoundStyle[] creepyArray = creepySounds.ToArray();
                     SoundStyle selectedSound = creepyArray[Main.rand.Next(0, creepyArray.Length - 1)];
-                    SoundEngine.PlaySound(selectedSound with { Pitch = selectedSound.Pitch - 0.8f, Volume = selectedSound.Volume - 0.2f}, NPC.Center);
+                    SoundEngine.PlaySound(selectedSound with { Pitch = selectedSound.Pitch - 0.8f, Volume = selectedSound.Volume - 0.2f }, NPC.Center);
                 }
             }
 
@@ -325,7 +322,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<PolterghastHook>(), NPC.whoAmI, 0f, 0f, 0f, 0f, 255);
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<PolterghastHook>(), NPC.whoAmI, 0f, 0f, 0f, 0f, 255);
 
-                if (CalamityWorld.getFixedBoi)
+                if (Main.zenithWorld)
                 {
                     for (int I = 0; I < 3; I++)
                     {
@@ -336,7 +333,8 @@ namespace CalamityMod.NPCs.Polterghast
                 }
             }
 
-            if (!player.ZoneDungeon && !bossRush && player.position.Y < Main.worldSurface * 16.0)
+            bool despawn = !player.ZoneDungeon && !bossRush && player.position.Y < Main.worldSurface * 16.0;
+            if (despawn)
             {
                 despawnTimer--;
                 if (despawnTimer <= 0)
@@ -412,58 +410,12 @@ namespace CalamityMod.NPCs.Polterghast
                 acceleration += revenge ? 0.035f : 0.025f;
             }
 
-            // Slow down if close to target and not inside tiles
-            if (!speedUp && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height) && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height) && !charging && !chargePhase)
-            {
-                velocity = 8f;
-                acceleration = 0.035f;
-            }
+            NPC.Calamity().CurrentlyEnraged = despawn;
 
-            // Detect active tiles around Polterghast
-            int radius = 30; // 30 tile radius
-            int diameter = radius * 2;
-            int npcCenterX = (int)(vector.X / 16f);
-            int npcCenterY = (int)(vector.Y / 16f);
-            Rectangle area = new Rectangle(npcCenterX - radius, npcCenterY - radius, diameter, diameter);
-            int nearbyActiveTiles = 0; // 0 to 3600
-            for (int x = area.Left; x < area.Right; x++)
-            {
-                for (int y = area.Top; y < area.Bottom; y++)
-                {
-                    if (Main.tile[x, y] != null)
-                    {
-                        if (Main.tile[x, y].HasUnactuatedTile && Main.tileSolid[Main.tile[x, y].TileType] && !Main.tileSolidTop[Main.tile[x, y].TileType] && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
-                            nearbyActiveTiles++;
-                    }
-                }
-            }
+            // Used to inform the clone and hooks about how aggressive they should be.
+            NPC.ai[3] = 1.5f;
 
-            // Scale multiplier based on nearby active tiles
-            float tileEnrageMult = 1f;
-            if (nearbyActiveTiles < 1000)
-                tileEnrageMult += (1000 - nearbyActiveTiles) * 0.00075f; // Ranges from 1f to 1.75f
-
-            if (bossRush)
-                tileEnrageMult = 1.75f;
-
-            NPC.Calamity().CurrentlyEnraged = !bossRush && tileEnrageMult >= 1.6f;
-
-            // Used to inform clone and hooks about number of active tiles nearby
-            NPC.ai[3] = tileEnrageMult;
-
-            // Increase projectile fire rate based on number of nearby active tiles
-            float amount = 1f - ((tileEnrageMult - 1f) / 0.75f);
-            if (amount < 0f)
-                amount = 0f;
-            float projectileFireRateMultiplier = MathHelper.Lerp(1f, 2f, amount);
-
-            // Increase projectile stats based on number of nearby active tiles
-            int baseProjectileTimeLeft = (int)(1200f * tileEnrageMult);
-            int baseProjectileAmt = (int)(4f * tileEnrageMult);
-            int baseProjectileSpread = (int)(45f * tileEnrageMult);
-            float baseProjectileVelocity = 5f * tileEnrageMult;
-            if (speedBoost)
-                baseProjectileVelocity *= 1.25f;
+            float baseProjectileVelocity = speedBoost ? 9.375f : 7.5f;
 
             // Predictiveness
             Vector2 predictionVector = chargePhase && bossRush ? player.velocity * 20f : Vector2.Zero;
@@ -473,12 +425,18 @@ namespace CalamityMod.NPCs.Polterghast
             // Rotation
             if (calamityGlobalNPC.newAI[3] == 0f)
             {
-                float num740 = player.Center.X + predictionVector.X - vector.X;
-                float num741 = player.Center.Y + predictionVector.Y - vector.Y;
-                NPC.rotation = (float)Math.Atan2(num741, num740) + MathHelper.PiOver2;
+                float playerXDestination = player.Center.X + predictionVector.X - vector.X;
+                float playerYDestination = player.Center.Y + predictionVector.Y - vector.Y;
+                NPC.rotation = (float)Math.Atan2(playerYDestination, playerXDestination) + MathHelper.PiOver2;
             }
             else
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
+
+            int phase1ReducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
+            int phase2Damage = (int)Math.Round(NPC.defDamage * 1.2);
+            int phase2ReducedSetDamage = (int)Math.Round(phase2Damage * 0.5);
+            int phase3Damage = (int)Math.Round(NPC.defDamage * 1.4);
+            int phase3ReducedSetDamage = (int)Math.Round(phase3Damage * 0.5);
 
             if (!chargePhase)
             {
@@ -492,38 +450,34 @@ namespace CalamityMod.NPCs.Polterghast
                 float movementLimitX = 0f;
                 float movementLimitY = 0f;
                 int numHooks = 4;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (var n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<PolterghastHook>())
+                    if (n.type == ModContent.NPCType<PolterghastHook>())
                     {
-                        movementLimitX += Main.npc[i].Center.X;
-                        movementLimitY += Main.npc[i].Center.Y;
+                        movementLimitX += n.Center.X;
+                        movementLimitY += n.Center.Y;
                     }
                 }
                 movementLimitX /= numHooks;
                 movementLimitY /= numHooks;
 
-                Vector2 vector91 = new Vector2(movementLimitX, movementLimitY);
-                float num736 = player.Center.X - vector91.X;
-                float num737 = player.Center.Y - vector91.Y;
+                Vector2 movementLimitVector = new Vector2(movementLimitX, movementLimitY);
+                float movementLimitedXDist = player.Center.X - movementLimitVector.X;
+                float movementLimitedYDist = player.Center.Y - movementLimitVector.Y;
 
                 if (despawnBoost)
                 {
-                    num737 *= -1f;
-                    num736 *= -1f;
+                    movementLimitedYDist *= -1f;
+                    movementLimitedXDist *= -1f;
                     velocity += 10f;
                 }
 
-                float num738 = (float)Math.Sqrt(num736 * num736 + num737 * num737);
+                float movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
                 float maxDistanceFromHooks = expertMode ? 650f : 500f;
                 if (speedBoost || bossRush)
                     maxDistanceFromHooks += 250f;
                 if (death)
                     maxDistanceFromHooks += maxDistanceFromHooks * 0.1f * (1f - lifeRatio);
-
-                // Increase speed based on nearby active tiles
-                velocity *= tileEnrageMult;
-                acceleration *= tileEnrageMult;
 
                 if (death)
                 {
@@ -531,61 +485,54 @@ namespace CalamityMod.NPCs.Polterghast
                     acceleration += acceleration * 0.15f * (1f - lifeRatio);
                 }
 
-                if (num738 >= maxDistanceFromHooks)
+                if (movementLimitedDistance >= maxDistanceFromHooks)
                 {
-                    num738 = maxDistanceFromHooks / num738;
-                    num736 *= num738;
-                    num737 *= num738;
+                    movementLimitedDistance = maxDistanceFromHooks / movementLimitedDistance;
+                    movementLimitedXDist *= movementLimitedDistance;
+                    movementLimitedYDist *= movementLimitedDistance;
                 }
 
-                movementLimitX += num736;
-                movementLimitY += num737;
-                num736 = movementLimitX - vector.X;
-                num737 = movementLimitY - vector.Y;
-                num738 = (float)Math.Sqrt(num736 * num736 + num737 * num737);
+                movementLimitX += movementLimitedXDist;
+                movementLimitY += movementLimitedYDist;
+                movementLimitedXDist = movementLimitX - vector.X;
+                movementLimitedYDist = movementLimitY - vector.Y;
+                movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
 
-                if (num738 < velocity)
+                if (movementLimitedDistance < velocity)
                 {
-                    num736 = NPC.velocity.X;
-                    num737 = NPC.velocity.Y;
+                    movementLimitedXDist = NPC.velocity.X;
+                    movementLimitedYDist = NPC.velocity.Y;
                 }
                 else
                 {
-                    num738 = velocity / num738;
-                    num736 *= num738;
-                    num737 *= num738;
+                    movementLimitedDistance = velocity / movementLimitedDistance;
+                    movementLimitedXDist *= movementLimitedDistance;
+                    movementLimitedYDist *= movementLimitedDistance;
                 }
 
-                if (NPC.velocity.X < num736)
+                if (NPC.velocity.X < movementLimitedXDist)
                 {
                     NPC.velocity.X += acceleration;
-                    if (NPC.velocity.X < 0f && num736 > 0f)
+                    if (NPC.velocity.X < 0f && movementLimitedXDist > 0f)
                         NPC.velocity.X += acceleration * 2f;
                 }
-                else if (NPC.velocity.X > num736)
+                else if (NPC.velocity.X > movementLimitedXDist)
                 {
                     NPC.velocity.X -= acceleration;
-                    if (NPC.velocity.X > 0f && num736 < 0f)
+                    if (NPC.velocity.X > 0f && movementLimitedXDist < 0f)
                         NPC.velocity.X -= acceleration * 2f;
                 }
-                if (NPC.velocity.Y < num737)
+                if (NPC.velocity.Y < movementLimitedYDist)
                 {
                     NPC.velocity.Y += acceleration;
-                    if (NPC.velocity.Y < 0f && num737 > 0f)
+                    if (NPC.velocity.Y < 0f && movementLimitedYDist > 0f)
                         NPC.velocity.Y += acceleration * 2f;
                 }
-                else if (NPC.velocity.Y > num737)
+                else if (NPC.velocity.Y > movementLimitedYDist)
                 {
                     NPC.velocity.Y -= acceleration;
-                    if (NPC.velocity.Y > 0f && num737 < 0f)
+                    if (NPC.velocity.Y > 0f && movementLimitedYDist < 0f)
                         NPC.velocity.Y -= acceleration * 2f;
-                }
-
-                // Slow down considerably if near player
-                if (!speedUp && nearbyActiveTiles > 1000 && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height) && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height) && !charging)
-                {
-                    if (NPC.velocity.Length() > velocity)
-                        NPC.velocity *= 0.97f;
                 }
             }
             else
@@ -597,18 +544,26 @@ namespace CalamityMod.NPCs.Polterghast
 
                     if (calamityGlobalNPC.newAI[1] == 0f)
                     {
+                        NPC.damage = phase3 ? phase3Damage : phase2 ? phase2Damage : NPC.defDamage;
+
                         NPC.velocity = Vector2.Normalize(rotationVector) * chargeVelocity;
                         calamityGlobalNPC.newAI[1] = 1f;
                     }
                     else
                     {
+                        NPC.damage = phase3 ? phase3Damage : phase2 ? phase2Damage : NPC.defDamage;
+
                         calamityGlobalNPC.newAI[2] += 1f;
 
                         // Slow down for a few frames
                         float totalChargeTime = chargeDistance * 4f / chargeVelocity;
                         float slowDownTime = chargeVelocity;
                         if (calamityGlobalNPC.newAI[2] >= totalChargeTime - slowDownTime)
+                        {
+                            NPC.damage = phase3 ? phase3ReducedSetDamage : phase2 ? phase2ReducedSetDamage : phase1ReducedSetDamage;
+
                             NPC.velocity *= 0.9f;
+                        }
 
                         // Reset and either go back to normal or charge again
                         if (calamityGlobalNPC.newAI[2] >= totalChargeTime)
@@ -634,6 +589,8 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 else
                 {
+                    NPC.damage = phase3 ? phase3ReducedSetDamage : phase2 ? phase2ReducedSetDamage : phase1ReducedSetDamage;
+
                     // Pick a charging location
                     // Set charge locations X
                     if (vector.X >= player.Center.X)
@@ -664,7 +621,7 @@ namespace CalamityMod.NPCs.Polterghast
                             SoundEngine.PlaySound(SoundID.Item125, NPC.Center);
                             for (int i = 0; i < 30; i++)
                             {
-                                int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                                int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
                                 Main.dust[dust].noGravity = true;
                                 Main.dust[dust].velocity *= 5f;
                             }
@@ -711,30 +668,34 @@ namespace CalamityMod.NPCs.Polterghast
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
             }
 
+            bool isInChargePhase = charging && chargePhase;
+
             // Phase 1: "Polterghast"
             if (!phase2 && !phase3)
             {
-                NPC.damage = NPC.defDamage;
+                if (!isInChargePhase)
+                    NPC.damage = phase1ReducedSetDamage;
+
                 NPC.defense = NPC.defDefense;
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && !charging && !chargePhase)
+                if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
                 {
                     NPC.localAI[1] += expertMode ? 1.5f : 1f;
                     if (speedBoost)
                         NPC.localAI[1] += 2f;
 
-                    if (NPC.localAI[1] >= 90f * projectileFireRateMultiplier)
+                    if (NPC.localAI[1] >= 120f)
                     {
                         NPC.localAI[1] = 0f;
 
-                        bool flag47 = Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+                        bool notLiningUpCharge = Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
                         if (NPC.localAI[3] > 0f)
                         {
-                            flag47 = true;
+                            notLiningUpCharge = true;
                             NPC.localAI[3] = 0f;
                         }
 
-                        if (flag47)
+                        if (notLiningUpCharge)
                         {
                             int type = ModContent.ProjectileType<PhantomShot>();
                             if (Main.rand.NextBool(3))
@@ -745,27 +706,27 @@ namespace CalamityMod.NPCs.Polterghast
 
                             int damage = NPC.GetProjectileDamage(type);
 
-                            Vector2 vector93 = vector;
-                            float num743 = player.Center.X - vector93.X;
-                            float num744 = player.Center.Y - vector93.Y;
-                            float num745 = (float)Math.Sqrt(num743 * num743 + num744 * num744);
+                            Vector2 firingPosition = vector;
+                            float playerXDist = player.Center.X - firingPosition.X;
+                            float playerYDist = player.Center.Y - firingPosition.Y;
+                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                            num745 = baseProjectileVelocity / num745;
-                            num743 *= num745;
-                            num744 *= num745;
-                            vector93.X += num743 * 3f;
-                            vector93.Y += num744 * 3f;
+                            playerDistance = baseProjectileVelocity / playerDistance;
+                            playerXDist *= playerDistance;
+                            playerYDist *= playerDistance;
+                            firingPosition.X += playerXDist * 3f;
+                            firingPosition.Y += playerYDist * 3f;
 
-                            float rotation = MathHelper.ToRadians(baseProjectileSpread);
-                            float baseSpeed = (float)Math.Sqrt(num743 * num743 + num744 * num744);
-                            double startAngle = Math.Atan2(num743, num744) - rotation / 2;
-                            double deltaAngle = rotation / baseProjectileAmt;
+                            float rotation = MathHelper.ToRadians(65);
+                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
+                            double deltaAngle = rotation / 6;
                             double offsetAngle;
-                            for (int i = 0; i < baseProjectileAmt; i++)
+                            for (int i = 0; i < 6; i++)
                             {
                                 offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), vector93.X, vector93.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = type == ModContent.ProjectileType<PhantomBlast>() ? baseProjectileTimeLeft / 4 : baseProjectileTimeLeft;
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
+                                Main.projectile[proj].timeLeft = type == ModContent.ProjectileType<PhantomBlast>() ? 450 : 1800;
                             }
                         }
                         else
@@ -773,27 +734,27 @@ namespace CalamityMod.NPCs.Polterghast
                             int type = ModContent.ProjectileType<PhantomBlast>();
                             int damage = NPC.GetProjectileDamage(type);
 
-                            Vector2 vector93 = vector;
-                            float num743 = player.Center.X - vector93.X;
-                            float num744 = player.Center.Y - vector93.Y;
-                            float num745 = (float)Math.Sqrt(num743 * num743 + num744 * num744);
+                            Vector2 firingPosition = vector;
+                            float playerXDist = player.Center.X - firingPosition.X;
+                            float playerYDist = player.Center.Y - firingPosition.Y;
+                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                            num745 = (baseProjectileVelocity + 5f) / num745;
-                            num743 *= num745;
-                            num744 *= num745;
-                            vector93.X += num743 * 3f;
-                            vector93.Y += num744 * 3f;
+                            playerDistance = (baseProjectileVelocity + 5f) / playerDistance;
+                            playerXDist *= playerDistance;
+                            playerYDist *= playerDistance;
+                            firingPosition.X += playerXDist * 3f;
+                            firingPosition.Y += playerYDist * 3f;
 
-                            float rotation = MathHelper.ToRadians(baseProjectileSpread + 15);
-                            float baseSpeed = (float)Math.Sqrt(num743 * num743 + num744 * num744);
-                            double startAngle = Math.Atan2(num743, num744) - rotation / 2;
-                            double deltaAngle = rotation / baseProjectileAmt;
+                            float rotation = MathHelper.ToRadians(80);
+                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
+                            double deltaAngle = rotation / 6;
                             double offsetAngle;
-                            for (int i = 0; i < baseProjectileAmt; i++)
+                            for (int i = 0; i < 6; i++)
                             {
                                 offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), vector93.X, vector93.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = baseProjectileTimeLeft / 4;
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
+                                Main.projectile[proj].timeLeft = 450;
                             }
                         }
                     }
@@ -825,51 +786,50 @@ namespace CalamityMod.NPCs.Polterghast
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Polt5").Type, 1f);
                     }
 
-                    for (int num621 = 0; num621 < 10; num621++)
+                    for (int i = 0; i < 10; i++)
                     {
-                        int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Phantoplasm, 0f, 0f, 100, default, 2f);
-                        Main.dust[num622].velocity *= 3f;
-                        Main.dust[num622].noGravity = true;
-                        if (Main.rand.NextBool(2))
+                        int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                        Main.dust[ghostDust].velocity *= 3f;
+                        Main.dust[ghostDust].noGravity = true;
+                        if (Main.rand.NextBool())
                         {
-                            Main.dust[num622].scale = 0.5f;
-                            Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            Main.dust[ghostDust].scale = 0.5f;
+                            Main.dust[ghostDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                         }
                     }
-                    for (int num623 = 0; num623 < 30; num623++)
+                    for (int j = 0; j < 30; j++)
                     {
-                        int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
-                        Main.dust[num624].noGravity = true;
-                        Main.dust[num624].velocity *= 5f;
-                        num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
-                        Main.dust[num624].velocity *= 2f;
+                        int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                        Main.dust[ghostDust2].noGravity = true;
+                        Main.dust[ghostDust2].velocity *= 5f;
+                        ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                        Main.dust[ghostDust2].velocity *= 2f;
                     }
                 }
 
-                // Actually changes name to Necroghast
-                nameStage = 2;
+                if (!isInChargePhase)
+                    NPC.damage = phase2ReducedSetDamage;
 
-                NPC.damage = (int)(NPC.defDamage * 1.2f);
-                NPC.defense = (int)(NPC.defDefense * 0.8f);
+                NPC.defense = (int)Math.Round(NPC.defDefense * 0.8);
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && !charging && !chargePhase)
+                if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
                 {
                     NPC.localAI[1] += expertMode ? 1.5f : 1f;
                     if (speedBoost)
                         NPC.localAI[1] += 2f;
 
-                    if (NPC.localAI[1] >= 150f * projectileFireRateMultiplier)
+                    if (NPC.localAI[1] >= 200f)
                     {
                         NPC.localAI[1] = 0f;
 
-                        bool flag47 = Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+                        bool notLiningUpCharge = Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
                         if (NPC.localAI[3] > 0f)
                         {
-                            flag47 = true;
+                            notLiningUpCharge = true;
                             NPC.localAI[3] = 0f;
                         }
 
-                        if (flag47)
+                        if (notLiningUpCharge)
                         {
                             int type = ModContent.ProjectileType<PhantomShot2>();
                             if (Main.rand.NextBool(3))
@@ -880,28 +840,28 @@ namespace CalamityMod.NPCs.Polterghast
 
                             int damage = NPC.GetProjectileDamage(type);
 
-                            Vector2 vector93 = vector;
-                            float num743 = player.Center.X - vector93.X;
-                            float num744 = player.Center.Y - vector93.Y;
-                            float num745 = (float)Math.Sqrt(num743 * num743 + num744 * num744);
+                            Vector2 firingPosition = vector;
+                            float playerXDist = player.Center.X - firingPosition.X;
+                            float playerYDist = player.Center.Y - firingPosition.Y;
+                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                            num745 = (baseProjectileVelocity + 1f) / num745;
-                            num743 *= num745;
-                            num744 *= num745;
-                            vector93.X += num743 * 3f;
-                            vector93.Y += num744 * 3f;
+                            playerDistance = (baseProjectileVelocity + 1f) / playerDistance;
+                            playerXDist *= playerDistance;
+                            playerYDist *= playerDistance;
+                            firingPosition.X += playerXDist * 3f;
+                            firingPosition.Y += playerYDist * 3f;
 
-                            int numProj = baseProjectileAmt + 1;
-                            float rotation = MathHelper.ToRadians(baseProjectileSpread + 15);
-                            float baseSpeed = (float)Math.Sqrt(num743 * num743 + num744 * num744);
-                            double startAngle = Math.Atan2(num743, num744) - rotation / 2;
+                            int numProj = 7;
+                            float rotation = MathHelper.ToRadians(80);
+                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
                             double deltaAngle = rotation / numProj;
                             double offsetAngle;
                             for (int i = 0; i < numProj; i++)
                             {
                                 offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), vector93.X, vector93.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = type == ModContent.ProjectileType<PhantomBlast2>() ? baseProjectileTimeLeft / 4 : baseProjectileTimeLeft;
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
+                                Main.projectile[proj].timeLeft = type == ModContent.ProjectileType<PhantomBlast2>() ? 450 : 1800;
                             }
                         }
                         else
@@ -909,28 +869,28 @@ namespace CalamityMod.NPCs.Polterghast
                             int type = ModContent.ProjectileType<PhantomBlast2>();
                             int damage = NPC.GetProjectileDamage(type);
 
-                            Vector2 vector93 = vector;
-                            float num743 = player.Center.X - vector93.X;
-                            float num744 = player.Center.Y - vector93.Y;
-                            float num745 = (float)Math.Sqrt(num743 * num743 + num744 * num744);
+                            Vector2 firingPosition = vector;
+                            float playerXDist = player.Center.X - firingPosition.X;
+                            float playerYDist = player.Center.Y - firingPosition.Y;
+                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                            num745 = (baseProjectileVelocity + 5f) / num745;
-                            num743 *= num745;
-                            num744 *= num745;
-                            vector93.X += num743 * 3f;
-                            vector93.Y += num744 * 3f;
+                            playerDistance = (baseProjectileVelocity + 5f) / playerDistance;
+                            playerXDist *= playerDistance;
+                            playerYDist *= playerDistance;
+                            firingPosition.X += playerXDist * 3f;
+                            firingPosition.Y += playerYDist * 3f;
 
-                            int numProj = baseProjectileAmt + 1;
-                            float rotation = MathHelper.ToRadians(baseProjectileSpread + 35);
-                            float baseSpeed = (float)Math.Sqrt(num743 * num743 + num744 * num744);
-                            double startAngle = Math.Atan2(num743, num744) - rotation / 2;
+                            int numProj = 7;
+                            float rotation = MathHelper.ToRadians(100);
+                            float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                            double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
                             double deltaAngle = rotation / numProj;
                             double offsetAngle;
                             for (int i = 0; i < numProj; i++)
                             {
                                 offsetAngle = startAngle + deltaAngle * i;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), vector93.X, vector93.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
-                                Main.projectile[proj].timeLeft = baseProjectileTimeLeft / 4;
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
+                                Main.projectile[proj].timeLeft = 450;
                             }
                         }
                     }
@@ -957,7 +917,7 @@ namespace CalamityMod.NPCs.Polterghast
                     {
                         NPC.NewNPC(NPC.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<PolterPhantom>());
 
-                        if (expertMode && !CalamityWorld.getFixedBoi)
+                        if (expertMode && !Main.zenithWorld)
                         {
                             for (int I = 0; I < 3; I++)
                             {
@@ -979,64 +939,63 @@ namespace CalamityMod.NPCs.Polterghast
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Polt5").Type, 1f);
                     }
 
-                    for (int num621 = 0; num621 < 10; num621++)
+                    for (int i = 0; i < 10; i++)
                     {
-                        int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Phantoplasm, 0f, 0f, 100, default, 2f);
-                        Main.dust[num622].velocity *= 3f;
-                        Main.dust[num622].noGravity = true;
-                        if (Main.rand.NextBool(2))
+                        int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                        Main.dust[ghostDust].velocity *= 3f;
+                        Main.dust[ghostDust].noGravity = true;
+                        if (Main.rand.NextBool())
                         {
-                            Main.dust[num622].scale = 0.5f;
-                            Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            Main.dust[ghostDust].scale = 0.5f;
+                            Main.dust[ghostDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                         }
                     }
-                    for (int num623 = 0; num623 < 30; num623++)
+                    for (int j = 0; j < 30; j++)
                     {
-                        int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
-                        Main.dust[num624].noGravity = true;
-                        Main.dust[num624].velocity *= 5f;
-                        num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
-                        Main.dust[num624].velocity *= 2f;
+                        int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                        Main.dust[ghostDust2].noGravity = true;
+                        Main.dust[ghostDust2].velocity *= 5f;
+                        ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                        Main.dust[ghostDust2].velocity *= 2f;
                     }
                 }
 
-                // Actually changes name to Necroplasm
-                nameStage = 3;
+                if (!isInChargePhase)
+                    NPC.damage = phase3ReducedSetDamage;
 
-                NPC.damage = (int)(NPC.defDamage * 1.4f);
-                NPC.defense = (int)(NPC.defDefense * 0.5f);
+                NPC.defense = (int)Math.Round(NPC.defDefense * 0.5);
 
                 NPC.localAI[1] += 1f;
-                if (NPC.localAI[1] >= (getPissed ? 150f : 210f) * projectileFireRateMultiplier && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
+                if (NPC.localAI[1] >= (getPissed ? 200f : 280f) && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                 {
                     NPC.localAI[1] = 0f;
-                    if (Main.netMode != NetmodeID.MultiplayerClient && !charging && !chargePhase)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
                     {
-                        Vector2 vector93 = vector;
-                        float num743 = player.Center.X - vector93.X;
-                        float num744 = player.Center.Y - vector93.Y;
-                        float num745 = (float)Math.Sqrt(num743 * num743 + num744 * num744);
+                        Vector2 firingPosition = vector;
+                        float playerXDist = player.Center.X - firingPosition.X;
+                        float playerYDist = player.Center.Y - firingPosition.Y;
+                        float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                        num745 = baseProjectileVelocity / num745;
-                        num743 *= num745;
-                        num744 *= num745;
-                        vector93.X += num743 * 3f;
-                        vector93.Y += num744 * 3f;
+                        playerDistance = baseProjectileVelocity / playerDistance;
+                        playerXDist *= playerDistance;
+                        playerYDist *= playerDistance;
+                        firingPosition.X += playerXDist * 3f;
+                        firingPosition.Y += playerYDist * 3f;
 
-                        int numProj = baseProjectileAmt + (getPissed ? 4 : 2);
-                        float rotation = MathHelper.ToRadians(baseProjectileSpread + (getPissed ? 60 : 45));
-                        float baseSpeed = (float)Math.Sqrt(num743 * num743 + num744 * num744);
-                        double startAngle = Math.Atan2(num743, num744) - rotation / 2;
+                        int numProj = 6 + (getPissed ? 4 : 2);
+                        float rotation = MathHelper.ToRadians(110 + (getPissed ? 15 : 0));
+                        float baseSpeed = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                        double startAngle = Math.Atan2(playerXDist, playerYDist) - rotation / 2;
                         double deltaAngle = rotation / numProj;
                         double offsetAngle;
 
-                        int type = Main.rand.NextBool(2) ? ModContent.ProjectileType<PhantomShot2>() : ModContent.ProjectileType<PhantomShot>();
+                        int type = Main.rand.NextBool() ? ModContent.ProjectileType<PhantomShot2>() : ModContent.ProjectileType<PhantomShot>();
                         int damage = NPC.GetProjectileDamage(type);
 
                         for (int i = 0; i < numProj; i++)
                         {
                             offsetAngle = startAngle + deltaAngle * i;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vector93.X, vector93.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), firingPosition.X, firingPosition.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, 0f, 0f);
                         }
                     }
                 }
@@ -1048,30 +1007,24 @@ namespace CalamityMod.NPCs.Polterghast
                     {
                         NPC.localAI[2] = 0f;
 
-                        float num757 = 6f;
-                        Vector2 vector94 = vector;
-                        float num758 = player.Center.X - vector94.X;
-                        float num760 = player.Center.Y - vector94.Y;
-                        float num761 = (float)Math.Sqrt(num758 * num758 + num760 * num760);
-                        num761 = num757 / num761;
-                        num758 *= num761;
-                        num760 *= num761;
-                        vector94.X += num758 * 3f;
-                        vector94.Y += num760 * 3f;
+                        Vector2 spiritSpawn = vector;
+                        float spiritXDist = player.Center.X - spiritSpawn.X;
+                        float spiritYDist = player.Center.Y - spiritSpawn.Y;
+                        float spiritDistance = (float)Math.Sqrt(spiritXDist * spiritXDist + spiritYDist * spiritYDist);
+                        spiritDistance = 6f / spiritDistance;
+                        spiritXDist *= spiritDistance;
+                        spiritYDist *= spiritDistance;
+                        spiritSpawn.X += spiritXDist * 3f;
+                        spiritSpawn.Y += spiritYDist * 3f;
 
-                        if (NPC.CountNPCS(ModContent.NPCType<PhantomSpiritL>()) < 2 && Main.netMode != NetmodeID.MultiplayerClient && !charging && !chargePhase)
+                        if (NPC.CountNPCS(ModContent.NPCType<PhantomSpiritL>()) < 2 && Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
                         {
                             SoundEngine.PlaySound(PhantomSound, NPC.Center);
-                            int num762 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<PhantomSpiritL>());
-                            Main.npc[num762].velocity.X = num758;
-                            Main.npc[num762].velocity.Y = num760;
-                            Main.npc[num762].netUpdate = true;
+                            int phantomSpirit = NPC.NewNPC(NPC.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<PhantomSpiritL>());
+                            Main.npc[phantomSpirit].velocity.X = spiritXDist;
+                            Main.npc[phantomSpirit].velocity.Y = spiritYDist;
+                            Main.npc[phantomSpirit].netUpdate = true;
                         }
-                    }
-
-                    if (CalamityWorld.getFixedBoi)
-                    {
-                        NPC.GivenName = "Polterplasm";
                     }
                 }
             }
@@ -1094,14 +1047,14 @@ namespace CalamityMod.NPCs.Polterghast
                 if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
                     SoundEngine.PlaySound(ReaperShark.SearchRoarSound, Main.player[Main.myPlayer].Center);
 
-                string key = "Mods.CalamityMod.GhostBossText";
+                string key = "Mods.CalamityMod.Status.Progression.GhostBossText";
                 Color messageColor = Color.RoyalBlue;
-                string sulfSeaBoostMessage = "Mods.CalamityMod.GhostBossText4";
+                string sulfSeaBoostMessage = "Mods.CalamityMod.Status.Progression.GhostBossText4";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
 
-                if ((Main.rand.NextBool(20) && DateTime.Now.Month == 4 && DateTime.Now.Day == 1) || CalamityWorld.getFixedBoi)
+                if ((Main.rand.NextBool(20) && DateTime.Now.Month == 4 && DateTime.Now.Day == 1) || Main.zenithWorld)
                 {
-                    sulfSeaBoostMessage = "Mods.CalamityMod.AprilFools2"; // Goddamn boomer duke moments
+                    sulfSeaBoostMessage = "Mods.CalamityMod.Status.Progression.AprilFools2"; // Goddamn boomer duke moments
                 }
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
@@ -1138,7 +1091,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RuinousSoul>(), 1, 7, 15));
-                normalOnly.Add(ModContent.ItemType<Phantoplasm>(), 1, 30, 40);
+                normalOnly.Add(ModContent.ItemType<Necroplasm>(), 1, 30, 40);
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<PolterghastMask>(), 7);
@@ -1149,6 +1102,12 @@ namespace CalamityMod.NPCs.Polterghast
 
             // Relic
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<PolterghastRelic>());
+
+            // GFB Cell Phone drop
+            var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
+            {
+                GFBOnly.Add(ItemID.CellPhone, hideLootReport: true);
+            }
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedPolterghast, ModContent.ItemType<LorePolterghast>(), desc: DropHelper.FirstKillText);
@@ -1201,41 +1160,39 @@ namespace CalamityMod.NPCs.Polterghast
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Texture2D texture2D16 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastGlow2").Value;
-            Vector2 vector11 = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
-            Color color36 = Color.White;
-            float amount9 = 0.5f;
-            int num153 = 7;
+            Texture2D texture2D16 = Texture_Glow2.Value;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            int afterimageAmt = 7;
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int num155 = 1; num155 < num153; num155 += 2)
+                for (int i = 1; i < afterimageAmt; i += 2)
                 {
-                    Color color38 = drawColor;
-                    color38 = Color.Lerp(color38, color36, amount9);
-                    color38 = NPC.GetAlpha(color38);
-                    color38 *= (num153 - num155) / 15f;
-                    Vector2 vector41 = NPC.oldPos[num155] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    vector41 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                    vector41 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, vector41, NPC.frame, color38, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                    Color afterimageColor = drawColor;
+                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                    afterimageColor = NPC.GetAlpha(afterimageColor);
+                    afterimageColor *= (afterimageAmt - i) / 15f;
+                    Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                    spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 vector43 = NPC.Center - screenPos;
             vector43 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-            vector43 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            vector43 += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color c = NPC.IsABestiaryIconDummy ? Color.White : NPC.GetAlpha(drawColor);
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, c, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, vector43, NPC.frame, c, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastGlow").Value;
+            texture2D15 = Texture_Glow.Value;
 
-            Color color37 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
+            Color secondColorLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
             Color lightRed = new Color(255, 100, 100, 255);
 
             if (threeAM)
             {
-                color37 = Color.Red;
+                secondColorLerp = Color.Red;
                 lightRed = Color.DarkRed;
             }
 
@@ -1247,34 +1204,34 @@ namespace CalamityMod.NPCs.Polterghast
             float colorChangeTime = 180f;
             float changeColorGateValue = chargePhaseGateValue - colorChangeTime;
             if (NPC.Calamity().newAI[0] > changeColorGateValue)
-                color37 = Color.Lerp(color37, lightRed, MathHelper.Clamp((NPC.Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
+                secondColorLerp = Color.Lerp(secondColorLerp, lightRed, MathHelper.Clamp((NPC.Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-            Color color42 = Color.Lerp(Color.White, (NPC.ai[2] >= changeColorGateValue || NPC.Calamity().newAI[0] > changeColorGateValue) ? Color.Red : Color.Black, 0.5f);
+            Color veinColor = Color.Lerp(Color.White, (NPC.ai[2] >= changeColorGateValue || NPC.Calamity().newAI[0] > changeColorGateValue) ? Color.Red : Color.Black, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int num163 = 1; num163 < num153; num163++)
+                for (int j = 1; j < afterimageAmt; j++)
                 {
-                    Color color41 = color37;
-                    color41 = Color.Lerp(color41, color36, amount9);
-                    color41 = NPC.GetAlpha(color41);
-                    color41 *= (num153 - num163) / 15f;
-                    Vector2 vector44 = NPC.oldPos[num163] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    vector44 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                    vector44 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, vector44, NPC.frame, color41, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                    Color otherAfterimageColor = secondColorLerp;
+                    otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
+                    otherAfterimageColor = NPC.GetAlpha(otherAfterimageColor);
+                    otherAfterimageColor *= (afterimageAmt - j) / 15f;
+                    Vector2 otherAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    otherAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                    spriteBatch.Draw(texture2D15, otherAfterimagePos, NPC.frame, otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-                    Color color43 = color42;
-                    color43 = Color.Lerp(color43, color36, amount9);
-                    color43 = NPC.GetAlpha(color43);
-                    color43 *= (num153 - num163) / 15f;
-                    spriteBatch.Draw(texture2D16, vector44, NPC.frame, color43, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                    Color veinAfterimageColor = veinColor;
+                    veinAfterimageColor = Color.Lerp(veinAfterimageColor, Color.White, 0.5f);
+                    veinAfterimageColor = NPC.GetAlpha(veinAfterimageColor);
+                    veinAfterimageColor *= (afterimageAmt - j) / 15f;
+                    spriteBatch.Draw(texture2D16, otherAfterimagePos, NPC.frame, veinAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, color37, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, vector43, NPC.frame, secondColorLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            spriteBatch.Draw(texture2D16, vector43, NPC.frame, color42, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D16, vector43, NPC.frame, veinColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -1331,10 +1288,10 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.MoonLeech, 900, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.MoonLeech, 900, true);
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -1343,15 +1300,15 @@ namespace CalamityMod.NPCs.Polterghast
             return true;
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * bossLifeScale);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
-            Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, hitDirection, -1f, 0, default, 1f);
+            Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 NPC.position.X = NPC.position.X + (NPC.width / 2);
@@ -1360,23 +1317,23 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.height = 90;
                 NPC.position.X = NPC.position.X - (NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-                for (int num621 = 0; num621 < 10; num621++)
+                for (int i = 0; i < 10; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Phantoplasm, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                    Main.dust[ghostDust].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[ghostDust].scale = 0.5f;
+                        Main.dust[ghostDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 60; num623++)
+                for (int j = 0; j < 60; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                    Main.dust[ghostDust2].noGravity = true;
+                    Main.dust[ghostDust2].velocity *= 5f;
+                    ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                    Main.dust[ghostDust2].velocity *= 2f;
                 }
             }
         }

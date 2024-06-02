@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,8 +9,6 @@ namespace CalamityMod.Buffs.Summon
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Frost Blossom");
-            Description.SetDefault("A cold, prickly flower is floating uncomfortably close to you");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
             //Main.persistentBuff[Type] = true;

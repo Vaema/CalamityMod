@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class DraedonsLogHell : ModItem
+    public class DraedonsLogHell : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Environmental Pollution Log");
-            Tooltip.SetDefault("[Environment Log] - Pollution and 'Wall of Flesh'\nClick to view its contents");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 28;

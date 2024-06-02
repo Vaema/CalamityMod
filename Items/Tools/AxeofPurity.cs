@@ -7,22 +7,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Tools
 {
     [LegacyName("PurityAxe")]
-    public class AxeofPurity : ModItem
+    public class AxeofPurity : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         private static int AxePower = 125 / 5;
         private static float PowderSpeed = 21f;
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Axe of Purity");
-            Tooltip.SetDefault("Left click to use as a tool\n" +
-                "Right click to cleanse evil");
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 58;
+            Item.height = 54;
             Item.damage = 55;
             Item.knockBack = 5f;
             Item.useTime = 15;
@@ -30,11 +29,9 @@ namespace CalamityMod.Items.Tools
             Item.axe = AxePower;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.DamageType = DamageClass.Melee;
-            Item.width = 58;
-            Item.height = 54;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -74,7 +71,7 @@ namespace CalamityMod.Items.Tools
         {
             if (Main.rand.NextBool(5))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 58);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Enchanted_Pink);
             }
         }
 

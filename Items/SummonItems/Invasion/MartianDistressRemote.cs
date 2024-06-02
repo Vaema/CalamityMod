@@ -7,17 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.SummonItems.Invasion
 {
     [LegacyName("MartianDistressBeacon")]
-    public class MartianDistressRemote : ModItem
+    public class MartianDistressRemote : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Martian Distress Remote");
-            Tooltip.SetDefault("Summons the Martian Madness\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 16; // Solar Tablet / Bloody Tear
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
         }
 
         public override void SetDefaults()
@@ -30,12 +27,13 @@ namespace CalamityMod.Items.SummonItems.Invasion
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = false;
+            Item.UseSound = SoundID.Zombie67;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player) => Main.invasionType == InvasionID.None;
 

@@ -1,21 +1,22 @@
-using CalamityMod.Items.Placeables.FurnitureAshen;
-using Terraria.ModLoader;
+﻿using CalamityMod.Items.Placeables.FurnitureAshen;
 using Terraria.ID;
+using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class SmoothBrimstoneSlagWall : ModItem
+    public class SmoothBrimstoneSlagWall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,7 +29,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<SmoothBrimstoneSlag>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(4).
+                AddIngredient<SmoothBrimstoneSlag>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

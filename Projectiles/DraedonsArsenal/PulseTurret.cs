@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class PulseTurret : ModProjectile
+    public class PulseTurret : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pulse Turret");
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
 
@@ -70,19 +70,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     if (aimingAtTarget || Projectile.Distance(potentialTarget.Center) < 45f)
                     {
                         SoundEngine.PlaySound(PulseRifle.FireSound, shootPosition);
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), shootPosition,
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), shootPosition,
                                                  Vector2.Normalize(potentialTarget.Center - shootPosition) * 12f,
                                                  ModContent.ProjectileType<PulseTurretShot>(),
                                                  Projectile.damage,
                                                  Projectile.knockBack,
                                                  Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
                         if (Projectile.ai[0] % 120f == 119f)
                         {
                             for (int i = -1; i <= 1; i += 2)
                             {
-                                int p2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), shootPosition,
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), shootPosition,
                                                          (potentialTarget.Center - shootPosition).SafeNormalize(Vector2.UnitY).RotatedBy(i * MathHelper.ToRadians(28f)) * 7f,
                                                          ModContent.ProjectileType<PulseTurretShot>(),
                                                          Projectile.damage,
@@ -90,8 +88,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                                                          Projectile.owner,
                                                          0f,
                                                          1f);
-                                if (Main.projectile.IndexInRange(p2))
-                                    Main.projectile[p2].originalDamage = Projectile.originalDamage;
                             }
                         }
 
@@ -110,14 +106,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 Projectile.rotation = Projectile.rotation.AngleLerp(0f, MathHelper.TwoPi / 50f);
             }
-
-            Projectile.StickToTiles(false, false);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D standTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurretStand").Value;
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value,
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
                              Projectile.Center - ((standTexture.Height / 2 + 6f) * Vector2.UnitY) - Main.screenPosition,
                              null,
                              lightColor,
@@ -140,5 +134,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool? CanDamage() => false;
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
     }
 }

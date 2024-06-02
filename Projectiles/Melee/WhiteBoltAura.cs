@@ -1,15 +1,11 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class WhiteBoltAura : ModProjectile
+    public class WhiteBoltAura : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aura");
-        }
 
         public override void SetDefaults()
         {
@@ -41,38 +37,41 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.ai[0] = 0f;
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        int num414 = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
-                        int num415 = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)num414, (float)num415, 0f, 5f, ModContent.ProjectileType<Whiterain>(), Projectile.damage, 0f, Projectile.owner, 0f, 0f);
+                        int randOrbXOffset = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
+                        int randOrbYOffset = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)randOrbXOffset, (float)randOrbYOffset, 0f, 5f, ModContent.ProjectileType<Whiterain>(), Projectile.damage, 0f, Projectile.owner, 0f, 0f);
                     }
                 }
             }
+
             Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] >= 10f)
+            if (Projectile.localAI[0] >= 20f)
             {
                 Projectile.localAI[0] = 0f;
-                int num416 = 0;
-                int num417 = 0;
-                float num418 = 0f;
-                int num419 = Projectile.type;
-                for (int num420 = 0; num420 < 1000; num420++)
+                int projTimer = 0;
+                int incTracker = 0;
+                float aiTracker = 0f;
+                int theProjectile = Projectile.type;
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[num420].active && Main.projectile[num420].owner == Projectile.owner && Main.projectile[num420].type == num419 && Main.projectile[num420].ai[1] < 3600f)
+                    if (p.owner == Projectile.owner && p.type == theProjectile && p.ai[1] < 3600f)
                     {
-                        num416++;
-                        if (Main.projectile[num420].ai[1] > num418)
+                        projTimer++;
+                        if (p.ai[1] > aiTracker)
                         {
-                            num417 = num420;
-                            num418 = Main.projectile[num420].ai[1];
+                            incTracker = p.whoAmI;
+                            aiTracker = p.ai[1];
                         }
                     }
                 }
-                if (num416 > 1)
+                if (projTimer > 1)
                 {
-                    Main.projectile[num417].netUpdate = true;
-                    Main.projectile[num417].ai[1] = 36000f;
+                    Main.projectile[incTracker].netUpdate = true;
+                    Main.projectile[incTracker].ai[1] = 36000f;
                 }
             }
         }
+
+        public override bool? CanDamage() => false;
     }
 }

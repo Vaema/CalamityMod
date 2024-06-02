@@ -9,48 +9,34 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class Perdition : ModItem
+    public class Perdition : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Perdition");
-            Tooltip.SetDefault("Summons a beacon at the position of the mouse\n" +
-                "When a target is manually selected via right click it releases torrents of souls from below onto the target\n" +
-                "Only one beacon may exist at a time");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Summon";
 
         public override void SetDefaults()
         {
-            Item.damage = 100;
-            Item.mana = 10;
             Item.width = Item.height = 56;
-            Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-            Item.knockBack = 4f;
-            Item.UseSound = SoundID.DD2_EtherianPortalOpen;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<PerditionBeacon>();
-            Item.shootSpeed = 10f;
+            Item.damage = 375;
             Item.DamageType = DamageClass.Summon;
-            Item.sentry = true;
+            Item.shoot = ModContent.ProjectileType<PerditionBeacon>();
+            Item.knockBack = 4f;
 
+            Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1.
+            Item.mana = 10;
+            Item.noMelee = true;
+            Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.UseSound = SoundID.DD2_EtherianPortalOpen;
         }
-
-        public override bool AltFunctionUse(Player player) => true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse != 2)
             {
-                CalamityUtils.OnlyOneSentry(player, type);
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-                player.UpdateMaxTurrets();
+                if (player.ownedProjectileCounts[type] < 1)
+                    Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             }
             else
             {

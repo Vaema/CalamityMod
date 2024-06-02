@@ -11,15 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class JawsOfOblivion : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Jaws of Oblivion");
-            Tooltip.SetDefault("Throws a tight spread of six venomous reaper fangs that stick in enemies\n" +
-                "Stealth strikes cause the teeth to emit a crushing shockwave on impact\n" +
-                "You're gonna need a bigger boat");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -37,11 +28,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-		public override float StealthDamageMultiplier => 1.8f;
+        public override float StealthDamageMultiplier => 1.8f;
         public override float StealthKnockbackMultiplier => 7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

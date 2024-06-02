@@ -7,24 +7,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class BloodyVein : ModItem
+    public class BloodyVein : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloody Vein");
-            Tooltip.SetDefault("Summons an amalgamated pile of flesh");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 24;
+            Item.height = 48;
             Item.damage = 0;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
-            Item.width = 24;
-            Item.height = 48;
             Item.UseSound = SoundID.NPCHit9;
             Item.shoot = ModContent.ProjectileType<PerforaMini>();
             Item.buffType = ModContent.BuffType<BloodBound>();

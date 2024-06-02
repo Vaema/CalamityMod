@@ -11,8 +11,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class AtlasMunitionsAutocannonHeld : ModProjectile
+    public class AtlasMunitionsAutocannonHeld : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public bool HasInitialized;
 
         public float HeatInterpolant;
@@ -66,7 +67,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Atlas Munitions Autocannon");
             Main.projFrames[Type] = 10;
         }
 
@@ -77,11 +77,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
-            Projectile.sentry = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 90000;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.Opacity = 1f;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -122,11 +121,11 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.velocity = new Vector2(Projectile.spriteDirection * 3f, -4f);
                     Projectile.netUpdate = true;
                     if (HeatInterpolant >= 1f)
-                        CombatText.NewText(Owner.Hitbox, Color.OrangeRed, "OUCH! HOT!", true);
+                        CombatText.NewText(Owner.Hitbox, Color.OrangeRed, CalamityUtils.GetTextValue("Misc.AutocannonHot"), true);
 
                     return;
                 }
-                
+
                 // Reset opacity and the dropped timer. This is done to undo any potential fadeout effects from the dropped state.
                 CannonDroppedTimer = 0f;
                 Projectile.Opacity = 1f;
@@ -172,11 +171,11 @@ namespace CalamityMod.Projectiles.Summon
                     int podID = ModContent.ProjectileType<AtlasMunitionsDropPod>();
                     int podUpperID = ModContent.ProjectileType<AtlasMunitionsDropPodUpper>();
                     int cannonID = ModContent.ProjectileType<AtlasMunitionsAutocannon>();
-                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    foreach (Projectile p in Main.ActiveProjectiles)
                     {
-                        bool validID = Main.projectile[i].type == podID || Main.projectile[i].type == podUpperID || Main.projectile[i].type == cannonID;
-                        if (Main.projectile[i].active && validID && Main.projectile[i].owner == Projectile.owner)
-                            Main.projectile[i].Kill();
+                        bool validID = p.type == podID || p.type == podUpperID || p.type == cannonID;
+                        if (validID && p.owner == Projectile.owner)
+                            p.Kill();
                     }
 
                     Projectile.Kill();
@@ -193,6 +192,11 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.owner = Main.myPlayer;
                 Projectile.netUpdate = true;
             }
+
+            // Destroy the cannon if the pod (base sentry) got replaced by other sentries
+            Projectile parent = Main.projectile[(int)Projectile.ai[2]];
+            if (parent.type != ModContent.ProjectileType<AtlasMunitionsDropPod>() || !parent.active)
+                Projectile.Kill();
         }
 
         public void DetermineFrames()
@@ -235,7 +239,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Determine whether the cannon is being fired based on the left mouse state.
             bool wasFiring = IsFiring;
-            IsFiring = Main.mouseLeft && !Main.blockMouse;
+            IsFiring = Main.mouseLeft && !Owner.mouseInterface;
 
             // Notify other clients and the server if the cannon's firing state has changed. This sync cannot be blocked by the net spam threshold.
             if (wasFiring != IsFiring)
@@ -256,7 +260,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.myPlayer == Projectile.owner)
                 {
                     int laserCount = 3;
-                    int laserDamage = Projectile.damage;
+                    int laserDamage = (int)(Projectile.damage * AtlasMunitionsBeacon.OverdriveProjectileDamageFactor);
                     int laserID = ModContent.ProjectileType<AtlasMunitionsLaserOverdrive>();
                     for (int i = 0; i < laserCount; i++)
                     {
@@ -328,6 +332,12 @@ namespace CalamityMod.Projectiles.Summon
 
         // The cannon does not get destroyed by tile collisions. This only applies when in the dropped state.
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         // The cannon itself does not do damage, but it does store damage for the lasers that it fires.
         public override bool? CanDamage() => false;

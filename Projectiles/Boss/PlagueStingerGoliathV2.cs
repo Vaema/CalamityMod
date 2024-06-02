@@ -1,22 +1,18 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class PlagueStingerGoliathV2 : ModProjectile
+    public class PlagueStingerGoliathV2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/Boss/PlagueStingerGoliath";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Exploding Plague Stinger");
-        }
 
         public override void SetDefaults()
         {
@@ -38,9 +34,12 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
+            if (info.Damage <= 0)
+                return;
+
+            target.AddBuff(ModContent.BuffType<Plague>(), 90);
         }
 
         public override void PostDraw(Color lightColor)
@@ -54,7 +53,7 @@ namespace CalamityMod.Projectiles.Boss
             Main.spriteBatch.Draw(glow, drawPos, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 

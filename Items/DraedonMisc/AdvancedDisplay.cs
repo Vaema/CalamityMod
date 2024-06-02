@@ -1,33 +1,26 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.TileEntities;
-using CalamityMod.CustomRecipes;
-using System.Collections.Generic;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class AdvancedDisplay : ModItem
+    public class AdvancedDisplay : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         public static readonly SoundStyle InstallSound = new("CalamityMod/Sounds/Custom/Codebreaker/AdvancedDisplayInstall");
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Advanced Display");
-            Tooltip.SetDefault("Can be placed on the Codebreaker\n" +
-                "Allows you to decrypt the Underworld schematic");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 52;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ItemRarityID.Yellow;
@@ -67,7 +60,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<DubiousPlating>(10).
                 AddIngredient<LifeAlloy>(3).
                 AddIngredient(ItemID.Glass, 20).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

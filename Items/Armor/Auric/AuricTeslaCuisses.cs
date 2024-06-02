@@ -12,22 +12,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class AuricTeslaCuisses : ModItem
+    public class AuricTeslaCuisses : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Tesla Cuisses");
-            Tooltip.SetDefault("10% increased movement speed\n" +
-                "12% increased damage and 5% increased critical strike chance\n" +
-                "Magic carpet effect");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 44;
             Item.rare = ModContent.RarityType<Violet>();
         }

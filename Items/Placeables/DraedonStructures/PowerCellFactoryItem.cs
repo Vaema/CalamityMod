@@ -1,4 +1,4 @@
-using CalamityMod.Rarities;
+﻿using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
 using Terraria;
 using Terraria.ID;
@@ -6,20 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.DraedonStructures
 {
-    public class PowerCellFactoryItem : ModItem
+    public class PowerCellFactoryItem : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Power Cell Factory");
-            Tooltip.SetDefault("Produces Draedon Power Cells over time\n" + "One cell is produced every 15 seconds");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = Item.useTime = 15;

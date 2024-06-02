@@ -1,22 +1,23 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.PlaguebringerGoliath;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Summon;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.Audio;
-using CalamityMod.Sounds;
-using CalamityMod.Particles;
-using CalamityMod.NPCs.PlaguebringerGoliath;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PlaguePrincess : ModProjectile
+    public class PlaguePrincess : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public enum ViriliAIState
         {
             HoverNearOwner,
@@ -39,7 +40,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Virili");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
@@ -236,7 +236,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.MaxUpdates = InfectedRemote.MaxUpdatesWhenCharging;
 
             float wrappedAttackTimer = AITimer % (hoverTime + chargeTime);
-            
+
             // Hover into position, to the top left/right of the target.
             if (wrappedAttackTimer < hoverTime)
             {
@@ -323,7 +323,7 @@ namespace CalamityMod.Projectiles.Summon
                     int smallBee = ModContent.ProjectileType<PlagueBeeSmall>();
                     int bigBee = ModContent.ProjectileType<BabyPlaguebringer>();
                     int projType = smallBee;
-                    if (Owner.ownedProjectileCounts[bigBee] <= 0 && Main.rand.NextBool(2))
+                    if (Owner.ownedProjectileCounts[bigBee] <= 0 && Main.rand.NextBool())
                         projType = bigBee;
 
                     if (Main.myPlayer == Projectile.owner && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, target.Center, 0, 0))
@@ -337,7 +337,6 @@ namespace CalamityMod.Projectiles.Summon
                             {
                                 if (projType == bigBee)
                                     Main.projectile[bee].frame = 2;
-                                Main.projectile[bee].originalDamage = (int)(Projectile.originalDamage * InfectedRemote.BeeDamageFactor);
                             }
                             Projectile.netUpdate = true;
                         }
@@ -379,7 +378,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -397,15 +396,9 @@ namespace CalamityMod.Projectiles.Summon
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
 
         public override bool? CanDamage() => CurrentState == ViriliAIState.ChargeAtEnemies ? null : false;
     }

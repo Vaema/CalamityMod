@@ -1,23 +1,76 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class IceClasper : ModNPC
     {
+        public Player player => Main.player[NPC.target];
+
+        public bool expert = Main.expertMode;
+        public bool revenge = CalamityWorld.revenge;
+        public bool death = CalamityWorld.death;
+
+        public enum IceClasperAIState
+        {
+            Shooting,
+            Dashing
+        }
+        public IceClasperAIState CurrentState
+        {
+            get => (IceClasperAIState)NPC.ai[0];
+            set => NPC.ai[0] = (int)value;
+        }
+
+        public ref float RotationIncrease => ref NPC.ai[1];
+        public bool checkedRotationDir = false;
+        public int rotationDir;
+
+        public ref float TimerForShooting => ref NPC.ai[2];
+
+        public ref float AITimer => ref NPC.ai[3];
+
+        public bool isDashing => (CurrentState == IceClasperAIState.Dashing && AITimer > TimeBeforeDash && AITimer <= TimeBeforeDash + TimeDashing);
+
+        #region Other stats
+
+        public float MaxVelocity = 10f;
+        public float DistanceFromPlayer = 500f;
+
+        // Although it is weird that Death Mode less projectiles, the AI also changes, making it a shotgun spread of 3 projectiles, so it'd be 2*3.
+        public float AmountOfProjectiles = (CalamityWorld.death) ? 2f : (CalamityWorld.revenge) ? 4f : (Main.expertMode) ? 3f : 3f;
+        public float TimeBetweenProjectiles = (CalamityWorld.death) ? 50f : (CalamityWorld.revenge) ? 35f : (Main.expertMode) ? 40f : 45f;
+        public float TimeBetweenBurst = (CalamityWorld.death) ? 240f : 180f;
+        public float ProjectileSpeed = 8f;
+
+        public float TimeBeforeDash = (CalamityWorld.revenge) ? 100f : 120f;
+        public float TimeDashing = 100f;
+        public float DashSpeed = 6f;
+
+        #endregion
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ice Clasper");
             Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
+            value.Rotation = MathHelper.ToRadians(135);
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.TrailingMode[NPC.type] = 0;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
         }
 
         public override void SetDefaults()
@@ -25,11 +78,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.npcSlots = 3f;
             NPC.noGravity = true;
             NPC.damage = 32;
-            NPC.width = 40;
-            NPC.height = 40;
+            NPC.width = 50;
+            NPC.height = 50;
             NPC.defense = 12;
-            NPC.lifeMax = 600;
-            NPC.knockBackResist = 0.35f;
+            NPC.lifeMax = 500;
+            NPC.knockBackResist = 0.25f;
+            NPC.noTileCollide = true;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 25, 0);
@@ -42,212 +96,185 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("An enemy which knows no bounds in hunting its prey. In blizzards where visibility is low, they have been known to glaciate and capture travelers. What happens to the victims is unknown.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.IceClasper")
             });
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(rotationDir);
+            writer.Write(checkedRotationDir);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            rotationDir = reader.ReadInt32();
+            checkedRotationDir = reader.ReadBoolean();
         }
 
         public override void AI()
         {
-            bool revenge = CalamityWorld.revenge;
-            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
-            {
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || player.dead || !player.active)
                 NPC.TargetClosest(true);
-            }
-            float num = revenge ? 7f : 6f;
-            float num2 = revenge ? 0.07f : 0.06f;
-            if (CalamityWorld.death)
+
+            AIMovement(player);
+
+            float distToTarget = NPC.Distance(player.Center) + .1f;
+            // When it's not dashing, it'll just look at the player normally.
+            // When it is dashing, so it's not unfair, it'll be slower when it's closer to the player.
+            NPC.rotation = NPC.rotation.AngleTowards(NPC.AngleTo(player.Center), (isDashing) ? ((death) ? .0005f : (revenge) ? .0003f : (expert) ? .0002f : .0001f) * distToTarget : .3f);
+
+            Lighting.AddLight(NPC.Center, Color.Cyan.ToVector3());
+
+            switch (CurrentState)
             {
-                num *= 1.5f;
-                num2 *= 1.5f;
+                case IceClasperAIState.Shooting:
+                    State_Shooting(player);
+                    break;
+                case IceClasperAIState.Dashing:
+                    State_Dashing(player);
+                    break;
             }
-            Vector2 vector = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float num4 = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float num5 = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
-            num4 = (float)((int)(num4 / 8f) * 8);
-            num5 = (float)((int)(num5 / 8f) * 8);
-            vector.X = (float)((int)(vector.X / 8f) * 8);
-            vector.Y = (float)((int)(vector.Y / 8f) * 8);
-            num4 -= vector.X;
-            num5 -= vector.Y;
-            float num6 = (float)Math.Sqrt((double)(num4 * num4 + num5 * num5));
-            float num7 = num6;
-            bool flag = false;
-            if (num6 > 600f)
+        }
+
+        public void AIMovement(Player player)
+        {
+            // Randomly chooses to go clockwise or anti-clockwise around the player.
+            if (!checkedRotationDir)
             {
-                flag = true;
-            }
-            if (num6 == 0f)
-            {
-                num4 = NPC.velocity.X;
-                num5 = NPC.velocity.Y;
-            }
-            else
-            {
-                num6 = num / num6;
-                num4 *= num6;
-                num5 *= num6;
-            }
-            if (num7 > 100f)
-            {
-                NPC.ai[0] += 1f;
-                if (NPC.ai[0] > 0f)
-                {
-                    NPC.velocity.Y = NPC.velocity.Y + 0.023f;
-                }
-                else
-                {
-                    NPC.velocity.Y = NPC.velocity.Y - 0.023f;
-                }
-                if (NPC.ai[0] < -100f || NPC.ai[0] > 100f)
-                {
-                    NPC.velocity.X = NPC.velocity.X + 0.023f;
-                }
-                else
-                {
-                    NPC.velocity.X = NPC.velocity.X - 0.023f;
-                }
-                if (NPC.ai[0] > 200f)
-                {
-                    NPC.ai[0] = -200f;
-                }
-            }
-            if (Main.player[NPC.target].dead)
-            {
-                num4 = (float)NPC.direction * num / 2f;
-                num5 = -num / 2f;
-            }
-            if (NPC.velocity.X < num4)
-            {
-                NPC.velocity.X = NPC.velocity.X + num2;
-            }
-            else if (NPC.velocity.X > num4)
-            {
-                NPC.velocity.X = NPC.velocity.X - num2;
-            }
-            if (NPC.velocity.Y < num5)
-            {
-                NPC.velocity.Y = NPC.velocity.Y + num2;
-            }
-            else if (NPC.velocity.Y > num5)
-            {
-                NPC.velocity.Y = NPC.velocity.Y - num2;
+                rotationDir = (Main.rand.NextBool()).ToDirectionInt();
+                checkedRotationDir = true;
+                NPC.netUpdate = true;
             }
 
-            if (NPC.justHit)
-                NPC.localAI[0] = 0f;
-            
-            NPC.localAI[0] += 1f;
-            if (Main.netMode != NetmodeID.MultiplayerClient && NPC.localAI[0] >= 150f)
+            Vector2 shootingPos = player.Center + new Vector2(MathF.Cos(RotationIncrease) * rotationDir, MathF.Sin(RotationIncrease) * rotationDir) * DistanceFromPlayer;
+            RotationIncrease += (CurrentState == IceClasperAIState.Shooting) ? .02f : .008f;
+
+            NPC.velocity = Vector2.Lerp(NPC.velocity, (shootingPos - NPC.Center).SafeNormalize(Vector2.Zero) * 6f, .1f);
+            NPC.velocity = Vector2.Clamp(NPC.velocity, new Vector2(-MaxVelocity, -MaxVelocity), new Vector2(MaxVelocity, MaxVelocity));
+
+            NPC.netUpdate = true;
+        }
+
+        public void State_Shooting(Player player)
+        {
+            // Minimun distance so the minion is able to shoot.
+            if (NPC.Distance(player.Center) > 800f)
+                return;
+
+            AITimer++;
+
+            if (AITimer >= TimeBetweenBurst)
             {
-                NPC.localAI[0] = 0f;
-                if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                if (TimerForShooting % TimeBetweenProjectiles == 0)
                 {
-                    int num9 = ProjectileID.FrostBlastHostile;
-                    int beam = Projectile.NewProjectile(NPC.GetSource_FromAI(), vector.X, vector.Y, num4, num5, num9, 45, 0f, Main.myPlayer, 0f, 0f);
-                    Main.projectile[beam].timeLeft = 300;
+                    Vector2 vecToPlayer = NPC.SafeDirectionTo(player.Center);
+                    Vector2 projVelocity = vecToPlayer * ProjectileSpeed;
+                    int type = ModContent.ProjectileType<IceClasperEnemyProjectile>();
+                    int damage = Main.masterMode ? 15 : Main.expertMode ? 18 : 24;
+
+                    // If Death Mode on, the enemy will shoot out a spead of projectiles, instead of a burst.
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        if (death)
+                        {
+                            for (int i = -16; i < 8; i += 8)
+                            {
+                                Vector2 spreadVelocity = projVelocity.RotatedBy(MathHelper.ToRadians(i));
+                                int projectile = Projectile.NewProjectile(NPC.GetSource_FromAI(),
+                                    NPC.Center + projVelocity.SafeNormalize(Vector2.Zero) * 10f,
+                                    spreadVelocity,
+                                    type,
+                                    damage,
+                                    0f,
+                                    Main.myPlayer);
+                                Main.projectile[projectile].timeLeft = 300;
+                            }
+                            NPC.netUpdate = true;
+                        }
+                        else
+                        {
+                            int projectile = Projectile.NewProjectile(NPC.GetSource_FromAI(),
+                                NPC.Center + projVelocity.SafeNormalize(Vector2.Zero) * 10f,
+                                projVelocity,
+                                type,
+                                damage,
+                                0f,
+                                Main.myPlayer);
+                            Main.projectile[projectile].timeLeft = 300;
+                            NPC.netUpdate = true;
+                        }
+                    }
+
+                    // Recoil effect when shooting.
+                    NPC.velocity -= vecToPlayer * 3f;
+
+                    SoundEngine.PlaySound(SoundID.Item28, NPC.Center);
+                    NPC.netUpdate = true;
                 }
-            }
-            int num10 = (int)NPC.position.X + NPC.width / 2;
-            int num11 = (int)NPC.position.Y + NPC.height / 2;
-            num10 /= 16;
-            num11 /= 16;
-            if (!WorldGen.SolidTile(num10, num11))
-            {
-                Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0f, 0.6f, 0.75f);
-            }
-            Vector2 vector92 = new Vector2(NPC.Center.X, NPC.Center.Y);
-            float num740 = Main.player[NPC.target].Center.X - vector92.X;
-            float num741 = Main.player[NPC.target].Center.Y - vector92.Y;
-            NPC.rotation = (float)Math.Atan2((double)num741, (double)num740) - 1.57f;
-            if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
-            {
-                if (NPC.ai[2] > 0f && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+
+                TimerForShooting++;
+
+                // When the enemy stops it's burst, reset every timer and go to the dash state.
+                if (TimerForShooting >= TimeBetweenProjectiles * AmountOfProjectiles)
                 {
-                    NPC.ai[2] = 0f;
-                    NPC.ai[1] = 0f;
+                    TimerForShooting = 0f;
+                    AITimer = 0f;
+                    CurrentState = IceClasperAIState.Dashing;
                     NPC.netUpdate = true;
                 }
             }
-            else if (NPC.ai[2] == 0f)
+            // When it's about to shoot, make a dust telegraph.
+            else if (AITimer >= TimeBetweenBurst / 2f && AITimer < TimeBetweenBurst)
             {
-                NPC.ai[1] += 1f;
-            }
-            if (NPC.ai[1] >= 150f)
-            {
-                NPC.ai[2] = 1f;
-                NPC.ai[1] = 0f;
+                Vector2 randPos = Main.rand.NextVector2CircularEdge(100f, 100f);
+                Dust telegraphDust = Dust.NewDustPerfect(NPC.Center + randPos, 172, NPC.DirectionFrom(NPC.Center + NPC.velocity + randPos) * Main.rand.NextFloat(5f, 7f), 0, default, 1.5f);
+                telegraphDust.noGravity = true;
                 NPC.netUpdate = true;
             }
-            if (NPC.ai[2] == 0f)
+        }
+
+        public void State_Dashing(Player player)
+        {
+            float distToTarget = NPC.Distance(player.Center) + .1f;
+            AITimer++;
+            if (AITimer <= TimeBeforeDash) // Before dashing.
             {
-                NPC.alpha = 0;
-                NPC.noTileCollide = false;
-            }
-            else
-            {
-                NPC.wet = false;
-                NPC.alpha = 200;
-                NPC.noTileCollide = true;
-            }
-            float num12 = 0.7f;
-            if (NPC.collideX)
-            {
+                // When it's preparing to dash, it stands back a bit. Flavor movement.
+                NPC.velocity = Vector2.Lerp(NPC.velocity, -NPC.rotation.ToRotationVector2() * 2f, .1f);
                 NPC.netUpdate = true;
-                NPC.velocity.X = NPC.oldVelocity.X * -num12;
-                if (NPC.direction == -1 && NPC.velocity.X > 0f && NPC.velocity.X < 2f)
-                {
-                    NPC.velocity.X = 2f;
-                }
-                if (NPC.direction == 1 && NPC.velocity.X < 0f && NPC.velocity.X > -2f)
-                {
-                    NPC.velocity.X = -2f;
-                }
             }
-            if (NPC.collideY)
+            else if (AITimer > TimeBeforeDash && AITimer <= TimeBeforeDash + TimeDashing) // While dashing.
             {
+                // The enemy will charge at player.
+                // And it's velocity will increase inversely proportional to the distance from the player.
+                NPC.velocity = NPC.rotation.ToRotationVector2() * (DashSpeed + (2f / (distToTarget * .1f)));
                 NPC.netUpdate = true;
-                NPC.velocity.Y = NPC.oldVelocity.Y * -num12;
-                if (NPC.velocity.Y > 0f && (double)NPC.velocity.Y < 1.5)
-                {
-                    NPC.velocity.Y = 2f;
-                }
-                if (NPC.velocity.Y < 0f && (double)NPC.velocity.Y > -1.5)
-                {
-                    NPC.velocity.Y = -2f;
-                }
             }
-            if (flag)
+            else // Done dashing.
             {
-                if ((NPC.velocity.X > 0f && num4 > 0f) || (NPC.velocity.X < 0f && num4 < 0f))
-                {
-                    if (Math.Abs(NPC.velocity.X) < 12f)
-                    {
-                        NPC.velocity.X = NPC.velocity.X * 1.05f;
-                    }
-                }
-                else
-                {
-                    NPC.velocity.X = NPC.velocity.X * 0.9f;
-                }
-            }
-            if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
-            {
+                AITimer = 0f;
+                checkedRotationDir = false; // Doing this makes the minion randomly choosing to rotate clockwise or anti-clockwise in the shooting state.
+                CurrentState = IceClasperAIState.Shooting;
                 NPC.netUpdate = true;
             }
         }
 
         public override void FindFrame(int frameHeight)
         {
-            NPC.frameCounter += 0.15f;
+            NPC.frameCounter += (isDashing) ? 0.4f : 0.15f;
             NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
@@ -262,41 +289,72 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Main.hardMode && !spawnInfo.PlayerInTown && !spawnInfo.Player.ZoneOldOneArmy && !Main.snowMoon && !Main.pumpkinMoon ? 0.02f : 0f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
+            if (hurtInfo.Damage > 0)
             {
-                player.AddBuff(BuffID.Frostburn, 180, true);
-                player.AddBuff(BuffID.Chilled, 120, true);
+                target.AddBuff(BuffID.Frostburn, 180, true);
+                target.AddBuff(BuffID.Chilled, 120, true);
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 92, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 92, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("IceClasper").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("IceClasper2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("IceClasper3").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("IceClasper").Type);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("IceClasper2").Type);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("IceClasper3").Type);
                 }
             }
         }
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (isDashing) ? true : false;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
             npcLoot.Add(ModContent.ItemType<FrostBarrier>(), 5);
             npcLoot.Add(ModContent.ItemType<AncientIceChunk>(), 3);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Vector2 position = NPC.Center - screenPos;
+            Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            position -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            position += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+
+            // If the enemy is preparing to dash, it'll fade in afterimages.
+            // And when it is dashing, the afterimages fade out.
+            float interpolant = (AITimer > TimeBeforeDash && AITimer <= TimeBeforeDash + TimeDashing) ? 1f - ((AITimer - TimeBeforeDash) / TimeDashing) :
+                (MathHelper.Clamp(AITimer, 0f, TimeBeforeDash) / TimeBeforeDash);
+            float AfterimageFade = MathHelper.Lerp(0f, 1f, interpolant);
+
+            if (CurrentState == IceClasperAIState.Dashing && CalamityConfig.Instance.Afterimages)
+            {
+                for (int i = 0; i < NPC.oldPos.Length; i++)
+                {
+                    Color afterimageDrawColor = new Color(0.79f, 0.94f, 0.98f) with { A = 125 } * NPC.Opacity * (1f - i / (float)NPC.oldPos.Length) * AfterimageFade;
+                    Vector2 afterimageDrawPosition = NPC.oldPos[i] + NPC.Size * 0.5f - screenPos;
+                    spriteBatch.Draw(texture, afterimageDrawPosition, NPC.frame, afterimageDrawColor, NPC.rotation - MathHelper.PiOver2, origin, NPC.scale, SpriteEffects.None, 0f);
+                }
+            }
+
+            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation - MathHelper.PiOver2, origin, NPC.scale, SpriteEffects.None, 0f);
+
+            return false;
         }
     }
 }

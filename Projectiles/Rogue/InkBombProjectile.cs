@@ -1,17 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class InkBombProjectile : ModProjectile
+    public class InkBombProjectile : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ink Bomb");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -34,16 +32,13 @@ namespace CalamityMod.Projectiles.Rogue
                 CreateInk();
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (!target.friendly)
                 CreateInk();
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            CreateInk();
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => CreateInk();
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -72,6 +67,8 @@ namespace CalamityMod.Projectiles.Rogue
                         break;
                 }
                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(22);
+                damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                 int inkID = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), inkType, damage, 7, Projectile.owner);
                 Main.projectile[inkID].timeLeft += Main.rand.Next(-20, 25);
             }

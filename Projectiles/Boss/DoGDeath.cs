@@ -1,17 +1,19 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGDeath : ModProjectile
+    public class DoGDeath : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
+
         public float TelegraphDelay
         {
             get => Projectile.ai[0];
@@ -19,14 +21,13 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public Vector2 OldVelocity;
-        public const float TelegraphTotalTime = 210f;
-        public const float TelegraphFadeTime = 30f;
-        public const float TelegraphWidth = 4200f;
-        public const float FadeTime = 100f;
+        public const float TelegraphTotalTime = 35f;
+        public const float TelegraphFadeTime = 5f;
+        public const float TelegraphWidth = 2400f;
+        public const float FadeTime = 20f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Death Beam");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -40,8 +41,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.Opacity = 0f;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 3;
-            Projectile.timeLeft = 940;
+            Projectile.timeLeft = 600;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -105,13 +105,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => TelegraphDelay > TelegraphTotalTime && Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             if (TelegraphDelay > TelegraphTotalTime && Projectile.Opacity == 1f)
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 0) * Projectile.Opacity;
@@ -120,6 +120,10 @@ namespace CalamityMod.Projectiles.Boss
         {
             if (TelegraphDelay >= TelegraphTotalTime)
                 return true;
+
+            // for old times sake
+            if (Main.zenithWorld)
+                return false;
 
             Texture2D laserTelegraph = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/LaserWallTelegraphBeam").Value;
 

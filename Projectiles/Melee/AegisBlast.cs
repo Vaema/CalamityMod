@@ -1,20 +1,16 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class AegisBlast : ModProjectile
+    public class AegisBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aegis Blast");
-        }
 
         public override void SetDefaults()
         {
@@ -24,10 +20,10 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 60;
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.timeLeft = 40;
+            Projectile.DamageType = TrueMeleeDamageClass.Instance;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -38,65 +34,65 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
                 Projectile.localAI[0] += 1f;
             }
-            bool flag15 = false;
-            bool flag16 = false;
+            bool xflag = false;
+            bool yflag = false;
             if (Projectile.velocity.X < 0f && Projectile.position.X < Projectile.ai[0])
             {
-                flag15 = true;
+                xflag = true;
             }
             if (Projectile.velocity.X > 0f && Projectile.position.X > Projectile.ai[0])
             {
-                flag15 = true;
+                xflag = true;
             }
             if (Projectile.velocity.Y < 0f && Projectile.position.Y < Projectile.ai[1])
             {
-                flag16 = true;
+                yflag = true;
             }
             if (Projectile.velocity.Y > 0f && Projectile.position.Y > Projectile.ai[1])
             {
-                flag16 = true;
+                yflag = true;
             }
-            if (flag15 && flag16)
+            if (xflag && yflag)
             {
                 Projectile.Kill();
             }
-            float num461 = 25f;
+            float projTimer = 25f;
             if (Projectile.ai[0] > 180f)
             {
-                num461 -= (Projectile.ai[0] - 180f) / 2f;
+                projTimer -= (Projectile.ai[0] - 180f) / 2f;
             }
-            if (num461 <= 0f)
+            if (projTimer <= 0f)
             {
-                num461 = 0f;
+                projTimer = 0f;
                 Projectile.Kill();
             }
-            num461 *= 0.7f;
+            projTimer *= 0.7f;
             Projectile.ai[0] += 4f;
-            int num462 = 0;
-            while ((float)num462 < num461)
+            int timerCounter = 0;
+            while ((float)timerCounter < projTimer)
             {
-                float num463 = (float)Main.rand.Next(-15, 16);
-                float num464 = (float)Main.rand.Next(-15, 16);
-                float num465 = (float)Main.rand.Next(4, 13);
-                float num466 = (float)Math.Sqrt((double)(num463 * num463 + num464 * num464));
-                num466 = num465 / num466;
-                num463 *= num466;
-                num464 *= num466;
-                int num467 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.5f);
-                Main.dust[num467].noGravity = true;
-                Main.dust[num467].position.X = Projectile.Center.X;
-                Main.dust[num467].position.Y = Projectile.Center.Y;
-                Dust expr_149DF_cp_0 = Main.dust[num467];
+                float rando1 = (float)Main.rand.Next(-15, 16);
+                float rando2 = (float)Main.rand.Next(-15, 16);
+                float rando3 = (float)Main.rand.Next(4, 13);
+                float randoAdjuster = (float)Math.Sqrt((double)(rando1 * rando1 + rando2 * rando2));
+                randoAdjuster = rando3 / randoAdjuster;
+                rando1 *= randoAdjuster;
+                rando2 *= randoAdjuster;
+                int goldDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.5f);
+                Main.dust[goldDust].noGravity = true;
+                Main.dust[goldDust].position.X = Projectile.Center.X;
+                Main.dust[goldDust].position.Y = Projectile.Center.Y;
+                Dust expr_149DF_cp_0 = Main.dust[goldDust];
                 expr_149DF_cp_0.position.X += (float)Main.rand.Next(-10, 11);
-                Dust expr_14A09_cp_0 = Main.dust[num467];
+                Dust expr_14A09_cp_0 = Main.dust[goldDust];
                 expr_14A09_cp_0.position.Y += (float)Main.rand.Next(-10, 11);
-                Main.dust[num467].velocity.X = num463;
-                Main.dust[num467].velocity.Y = num464;
-                num462++;
+                Main.dust[goldDust].velocity.X = rando1;
+                Main.dust[goldDust].velocity.Y = rando2;
+                timerCounter++;
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             Projectile.damage = (int)(Projectile.damage * 0.95);
         }

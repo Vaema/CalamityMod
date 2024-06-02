@@ -1,19 +1,15 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class VileClot : ModProjectile
+    public class VileClot : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Vile Clot");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -35,32 +31,32 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity.Length() < 12f)
                 Projectile.velocity *= 1.01f;
 
-            int num104 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y),
-                Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 100, default, 1.5f);
-            Main.dust[num104].noGravity = true;
+            int vileDust = Dust.NewDust(Projectile.position,
+                Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 100, default, 1.5f);
+            Main.dust[vileDust].noGravity = true;
 
             Projectile.rotation += 0.3f * (float)Projectile.direction;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.CursedInferno, 60);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
-            for (int num584 = 0; num584 < 6; num584++)
+            for (int i = 0; i < 6; i++)
             {
-                int num585 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 2.5f);
-                Main.dust[num585].noGravity = true;
-                Dust dust = Main.dust[num585];
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 2.5f);
+                Main.dust[killDust].noGravity = true;
+                Dust dust = Main.dust[killDust];
                 dust.velocity *= 2f;
-                num585 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 1.2f);
-                dust = Main.dust[num585];
+                killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 1.2f);
+                dust = Main.dust[killDust];
                 dust.velocity *= 2f;
             }
         }

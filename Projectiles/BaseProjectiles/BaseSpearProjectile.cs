@@ -1,12 +1,14 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
-    public abstract class BaseSpearProjectile : ModProjectile
+    public abstract class BaseSpearProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public enum SpearType
         {
             TypicalSpear,
@@ -28,12 +30,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 Player player = Main.player[Projectile.owner];
 
                 // Adjust owner stats based on this projectile
-                player.direction = Projectile.direction;
+                player.ChangeDir(Projectile.direction);
                 player.heldProj = Projectile.whoAmI;
                 player.itemTime = player.itemAnimation;
 
                 // Stick to the player
-                Projectile.position = player.Center - Projectile.Size / 2f;
+                Projectile.Center = player.RotatedRelativePoint(player.MountedCenter);
 
                 // And move outward/inward based on the speed variable.
                 Projectile.position += Projectile.velocity * Projectile.ai[0];
@@ -64,7 +66,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 }
 
                 // If at the end of the animation, kill the projectile.
-                if (player.itemAnimation == 0)
+                //Checking if == 0 is too late, lets the projectile linger into chained item uses.
+                if (player.itemAnimation <= 1)
                     Projectile.Kill();
 
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + MathHelper.PiOver4;
@@ -153,6 +156,19 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             {
                 ExtraBehavior();
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (SpearAiType == SpearType.TypicalSpear)
+            {
+                Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+                Vector2 origin = Vector2.Zero;
+                Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, 0, 0);
+                return false;
+            }
+            return base.PreDraw(ref lightColor);
         }
 
         #region Virtual Values

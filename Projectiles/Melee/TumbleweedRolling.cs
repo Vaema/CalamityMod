@@ -1,18 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TumbleweedRolling : ModProjectile
+    public class TumbleweedRolling : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/TumbleweedFlail";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tumbleweed");
-        }
 
         public override void SetDefaults()
         {
@@ -23,6 +19,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = 8;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
 
         public override void AI()
@@ -44,32 +42,26 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation += Projectile.velocity.X * 0.05f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            // TODO -- Make this use proper i-frame variables.
-            target.immune[Projectile.owner] = 5;
-        }
-
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath15, Projectile.position);
-            for (int num621 = 0; num621 < 20; num621++)
+            for (int i = 0; i < 20; i++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 32, 0f, 0f, 100, default, 1.2f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                int tumbleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, 0f, 0f, 100, default, 1.2f);
+                Main.dust[tumbleDust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Main.dust[tumbleDust].scale = 0.5f;
+                    Main.dust[tumbleDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 30; num623++)
+            for (int j = 0; j < 30; j++)
             {
-                int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1.7f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
-                Main.dust[num624].velocity *= 2f;
+                int tumbleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.7f);
+                Main.dust[tumbleDust2].noGravity = true;
+                Main.dust[tumbleDust2].velocity *= 5f;
+                tumbleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
+                Main.dust[tumbleDust2].velocity *= 2f;
             }
         }
     }

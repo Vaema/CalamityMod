@@ -7,21 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Mollusk
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class MolluskShelleggings : ModItem
+    public class MolluskShelleggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Mollusk Shelleggings");
-            Tooltip.SetDefault("12% increased damage and 4% increased critical strike chance\n" +
-                               "7% decreased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 15;
         }

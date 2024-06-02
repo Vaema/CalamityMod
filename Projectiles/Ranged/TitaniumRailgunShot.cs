@@ -1,16 +1,17 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class TitaniumRailgunShot : BaseLaserbeamProjectile
+    public class TitaniumRailgunShot : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Magic/YharimsCrystalBeam";
         public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayStart", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayMid", AssetRequestMode.ImmediateLoad).Value;
@@ -21,11 +22,6 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float ChargePercent => ref Projectile.ai[1];
         public override Color LaserOverlayColor => Color.White;
         public override Color LightCastColor => LaserOverlayColor;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Titanium Decimator");
-        }
 
         public override void SetDefaults()
         {
@@ -51,15 +47,15 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.timeLeft == 15)
             {
-                
+
                 Vector2 beamVector = Projectile.velocity;
-                float beamLenght = DetermineLaserLength_CollideWithTiles(12);
+                float beamLength = DetermineLaserLength_CollideWithTiles(12);
 
                 //Rapid dust
                 int dustCount = Main.rand.Next(10, 30);
                 for (int i = 0; i < dustCount; i++)
                 {
-                    float dustProgressAlongBeam = beamLenght * Main.rand.NextFloat(0f, 0.8f);
+                    float dustProgressAlongBeam = beamLength * Main.rand.NextFloat(0f, 0.8f);
                     Vector2 dustPosition = Projectile.Center + dustProgressAlongBeam * beamVector + beamVector.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-6f, 6f) * Projectile.scale;
 
                     Dust dust = Dust.NewDustPerfect(dustPosition, 187, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.White, 2.2f);
@@ -67,9 +63,9 @@ namespace CalamityMod.Projectiles.Ranged
                 }
 
                 //Put a titanium shell into the impact tile (if it collided with one)
-                if (beamLenght < MaxLaserLength)
+                if (beamLength < MaxLaserLength)
                 {
-                    Vector2 endPoint = beamLenght * beamVector + Projectile.Center + beamVector * 8.5f;
+                    Vector2 endPoint = beamLength * beamVector + Projectile.Center + beamVector * 8.5f;
                     Point anchorPos = new Point((int)endPoint.X / 16, (int)endPoint.Y / 16);
 
                     Color burnColor = Main.rand.NextBool(4) ? Color.PaleGreen : Main.rand.NextBool(4) ? Color.PaleTurquoise : Color.OrangeRed;

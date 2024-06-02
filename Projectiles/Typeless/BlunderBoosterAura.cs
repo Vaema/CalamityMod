@@ -1,4 +1,4 @@
-using CalamityMod.NPCs;
+﻿using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,24 +8,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class BlunderBoosterAura : ModProjectile
+    public class BlunderBoosterAura : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         private const float radius = 98f;
         private const int framesX = 3;
         private const int framesY = 6;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Red Lightning Aura");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 218;
-            Projectile.height = 218;
+            Projectile.width = Projectile.height = 218;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 18000;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
@@ -66,34 +64,28 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Electrified, 180);
 
             if (target.knockBackResist <= 0f)
                 return;
 
+            // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
             if (CalamityGlobalNPC.ShouldAffectNPC(target))
             {
-                float knockbackMultiplier = knockback - (1f - target.knockBackResist);
-                if (knockbackMultiplier < 0)
-                {
-                    knockbackMultiplier = 0;
-                }
+                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
                 Vector2 trueKnockback = target.Center - Projectile.Center;
                 trueKnockback.Normalize();
                 target.velocity = trueKnockback * knockbackMultiplier;
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Electrified, 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Electrified, 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color drawColour = Color.White;
             Rectangle sourceRect = new Rectangle(Projectile.width * (int)Projectile.localAI[1], Projectile.height * (int)Projectile.localAI[0], Projectile.width, Projectile.height);

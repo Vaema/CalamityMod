@@ -1,27 +1,28 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class BloodOrange : ModItem
+    public class BloodOrange : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
+
+        public const int LifeBoost = 25;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LifeBoost);
+
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/BloodOrangeConsume");
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Orange");
-            Tooltip.SetDefault("It has a distinctly sweet flavor and a strong aroma\n" +
-                               "Permanently increases maximum life by 25\n" +
-                               "Can only be used if the max amount of life fruit has been consumed");
-            SacrificeTotal = 1;
-			// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 18; // Life Fruit
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
         }
 
         public override void SetDefaults()
@@ -36,33 +37,23 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.consumable = true;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.bOrange)
-            {
-                string key = "Mods.CalamityMod.BloodOrangeText";
-                Color messageColor = Color.Orange;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                return false;
-            }
-            else if (player.statLifeMax < 500)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;
 
         public override bool? UseItem(Player player)
         {
+            CalamityPlayer modPlayer = player.Calamity();
             if (player.itemAnimation > 0 && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
-                if (Main.myPlayer == player.whoAmI)
+                if (modPlayer.bOrange)
                 {
-                    player.HealEffect(25);
+                    string key = "Mods.CalamityMod.Misc.BloodOrangeText";
+                    Color messageColor = Color.Orange;
+                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    return false;
                 }
-                CalamityPlayer modPlayer = player.Calamity();
+
+                player.UseHealthMaxIncreasingItem(LifeBoost);
                 modPlayer.bOrange = true;
             }
             return true;
@@ -70,10 +61,10 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip2");
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
 
             if (line != null && Main.LocalPlayer.Calamity().bOrange)
-                line.Text = "[c/8a8a8a:You have already consumed this item]";
+                line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
         }
 
         public override void AddRecipes()

@@ -10,20 +10,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Typeless
 {
-    public class Aestheticus : ModItem
+    public class Aestheticus : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aestheticus");
-            Tooltip.SetDefault("Fires crystals that explode and slow enemies down\n" +
-                "This weapon scales with all your damage stats at once");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
-            Item.DamageType = AverageDamageClass.Instance;
             Item.width = 58;
+            Item.height = 58;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 8;
             Item.useAnimation = 25;
             Item.useTime = 25;
@@ -31,9 +25,8 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
-            Item.height = 58;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
 
@@ -41,10 +34,10 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.shootSpeed = 5f;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -52,12 +45,12 @@ namespace CalamityMod.Items.Weapons.Typeless
             return false;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Vaporfied>(), 120);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(ModContent.BuffType<Vaporfied>(), 120);
         }

@@ -5,17 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Tequila : ModItem
+    public class Tequila : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         internal static readonly int CritBoost = 4;
-        
+
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Tequila");
-            Tooltip.SetDefault(@"Great for mixing up daytime drinks
-Boosts knockback by 10%, crit chance by 4% and defense by 5 during daytime
-Reduces life regen by 1");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -23,7 +20,7 @@ Reduces life regen by 1");
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 17;
             Item.useTime = 17;

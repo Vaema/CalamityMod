@@ -9,8 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class CoralSpout : ModItem
+    public class CoralSpout : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle ChargeSound = SoundID.LiquidsHoneyWater with { Type = SoundType.Sound };
 
         public static int FullChargeExtraDamage = 6; //Extra damage dealt by each coral chunkits b when fully charging a shot
@@ -18,35 +19,20 @@ namespace CalamityMod.Items.Weapons.Magic
         public static int SymbiosisDamageBuff = 2; //Extra damage from the symbiosis buff
         public static int SymbiosisTime = 8 * 60;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Coral Spout");
-            Tooltip.SetDefault("Casts a shotgun-like blast of coral shards\n" +
-                               "Keep the attack button held down to narrow the spread\n" +
-                               "Fully charging the attack releases a single, bigger chunk of coral that sticks to enemies\n" +
-                               "Grabbing the chunk of coral after it falls from the enemy replenishes 150 mana\n" +
-                               "The mana-charged coral also provides a buff that increases the coral's damage and the convergence speed\n" +
-                               //Lore tooltip time. Sekiro.
-                               "[c/5C95A1:Knowledge is important, and the Old Sea Kingdom's many scribes knew it had to be preserved at any cost.]\n" +
-                               "[c/5C95A1:Their libraries were much larger than most, because of the water-proof stone tablets occupying them.]"
-                );
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 30;
             Item.damage = 8;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
-            Item.width = 28;
-            Item.height = 30;
             Item.useTime = 26;
             Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.channel = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item17;
             Item.autoReuse = true;

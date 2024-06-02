@@ -1,23 +1,14 @@
 ﻿using CalamityMod.Dusts.Furniture;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureBotanic
 {
     public class BotanicLantern : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpLantern(true);
-            AddMapEntry(new Color(191, 142, 111), Language.GetText("MapObject.Lantern"));
-
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.HangingLanterns };
-        }
+        public override void SetStaticDefaults() => this.SetUpLantern(ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicLantern>(), true);
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -29,11 +20,6 @@ namespace CalamityMod.Tiles.FurnitureBotanic
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicLantern>());
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

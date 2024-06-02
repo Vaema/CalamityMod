@@ -10,20 +10,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ToxicantTwister : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Toxicant Twister");
-            Tooltip.SetDefault("Throws a slow moving boomerang\n" +
-                "After a few moments, the boomerang chooses a target and rapidly homes in\n" +
-                "Stealth strikes home in faster and rapidly release sand");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 46;
-            Item.damage = 300;
+            Item.damage = 333;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 20;
@@ -35,11 +26,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 18f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-		public override float StealthDamageMultiplier => 1.35f;
+        public override float StealthDamageMultiplier => 1.3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

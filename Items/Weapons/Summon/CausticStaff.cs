@@ -1,35 +1,28 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class CausticStaff : ModItem
+    public class CausticStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Caustic Staff");
-            Tooltip.SetDefault("Summons a mini dragon to fight for you\n" +
-                "The dragon can inflict several debilitating debuffs if you hold a summon weapon or tool");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 26;
+            Item.height = 28;
             Item.mana = 10;
             Item.damage = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<CausticStaffSummon>();
-            Item.width = 26;
-            Item.height = 28;
             Item.UseSound = SoundID.Item77;
             Item.useAnimation = Item.useTime = 25;
 
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
 

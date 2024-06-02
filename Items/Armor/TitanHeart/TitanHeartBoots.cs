@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.TitanHeart
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class TitanHeartBoots : ModItem
+    public class TitanHeartBoots : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Titan Heart Boots");
-            Tooltip.SetDefault("4% increased rogue damage, 10% increased rogue velocity, and 5% increased rogue knockback");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;

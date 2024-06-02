@@ -1,17 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class SporeGasPlantera : ModProjectile
+    public class SporeGasPlantera : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spore Gas");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -40,7 +41,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Projectile.ai[1] += 1f;
-            if (Projectile.ai[1] > 1800f)
+            if (Projectile.ai[1] > (CalamityWorld.LegendaryMode ? 600f : 900f))
             {
                 Projectile.localAI[0] += 10f;
                 Projectile.damage = 0;
@@ -52,23 +53,24 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.localAI[0] = 255f;
             }
 
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.16f / 255f, (255 - Projectile.alpha) * 0.2f / 255f, (255 - Projectile.alpha) * 0.04f / 255f);
+            float lightValues = (255 - Projectile.alpha) * 0.6f / 255f;
+            Lighting.AddLight(Projectile.Center, 0f, lightValues, 0f);
 
             Projectile.alpha = (int)(100.0 + Projectile.localAI[0] * 0.7);
             Projectile.rotation += Projectile.velocity.X * 0.02f;
             Projectile.rotation += Projectile.direction * 0.002f;
 
-            if (Projectile.velocity.Length() > 0.5f)
-                Projectile.velocity *= 0.98f;
+            if (Projectile.velocity.Length() > (CalamityWorld.LegendaryMode ? 4f : 2f))
+                Projectile.velocity *= 0.985f;
         }
 
-        public override bool CanHitPlayer(Player target) => Projectile.ai[1] <= 1800f && Projectile.ai[1] > 120f;
+        public override bool CanHitPlayer(Player target) => Projectile.ai[1] <= (CalamityWorld.LegendaryMode ? 600f : 900f) && Projectile.ai[1] > 120f;
 
         public override Color? GetAlpha(Color lightColor)
         {
-            if (Projectile.ai[1] > 1800f)
+            if (Projectile.ai[1] > (CalamityWorld.LegendaryMode ? 600f : 900f))
             {
-                byte b2 = (byte)((26f - (Projectile.ai[1] - 1800f)) * 10f);
+                byte b2 = (byte)((26f - (Projectile.ai[1] - (CalamityWorld.LegendaryMode ? 600f : 900f))) * 10f);
                 byte a2 = (byte)(Projectile.alpha * (b2 / 255f));
                 return new Color(b2, b2, b2, a2);
             }
@@ -78,7 +80,7 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             // Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             switch ((int)Projectile.ai[0])
             {
                 case 0:
@@ -96,12 +98,12 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            if (Projectile.ai[1] <= 1800f && Projectile.ai[1] > 120f)
+            if (Projectile.ai[1] <= (CalamityWorld.LegendaryMode ? 600f : 900f) && Projectile.ai[1] > 120f)
                 target.AddBuff(BuffID.Poisoned, 480);
         }
     }

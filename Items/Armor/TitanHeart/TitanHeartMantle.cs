@@ -7,14 +7,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.TitanHeart
 {
     [AutoloadEquip(EquipType.Body)]
-    public class TitanHeartMantle : ModItem
+    public class TitanHeartMantle : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Titan Heart Mantle");
-            Tooltip.SetDefault("45% chance to not consume rogue items\n" +
-            "5% boosted rogue knockback but 15% lowered rogue attack speed");
 
             if (Main.netMode == NetmodeID.Server)
                 return;

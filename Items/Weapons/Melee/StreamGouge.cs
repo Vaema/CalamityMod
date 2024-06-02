@@ -10,28 +10,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class StreamGouge : ModItem
+    public class StreamGouge : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public const int SpinTime = 45;
 
         public const int SpearFireTime = 24;
 
         public const int PortalLifetime = 30;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Stream Gouge");
-            Tooltip.SetDefault("Summons a portal that the spear crosses through\n" +
-                "Shortly after going through the portal, portals appear near the mouse that release copies of the spear's cutting edge\n" +
-                "Enemies hit by the copies create lacerations in space, revealing a cosmic background");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 100;
             Item.height = 100;
-            Item.damage = 400;
+            Item.damage = 500;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.useTurn = true;

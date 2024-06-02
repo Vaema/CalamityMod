@@ -4,18 +4,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class BrimstoneSlab : ModItem
+    public class BrimstoneSlab : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,9 +29,13 @@ namespace CalamityMod.Items.Placeables
         public override void AddRecipes()
         {
             CreateRecipe(25).
-            AddIngredient(ModContent.ItemType<BrimstoneSlag>()).
-            AddTile(TileID.HeavyWorkBench).
-            Register();
+                AddIngredient<BrimstoneSlag>().
+                AddTile(TileID.HeavyWorkBench).
+                Register();
+            CreateRecipe().
+                AddIngredient<BrimstoneSlabWall>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

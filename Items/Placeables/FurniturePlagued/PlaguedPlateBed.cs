@@ -1,23 +1,21 @@
-using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurniturePlagued
 {
-    public class PlaguedPlateBed : ModItem
+    public class PlaguedPlateBed : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plagued 'Bed'");
-            Tooltip.SetDefault("Counts as a bed");
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BrokenPlaguedBed>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -29,7 +27,11 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<PlaguedContainmentBrick>(), 15).AddIngredient(ModContent.ItemType<PlagueCellCanister>(), 5).AddTile(ModContent.TileType<PlagueInfuser>()).Register();
+            CreateRecipe().
+                AddIngredient<PlaguedContainmentBrick>(15).
+                AddIngredient(ItemID.Silk, 5).
+                AddTile<PlagueInfuser>().
+                Register();
         }
     }
 }

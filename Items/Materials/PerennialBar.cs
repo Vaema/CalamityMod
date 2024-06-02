@@ -7,17 +7,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("DraedonBar")]
-    public class PerennialBar : ModItem
+    public class PerennialBar : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Perennial Bar");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 92; // Shroomite Bar
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 92; // Shroomite Bar
         }
 
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 24;
             Item.createTile = ModContent.TileType<Tiles.PerennialBar>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -25,9 +27,7 @@ namespace CalamityMod.Items.Materials
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 30;
-            Item.height = 24;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Lime;
         }

@@ -1,20 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class CoralBubbleSmall : ModProjectile
+    public class CoralBubbleSmall : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Typeless/CoralBubble";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bubble");
-        }
 
         public override void SetDefaults()
         {
@@ -25,6 +21,11 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.penetrate = 1;
+        }
+
+        public override bool? CanCutTiles()
+        {
+            return false;
         }
 
         public override void AI()
@@ -69,12 +70,12 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 10; i++)
             {
                 int size = 6;
-                int dustIndex = Dust.NewDust(Projectile.Center - Vector2.One * size, size * 2, size * 2, 212);
+                int dustIndex = Dust.NewDust(Projectile.Center - Vector2.One * size, size * 2, size * 2, DustID.BubbleBurst_White);
                 Dust dust = Main.dust[dustIndex];
                 Vector2 value14 = Vector2.Normalize(dust.position - Projectile.Center);
                 dust.position = Projectile.Center + value14 * size;

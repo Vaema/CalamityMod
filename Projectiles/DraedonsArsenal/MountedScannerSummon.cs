@@ -1,15 +1,16 @@
 ﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class MountedScannerSummon : ModProjectile
+    public class MountedScannerSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public float AngularOffsetRelativeToPlayer
         {
             get => Projectile.ai[0];
@@ -21,13 +22,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             set => Projectile.ai[1] = value;
         }
 
-        public const int LaserFireRate = 300;
+        public const int LaserFireRate = 125;
 
         public const float OffsetDistanceFromPlayer = 60f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mounted Scanner");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                                          Projectile.SafeDirectionTo(target.Center, Vector2.UnitY),
                                          ModContent.ProjectileType<MountedScannerLaser>(),
                                          Projectile.damage,
@@ -110,8 +110,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                                          Projectile.owner,
                                          0f,
                                          Projectile.whoAmI);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Projectile.originalDamage;
                 }
                 SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }

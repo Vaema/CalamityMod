@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class GastricBelcherBubble : ModProjectile
+    public class GastricBelcherBubble : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gastric Bubble");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -17,20 +17,19 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.friendly = true;
             Projectile.width = Projectile.height = 18;
-            Projectile.minion = true;
             Projectile.timeLeft = 180;
             Projectile.aiStyle = ProjAIStyleID.Bubble;
             Projectile.DamageType = DamageClass.Summon;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
             Vector2 center = Projectile.Center;
             for (int dustIndex = 0; dustIndex < 10; ++dustIndex)
             {
                 int scalar = (int)(10 * Projectile.ai[1]);
-                int bubble = Dust.NewDust(Projectile.Center - Vector2.One * scalar, scalar * 2, scalar * 2, 212, 0.0f, 0.0f, 0, new Color(), 1f);
+                int bubble = Dust.NewDust(Projectile.Center - Vector2.One * scalar, scalar * 2, scalar * 2, DustID.BubbleBurst_White, 0.0f, 0.0f, 0, new Color(), 1f);
                 Dust dust = Main.dust[bubble];
                 Vector2 dustVec = Vector2.Normalize(dust.position - Projectile.Center);
                 dust.position = Projectile.Center + dustVec * scalar * Projectile.scale;

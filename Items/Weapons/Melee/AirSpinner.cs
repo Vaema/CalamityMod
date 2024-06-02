@@ -6,17 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class AirSpinner : ModItem
+    public class AirSpinner : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Air Spinner");
-            Tooltip.SetDefault("Fires feathers when enemies are near\n" +
-            "A very agile yoyo");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -24,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 28;
             Item.height = 28;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 26;
+            Item.damage = 29;
             Item.knockBack = 4f;
             Item.useTime = 22;
             Item.useAnimation = 22;
@@ -40,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 14f;
 
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
         }
 
         public override void AddRecipes()

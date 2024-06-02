@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class MadAlchemistsCocktailPurple : ModProjectile
+    public class MadAlchemistsCocktailPurple : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mad Alchemist's Purple Cocktail");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -39,9 +35,9 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item107, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item107, Projectile.Center);
 
             if (Main.netMode != NetmodeID.Server)
             {
@@ -55,10 +51,10 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < numShrapnel; i++)
                 {
-                    Vector2 value17 = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                    value17.Normalize();
-                    value17 *= (float)Main.rand.Next(10, 201) * 0.01f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, value17.X, value17.Y, ModContent.ProjectileType<MadAlchemistsCocktailShrapnel>(), shrapnelDamage, 0f, Projectile.owner, 0f, (float)Main.rand.Next(-45, 1));
+                    Vector2 randProjSpawn = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                    randProjSpawn.Normalize();
+                    randProjSpawn *= (float)Main.rand.Next(10, 201) * 0.01f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, randProjSpawn.X, randProjSpawn.Y, ModContent.ProjectileType<MadAlchemistsCocktailShrapnel>(), shrapnelDamage, 0f, Projectile.owner, 0f, (float)Main.rand.Next(-45, 1));
                 }
             }
         }

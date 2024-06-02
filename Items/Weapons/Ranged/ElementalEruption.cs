@@ -1,65 +1,62 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class ElementalEruption : ModItem
+    public class ElementalEruption : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Elemental Eruption");
-            Tooltip.SetDefault("90% chance to not consume gel\n" +
-                "Fires a spread of rainbow flames");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public int FlareCounter = 0;
+
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
 
         public override void SetDefaults()
         {
-            Item.damage = 77;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 64;
             Item.height = 34;
-            Item.useTime = 14;
-            Item.useAnimation = 14;
+            Item.damage = 94;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useAnimation = Item.useTime = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
             Item.UseSound = SoundID.Item34;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<TerraFireGreen2>();
-            Item.shootSpeed = 10f;
+            Item.shoot = ModContent.ProjectileType<ElementalEruptionHoldout>();
+            Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Gel;
+            Item.channel = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+
+        // Spawning the holdout cannot consume ammo
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int numFirestreams = Main.rand.Next(3, 5);
-            for (int index = 0; index < numFirestreams; ++index)
-            {
-                float SpeedX = velocity.X + Main.rand.Next(-20, 21) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-20, 21) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI, 0f, 0f);
-            }
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ElementalEruptionHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.9f;
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<TerraFlameburster>().
-                AddIngredient<BlightSpewer>().
-                AddIngredient<HavocsBreath>().
+                AddIngredient<WildfireBloom>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<GalacticaSingularity>(5).

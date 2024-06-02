@@ -11,24 +11,16 @@ namespace CalamityMod.Items.Armor.Reaver
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("ReaverHeadgear")]
-    public class ReaverHeadExplore : ModItem
+    public class ReaverHeadExplore : ModItem, ILocalizedModType
     {
-        //Exploration and Mining Helm
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Reaver Headgear");
-            Tooltip.SetDefault("40% increased pick speed and block/wall placement speed\n" +
-                "Temporary immunity to lava and can move freely through liquids");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 22;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 7; //40
+            Item.defense = 7;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -44,12 +36,7 @@ namespace CalamityMod.Items.Armor.Reaver
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Highlights all treasure nearby\n" +
-                "Increased item grab range and block placement range\n" +
-                "Mining tiles restores breath while underwater\n" +
-                "Summons a reaver orb to light up the area around you\n" +
-                "Reduces enemy aggression, even in the abyss\n" +
-                "Provides a small amount of light in the abyss";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.reaverExplore = true;
             modPlayer.wearingRogueArmor = true;
@@ -74,10 +61,10 @@ namespace CalamityMod.Items.Armor.Reaver
         public override void UpdateEquip(Player player)
         {
             player.ignoreWater = true;
-            player.pickSpeed -= 0.4f;
+            player.lavaImmune = true;
+            player.pickSpeed -= 0.2f;
             player.tileSpeed += 0.4f;
             player.wallSpeed += 0.4f;
-            player.lavaMax += 420;
         }
 
         public override void AddRecipes()

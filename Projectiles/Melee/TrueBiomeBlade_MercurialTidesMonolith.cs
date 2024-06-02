@@ -1,21 +1,22 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Melee;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class MercurialTidesMonolith : ModProjectile
+    public class MercurialTidesMonolith : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTidesMonolith";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => (100f - Projectile.timeLeft) / 100f;
@@ -42,7 +43,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mercurial Monolith");
         }
         public override void SetDefaults()
         {
@@ -174,14 +174,13 @@ namespace CalamityMod.Projectiles.Melee
             return validPositionFound;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_MonolithProc)
                 sword.OnHitProc = true;
 
             if (Projectile.numHits > 0)
-                damage = (int)(damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageFalloff);
-
+                modifiers.SourceDamage *= OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageFalloff;
         }
 
         public override bool PreDraw(ref Color lightColor)

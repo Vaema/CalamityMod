@@ -1,44 +1,42 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class DiseasedPikeSpear : BaseSpearProjectile
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Pike");
-        }
-
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<DiseasedPike>();
         public override void SetDefaults()
         {
-            Projectile.width = 40;  //The width of the .png file in pixels divided by 2.
-            Projectile.aiStyle = ProjAIStyleID.Spear;
+            Projectile.width = Projectile.height = 40;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
             Projectile.timeLeft = 90;
-            Projectile.height = 40;  //The height of the .png file in pixels divided by 2.
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
         }
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.8f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(4))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 107, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 7;
             target.AddBuff(ModContent.BuffType<Plague>(), 300);
             if (Projectile.owner == Main.myPlayer)
             {

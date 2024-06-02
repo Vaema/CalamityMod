@@ -1,24 +1,28 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TrueBiomeBlade : ModItem
+    // TODO -- CANNOT RENAME this and True Biome Blade to "TrueBiomeBlade" and "BiomeBlade" internally without corrupting existing items
+    // (Comment copied from an equivalent one on OmegaBiomeBlade from June 2022)
+    public class TrueBiomeBlade : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public Attunement mainAttunement = null;
         public Attunement secondaryAttunement = null;
         public int Combo = 0;
@@ -27,11 +31,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public int PowerLungeCounter = 0;
 
         #region stats
-        public static int BaseDamage = 80;
+        public static int BaseDamage = 115;
 
-        public static int DefaultAttunement_BaseDamage = 80;
-        public static int DefaultAttunement_SigilTime = 1200;
-        public static int DefaultAttunement_BeamTime = 60;
+        public static int DefaultAttunement_BaseDamage = 105;
+        public static int DefaultAttunement_SigilTime = 900;
+        public static int DefaultAttunement_BeamTime = 90;
         public static float DefaultAttunement_HomingAngle = MathHelper.PiOver4;
 
         public static int EvilAttunement_BaseDamage = 155;
@@ -40,9 +44,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float EvilAttunement_SlashDamageBoost = 3f;
         public static int EvilAttunement_SlashIFrames = 60;
 
-        public static int ColdAttunement_BaseDamage = 150;
-        public static float ColdAttunement_SecondSwingBoost = 1.15f;
-        public static float ColdAttunement_ThirdSwingBoost = 1.3f;
+        public static int ColdAttunement_BaseDamage = 175;
+        public static float ColdAttunement_ThirdSwingBoost = 1.75f;
         public static float ColdAttunement_MistDamageReduction = 0.09f;
 
         public static int HotAttunement_BaseDamage = 122;
@@ -53,10 +56,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int HotAttunement_LocalIFramesCharged = 16;
         public static float HotAttunement_ShredDecayRate = 0.65f; //How much charge is lost per frame.
 
-        public static int TropicalAttunement_BaseDamage = 120;
+        public static int TropicalAttunement_BaseDamage = 150;
         public static float TropicalAttunement_ChainDamageReduction = 0.6f;
         public static float TropicalAttunement_VineDamageReduction = 0.3f;
-        public static float TropicalAttunement_SweetSpotDamageMultiplier = 1.2f; //It also crits, so be mindful of that
+        public static float TropicalAttunement_SweetSpotDamageMultiplier = 1.5f; //It also crits, so be mindful of that
         public static int TropicalAttunement_LocalIFrames = 60; //Be warned its got 2 extra updates so all the iframes should be divided in 3
 
         public static int HolyAttunement_BaseDamage = 60;
@@ -65,9 +68,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float HolyAttunement_ThrowDamageBoost = 3.8f;
         public static int HolyAttunement_LocalIFrames = 16; //Be warned its got 1 extra update yadda yadda
 
-        public static int AstralAttunement_BaseDamage = 225;
+        public static int AstralAttunement_BaseDamage = 250;
         public static int AstralAttunement_DashHitIFrames = 20;
-        public static float AstralAttunement_FullChargeBoost = 2.5f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
+        public static float AstralAttunement_FullChargeBoost = 4f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
         public static float AstralAttunement_MonolithDamageBoost = 1.25f;
         public static float AstralAttunement_MonolithDamageFalloff = 0.25f; //Damage multiplier for all subsequent hits after the first one.
 
@@ -79,13 +82,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Biome Blade");
-            Tooltip.SetDefault("FUNCTION_DESC\n" +
-                               "Hold down RMB while standing still on flat ground to attune the weapon to the powers of the surrounding biome\n" +
-                               "Using RMB otherwise switches between the current attunement and an extra stored one\n" +
-                               "Main Attunement : [None]\n" +
-                               "Secondary Attunement: [None]\n"); //Theres potential for flavor text as well but im not a writer
-            SacrificeTotal = 1;
+            //Theres potential for flavor text as well but im not a writer
         }
 
         #region tooltip editing
@@ -101,27 +98,15 @@ namespace CalamityMod.Items.Weapons.Melee
             if (player is null)
                 return;
 
-            var effectDescTooltip = list.FirstOrDefault(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
-            var mainAttunementTooltip = list.FirstOrDefault(x => x.Name == "Tooltip3" && x.Mod == "Terraria");
-            var secondaryAttunementTooltip = list.FirstOrDefault(x => x.Name == "Tooltip4" && x.Mod == "Terraria");
+            var effectDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[FUNC]") && x.Mod == "Terraria");
+            var mainAttunementTooltip = list.FirstOrDefault(x => x.Text.Contains("[ATT1]") && x.Mod == "Terraria");
+            var secondaryAttunementTooltip = list.FirstOrDefault(x => x.Text.Contains("[ATT2]") && x.Mod == "Terraria");
 
             if (effectDescTooltip != null)
             {
                 //Default stuff
-                effectDescTooltip.Text = "Does nothing..yet\nRepairing the blade seems to have improved its attuning capacities";
+                effectDescTooltip.Text = this.GetLocalizedValue("DefaultFunction");
                 effectDescTooltip.OverrideColor = new Color(163, 163, 163);
-            }
-
-            if (mainAttunementTooltip != null)
-            {
-                mainAttunementTooltip.Text = "Main Attunement : [None]";
-                mainAttunementTooltip.OverrideColor = new Color(163, 163, 163);
-            }
-
-            if (secondaryAttunementTooltip != null)
-            {
-                secondaryAttunementTooltip.Text = "Secondary Attunement : [None]";
-                secondaryAttunementTooltip.OverrideColor = new Color(163, 163, 163);
             }
 
             //If theres a main attunement
@@ -129,22 +114,32 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 if (effectDescTooltip != null)
                 {
-                    effectDescTooltip.Text = mainAttunement.function_description + "\n" + mainAttunement.function_description_extra;
+                    effectDescTooltip.Text = Lang.SupportGlyphs(mainAttunement.FunctionText.ToString());
                     effectDescTooltip.OverrideColor = mainAttunement.tooltipColor;
                 }
 
                 if (mainAttunementTooltip != null)
                 {
-                    mainAttunementTooltip.Text = "Main Attunement : [" + mainAttunement.name + "]";
+                    mainAttunementTooltip.Text = mainAttunementTooltip.Text.Replace("ATT1", mainAttunement.AttunementName.ToString());
                     mainAttunementTooltip.OverrideColor = mainAttunement.tooltipColor;
                 }
+            }
+            else if (mainAttunementTooltip != null)
+            {
+                mainAttunementTooltip.Text = mainAttunementTooltip.Text.Replace("ATT1", Language.GetTextValue("LegacyInterface.23"));
+                mainAttunementTooltip.OverrideColor = new Color(163, 163, 163);
             }
 
             //If theres a secondary attunement
             if (secondaryAttunement != null && secondaryAttunementTooltip != null)
             {
-                secondaryAttunementTooltip.Text = "Secondary Attunement : [" + secondaryAttunement.name + "]";
+                secondaryAttunementTooltip.Text = secondaryAttunementTooltip.Text.Replace("ATT2", secondaryAttunement.AttunementName.ToString());
                 secondaryAttunementTooltip.OverrideColor = Color.Lerp(secondaryAttunement.tooltipColor, Color.Gray, 0.5f);
+            }
+            else if (secondaryAttunementTooltip != null)
+            {
+                secondaryAttunementTooltip.Text = secondaryAttunementTooltip.Text.Replace("ATT2", Language.GetTextValue("LegacyInterface.23"));
+                secondaryAttunementTooltip.OverrideColor = new Color(163, 163, 163);
             }
         }
         #endregion
@@ -161,7 +156,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 12f;
@@ -296,7 +291,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
+            bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
+            return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<TrueBitingEmbrace>() ||
              n.type == ProjectileType<TrueGrovetendersTouch>() ||
              n.type == ProjectileType<TrueAridGrandeur>() ||
@@ -305,9 +301,12 @@ namespace CalamityMod.Items.Weapons.Melee
              n.type == ProjectileType<GestureForTheDrowned>()));
         }
 
+        // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
+        public override bool AltFunctionUse(Player player) => true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (mainAttunement == null)
+            if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
                 return false;
 
             ComboResetTimer = 1f;
@@ -316,7 +315,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
 
         //This is only used for the purity sigil effect of the default attunement
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (mainAttunement == null || mainAttunement.id != AttunementID.TrueDefault || player.whoAmI != Main.myPlayer)
                 return;
@@ -354,7 +353,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             // Draw all particles.
 
-            Vector2 particleDrawCenter = position + new Vector2(12f, 16f) * Main.inventoryScale;
+            Vector2 particleDrawCenter = position + new Vector2(12f, 16f) * Main.inventoryScale - frame.Size() * 0.18f;
 
             BiomeEnergyParticles.EdgeColor = mainAttunement.energyParticleEdgeColor;
             BiomeEnergyParticles.CenterColor = mainAttunement.energyParticleCenterColor;
@@ -385,11 +384,11 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<BrokenBiomeBlade>().
-                AddIngredient(ItemID.SoulofFright, 1).
-                AddIngredient(ItemID.SoulofMight, 1).
-                AddIngredient(ItemID.SoulofSight, 1).
+                AddIngredient(ItemID.SoulofFright).
+                AddIngredient(ItemID.SoulofMight).
+                AddIngredient(ItemID.SoulofSight).
                 AddIngredient(ItemID.PixieDust, 2).
-                AddIngredient<Stardust>(10).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

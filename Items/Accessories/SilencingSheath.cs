@@ -5,21 +5,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class SilencingSheath : ModItem
+    public class SilencingSheath : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Silencing Sheath");
-            Tooltip.SetDefault("+10 maximum stealth");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }
 
@@ -27,6 +21,8 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.rogueStealthMax += 0.1f;
+            modPlayer.stealthGenStandstill += 0.04f;
+            modPlayer.stealthGenMoving += 0.04f;
         }
 
         public override void AddRecipes()

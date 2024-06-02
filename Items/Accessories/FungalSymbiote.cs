@@ -1,26 +1,18 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class FungalSymbiote : ModItem
+    public class FungalSymbiote : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fungal Symbiote");
-            Tooltip.SetDefault("You grow mushrooms on the grass beneath you\n" +
-                "Consuming mushrooms provides the Mushy buff, increasing defense by 6 and life regen by 2\n" +
-                "All mushroom-based weapons deal 10% more damage and emit non-damaging mushrooms");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

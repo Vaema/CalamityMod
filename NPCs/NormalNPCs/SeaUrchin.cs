@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -10,12 +11,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class SeaUrchin : ModNPC
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sea Urchin");
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
-        }
-
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
@@ -36,27 +31,30 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A spiny animal that flings itself about in defense of its territory. If they fling themselves onto land—though relatively helpless—they can make their way back to the ocean.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaUrchin")
             });
         }
 
         public override void AI()
         {
-            CalamityAI.UnicornAI(NPC, Mod, true, NPC.wet ? 9f : 4f, NPC.wet ? 5.5f : 2.2f, NPC.wet ? 0.09f : 0.04f, NPC.wet ? -14f : -6.5f, NPC.wet ? -12f : -6f, NPC.wet ? -11f : -5f, NPC.wet ? -10f : -4f, NPC.wet ? -13f : -6f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, NPC.wet ? 9f : 4f, NPC.wet ? 5.5f : 2.2f, NPC.wet ? 0.09f : 0.04f, NPC.wet ? -14f : -6.5f, NPC.wet ? -12f : -6f, NPC.wet ? -11f : -5f, NPC.wet ? -10f : -4f, NPC.wet ? -13f : -6f);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Venom, 120, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Venom, 120, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -70,17 +68,17 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<UrchinStinger>(), 1, 30, 50);
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

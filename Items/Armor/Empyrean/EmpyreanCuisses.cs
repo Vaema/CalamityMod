@@ -7,21 +7,14 @@ namespace CalamityMod.Items.Armor.Empyrean
 {
     [AutoloadEquip(EquipType.Legs)]
     [LegacyName("XerocCuisses")]
-    public class EmpyreanCuisses : ModItem
+    public class EmpyreanCuisses : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Empyrean Cuisses");
-            Tooltip.SetDefault("5% increased rogue damage and critical strike chance\n" +
-                    "15% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.defense = 24;
         }

@@ -8,29 +8,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Mistlestorm : ModItem
+    public class Mistlestorm : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mistlestorm");
-            Tooltip.SetDefault("Casts a storm of pine needles and leaves");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 45;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 5;
             Item.width = 48;
             Item.height = 48;
+            Item.damage = 54;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 5;
             Item.useTime = 6;
             Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
@@ -38,20 +36,20 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 24f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int num106 = 2 + Main.rand.Next(3);
-            for (int num107 = 0; num107 < num106; num107++)
+            int projAmt = 2 + Main.rand.Next(3);
+            for (int i = 0; i < projAmt; i++)
             {
-                float num110 = 0.025f * (float)num107;
-                velocity.X += (float)Main.rand.Next(-35, 36) * num110;
-                velocity.Y += (float)Main.rand.Next(-35, 36) * num110;
-                float num84 = velocity.Length();
-                num84 = Item.shootSpeed / num84;
-                velocity.X *= num84;
-                velocity.Y *= num84;
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, (float)Main.rand.Next(0, 10 * (num107 + 1)), 0f);
+                float randVelocityDampener = 0.025f * (float)i;
+                velocity.X += (float)Main.rand.Next(-35, 36) * randVelocityDampener;
+                velocity.Y += (float)Main.rand.Next(-35, 36) * randVelocityDampener;
+                float projDistance = velocity.Length();
+                projDistance = Item.shootSpeed / projDistance;
+                velocity.X *= projDistance;
+                velocity.Y *= projDistance;
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, (float)Main.rand.Next(0, 10 * (i + 1)), 0f);
                 Projectile.NewProjectile(source, position, velocity, ProjectileID.Leaf, damage, knockback, player.whoAmI);
             }
             return false;

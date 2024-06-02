@@ -5,12 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class BarrelShrapnel : ModProjectile
+    public class BarrelShrapnel : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public bool hitTile = false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shrapnel");
             Main.projFrames[Projectile.type] = 3;
         }
 
@@ -44,12 +44,12 @@ namespace CalamityMod.Projectiles.Rogue
             hitTile = true;
             return false;
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 60 * 4);
             Projectile.Kill();
         }
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.OnFire3, 60 * 4);
             Projectile.Kill();

@@ -1,22 +1,22 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class RainbowComet : ModProjectile
+    public class RainbowComet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public ref float Time => ref Projectile.ai[0];
         public const float FadeinTime = 40f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Comet");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             Main.projFrames[Projectile.type] = 3;
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D cometTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D cometTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(cometTexture,
                              Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition,
                              cometTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
                              0);
             return false;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {

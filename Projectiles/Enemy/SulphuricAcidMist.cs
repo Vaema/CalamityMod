@@ -1,18 +1,18 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class SulphuricAcidMist : ModProjectile
+    public class SulphuricAcidMist : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Acid Mist");
             Main.projFrames[Projectile.type] = 10;
         }
 
@@ -29,19 +29,22 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void AI()
         {
+            Projectile.ai[0] += 1f;
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame > 9)
-                Projectile.frame = 0;
+            if (Projectile.frame > 5 && Projectile.ai[0] < 480f)
+                Projectile.frame = 3;
+            else if (Projectile.frame > 7)
+                Projectile.frame = 4;
 
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item111, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item111, Projectile.Center);
             }
 
             if (Projectile.velocity.X < 0f)
@@ -52,10 +55,9 @@ namespace CalamityMod.Projectiles.Enemy
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
-            Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= 480f)
             {
                 if (Projectile.Opacity > 0f)
@@ -87,9 +89,9 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity >= 0.9f;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             if (Projectile.Opacity >= 0.9f)

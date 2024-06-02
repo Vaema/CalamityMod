@@ -1,19 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SealedSingularityGore : ModProjectile
+    public class SealedSingularityGore : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sealed Singularity Fragment");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.friendly = true;
@@ -33,14 +29,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             //Dust effect
             int splash = 0;
             while (splash < 4)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
                 splash += 1;
             }
         }
@@ -50,12 +46,15 @@ namespace CalamityMod.Projectiles.Rogue
             Texture2D texture;
             switch (Projectile.ai[0])
             {
-                case 1f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityGore2").Value;
-                         break;
-                case 2f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityGore3").Value;
-                         break;
-                default: texture = ModContent.Request<Texture2D>(Texture).Value;
-                         break;
+                case 1f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityGore2").Value;
+                    break;
+                case 2f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityGore3").Value;
+                    break;
+                default:
+                    texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                    break;
             }
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

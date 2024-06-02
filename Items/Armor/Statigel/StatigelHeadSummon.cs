@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
+using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
@@ -12,15 +13,9 @@ namespace CalamityMod.Items.Armor.Statigel
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("StatigelHood")]
-    public class StatigelHeadSummon : ModItem
+    public class StatigelHeadSummon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statigel Hood");
-            Tooltip.SetDefault("Increased minion knockback");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -37,15 +32,11 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "18% increased minion damage and +1 max minion\n" +
-                "Summons a mini slime god to fight for you, the type depends on what world evil you have\n" +
-                "When you take over 100 damage in one hit you become immune to damage for an extended period of time\n" +
-                "Grants an extra jump and increased jump height\n" +
-                "12% increased jump speed";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<StatigelArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
             modPlayer.slimeGod = true;
-            modPlayer.statigelJump = true;
+            player.GetJumpState<StatigelJump>().Enable();
             Player.jumpHeight += 5;
             player.jumpSpeedBoost += 0.6f;
             player.GetDamage<SummonDamageClass>() += 0.18f;
@@ -59,8 +50,11 @@ namespace CalamityMod.Items.Armor.Statigel
                 }
 
                 var minionID = -1;
-                var baseDamage = 33;
+
+                // 08DEC2023: Ozzatron: Corruption and Crimson Slimes spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                var baseDamage = player.ApplyArmorAccDamageBonusesTo(18);
                 var minionDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                 if (WorldGen.crimson && player.ownedProjectileCounts[ModContent.ProjectileType<CrimsonSlimeGodMinion>()] < 1)
                     minionID = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<CrimsonSlimeGodMinion>(), minionDamage, 0f, Main.myPlayer);
                 else if (!WorldGen.crimson && player.ownedProjectileCounts[ModContent.ProjectileType<CorruptionSlimeGodMinion>()] < 1)

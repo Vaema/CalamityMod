@@ -3,20 +3,20 @@ using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class GastricBelcher : ModProjectile
+    public class GastricBelcher : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private bool initialized = false;
         private int bubbleCounter = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gastric Belcher");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -277,9 +277,7 @@ namespace CalamityMod.Projectiles.Summon
                 vomitVel.X += Main.rand.NextFloat(-30f, 30f) * 0.05f;
 
                 //Fire the vomit projectile
-                int vomit = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vomitVel, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
-                if (Main.projectile.IndexInRange(vomit))
-                    Main.projectile[vomit].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vomitVel, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
 
                 //Fire 5 bubbles for every three attacks
                 if (bubbleCounter++ % 3 == 2)
@@ -292,9 +290,7 @@ namespace CalamityMod.Projectiles.Summon
                         bubbleVel.Y += Main.rand.NextFloat(-50f, 50f) * 0.05f;
                         bubbleVel.X += Main.rand.NextFloat(-50f, 50f) * 0.05f;
 
-                        int bubble = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, bubbleVel, ModContent.ProjectileType<GastricBelcherBubble>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                        if (Main.projectile.IndexInRange(bubble))
-                            Main.projectile[bubble].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, bubbleVel, ModContent.ProjectileType<GastricBelcherBubble>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
 
@@ -307,7 +303,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int y6 = frameHeight * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;

@@ -8,42 +8,37 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class ElementalRay : ModItem
+    public class ElementalRay : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Elemental Ray");
-            Tooltip.SetDefault("Casts four celestial beams near the player\n" +
-                "Solar beams explode into fire on enemy hits\n" +
-                "Nebula beams sweep a little bit over time\n" +
-                "Vortex beams act like fast lightning and electrify enemies on hit\n" +
-                "Stardust beams release small stars that home on enemy hits");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 62;
+            Item.height = 62;
             Item.damage = 70;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 18;
-            Item.width = 62;
-            Item.height = 62;
             Item.useTime = 4;
             Item.useAnimation = 16;
             Item.reuseDelay = 14;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
-            Item.shoot = 1;
+            Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.shootSpeed = 6f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float offsetAngle = MathHelper.TwoPi * player.itemAnimation / player.itemAnimationMax;
@@ -83,7 +78,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<TerraRay>().
+                AddIngredient<Photosynthesis>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<GalacticaSingularity>(5).

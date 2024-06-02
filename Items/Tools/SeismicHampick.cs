@@ -7,24 +7,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Tools
 {
     [LegacyName("FlamebeakHampick")]
-    public class SeismicHampick : ModItem
+    public class SeismicHampick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         private const int PickPower = 210;
         private const int HammerPower = 95;
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Seismic Hampick");
-            Tooltip.SetDefault(@"Capable of mining Lihzahrd Bricks
-Left click to use as a pickaxe
-Right click to use as a hammer");
-
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 52;
+            Item.height = 50;
             Item.damage = 58;
             Item.knockBack = 8f;
             Item.useTime = 6;
@@ -34,11 +31,9 @@ Right click to use as a hammer");
             Item.tileBoost += 2;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 52;
-            Item.height = 50;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -85,7 +80,7 @@ Right click to use as a hammer");
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 300);
         }

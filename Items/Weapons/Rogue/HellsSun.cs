@@ -1,44 +1,29 @@
-﻿using Terraria.DataStructures;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
-using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
     public class HellsSun : RogueWeapon
     {
-        private static int damage = 240;
-        private static int knockBack = 5;
-        private static float SdamageMult = 0.12f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Hell's Sun");
-            Tooltip.SetDefault("The Subterranean Sun in the palm of your hand\n" +
-                "Hurls up to 10 gravity-defying spiky balls\n" +
-                "Once stationary, periodically emit small suns that explode on hit\n" +
-                "Stealth strikes emit suns at a faster rate and last for a longer amount of time\n" +
-                "Right click to delete all existing spiky balls");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = damage;
+            Item.width = 22;
+            Item.height = 18;
+            Item.damage = 200;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.width = 22;
-            Item.height = 18;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = knockBack;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.knockBack = 5;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -61,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
         }
 
-		public override float StealthDamageMultiplier => SdamageMult;
+        public override float StealthDamageMultiplier => 0.10f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

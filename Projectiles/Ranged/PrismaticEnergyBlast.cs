@@ -8,8 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PrismaticEnergyBlast : BaseLaserbeamProjectile
+    public class PrismaticEnergyBlast : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public bool ExplodedYet
         {
             get => Projectile.ai[1] == 1f;
@@ -27,7 +28,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Energy Blast");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -77,16 +77,16 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool? CanDamage() => Projectile.penetrate == 100 ? null : false;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             LaserLength = Projectile.Distance(target.Center);
             CreateExplosion(target.Center);
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Vector2 laserEnd = Projectile.Center + Projectile.velocity * LaserLength;
             CreateExplosion(laserEnd);

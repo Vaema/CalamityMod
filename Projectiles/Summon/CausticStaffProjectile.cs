@@ -5,21 +5,18 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class CausticStaffProjectile : ModProjectile
+    public class CausticStaffProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Thorn");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 3;
             Projectile.timeLeft = 360;
@@ -31,7 +28,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void AI()
         {
-            int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 0, default, 0.5f);
+            int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 0, default, 0.5f);
             Dust dust = Main.dust[fire];
             dust.velocity *= 0.1f;
             dust.scale = 1.3f;
@@ -42,7 +39,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.velocity.Y < 9f)
                 Projectile.velocity.Y += 0.085f;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -51,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon
                 dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f);
             }
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
             if ((player.ActiveItem().CountsAsClass<SummonDamageClass>() &&

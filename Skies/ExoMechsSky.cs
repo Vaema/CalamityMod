@@ -1,15 +1,15 @@
-﻿using CalamityMod.NPCs;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent;
 
 namespace CalamityMod.Skies
 {
@@ -53,8 +53,10 @@ namespace CalamityMod.Skies
 
                 if (CalamityGlobalNPC.draedonExoMechWorm != -1 && Main.npc[CalamityGlobalNPC.draedonExoMechWorm].active)
                     combinedLifeRatio += Main.npc[CalamityGlobalNPC.draedonExoMechWorm].life / (float)Main.npc[CalamityGlobalNPC.draedonExoMechWorm].lifeMax;
-
-                return (float)Math.Pow(1f - combinedLifeRatio / 3f, 2D);
+                if (combinedLifeRatio > 0)
+                    return (float)Math.Pow(1f - combinedLifeRatio / 3f, 2D);
+                else
+                    return MathHelper.Lerp(1f, 0f, Main.LocalPlayer.Calamity().monolithExoShader / 30);
             }
         }
 
@@ -91,7 +93,7 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
-            if (!CanSkyBeActive)
+            if (!CanSkyBeActive && Main.LocalPlayer?.Calamity()?.monolithExoShader <= 0)
             {
                 LightningIntensity = 0f;
                 BackgroundIntensity = MathHelper.Clamp(BackgroundIntensity - 0.08f, 0f, 1f);
@@ -130,7 +132,7 @@ namespace CalamityMod.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (!CanSkyBeActive)
+            if (!CanSkyBeActive && Main.LocalPlayer?.Calamity()?.monolithExoShader <= 0)
                 return;
 
             if (maxDepth >= float.MaxValue)
@@ -141,12 +143,13 @@ namespace CalamityMod.Skies
                 Vector2 scale = new Vector2(Main.screenWidth * 1.1f / TextureAssets.MagicPixel.Value.Width, Main.screenHeight * 1.1f / TextureAssets.MagicPixel.Value.Height);
                 Vector2 screenArea = new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
                 Color drawColor = Color.White * MathHelper.Lerp(0f, 0.24f, LightningIntensity) * BackgroundIntensity;
+                Vector2 origin = TextureAssets.MagicPixel.Value.Size() * 0.5f;
 
                 // Draw a grey background as base.
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenArea, null, OnTileColor(Color.Transparent), 0f, TextureAssets.MagicPixel.Value.Size() * 0.5f, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenArea, null, OnTileColor(Color.Transparent), 0f, origin, scale, SpriteEffects.None, 0f);
 
                 for (int i = 0; i < 2; i++)
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenArea, null, drawColor, 0f, TextureAssets.MagicPixel.Value.Size() * 0.5f, scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenArea, null, drawColor, 0f, origin, scale, SpriteEffects.None, 0f);
             }
 
             Texture2D flashTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/VortexSky/Flash").Value;
@@ -187,6 +190,9 @@ namespace CalamityMod.Skies
 
         public override void Deactivate(params object[] args) { }
 
-        public override bool IsActive() => CanSkyBeActive && !Main.gameMenu;
+        public override bool IsActive()
+        {
+            return !Main.gameMenu && (CanSkyBeActive || Main.LocalPlayer?.Calamity()?.monolithExoShader > 0);
+        }
     }
 }

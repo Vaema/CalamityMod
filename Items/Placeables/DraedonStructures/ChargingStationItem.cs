@@ -1,4 +1,4 @@
-using CalamityMod.Rarities;
+﻿using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
 using Terraria;
 using Terraria.ID;
@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.DraedonStructures
 {
-    public class ChargingStationItem : ModItem
+    public class ChargingStationItem : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Charging Station");
-            Tooltip.SetDefault("Charges Draedon's Arsenal items using Power Cells\n" +
-                "Place both an item and Power Cells into the Charging Station to charge the item");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = Item.useTime = 15;

@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,35 +11,29 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("AccretionDisk")]
     public class ElementalDisk : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Elemental Disk");
-            Tooltip.SetDefault("Throws a disk that has a chance to generate several disks if enemies are near it\n" +
-            "Stealth strikes fly slower but travel farther, pierce through enemies, and spawn extra disks more frequently");
-            SacrificeTotal = 1;
-        }
-
+        public static int stealthTimeMult = 2;
         public override void SetDefaults()
         {
             Item.width = 38;
-            Item.damage = 100;
+            Item.height = 38;
+            Item.damage = 92;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
-            Item.useAnimation = 15;
+            Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 15;
+            Item.useTime = 16;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
-            Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<ElementalDiskProj>();
-            Item.shootSpeed = 13f;
+            Item.shootSpeed = 15f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
         public override float StealthVelocityMultiplier => 0.7f;
+        public override float StealthDamageMultiplier => 0.75f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -49,8 +43,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (proj.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[proj].Calamity().stealthStrike = true;
-                    Main.projectile[proj].timeLeft *= 3;
-                    Main.projectile[proj].localNPCHitCooldown *= 2;
+                    Main.projectile[proj].timeLeft *= stealthTimeMult;
                 }
                 return false;
             }
@@ -60,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<TerraDisk>().
+                AddIngredient<SamsaraSlicer>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<GalacticaSingularity>(5).

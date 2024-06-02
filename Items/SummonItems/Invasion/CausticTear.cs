@@ -6,22 +6,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems.Invasion
 {
-    public class CausticTear : ModItem
+    public class CausticTear : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Caustic Tear");
-            Tooltip.SetDefault("Causes an acidic downpour in the Sulphurous Sea\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 1; // Suspicious Looking Eye
-
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 4; // Goblin Battle Standard
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
+            Item.width = 16;
+            Item.height = 28;
             Item.maxStack = 1;
             Item.rare = ItemRarityID.Green;
             Item.useAnimation = 10;
@@ -30,10 +26,10 @@ namespace CalamityMod.Items.SummonItems.Invasion
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -51,7 +47,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
         {
             CreateRecipe().
                 AddIngredient<SulphuricScale>(5).
-                AddCondition(Recipe.Condition.NearWater).
+                AddCondition(Condition.NearWater).
                 Register();
         }
     }

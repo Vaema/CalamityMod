@@ -1,14 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class Rox1 : ModProjectile
+    public class Rox1 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
             //Dust trail
             if (Main.rand.NextBool(10))
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 191, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 160, default, 0.7f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpookyWood, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 160, default, 0.7f);
             }
         }
 
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int i = 0; i < 8; i++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 191, -Projectile.velocity.X * 0.4f, -Projectile.velocity.Y * 0.4f, 120, default, 1.2f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpookyWood, -Projectile.velocity.X * 0.4f, -Projectile.velocity.Y * 0.4f, 120, default, 1.2f);
             }
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             Projectile.Kill();

@@ -1,22 +1,24 @@
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Plates
 {
-    public class Cinderplate : ModItem
+    public class Cinderplate : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cinderplate");
-            Tooltip.SetDefault("It resonates with otherworldly energy.");
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Plagueplate>();
         }
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<Tiles.Plates.Cinderplate>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -24,9 +26,7 @@ namespace CalamityMod.Items.Placeables.Plates
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ItemRarityID.Orange;
         }

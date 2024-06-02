@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.Alcohol
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fab");
-            Description.SetDefault("You feel fabulous");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;

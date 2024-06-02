@@ -3,13 +3,16 @@ using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
-    public class MinionGaussNuke : ModProjectile
+    public class MinionGaussNuke : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Gauss Nuke");
+        public new string LocalizationCategory => "Projectiles.Summon";
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Projectile.type] = true;
 
         public override void SetDefaults()
         {
@@ -19,8 +22,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Projectile.timeLeft = 180;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
@@ -37,12 +38,9 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 Projectile.velocity = Projectile.SuperhomeTowardsTarget(potentialTarget, 23f, 10f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            Projectile.Kill();
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Projectile.Kill();
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(TeslaCannon.FireSound, Projectile.Center);
             if (Main.myPlayer == Projectile.owner)

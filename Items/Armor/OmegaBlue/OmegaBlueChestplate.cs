@@ -9,16 +9,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.OmegaBlue
 {
     [AutoloadEquip(EquipType.Body)]
-    public class OmegaBlueChestplate : ModItem
+    public class OmegaBlueChestplate : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Omega Blue Chestplate");
-            Tooltip.SetDefault(@"12% increased damage and 8% increased critical strike chance
-Your attacks inflict Crush Depth
-No positive life regen");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -32,7 +27,7 @@ No positive life regen");
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 28;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -49,7 +44,7 @@ No positive life regen");
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(12).
+                AddIngredient<ReaperTooth>(5).
                 AddIngredient<DepthCells>(18).
                 AddIngredient<RuinousSoul>(3).
                 AddTile(TileID.LunarCraftingStation).

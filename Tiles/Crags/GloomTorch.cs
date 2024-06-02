@@ -1,34 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ObjectData;
-using Terraria.DataStructures;
-using Terraria.Enums;
 
 namespace CalamityMod.Tiles.Crags
 {
     public class GloomTorch : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpTorch(false, false);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Torch");
-            AddMapEntry(new Color(253, 221, 3), name);
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            TileID.Sets.Torch[Type] = true;
-            Main.tileWaterDeath[Type] = true;
-            TileID.Sets.FramesOnKillWall[Type] = true;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Furniture.GloomTorch>();
-            AdjTiles = new int[] { TileID.Torches };
-            
-        }
+        public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.GloomTorch>(), lavaImmune: true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(190, 255, 60), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(190, 255, 60), 1f);
             return false;
         }
 
@@ -48,6 +33,7 @@ namespace CalamityMod.Tiles.Crags
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             Tile tile = Main.tile[i, j];
+
             if (tile.TileFrameX < 66)
             {
                 r = 0.5f;
@@ -86,10 +72,10 @@ namespace CalamityMod.Tiles.Crags
             return true;
         }
 
-		public override float GetTorchLuck(Player player)
-		{
-			// Note: Total Torch luck never goes below zero
-			return player.Calamity().ZoneCalamity ? 1f : -1f;
-		}
+        public override float GetTorchLuck(Player player)
+        {
+            // Note: Total Torch luck never goes below zero
+            return player.Calamity().ZoneCalamity ? 1f : -1f;
+        }
     }
 }

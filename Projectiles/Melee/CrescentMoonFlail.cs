@@ -1,19 +1,15 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class CrescentMoonFlail : BaseWhipProjectile
+    public class CrescentMoonFlail : BaseWhipProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public int moonCounter = 6;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Crescent Moon");
-        }
 
         public override void SetDefaults()
         {
@@ -64,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Nightwither>(), 240);
             Projectile.localAI[1] = 4f;

@@ -23,7 +23,6 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Lecherous Orb");
         }
 
         public override void SetDefaults()
@@ -31,7 +30,7 @@ namespace CalamityMod.NPCs.Other
             NPC.width = NPC.height = 28;
             NPC.damage = 0;
             NPC.defense = 0;
-            NPC.lifeMax = 181445;
+            NPC.lifeMax = 180000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.value = 0f;
@@ -48,7 +47,7 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale) => NPC.lifeMax = 181445;
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment) => NPC.lifeMax = 180000;
 
         public override void AI()
         {
@@ -95,7 +94,7 @@ namespace CalamityMod.NPCs.Other
             Time++;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -174,12 +173,10 @@ namespace CalamityMod.NPCs.Other
             return false;
         }
 
-        public override bool StrikeNPC(ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
         {
             if (Main.myPlayer == NPC.target)
                 NPC.SyncMotionToServer();
-
-            return base.StrikeNPC(ref damage, defense, ref knockback, hitDirection, ref crit);
         }
 
         public override void OnKill()

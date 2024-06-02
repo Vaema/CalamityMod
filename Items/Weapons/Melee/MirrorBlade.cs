@@ -8,17 +8,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class MirrorBlade : ModItem
+    public class MirrorBlade : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         private int baseDamage = 100;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mirror Blade");
-            Tooltip.SetDefault("The amount of contact damage an enemy does is added to this weapons' damage\n" +
-                "You must hit an enemy with the blade to trigger this effect");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -33,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<MirrorBlast>();
@@ -45,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
             return false;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             int conDamage = target.damage + baseDamage;
             if (conDamage < baseDamage)

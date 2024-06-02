@@ -1,20 +1,17 @@
-using Microsoft.Xna.Framework;
-using System.IO;
-using Terraria;
-using Terraria.ModLoader;
+﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class EmesisGore : ModProjectile
+    public class EmesisGore : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public int HurtCounter = 0;
         public const int HurtTimeIncrement = 10;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rotten Gore");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -58,17 +55,14 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < (Projectile.ai[0] == 1f ? 3 : 1); i++)
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, 27);
+                    Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, DustID.Shadowflame);
                     dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi);
                     dust.noGravity = true;
                 }
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            Projectile.ModifyHitNPCSticky(8, true);
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(8);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -79,12 +73,12 @@ namespace CalamityMod.Projectiles.Ranged
             return null;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
         }

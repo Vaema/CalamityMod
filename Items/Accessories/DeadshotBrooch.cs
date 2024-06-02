@@ -6,22 +6,15 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("DaedalusEmblem")]
-    public class DeadshotBrooch : ModItem
+    public class DeadshotBrooch : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Deadshot Brooch");
-            Tooltip.SetDefault("10% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage\n" +
-                "Greatly increases all ranged projectile velocity");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 46;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
-            Item.rare = ItemRarityID.Yellow;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
 

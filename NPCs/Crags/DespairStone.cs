@@ -1,20 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Particles;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Utilities;
-using System;
-using CalamityMod.Items.Placeables;
 
 namespace CalamityMod.NPCs.Crags
 {
@@ -26,11 +27,6 @@ namespace CalamityMod.NPCs.Crags
 
         public static readonly SoundStyle ChainsawEndSound = new("CalamityMod/Sounds/Custom/ChainsawEnd") { Volume = 0.15f };
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Despair Stone");
-        }
-
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
@@ -41,7 +37,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.defense = 38;
             NPC.DR_NERD(0.35f);
             NPC.lifeMax = 120;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.1f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit41;
             NPC.DeathSound = SoundID.NPCDeath14;
@@ -59,14 +55,17 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("A condensed, volatile stone of brimstone slag. It is said that the souls of many, fighting to get out from within, are what cause it to tear across the ground.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DespairStone")
             });
         }
 
@@ -88,7 +87,7 @@ namespace CalamityMod.NPCs.Crags
             else //run regular ai if buzzsaw mode isn't available
             {
                 NPC.ai[2] = 0f;
-                CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+                CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
             }
             if (NPC.lavaWet) //float on lava 
                 NPC.velocity.Y += -0.8f;
@@ -105,7 +104,7 @@ namespace CalamityMod.NPCs.Crags
                 if (NPC.velocity.X < 0f) //left
                 {
                     NPC.ai[2] = -1f;
-                }   
+                }
                 else if (NPC.velocity.X > 0f) //right
                 {
                     NPC.ai[2] = 1f;
@@ -165,27 +164,27 @@ namespace CalamityMod.NPCs.Crags
             npcLoot.Add(ModContent.ItemType<BrimstoneSlag>(), 5, 10, 30);
             LeadingConditionRule hardmode = npcLoot.DefineConditionalDropSet(DropHelper.Hardmode());
             LeadingConditionRule postProv = npcLoot.DefineConditionalDropSet(DropHelper.PostProv());
-            hardmode.Add(ModContent.ItemType<EssenceofHavoc>(), 3);
+            hardmode.Add(ModContent.ItemType<EssenceofHavoc>(), 2);
             postProv.Add(ModContent.ItemType<Bloodstone>(), 4);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -207,7 +206,7 @@ namespace CalamityMod.NPCs.Crags
             Vector2 splatterDirection;
             if (NPC.velocity.X == 0f)
             {
-                particleSpawnDisplacement = new Vector2 (24f * NPC.ai[2], 20f);
+                particleSpawnDisplacement = new Vector2(24f * NPC.ai[2], 20f);
                 splatterDirection = new Vector2(0f, 1f);
             }
             else
@@ -215,7 +214,7 @@ namespace CalamityMod.NPCs.Crags
                 particleSpawnDisplacement = new Vector2(20f * -NPC.ai[2], 24f);
                 splatterDirection = new Vector2(-NPC.ai[2], 0f);
             }
-            
+
             //Color impactColor = Color.Lerp(Color.Silver, Color.Gold, Main.rand.NextFloat(0.5f));
             Vector2 bloodSpawnPosition = NPC.Center + particleSpawnDisplacement;
 

@@ -1,20 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class CraniumSmasherStealth : ModProjectile
+    public class CraniumSmasherStealth : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Rogue/CraniumSmasherExplosive";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Stealthy Cranium Smasher");
-        }
 
         public override void SetDefaults()
         {
@@ -42,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.X = Projectile.velocity.X * 0.99f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.owner == Main.myPlayer)
             {
@@ -51,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (Projectile.owner == Main.myPlayer)
             {
@@ -60,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 192;
@@ -117,11 +113,11 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            for (int num194 = 0; num194 < 25; num194++)
+            for (int i = 0; i < 25; i++)
             {
-                int num195 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 135, 0f, 0f, 100, default, 2f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 0f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default, 2f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 0f;
             }
         }
 

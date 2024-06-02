@@ -1,18 +1,12 @@
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
 {
-    public class SacrilegiousBookcase : ModItem
+    public class SacrilegiousBookcase : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sacrilegious Bookcase");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -25,16 +19,15 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<SacrilegiousBookcaseTile>();
-            Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-				AddIngredient(ModContent.ItemType<OccultBrickItem>(), 20).
-				AddIngredient(ItemID.Book, 10).
-				AddTile(ModContent.TileType<SCalAltar>()).
-				Register();
+            CreateRecipe().
+                AddIngredient<OccultBrickItem>(20).
+                AddIngredient(ItemID.Book, 10).
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

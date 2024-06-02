@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -13,11 +14,19 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Meteor";
 
-        // Meteor Armor only makes space gun cost 50% instead of zero mana.
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText = setBonusText.Replace("0", "50%");
+            setBonusText = $"{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
         }
+
+        // Reducing every piece's damage boost from 9% to 8%
+        private void ApplyAnyPieceEffect(Player player) => player.GetDamage<MagicDamageClass>() -= 0.01f;
+
+        public override void ApplyHeadPieceEffect(Player player) => ApplyAnyPieceEffect(player);
+
+        public override void ApplyBodyPieceEffect(Player player) => ApplyAnyPieceEffect(player);
+
+        public override void ApplyLegPieceEffect(Player player) => ApplyAnyPieceEffect(player);
 
         public override void ApplyArmorSetBonus(Player player)
         {

@@ -1,18 +1,14 @@
-using System;
+﻿using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class MangroveChakramFlower : ModProjectile
+    public class MangroveChakramFlower : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Magic/BeamingBolt";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Flower");
-        }
 
         public override void SetDefaults()
         {
@@ -42,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 6; k++)
             {

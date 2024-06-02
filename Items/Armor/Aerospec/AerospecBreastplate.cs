@@ -6,25 +6,25 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Aerospec
 {
     [AutoloadEquip(EquipType.Body)]
-    public class AerospecBreastplate : ModItem
+    public class AerospecBreastplate : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Aerospec Breastplate");
-            Tooltip.SetDefault("3% increased critical strike chance");
-        }
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
+        internal static string FeatherEntitySourceContext => "SetBonus_Calamity_Aerospec";
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 7;
         }
 
-        public override void UpdateEquip(Player player) => player.GetCritChance<GenericDamageClass>() += 3;
+        public override void UpdateEquip(Player player)
+        {
+            player.GetDamage<GenericDamageClass>() += 0.03f;
+            player.GetCritChance<GenericDamageClass>() += 3;
+        }
 
         public override void AddRecipes()
         {

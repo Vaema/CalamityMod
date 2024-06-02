@@ -1,10 +1,12 @@
-﻿using CalamityMod.NPCs.ExoMechs;
+﻿using System.Reflection;
+using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CalamityMod.World
@@ -21,15 +23,21 @@ namespace CalamityMod.World
         public static ushort[] OreTypes = new ushort[4];
 
         // Modes
-        public static bool onionMode = false; // Extra accessory from Moon Lord
         public static bool revenge = false; // Revengeance Mode
         public static bool death = false; // Death Mode
         public static bool armageddon = false; // Armageddon Mode
-        public static bool LegendaryMode => Main.getGoodWorld && Main.masterMode; // Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy)
 
-        // TODO -- This is intentionally a constant so that all relevant code gets compiled out, or at the very least cannot be re-enabled without extensive IL editing.
-        // When the 1.4.4 port occurs, this will be changed to a property which retrieves Main.zenithWorld.
-        internal const bool getFixedBoi = false; // True when the "get fixed boi" (aka "Zenith") seed is active, which combines all other seeds.
+        // Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy)
+        public static bool LegendaryMode => Main.getGoodWorld && ReflectMasterMode();
+
+        // FTW automatically bumps difficulties up and has no proper check for Master since a world generated in Expert Mode will be classified as Master
+        // Therefore gotta reflect!
+        public static bool ReflectMasterMode()
+        {
+            FieldInfo findInfo = typeof(Main).GetField("_currentGameModeInfo", BindingFlags.Static | BindingFlags.NonPublic);
+            GameModeData data = (GameModeData)findInfo.GetValue(null);
+            return data.IsMasterMode;
+        }
 
         // Sunken Sea
         public static Rectangle SunkenSeaLocation = Rectangle.Empty;

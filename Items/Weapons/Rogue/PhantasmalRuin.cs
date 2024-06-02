@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,38 +12,28 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class PhantasmalRuin : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Phantasmal Ruin");
-            Tooltip.SetDefault(@"Fires an enormous ghost lance that emits lost souls as it flies
-Explodes into tormented souls on enemy hits
-Stealth strikes continuously leave spectral clones in their wake");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 955;
+            Item.width = 108;
+            Item.height = 114;
+            Item.damage = 152;
             Item.knockBack = 8f;
-
-            Item.width = 102;
-            Item.height = 98;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useTime = 35;
-            Item.useAnimation = 35;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
             Item.autoReuse = true;
-            Item.shootSpeed = 14.5f;
+            Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<PhantasmalRuinProj>();
             Item.UseSound = SoundID.Item1;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.rare = ItemRarityID.Lime;
         }
 
-		public override float StealthDamageMultiplier => 1.22f;
+        public override float StealthDamageMultiplier => 1.2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -51,6 +42,7 @@ Stealth strikes continuously leave spectral clones in their wake");
                 int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (stealth.WithinBounds(Main.maxProjectiles))
                     Main.projectile[stealth].Calamity().stealthStrike = true;
+                Main.projectile[stealth].penetrate = 3;
                 return false;
             }
             return true;
@@ -59,11 +51,9 @@ Stealth strikes continuously leave spectral clones in their wake");
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<LuminousStriker>().
-                AddIngredient<PhantomLance>(500).
-                AddIngredient<RuinousSoul>(4).
-                AddIngredient<Phantoplasm>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient(ItemID.SpectreBar, 15).
+                AddIngredient(ItemID.Bone, 35).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

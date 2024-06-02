@@ -1,27 +1,19 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using CalamityMod.Sounds;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class Taser : ModItem
+    public class Taser : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Taser");
-            Tooltip.SetDefault("A slow, simple electric weapon, meant only for low ranking guards\n" +
-            "Shoots a hook that attaches to enemies and electrocutes them before returning");
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -29,7 +21,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 50;
             Item.height = 26;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 15;
+            Item.damage = 20;
             Item.knockBack = 0f;
             Item.useTime = Item.useAnimation = 28;
             Item.autoReuse = true;
@@ -38,11 +30,11 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
 
             Item.shoot = ModContent.ProjectileType<TaserHook>();
-            Item.shootSpeed = 15f;
+            Item.shootSpeed = 25f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 50f;
@@ -60,7 +52,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(5).
                 AddIngredient<AerialiteBar>(4).
                 AddIngredient<SeaPrism>(7).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
                 Register();
         }

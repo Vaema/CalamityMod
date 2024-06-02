@@ -8,31 +8,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class AbyssShellFossil : ModItem
+    public class AbyssShellFossil : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Abyss Shell Fossil");
-            Tooltip.SetDefault("A fossil of a prehistoric creature, long forgotten in the deep abyss"
-            + "\nSummons a pet Escargidolon Snail to follow you"
-            + "\nSlightly reduces creatures' ability to detect you in the abyss while equipped");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.damage = 0;
             Item.width = 42;
             Item.height = 30;
+            Item.damage = 0;
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
-
             Item.value = Item.sellPrice(platinum: 1);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ItemRarityID.Cyan;
             Item.Calamity().devItem = true;
-
             Item.shoot = ModContent.ProjectileType<EidolonSnail>();
             Item.buffType = ModContent.BuffType<EidolonSnailBuff>();
             Item.UseSound = SoundID.Item2;

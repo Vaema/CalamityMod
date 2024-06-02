@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,14 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SandDollar : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sand Dollar");
-            Tooltip.SetDefault("Throws up to 2 returning sand dollars\n" +
-            "Stealth strikes throw 2 long ranged sand dollars that explode into coral shards on enemy hits");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -32,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3.5f;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SandDollarProj>();
             Item.shootSpeed = 14f;
@@ -50,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
         }
 
-		public override float StealthDamageMultiplier => 2.25f;
+        public override float StealthDamageMultiplier => 1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -59,11 +51,11 @@ namespace CalamityMod.Items.Weapons.Rogue
                 int spread = 2;
                 for (int i = 0; i < 2; i++)
                 {
-                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2,3), velocity.Y + Main.rand.Next(-2,3)).RotatedBy(MathHelper.ToRadians(spread));
+                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2, 3), velocity.Y + Main.rand.Next(-2, 3)).RotatedBy(MathHelper.ToRadians(spread));
                     int stealth = Projectile.NewProjectile(source, position.X, position.Y, perturbedspeed.X * 1.5f, perturbedspeed.Y * 1.5f, ModContent.ProjectileType<SandDollarStealth>(), damage, knockback, player.whoAmI);
                     if (stealth.WithinBounds(Main.maxProjectiles))
                         Main.projectile[stealth].Calamity().stealthStrike = true;
-                    spread -= Main.rand.Next(1,3);
+                    spread -= Main.rand.Next(1, 3);
                 }
                 return false;
             }

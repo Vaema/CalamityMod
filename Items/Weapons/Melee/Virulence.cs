@@ -1,26 +1,22 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("VirulentKatana")]
-    public class Virulence : ModItem
+    public class Virulence : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Virulence");
-            Tooltip.SetDefault("Fires a plague cloud");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.damage = 96;
+            Item.width = 48;
+            Item.height = 62;
+            Item.damage = 100;
             Item.knockBack = 5.5f;
             Item.useAnimation = Item.useTime = 15;
             Item.DamageType = DamageClass.Melee;
@@ -29,11 +25,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<VirulentWave>();
 
-            Item.width = 48;
-            Item.height = 62;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -43,12 +37,12 @@ namespace CalamityMod.Items.Weapons.Melee
             return false;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 300);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 300);
         }

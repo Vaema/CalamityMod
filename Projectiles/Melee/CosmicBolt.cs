@@ -1,16 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
-    public class CosmicBolt : ModProjectile
+    public class CosmicBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bolt");
-        }
 
         public override void SetDefaults()
         {
@@ -32,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 spawnPos = Projectile.position;
                     spawnPos -= Projectile.velocity * ((float)i * 0.25f);
                     Projectile.alpha = 255;
-                    int d = Dust.NewDust(spawnPos, 1, 1, 242, 0f, 0f, 0, default, 1.3f);
+                    int d = Dust.NewDust(spawnPos, 1, 1, DustID.PinkTorch, 0f, 0f, 0, default, 1.3f);
                     Dust dust = Main.dust[d];
                     dust.position = spawnPos;
                     dust.position.X += (float)(Projectile.width / 2);

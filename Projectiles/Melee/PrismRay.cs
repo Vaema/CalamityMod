@@ -7,8 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class PrismRay : ModProjectile
+    public class PrismRay : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public Vector2 StartingPosition;
         public Color RayColor => CalamityUtils.MulticolorLerp(RayHue, CalamityUtils.ExoPalette);
         public Color HueDownscaledRayColor => RayColor * 0.66f;
@@ -19,7 +20,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Prismatic Light");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
             Utils.PlotTileLine(StartingPosition, Projectile.Center, 8f, DelegateMethods.CastLight);
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.direction = Main.rand.NextBool(2).ToDirectionInt();
+                Projectile.direction = Main.rand.NextBool().ToDirectionInt();
                 Projectile.localAI[0] = 1f;
             }
             Projectile.rotation = Time / 20f * MathHelper.TwoPi * Projectile.direction;
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Main.rand.NextBool(10))
                 {
-                    Dust verticalMagic = Dust.NewDustDirect(Projectile.Center, 0, 0, 267, 0f, 0f, 225, RayColor, 1.5f);
+                    Dust verticalMagic = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, RayColor, 1.5f);
                     verticalMagic.noGravity = true;
                     verticalMagic.noLight = true;
                     verticalMagic.scale = Projectile.Opacity;
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (canSpawnDust)
                 {
-                    Dust risingMagic = Dust.NewDustDirect(dustSpawnPosition, 0, 0, 267, 0f, 0f, 127, RayColor, 1f);
+                    Dust risingMagic = Dust.NewDustDirect(dustSpawnPosition, 0, 0, DustID.RainbowMk2, 0f, 0f, 127, RayColor, 1f);
                     risingMagic.noGravity = true;
                     risingMagic.position = dustSpawnPosition;
                     risingMagic.velocity = -Vector2.UnitY * Main.rand.NextFloat(1.6f, 7.5f);
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 baseDrawPosition = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 origin = frame.Size() / 2f;
             Color fadedRayColor = Projectile.GetAlpha(lightColor);
@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             CreateKillExplosionBurstDust(Main.rand.Next(7, 13));
 
@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee
 
             for (float i = 0f; i < dustCount; i++)
             {
-                Dust explosionDust = Dust.NewDustDirect(Projectile.Center, 0, 0, 267, 0f, 0f, 0, brightenedRayColor, 1f);
+                Dust explosionDust = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, brightenedRayColor, 1f);
                 explosionDust.position = Projectile.Center;
                 explosionDust.velocity = baseExplosionDirection.RotatedBy(MathHelper.TwoPi * i / dustCount) * outwardFireSpeedFactor * Main.rand.NextFloat(0.8f, 1.2f);
                 explosionDust.noGravity = true;
@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (float i = 0f; i < dustCount; i++)
             {
-                Dust explosionDust = Dust.NewDustDirect(Projectile.Center, 0, 0, 267, 0f, 0f, 0, brightenedRayColor, 1f);
+                Dust explosionDust = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, brightenedRayColor, 1f);
                 explosionDust.position = Projectile.Center;
                 explosionDust.velocity = baseExplosionDirection.RotatedBy(MathHelper.TwoPi * i / dustCount) * outwardFireSpeedFactor * Main.rand.NextFloat(0.8f, 1.2f);
                 explosionDust.velocity *= Main.rand.NextFloat() * 0.8f;
@@ -207,8 +207,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Color? GetAlpha(Color lightColor) => new Color(Projectile.Opacity, Projectile.Opacity, Projectile.Opacity, 0);
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
     }
 }

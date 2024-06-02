@@ -8,29 +8,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class ShadowboltStaff : ModItem
+    public class ShadowboltStaff : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadowbolt Staff");
-            Tooltip.SetDefault("The more tiles and enemies the beam bounces off of or travels through the more damage the beam does");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 250;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
             Item.width = 58;
             Item.height = 56;
+            Item.damage = 280;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 20;
             Item.useTime = 14;
             Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item72;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Shadowbolt>();

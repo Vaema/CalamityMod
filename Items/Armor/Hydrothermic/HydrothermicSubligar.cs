@@ -7,21 +7,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 {
     [AutoloadEquip(EquipType.Legs)]
     [LegacyName("AtaxiaSubligar")]
-    public class HydrothermicSubligar : ModItem
+    public class HydrothermicSubligar : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hydrothermic Subligar");
-            Tooltip.SetDefault("5% increased critical strike chance\n" +
-                "10% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 14;
         }

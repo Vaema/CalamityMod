@@ -2,12 +2,14 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class AuroraAustralis : ModProjectile
+    public class AuroraAustralis : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private static float CosFrequency = 0.05f;
@@ -17,11 +19,6 @@ namespace CalamityMod.Projectiles.Magic
             ModContent.DustType<AstralBlue>(),
             ModContent.DustType<AstralOrange>()
         };
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aurora Australis");
-        }
 
         public override void SetDefaults()
         {
@@ -66,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.Next(dustTypes), Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            int rainbow = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 66, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+            int rainbow = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
             Dust dust = Main.dust[rainbow];
             dust.velocity *= 0.1f;
             dust.velocity += Projectile.velocity * 0.2f;
@@ -95,7 +92,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.velocity += CosAmplitude * baseVelocity.RotatedBy(radians);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 5; i++)
             {
@@ -103,12 +100,12 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }

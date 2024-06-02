@@ -1,17 +1,13 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class InfernalKrisCinder : ModProjectile
+    public class InfernalKrisCinder : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Infernal Cinder");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -41,28 +37,22 @@ namespace CalamityMod.Projectiles.Rogue
             int numDust = 2;
             for (int i = 0; i < numDust; i++)
             {
-                Dust.NewDust(Projectile.position, 4, 4, 6, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
+                Dust.NewDust(Projectile.position, 4, 4, DustID.Torch, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
             }
 
             Projectile.Kill();
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire, 90);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire, 90);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire, 90);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire, 90);
 
         public override bool PreDraw(ref Color lightColor)
         {
             // If this is a stealth strike, make the blade glow orange
             Color glowColour = new Color(255, 215, 100, 100);
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, glowColour, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             float minScale = 1.9f;
@@ -70,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
             int numDust = 2;
             for (int i = 0; i < numDust; i++)
             {
-                int dust = Dust.NewDust(Projectile.position, 4, 4, 6, 0f, -2f, 0, default, Main.rand.NextFloat(minScale, maxScale));
+                int dust = Dust.NewDust(Projectile.position, 4, 4, DustID.Torch, 0f, -2f, 0, default, Main.rand.NextFloat(minScale, maxScale));
                 Main.dust[dust].noGravity = true;
             }
             return false;

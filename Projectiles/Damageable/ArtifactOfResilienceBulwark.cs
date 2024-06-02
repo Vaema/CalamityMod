@@ -7,8 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Damageable
 {
-    public class ArtifactOfResilienceBulwark : DamageableProjectile
+    public class ArtifactOfResilienceBulwark : DamageableProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public int Reformations = 0;
         public const int MaxReformations = 3;
         public override int LifeMax => 1;
@@ -16,11 +17,6 @@ namespace CalamityMod.Projectiles.Damageable
         public override DamageSourceType DamageSources => DamageSourceType.FriendlyProjectiles | DamageSourceType.HostileProjectiles | DamageSourceType.HostileNPCs;
         public override SoundStyle HitSound => SoundID.NPCHit3;
         public override SoundStyle DeathSound => SoundID.NPCDeath14;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Artifact of Resilience");
-        }
-
         public override void SafeSetDefaults()
         {
             Projectile.width = Projectile.height = 76;
@@ -44,7 +40,7 @@ namespace CalamityMod.Projectiles.Damageable
         {
             Utils.PoofOfSmoke(Projectile.Center);
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 1; i <= 6; i++)
             {

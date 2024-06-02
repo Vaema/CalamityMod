@@ -1,20 +1,17 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGTeleportRift : ModProjectile
+    public class DoGTeleportRift : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/StarProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rift");
-        }
 
         public override void SetDefaults()
         {
@@ -44,7 +41,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.Opacity == 1f && Main.rand.NextBool(15))
             {
-                Dust dust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, 267, 0f, 0f, 100, new Color(150, 100, 255, 255), 1f)];
+                Dust dust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, DustID.RainbowMk2, 0f, 0f, 100, new Color(150, 100, 255, 255), 1f)];
                 dust.velocity.X = 0f;
                 dust.noGravity = true;
                 dust.fadeIn = 1f;
@@ -57,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             float lerpMult = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * (MathHelper.Pi * 2f) * 3f)) * 0.8f;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color baseColor = new Color(150, 100, 255, 255) * Projectile.Opacity;
             baseColor *= 0.5f;
@@ -96,9 +93,9 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            if (Projectile.ai[0] == -1f)
+            if (Projectile.ai[0] == -1f || Projectile.ai[2] == 1f)
                 return;
 
             int dustAmt = 50;

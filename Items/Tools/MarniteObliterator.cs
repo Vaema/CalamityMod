@@ -1,24 +1,20 @@
 ﻿using CalamityMod.Projectiles.Melee;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
 {
-    public class MarniteObliterator : ModItem
+    public class MarniteObliterator : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/MarniteObliteratorUse") { PitchVariance = 0.3f };
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Marnite Obliterator");
-            Tooltip.SetDefault("Uses a diamond focus to project a long-range digging beam of light\n" + "Ignores 5 points of enemy Defense");
-        }
 
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 18;
             Item.damage = 7;
             Item.ArmorPenetration = 5;
             Item.knockBack = 0f;
@@ -27,13 +23,11 @@ namespace CalamityMod.Items.Tools
             Item.pick = 50;
 
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
-            Item.width = 36;
-            Item.height = 18;
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item23;
             Item.autoReuse = true;

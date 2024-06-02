@@ -7,12 +7,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PlaguebringerMK2 : ModProjectile
+    public class PlaguebringerMK2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float DistanceToCheck = 1000.0001f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Plaguebringer MK2");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -69,22 +69,18 @@ namespace CalamityMod.Projectiles.Summon
                 int timeNeeded = (int)MathHelper.Lerp(60f, 18f, MathHelper.Clamp(Projectile.localAI[1] / 320f, 0f, 1f));
                 if (Projectile.ai[0] >= timeNeeded && Main.myPlayer == Projectile.owner)
                 {
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                         Projectile.SafeDirectionTo(potentialTarget.Center) * 14f,
                         ModContent.ProjectileType<MK2RocketNormal>(),
-                        (int)(Projectile.damage * 0.9),
+                        Projectile.damage,
                         3f,
                         Projectile.owner);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Projectile.originalDamage;
-                    p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center,
                         Projectile.SafeDirectionTo(potentialTarget.Center) * 11.5f,
                         ModContent.ProjectileType<MK2RocketHoming>(),
-                        (int)(Projectile.damage * 0.9),
+                        Projectile.damage,
                         3f,
                         Projectile.owner);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Projectile.originalDamage;
                     Projectile.ai[0] = 0;
                 }
                 else Projectile.ai[0]++;

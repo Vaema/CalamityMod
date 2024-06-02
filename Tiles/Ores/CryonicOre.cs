@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
@@ -19,11 +20,8 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.Ore[Type] = true;
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.CryonicOre>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Cryonic");
-            AddMapEntry(new Color(0, 0, 150), name);
-            MineResist = 3f;
+            AddMapEntry(new Color(0, 0, 150), CreateMapEntryName());
+            MineResist = 2f;
             MinPick = 180;
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;

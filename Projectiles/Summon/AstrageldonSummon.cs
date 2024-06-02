@@ -1,25 +1,25 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class AstrageldonSummon : ModProjectile
+    public class AstrageldonSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public bool dust = false;
         private int attackCounter = 1;
         private int teleportCounter = 400;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Astrageldon");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];;
+            Player player = Main.player[Projectile.owner]; ;
             CalamityPlayer modPlayer = player.Calamity();
             CalamityGlobalProjectile modProj = Projectile.Calamity();
 
@@ -71,22 +71,22 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 16;
                 for (int dustIndex = 0; dustIndex < dustAmt; dustIndex++)
                 {
-                    Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                    vector6 = vector6.RotatedBy((double)((float)(dustIndex - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
-                    Vector2 vector7 = vector6 - Projectile.Center;
-                    int dusty = Dust.NewDust(vector6 + vector7, 0, 0, ModContent.DustType<AstralOrange>(), vector7.X * 1f, vector7.Y * 1f, 100, default, 1.1f);
+                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
+                    rotate = rotate.RotatedBy((double)((float)(dustIndex - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
+                    Vector2 faceDirection = rotate - Projectile.Center;
+                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, ModContent.DustType<AstralOrange>(), faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].noLight = true;
-                    Main.dust[dusty].velocity = vector7;
+                    Main.dust[dusty].velocity = faceDirection;
                 }
 
                 dust = true;
             }
 
             //Bool setup
-            bool flag64 = Projectile.type == ModContent.ProjectileType<AstrageldonSummon>();
+            bool isSummon = Projectile.type == ModContent.ProjectileType<AstrageldonSummon>();
             player.AddBuff(ModContent.BuffType<AbandonedSlimeBuff>(), 3600);
-            if (flag64)
+            if (isSummon)
             {
                 if (player.dead)
                 {
@@ -123,9 +123,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    for (int num645 = 0; num645 < Main.npc.Length; num645++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[num645];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             bool lineOfSight = Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height);
@@ -151,32 +150,31 @@ namespace CalamityMod.Projectiles.Summon
                     float scaleAddition = Projectile.scale * 5f;
                     if (teleportCounter <= 0 && teleportRange >= 800f)
                     {
-                        float num461 = 50f;
-                        int num462 = 0;
-                        while ((float)num462 < num461)
+                        int counter = 0;
+                        while ((float)counter < 50f)
                         {
                             int dustType = Utils.SelectRandom(Main.rand, new int[]
                             {
                                 ModContent.DustType<AstralBlue>(),
                                 ModContent.DustType<AstralOrange>()
                             });
-                            float num463 = Main.rand.Next(-10, 11);
-                            float num464 = Main.rand.Next(-10, 11);
-                            float num465 = Main.rand.Next(3, 9);
-                            float num466 = (float)Math.Sqrt((double)(num463 * num463 + num464 * num464));
-                            num466 = num465 / num466;
-                            num463 *= num466;
-                            num464 *= num466;
-                            int num467 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                            Dust dust = Main.dust[num467];
+                            float rand1 = Main.rand.Next(-10, 11);
+                            float rand2 = Main.rand.Next(-10, 11);
+                            float rand3 = Main.rand.Next(3, 9);
+                            float randAdjust = (float)Math.Sqrt((double)(rand1 * rand1 + rand2 * rand2));
+                            randAdjust = rand3 / randAdjust;
+                            rand1 *= randAdjust;
+                            rand2 *= randAdjust;
+                            int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
+                            Dust dust = Main.dust[astralDust];
                             dust.noGravity = true;
                             dust.position.X = Projectile.Center.X;
                             dust.position.Y = Projectile.Center.Y;
                             dust.position.X += Main.rand.Next(-10, 11);
                             dust.position.Y += Main.rand.Next(-10, 11);
-                            dust.velocity.X = num463;
-                            dust.velocity.Y = num464;
-                            num462++;
+                            dust.velocity.X = rand1;
+                            dust.velocity.Y = rand2;
+                            counter++;
                         }
                         Projectile.position.X = objectivepos.X - (float)(Projectile.width / 2) + Main.rand.NextFloat(-100f, 100f);
                         Projectile.position.Y = objectivepos.Y - (float)(Projectile.height / 2) - Main.rand.NextFloat(0f + scaleAddition, 200f + scaleAddition);
@@ -204,9 +202,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (Main.myPlayer == Projectile.owner)
                     {
                         Vector2 laserVel = Projectile.SafeDirectionTo(objectivepos) * laserSpeed;
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, laserVel, projType, Projectile.damage, 0f, Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, laserVel, projType, Projectile.damage, 0f, Projectile.owner);
                         Projectile.netUpdate = true;
                     }
                 }
@@ -215,14 +211,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int y6 = height * Projectile.frame;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)height / 2f), Projectile.scale, SpriteEffects.None, 0);

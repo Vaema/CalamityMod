@@ -11,18 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ShatteredSun : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shattered Sun");
-            Tooltip.SetDefault("Throws daggers that split into scorching homing daggers\n" +
-                "Stealth strikes fire volleys of homing daggers from the player on dagger hits that suck enemies in");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.width = 56;
-            Item.height = 56;
+            Item.width = 66;
+            Item.height = 66;
             Item.damage = 80;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -32,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<ShatteredSunKnife>();
             Item.shootSpeed = 25f;
@@ -42,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 10;
 
-		public override float StealthDamageMultiplier => 1.2f;
+        public override float StealthDamageMultiplier => 1.2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,18 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class GodSlayerShrapnelRound : ModProjectile
+    public class GodSlayerShrapnelRound : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Round");
-        }
 
         public override void SetDefaults()
         {
@@ -33,14 +29,14 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int d = 0; d < 3; d++)
             {
-                int cosmilite = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.2f);
+                int cosmilite = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.2f);
                 Main.dust[cosmilite].noGravity = true;
                 Main.dust[cosmilite].velocity *= 0.5f;
                 Main.dust[cosmilite].velocity += Projectile.velocity * 0.1f;
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {

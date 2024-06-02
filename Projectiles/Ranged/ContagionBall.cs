@@ -1,18 +1,14 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ContagionBall : ModProjectile
+    public class ContagionBall : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Contagion Ball");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -23,7 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 64;
@@ -35,11 +31,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 44, 0f, 0f, 100, default, 0.15f);
-            Main.dust[num622].velocity *= 1.2f;
-            if (Main.rand.NextBool(2))
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.JungleSpore, 0f, 0f, 100, default, 0.15f);
+            Main.dust[dust].velocity *= 1.2f;
+            if (Main.rand.NextBool())
             {
-                Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
             }
         }
     }

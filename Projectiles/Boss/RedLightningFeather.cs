@@ -1,18 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class RedLightningFeather : ModProjectile
+    public class RedLightningFeather : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Feather");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -67,15 +67,15 @@ namespace CalamityMod.Projectiles.Boss
                     if (Projectile.velocity.Length() < 10f)
                         Projectile.velocity *= 1.015f;
 
-                    int num103 = Player.FindClosest(Projectile.Center, 1, 1);
-                    float scaleFactor2 = Projectile.velocity.Length();
-                    Vector2 vector11 = Main.player[num103].Center - Projectile.Center;
-                    vector11.Normalize();
-                    vector11 *= scaleFactor2;
+                    int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
+                    float projVelocity = Projectile.velocity.Length();
+                    Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
+                    playerDirection.Normalize();
+                    playerDirection *= projVelocity;
 
-                    Projectile.velocity = (Projectile.velocity * 19f + vector11) / 20f;
+                    Projectile.velocity = (Projectile.velocity * 19f + playerDirection) / 20f;
                     Projectile.velocity.Normalize();
-                    Projectile.velocity *= scaleFactor2;
+                    Projectile.velocity *= projVelocity;
                 }
                 else
                 {
@@ -89,11 +89,11 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>(Texture).Value, false);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, false);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 64;
@@ -106,26 +106,26 @@ namespace CalamityMod.Projectiles.Boss
         private void EmitDust()
         {
             SoundEngine.PlaySound(SoundID.Item109, Projectile.Center);
-            for (int num193 = 0; num193 < 6; num193++)
+            for (int j = 0; j < 6; j++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 60, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
             }
-            for (int num194 = 0; num194 < 10; num194++)
+            for (int k = 0; k < 10; k++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 60, 0f, 0f, 0, default, 2.5f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 3f;
-                num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 60, 0f, 0f, 100, default, 1.5f);
-                Main.dust[num195].velocity *= 2f;
-                Main.dust[num195].noGravity = true;
+                int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 2.5f);
+                Main.dust[redDust].noGravity = true;
+                Main.dust[redDust].velocity *= 3f;
+                redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
+                Main.dust[redDust].velocity *= 2f;
+                Main.dust[redDust].noGravity = true;
             }
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.Opacity != 1f)
+            if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
             target.AddBuff(BuffID.Electrified, 60);

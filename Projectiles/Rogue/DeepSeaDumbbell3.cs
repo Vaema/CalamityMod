@@ -1,21 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class DeepSeaDumbbell3 : ModProjectile
+    public class DeepSeaDumbbell3 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/DeepSeaDumbbell";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Deep Sea Dumbbell");
-        }
 
         public override void SetDefaults()
         {
@@ -45,26 +41,26 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.owner == Main.myPlayer)
             {
-                float num628 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                float num629 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                int num3;
-                for (int num627 = 0; num627 < 2; num627 = num3 + 1)
+                float randVel = (float)Main.rand.Next(-35, 36) * 0.01f;
+                float randVel2 = (float)Main.rand.Next(-35, 36) * 0.01f;
+                int inc;
+                for (int i = 0; i < 2; i = inc + 1)
                 {
-                    if (num627 == 1)
+                    if (i == 1)
                     {
-                        num628 *= 10f;
-                        num629 *= 10f;
+                        randVel *= 10f;
+                        randVel2 *= 10f;
                     }
                     else
                     {
-                        num628 *= -10f;
-                        num629 *= -10f;
+                        randVel *= -10f;
+                        randVel2 *= -10f;
                     }
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, num628, num629, ModContent.ProjectileType<DeepSeaDumbbellWeight>(),
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, randVel, randVel2, ModContent.ProjectileType<DeepSeaDumbbellWeight>(),
                         (int)((double)Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Main.myPlayer, 0f, 0f);
 
-                    num3 = num627;
+                    inc = i;
                 }
             }
 
@@ -73,7 +69,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
 
@@ -81,33 +77,33 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.owner == Main.myPlayer)
             {
-                float num628 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                float num629 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                int num3;
-                for (int num627 = 0; num627 < 2; num627 = num3 + 1)
+                float randVel = (float)Main.rand.Next(-35, 36) * 0.01f;
+                float randVel2 = (float)Main.rand.Next(-35, 36) * 0.01f;
+                int inc;
+                for (int i = 0; i < 2; i = inc + 1)
                 {
-                    if (num627 == 1)
+                    if (i == 1)
                     {
-                        num628 *= 10f;
-                        num629 *= 10f;
+                        randVel *= 10f;
+                        randVel2 *= 10f;
                     }
                     else
                     {
-                        num628 *= -10f;
-                        num629 *= -10f;
+                        randVel *= -10f;
+                        randVel2 *= -10f;
                     }
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, num628, num629, ModContent.ProjectileType<DeepSeaDumbbellWeight>(),
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, randVel, randVel2, ModContent.ProjectileType<DeepSeaDumbbellWeight>(),
                         (int)((double)Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Main.myPlayer, 0f, 0f);
 
-                    num3 = num627;
+                    inc = i;
                 }
             }
 
             Projectile.Kill();
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
 
@@ -115,26 +111,26 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.owner == Main.myPlayer)
             {
-                float num628 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                float num629 = (float)Main.rand.Next(-35, 36) * 0.01f;
-                int num3;
-                for (int num627 = 0; num627 < 2; num627 = num3 + 1)
+                float randVel = (float)Main.rand.Next(-35, 36) * 0.01f;
+                float randVel2 = (float)Main.rand.Next(-35, 36) * 0.01f;
+                int inc;
+                for (int i = 0; i < 2; i = inc + 1)
                 {
-                    if (num627 == 1)
+                    if (i == 1)
                     {
-                        num628 *= 10f;
-                        num629 *= 10f;
+                        randVel *= 10f;
+                        randVel2 *= 10f;
                     }
                     else
                     {
-                        num628 *= -10f;
-                        num629 *= -10f;
+                        randVel *= -10f;
+                        randVel2 *= -10f;
                     }
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, num628, num629, ModContent.ProjectileType<DeepSeaDumbbellWeight>(),
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, randVel, randVel2, ModContent.ProjectileType<DeepSeaDumbbellWeight>(),
                         (int)((double)Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Main.myPlayer, 0f, 0f);
 
-                    num3 = num627;
+                    inc = i;
                 }
             }
 

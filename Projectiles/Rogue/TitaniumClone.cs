@@ -4,14 +4,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class TitaniumClone : ModProjectile
+    public class TitaniumClone : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/TitaniumShuriken";
 
         private static float RotationIncrement = 0.22f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shuriken");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

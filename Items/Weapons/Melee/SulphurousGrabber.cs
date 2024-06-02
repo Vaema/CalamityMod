@@ -5,18 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class SulphurousGrabber : ModItem
+    public class SulphurousGrabber : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sulphurous Grabber");
-            Tooltip.SetDefault("Occasionally releases a ring of colored bubbles\n" +
-            "The yoyo powers up after touching a green bubble\n" +
-            "A very agile yoyo");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -24,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 50;
             Item.height = 36;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 82;
+            Item.damage = 40;
             Item.knockBack = 3.5f;
             Item.useTime = 25;
             Item.useAnimation = 25;

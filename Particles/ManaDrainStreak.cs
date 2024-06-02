@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Particles
 {
@@ -18,8 +18,10 @@ namespace CalamityMod.Particles
         public float FinalDistanceFromPlayer;
         public Color StartColor;
         public Color EndColor;
+        public Vector2 OverridePosition;
+        public bool FadeOut;
 
-        public ManaDrainStreak(Player owner, float thickness, Vector2 startVector, float finalDistance, Color colorStart, Color colorEnd, int lifetime)
+        public ManaDrainStreak(Player owner, float thickness, Vector2 startVector, float finalDistance, Color colorStart, Color colorEnd, int lifetime, Vector2 overridePosition = default, bool fadeOut = false)
         {
             Owner = owner;
             Scale = thickness;
@@ -31,6 +33,8 @@ namespace CalamityMod.Particles
             EndColor = colorEnd;
             Color = colorStart;
             Lifetime = lifetime;
+            OverridePosition = overridePosition;
+            FadeOut = fadeOut;
         }
 
         public override void Update()
@@ -38,8 +42,9 @@ namespace CalamityMod.Particles
             if (Owner == null || !Owner.active || Owner.dead)
                 return;
 
-            Position = Owner.MountedCenter + Rotation.ToRotationVector2() * MathHelper.Lerp(StartDistanceFromPlayer, FinalDistanceFromPlayer, (float)Math.Pow(LifetimeCompletion, 2));
-            Color = Color.Lerp(StartColor, EndColor, LifetimeCompletion);
+            Vector2 setPosition = OverridePosition != default ? OverridePosition : Owner.MountedCenter;
+            Position = setPosition + Rotation.ToRotationVector2() * MathHelper.Lerp(StartDistanceFromPlayer, FinalDistanceFromPlayer, (float)Math.Pow(LifetimeCompletion, 2));
+            Color = Color.Lerp(StartColor, FadeOut ? EndColor with { A = 0 } : EndColor, LifetimeCompletion);
             Lighting.AddLight(Position, Color.ToVector3() * 0.2f);
         }
 
@@ -50,8 +55,8 @@ namespace CalamityMod.Particles
             float currentDisplace = MathHelper.Lerp(StartDistanceFromPlayer, FinalDistanceFromPlayer, (float)Math.Pow(LifetimeCompletion, 2));
             float earlierDisplace = MathHelper.Lerp(StartDistanceFromPlayer, FinalDistanceFromPlayer, (float)Math.Pow(Math.Clamp(LifetimeCompletion - 0.2f, 0f, 1f), 2));
 
-            float lenght = (currentDisplace - earlierDisplace) / tex.Height;
-            Vector2 scale = new Vector2(Scale, lenght);
+            float Length = (currentDisplace - earlierDisplace) / tex.Height;
+            Vector2 scale = new Vector2(Scale, Length);
 
             Vector2 origin = new Vector2(tex.Width / 2f, tex.Height);
 

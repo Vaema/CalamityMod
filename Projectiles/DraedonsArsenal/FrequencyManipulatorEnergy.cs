@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class FrequencyManipulatorEnergy : ModProjectile
+    public class FrequencyManipulatorEnergy : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
@@ -18,7 +19,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const int Lifetime = 240;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pulse Energy");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
         }

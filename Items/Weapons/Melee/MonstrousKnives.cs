@@ -1,24 +1,19 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class MonstrousKnives : ModItem
+    public class MonstrousKnives : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Monstrous Knives");
-            Tooltip.SetDefault("Throws a spread of knives that can heal the user");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 18;
+            Item.height = 20;
             Item.damage = 9;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
@@ -29,9 +24,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
-            Item.height = 20;
 
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.Calamity().donorItem = true;
 
@@ -49,6 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 yDist = Main.screenPosition.Y + Main.screenHeight - Main.mouseY - playerPos.Y;
             }
+
             Vector2 vector = new Vector2(xDist, yDist);
             float speedMult = vector.Length();
             if ((float.IsNaN(xDist) && float.IsNaN(yDist)) || (xDist == 0f && yDist == 0f))
@@ -61,25 +56,11 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 speedMult = speed / speedMult;
             }
+
             xDist *= speedMult;
             yDist *= speedMult;
-            int knifeAmt = 3;
-            if (Main.rand.NextBool(2))
-            {
-                knifeAmt++;
-            }
-            if (Main.rand.NextBool(4))
-            {
-                knifeAmt++;
-            }
-            if (Main.rand.NextBool(8))
-            {
-                knifeAmt++;
-            }
-            if (Main.rand.NextBool(16))
-            {
-                knifeAmt++;
-            }
+
+            int knifeAmt = Main.rand.Next(4, 7);
             for (int i = 0; i < knifeAmt; i++)
             {
                 float xVec = xDist;
@@ -93,8 +74,9 @@ namespace CalamityMod.Items.Weapons.Melee
                 xVec *= speedMult;
                 yVec *= speedMult;
                 directionToShoot = new Vector2(xVec, yVec);
-                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
             }
+
             return false;
         }
 

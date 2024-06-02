@@ -8,21 +8,14 @@ namespace CalamityMod.Items.Armor.Daedalus
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("DaedalusVisor")]
-    public class DaedalusHeadRogue : ModItem
+    public class DaedalusHeadRogue : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daedalus Facemask");
-            Tooltip.SetDefault("13% increased rogue damage and 7% increased rogue critical strike chance, increases rogue velocity by 15%\n" +
-                "5% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 7; //37
         }
@@ -40,9 +33,7 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased rogue damage\n" +
-				"+105 maximum stealth\n" +
-                "Rogue projectiles throw out crystal shards as they travel";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.daedalusSplit = true;
             modPlayer.rogueStealthMax += 1.05f;

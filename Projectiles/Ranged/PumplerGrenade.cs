@@ -1,22 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.Audio;
+﻿using System;
 using CalamityMod.Particles;
-using System;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PumplerGrenade : ModProjectile
+    public class PumplerGrenade : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public ref float State => ref Projectile.ai[0];
         public static int MaxTime => 180;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Squash Shell");
-        }
 
         public override void SetDefaults()
         {
@@ -39,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
-            int size = NPCHit ? 50 : 70; //Bigger explosion if no npc is hit
+            int size = NPCHit ? 60 : 90; //Bigger explosion if no npc is hit
             Projectile.scale = (size / (float)Projectile.height) * Projectile.scale;
 
             Projectile.position -= Vector2.One * (size - Projectile.width) * 0.5f;
@@ -103,7 +99,7 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (State == 0)
             {

@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class GaussPistolShot : ModProjectile
+    public class GaussPistolShot : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
@@ -24,7 +25,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const float ChargeTime = 30f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gauss Shot");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
         }

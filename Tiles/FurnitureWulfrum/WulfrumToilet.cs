@@ -6,6 +6,7 @@ using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -13,9 +14,11 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class WulfrumToilet : ModTile
     {
-		public const int NextStyleHeight = 40;
+        public const int NextStyleHeight = 40;
         public override void SetStaticDefaults()
         {
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumToilet>());
+
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = false;
             Main.tileWaterDeath[Type] = false;
@@ -37,10 +40,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
             // Toilets count as Chairs
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsChair);
-
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Wulfrum Toilet");
-            AddMapEntry(new Color(71, 95, 114), name);
+            AddMapEntry(new Color(191, 142, 111), Language.GetText("MapObject.Toilet"));
             TileID.Sets.CanBeSatOnForNPCs[Type] = true;
             TileID.Sets.CanBeSatOnForPlayers[Type] = true;
             TileID.Sets.HasOutlines[Type] = true;
@@ -51,18 +51,13 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumToilet>());
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -80,7 +75,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
                 spriteBatch.Draw(glowmask, drawPosition + new Vector2(0f, 8f), new Rectangle(xFrameOffset, yFrameOffset, 18, 8), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
 
-        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.ChairSitInfo(i, j, ref info, NextStyleHeight, true);
+        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.ChairSitInfo(i, j, ref info, NextStyleHeight, true, shitter: true);
 
         public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
 

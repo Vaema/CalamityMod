@@ -14,8 +14,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class PrismaticBreaker : ModItem
+    public class PrismaticBreaker : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         internal static readonly Color[] colors = new Color[]
         {
             new Color(255, 0, 0, 50), //Red
@@ -34,47 +35,32 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Prismatic Breaker");
-            Tooltip.SetDefault("Seems to belong to a certain magical girl. Radiates with intense cosmic energy.\n" +
-                "Fire to charge for a powerful rainbow laser\n" +
-                "Right click to instead swing the sword and fire rainbow colored waves\n" +
-                "The sword is boosted by both melee and ranged damage");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
 
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 662;
+            Item.width = 50;
+            Item.height = 50;
+            Item.damage = 699;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 13;
             Item.useTurn = true;
-            // TODO -- Prismatic Breaker should have its own damage type which is half Ranged, half Melee.
-            // Right now, it uses a hacky damage formula, see below.
-            // Its custom damage class should CountAs both melee AND ranged for the sake of effects.
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = MeleeRangedHybridDamageClass.Instance;
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.width = 50;
-            Item.height = 50;
             Item.shoot = ModContent.ProjectileType<PrismaticBeam>();
             Item.shootSpeed = 14f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 8;
-
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
-            StatModifier halfMelee = damage.Scale(0.5f);
-            damage = halfMelee.CombineWith(player.GetTotalDamage<RangedDamageClass>().Scale(0.5f));
-        }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
@@ -85,11 +71,11 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<PrismaticWave>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PrismaticWave>(), damage, knockback, player.whoAmI);
             }
             else
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X * 0.5f, velocity.Y * 0.5f, type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity * 0.5f, type, (int)(damage * 1.1f), knockback, player.whoAmI);
             }
             return false;
         }
@@ -123,18 +109,18 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(4))
             {
-                Dust rainbow = Main.dust[Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 267, 0f, 0f, 50, Main.rand.Next(colors), 0.8f)];
+                Dust rainbow = Main.dust[Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.RainbowMk2, 0f, 0f, 50, Main.rand.Next(colors), 0.8f)];
                 rainbow.noGravity = true;
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
             target.AddBuff(BuffID.Daybreak, 300);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
             target.AddBuff(BuffID.Daybreak, 300);
@@ -148,7 +134,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<LifeAlloy>(3).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).
-                AddTile(ModContent.TileType<CosmicAnvil>()).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

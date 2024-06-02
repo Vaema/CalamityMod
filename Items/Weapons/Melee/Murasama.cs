@@ -3,34 +3,35 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Murasama : ModItem
+    public class Murasama : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public int frameCounter = 0;
         public int frame = 0;
-        public bool IDUnlocked(Player player) => DownedBossSystem.downedYharon || player.name == "Jetstream Sam" || player.name == "Samuel Rodrigues";
+        public bool IDUnlocked(Player player) => DownedBossSystem.downedDoG;
 
+        public static readonly SoundStyle OrganicHit = new("CalamityMod/Sounds/Item/MurasamaHitOrganic") { Volume = 0.45f };
+        public static readonly SoundStyle InorganicHit = new("CalamityMod/Sounds/Item/MurasamaHitInorganic") { Volume = 0.55f };
+        public static readonly SoundStyle Swing = new("CalamityMod/Sounds/Item/MurasamaSwing") { Volume = 0.2f };
+        public static readonly SoundStyle BigSwing = new("CalamityMod/Sounds/Item/MurasamaBigSwing") { Volume = 0.25f };
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Murasama");
-            Tooltip.SetDefault("There will be blood!\n" +
-                "ID and power-level locked\n" +
-                "Prove your strength or have the correct user ID to wield this sword");
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 13));
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(2, 13));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.height = 128;
-            Item.width = 56;
-            Item.damage = 3001;
+            Item.width = 90;
+            Item.height = 134;
+            Item.damage = 2222;
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -40,15 +41,14 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTime = 5;
             Item.knockBack = 6.5f;
             Item.autoReuse = false;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ModContent.ProjectileType<MurasamaSlash>();
             Item.shootSpeed = 24f;
-            Item.rare = ModContent.RarityType<Violet>();
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 14));
+            Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 30;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 61;
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 //0 = 6 frames, 8 = 3 frames]
                 texture = ModContent.Request<Texture2D>(Texture).Value;
-                spriteBatch.Draw(texture, position, Item.GetCurrentFrame(ref frame, ref frameCounter, frame == 0 ? 36 : frame == 8 ? 24 : 6, 13), Color.White, 0f, origin, scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, position, Item.GetCurrentFrame(ref frame, ref frameCounter, 2, 13), Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
             else
             {
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (IDUnlocked(Main.LocalPlayer))
             {
                 texture = ModContent.Request<Texture2D>(Texture).Value;
-                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Item.GetCurrentFrame(ref frame, ref frameCounter, frame == 0 ? 36 : frame == 8 ? 24 : 6, 13), lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Item.GetCurrentFrame(ref frame, ref frameCounter, 2, 13), lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             else
             {
@@ -91,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (!IDUnlocked(Main.LocalPlayer))
                 return;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/MurasamaGlow").Value;
-            spriteBatch.Draw(texture, Item.position - Main.screenPosition, Item.GetCurrentFrame(ref frame, ref frameCounter, frame == 0 ? 36 : frame == 8 ? 24 : 6, 13, false), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Item.position - Main.screenPosition, Item.GetCurrentFrame(ref frame, ref frameCounter, 2, 13, false), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
         }
 
         public override bool CanUseItem(Player player)

@@ -1,13 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
     public class HallowedOre : ModTile
     {
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -23,14 +27,13 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.HallowedOre>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Hallowed Ore");
-            AddMapEntry(new Color(250, 250, 150), name);
-            MineResist = 3f;
+            AddMapEntry(new Color(250, 250, 150), CreateMapEntryName());
+            MineResist = 2f;
             MinPick = 180;
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
+
+            this.RegisterUniversalMerge(TileID.Pearlstone, "CalamityMod/Tiles/Merges/PearlstoneMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -41,11 +44,6 @@ namespace CalamityMod.Tiles.Ores
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, TileID.Pearlstone, false, false, false);
-            return false;
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

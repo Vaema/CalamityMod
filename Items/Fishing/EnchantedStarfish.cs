@@ -1,30 +1,32 @@
 ﻿using Terraria;
+using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent.Achievements;
 
 namespace CalamityMod.Items.Fishing
 {
-    public class EnchantedStarfish : ModItem
+    public class EnchantedStarfish : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Enchanted Starfish");
-            Tooltip.SetDefault("Permanently increases maximum mana by 20");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
+            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ArcaneCrystal;
         }
 
         public override void SetDefaults()
         {
-            Item.rare = ItemRarityID.Green;
             Item.width = 30;
             Item.height = 26;
+            Item.rare = ItemRarityID.Green;
             Item.useAnimation = 30;
             Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item29;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 50);
             Item.autoReuse = true;
             Item.consumable = true;
@@ -32,18 +34,14 @@ namespace CalamityMod.Items.Fishing
 
         public override bool? UseItem(Player player)
         {
-            if (player.itemAnimation > 0 && (player.statManaMax < 200 && player.itemTime == 0))
+            if (player.itemAnimation > 0 && (player.ConsumedManaCrystals < Player.ManaCrystalMax && player.itemTime == 0))
             {
                 player.itemTime = Item.useTime;
-                player.statManaMax += 20;
-                player.statManaMax2 += 20;
-                player.statMana += 20;
-                if (Main.myPlayer == player.whoAmI)
-                    player.ManaEffect(20);
+                player.UseManaMaxIncreasingItem(20);
+                player.ConsumedManaCrystals++;
                 AchievementsHelper.HandleSpecialEvent(player, 1);
-                player.ConsumeItem(ModContent.ItemType<EnchantedStarfish>(), true);
             }
-            return false;
+            return true;
         }
     }
 }

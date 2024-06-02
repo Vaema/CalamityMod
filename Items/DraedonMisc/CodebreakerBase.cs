@@ -1,31 +1,26 @@
-﻿using Terraria.ModLoader;
-using Terraria.ID;
-using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.DraedonSummoner;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.DraedonStructures;
+using CalamityMod.Tiles.DraedonSummoner;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class CodebreakerBase : ModItem
+    public class CodebreakerBase : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Codebreaker Base");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
+            Item.width = 42;
+            Item.height = 32;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.useAnimation = 15;
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 42;
-            Item.height = 32;
-            Item.maxStack = 999;
-            Item.rare = ItemRarityID.Orange;
+            Item.maxStack = 9999;
+            Item.rare = ItemRarityID.Green;
             Item.createTile = ModContent.TileType<CodebreakerTile>();
         }
 

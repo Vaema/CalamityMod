@@ -1,21 +1,13 @@
 ﻿using CalamityMod.Dusts.Furniture;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureBotanic
 {
     public class BotanicChandelier : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpChandelier(true);
-            AddMapEntry(new Color(191, 142, 111), Language.GetText("MapObject.Chandelier"));
-            AdjTiles = new int[] { TileID.Chandeliers };
-        }
+        public override void SetStaticDefaults() => this.SetUpChandelier(ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicChandelier>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -43,11 +35,6 @@ namespace CalamityMod.Tiles.FurnitureBotanic
                 g = 0f;
                 b = 0f;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 48, 48, ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicChandelier>());
         }
 
         public override void HitWire(int i, int j)

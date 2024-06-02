@@ -7,28 +7,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class FlarefrostBlade : ModItem
+    public class FlarefrostBlade : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Flarefrost Blade");
-            Tooltip.SetDefault("Fires a homing flarefrost orb");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 64;
-            Item.damage = 95;
+            Item.height = 66;
+            Item.damage = 125;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 36;
+            Item.useAnimation = Item.useTime = 29;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 66;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<Flarefrost>();
             Item.shootSpeed = 11f;
@@ -53,16 +47,16 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire, 180);
-            target.AddBuff(BuffID.Frostburn, 180);
+            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddBuff(BuffID.Frostburn2, 180);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(BuffID.OnFire, 180);
-            target.AddBuff(BuffID.Frostburn, 180);
+            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddBuff(BuffID.Frostburn2, 180);
         }
 
         public override void AddRecipes()

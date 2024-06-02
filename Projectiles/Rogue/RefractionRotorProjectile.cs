@@ -1,20 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class RefractionRotorProjectile : ModProjectile
+    public class RefractionRotorProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public const int EnergyShotCount = 6;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/RefractionRotor";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Prism Shuriken");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 16;
         }
@@ -41,13 +41,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool? CanDamage() => Projectile.alpha <= 128 ? null : false;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.timeLeft > 20)
                 Projectile.timeLeft = 20;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Release a puff of rainbow dust and some blades.
             // If this projectile is a stealth strike, don't create the blades as a gore-- create them as a projectile instead.

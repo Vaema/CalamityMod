@@ -5,8 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class NebulaNova : ModProjectile
+    public class NebulaNova : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const int TotalXFrames = 2;
         private const int TotalYFrames = 7;
         private const int FrameTimer = 4;
@@ -22,11 +23,6 @@ namespace CalamityMod.Projectiles.Magic
                 frameX = value / TotalYFrames;
                 frameY = value % TotalYFrames;
             }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nebula Nova");
         }
 
         public override void SetDefaults()
@@ -60,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() / new Vector2(TotalXFrames, TotalYFrames) * 0.5f;
             Rectangle frame = texture.Frame(TotalXFrames, TotalYFrames, frameX, frameY);

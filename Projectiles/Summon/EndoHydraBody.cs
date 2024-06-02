@@ -2,14 +2,15 @@
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class EndoHydraBody : ModProjectile
+    public class EndoHydraBody : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int TargetNPCIndex
         {
             get => (int)Projectile.ai[0];
@@ -18,7 +19,6 @@ namespace CalamityMod.Projectiles.Summon
         public const float DistanceToCheck = 2800f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hydra Body");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;

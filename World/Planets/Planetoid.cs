@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.IO;
@@ -17,15 +17,15 @@ namespace CalamityMod.World.Planets
             progress.Message = "Enriching low Terraria orbit";
             var config2 = WorldGenConfiguration.FromEmbeddedPath("Terraria.GameContent.WorldBuilding.Configuration.json");
 
-            int GrassPlanetoidCount = Main.maxTilesX / 1100;
-            int LCPlanetoidCount = Main.maxTilesX / 800;
-            int MudPlanetoidCount = Main.maxTilesX / 1100;
+            int GrassPlanetoidCount = Main.maxTilesX / 750;
+            int LCPlanetoidCount = Main.maxTilesX / 1500;
+            int MudPlanetoidCount = Main.maxTilesX / 1000;
 
             const int MainPlanetoidAttempts = 3000;
             int i = 0;
             while (i < MainPlanetoidAttempts)
             {
-                if (config2.CreateBiome<MainPlanet>().Place(new Point(WorldGen.genRand.Next(Main.maxTilesX / 2 - 300, Main.maxTilesX / 2 + 300), WorldGen.genRand.Next(128, 134)), WorldGen.structures))
+                if (config2.CreateBiome<MainPlanet>().Place(new Point(WorldGen.genRand.Next(Main.maxTilesX / 2 - 300, Main.maxTilesX / 2 + 300), WorldGen.genRand.Next(128, 134)), GenVars.structures))
                 {
                     break;
                 }
@@ -36,10 +36,10 @@ namespace CalamityMod.World.Planets
             i = 0;
             while (LCPlanetoidCount > 0 && i < CrystalHeartPlanetoidAttempts)
             {
-                int x = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.2), (int)(Main.maxTilesX * 0.8));
+                int x = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15), (int)(Main.maxTilesX * 0.85));
                 int y = WorldGen.genRand.Next(70, 101);
 
-                bool placed = config2.CreateBiome<HeartPlanet>().Place(new Point(x, y), WorldGen.structures);
+                bool placed = config2.CreateBiome<HeartPlanet>().Place(new Point(x, y), GenVars.structures);
 
                 if (placed)
                     LCPlanetoidCount--;
@@ -50,11 +50,11 @@ namespace CalamityMod.World.Planets
             i = 0;
             while (GrassPlanetoidCount > 0 && i < GrassPlanetoidAttempts)
             {
-                int x = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.333), (int)(Main.maxTilesX * 0.666));
+                int x = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.25), (int)(Main.maxTilesX * 0.75));
                 int y = WorldGen.genRand.Next(100, 131);
 
 
-                bool placed = config2.CreateBiome<GrassPlanet>().Place(new Point(x, y), WorldGen.structures);
+                bool placed = config2.CreateBiome<GrassPlanet>().Place(new Point(x, y), GenVars.structures);
 
                 if (placed)
                     GrassPlanetoidCount--;
@@ -65,10 +65,10 @@ namespace CalamityMod.World.Planets
             i = 0;
             while (MudPlanetoidCount > 0 && i < MudPlanetoidAttempts)
             {
-                int x = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.3f), (int)(Main.maxTilesX * 0.7f));
+                int x = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.25f), (int)(Main.maxTilesX * 0.75f));
                 int y = WorldGen.genRand.Next(100, 131);
 
-                bool placed = config2.CreateBiome<MudPlanet>().Place(new Point(x, y), WorldGen.structures);
+                bool placed = config2.CreateBiome<MudPlanet>().Place(new Point(x, y), GenVars.structures);
 
                 if (placed)
                     MudPlanetoidCount--;
@@ -120,10 +120,11 @@ namespace CalamityMod.World.Planets
             }
             return true;
         }
+
         public bool CheckIfPlaceable(Point origin, int radius, StructureMap structures)
         {
             //Fluff is used to create padding between the planets. this is the minimum distance between planets (they can't be within "fluff" blocks)
-            int fluff = 10;
+            int fluff = 12;
             int myRadius = radius + fluff;
             int diameter = myRadius * 2;
             _area = new Rectangle(origin.X - myRadius, origin.Y - myRadius, diameter, diameter);

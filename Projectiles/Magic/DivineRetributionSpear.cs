@@ -1,18 +1,18 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class DivineRetributionSpear : ModProjectile
+    public class DivineRetributionSpear : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Divine Retribution");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -32,9 +32,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            float num953 = 25f * Projectile.ai[1]; //100
-            float scaleFactor12 = 5f * Projectile.ai[1]; //5
-            float num954 = 1000f;
+            float aiVelocityMult = 25f * Projectile.ai[1]; //100
+            float scaleFactor = 5f * Projectile.ai[1]; //5
+            float homingRange = 1000f;
 
             if (Projectile.velocity.X < 0f)
             {
@@ -44,16 +44,16 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
             Lighting.AddLight(Projectile.Center, 0.7f, 0.3f, 0f);
             if (Main.player[Projectile.owner].active && !Main.player[Projectile.owner].dead)
             {
-                if (Projectile.Distance(Main.player[Projectile.owner].Center) > num954)
+                if (Projectile.Distance(Main.player[Projectile.owner].Center) > homingRange)
                 {
                     Vector2 moveDirection = Projectile.SafeDirectionTo(Main.player[Projectile.owner].Center, Vector2.UnitY);
-                    Projectile.velocity = (Projectile.velocity * (num953 - 1f) + moveDirection * scaleFactor12) / num953;
+                    Projectile.velocity = (Projectile.velocity * (aiVelocityMult - 1f) + moveDirection * scaleFactor) / aiVelocityMult;
                     return;
                 }
 
@@ -74,11 +74,11 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 96;
@@ -90,18 +90,18 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
-            for (int num193 = 0; num193 < 6; num193++)
+            for (int i = 0; i < 6; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0, 0);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0, 0);
             }
-            for (int num194 = 0; num194 < 10; num194++)
+            for (int j = 0; j < 10; j++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0, 0);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 3f;
-                num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0, 0);
-                Main.dust[num195].velocity *= 2f;
-                Main.dust[num195].noGravity = true;
+                int divinity = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0, 0);
+                Main.dust[divinity].noGravity = true;
+                Main.dust[divinity].velocity *= 3f;
+                divinity = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0, 0);
+                Main.dust[divinity].velocity *= 2f;
+                Main.dust[divinity].noGravity = true;
             }
         }
     }

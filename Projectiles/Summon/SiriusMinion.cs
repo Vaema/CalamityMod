@@ -9,8 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SiriusMinion : ModProjectile
+    public class SiriusMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public CalamityPlayer moddedOwner => Owner.Calamity();
@@ -18,10 +19,9 @@ namespace CalamityMod.Projectiles.Summon
         public ref float TimerForShooting => ref Projectile.ai[0];
 
         public bool CheckForSpawning = false;
-        
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sirius");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public void ShootTarget(NPC target)
-        {            
+        {
             if (target is not null)
             {
                 if (TimerForShooting >= 60f && Projectile.owner == Main.myPlayer)
@@ -112,9 +112,7 @@ namespace CalamityMod.Projectiles.Summon
 
                     // Shoots the beam.
                     Vector2 velocity = (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 3f;
-                    int beam = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<SiriusBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(beam))
-                        Main.projectile[beam].originalDamage = Projectile.originalDamage;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<SiriusBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
             }
         }

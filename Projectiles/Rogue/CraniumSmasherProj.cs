@@ -1,16 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class CraniumSmasherProj : ModProjectile
+    public class CraniumSmasherProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/CraniumSmasher";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cranium Smasher");
-        }
 
         public override void SetDefaults()
         {
@@ -38,12 +36,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.X = Projectile.velocity.X * 0.99f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 5, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 2f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 6, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 2f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Torch, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 1f);
             }
         }
 

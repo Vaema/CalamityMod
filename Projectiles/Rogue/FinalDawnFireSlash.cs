@@ -1,21 +1,22 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.CalPlayer;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class FinalDawnFireSlash : ModProjectile
+    public class FinalDawnFireSlash : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public bool HasRegeneratedStealth = false;
-        public const float StealthReturnRatio = 0.25f;
+        public static float StealthReturnRatio = 0.40f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Final Dawn");
             Main.projFrames[Projectile.type] = 11;
         }
         public override void SetDefaults()
@@ -38,20 +39,20 @@ namespace CalamityMod.Projectiles.Rogue
             if (player is null || player.dead)
                 Projectile.Kill();
 
-            player.direction = Projectile.direction;
+            player.ChangeDir(Projectile.direction);
             player.heldProj = Projectile.whoAmI;
 
             AdjustPlayerPositionValues(player);
 
             Projectile.ai[0]++;
-            if(Projectile.ai[0] >= 4)
+            if (Projectile.ai[0] >= 4)
             {
                 Projectile.ai[1]++;
                 Projectile.ai[0] = 0;
                 if (Projectile.ai[1] == 5)
                 {
                     Projectile.friendly = true;
-                    SoundEngine.PlaySound(SoundID.Item71, Projectile.Center);
+                    SoundEngine.PlaySound(TheFinalDawn.UseSound, Projectile.Center);
                 }
             }
             if (Projectile.ai[1] >= 11)
@@ -88,18 +89,18 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.spriteDirection = player.direction;
             player.heldProj = Projectile.whoAmI;
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             CalamityPlayer calamityPlayer = Main.player[Projectile.owner].Calamity();
             // Restore stealth
-            if (!HasRegeneratedStealth)
+            if (!HasRegeneratedStealth && !Projectile.Calamity().LocketClone) //Locket clones dont create stealth
             {
                 calamityPlayer.rogueStealth += calamityPlayer.rogueStealthMax * StealthReturnRatio;
                 if (calamityPlayer.rogueStealth > calamityPlayer.rogueStealthMax)
                     calamityPlayer.rogueStealth = calamityPlayer.rogueStealthMax;
                 HasRegeneratedStealth = true;
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
             }
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -109,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 drawCenter = Projectile.Center;
             Rectangle frameRectangle = new Rectangle(Projectile.frame / 5 * width, Projectile.frame % 5 * height, width, height);
 
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnFireSlash_Glow").Value;
 
             Main.spriteBatch.Draw(scytheTexture,

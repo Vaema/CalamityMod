@@ -11,22 +11,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Alluvion : ModItem
+    public class Alluvion : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Alluvion");
-            Tooltip.SetDefault("Converts wooden arrows into sharks, torrential and typhoon arrows\n" +
-                       "Fires a torrent of six arrows at once");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 165;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 62;
             Item.height = 90;
+            Item.damage = 83;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -45,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo spawnSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 source = player.RotatedRelativePoint(player.MountedCenter);
-            float num117 = MathHelper.Pi * 0.1f;
+            float tenthPi = MathHelper.Pi * 0.1f;
             int totalProjectiles = 6;
 
             velocity.Normalize();
@@ -53,8 +46,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             bool canHit = Collision.CanHit(source, 0, 0, source + velocity, 0, 0);
             for (int i = 0; i < totalProjectiles; i++)
             {
-                float num120 = i - (totalProjectiles - 1f) / 2f;
-                Vector2 offset = velocity.RotatedBy(num117 * num120);
+                float arrowOffset = i - (totalProjectiles - 1f) / 2f;
+                Vector2 offset = velocity.RotatedBy(tenthPi * arrowOffset);
                 if (!canHit)
                     offset -= velocity;
 
@@ -76,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                             newType = ModContent.ProjectileType<TorrentialArrow>();
                             break;
                     }
-                    int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, damage, knockback, player.whoAmI);
+                    int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, (int)(damage * 2.3f), knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[proj].arrow = true;
@@ -94,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
+            CreateRecipe().
                 AddIngredient<Monsoon>().
                 AddIngredient<Lumenyl>(20).
                 AddIngredient<CosmiliteBar>(8).

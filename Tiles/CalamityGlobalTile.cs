@@ -1,41 +1,33 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CalamityMod.Events;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
+using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
-using CalamityMod.Tiles.Crags;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Tiles
 {
     public class CalamityGlobalTile : GlobalTile
     {
-        internal static readonly MethodInfo ActiveFountainColorMethod = typeof(SceneMetrics).GetMethod("set_ActiveFountainColor", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        public static void SetActiveFountainColor(int fountainID)
-        {
-            ActiveFountainColorMethod.Invoke(Main.SceneMetrics, new object[]
-            {
-                fountainID
-            });
-        }
-
         public static ushort[] PlantTypes = new ushort[]
         {
             TileID.Plants,
@@ -55,6 +47,7 @@ namespace CalamityMod.Tiles
             (ushort)ModContent.TileType<AbyssKelp>(),
             (ushort)ModContent.TileType<TenebrisRemnant>(),
             (ushort)ModContent.TileType<PhoviamareHalm>(),
+            (ushort)ModContent.TileType<SmallCorals>(),
 
         };
 
@@ -62,6 +55,8 @@ namespace CalamityMod.Tiles
         {
             ModContent.TileType<SeaPrism>(),
             ModContent.TileType<Navystone>(),
+            ModContent.TileType<Shellstone>(),
+            ModContent.TileType<Limestone>(),
             ModContent.TileType<Voidstone>()
         };
 
@@ -69,11 +64,6 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
-        }
-
-        public override bool PreHitWire(int i, int j, int type)
-        {
-            return !BossRushEvent.BossRushActive;
         }
 
         public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
@@ -149,9 +139,8 @@ namespace CalamityMod.Tiles
             Tile tile = Main.tile[i, j];
 
             // Fruit from trees upon tree destruction
-            // 50% chance to drop 1 to 2 fruit
-            // TODO -- ADD ASH TREE SUPPORT IN 1.4.4 PORT
-            if (!effectOnly && !fail && Main.netMode != NetmodeID.MultiplayerClient && TileID.Sets.IsShakeable[type] && WorldGen.genRand.NextBool())
+            // 25% chance to drop 1 to 2 fruit
+            if (!effectOnly && !fail && Main.netMode != NetmodeID.MultiplayerClient && TileID.Sets.IsShakeable[type] && WorldGen.genRand.NextBool(4))
             {
                 GetTreeBottom(i, j, out int treeX, out int treeY);
                 TreeTypes treeType = WorldGen.GetTreeType(Main.tile[treeX, treeY].TileType);
@@ -254,12 +243,22 @@ namespace CalamityMod.Tiles
                                     treeDropItemType = WorldGen.genRand.NextBool() ? ItemID.BloodOrange : ItemID.Rambutan;
                                     break;
 
+                                case TreeTypes.Ash:
+                                    treeDropItemType = WorldGen.genRand.NextBool() ? ItemID.Pomegranate : ItemID.SpicyPepper;
+                                    break;
+
                                 default:
                                     break;
                             }
 
                             if (treeDropItemType != 0)
+                            {
+                                if (Main.rand.NextBool(100) || (DateTime.Now.Month == 2 && DateTime.Now.Day == 14 && Main.rand.NextBool(15)))
+                                {
+                                    treeDropItemType = ModContent.ItemType<HapuFruit>();
+                                }
                                 Item.NewItem(new EntitySource_TileBreak(treeX, treeY), treeX * 16, treeY * 16, 16, 16, treeDropItemType);
+                            }
                         }
                     }
                 }
@@ -363,22 +362,41 @@ namespace CalamityMod.Tiles
                     player.breath = player.breathMax;
             }
 
-			// Mining set gives a chance for additional ore. This can be abused for infinite ore but it has a cooldown to prevent too much abuse
-            if (player.Calamity().miningSet && player.Calamity().miningSetCooldown <= 0 && !fail)
+            // Mining set gives a chance for additional ore. This can be abused for infinite ore but it has a cooldown to prevent too much abuse
+            if (player.Calamity().miningSet && player.Calamity().miningSetCooldown <= 0 && !fail && TileID.Sets.Ore[tile.TileType])
             {
-                int item = tile.GetOreItemID();
+                // 25% chance for additional ore
+                if (!Main.rand.NextBool(MiningArmorSetChange.BonusOreChance))
+                    return;
+
+                var source = new EntitySource_TileBreak(i, j);
                 Vector2 pos = new Vector2(i, j) * 16;
-				// 25% chance for additional ore
-                if (Main.rand.NextBool(MiningArmorSetChange.BonusOreChance) && item != -1)
-				{
-                    Item.NewItem(new EntitySource_TileBreak(i, j), pos, item);
-					// Cooldown varies between 3 and 6 seconds
-					player.Calamity().miningSetCooldown = Main.rand.Next(MiningArmorSetChange.CooldownMin, MiningArmorSetChange.CooldownMax + 1);
-				}
+                ModTile moddedTile = TileLoader.GetTile(tile.TileType);
+                if (moddedTile != null) // Fetch the modded tile's drop logic
+                {
+                    IEnumerable<Item> itemDrops = moddedTile.GetItemDrops(i, j);
+                    if (itemDrops == null)
+                        return;
+
+                    foreach (Item item in itemDrops)
+                    {
+                        item.Prefix(-1); // You're twisted if you have a prefixable item inside ores but fuck it
+                        int moddedOre = Item.NewItem(source, pos, item);
+                        Main.item[moddedOre].TryCombiningIntoNearbyItems(moddedOre);
+                    }
+                }
+                else // Fetch normal tile-item relationships (all vanilla ores are normal thankfully)
+                {
+                    int itemType = TileLoader.GetItemDropFromTypeAndStyle(tile.TileType);
+                    Item.NewItem(source, pos, itemType);
+                }
+
+                // Cooldown varies between 3 and 6 seconds
+                player.Calamity().miningSetCooldown = Main.rand.Next(MiningArmorSetChange.CooldownMin, MiningArmorSetChange.CooldownMax + 1);
             }
         }
 
-        public override bool Drop(int i, int j, int type)
+        public override void Drop(int i, int j, int type)/* tModPorter Suggestion: Use CanDrop to decide if items can drop, use this method to drop additional items. See documentation. */
         {
             Tile tileAtPosition = CalamityUtils.ParanoidTileRetrieval(i, j);
             if (tileAtPosition.TileFrameX % 36 == 0 && tileAtPosition.TileFrameY % 36 == 0)
@@ -401,10 +419,10 @@ namespace CalamityMod.Tiles
                         Item.NewItem(new EntitySource_TileBreak(i, j), pos, ModContent.ItemType<EvilSmasher>());
                 }
             }
-
-            return true;
         }
 
+        // TODO: Make this a data set or smth?
+        // Plausible name: PreventsAnchorTileChanges  ///  Tile prevents its "anchors" from being hammered, killed, actuated, or edited in any way which may cause it to unintentionally break.
         public static bool ShouldNotBreakDueToAboveTile(int x, int y)
         {
             int[] invincibleTiles = new int[]
@@ -412,7 +430,8 @@ namespace CalamityMod.Tiles
                 ModContent.TileType<DraedonLabTurret>(),
                 ModContent.TileType<AstralBeacon>(),
                 ModContent.TileType<CodebreakerTile>(),
-                ModContent.TileType<SCalAltar>()
+                ModContent.TileType<SCalAltar>(),
+                ModContent.TileType<GiantPlanteraBulb>()
             };
 
             Tile checkTile = CalamityUtils.ParanoidTileRetrieval(x, y);
@@ -455,19 +474,19 @@ namespace CalamityMod.Tiles
                 return;
             }
 
-            int num = tileSafely.TileFrameX / 22;
-            int num2 = tileSafely.TileFrameY / 22;
-            if (num == 3 && num2 <= 2)
+            int treeTileX = tileSafely.TileFrameX / 22;
+            int treeTileY = tileSafely.TileFrameY / 22;
+            if (treeTileX == 3 && treeTileY <= 2)
                 x++;
-            else if (num == 4 && num2 >= 3 && num2 <= 5)
+            else if (treeTileX == 4 && treeTileY >= 3 && treeTileY <= 5)
                 x--;
-            else if (num == 1 && num2 >= 6 && num2 <= 8)
+            else if (treeTileX == 1 && treeTileY >= 6 && treeTileY <= 8)
                 x--;
-            else if (num == 2 && num2 >= 6 && num2 <= 8)
+            else if (treeTileX == 2 && treeTileY >= 6 && treeTileY <= 8)
                 x++;
-            else if (num == 2 && num2 >= 9)
+            else if (treeTileX == 2 && treeTileY >= 9)
                 x++;
-            else if (num == 3 && num2 >= 9)
+            else if (treeTileX == 3 && treeTileY >= 9)
                 x--;
 
             tileSafely = Framing.GetTileSafely(x, y);

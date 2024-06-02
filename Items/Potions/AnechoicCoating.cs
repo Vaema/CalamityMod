@@ -6,13 +6,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class AnechoicCoating : ModItem
+    public class AnechoicCoating : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Anechoic Coating");
-            Tooltip.SetDefault("Reduces creatures' ability to detect you in the abyss");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 2, 0, 0);
             Item.rare = ItemRarityID.Blue;
             Item.useAnimation = 17;
@@ -38,7 +37,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient(ItemID.BottledWater).
                 AddIngredient<BloodOrb>(10).
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

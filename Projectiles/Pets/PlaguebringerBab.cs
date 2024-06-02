@@ -1,15 +1,20 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
-    public class PlaguebringerBab : ModProjectile
+    public class PlaguebringerBab : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Plaguebringer Bab");
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Projectile.type] = 6;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 4, 6)
+            .WithOffset(-25f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()
@@ -48,7 +53,7 @@ namespace CalamityMod.Projectiles.Pets
             }
             if (Projectile.frame >= 4)
             {
-                Projectile.frame = 2;
+                Projectile.frame = 0;
             }
         }
     }

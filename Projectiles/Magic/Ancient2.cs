@@ -1,19 +1,21 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
-    public class Ancient2 : ModProjectile
+    public class Ancient2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/Magic/Ancient";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -51,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
                 int dustType = 22;
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 1f);
                 Dust dust = Main.dust[idx];
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     dust.noGravity = true;
                     dust.scale *= 2f;
@@ -83,13 +85,13 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.rotation += 0.3f * (float)Projectile.direction;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
@@ -106,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustPos = dustCircle.RandomPointInCircle();
                 if ((dustPos - Projectile.Center).Length() > 48)
                 {
-                    int dustIndex = Dust.NewDust(dustPos, 1, 1, 22);
+                    int dustIndex = Dust.NewDust(dustPos, 1, 1, DustID.Pot);
                     Main.dust[dustIndex].noGravity = true;
                     Main.dust[dustIndex].fadeIn = 1f;
                     Vector2 dustVelocity = Projectile.Center - Main.dust[dustIndex].position;

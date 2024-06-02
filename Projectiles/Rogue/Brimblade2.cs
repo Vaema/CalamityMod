@@ -5,14 +5,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class Brimblade2 : ModProjectile
+    public class Brimblade2 : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Brimblade";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Brimblade");
-        }
 
         public override void SetDefaults()
         {
@@ -27,7 +23,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
             for (int k = 0; k < 5; k++)
@@ -36,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
             for (int k = 0; k < 5; k++)

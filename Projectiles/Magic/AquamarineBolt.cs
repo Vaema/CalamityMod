@@ -1,14 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class AquamarineBolt : ModProjectile
+    public class AquamarineBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bolt");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -26,17 +26,15 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f);
-            int num154 = 14;
-            int num155 = Dust.NewDust(Projectile.Center, Projectile.width - num154 * 2, Projectile.height - num154 * 2, 68, 0f, 0f, 100, default, 1.5f);
-            Main.dust[num155].noGravity = true;
-            Main.dust[num155].velocity *= 0.1f;
-            Main.dust[num155].velocity += Projectile.velocity * 0.5f;
+            int aquaDust = Dust.NewDust(Projectile.Center, Projectile.width - 28, Projectile.height - 28, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.5f);
+            Main.dust[aquaDust].noGravity = true;
+            Main.dust[aquaDust].velocity *= 0.1f;
+            Main.dust[aquaDust].velocity += Projectile.velocity * 0.5f;
             if (Main.rand.NextBool(16))
             {
-                int num156 = 16;
-                int num157 = Dust.NewDust(Projectile.Center, Projectile.width - num156 * 2, Projectile.height - num156 * 2, 68, 0f, 0f, 100, default, 1f);
-                Main.dust[num157].velocity *= 0.25f;
-                Main.dust[num157].velocity += Projectile.velocity * 0.5f;
+                int aquaticDust = Dust.NewDust(Projectile.Center, Projectile.width - 32, Projectile.height - 32, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1f);
+                Main.dust[aquaticDust].velocity *= 0.25f;
+                Main.dust[aquaticDust].velocity += Projectile.velocity * 0.5f;
             }
             Projectile.rotation += 0.3f * (float)Projectile.direction;
         }

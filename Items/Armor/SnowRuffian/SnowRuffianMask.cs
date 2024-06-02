@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.SnowRuffian
 {
     [AutoloadEquip(EquipType.Head)]
-    public class SnowRuffianMask : ModItem
+    public class SnowRuffianMask : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         private bool shouldBoost = false;
 
 
@@ -19,18 +20,11 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             }
         }
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Snow Ruffian Mask");
-            Tooltip.SetDefault("2% increased rogue damage");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2; //9
         }
@@ -45,9 +39,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             var modPlayer = player.Calamity();
             modPlayer.snowRuffianSet = true;
             modPlayer.rogueStealthMax += 0.5f;
-            player.setBonus = "5% increased rogue damage\n" +
-                "+50 maximum stealth\n" +
-                "You can glide to negate fall damage";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             player.GetDamage<ThrowingDamageClass>() += 0.05f;
             player.Calamity().wearingRogueArmor = true;
 

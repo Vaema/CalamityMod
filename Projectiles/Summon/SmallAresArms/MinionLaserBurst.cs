@@ -1,38 +1,36 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
-    public class MinionLaserBurst : ModProjectile
+    public class MinionLaserBurst : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Boss/ThanatosLaser";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exothermal Laser");
             Main.projFrames[Type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 32;
-            Projectile.height = 32;
+            Projectile.width = Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = true;
             Projectile.netImportant = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 420;
             Projectile.Opacity = 0f;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
-            Projectile.extraUpdates = 3; // THESE MOVE SUPER FAST NOW I AM NOT SORRY
+            Projectile.MaxUpdates = 4; // THESE MOVE SUPER FAST NOW I AM NOT SORRY
         }
 
         public override void AI()
@@ -49,7 +47,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
-        
+
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);

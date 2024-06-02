@@ -8,21 +8,14 @@ namespace CalamityMod.Items.Armor.Daedalus
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("DaedalusHelm")]
-    public class DaedalusHeadMelee : ModItem
+    public class DaedalusHeadMelee : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daedalus Helm");
-            Tooltip.SetDefault("10% increased melee damage and critical strike chance\n" +
-                "15% increased melee speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 21; //51
         }
@@ -40,21 +33,16 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased melee damage\n" +
-                "Enemies are more likely to target you\n" +
-                "You reflect projectiles back at enemies\n" +
-                "Reflected projectiles deal 50% less damage to you\n" +
-                "This reflect has a 90 second cooldown which is shared with all other dodges and reflects";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.daedalusReflect = true;
-            player.GetDamage<MeleeDamageClass>() += 0.05f;
+            player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
             player.aggro += 500;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
-            player.GetDamage<MeleeDamageClass>() += 0.1f;
+            player.GetDamage<MeleeDamageClass>() += 0.15f;
             player.GetCritChance<MeleeDamageClass>() += 10;
         }
 

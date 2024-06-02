@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,27 +12,18 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Apoctolith : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Tooltip.SetDefault("Maybe catching bricks with your face isn't such a hot idea...\n" +
-                "Critical hits tear away enemy defense\n" +
-                "Stealth strikes shatter and briefly stun enemies");
-            DisplayName.SetDefault("Apoctolith");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 220;
-            Item.shootSpeed = 18f;
-            Item.shoot = ModContent.ProjectileType<ApoctolithProj>();
             Item.width = 66;
             Item.height = 64;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.damage = 228;
+            Item.shootSpeed = 18f;
+            Item.shoot = ModContent.ProjectileType<ApoctolithProj>();
+            Item.useTime = 26;
+            Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 10f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item1;
             Item.noMelee = true;
@@ -44,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
 
-		public override float StealthDamageMultiplier => 1.25f;
+        public override float StealthDamageMultiplier => 1.3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,4 +1,7 @@
-﻿using CalamityMod.Tiles;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -15,14 +18,11 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using static Terraria.ModLoader.ModContent;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod
 {
@@ -63,18 +63,16 @@ namespace CalamityMod
             {
                 if (xIter < 0 || xIter >= Main.maxTilesX)
                     continue;
+
                 for (int yIter = y - 1; yIter <= y + 1; yIter++)
                 {
                     if (yIter < 0 || yIter >= Main.maxTilesY)
                         continue;
+
                     if (xIter == x && yIter == y)
-                    {
                         WorldGen.TileFrame(x, y, resetFrame, false);
-                    }
                     else
-                    {
                         WorldGen.TileFrame(xIter, yIter, false, false);
-                    }
                 }
             }
         }
@@ -83,31 +81,27 @@ namespace CalamityMod
         {
             int x = i - Main.tile[i, j].TileFrameX / 18 % tileX;
             int y = j - Main.tile[i, j].TileFrameY / 18 % tileY;
+            int tileXX18 = 18 * tileX;
             for (int l = x; l < x + tileX; l++)
             {
                 for (int m = y; m < y + tileY; m++)
                 {
                     if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == type)
                     {
-                        if (Main.tile[l, m].TileFrameX < (18 * tileX))
-                        {
-                            Main.tile[l, m].TileFrameX += (short)(18 * tileX);
-                        }
+                        if (Main.tile[l, m].TileFrameX < tileXX18)
+                            Main.tile[l, m].TileFrameX += (short)(tileXX18);
                         else
-                        {
-                            Main.tile[l, m].TileFrameX -= (short)(18 * tileX);
-                        }
+                            Main.tile[l, m].TileFrameX -= (short)(tileXX18);
                     }
                 }
             }
+
             if (Wiring.running)
             {
                 for (int k = 0; k < tileX; k++)
                 {
                     for (int l = 0; l < tileY; l++)
-                    {
                         Wiring.SkipWire(x + k, y + l);
-                    }
                 }
             }
         }
@@ -121,13 +115,14 @@ namespace CalamityMod
             int height = 16;
             int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
 
-            ulong num190 = Main.TileFrameSeed ^ (ulong)((long)j << 32 | (long)(uint)i);
-
+            ulong randShakeEffect = Main.TileFrameSeed ^ (ulong)((long)j << 32 | (long)(uint)i);
+            float drawPositionX = i * 16 - (int)Main.screenPosition.X - (width - 16f) / 2f;
+            float drawPositionY = j * 16 - (int)Main.screenPosition.Y;
             for (int c = 0; c < 7; c++)
             {
-                float shakeX = Utils.RandomInt(ref num190, -10, 11) * 0.15f;
-                float shakeY = Utils.RandomInt(ref num190, -10, 1) * 0.35f;
-                Main.spriteBatch.Draw(flameTexture, new Vector2(i * 16 - (int)Main.screenPosition.X - (width - 16f) / 2f + shakeX, j * 16 - (int)Main.screenPosition.Y + shakeY + yOffset) + zero, new Rectangle(tile.TileFrameX + offsetX, tile.TileFrameY + offsetY, width, height), new Color(100, 100, 100, 0), 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                float shakeX = Utils.RandomInt(ref randShakeEffect, -10, 11) * 0.15f;
+                float shakeY = Utils.RandomInt(ref randShakeEffect, -10, 1) * 0.35f;
+                Main.spriteBatch.Draw(flameTexture, new Vector2(drawPositionX + shakeX, drawPositionY + shakeY + yOffset) + zero, new Rectangle(tile.TileFrameX + offsetX, tile.TileFrameY + offsetY, width, height), new Color(100, 100, 100, 0), 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
             }
         }
 
@@ -156,10 +151,12 @@ namespace CalamityMod
                 if (Main.rand.NextBool(rarity))
                 {
                     int dust = Dust.NewDust(new Vector2(i * 16 + 4, j * 16 + 2), 4, 4, dustType, 0f, 0f, 100, default, 1f);
-                    if (Main.rand.Next(3) != 0)
-                    {
+                    if (!Main.rand.NextBool(3))
                         Main.dust[dust].noGravity = true;
-                    }
+
+                    // Prevent lag.
+                    Main.dust[dust].noLightEmittence = true;
+
                     Main.dust[dust].velocity *= 0.3f;
                     Main.dust[dust].velocity.Y = Main.dust[dust].velocity.Y - 1.5f;
                 }
@@ -170,11 +167,13 @@ namespace CalamityMod
         {
             int width = flameTexture.Width;
             int height = flameTexture.Height;
+            float drawPositionX = item.position.X - Main.screenPosition.X + item.width * 0.5f;
+            float drawPositionY = item.position.Y - Main.screenPosition.Y + item.height - flameTexture.Height * 0.5f + 2f;
             for (int c = 0; c < 7; c++)
             {
                 float shakeX = Main.rand.Next(-10, 11) * 0.15f;
                 float shakeY = Main.rand.Next(-10, 1) * 0.35f;
-                Main.spriteBatch.Draw(flameTexture, new Vector2(item.position.X - Main.screenPosition.X + item.width * 0.5f + shakeX, item.position.Y - Main.screenPosition.Y + item.height - flameTexture.Height * 0.5f + 2f + shakeY), new Rectangle(0, 0, width, height), new Color(100, 100, 100, 0), 0f, default, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(flameTexture, new Vector2(drawPositionX + shakeX, drawPositionY + shakeY), new Rectangle(0, 0, width, height), new Color(100, 100, 100, 0), 0f, default, 1f, SpriteEffects.None, 0f);
             }
         }
 
@@ -238,6 +237,7 @@ namespace CalamityMod
                 {
                     if (WorldGen.InWorld(i, j))
                         continue;
+
                     if (WorldGen.SolidTile(Framing.GetTileSafely(i, j)))
                         return true;
                 }
@@ -253,6 +253,7 @@ namespace CalamityMod
                 {
                     if (!WorldGen.InWorld(i, j))
                         return false;
+
                     if (!WorldGen.SolidTile(Framing.GetTileSafely(i, j)))
                         return false;
                 }
@@ -268,6 +269,7 @@ namespace CalamityMod
                 {
                     if (!WorldGen.InWorld(i, j))
                         return false;
+
                     if (!WorldGen.SolidTile(Framing.GetTileSafely(i, j)))
                         return false;
                 }
@@ -334,6 +336,12 @@ namespace CalamityMod
             TileType<AstralStone>(),
             TileType<AstralSand>(),
             TileType<AstralSnow>(),
+            TileType<Driftwood>(),
+            TileType<PinkPearlPile>(),
+            TileType<BlackPearlPile>(),
+            TileType<WhitePearlPile>(),
+            TileType<Shellstone>(),
+            TileType<RuneSand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
             TileType<SulphurousShale>(),
@@ -404,6 +412,15 @@ namespace CalamityMod
             TileType<AstralSandstone>(),
             TileType<CelestialRemains>(),
             // Sunken Sea
+            TileType<Limestone>(),
+            TileType<PolypSand>(),
+            TileType<VolcanicSand>(),
+            TileType<PinkPearlPile>(),
+            TileType<BlackPearlPile>(),
+            TileType<WhitePearlPile>(),
+            TileType<Shellstone>(),
+            TileType<Runestone>(),
+            TileType<RuneSand>(),
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
@@ -657,7 +674,7 @@ namespace CalamityMod
         /// Returns if a tile is safe to be mined in terms of it being "important"
         /// </summary>
         /// <param name="tile"></param>
-        /// <param name="ignoreAbyss">If voidstone and abyss gravel should be considered unsafe to mine</param>
+        /// <param name="ignoreAbyss">If abyss terrain blocks should be considered unsafe to mine</param>
         /// <returns></returns>
         public static bool ShouldBeMined(this Tile tile, bool ignoreAbyss = true)
         {
@@ -669,105 +686,12 @@ namespace CalamityMod
             if (ignoreAbyss)
             {
                 tileExcludeList.Add(ModContent.TileType<AbyssGravel>());
+                tileExcludeList.Add(ModContent.TileType<PyreMantle>());
+                tileExcludeList.Add(ModContent.TileType<PyreMantleMolten>());
                 tileExcludeList.Add(ModContent.TileType<Voidstone>());
             }
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);
-        }
-
-        /// <summary>
-        /// Gets the item drop of an ore tile
-        /// </summary>
-        /// <param name="tile"></param>
-        /// <returns>The item a tile breaks when drops if it's an ore</returns>
-        public static int GetOreItemID(this Tile tile)
-        {
-            int item = -1;
-
-			// If it's not ore, then return
-			if (!TileID.Sets.Ore[tile.TileType])
-				return item;
-
-            ModTile moddedTile = TileLoader.GetTile(tile.TileType);
-
-            //Getting the item drop of a modded tile is pretty easy.
-            if (moddedTile != null)
-                item = moddedTile.ItemDrop;
-
-            //There is no easy way for getting vanilla item drops :(
-            else
-            {
-                switch (tile.TileType)
-                {
-                    case TileID.LunarOre:
-                        item = ItemID.LunarOre;
-                        break;
-                    case TileID.Chlorophyte:
-                        item = ItemID.ChlorophyteOre;
-                        break;
-                    case TileID.Titanium:
-                        item = ItemID.TitaniumOre;
-                        break;
-                    case TileID.Adamantite:
-                        item = ItemID.AdamantiteOre;
-                        break;
-                    case TileID.Orichalcum:
-                        item = ItemID.OrichalcumOre;
-                        break;
-                    case TileID.Mythril:
-                        item = ItemID.MythrilOre;
-                        break;
-                    case TileID.Palladium:
-                        item = ItemID.PalladiumOre;
-                        break;
-                    case TileID.Cobalt:
-                        item = ItemID.CobaltOre;
-                        break;
-                    case TileID.Hellstone:
-                        item = ItemID.Hellstone;
-                        break;
-                    case TileID.Obsidian:
-                        item = ItemID.Obsidian;
-                        break;
-                    case TileID.Meteorite:
-                        item = ItemID.Meteorite;
-                        break;
-                    case TileID.Demonite:
-                        item = ItemID.DemoniteOre;
-                        break;
-                    case TileID.Crimtane:
-						item = ItemID.CrimtaneOre;
-                        break;
-                    case TileID.Platinum:
-                        item = ItemID.PlatinumOre;
-                        break;
-                    case TileID.Gold:
-                        item = ItemID.GoldOre;
-                        break;
-                    case TileID.Tungsten:
-                        item = ItemID.TungstenOre;
-                        break;
-                    case TileID.Silver:
-                        item = ItemID.SilverOre;
-                        break;
-                    case TileID.Lead:
-                        item = ItemID.LeadOre;
-                        break;
-                    case TileID.Iron:
-                        item = ItemID.IronOre;
-                        break;
-                    case TileID.Tin:
-                        item = ItemID.TinOre;
-                        break;
-                    case TileID.Copper:
-                        item = ItemID.CopperOre;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return item;
         }
     }
 }

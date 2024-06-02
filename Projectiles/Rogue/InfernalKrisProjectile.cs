@@ -1,22 +1,22 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class InfernalKrisProjectile : ModProjectile
+    public class InfernalKrisProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/InfernalKris";
 
         public static int spinTime = 280;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Infernal Kris");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -39,12 +39,12 @@ namespace CalamityMod.Projectiles.Rogue
 
                 float minScale = 1.9f;
                 float maxScale = 2.5f;
-                int dust = Dust.NewDust(Projectile.position - new Vector2(10, 10), 30, 30, 6, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
+                int dust = Dust.NewDust(Projectile.position - new Vector2(10, 10), 30, 30, DustID.Torch, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
                 Main.dust[dust].noGravity = true;
             }
             else
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             }
 
             Projectile.velocity.Y += 0.01f;
@@ -54,17 +54,17 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.timeLeft < spinTime)
             {
-                damage = (int)(Projectile.damage * 1.75f) + Main.rand.Next(0, 6);
+                modifiers.SourceDamage *= 1.75f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4,8) : Main.rand.Next(3,6));
+            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4, 8) : Main.rand.Next(3, 6));
             target.AddBuff(BuffID.OnFire, debuffTime);
 
             if (Projectile.Calamity().stealthStrike)
@@ -85,9 +85,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4,8) : Main.rand.Next(3,6));
+            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4, 8) : Main.rand.Next(3, 6));
             target.AddBuff(BuffID.OnFire, debuffTime);
 
             if (Projectile.Calamity().stealthStrike)
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 float minScale = 1.9f;
                 float maxScale = 2.5f;
-                int dust = Dust.NewDust(Projectile.position, 10, 10, 6, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
+                int dust = Dust.NewDust(Projectile.position, 10, 10, DustID.Torch, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
                 Main.dust[dust].noGravity = true;
             }
             else
@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.Calamity().stealthStrike)
             {

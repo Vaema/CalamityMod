@@ -14,7 +14,6 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Demon");
             Main.npcFrameCount[NPC.type] = 5;
         }
 
@@ -26,7 +25,7 @@ namespace CalamityMod.NPCs.Other
             NPC.defense = 0;
 
             // This is meant to be created after SCal is defeated and should be at least a little challenging.
-            NPC.lifeMax = 101010;
+            NPC.lifeMax = 100000;
             NPC.HitSound = SoundID.NPCHit47;
             NPC.DeathSound = SoundID.NPCDeath18;
             NPC.noGravity = true;
@@ -41,7 +40,7 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale) => NPC.lifeMax = 101010;
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment) => NPC.lifeMax = 100000;
 
         public override void AI()
         {
@@ -87,7 +86,7 @@ namespace CalamityMod.NPCs.Other
             // Create some fade dust.
             for (int i = 0; i < 3; i++)
             {
-                Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 223);
+                Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.FireworkFountain_Pink);
                 magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(2.8f, 3.5f);
                 magic.scale = Main.rand.NextFloat(1f, 1.125f);
                 magic.fadeIn = 0.4f;
@@ -103,7 +102,7 @@ namespace CalamityMod.NPCs.Other
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 223);
+                    Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.FireworkFountain_Pink);
                     magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(2.8f, 3.5f);
                     magic.scale = Main.rand.NextFloat(1f, 1.125f);
                     magic.fadeIn = 0.7f;
@@ -147,7 +146,7 @@ namespace CalamityMod.NPCs.Other
                 NPC.frame.Y = 0;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
                 Utils.PoofOfSmoke(NPC.Center);

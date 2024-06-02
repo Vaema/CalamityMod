@@ -1,16 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class UniversalGenesisStarcaller : ModProjectile
+    public class UniversalGenesisStarcaller : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Starcaller Shot");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -36,9 +36,9 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
-                    int idx = Dust.NewDust(Projectile.position, 1, 1, 173, 0f, 0f, 0, default, 0.5f);
+                    int idx = Dust.NewDust(Projectile.position, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 0.5f);
                     Main.dust[idx].alpha = Projectile.alpha;
                     Main.dust[idx].velocity *= 0f;
                     Main.dust[idx].noGravity = true;
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Item11 with { PitchVariance = 0.05f } , Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item11 with { PitchVariance = 0.05f }, Projectile.Center);
             return true;
         }
 
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
         // This projectile is always fullbright.
         public override Color? GetAlpha(Color lightColor) => new Color(1f, 1f, 1f, 0f);
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SpawnStars();
         }
@@ -87,9 +87,8 @@ namespace CalamityMod.Projectiles.Ranged
             bool bossFound = false;
             int life = 0;
             Vector2 targetVec = Projectile.Center;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (bossFound && !npc.IsABoss())
                     continue;
                 if (npc.CanBeChasedBy(Projectile, false))
@@ -115,11 +114,11 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
             if (Main.netMode != NetmodeID.Server)
             {

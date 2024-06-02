@@ -7,19 +7,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class PlagueKeeper : ModItem
+    public class PlagueKeeper : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Plague Keeper");
-            Tooltip.SetDefault("Fires a plague and bee cloud");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 74;
-            Item.damage = 80;
+            Item.height = 90;
+            Item.damage = 68;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -28,24 +23,21 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 90;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<VirulentBeeWave>();
             Item.shootSpeed = 9f;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
 
             target.AddBuff(ModContent.BuffType<Plague>(), 300);
             for (int i = 0; i < 3; i++)
             {
                 int bee = Projectile.NewProjectile(source, player.Center, Vector2.Zero, player.beeType(),
-                    player.beeDamage(damage / 3), player.beeKB(0f), player.whoAmI);
+                    player.beeDamage(Item.damage / 3), player.beeKB(0f), player.whoAmI);
                 if (bee.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[bee].penetrate = 1;
@@ -54,17 +46,15 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
 
             target.AddBuff(ModContent.BuffType<Plague>(), 300);
             for (int i = 0; i < 3; i++)
             {
                 int bee = Projectile.NewProjectile(source, player.Center, Vector2.Zero, player.beeType(),
-                    player.beeDamage(damage / 3), player.beeKB(0f), player.whoAmI);
+                    player.beeDamage(Item.damage / 3), player.beeKB(0f), player.whoAmI);
                 if (bee.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[bee].penetrate = 1;

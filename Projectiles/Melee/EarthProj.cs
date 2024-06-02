@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class EarthProj : ModProjectile
+    public class EarthProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private int noTileHitCounter = 120;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Earth");
-        }
 
         public override void SetDefaults()
         {
@@ -46,14 +42,14 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
             Projectile.alpha -= 15;
-            int num58 = 150;
+            int alphaControl = 150;
             if (Projectile.Center.Y >= Projectile.ai[1])
             {
-                num58 = 0;
+                alphaControl = 0;
             }
-            if (Projectile.alpha < num58)
+            if (Projectile.alpha < alphaControl)
             {
-                Projectile.alpha = num58;
+                Projectile.alpha = alphaControl;
             }
             Projectile.localAI[0] += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.01f * (float)Projectile.direction;
             Projectile.rotation = Projectile.velocity.ToRotation() - 1.57079637f;
@@ -72,16 +68,16 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Main.rand.NextBool(16))
             {
-                Vector2 value3 = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int num59 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustChoice, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
-                Main.dust[num59].velocity = value3 * 0.66f;
-                Main.dust[num59].position = Projectile.Center + value3 * 12f;
+                Vector2 dustDirection = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy((double)Projectile.velocity.ToRotation(), default);
+                int dustOnHit = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustChoice, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                Main.dust[dustOnHit].velocity = dustDirection * 0.66f;
+                Main.dust[dustOnHit].position = Projectile.Center + dustDirection * 12f;
             }
             if (Main.rand.NextBool(48) && Main.netMode != NetmodeID.Server)
             {
-                int num60 = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
-                Main.gore[num60].velocity *= 0.66f;
-                Main.gore[num60].velocity += Projectile.velocity * 0.3f;
+                int gored = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
+                Main.gore[gored].velocity *= 0.66f;
+                Main.gore[gored].velocity += Projectile.velocity * 0.3f;
             }
             if (Projectile.ai[1] == 1f)
             {
@@ -98,7 +94,7 @@ namespace CalamityMod.Projectiles.Melee
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0.5f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             float spread = 45f * 0.0174f;
             double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
@@ -144,7 +140,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire, 300);
             target.AddBuff(BuffID.Frostburn, 240);

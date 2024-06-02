@@ -21,10 +21,9 @@ namespace CalamityMod.Tiles.Furniture
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 18 };
+            TileObjectData.newTile.StyleLineSkip = 2;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Lantern Center");
-            AddMapEntry(new Color(99, 99, 99), name);
+            AddMapEntry(new Color(99, 99, 99), CalamityUtils.GetItemName<LanternCenter>());
             TileID.Sets.HasOutlines[Type] = true;
 
             AnimationFrameHeight = 54;
@@ -46,7 +45,6 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<LanternCenter>());
             LanternNight.ManualLanterns = false;
         }
 

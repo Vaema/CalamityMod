@@ -1,13 +1,13 @@
-﻿using CalamityMod.Tiles.AstralDesert;
-using System;
-
+﻿using System;
+using CalamityMod.Tiles.AstralDesert;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class AstralSandgun : ModProjectile
+    public class AstralSandgun : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.knockBack = 6f;
@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int tileX = (int)(Projectile.Center.X / 16f);
             int tileY = (int)(Projectile.Center.Y / 16f);
@@ -41,9 +41,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
-                int i = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 108, 0f, Projectile.velocity.Y * 0.5f);
+                int i = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainCloud, 0f, Projectile.velocity.Y * 0.5f);
                 Main.dust[i].velocity.X *= 0.2f;
             }
             Projectile.velocity.Y += 0.2f;

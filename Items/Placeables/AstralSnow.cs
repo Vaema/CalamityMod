@@ -1,19 +1,21 @@
 ﻿using CalamityMod.Items.Placeables.Walls;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class AstralSnow : ModItem
+    public class AstralSnow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Astral Snow");
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             Item.createTile = ModContent.TileType<Tiles.AstralSnow.AstralSnow>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -21,9 +23,7 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
         }
 
         public override void AddRecipes()

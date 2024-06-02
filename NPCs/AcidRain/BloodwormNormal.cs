@@ -1,8 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Events;
 using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,7 +14,6 @@ namespace CalamityMod.NPCs.AcidRain
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloodworm");
             Main.npcFrameCount[NPC.type] = 7;
             Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
@@ -45,7 +44,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 if (NPC.ai[0] == 0f)
                 {
-                    NPC.ai[0] = Main.rand.NextBool(2).ToDirectionInt();
+                    NPC.ai[0] = Main.rand.NextBool().ToDirectionInt();
                     NPC.netUpdate = true;
                 }
                 if (NPC.collideX)
@@ -57,10 +56,9 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.velocity.X = xSpeed * NPC.ai[0];
             NPC.spriteDirection = (int)NPC.ai[0];
             bool flee = false;
-            for (int i = 0; i < Main.player.Length; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player.active && !player.dead && Vector2.Distance(player.Center, NPC.Center) <= 220f)
+                if (!player.dead && Vector2.Distance(player.Center, NPC.Center) <= 220f)
                 {
                     flee = true;
                     break;
@@ -82,10 +80,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("A ripe-looking worm large enough to curl around your arm. A fish would have to be either mad enough or wise enough, to go after one of these.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bloodworm")
             });
         }
 
@@ -103,11 +100,11 @@ namespace CalamityMod.NPCs.AcidRain
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
 
@@ -119,8 +116,8 @@ namespace CalamityMod.NPCs.AcidRain
             // Increase bloodworm spawn rate relative to the number of existing bloodworms, parabolic multiplier ranging from 5x spawn rate with 0 blood worms to 1x with 5 or more
             int bloodwormAmt = NPC.CountNPCS(NPC.type);
             float spawnMult = bloodwormAmt > 5 ? 1f : (float)(0.16 * Math.Pow(5 - bloodwormAmt, 2)) + 1f;
-            float baseSpawnRate = AcidRainEvent.OldDukeHasBeenEncountered ? 2.569f : 5.138f;
-            float spawnRate = SpawnCondition.WormCritter.Chance * baseSpawnRate * spawnMult;
+            float baseSpawnRate = DownedBossSystem.downedBoomerDuke ? 0.1f : AcidRainEvent.OldDukeHasBeenEncountered ? 0.4f : 0.2f;
+            float spawnRate = baseSpawnRate * spawnMult;
 
             return spawnRate;
         }

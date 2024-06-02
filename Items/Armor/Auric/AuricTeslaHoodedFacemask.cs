@@ -1,32 +1,26 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.GodSlayer;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Items.Armor.Bloodflare;
-using CalamityMod.Items.Armor.GodSlayer;
-using CalamityMod.Items.Armor.Tarragon;
 
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaHoodedFacemask : ModItem
+    public class AuricTeslaHoodedFacemask : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Tesla Hooded Facemask");
-            Tooltip.SetDefault("30% increased ranged damage and critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 40; //132
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -38,13 +32,12 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void ArmorSetShadows(Player player)
         {
-            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawOutlines = true;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Ranged Tarragon, Bloodflare and God Slayer armor effects\n" +
-                "All projectiles spawn healing auric orbs on enemy hits";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraRanged = true;
@@ -54,7 +47,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayerRanged = true;
             modPlayer.auricSet = true;
             player.thorns += 3f;
-            player.lavaMax += 240;
             player.ignoreWater = true;
             player.crimsonRegen = true;
 

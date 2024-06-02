@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Astral
 {
     [AutoloadEquip(EquipType.Body)]
-    public class AstralBreastplate : ModItem
+    public class AstralBreastplate : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Astral Breastplate");
-            Tooltip.SetDefault("+80 max mana and +20 max life\n" +
-                               "Creature detection");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.defense = 25;
         }

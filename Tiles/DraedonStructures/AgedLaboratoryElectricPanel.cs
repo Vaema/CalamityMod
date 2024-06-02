@@ -1,8 +1,9 @@
-using CalamityMod.Items.Placeables.DraedonStructures;
+﻿using CalamityMod.Items.Placeables.DraedonStructures;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -31,9 +32,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             TileObjectData.addAlternate(1);
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Aged Electric Panel");
-            AddMapEntry(Color.DimGray, name);
+            AddMapEntry(Color.DimGray, CalamityUtils.GetText("Tiles.ElectricPanel"));
             DustType = 8;
         }
 
@@ -42,11 +41,6 @@ namespace CalamityMod.Tiles.DraedonStructures
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<AgedLaboratoryElectricPanelItem>());
         }
     }
 }

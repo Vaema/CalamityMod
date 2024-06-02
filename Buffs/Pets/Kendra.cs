@@ -1,4 +1,4 @@
-using CalamityMod.Projectiles.Pets;
+﻿using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,8 +9,6 @@ namespace CalamityMod.Buffs.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Kendra");
-            Description.SetDefault("A loyal friend accompanies you.");
             Main.buffNoTimeDisplay[Type] = true;
             Main.vanityPet[Type] = true;
         }

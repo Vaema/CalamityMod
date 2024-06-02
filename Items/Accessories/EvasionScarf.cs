@@ -1,29 +1,21 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.CalPlayer.Dashes;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Neck)]
-    public class EvasionScarf : ModItem
+    public class EvasionScarf : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Evasion Scarf");
-            Tooltip.SetDefault("15% increased true melee damage\n" +
-                "Grants the ability to dash; dashing into an attack will cause you to dodge it\n" +
-                "After a successful dodge you must wait 30 seconds before you can dodge again\n");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
         }

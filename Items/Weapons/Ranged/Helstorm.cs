@@ -1,33 +1,26 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Helstorm : ModItem
+    public class Helstorm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Helstorm");
-            Tooltip.SetDefault("Fires two bullets at once\n" +
-                "The gun also deals damage to enemies that touch it");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 31;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 50;
             Item.height = 24;
-            Item.useTime = 7;
-            Item.useAnimation = 7;
+            Item.damage = 33;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 9;
+            Item.useAnimation = 9;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.knockBack = 2f;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
@@ -48,10 +41,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Rectangle targetHitbox = target.Hitbox;
 
             float collisionPoint = 0f;
-            float gunLenght = 60f;
+            float gunLength = 60f;
             float gunHeight = 26f;
 
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.MountedCenter, player.MountedCenter + ((player.itemRotation + (player.direction < 0 ? MathHelper.Pi : 0f)).ToRotationVector2() * gunLenght), gunHeight, ref collisionPoint) ? null : false;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.MountedCenter, player.MountedCenter + ((player.itemRotation + (player.direction < 0 ? MathHelper.Pi : 0f)).ToRotationVector2() * gunLength), gunHeight, ref collisionPoint) ? null : false;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -73,12 +66,12 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Register();
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 360);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(BuffID.OnFire3, 360);
         }

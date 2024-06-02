@@ -6,19 +6,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
 {
-    public class Bloodfin : ModItem
+    public class Bloodfin : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public static int BuffType = ModContent.BuffType<BloodfinBoost>();
         public static int BuffDuration = 600;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloodfin");
-            Tooltip.SetDefault(@"The wonders of angiogenesis
-Grants a buff that boosts life regen for 10 seconds
-The life regen boost is stronger if below 75% health
-10 second duration");
-            SacrificeTotal = 30;
+            Item.ResearchUnlockCount = 30;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -26,7 +22,7 @@ The life regen boost is stronger if below 75% health
         {
             Item.width = 44;
             Item.height = 36;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Turquoise>();

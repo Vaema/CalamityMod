@@ -6,14 +6,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class PhotosynthesisPotion : ModItem
+    public class PhotosynthesisPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Photosynthesis Potion");
-            Tooltip.SetDefault("You regen life quickly while not moving, this effect is five times as strong during daytime\n" +
-                "Dropped hearts heal more HP");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -21,7 +19,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.useAnimation = 17;
             Item.useTime = 17;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
@@ -40,7 +38,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<TrapperBulb>().
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddDecraftCondition(Condition.Hardmode).
                 Register();
 
             CreateRecipe().
@@ -48,7 +47,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<BloodOrb>(40).
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

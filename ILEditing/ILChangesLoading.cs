@@ -1,20 +1,30 @@
-﻿using CalamityMod.Tiles.DraedonStructures;
-using CalamityMod.Tiles.FurnitureExo;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Reflection;
+using CalamityMod.Graphics.Renderers.CalamityRenderers;
+using CalamityMod.Tiles.DraedonStructures;
+using CalamityMod.Tiles.FurnitureExo;
+using CalamityMod.Walls;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Events;
+using Terraria.GameContent.ItemDropRules;
+using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
+using Terraria.GameContent.UI.States;
+using Terraria.Graphics.Light;
+using Terraria.Map;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public partial class ILChanges
+    public partial class ILChanges : ModSystem
     {
         /// <summary>
         /// Loads all IL Editing changes in the mod.
         /// </summary>
-        internal static void Load()
+        public override void OnModLoad()
         {
             // Wrap the vanilla town NPC spawning function in a delegate so that it can be tossed around and called at will.
             var updateTime = typeof(Main).GetMethod("UpdateTime_SpawnTownNPCs", BindingFlags.Static | BindingFlags.NonPublic);
@@ -27,9 +37,6 @@ namespace CalamityMod.ILEditing
             aLabDoorClosed = ModContent.TileType<AgedLaboratoryDoorClosed>();
             exoDoorOpen = ModContent.TileType<ExoDoorOpen>();
             exoDoorClosed = ModContent.TileType<ExoDoorClosed>();
-
-            // Re-initialize the projectile cache list.
-            OrderedProjectiles = new List<OrderedProjectileEntry>();
 
             // Graphics
             IL.Terraria.Main.DoDraw += AdditiveDrawing;
@@ -48,98 +55,118 @@ namespace CalamityMod.ILEditing
             On.Terraria.GameContent.Drawing.TileDrawing.PreDrawTiles += ClearForegroundStuff;
             On.Terraria.GameContent.Drawing.TileDrawing.Draw += ClearTilePings;
             On.Terraria.GameContent.ItemDropRules.CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
-            On.Terraria.GameContent.Drawing.TileDrawing.Update += StoreWindGrid;
+
+            // Graphics (dyeable shader stuff)
+            On_Player.UpdateItemDye += DyeableShadersRenderer.FindDyesDetour;
+            On_Player.ApplyEquipFunctional += DyeableShadersRenderer.CheckAccessoryDetour;
+            On_Player.ApplyEquipVanity_Item += DyeableShadersRenderer.CheckVanityDetour;
+            On_Player.UpdateArmorSets += DyeableShadersRenderer.CheckArmorSetsDetour;
 
             // NPC behavior
-            IL.Terraria.Main.UpdateTime += PermitNighttimeTownNPCSpawning;
-            On.Terraria.Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
-            On.Terraria.NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
-            IL.Terraria.Player.CollectTaxes += MakeTaxCollectorUseful;
-            IL.Terraria.Projectile.Damage += RemoveLunaticCultistHomingResist;
+            IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
+            On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
+            On_NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
+            IL_Player.CollectTaxes += MakeTaxCollectorUseful;
+            IL_Projectile.Damage += RemoveLunaticCultistHomingResist;
 
             // Mechanics / features
-            On.Terraria.NPC.ApplyTileCollision += AllowTriggeredFallthrough;
-            IL.Terraria.Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
-            IL.Terraria.Player.Hurt += RemoveRNGFromDodges;
-            IL.Terraria.Player.DashMovement += FixAllDashMechanics;
-            On.Terraria.Player.DoCommonDashHandle += ApplyDashKeybind;
-            IL.Terraria.Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
-            IL.Terraria.Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
-            On.Terraria.WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
-            On.Terraria.WorldGen.CloseDoor += CloseDoor_LabDoorOverride;
-            On.Terraria.Item.AffixName += IncorporateEnchantmentInAffix;
-            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float += IncorporateMinionExplodingCountdown;
+            On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
+            IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
+            IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
+            IL_Player.DashMovement += FixAllDashMechanics;
+            On_Player.DoCommonDashHandle += ApplyDashKeybind;
+            IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
+            IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
+            On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
+            On_WorldGen.CloseDoor += CloseDoor_LabDoorOverride;
+            On_Item.AffixName += IncorporateEnchantmentInAffix;
+            On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateMinionExplodingCountdown;
             // TODO -- This should be unnecessary. There is now a TML hook for platform collision for ModNPCs.
-            On.Terraria.NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
-            IL.Terraria.Wiring.HitWireSingle += AddTwinklersToStatue;
-            On.Terraria.Player.UpdateItemDye += FindCalamityItemDyeShader;
+            On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
+            IL_Wiring.HitWireSingle += AddTwinklersToStatue;
+            On_Player.UpdateItemDye += FindCalamityItemDyeShader;
+            On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
+            On_Item.GetShimmered += ShimmerEffectEdits;
 
-            // Mana Burn
-            IL.Terraria.Player.QuickHeal += ConditionallyReplaceManaSickness;
-            IL.Terraria.Player.QuickMana += ConditionallyReplaceManaSickness;
-            IL.Terraria.Player.ItemCheck_Inner += ConditionallyReplaceManaSickness;
+            // Mana Burn (Chaos Stone) and Chalice of the Blood God
+            IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
 
             // Custom grappling
-            On.Terraria.Player.GrappleMovement += CustomGrappleMovementCheck;
-            On.Terraria.Player.UpdatePettingAnimal += CustomGrapplePreDefaultMovement;
-            On.Terraria.Player.PlayerFrame += CustomGrapplePostFrame;
-            On.Terraria.Player.SlopeDownMovement += CustomGrapplePreStepUp;
+            On_Player.GrappleMovement += CustomGrappleMovementCheck;
+            On_Player.UpdatePettingAnimal += CustomGrapplePreDefaultMovement;
+            On_Player.PlayerFrame += CustomGrapplePostFrame;
+            On_Player.SlopeDownMovement += CustomGrapplePreStepUp;
 
             // Damage and health balance
-            IL.Terraria.Main.DamageVar += AdjustDamageVariance;
-            IL.Terraria.Projectile.Damage += MakeTagDamageMultiplicative;
-            IL.Terraria.NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
-            IL.Terraria.Projectile.AI_001 += AdjustChlorophyteBullets;
-            IL.Terraria.Player.UpdateBuffs += NerfSharpeningStation;
+            On_Main.DamageVar_float_int_float += AdjustDamageVariance;
+            IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
+            IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
+            IL_Player.UpdateBuffs += NerfSharpeningStation;
+            IL_Player.UpdateBuffs += NerfBeetleScaleMail;
+            IL_Player.UpdateBuffs += NerfNebulaArmorBaseLifeRegenAndDamage;
+            IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 
             // Movement speed balance
-            IL.Terraria.Player.UpdateJumpHeight += FixJumpHeightBoosts;
-            IL.Terraria.Player.Update += BaseJumpHeightAdjustment;
-            IL.Terraria.Player.Update += RunSpeedAdjustments;
-            IL.Terraria.Initializers.WingStatsInitializer.Load += ReduceWingHoverVelocities;
-            IL.Terraria.Player.Update += NerfMagiluminescence;
-            IL.Terraria.Player.Update += NerfSoaringInsigniaRunAcceleration;
-            IL.Terraria.Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
+            IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
+            IL_Player.Update += BaseJumpHeightAdjustment;
+            IL_Player.Update += RunSpeedAdjustments;
+            IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
+            IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
 
             // Life regen balance
-            IL.Terraria.Player.UpdateLifeRegen += PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen;
+            IL_Player.UpdateLifeRegen += PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen;
+            IL_Player.UpdateLifeRegen += RemoveNebulaLifeBoosterDoTImmunity;
 
             // Mana regen balance
-            IL.Terraria.Player.Update += ManaRegenDelayAdjustment;
-            IL.Terraria.Player.UpdateManaRegen += ManaRegenAdjustment;
+            IL_Player.Update += ManaRegenDelayAdjustment;
+            IL_Player.UpdateManaRegen += ManaRegenAdjustment;
+            IL_Player.UpdateManaRegen += NerfNebulaArmorManaRegen;
+
+            // Item prefix changes
+            On_Player.GrantPrefixBenefits += PrefixChanges;
+
+            // Debuff balancing
+            IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
             // World generation
-            IL.Terraria.WorldGen.Pyramid += ReplacePharaohSetInPyramids;
-            IL.Terraria.WorldGen.MakeDungeon += PreventDungeonHorizontalCollisions;
-            IL.Terraria.WorldGen.DungeonHalls += PreventDungeonHallCollisions;
-            IL.Terraria.WorldGen.GrowLivingTree += BlockLivingTreesNearOcean;
-            On.Terraria.WorldGen.SmashAltar += PreventSmashAltarCode;
-            IL.Terraria.WorldGen.hardUpdateWorld += AdjustChlorophyteSpawnRate;
-            IL.Terraria.WorldGen.Chlorophyte += AdjustChlorophyteSpawnLimits;
-            IL.Terraria.GameContent.UI.States.UIWorldCreation.SetDefaultOptions += ChangeDefaultWorldSize;
-            IL.Terraria.GameContent.UI.States.UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
-            On.Terraria.IO.WorldFile.ClearTempTiles += ClearModdedTempTiles;
+            IL_WorldGen.Pyramid += ReplacePharaohSetInPyramids;
+            IL_WorldGen.GrowLivingTree += BlockLivingTreesNearOcean;
+            On_WorldGen.SmashAltar += PreventSmashAltarCode;
+            IL_WorldGen.hardUpdateWorld += AdjustChlorophyteSpawnRate;
+            IL_WorldGen.Chlorophyte += AdjustChlorophyteSpawnLimits;
+            IL_UIWorldCreation.SetDefaultOptions += ChangeDefaultWorldSize;
+            IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
+            Terraria.IO.On_WorldFile.ClearTempTiles += ClearModdedTempTiles;
+            On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
+            IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
+            IL_WorldGen.MakeDungeon += ChangeDungeonSpikeQuantities;
 
             // Removal of vanilla stupidity
-            IL.Terraria.GameContent.Events.Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
-            IL.Terraria.Item.Prefix += RelaxPrefixRequirements;
-            On.Terraria.NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
-            IL.Terraria.NPC.SpawnNPC += MakeVoodooDemonDollWork;
-            // TODO -- Beat Lava Slimes once and for all
-            // IL.Terraria.NPC.VanillaHitEffect += RemoveLavaDropsFromExpertLavaSlimes;
-            IL.Terraria.Player.IsTileTypeInInteractionRange += IncreasePylonInteractionRange;
-            IL.Terraria.Projectile.CanExplodeTile += MakeMeteoriteExplodable;
-            IL.Terraria.Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
-            IL.Terraria.Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
-            IL.Terraria.WorldGen.AttemptFossilShattering += PreventFossilShattering;
-            On.Terraria.Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
-            On.Terraria.Player.GetAnglerReward += ImproveAnglerRewards;
+            IL_Player.UpdateBuffs += RemoveFeralBiteRandomDebuffs;
+            IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
+            IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
+            On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
+            On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
+
+            IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
+            IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
+            IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
+            IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
+            On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
+            On_Player.GetAnglerReward += ImproveAnglerRewards;
 
             // Fix vanilla bugs exposed by Calamity mechanics
-            IL.Terraria.NPC.NPCLoot += FixSplittingWormBannerDrops;
-            On.Terraria.Item.Prefix += LetRogueItemsBeReforgeable;
-            // Should not be necessary in 1.4
-            // IL.Terraria.Main.DoUpdate += FixProjectileUpdatePriorityProblems;
+            IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
+            On_NPC.PlayerInteraction += FixSplittingWormInteraction;
+
+            // Fix vanilla not accounting for spritebatch modification in held projectile drawing
+            On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
+
+            // Fix vanilla not accounting for multiple bobbers when fishing with truffle worm
+            IL_Player.ItemCheck_CheckFishingBobbers += FixTruffleWormFishing;
+            
+            // Allow specified walls to be visible through water on the map
+            IL_MapHelper.CreateMapTile += UseVisibleThroughWaterMapTile;
 
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
@@ -148,119 +175,23 @@ namespace CalamityMod.ILEditing
         }
 
         /// <summary>
+        /// Loads things which need to be instantiated later in the load order.
+        /// </summary>
+        public override void AddRecipes()
+        {
+            WallVisibleThroughWater.InitializeWaterMapEntryLookups();
+        }
+
+        /// <summary>
         /// Unloads all IL Editing changes in the mod.
         /// </summary>
-        internal static void Unload()
+        public override void OnModUnload()
         {
+            // (2023/07) Manually unloading IL hooks is no longer necessary as TML should automatically do it for you.
+            // https://discord.com/channels/103110554649894912/445276626352209920/1099856743820959855 (links to TML server)
+
             VanillaSpawnTownNPCs = null;
             labDoorOpen = labDoorClosed = aLabDoorOpen = aLabDoorClosed = exoDoorClosed = exoDoorOpen = -1;
-
-            // Graphics
-            IL.Terraria.Main.DoDraw -= AdditiveDrawing;
-            IL.Terraria.Main.DoDraw -= DrawFloralParadiseFog;
-            On.Terraria.Main.DrawGore -= DrawForegroundStuff;
-            On.Terraria.Main.DrawCursor -= UseCoolFireCursorEffect;
-            On.Terraria.Main.SetDisplayMode -= ResetRenderTargetSizes;
-            On.Terraria.Main.SortDrawCacheWorms -= DrawFusableParticles;
-            On.Terraria.Main.DrawInfernoRings -= DrawForegroundParticles;
-            IL.Terraria.Main.DrawInterface_40_InteractItemIcon -= MakeMouseHoverItemsSupportAnimations;
-            On.Terraria.GameContent.Drawing.TileDrawing.DrawPartialLiquid -= DrawCustomLava;
-            IL.Terraria.WaterfallManager.DrawWaterfall -= DrawCustomLavafalls;
-            IL.Terraria.GameContent.Liquid.LiquidRenderer.InternalDraw -= ChangeWaterQuadColors;
-            IL.Terraria.Main.oldDrawWater -= DrawCustomLava3;
-            On.Terraria.Graphics.Light.TileLightScanner.GetTileLight -= MakeSulphSeaWaterBetter;
-            On.Terraria.GameContent.Drawing.TileDrawing.PreDrawTiles -= ClearForegroundStuff;
-            On.Terraria.GameContent.Drawing.TileDrawing.Draw -= ClearTilePings;
-            On.Terraria.GameContent.ItemDropRules.CommonCode.ModifyItemDropFromNPC -= ColorBlightedGel;
-            On.Terraria.GameContent.Drawing.TileDrawing.Update -= StoreWindGrid;
-
-            // NPC behavior
-            IL.Terraria.Main.UpdateTime -= PermitNighttimeTownNPCSpawning;
-            On.Terraria.Main.UpdateTime_SpawnTownNPCs -= AlterTownNPCSpawnRate;
-            On.Terraria.NPC.ShouldEmpressBeEnraged -= AllowEmpressToEnrageInBossRush;
-            IL.Terraria.Player.CollectTaxes -= MakeTaxCollectorUseful;
-            IL.Terraria.Projectile.Damage -= RemoveLunaticCultistHomingResist;
-
-            // Mechanics / features
-            On.Terraria.NPC.ApplyTileCollision -= AllowTriggeredFallthrough;
-            IL.Terraria.Player.ApplyEquipFunctional -= ScopesRequireVisibilityToZoom;
-            IL.Terraria.Player.Hurt -= RemoveRNGFromDodges;
-            IL.Terraria.Player.DashMovement -= FixAllDashMechanics;
-            On.Terraria.Player.DoCommonDashHandle -= ApplyDashKeybind;
-            IL.Terraria.Player.GiveImmuneTimeForCollisionAttack -= MakeShieldSlamIFramesConsistent;
-            IL.Terraria.Player.Update_NPCCollision -= NerfShieldOfCthulhuBonkSafety;
-            On.Terraria.WorldGen.OpenDoor -= OpenDoor_LabDoorOverride;
-            On.Terraria.WorldGen.CloseDoor -= CloseDoor_LabDoorOverride;
-            On.Terraria.Item.AffixName -= IncorporateEnchantmentInAffix;
-            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float -= IncorporateMinionExplodingCountdown;
-            On.Terraria.NPC.Collision_DecideFallThroughPlatforms -= EnableCalamityBossPlatformCollision;
-            IL.Terraria.Wiring.HitWireSingle -= AddTwinklersToStatue;
-            On.Terraria.Player.UpdateItemDye -= FindCalamityItemDyeShader;
-
-            // Mana Burn
-            IL.Terraria.Player.QuickHeal -= ConditionallyReplaceManaSickness;
-            IL.Terraria.Player.QuickMana -= ConditionallyReplaceManaSickness;
-            IL.Terraria.Player.ItemCheck_Inner -= ConditionallyReplaceManaSickness;
-
-            // Custom grappling
-            On.Terraria.Player.GrappleMovement -= CustomGrappleMovementCheck;
-            On.Terraria.Player.UpdatePettingAnimal -= CustomGrapplePreDefaultMovement;
-            On.Terraria.Player.PlayerFrame -= CustomGrapplePostFrame;
-            On.Terraria.Player.SlopeDownMovement -= CustomGrapplePreStepUp;
-
-            // Damage and health balance
-            IL.Terraria.Main.DamageVar -= AdjustDamageVariance;
-            IL.Terraria.Projectile.Damage -= MakeTagDamageMultiplicative;
-            IL.Terraria.NPC.ScaleStats_ApplyExpertTweaks -= RemoveExpertHardmodeScaling;
-            IL.Terraria.Projectile.AI_001 -= AdjustChlorophyteBullets;
-            IL.Terraria.Player.UpdateBuffs -= NerfSharpeningStation;
-
-            // Movement speed balance
-            IL.Terraria.Player.UpdateJumpHeight -= FixJumpHeightBoosts;
-            IL.Terraria.Player.Update -= BaseJumpHeightAdjustment;
-            IL.Terraria.Player.Update -= RunSpeedAdjustments;
-            IL.Terraria.Initializers.WingStatsInitializer.Load -= ReduceWingHoverVelocities;
-            IL.Terraria.Player.Update -= NerfMagiluminescence;
-            IL.Terraria.Player.Update -= NerfSoaringInsigniaRunAcceleration;
-            IL.Terraria.Player.WingMovement -= RemoveSoaringInsigniaInfiniteWingTime;
-
-            // Life regen balance
-            IL.Terraria.Player.UpdateLifeRegen -= PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen;
-
-            // Mana regen balance
-            IL.Terraria.Player.Update -= ManaRegenDelayAdjustment;
-            IL.Terraria.Player.UpdateManaRegen -= ManaRegenAdjustment;
-
-            // World generation
-            IL.Terraria.WorldGen.Pyramid -= ReplacePharaohSetInPyramids;
-            IL.Terraria.WorldGen.MakeDungeon -= PreventDungeonHorizontalCollisions;
-            IL.Terraria.WorldGen.DungeonHalls -= PreventDungeonHallCollisions;
-            IL.Terraria.WorldGen.GrowLivingTree -= BlockLivingTreesNearOcean;
-            On.Terraria.WorldGen.SmashAltar -= PreventSmashAltarCode;
-            IL.Terraria.WorldGen.hardUpdateWorld -= AdjustChlorophyteSpawnRate;
-            IL.Terraria.WorldGen.Chlorophyte -= AdjustChlorophyteSpawnLimits;
-            IL.Terraria.GameContent.UI.States.UIWorldCreation.SetDefaultOptions -= ChangeDefaultWorldSize;
-            IL.Terraria.GameContent.UI.States.UIWorldCreation.AddWorldSizeOptions -= SwapSmallDescriptionKey;
-            On.Terraria.IO.WorldFile.ClearTempTiles -= ClearModdedTempTiles;
-
-            // Removal of vanilla stupidity
-            IL.Terraria.GameContent.Events.Sandstorm.HasSufficientWind -= DecreaseSandstormWindSpeedRequirement;
-            IL.Terraria.Item.Prefix -= RelaxPrefixRequirements;
-            On.Terraria.NPC.SlimeRainSpawns -= PreventBossSlimeRainSpawns;
-            IL.Terraria.NPC.SpawnNPC -= MakeVoodooDemonDollWork;
-            // IL.Terraria.NPC.VanillaHitEffect -= RemoveLavaDropsFromExpertLavaSlimes;
-            IL.Terraria.Player.IsTileTypeInInteractionRange -= IncreasePylonInteractionRange;
-            IL.Terraria.Projectile.CanExplodeTile -= MakeMeteoriteExplodable;
-            IL.Terraria.Main.UpdateWindyDayState -= MakeWindyDayMusicPlayLessOften;
-            IL.Terraria.Main.UpdateTime_StartNight -= BloodMoonsRequire200MaxLife;
-            IL.Terraria.WorldGen.AttemptFossilShattering -= PreventFossilShattering;
-            On.Terraria.Player.GetPickaxeDamage -= RemoveHellforgePickaxeRequirement;
-            On.Terraria.Player.GetAnglerReward -= ImproveAnglerRewards;
-
-            // Fix vanilla bugs exposed by Calamity mechanics
-            IL.Terraria.NPC.NPCLoot -= FixSplittingWormBannerDrops;
-            On.Terraria.Item.Prefix -= LetRogueItemsBeReforgeable;
-            // IL.Terraria.Main.DoUpdate -= FixProjectileUpdatePriorityProblems;
         }
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -33,27 +35,20 @@ namespace CalamityMod.Tiles.DraedonStructures
             TileObjectData.addAlternate(1);
 
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Server");
-            AddMapEntry(new Color(82, 67, 66), name);
+            AddMapEntry(new Color(82, 67, 66), CalamityUtils.GetText("Tiles.Server"));
         }
 
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 182);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TheDestroyer);
             return false;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ModContent.ItemType<LaboratoryServerItem>());
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

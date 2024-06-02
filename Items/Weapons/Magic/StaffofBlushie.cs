@@ -8,15 +8,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Magic
 {
     [LegacyName("BlushieStaff")]
-    public class StaffofBlushie : ModItem
+    public class StaffofBlushie : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Staff of Blushie");
-            Tooltip.SetDefault("Hold your mouse, wait, wait, wait, and put your trust in the power of blue magic");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
             Item.width = Item.height = 48;
@@ -31,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useTurn = false;
             Item.DamageType = DamageClass.Magic;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -45,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.SapphireStaff).
-                AddIngredient<Phantoplasm>(10).
+                AddIngredient<Necroplasm>(10).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

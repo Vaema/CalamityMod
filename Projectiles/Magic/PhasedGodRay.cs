@@ -1,14 +1,15 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class PhasedGodRay : ModProjectile
+    public class PhasedGodRay : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const float LaserLength = 80f;
         private const float LaserLengthChangeRate = 2f;
 
@@ -16,13 +17,12 @@ namespace CalamityMod.Projectiles.Magic
         // They are extremely carefully chosen and barely work as is!
         private const float WaveTheta = 0.09f;
         private const int WaveTwistFrames = 9;
-        private ref float WaveFrameState => ref Projectile.localAI[1];
+        private ref float WaveFrameState => ref Projectile.ai[0];
 
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phased God Ray");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
 
             float waveSign = WaveFrameState < 0f ? -1f : 1f;
 
-            // Initialize waving. Setting localAI[1] to a number between -1 and 1 tells it which way to wave.
+            // Initialize waving. Setting ai[0] to a number between -1 and 1 tells it which way to wave.
             // Exactly 0 is a coinflip.
             if (Math.Abs(WaveFrameState) < 1f)
             {
@@ -101,15 +101,15 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
         public override Color? GetAlpha(Color lightColor) => new Color(222, 166, 44, 0);
 
         public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(LaserLength, 2f, lightColor, curve: true);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustID = 269;
             int dustAmt = 4;

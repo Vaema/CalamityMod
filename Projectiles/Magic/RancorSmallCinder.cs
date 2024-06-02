@@ -4,13 +4,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class RancorSmallCinder : ModProjectile
+    public class RancorSmallCinder : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public ref float Time => ref Projectile.ai[0];
         public ref float Lifetime => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cinder");
             Main.projFrames[Projectile.type] = 3;
         }
 

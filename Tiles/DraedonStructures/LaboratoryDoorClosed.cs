@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -36,13 +37,11 @@ namespace CalamityMod.Tiles.DraedonStructures
             TileObjectData.addTile(Type);
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Laboratory Door");
-            AddMapEntry(Color.DarkSlateGray, name);
+            AddMapEntry(new Color(119, 105, 79), Language.GetText("MapObject.Door"));
             TileID.Sets.DisableSmartCursor[Type] = true;
             AdjTiles = new int[] { TileID.ClosedDoor };
             DustType = 8;
-            OpenDoorID = ModContent.TileType<LaboratoryDoorOpen>();
+            TileID.Sets.OpenDoorID[Type] = ModContent.TileType<LaboratoryDoorOpen>();
         }
 
         public override bool Slope(int i, int j) => false;
@@ -54,11 +53,6 @@ namespace CalamityMod.Tiles.DraedonStructures
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 48, ModContent.ItemType<LaboratoryDoorItem>());
         }
 
         public override void MouseOver(int i, int j)

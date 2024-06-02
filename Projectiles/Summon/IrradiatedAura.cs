@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class IrradiatedAura : ModProjectile
+    public class IrradiatedAura : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Irradiated Aura");
-        }
 
         public override void SetDefaults()
         {
@@ -39,31 +35,25 @@ namespace CalamityMod.Projectiles.Summon
             }
             else if (randomDust == 2)
             {
-                randomDust = (int)CalamityDusts.SulfurousSeaAcid;
+                randomDust = (int)CalamityDusts.SulphurousSeaAcid;
             }
             else
             {
                 randomDust = 33;
             }
-            for (int num468 = 0; num468 < (Main.rand.NextBool(2) ? 1 : 2); num468++)
+            for (int i = 0; i < (Main.rand.NextBool() ? 1 : 2); i++)
             {
-                int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
                 if (randomDust == 89)
                 {
-                    Main.dust[num469].scale *= 0.35f;
+                    Main.dust[dust].scale *= 0.35f;
                 }
-                Main.dust[num469].velocity *= 0f;
+                Main.dust[dust].velocity *= 0f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
     }
 }

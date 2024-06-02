@@ -1,22 +1,22 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class EndoCooperLimbs : ModProjectile
+    public class EndoCooperLimbs : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private int AttackMode = 0;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ascened Cooper");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
@@ -47,12 +47,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile body = Main.projectile[(int)Projectile.ai[1]];
             //Apply the buff
-            bool flag64 = Projectile.type == ModContent.ProjectileType<EndoCooperLimbs>();
+            bool isMinion = Projectile.type == ModContent.ProjectileType<EndoCooperLimbs>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             player.AddBuff(ModContent.BuffType<EndoCooperBuff>(), 3600);
 
-            if (flag64)
+            if (isMinion)
             {
                 if (player.dead)
                 {
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Summon
 
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SpawnDust();
             SoundEngine.PlaySound(SoundID.NPCHit5, Projectile.Center);
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override void PostDraw(Color lightColor)
-        {            
+        {
             if (Projectile.ai[0] == 2f)
                 return;
 
@@ -142,9 +142,8 @@ namespace CalamityMod.Projectiles.Summon
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Color.LightSkyBlue, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<ExoFreeze>(), 30);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             target.AddBuff(BuffID.Frostburn, 180);
         }
@@ -159,21 +158,12 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 360; i += 60)
                 {
-                    float dmgmult = 0.8f;
                     Vector2 pspeed1 = new Vector2(Main.rand.NextFloat(3f, 8f), Main.rand.NextFloat(3f, 8f)).RotatedBy(MathHelper.ToRadians(i + 20 + MathHelper.ToDegrees(Projectile.rotation)));
-                    int[] projectiles = new int[3];
-
-                    projectiles[0] = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed1, ModContent.ProjectileType<EndoIceShard>(), (int)(Projectile.damage * dmgmult), 1f, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed1, ModContent.ProjectileType<EndoIceShard>(), Projectile.damage, 1f, Projectile.owner, 0f, 0f);
                     Vector2 pspeed2 = pspeed1.RotatedBy(MathHelper.ToRadians(Main.rand.Next(5, 13))) * Main.rand.NextFloat(0.6f, 1.3f);
-                    projectiles[1] = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed2, ModContent.ProjectileType<EndoIceShard>(), (int)(Projectile.damage * dmgmult), 1f, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed2, ModContent.ProjectileType<EndoIceShard>(), Projectile.damage, 1f, Projectile.owner, 0f, 0f);
                     Vector2 pspeed3 = pspeed1.RotatedBy(MathHelper.ToRadians(Main.rand.Next(-12, -1))) * Main.rand.NextFloat(0.6f, 1.3f);
-                    projectiles[2] = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed3, ModContent.ProjectileType<EndoIceShard>(), (int)(Projectile.damage * dmgmult), 1f, Projectile.owner, 0f, 0f);
-
-                    for (int j = 0; j < projectiles.Length; j++)
-                    {
-                        if (Main.projectile.IndexInRange(projectiles[j]))
-                            Main.projectile[projectiles[j]].originalDamage = Projectile.originalDamage;
-                    }
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed3, ModContent.ProjectileType<EndoIceShard>(), Projectile.damage, 1f, Projectile.owner, 0f, 0f);
                 }
             }
         }
@@ -182,7 +172,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 50; i++)
             {
-                int dusttype = Main.rand.NextBool(2) ? 68 : 67;
+                int dusttype = Main.rand.NextBool() ? 68 : 67;
                 if (Main.rand.NextBool(4))
                 {
                     dusttype = 80;
@@ -199,11 +189,8 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 360; i += 60)
             {
-                float dmgmult = 0.9f;
                 Vector2 pspeed1 = new Vector2(0.9f, 0.9f).RotatedBy(MathHelper.ToRadians(i + 20 + MathHelper.ToDegrees(Projectile.rotation)));
-                int flame = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed1, ModContent.ProjectileType<EndoFire>(), (int)(Projectile.damage * dmgmult), 1f, Projectile.owner, 0f, 0f);
-                if (Main.projectile.IndexInRange(flame))
-                    Main.projectile[flame].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, pspeed1, ModContent.ProjectileType<EndoFire>(), Projectile.damage, 1f, Projectile.owner, 0f, 0f);
             }
         }
     }

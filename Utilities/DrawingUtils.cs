@@ -1,11 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
+using CalamityMod.Graphics;
+using CalamityMod.Items.Weapons.Melee;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -72,6 +75,7 @@ namespace CalamityMod
             if (CalamityConfig.Instance.Afterimages)
             {
                 Vector2 centerOffset = drawCentered ? proj.Size / 2f : Vector2.Zero;
+                Color alphaColor = proj.GetAlpha(lightColor);
                 switch (mode)
                 {
                     // Standard afterimages. No customizable features other than total afterimage count.
@@ -81,7 +85,7 @@ namespace CalamityMod
                         {
                             Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                            Color color = proj.GetAlpha(lightColor) * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                            Color color = alphaColor * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
                             Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, origin, scale, spriteEffects, 0f);
                         }
                         break;
@@ -91,8 +95,9 @@ namespace CalamityMod
                     case 1:
                         // Safety check: the loop must increment
                         int increment = Math.Max(1, typeOneIncrement);
-                        Color drawColor = proj.GetAlpha(lightColor);
+                        Color drawColor = alphaColor;
                         int afterimageCount = ProjectileID.Sets.TrailCacheLength[proj.type];
+                        float afterimageColorCount = (float)afterimageCount * 1.5f;
                         int k = 0;
                         while (k < afterimageCount)
                         {
@@ -101,7 +106,7 @@ namespace CalamityMod
                             if (k > 0)
                             {
                                 float colorMult = (float)(afterimageCount - k);
-                                drawColor *= colorMult / ((float)afterimageCount * 1.5f);
+                                drawColor *= colorMult / afterimageColorCount;
                             }
                             Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), drawColor, rotation, origin, scale, spriteEffects, 0f);
                             k += increment;
@@ -118,7 +123,7 @@ namespace CalamityMod
 
                             Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                            Color color = proj.GetAlpha(lightColor) * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                            Color color = alphaColor * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
                             Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, origin, scale, sfxForThisAfterimage, 0f);
                         }
                         break;
@@ -191,6 +196,36 @@ namespace CalamityMod
             }
         }
         #endregion
+
+        public static Vector2 TileDrawOffset => Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+
+        // TODO: Add helper for drawing an inventory item to fill more of the slot than normal
+        /// <summary>
+        /// Helper for drawing a simple item with a customized scale in the inventory.
+        /// <para>Various notes and tips:</para>
+        /// <list type="bullet">Only apply this effect to items which get screwed over by effects like a flame animation
+        /// <item>For consistency, try to keep the physical object inside the slot.</item>
+        /// <item>Sprited effects like thunder, fire, ect can be fine when allowed outside to bleed outside a slot. <para>However these bleeds should only happen for a few frames, like Auric Tesla and Dyanmo Stem Cells.</para></item>
+        /// <item>Exceptions to these rules are the various Tracers, The Community, and Quiver of Nihility.<para>Do not treat their upscales as them as a norm.</para></item>
+        /// </list>
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="texture"></param>
+        /// <param name="position"></param>
+        /// <param name="frame"></param>
+        /// <param name="drawColor"></param>
+        /// <param name="itemColor"></param>
+        /// <param name="origin"></param>
+        /// <param name="scale"></param>
+        /// <param name="wantedScale"></param>
+        /// <param name="drawOffset"></param>
+        public static void DrawInventoryCustomScale(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale, float wantedScale = 1f, Vector2 drawOffset = default)
+        {
+            wantedScale = Math.Max(scale, wantedScale * Main.inventoryScale);
+            float scaleDifference = wantedScale - scale;
+            position += drawOffset * wantedScale;
+            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, wantedScale, SpriteEffects.None, 0);
+        }
 
         /// <summary>
         /// Draws a treasure bag in the world in the exact same way as how Terraria 1.4's bags are drawn.
@@ -363,8 +398,40 @@ namespace CalamityMod
 
         public static void DrawItemGlowmaskSingleFrame(this Item item, SpriteBatch spriteBatch, float rotation, Texture2D glowmaskTexture)
         {
-            Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f - 2f);
-            spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, Color.White, rotation, origin, 1f, SpriteEffects.None, 0f);
+            Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f);
+
+            Color color = new Color(250, 250, 250, item.alpha);
+            if (item.type == ModContent.ItemType<GrandGuardian>())
+                color = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, item.alpha);
+
+            spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, color, rotation, origin, 1f, SpriteEffects.None, 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle GetFrame(int itemID, int whoAmI, Texture2D texture = null)
+        {
+            texture ??= TextureAssets.Item[itemID].Value;
+            return Main.itemAnimations[itemID] == null
+                ? texture.Frame()
+                : Main.itemAnimations[itemID].GetFrame(texture, Main.itemFrameCounter[whoAmI]);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle GetFrame(this Item item, int whoAmI, Texture2D texture = null)
+        {
+            return GetFrame(item.type, whoAmI, texture);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle GetFrame(int itemID, Texture2D texture = null)
+        {
+            texture ??= TextureAssets.Item[itemID].Value;
+            return Main.itemAnimations[itemID] == null
+                ? texture.Frame()
+                : Main.itemAnimations[itemID].GetFrame(texture);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle GetFrame(this Item item, Texture2D texture = null)
+        {
+            return GetFrame(item.type, texture);
         }
 
         public static Rectangle GetCurrentFrame(this Item item, ref int frame, ref int frameCounter, int frameDelay, int frameAmt, bool frameCounterUp = true)
@@ -377,118 +444,6 @@ namespace CalamityMod
             if (frameCounterUp)
                 frameCounter++;
             return new Rectangle(0, item.height * frame, item.width, item.height);
-        }
-
-        public static bool DrawFishingLine(this Projectile projectile, int fishingRodType, Color poleColor, int xPositionAdditive = 45, float yPositionAdditive = 35f)
-        {
-            Player player = Main.player[projectile.owner];
-            Item item = player.HeldItem;
-            if (!projectile.bobber || item.holdStyle <= 0)
-                return false;
-
-            Texture2D fishingLineTexture = TextureAssets.FishingLine.Value;
-            float originX = player.MountedCenter.X;
-            float originY = player.MountedCenter.Y;
-            originY += player.gfxOffY;
-            //This variable is used to account for Gravitation Potions
-            float gravity = player.gravDir;
-
-            if (item.type == fishingRodType)
-            {
-                originX += (float)(xPositionAdditive * player.direction);
-                if (player.direction < 0)
-                {
-                    originX -= 13f;
-                }
-                originY -= yPositionAdditive * gravity;
-            }
-
-            if (gravity == -1f)
-            {
-                originY -= 12f;
-            }
-            Vector2 mountedCenter = new Vector2(originX, originY);
-            mountedCenter = player.RotatedRelativePoint(mountedCenter + new Vector2(8f), true) - new Vector2(8f);
-            Vector2 lineOrigin = projectile.Center - mountedCenter;
-            bool canDraw = true;
-            if (lineOrigin.X == 0f && lineOrigin.Y == 0f)
-                return false;
-
-            float projPosMagnitude = lineOrigin.Length();
-            projPosMagnitude = 12f / projPosMagnitude;
-            lineOrigin.X *= projPosMagnitude;
-            lineOrigin.Y *= projPosMagnitude;
-            mountedCenter -= lineOrigin;
-            lineOrigin = projectile.Center - mountedCenter;
-
-            while (canDraw)
-            {
-                float height = 12f;
-                float positionMagnitude = lineOrigin.Length();
-                if (float.IsNaN(positionMagnitude) || float.IsNaN(positionMagnitude))
-                    break;
-
-                if (positionMagnitude < 20f)
-                {
-                    height = positionMagnitude - 8f;
-                    canDraw = false;
-                }
-                positionMagnitude = 12f / positionMagnitude;
-                lineOrigin.X *= positionMagnitude;
-                lineOrigin.Y *= positionMagnitude;
-                mountedCenter += lineOrigin;
-                lineOrigin = projectile.Center - mountedCenter;
-                if (positionMagnitude > 12f)
-                {
-                    float positionInverseMultiplier = 0.3f;
-                    float absVelocitySum = Math.Abs(projectile.velocity.X) + Math.Abs(projectile.velocity.Y);
-                    if (absVelocitySum > 16f)
-                    {
-                        absVelocitySum = 16f;
-                    }
-                    absVelocitySum = 1f - absVelocitySum / 16f;
-                    positionInverseMultiplier *= absVelocitySum;
-                    absVelocitySum = positionMagnitude / 80f;
-                    if (absVelocitySum > 1f)
-                    {
-                        absVelocitySum = 1f;
-                    }
-                    positionInverseMultiplier *= absVelocitySum;
-                    if (positionInverseMultiplier < 0f)
-                    {
-                        positionInverseMultiplier = 0f;
-                    }
-                    absVelocitySum = 1f - projectile.localAI[0] / 100f;
-                    positionInverseMultiplier *= absVelocitySum;
-                    if (lineOrigin.Y > 0f)
-                    {
-                        lineOrigin.Y *= 1f + positionInverseMultiplier;
-                        lineOrigin.X *= 1f - positionInverseMultiplier;
-                    }
-                    else
-                    {
-                        absVelocitySum = Math.Abs(projectile.velocity.X) / 3f;
-                        if (absVelocitySum > 1f)
-                        {
-                            absVelocitySum = 1f;
-                        }
-                        absVelocitySum -= 0.5f;
-                        positionInverseMultiplier *= absVelocitySum;
-                        if (positionInverseMultiplier > 0f)
-                        {
-                            positionInverseMultiplier *= 2f;
-                        }
-                        lineOrigin.Y *= 1f + positionInverseMultiplier;
-                        lineOrigin.X *= 1f - positionInverseMultiplier;
-                    }
-                }
-                //This color decides the color of the fishing line.
-                Color lineColor = Lighting.GetColor((int)mountedCenter.X / 16, (int)mountedCenter.Y / 16, poleColor);
-                float rotation = lineOrigin.ToRotation() - MathHelper.PiOver2;
-
-                Main.spriteBatch.Draw(fishingLineTexture, new Vector2(mountedCenter.X - Main.screenPosition.X + fishingLineTexture.Width * 0.5f, mountedCenter.Y - Main.screenPosition.Y + fishingLineTexture.Height * 0.5f), new Rectangle(0, 0, fishingLineTexture.Width, (int)height), lineColor, rotation, new Vector2(fishingLineTexture.Width * 0.5f, 0f), 1f, SpriteEffects.None, 0f);
-            }
-            return false;
         }
 
         public static void DrawHook(this Projectile projectile, Texture2D hookTexture, float angleAdditive = 0f)
@@ -658,10 +613,10 @@ namespace CalamityMod
             return shader;
         }
 
-        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null)
+        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
         }
 
         public static void ExitShaderRegion(this SpriteBatch spriteBatch)
@@ -797,6 +752,21 @@ namespace CalamityMod
 
                 drawCall.Invoke(offset, aberrationColor);
             }
+        }
+
+        /// <summary>
+        /// Sets the current render target to the provided one.
+        /// </summary>
+        /// <param name="target">The render target to swap to</param>
+        /// <param name="flushColor">The color to clear the screen with. Transparent by default</param>
+        public static void SwapTo(this RenderTarget2D target, Color? flushColor = null)
+        {
+            // If we are in the menu, a server, or any of these are null, return.
+            if (Main.gameMenu || Main.dedServ || target is null || Main.instance.GraphicsDevice is null || Main.spriteBatch is null)
+                return;
+
+            Main.instance.GraphicsDevice.SetRenderTarget(target);
+            Main.instance.GraphicsDevice.Clear(flushColor ?? Color.Transparent);
         }
     }
 }

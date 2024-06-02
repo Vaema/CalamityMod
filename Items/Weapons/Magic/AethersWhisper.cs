@@ -9,18 +9,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class AethersWhisper : ModItem
+    public class AethersWhisper : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aether's Whisper");
-            Tooltip.SetDefault("Inflicts long-lasting shadowflame and splits on tile hits\n" +
-                "Projectiles gain damage as they travel");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 134;
+            Item.height = 44;
             Item.damage = 504;
             Item.knockBack = 5.5f;
             Item.useTime = Item.useAnimation = 24;
@@ -30,13 +25,11 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.autoReuse = true;
 
-            Item.width = 134;
-            Item.height = 44;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = CommonCalamitySounds.LaserCannonSound;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

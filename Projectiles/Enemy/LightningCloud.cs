@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class LightningCloud : ModProjectile
+    public class LightningCloud : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cloud");
             Main.projFrames[Projectile.type] = 6;
         }
 

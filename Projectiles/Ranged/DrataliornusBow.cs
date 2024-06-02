@@ -1,20 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class DrataliornusBow : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Drataliornus>();
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/Drataliornus";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Drataliornus");
-        }
 
         public override void SetDefaults()
         {
@@ -56,15 +54,15 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile.localAI[0]++;
                         Projectile.ai[0] = -1f; //fully spun up, don't need timer anymore
 
-                        const int num226 = 36; //dusts indicate fully spun up
-                        for (int num227 = 0; num227 < num226; num227++)
+                        const int constant = 36; //dusts indicate fully spun up
+                        for (int i = 0; i < constant; i++)
                         {
-                            Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * 9f;
-                            vector6 = vector6.RotatedBy((num227 - (num226 / 2 - 1)) * 6.28318548f / num226, default) + player.Center;
-                            Vector2 vector7 = vector6 - player.Center;
-                            int num228 = Dust.NewDust(vector6 + vector7, 0, 0, 127, 0f, 0f, 0, default, 4f);
-                            Main.dust[num228].noGravity = true;
-                            Main.dust[num228].velocity = vector7;
+                            Vector2 rotate = Vector2.Normalize(Projectile.velocity) * 9f;
+                            rotate = rotate.RotatedBy((i - (constant / 2 - 1)) * 6.28318548f / constant, default) + player.Center;
+                            Vector2 faceDirection = rotate - player.Center;
+                            int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Flare, 0f, 0f, 0, default, 4f);
+                            Main.dust[dust].noGravity = true;
+                            Main.dust[dust].velocity = faceDirection;
                         }
                         break;
                 }
@@ -79,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 timeToFire = true;
             }
 
-            bool canFire = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canFire = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
 
             if (Projectile.soundDelay <= 0 && canFire)
             {

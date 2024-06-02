@@ -1,4 +1,4 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -9,16 +9,9 @@ namespace CalamityMod.Items.Armor.Statigel
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("StatigelHelm")]
-    public class StatigelHeadMelee : ModItem
+    public class StatigelHeadMelee : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statigel Helm");
-            Tooltip.SetDefault("10% increased melee damage and melee speed\n" +
-                "7% increased melee critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -35,13 +28,10 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Enemies are more likely to target you\n" +
-                    "When you take over 100 damage in one hit you become immune to damage for an extended period of time\n" +
-                    "Grants an extra jump and increased jump height\n" +
-                    "12% increased jump speed";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<StatigelArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
-            modPlayer.statigelJump = true;
+            player.GetJumpState<StatigelJump>().Enable();
             Player.jumpHeight += 5;
             player.jumpSpeedBoost += 0.6f;
             player.aggro += 400;

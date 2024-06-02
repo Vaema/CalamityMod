@@ -8,8 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class TundraFlameBlossom : ModProjectile
+    public class TundraFlameBlossom : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public CalamityPlayer moddedOwner => Owner.Calamity();
@@ -17,10 +18,9 @@ namespace CalamityMod.Projectiles.Summon
         public ref float FlowerShootTimer => ref Projectile.ai[0];
 
         public ref float RotationMovement => ref Projectile.ai[1];
-        
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tundra Flame Blossoms");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -86,8 +86,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             SoundEngine.PlaySound(SoundID.Item20, Owner.Center);
             Vector2 velocity = -Projectile.SafeDirectionTo(Owner.Center) * 10f + Projectile.velocity;
-            int tundraOrb = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TundraFlameBlossomsOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-            Main.projectile[tundraOrb].originalDamage = Projectile.originalDamage;
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TundraFlameBlossomsOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             Projectile.netUpdate = true;
         }
 

@@ -8,21 +8,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("AtaxiaMask")]
-    public class HydrothermicHeadMagic : ModItem
+    public class HydrothermicHeadMagic : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hydrothermic Mask");
-            Tooltip.SetDefault("12% increased magic damage, +100 max mana, and 10% increased magic critical strike chance\n" +
-                "Temporary immunity to lava, and immunity to fire damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 9; //45
         }
@@ -40,10 +33,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased magic damage and 15% reduced mana usage\n" +
-                "Inferno effect when below 50% life\n" +
-                "Magic attacks summon damaging and healing flare orbs on hit\n" +
-                "You emit a blazing explosion when you are hit";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<HydrothermicArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaMage = true;
@@ -56,7 +46,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
             player.statManaMax2 += 100;
             player.GetDamage<MagicDamageClass>() += 0.12f;
             player.GetCritChance<MagicDamageClass>() += 10;
-            player.lavaMax += 240;
+            player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
         }
 

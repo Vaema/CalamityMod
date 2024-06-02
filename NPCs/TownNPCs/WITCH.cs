@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.UI.CalamitasEnchants;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Personalities;
@@ -22,8 +23,6 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Brimstone Witch");
-
             Main.npcFrameCount[NPC.type] = 27;
             NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
             NPCID.Sets.AttackFrameCount[NPC.type] = 4;
@@ -31,16 +30,17 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.AttackType[NPC.type] = 1;
             NPCID.Sets.AttackTime[NPC.type] = 30;
             NPCID.Sets.AttackAverageChance[NPC.type] = 5;
+            NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<ForestBiome>(AffectionLevel.Like)
                 .SetBiomeAffection<BrimstoneCragsBiome>(AffectionLevel.Dislike)
                 .SetNPCAffection(NPCID.Clothier, AffectionLevel.Like)
-                .SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Dislike)
-            ;
-			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0) {
-				Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
-			};
-			NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+                .SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Dislike);
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
         }
 
         public override void SetDefaults()
@@ -65,22 +65,20 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,                
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A most surprising sight to see this powerful foe live along friendly faces. Will history repeat itself or has she finally managed to free herself from the Tyrant's grasp?")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.WITCH")
             });
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money) => DownedBossSystem.downedCalamitas && !NPC.AnyNPCs(NPCType<SCalBoss>());
+        public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCalamitas && !NPC.AnyNPCs(NPCType<SCalBoss>());
 
-		public override List<string> SetNPCNameList() => new List<string>() { "Calamitas" };
+        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Calamitas") };
 
         // The way this works is by having an RNG based on weights.
         // With certain conditions (such as if a blood moon is happening) you can add possibilities
-        // to the RNG via textSelector.Add("text", weight);
+        // to the RNG via dialogue.Add("text", weight);
         // Text can always appear assuming the weight is greater than 0 and there's no if condition deciding whether it can.
         // The higher the weight is, the more likely it is to be selected from all the choices.
         // To give an example of this, assume you have two possibilities:
@@ -89,74 +87,55 @@ namespace CalamityMod.NPCs.TownNPCs
         // If only one possibility exists it will be the only thing that is displayed, regardless of weight.
         public override string GetChat()
         {
-            WeightedRandom<string> textSelector = new WeightedRandom<string>(Main.rand);
+            WeightedRandom<string> dialogue = new WeightedRandom<string>();
+
+            // Have a flat chance (1/4444) to simply ignore the below selection and say something humorous instead.
+            if (Main.rand.NextBool(4444))
+                return this.GetLocalizedValue("Chat.EasterEgg");
 
             if (NPC.homeless)
+                return this.GetLocalizedValue("Chat.Homeless" + Main.rand.Next(1, 2 + 1));
+
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal5"));
+
+            if (!Main.dayTime)
             {
-                textSelector.Add("I'm considering moving back to that old cave of mine.");
-                textSelector.Add("I certainly can't return to Yharim's old dwellings now, have you got any places to stay?");
-            }
-            else
-            {
-                textSelector.Add("I can't pay rent, but if you've got any dead relative you want me to try and... what? You don't?");
-                textSelector.Add("One of these days, I was thinking of starting a garden with the flowers from the old capitol of hell." +
-                    " I love the smell of brimstone in the morning.");
-                textSelector.Add("I think I've settled comfortably, thank you very much.");
-                textSelector.Add("Many seasons have gone by since I first met with the Tyrant, and only now did I break free." +
-                    " I wish I'd been stronger...");
-                textSelector.Add("If you've got any curses you want dispelled... well I'm not your person.");
-
-                if (!Main.dayTime)
+                if (Main.bloodMoon)
                 {
-                    if (Main.bloodMoon)
-                    {
-                        textSelector.Add("Such an unnatural shade of red. Nothing like my brimstone flames.", 5.15);
-                        textSelector.Add("I can't work with nights like these. The stars seem to have shrunk away in fear.", 5.15);
-                    }
-                    else
-                    {
-                        textSelector.Add("These undead are horrific, I can't stand to look at them. How could anyone be satisfied" +
-                            " with such amateur work?", 2.8);
-                        textSelector.Add("I don't think it's a stretch to say that astrology is utter nonsense... but it was a hobby" +
-                            " of mine once.", 2.8);
-                    }
+                    dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon1"), 5.15);
+                    dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon2"), 5.15);
                 }
-
-                if (BirthdayParty.PartyIsUp)
-                    textSelector.Add("If another person asks me if I can dance or not, I will light their hat on fire.", 5.5);
-
-                if (NPC.AnyNPCs(NPCType<SEAHOE>()))
+                else
                 {
-                    textSelector.Add("I cannot understand the Sea King. He does not seem to want me dead. That amount of compassion" +
-                        " I just can't understand.", 1.45);
-                }
-
-                int fab = NPC.FindFirstNPC(NPCType<FAP>());
-                if (fab != -1)
-                {
-                    textSelector.Add("I wonder if " + Main.npc[fab].GivenName + " ever feels cold given how revealing her dress is." +
-                        " Perhaps she should cover up a bit more.", 1.45);
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night1"), 2.8);
+                    dialogue.Add(this.GetLocalizedValue("Chat.Night2"), 2.8);
                 }
             }
 
-            // Select a possibility from the RNG and choose it as the thing that should be said.
-            string thingToSay = textSelector.Get();
+            int fab = NPC.FindFirstNPC(NPCType<FAP>());
+            if (fab != -1 && ChildSafety.Disabled)
+                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[fab].GivenName), 1.45);
 
-            // Have a flat chance (1/4444) to simply ignore the above selection and say something humorous instead.
-            if (Main.rand.NextBool(4444))
-                thingToSay = "Mrrp is cringe.";
+            if (NPC.AnyNPCs(NPCType<SEAHOE>()))
+                dialogue.Add(this.GetLocalizedValue("Chat.SeaKing"), 1.45);
 
-            return thingToSay;
+            if (BirthdayParty.PartyIsUp)
+                dialogue.Add(this.GetLocalizedValue("Chat.Party"), 5.5);
+
+            return dialogue;
         }
 
-        public override void SetChatButtons(ref string button, ref string button2) => button = "Enchant";
+        public override void SetChatButtons(ref string button, ref string button2) => button = this.GetLocalizedValue("EnchantButton");
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
             {
                 Main.playerInventory = true;
-                Main.LocalPlayer.Calamity().newCalamitasInventory = false;
                 CalamitasEnchantUI.NPCIndex = NPC.whoAmI;
                 CalamitasEnchantUI.CurrentlyViewing = true;
 
@@ -165,8 +144,6 @@ namespace CalamityMod.NPCs.TownNPCs
                     Item.NewItem(NPC.GetSource_Loot(), NPC.Hitbox, ItemType<BrimstoneLocus>());
                     Main.LocalPlayer.Calamity().GivenBrimstoneLocus = true;
                 }
-
-                shop = false;
             }
         }
 
@@ -212,7 +189,7 @@ namespace CalamityMod.NPCs.TownNPCs
         }
 
         // Explode into red dust on death.
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
@@ -224,7 +201,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 {
                     int brimstone = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimstone].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[brimstone].scale = 0.5f;
                         Main.dust[brimstone].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

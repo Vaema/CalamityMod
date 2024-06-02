@@ -13,17 +13,13 @@ namespace CalamityMod.Tiles.Pylons
     public class CragsPylonTile : BasePylonTile
     {
         public override Color LightColor => new Color(1f, 0.3f, 0f);
-        public override string PylonMapText => "Mods.CalamityMod.ItemName.CragsPylon";
         public override int AssociatedItem => ModContent.ItemType<CragsPylon>();
         public override Color PylonMapColor => Color.OrangeRed;
         public override Color DustColor => Color.OrangeRed;
 
-        public override int? IsPylonForSale(int npcType, Player player, bool isNPCHappyEnough)
+        public override NPCShop.Entry GetNPCShopEntry()
         {
-            //Purchaseable regardless of happiness, therefore, these NPCs need to be checked
-			if (npcType == NPCID.TravellingMerchant || npcType == NPCID.SkeletonMerchant)
-				return null;
-            return player.Calamity().ZoneCalamity ? AssociatedItem : null;
+            return new NPCShop.Entry(AssociatedItem, CalamityConditions.InCrag);
         }
 
         //Doesnt require npcs to function

@@ -1,16 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TerratomereSlash : ModProjectile
+    public class TerratomereSlash : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/ExobeamSlash";
-
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Terratomere Slash");
 
         public override void SetDefaults()
         {
@@ -27,12 +28,18 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale = 0.75f;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 12;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Opacity = Projectile.timeLeft / 35f;
+            if (Projectile.timeLeft == 34)
+            {
+                Particle spark2 = new GlowSparkParticle(Projectile.Center, new Vector2(0.1f, 0.1f).RotatedByRandom(100), false, 12, Main.rand.NextFloat(0.05f, 0.09f), Main.rand.NextBool() ? Terratomere.TerraColor1 : Terratomere.TerraColor2, new Vector2(2, 0.5f), true);
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -46,28 +53,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft >= 34f)
-                return false;
-
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-
-            float progress = (33f - Projectile.timeLeft) / 33f;
-
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 origin = texture.Size() * 0.5f;
-            Vector2 scale = new Vector2(MathHelper.Lerp(0.8f, 1.25f, (float)Math.Pow(progress, 0.45)), MathHelper.Lerp(0.6f, 0.24f, (float)Math.Pow(progress, 0.4))) * Projectile.scale;
-            
-            // Draw an inner bloom circle to signify power at the center of the strike along with two thinner lines.
-            Vector2 bloomScale = Projectile.Size / bloomTexture.Size() * new Vector2(1f, 2f);
-            Vector2 bloomOrigin = bloomTexture.Size() * 0.5f;
-            Main.spriteBatch.Draw(bloomTexture, drawPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, bloomOrigin, bloomScale, 0, 0f);
-            Main.spriteBatch.Draw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, scale, 0, 0f);
-            Main.spriteBatch.Draw(texture, drawPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, origin, scale * new Vector2(1f, 0.6f), 0, 0f);
-
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             return false;
         }
     }

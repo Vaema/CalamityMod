@@ -1,10 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,17 +11,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class PulseTurretRemote : ModItem
+    public class PulseTurretRemote : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Pulse Turret Remote");
-            Tooltip.SetDefault("A device used to defend against the weaker, less cognizant rogue creations of Draedon\n" +
-                               "Summons a pulse turret which eradicates nearby foes with focused energy blasts\n" +
-                               "Only one pulse turret may exist at a time");
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -41,8 +32,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = SoundID.Item15;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
 
             Item.shoot = ModContent.ProjectileType<PulseTurret>();
             Item.shootSpeed = 1f;
@@ -56,7 +47,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             CalamityUtils.OnlyOneSentry(player, type);
-            int turret = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
+            YOffset -= 15;
+            position = new Vector2((float)XPosition, (float)(YPosition - YOffset));
+            int turret = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
             if (Main.projectile.IndexInRange(turret))
                 Main.projectile[turret].originalDamage = Item.damage;
 
@@ -73,7 +67,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(18).
                 AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -9,23 +9,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class EventHorizon : ModItem
+    public class EventHorizon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Event Horizon");
-            Tooltip.SetDefault("Nothing, not even light, can return.\n" +
-            "Fires a ring of stars to home in on nearby enemies\n" +
-            "Stars spawn black holes on enemy hits");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 46;
-
-            Item.damage = 275;
+            Item.damage = 200;
             Item.knockBack = 3.5f;
             Item.noMelee = true;
             Item.DamageType = DamageClass.Magic;
@@ -35,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.UseSound = SoundID.Item84;
@@ -56,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Starfall>().
+                AddIngredient<StarShower>().
                 AddIngredient<NuclearFury>().
                 AddIngredient<RelicofRuin>().
                 AddIngredient<CosmiliteBar>(8).

@@ -1,18 +1,19 @@
-﻿using CalamityMod.NPCs.AstrumDeus;
+﻿using System;
+using CalamityMod.NPCs.AstrumDeus;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DeusRitualDrama : ModProjectile
+    public class DeusRitualDrama : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public static readonly SoundStyle PulseSound = new("CalamityMod/Sounds/Custom/AstralBeaconOrbPulse");
 
         public float Time
@@ -26,11 +27,6 @@ namespace CalamityMod.Projectiles.Boss
         public const int TotalRitualTime = 420;
         public const float MaxUpwardRise = 540f;
         public static readonly Point PulseSize = new(300, 300);
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Deus Ritual Drama");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 2;
@@ -122,7 +118,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public void DrawStars(SpriteBatch spriteBatch, Vector2 offset)
         {
-            Texture2D starTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < 6; i++)
             {
                 float angle = MathHelper.TwoPi * i / 6f + Time / 15f;

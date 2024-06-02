@@ -1,23 +1,24 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Items.Placeables.FurnitureBotanic;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Items.Placeables.FurnitureBotanic;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables
 {
-    public class UelibloomBrick : ModItem
+    public class UelibloomBrick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -36,11 +37,10 @@ namespace CalamityMod.Items.Placeables
                 Register();
             CreateRecipe().
                 AddIngredient<UelibloomBrickWall>(4).
-                AddTile<BotanicPlanter>().
+                AddTile(TileID.WorkBenches).
                 Register();
             CreateRecipe().
                 AddIngredient<BotanicPlatform>(2).
-                AddTile<BotanicPlanter>().
                 Register();
         }
     }

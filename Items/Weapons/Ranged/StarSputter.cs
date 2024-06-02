@@ -1,34 +1,27 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class StarSputter : ModItem
+    public class StarSputter : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int counter = 0;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Star Sputter");
-            Tooltip.SetDefault("Fires a chain of comets\n" +
-            "Fires a bigger, more powerful comet every four rounds\n" +
-            "Look to the stars for a galaxy far, far away");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = 112;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 80;
             Item.height = 26;
+            Item.damage = 138;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 8;
-            Item.reuseDelay = 15;
             Item.useAnimation = 24;
+            Item.reuseDelay = 15;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 15f;

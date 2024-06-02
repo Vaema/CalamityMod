@@ -9,15 +9,11 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 {
     [AutoloadEquip(EquipType.Legs)]
     [LegacyName("OmegaBlueLeggings")]
-    public class OmegaBlueTentacles : ModItem
+    public class OmegaBlueTentacles : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Omega Blue Tentacles");
-            Tooltip.SetDefault(@"12% increased movement speed
-12% increased damage and critical strike chance");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -30,7 +26,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 22;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -45,7 +41,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(10).
+                AddIngredient<ReaperTooth>(4).
                 AddIngredient<DepthCells>(15).
                 AddIngredient<RuinousSoul>(2).
                 AddTile(TileID.LunarCraftingStation).

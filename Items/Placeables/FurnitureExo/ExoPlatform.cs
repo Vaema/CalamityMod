@@ -1,23 +1,22 @@
-﻿using CalamityMod.Rarities;
-using CalamityMod.Tiles.FurnitureExo;
+﻿using CalamityMod.Tiles.FurnitureExo;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureExo
 {
-    public class ExoPlatform : ModItem
+    public class ExoPlatform : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 200;
+            Item.ResearchUnlockCount = 200;
         }
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Platform");
             Item.width = 8;
             Item.height = 10;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -25,12 +24,13 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<ExoPlatformTile>();
-            Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).AddIngredient(ModContent.ItemType<ExoPlating>()).Register();
+            CreateRecipe(2).
+                AddIngredient<ExoPlating>().
+                Register();
         }
     }
 }

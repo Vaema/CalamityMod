@@ -1,20 +1,16 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class BrackishFlaskProj : ModProjectile
+    public class BrackishFlaskProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/BrackishFlask";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Brackish Flask");
-        }
 
         public override void SetDefaults()
         {
@@ -29,7 +25,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item107, Projectile.Center);
             int randomDust = Utils.SelectRandom(Main.rand, new int[]
@@ -63,12 +59,12 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Venom, 90);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Venom, 90);
         }

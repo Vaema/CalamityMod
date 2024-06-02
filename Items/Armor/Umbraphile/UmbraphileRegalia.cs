@@ -6,15 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Umbraphile
 {
     [AutoloadEquip(EquipType.Body)]
-    public class UmbraphileRegalia : ModItem
+    public class UmbraphileRegalia : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Umbraphile Regalia");
-            Tooltip.SetDefault("10% increased rogue damage and 10% increased rogue crit");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 38;

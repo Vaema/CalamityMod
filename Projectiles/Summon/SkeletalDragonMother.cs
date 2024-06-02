@@ -6,12 +6,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SkeletalDragonMother : ModProjectile
+    public class SkeletalDragonMother : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float DistanceToCheck = 1100f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mother");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -100,9 +100,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (Projectile.owner == player.whoAmI && Projectile.spriteDirection == (Projectile.SafeDirectionTo(target.Center).X > 0).ToDirectionInt())
                     {
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(target.Center) * 11.5f, ModContent.ProjectileType<BloodBreath>(), Projectile.damage, 0f, Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(target.Center) * 11.5f, ModContent.ProjectileType<BloodBreath>(), Projectile.damage, 0f, Projectile.owner);
                     }
                 }
             }
@@ -114,13 +112,13 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.Distance(player.Center) > 3250f)
                 {
                     Projectile.Center = player.Center;
-                    for (int i = 0; i < Main.projectile.Length; i++)
+                    foreach (Projectile p in Main.ActiveProjectiles)
                     {
-                        if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner &&
-                            Main.projectile[i].type == ModContent.ProjectileType<SkeletalDragonChild>())
+                        if (p.owner == Projectile.owner &&
+                            p.type == ModContent.ProjectileType<SkeletalDragonChild>())
                         {
-                            Main.projectile[i].Center = player.Center;
-                            Main.projectile[i].netUpdate = true;
+                            p.Center = player.Center;
+                            p.netUpdate = true;
                         }
                     }
                     Projectile.netUpdate = true;

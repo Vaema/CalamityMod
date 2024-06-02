@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,14 +9,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class WulfrumClock : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpClock();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Grandfather Clock");
-            AddMapEntry(new Color(71, 95, 114), name);
-            AdjTiles = new int[] { TileID.GrandfatherClocks };
-        }
+        public override void SetStaticDefaults() => this.SetUpClock(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumClock>());
 
         public override bool CanExplode(int i, int j) => false;
 
@@ -25,7 +17,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -42,11 +34,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 48, 32, ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumClock>());
         }
 
         public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumClock>());

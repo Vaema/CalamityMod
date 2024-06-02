@@ -30,8 +30,13 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{SpeedBoostSetBonusPercentage}% increased max speed and acceleration\n" +
-                $"You gain a damage and critical strike chance boost relative to your current movement speed, up to {SpeedBoostSetBonusPercentage}%";
+            Player player = Main.LocalPlayer;
+            if (player.armor[0].type == ItemID.CobaltHelmet)
+            {
+                setBonusText = CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}.Melee");
+            }
+
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(SpeedBoostSetBonusPercentage)}";
         }
 
         public static float CalculateMovementSpeedInterpolant(Player player)
@@ -51,6 +56,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void ApplyArmorSetBonus(Player player)
         {
+            player.GetAttackSpeed<MeleeDamageClass>() -= 0.05f;
             player.Calamity().CobaltSet = true;
         }
     }

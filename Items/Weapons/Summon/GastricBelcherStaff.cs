@@ -1,34 +1,27 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class GastricBelcherStaff : ModItem
+    public class GastricBelcherStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gastric Belcher Staff");
-            Tooltip.SetDefault("Summons aquatic aberrations to protect you\n" +
-            "Aberrations fire vomit at nearby enemies with every third attack firing bubbles");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 60;
-            Item.mana = 10;
             Item.width = 66;
             Item.height = 70;
+            Item.damage = 60;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item76;
             Item.shoot = ModContent.ProjectileType<GastricBelcher>();
@@ -41,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                player.itemTime = Item.useTime;
                 Vector2 playerPos = player.RotatedRelativePoint(player.MountedCenter, true);
                 float directionX = Main.mouseX + Main.screenPosition.X - playerPos.X;
                 float directionY = Main.mouseY + Main.screenPosition.Y - playerPos.Y;

@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class CelestialReaperProjectile : ModProjectile
+    public class CelestialReaperProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/CelestialReaper";
 
         public int HomingCooldown = 0;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Celestial Reaper");
-        }
 
         public override void SetDefaults()
         {
@@ -64,13 +60,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool CanHitPvp(Player target) => HomingCooldown <= 0;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             HomingCooldown = 25;
             Projectile.velocity *= -0.75f; // Bounce off of the enemy.
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             bool ss = Projectile.Calamity().stealthStrike;
             int numSplits = 4;

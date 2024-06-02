@@ -5,28 +5,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class VolcanicFireballSummon : ModProjectile
+    public class VolcanicFireballSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Melee/VolcanicFireball";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Volcanic Fireball");
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 12;
-            Projectile.height = 12;
+            Projectile.width = Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 300;
-            Projectile.penetrate = 1;
-            Projectile.minionSlots = 0f;
-            Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -56,10 +53,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire3, 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 180);
 
         public override bool PreDraw(ref Color lightColor)
         {

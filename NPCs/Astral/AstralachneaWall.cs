@@ -1,35 +1,37 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Sounds;
 using CalamityMod.World;
+using CalamityMod.BiomeManagers.BestiaryCategories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
 using ReLogic.Content;
-using CalamityMod.Sounds;
+using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.Bestiary;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class AstralachneaWall : ModNPC
     {
-        private static Texture2D glowmask;
-
+        public static Asset<Texture2D> glowmask;
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.AstralachneaGround.DisplayName");
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Astralachnea");
-
             Main.npcFrameCount[NPC.type] = 4;
 
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralachneaWallGlow", AssetRequestMode.ImmediateLoad).Value;
-
-            base.SetStaticDefaults();
-            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers(0) { Hide = true };
-            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralachneaWallGlow", AssetRequestMode.AsyncLoad);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers() { Rotation = -MathHelper.PiOver2 };
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
         public override void SetDefaults()
@@ -47,7 +49,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.value = Item.buyPrice(0, 0, 20, 0);
             NPC.timeLeft = NPC.activeTime * 2;
             AnimationType = NPCID.BlackRecluseWall;
-            Banner = ModContent.NPCType<AstralachneaGround>();
+            Banner = NPC.type;
             BannerItem = ModContent.ItemType<AstralachneaBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
@@ -57,6 +59,19 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<AstralUnderground>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Astralachnea")
+            });
         }
 
         public override void AI()
@@ -66,6 +81,13 @@ namespace CalamityMod.NPCs.Astral
 
         public override void FindFrame(int frameHeight)
         {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.frameCounter += 0.1f;
+                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frame.Y = (int)NPC.frameCounter * frameHeight;
+                return;
+            }
             //DO DUST
             int frame = NPC.frame.Y / frameHeight;
             Rectangle rect = new Rectangle(12, 24, 18, 10);
@@ -97,7 +119,7 @@ namespace CalamityMod.NPCs.Astral
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.soundDelay == 0)
             {
@@ -105,7 +127,7 @@ namespace CalamityMod.NPCs.Astral
                 SoundEngine.PlaySound(CommonCalamitySounds.AstralNPCHitSound, NPC.Center);
             }
 
-            CalamityGlobalNPC.DoHitDust(NPC, hitDirection, (Main.rand.Next(0, Math.Max(0, NPC.life)) == 0) ? 5 : ModContent.DustType<AstralEnemy>(), 1f, 4, 22);
+            CalamityGlobalNPC.DoHitDust(NPC, hit.HitDirection, (Main.rand.Next(0, Math.Max(0, NPC.life)) == 0) ? 5 : ModContent.DustType<AstralEnemy>(), 1f, 4, 22);
 
             //if dead do gores
             if (NPC.life <= 0)
@@ -123,15 +145,22 @@ namespace CalamityMod.NPCs.Astral
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Vector2 origin = new Vector2(40f, 40f);
-            spriteBatch.Draw(glowmask, NPC.Center - screenPos - new Vector2(0, 8f), NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos - new Vector2(0, 8f), NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, SpriteEffects.None, 0);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => AstralachneaGround.ModifyAstralachneaLoot(npcLoot);
+        public static void ModifyAstralachneaLoot(NPCLoot npcLoot)
+        {
+            npcLoot.AddIf(() => !Main.expertMode, ModContent.ItemType<StarblightSoot>(), 2, 2, 3);
+            npcLoot.AddIf(() => Main.expertMode, ModContent.ItemType<StarblightSoot>(), 1, 1, 4);
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<AstralachneaStaff>(), 7);
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => ModifyAstralachneaLoot(npcLoot);
     }
 }

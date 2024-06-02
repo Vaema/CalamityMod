@@ -1,26 +1,26 @@
-﻿using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class RancorArm : ModProjectile
+    public class RancorArm : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public Vector2 IdealPosition;
         public Player Owner => Main.player[Projectile.owner];
         public float RotationDirection => Projectile.rotation + Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vengeful Arm");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -135,20 +135,20 @@ namespace CalamityMod.Projectiles.Magic
             behindNPCsAndTiles.Add(index);
         }
 
-        // TODO -- this damage should be after Terraria vanilla multipliers, so it won't one shot people
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             if (Projectile.friendly)
             {
-                if (Main.masterMode) damage = 450;
-                else if (Main.expertMode) damage = 375;
-                else damage = 300;
+                modifiers.SourceDamage *= 0f;
+                if (Main.masterMode) modifiers.SourceDamage.Flat += 450f;
+                else if (Main.expertMode) modifiers.SourceDamage.Flat += 375f;
+                else modifiers.SourceDamage.Flat += 300f;
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

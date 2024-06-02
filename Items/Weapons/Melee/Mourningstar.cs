@@ -9,20 +9,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Mourningstar : ModItem
+    public class Mourningstar : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mourningstar");
-            Tooltip.SetDefault("Launches two solar whip swords that explode on hit");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 16;
             Item.height = 16;
-            Item.damage = 127;
+            Item.damage = 112;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
@@ -33,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item116;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<MourningstarFlail>();

@@ -8,18 +8,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class PhosphorescentGauntlet : ModItem
+    public class PhosphorescentGauntlet : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public const int OnHitIFrames = 15;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Phosphorescent Gauntlet");
-            Tooltip.SetDefault("Releases rapid sulphurous punches\n" +
-                "On use, you lunge in the direction of the mouse\n" +
-                "On collision, you are knocked back");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {

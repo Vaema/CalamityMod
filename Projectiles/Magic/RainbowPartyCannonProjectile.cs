@@ -1,21 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class RainbowPartyCannonProjectile : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<RainbowPartyCannon>();
         public Player Owner => Main.player[Projectile.owner];
         public ref float Time => ref Projectile.ai[0];
         public const float ChargeDelay = 60f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Party Cannon");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 92;
@@ -33,8 +31,7 @@ namespace CalamityMod.Projectiles.Magic
 
             UpdatePlayerVisuals(Owner.Center);
 
-            bool stillUsingCannon = Owner.channel && !Owner.noItems && !Owner.CCed;
-            if (!stillUsingCannon)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;

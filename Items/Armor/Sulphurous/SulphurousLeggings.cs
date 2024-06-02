@@ -8,21 +8,14 @@ namespace CalamityMod.Items.Armor.Sulphurous
 {
     [AutoloadEquip(EquipType.Legs)]
     [LegacyName("SulfurLeggings")]
-    public class SulphurousLeggings : ModItem
+    public class SulphurousLeggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Sulphurous Leggings");
-            Tooltip.SetDefault("Movement speed increased by 10%\n" +
-                "Movement speed increased by 35% while submerged in liquid");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 16;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.defense = 5;
             Item.rare = ItemRarityID.Green;
         }

@@ -12,23 +12,14 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Tools
 {
-    public class WulfrumScaffoldKit : ModItem
+    public class WulfrumScaffoldKit : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         public int storedScrap = 0;
         public static int TilesPerScrap = 40;
         public static int TileTime = 6 * 60;
         public static int TileReach = 40;
         public static int PlacedTileType => ModContent.TileType<WulfrumPipes>();
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wulfrum Scaffold Kit");
-            Tooltip.SetDefault("\"For when you need something built fast and don't need it to last.\"\n" +
-            "Places down temporary metal scaffolding. Uses up one wulfrum metal scrap for " + TilesPerScrap.ToString() + " tiles built\n" +
-            "Scaffold needs to be adjacent to a solid tile to be placed down"
-            );
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -48,10 +39,10 @@ namespace CalamityMod.Items.Tools
             TileTime = 6 * 60;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override void HoldItem(Player player)
         {
@@ -117,7 +108,7 @@ namespace CalamityMod.Items.Tools
         {
             CreateRecipe().
                 AddIngredient<WulfrumMetalScrap>(6).
-                AddIngredient<EnergyCore>(1).
+                AddIngredient<EnergyCore>().
                 AddTile(TileID.Anvils).
                 Register();
         }

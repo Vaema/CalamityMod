@@ -7,17 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("Chaotrix")]
-    public class FaultLine : ModItem
+    public class FaultLine : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fault Line");
-            Tooltip.SetDefault("Explodes on enemy hits\n" +
-            "A very agile yoyo");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -25,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 30;
             Item.height = 26;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 88; // 110 pre-nerf
+            Item.damage = 75;
             Item.knockBack = 4f;
             Item.useTime = 22;
             Item.useAnimation = 22;

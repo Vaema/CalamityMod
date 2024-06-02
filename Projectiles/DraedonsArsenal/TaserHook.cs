@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class TaserHook : ModProjectile
+    public class TaserHook : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public enum TaserAIState
         {
             Firing,
@@ -34,11 +35,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
 
         public const float ReelbackSpeed = 25f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Taser");
-        }
 
         public override void SetDefaults()
         {
@@ -114,13 +110,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Utils.DrawLine(Main.spriteBatch, player.MountedCenter, Projectile.Center, Color.Cyan, Color.White, 4f);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Electrified, 120);
 

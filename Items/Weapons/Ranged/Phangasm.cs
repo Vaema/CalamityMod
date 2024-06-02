@@ -11,20 +11,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Phangasm : ModItem
+    public class Phangasm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Phangasm");
-            Tooltip.SetDefault("Fires a spread of 5 arrows and emits phantom arrows on enemy hits");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 180;
             Item.width = 48;
             Item.height = 82;
+            Item.damage = 117;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -45,6 +39,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
+        // Spawning the holdout cannot consume ammo
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool(3) && player.ownedProjectileCounts[Item.shoot] > 0;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<PhangasmBow>(), damage, knockback, player.whoAmI);
@@ -61,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Phantasm).
                 AddIngredient<CosmiliteBar>(8).
-                AddIngredient<Phantoplasm>(20).
+                AddIngredient<Necroplasm>(20).
                 AddIngredient<NightmareFuel>(20).
                 AddTile<CosmicAnvil>().
                 Register();

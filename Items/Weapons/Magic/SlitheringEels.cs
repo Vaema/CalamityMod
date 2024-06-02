@@ -7,27 +7,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class SlitheringEels : ModItem
+    public class SlitheringEels : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Slithering Eels");
-            Tooltip.SetDefault("Casts a magical acid eel that releases acid drops as it moves");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 80;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 11;
             Item.width = 34;
             Item.height = 40;
+            Item.damage = 50;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 11;
             Item.useAnimation = Item.useTime = 40;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.NPCHit13;
             Item.autoReuse = true;

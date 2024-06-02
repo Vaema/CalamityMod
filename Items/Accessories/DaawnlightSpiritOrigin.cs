@@ -8,15 +8,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class DaawnlightSpiritOrigin : ModItem
+    public class DaawnlightSpiritOrigin : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         // "Despite the seemingly insane numbers here, I think this item might actually be underpowered"
         // hindsight: the item was not underpowered. Ozzatron 05NOV2021
         //
         // Regular crits are intentionally weak, especially because they rarely happen (your crit chance gets murdered).
         // Bullseyes should be doing all the work.
         private const float OriginBullseyeCritRatio = 3.5f; // Bullseye crits deal x3.5 damage instead of x2.
-        private const float RicoshotBullseyeCritRatio = 2.4f; // If you use Ricoshot mechanics to "force" a bullseye, you get less of a reward.
+        private const float ForcedCritBullseyeCritRatio = 2.4f; // If your projectile is forced to crit, you get less of a reward.
 
         private const float StoredCritConversionRatio = 0.01f; // Add +1% more damage to crits for every 1% critical chance the player would have had.
         private const float MinUseTimeForSlowBonus = 11f;
@@ -38,8 +39,8 @@ namespace CalamityMod.Items.Accessories
             if (hitBullseye)
             {
                 // Bullseye crits are weaker if the projectile was already a forced crit.
-                // This currently only occurs due to ULTRAKILL-style ricoshots.
-                baseCritMult = wasForcedCrit ? RicoshotBullseyeCritRatio : OriginBullseyeCritRatio;
+                // This is currently implemented for ULTRAKILL-style ricoshots and for Heavenly Gale's lightning.
+                baseCritMult = wasForcedCrit ? ForcedCritBullseyeCritRatio : OriginBullseyeCritRatio;
             }
 
             // Factor in the critical strike chance the player isn't getting to use.
@@ -50,29 +51,13 @@ namespace CalamityMod.Items.Accessories
             return baseCritMult * (1f + convertedCritBonus + slowWeaponBonus);
         }
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daawnlight Spirit Origin");
-            Tooltip.SetDefault("All nearby enemies and bosses are marked with bullseyes\n" +
-                "Ranged attacks that strike a bullseye always critically strike and deal massive damage\n" +
-                "When a bullseye is struck, it vanishes and a new one appears elsewhere\n" +
-                "Explosions or large projectiles cannot strike bullseyes\n" +
-                "Shots ricocheted off of tossed coins will target bullseyes, but use a lower crit multiplier\n" +
-                "Converts all ranged critical strike chance boosts into extra critical strike damage\n" +
-                "All ranged weapons will deal even more critical strike damage the slower they are\n" +
-                "Summons a heroic spirit from another world if accessory visibility is enabled\n" +
-                "The heroic spirit is also summoned when this accessory is placed in vanity slots\n" +
-                "'A strand of a lost cosmos remains, waiting for its master'");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 38;
             Item.accessory = true;
             Item.rare = ItemRarityID.Purple;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.Calamity().donorItem = true;
         }
 

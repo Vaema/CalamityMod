@@ -6,14 +6,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Reaver
 {
     [AutoloadEquip(EquipType.Body)]
-    public class ReaverScaleMail : ModItem
+    public class ReaverScaleMail : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Reaver Scale Mail");
-            Tooltip.SetDefault("9% increased damage and 4% increased critical strike chance\n" +
-                "+20 max life");
 
             if (Main.netMode == NetmodeID.Server)
                 return;

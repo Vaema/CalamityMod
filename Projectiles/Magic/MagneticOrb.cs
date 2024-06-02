@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class MagneticOrb : ModProjectile
+    public class MagneticOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const int Lifetime = 120;
         private const float FramesPerBeam = 12f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Magnetic Orb");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 50;
             Projectile.DamageType = DamageClass.Magic;
         }
 
@@ -34,7 +34,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             // Drift to a stop after being launched
-            Projectile.velocity *= 0.972f;
+            if (Projectile.timeLeft < 40)
+            Projectile.velocity *= 0.882f;
 
             // On frame 1, pick a random offset to use for the firing pattern.
             if (Projectile.timeLeft == Lifetime)
@@ -52,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Update animation
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
+            if (Projectile.frameCounter > 4)
             {
                 Projectile.frameCounter = 0;
                 Projectile.frame++;
@@ -62,25 +63,28 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 8f, FramesPerBeam, 1, ModContent.ProjectileType<MagneticBeam>(), 1D, true);
+            NPC target = Projectile.Center.ClosestNPCAt(550);
+
+            if ((Projectile.timeLeft == 30 || Projectile.timeLeft == 10) && target != null)
+                CalamityUtils.MagnetSphereHitscan(Projectile, Vector2.Distance(Projectile.Center, target.Center), 8f, 0, 1, ModContent.ProjectileType<MagneticBeam>(), 1D, true);
         }
 
         public override Color? GetAlpha(Color lightColor)
         {
             if (Projectile.timeLeft < 30)
             {
-                float num7 = (float)Projectile.timeLeft / 30f;
-                Projectile.alpha = (int)(255f - 255f * num7);
+                float timeAlpha = (float)Projectile.timeLeft / 30f;
+                Projectile.alpha = (int)(255f - 255f * timeAlpha);
             }
             return new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 0);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
     }

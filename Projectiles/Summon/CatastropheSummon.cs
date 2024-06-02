@@ -1,21 +1,21 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class CatastropheSummon : ModProjectile
+    public class CatastropheSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float Time => ref Projectile.ai[0];
         public bool LookingAtPlayer => Time < 45f;
         public override string Texture => "CalamityMod/NPCs/SupremeCalamitas/SupremeCatastrophe";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Catastrophe");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -51,11 +51,11 @@ namespace CalamityMod.Projectiles.Summon
             CataclysmSummon.Behavior(Projectile, Main.player[Projectile.owner], ref Time);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(2, 8, Projectile.frame / 8, Projectile.frame % 8);
             Vector2 origin = frame.Size() * 0.5f;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
@@ -73,12 +73,12 @@ namespace CalamityMod.Projectiles.Summon
             return false;
         }
 
-        // TODO -- this damage should be after Terraria vanilla multipliers, so it won't one shot people
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            if (Main.masterMode) damage = 320;
-            else if (Main.expertMode) damage = 260;
-            else damage = 200;
+            modifiers.SourceDamage *= 0f;
+            if (Main.masterMode) modifiers.SourceDamage.Flat += 320f;
+            else if (Main.expertMode) modifiers.SourceDamage.Flat += 260f;
+            else modifiers.SourceDamage.Flat += 200f;
         }
 
         public override bool? CanDamage() => Projectile.Opacity >= 1f;

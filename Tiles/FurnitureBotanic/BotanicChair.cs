@@ -4,20 +4,13 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
-using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureBotanic
 {
     public class BotanicChair : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpChair(true);
-            AddMapEntry(new Color(191, 142, 111), Language.GetText("MapObject.Chair"));
-            AdjTiles = new int[] { TileID.Chairs };
-        }
+        public override void SetStaticDefaults() => this.SetUpChair(ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicChair>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -29,11 +22,6 @@ namespace CalamityMod.Tiles.FurnitureBotanic
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicChair>());
         }
 
         public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.ChairSitInfo(i, j, ref info);

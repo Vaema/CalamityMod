@@ -1,19 +1,18 @@
 ﻿using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.SummonItems;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.Other;
 using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Bohldohr : ModNPC
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bohldohr");
-        }
-
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
@@ -33,21 +32,24 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<BohldohrBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheTemple,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A distant relative to the gem-covered lizards found within the caverns. This species instead covers itself with the smooth bricks of the Temple and curls into a ball for locomotion.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bohldohr")
             });
         }
 
         public override void AI()
         {
-            CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -59,17 +61,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             return SpawnCondition.JungleTemple.Chance * 0.1f;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 155, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 155, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -80,11 +82,26 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
+        public override void OnKill()
+        {
+            if (Main.zenithWorld)
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    if (Main.rand.NextBool(42))
+                    {
+                        NPC.SpawnOnPlayer(Main.myPlayer, ModContent.NPCType<THELORDE>());
+                    }
+                }
+            }
+        }
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.LihzahrdBrick, 1, 10, 26);
             npcLoot.Add(ItemID.LunarTabletFragment, 7, 10, 26);
             npcLoot.Add(ItemID.LihzahrdPowerCell, 50);
+            npcLoot.AddIf(() => DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && Main.zenithWorld, ModContent.ItemType<NO>(), 2, ui: false);
         }
     }
 }

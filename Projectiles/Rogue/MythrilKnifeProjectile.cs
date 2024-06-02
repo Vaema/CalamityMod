@@ -7,14 +7,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class MythrilKnifeProjectile : ModProjectile
+    public class MythrilKnifeProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/MythrilKnife";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Knife");
-        }
 
         public override void SetDefaults()
         {
@@ -34,14 +30,14 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Main.rand.NextBool(7))
                 {
-                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 171, 0.0f, 0.0f, 100, new Color(), 1f);
+                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Venom, 0.0f, 0.0f, 100, new Color(), 1f);
                     Main.dust[index].noGravity = true;
                     Main.dust[index].fadeIn = 1.5f;
                     Main.dust[index].velocity *= 0.25f;
                 }
                 if (Main.rand.NextBool(5))
                 {
-                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 46, 0.0f, 0.0f, 100, new Color(), 1f);
+                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Poisoned, 0.0f, 0.0f, 100, new Color(), 1f);
                     Main.dust[index].noGravity = true;
                     Main.dust[index].fadeIn = 1.5f;
                     Main.dust[index].velocity *= 0.25f;
@@ -72,12 +68,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (!Projectile.Calamity().stealthStrike)
                 return;
@@ -87,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (!Projectile.Calamity().stealthStrike)
                 return;

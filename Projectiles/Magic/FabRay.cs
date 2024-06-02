@@ -1,20 +1,23 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
-    public class FabRay : ModProjectile
+    public class FabRay : ModProjectile, ILocalizedModType
     {
-        internal PrimitiveTrail TrailDrawer;
+        public new string LocalizationCategory => "Projectiles.Magic";
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ray");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 54;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -46,7 +49,16 @@ namespace CalamityMod.Projectiles.Magic
                 if (potentialTarget != null)
                 {
                     Vector2 shootVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 13f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2.5f, shootVelocity, ModContent.ProjectileType<FabBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2.5f, shootVelocity, ModContent.ProjectileType<FabBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    if (p.WithinBounds(Main.maxProjectiles))
+                    {
+                        if (Projectile.hostile)
+                        {
+                            Main.projectile[p].hostile = true;
+                            Main.projectile[p].friendly = false;
+                            Main.projectile[p].DamageType = DamageClass.Default;
+                        }
+                    }
                 }
 
                 for (int i = 0; i < Projectile.oldPos.Length / 4; i += 3)
@@ -55,14 +67,24 @@ namespace CalamityMod.Projectiles.Magic
                     if (potentialTarget != null)
                     {
                         Vector2 shootVelocity = (potentialTarget.Center - Projectile.oldPos[i]).SafeNormalize(Vector2.UnitY) * 13f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.oldPos[i] - shootVelocity * 2.5f, shootVelocity, ModContent.ProjectileType<FabBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.oldPos[i] - shootVelocity * 2.5f, shootVelocity, ModContent.ProjectileType<FabBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        if (p.WithinBounds(Main.maxProjectiles))
+                        {
+                            if (Projectile.hostile)
+                            {
+                                Main.projectile[p].hostile = true;
+                                Main.projectile[p].friendly = false;
+                                Main.projectile[p].DamageType = DamageClass.Default;
+                            }
+                        }
                         break;
                     }
                 }
             }
 
             // Emit light.
-            Lighting.AddLight(Projectile.Center, Vector3.One * Projectile.Opacity * 0.7f);
+            if (!Projectile.hostile)
+                Lighting.AddLight(Projectile.Center, Vector3.One * Projectile.Opacity * 0.7f);
         }
 
         internal Color ColorFunction(float completionRatio)
@@ -79,13 +101,12 @@ namespace CalamityMod.Projectiles.Magic
             return MathHelper.Lerp(0f, 32f * Projectile.Opacity, expansionCompletion);
         }
 
+        internal Vector2 OffsetFunction(float completionRatio) => Projectile.Size * 0.5f;
+
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 32);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, OffsetFunction, pixelate: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 32);
             return false;
         }
 
@@ -108,6 +129,12 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
             return false;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            if (Projectile.hostile)
+                target.AddBuff(ModContent.BuffType<FabsolVodkaBuff>(), 54000);
         }
     }
 }

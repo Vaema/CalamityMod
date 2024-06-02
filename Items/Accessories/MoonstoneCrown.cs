@@ -7,23 +7,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Face)]
-    public class MoonstoneCrown : ModItem
+    public class MoonstoneCrown : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         // Base damage of lunar flares on stealth strikes. Increased by rogue damage stats, but not stealth damage.
-        internal const int BaseDamage = 85;
+        internal static int BaseDamage = 75;
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Moonstone Crown");
-            Tooltip.SetDefault("15% increased rogue projectile velocity\n" +
-                "Stealth strikes summon lunar flares on enemy hits\n" +
-                "Rogue projectiles very occasionally summon moon sigils behind them");
 
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
-				ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
+                ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
             }
         }
 
@@ -31,7 +27,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 46;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }

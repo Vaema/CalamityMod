@@ -14,21 +14,11 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public const int SplitDaggerCount = 6;
         public const int StealthStrikeLightCount = 7;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seraphim");
-            Tooltip.SetDefault("Throws an extraordinarily fast dagger which slows down exponentially and dissipates into light\n" +
-                $"Once dissipation has ended, {SplitDaggerCount} fast, splitting blades that aim at and slice nearby targets are released, along\n" +
-                "with a large laserbeam\n" +
-                $"Stealth strikes release a volley of {StealthStrikeLightCount} lights which explode into smaller laser beams along with the dagger");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 82;
             Item.height = 82;
-            Item.damage = 300;
+            Item.damage = 320;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 13;
@@ -66,9 +56,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<ShatteredSun>()).
-                AddIngredient(ModContent.ItemType<AuricBar>(), 5).
-                AddTile(ModContent.TileType<CosmicAnvil>()).
+                AddIngredient<ShatteredSun>().
+                AddIngredient<AuricBar>(5).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

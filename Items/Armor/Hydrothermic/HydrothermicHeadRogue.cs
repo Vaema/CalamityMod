@@ -8,22 +8,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("AtaxiaHood")]
-    public class HydrothermicHeadRogue : ModItem
+    public class HydrothermicHeadRogue : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hydrothermic Hood");
-            Tooltip.SetDefault("12% increased rogue damage and 10% increased rogue critical strike chance\n" +
-                "50% chance to not consume rogue items and 5% increased movement speed\n" +
-                "Temporary immunity to lava and immunity to fire damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 12; //49
         }
@@ -41,11 +33,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased rogue damage\n" +
-				"+110 maximum stealth\n" +
-                "Inferno effect when below 50% life\n" +
-                "Rogue weapons unleash a volley of homing chaos flames around the player every 2.5 seconds\n" +
-                "You emit a blazing explosion when you are hit";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<HydrothermicArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaVolley = true;
@@ -60,7 +48,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
             player.GetDamage<ThrowingDamageClass>() += 0.12f;
             player.GetCritChance<ThrowingDamageClass>() += 10;
             player.moveSpeed += 0.05f;
-            player.lavaMax += 240;
+            player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
         }
 

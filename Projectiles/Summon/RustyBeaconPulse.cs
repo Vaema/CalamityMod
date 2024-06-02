@@ -1,22 +1,18 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class RustyBeaconPulse : ModProjectile
+    public class RustyBeaconPulse : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public float LifetimeCompletion => 1f - Projectile.timeLeft / (float)RustyBeaconPrototype.PulseLifetime;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Irradiated Pulse");
-        }
 
         public override void SetDefaults()
         {
@@ -55,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color drawColor = Projectile.GetAlpha(lightColor) * 0.33f;
             for (int i = 0; i < 8; i++)
             {
@@ -72,10 +68,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool? CanHitNPC(NPC target) => !target.CountsAsACritter && !target.friendly && target.chaseable;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), RustyBeaconPrototype.IrradiatedDebuffTime);
-            target.AddBuff(BuffID.Poisoned, RustyBeaconPrototype.PoisonedDebuffTime);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

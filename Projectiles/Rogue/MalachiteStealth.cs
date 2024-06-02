@@ -1,19 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class MalachiteStealth : ModProjectile
+    public class MalachiteStealth : ModProjectile, ILocalizedModType
     {
-        private const int lifeSpan = 300;
+        public new string LocalizationCategory => "Projectiles.Rogue";
+        private const int lifeSpan = 240;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Malachite";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Malachite");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -31,6 +32,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = false;
             Projectile.timeLeft = lifeSpan;
             Projectile.extraUpdates = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 60;
         }
 
         public override void AI()
@@ -42,11 +45,11 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.localAI[1] += 1f;
                 if (Projectile.localAI[1] > 4f)
                 {
-                    for (int num468 = 0; num468 < 3; num468++)
+                    for (int k = 0; k < 3; k++)
                     {
-                        int num469 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 0.75f);
-                        Main.dust[num469].noGravity = true;
-                        Main.dust[num469].velocity *= 0f;
+                        int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 0.75f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].velocity *= 0f;
                     }
                 }
             }
@@ -79,16 +82,16 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override Color? GetAlpha(Color lightColor) => new Color(Main.DiscoR, 203, 103, Projectile.alpha);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ai[0] = 2f;
             Projectile.ExpandHitboxBy(112);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 7; i++)
             {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                 Main.dust[dusty].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[dusty].scale = 0.5f;
                     Main.dust[dusty].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -96,40 +99,43 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int j = 0; j < 15; j++)
             {
-                int green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                int green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                 Main.dust[green].noGravity = true;
                 Main.dust[green].velocity *= 5f;
-                green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[green].velocity *= 2f;
             }
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 0;
+            target.AddBuff(ModContent.BuffType<Plague>(), 240);
             Projectile.extraUpdates = 0;
-            Projectile.ai[0] = 1f;
-            Projectile.ai[1] = target.whoAmI;
-            Projectile.velocity = target.Center - Projectile.Center;
-            Projectile.velocity *= 0.75f;
-            Projectile.netUpdate = true;
+            if (Projectile.ai[0] == 0f)
+            {
+                Projectile.ai[0] = 1f;
+                Projectile.ai[1] = target.whoAmI;
+                Projectile.velocity = target.Center - Projectile.Center;
+                Projectile.velocity *= 0.75f;
+                Projectile.netUpdate = true;
+            }
+            if (Projectile.localAI[0] < 3f)
+                Projectile.localAI[0] += 1f;
 
-            const int maxKunai = 3;
+            const int maxKunai = 6;
             int kunaiFound = 0;
             int oldestKunai = -1;
             int oldestKunaiTimeLeft = lifeSpan;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == Projectile.type && i != Projectile.whoAmI && Main.projectile[i].ai[1] == target.whoAmI)
+                if (p.owner == Main.myPlayer && p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.ai[1] == target.whoAmI)
                 {
                     kunaiFound++;
-                    if (Main.projectile[i].timeLeft < oldestKunaiTimeLeft)
+                    if (p.timeLeft < oldestKunaiTimeLeft)
                     {
-                        oldestKunaiTimeLeft = Main.projectile[i].timeLeft;
-                        oldestKunai = Main.projectile[i].whoAmI;
+                        oldestKunaiTimeLeft = p.timeLeft;
+                        oldestKunai = p.whoAmI;
                     }
                     if (kunaiFound >= maxKunai)
                         break;
@@ -141,6 +147,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override bool? CanDamage() => Projectile.ai[0] != 1f ? null : false;
+        public override bool? CanDamage() => (Projectile.localAI[0] < 3f || Projectile.ai[0] == 2f) ? null : false;
     }
 }

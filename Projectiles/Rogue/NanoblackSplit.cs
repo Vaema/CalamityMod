@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class NanoblackSplit : ModProjectile
+    public class NanoblackSplit : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private static int SpriteWidth = 52;
         private static int Lifetime = 90;
         private static float MaxRotationSpeed = 0.25f;
@@ -22,7 +23,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nanoblack Blade");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -128,10 +128,9 @@ namespace CalamityMod.Projectiles.Rogue
             bool bossFound = false;
             int target = -1;
             float minDist = HomingStartRange;
-            for (int i = 0; i < 200; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (!npc.active || npc.type == NPCID.TargetDummy)
+                if (npc.type == NPCID.TargetDummy)
                     continue;
 
                 // If we've found a valid boss target, ignore ALL targets which aren't bosses.
@@ -149,7 +148,7 @@ namespace CalamityMod.Projectiles.Rogue
                         if (npc.boss)
                             bossFound = true;
                         minDist = distToNPC;
-                        target = i;
+                        target = npc.whoAmI;
                     }
                 }
             }
@@ -189,7 +188,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         // Spawns a tiny bit of dust when the energy blade vanishes.
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SpawnDust();
         }

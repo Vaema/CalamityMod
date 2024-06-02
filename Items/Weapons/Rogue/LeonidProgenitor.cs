@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,16 +15,13 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Leonid Progenitor");
-            Tooltip.SetDefault("Throws a bombshell that explodes, summoning a meteor to impact the site\n" +
-                "Right click to throw a spread of gravity affected comets that explode, leaving behind a star\n" +
-                "Stealth strikes lob a bombshell that additionally splits into comets on hit");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 32;
+            Item.height = 48;
             Item.damage = 64;
             Item.DamageType = RogueDamageClass.Instance;
             Item.knockBack = 3f;
@@ -33,14 +30,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<LeonidProgenitorBombshell>();
             Item.shootSpeed = 12f;
 
-            Item.width = 32;
-            Item.height = 48;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item61;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 
@@ -68,13 +63,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             return 0.8f;
         }
 
-		public override float StealthDamageMultiplier => 1.25f;
+        public override float StealthDamageMultiplier => 1.25f;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
+        {
             if (!player.Calamity().StealthStrikeAvailable() && player.altFunctionUse == 2)
-				damage = (int)(damage * 0.5f);
-		}
+                damage = (int)(damage * 0.5f);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

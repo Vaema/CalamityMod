@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Balancing;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,6 +13,9 @@ namespace CalamityMod.Items
     // ApplyTweaks(ref Item item) would be the one exposed function, which CalamityGlobalItem would call in SetDefaults.
     public partial class CalamityGlobalItem : GlobalItem
     {
+        // 02AUG2023: Ozzatron: Having Overhaul enabled turns off all scaling changes, per direct request from Mirsario on 8/2/23.
+        private static bool DisableScalingForOverhaul => CalamityMod.Instance.overhaul is not null;
+
         #region Database and Initialization
         internal static SortedDictionary<int, IItemTweak[]> currentTweaks = null;
 
@@ -18,180 +23,461 @@ namespace CalamityMod.Items
         {
             // Various shorthands for items which receive very simple changes, such as setting one flag.
             IItemTweak[] trueMelee = Do(TrueMelee);
-            IItemTweak[] trueMeleeNoSpeed = Do(TrueMeleeNoSpeed); 
+            IItemTweak[] trueMeleeNoSpeed = Do(TrueMeleeNoSpeed);
             IItemTweak[] pointBlank = Do(PointBlank);
             IItemTweak[] autoReuse = Do(AutoReuse);
-            IItemTweak[] maxStack9999 = Do(MaxStack(9999));
             IItemTweak[] nonConsumableBossSummon = Do(MaxStack(1), NotConsumable, UseTimeExact(10));
 
-            // Please keep this strictly alphabetical. It's the only way to keep it sane. Thanks in advance.
-            // - Ozzatron
+            // SORTING NOTES:
+            // 1. Sort tweaks by categories first, then sort by the internal name in alphabetical order. Navigate through categories and names using the search function.
+            // 2. Higher categories hold priority over lower ones (ie. Balancing with price tweaks belong in balancing, rather than price)
+            // 3. Items with different display names as opposed to internal ones should have comments for display names for ease of access.
             currentTweaks = new SortedDictionary<int, IItemTweak[]>
             {
-                { ItemID.Abeemination, nonConsumableBossSummon },
-                { ItemID.AbigailsFlower, autoReuse },
-                { ItemID.AdamantiteChainsaw, Do(TrueMeleeNoSpeed, AxePower(90), UseTimeExact(4), TileBoostExact(+0)) },
-                { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, PickPower(180), UseTimeExact(4), TileBoostExact(+1)) },
+                #region CATEGORY 1: Weapon Balancing
                 { ItemID.AdamantiteGlaive, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(65), ShootSpeedRatio(1.25f)) },
-                { ItemID.AdamantitePickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) },
-                { ItemID.AdamantiteRepeater, Do(PointBlank, UseExact(18), DamageExact(61)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.AdamantiteSword, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(77)) },
-                // { ItemID.AdamantiteSword, Do(UseTurn, ScaleRatio(1.45f), DamageExact(77)) },
-
-                { ItemID.AdamantiteWaraxe, Do(AxePower(160), UseTimeExact(10), TileBoostExact(+1)) },
-                { ItemID.Amarok, autoReuse },
-                { ItemID.AmberStaff, Do(UseTimeExact(15), UseAnimationExact(45), ReuseDelayExact(10)) },
+                { ItemID.AdamantiteRepeater, Do(PointBlank, UseExact(14)) },
+                { ItemID.AdamantiteSword, Do(UseTurn, DamageExact(77)) },
+                { ItemID.AmberStaff, Do(UseTimeExact(15), UseAnimationExact(45), ReuseDelayExact(15)) },
                 { ItemID.AmethystStaff, Do(ManaExact(2)) },
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) },
-                { ItemID.AncientHallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.AncientHallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.AnkhShield, Do(DefenseDelta(+8)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.AntlionClaw, Do(ScaleRatio(1.5f), DamageRatio(1.5f), UseExact(14)) },
-                // { ItemID.AntlionClaw, Do(ScaleRatio(1.4f), DamageRatio(1.5f), UseExact(14)) }, // Mandible Blade
-
-                { ItemID.Apple, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Apricot, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.AquaScepter, Do(DamageExact(21), ShootSpeedExact(25f)) },
-                { ItemID.Arkhalis, trueMeleeNoSpeed },
-                { ItemID.BabyBirdStaff, Do(AutoReuse, UseExact(35)) },
-                { ItemID.Banana, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Bananarang, Do(DamageExact(98), UseExact(14)) },
-                { ItemID.BatBat, autoReuse },
+                { ItemID.AntlionClaw, Do(UseExact(14)) }, // Mandible Blade
+                { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
                 { ItemID.BatScepter, Do(DamageExact(56)) },
-                { ItemID.BeamSword, Do(AutoReuse, UseMeleeSpeed, DamageExact(360), UseAnimationExact(60), ShootSpeedExact(23f)) },
-                { ItemID.BeeGun, Do(DamageExact(11)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.BeeKeeper, Do(UseTurn, ScaleRatio(1.5f), DamageExact(60)) },
-                // { ItemID.BeeKeeper, Do(UseTurn, ScaleRatio(1.2f), DamageExact(60)) },
-
-                { ItemID.BeesKnees, Do(PointBlank, DamageExact(18), UseExact(38)) },
-                { ItemID.BlackCurrant, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.BladedGlove, Do(DamageExact(15), UseExact(7)) },
-                { ItemID.BladeofGrass, Do(AutoReuse, UseTurn, ScaleRatio(1.8f), DamageExact(35)) },
-                { ItemID.Bladetongue, Do(UseTurn, UseRatio(0.8f), DamageExact(120), ScaleRatio(1.75f)) },
+                { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(142), UseAnimationExact(45), ShootSpeedExact(23f), KnockbackExact(8)) },
+                { ItemID.BeeGun, Do(DamageExact(13), ManaExact(4)) },
+                { ItemID.BeeKeeper, Do((UseTurn),DamageExact(32)) },
+                { ItemID.BeesKnees, Do(PointBlank, DamageExact(24), UseExact(38)) },
+                { ItemID.Bladetongue, Do(UseTurn, UseRatio(0.8f), DamageExact(120)) },
                 { ItemID.BlizzardStaff, Do(DamageExact(41), ManaExact(7)) },
-                { ItemID.BloodButcherer, Do(AutoReuse, UseTurn, DamageRatio(1.66f), ScaleRatio(1.4f)) },
-                { ItemID.BloodLustCluster, Do(AxePower(100), UseTimeExact(13), TileBoostExact(+0)) },
-                { ItemID.BloodMoonStarter, nonConsumableBossSummon },
-                { ItemID.BloodOrange, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.BloodyMachete, Do(AutoReuse, DamageExact(30)) },
-                { ItemID.BloodySpine, nonConsumableBossSummon },
+                { ItemID.BloodyMachete, Do(AutoReuse, DamageExact(24)) },
                 { ItemID.Blowgun, Do(PointBlank, DamageExact(40)) },
-                { ItemID.Blowpipe, Do(PointBlank, DamageExact(16), UseExact(35)) },
-                { ItemID.BluePhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.BluePhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.BluePhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.BlueSolution, Do(Value(Item.buyPrice(silver: 5))) },
-                { ItemID.BonePickaxe, Do(PickPower(55), UseTimeExact(6)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.BoneSword, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageRatio(1.25f)) },
-                // { ItemID.BoneSword, Do(AutoReuse, UseTurn, ScaleRatio(1.3f)) },
-
-                { ItemID.BoneWhip, autoReuse },
+                { ItemID.BluePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.BluePhasesaber, Do(DamageExact(60)) },
                 { ItemID.BookofSkulls, Do(ManaExact(12), ShootSpeedExact(5.5f)) },
                 { ItemID.BookStaff, Do(ManaExact(14)) }, // Tome of Infinite Wisdom
                 { ItemID.Boomstick, Do(PointBlank, DamageExact(11)) },
-                { ItemID.BorealWoodBow, pointBlank },
-                { ItemID.BorealWoodHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.BorealWoodSword, Do(AutoReuse, UseTurn) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(97)) },
-                // { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, ScaleRatio(1.4f), DamageExact(97)) },
-
-                { ItemID.ButchersChainsaw, Do(TrueMeleeNoSpeed, AxePower(150), UseTimeExact(3), TileBoostExact(+0)) },
-                { ItemID.CactusPickaxe, Do(PickPower(34), UseTimeExact(9)) },
-                { ItemID.CactusSword, Do(AutoReuse, UseTurn) },
-                { ItemID.CnadyCanePickaxe, Do(PickPower(55), UseTimeExact(9), TileBoostExact(+1)) }, // Candy Cane Pickaxe, intentionally not in alphabetical order to correct for typo
-                { ItemID.CandyCaneSword, Do(AutoReuse, UseTurn, DamageExact(24)) },
-                { ItemID.CandyCornRifle, pointBlank },
-                { ItemID.Cascade, Do(AutoReuse, DamageExact(39)) },
-                { ItemID.CelestialSigil, nonConsumableBossSummon },
-                { ItemID.CellPhone, Do(UseExact(30)) },
+                { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, DamageExact(97)) },
+                { ItemID.CandyCornRifle, Do(PointBlank, DamageExact(66)) },
+                { ItemID.Cascade, Do(AutoReuse, DamageExact(30)) },
                 { ItemID.ChainGuillotines, Do(DamageExact(100)) },
-                { ItemID.ChainGun, pointBlank },
-                { ItemID.ChainKnife, Do(AutoReuse, DamageExact(14)) },
-                // Charged Blaster Cannon is now an earlier Last Prism-like, so it will probably need careful balance attention.
-                // { ItemID.ChargedBlasterCannon, Do(DamageRatio(1.33f)) },
-                { ItemID.Cherry, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Chik, autoReuse },
-                { ItemID.ChlorophyteArrow, Do(DamageRatio(1.1f)) },
-                { ItemID.ChlorophyteChainsaw, Do(TrueMeleeNoSpeed, AxePower(120), UseTimeExact(3), TileBoostExact(+0)) },
-                { ItemID.ChlorophyteClaymore, Do(UseMeleeSpeed) },
-                { ItemID.ChlorophyteDrill, Do(TrueMeleeNoSpeed, PickPower(200), UseTimeExact(4), TileBoostExact(+2)) },
-                { ItemID.ChlorophyteGreataxe, Do(AxePower(165), UseTimeExact(7), TileBoostExact(+2)) },
-                { ItemID.ChlorophyteJackhammer, Do(TrueMeleeNoSpeed, HammerPower(90), UseTimeExact(5), TileBoostExact(+0)) },
-                { ItemID.ChlorophytePartisan, Do(AutoReuse, UseMeleeSpeed, UseRatio(0.8f), DamageExact(100)) },
-                { ItemID.ChlorophytePickaxe, Do(PickPower(200), UseTimeExact(7), TileBoostExact(+2)) },
+                { ItemID.ChainGun, Do(PointBlank, DamageExact(35)) },
+                { ItemID.ChainKnife, Do(AutoReuse, DamageRatio(1.34f)) },  // Uses ratios due to remix seed
+                { ItemID.ChlorophyteClaymore, Do(UseMeleeSpeed, DamageExact(176), UseExact(35), UseAnimationExact(45), ShootSpeedExact(22f)) },
+                { ItemID.ChlorophytePartisan, Do(AutoReuse, UseMeleeSpeed, UseRatio(0.8f), DamageExact(70)) },
                 { ItemID.ChlorophyteSaber, Do(UseMeleeSpeed, DamageExact(80), UseExact(10)) },
-                { ItemID.ChlorophyteShotbow, Do(PointBlank, DamageExact(80), UseExact(50)) },
-                { ItemID.ChlorophyteWarhammer, Do(HammerPower(90), UseTimeExact(8), TileBoostExact(+2)) },
-                { ItemID.ChristmasTreeSword, Do(AutoReuse, UseTurn, UseMeleeSpeed) },
-                { ItemID.ClingerStaff, Do(DamageExact(118)) },
+                { ItemID.ChristmasTreeSword, Do(AutoReuse, UseTurn, UseMeleeSpeed, DamageExact(80), UseExact(30)) },
+                { ItemID.ClingerStaff, Do(DamageExact(63)) },
                 { ItemID.ClockworkAssaultRifle, Do(PointBlank, DamageExact(21)) },
-
-                // TODO -- DELETE THIS LINE IN 1.4.4 PORT
-                { ItemID.CobaltBreastplate, Do(DefenseDelta(+2)) },
-
-                { ItemID.CobaltChainsaw, Do(TrueMeleeNoSpeed, AxePower(70), UseTimeExact(4), TileBoostExact(-1)) },
-                { ItemID.CobaltDrill, Do(TrueMeleeNoSpeed, PickPower(130), UseTimeExact(5)) },
-
-                // TODO -- DELETE THE FOLLOWING THREE LINES IN 1.4.4 PORT
-                { ItemID.CobaltHat, Do(DefenseDelta(+1)) },
-                { ItemID.CobaltHelmet, Do(DefenseDelta(+2)) },
-                { ItemID.CobaltMask, Do(DefenseDelta(+1)) },
-
                 { ItemID.CobaltNaginata, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(90)) },
-                { ItemID.CobaltPickaxe, Do(PickPower(130), UseTimeExact(9)) },
-                { ItemID.CobaltRepeater, Do(PointBlank, DamageExact(50), UseExact(20)) },
-                { ItemID.CobaltShield, Do(DefenseDelta(+3)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.CobaltSword, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(80)) },
-                // { ItemID.CobaltSword, Do(UseTurn, ScaleRatio(1.4f), DamageExact(80)) },
-
-                { ItemID.CobaltWaraxe, Do(AxePower(125), UseTimeExact(12), TileBoostExact(+0)) },
-                { ItemID.Coconut, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Code1, Do(AutoReuse, DamageExact(25)) },
-                { ItemID.Code2, autoReuse },
-                { ItemID.CoolWhip, autoReuse },
-                { ItemID.CopperAxe, Do(AxePower(50), UseTimeExact(16), TileBoostExact(+0)) },
-                { ItemID.CopperBow, pointBlank },
-                { ItemID.CopperBroadsword, Do(AutoReuse, UseTurn) },
-                { ItemID.CopperHammer, Do(HammerPower(35), UseTimeExact(12), TileBoostExact(+0)) },
-                { ItemID.CopperPickaxe, Do(PickPower(35), UseTimeExact(10), TileBoostExact(+0)) },
-                { ItemID.CopperShortsword, Do(AutoReuse, TrueMelee) },
-                { ItemID.CorruptYoyo, Do(AutoReuse, DamageExact(27)) },
-                { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(30)) },
+                { ItemID.CobaltRepeater, Do(PointBlank, UseExact(18)) },
+                { ItemID.CobaltSword, Do(UseTurn, DamageExact(80)) },
+                { ItemID.Code2, Do(AutoReuse, DamageExact(43)) },
+                { ItemID.CorruptYoyo, Do(AutoReuse, DamageExact(20)) }, // Malaise
+                { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(20)) }, // Artery
+                { ItemID.CrystalBullet, Do(DamageExact(8)) },
                 { ItemID.CrystalDart, Do(DamageExact(20)) },
                 { ItemID.CrystalSerpent, Do(DamageExact(45)) },
-                { ItemID.CrystalStorm, Do(DamageExact(40))},
+                { ItemID.CrystalStorm, Do(DamageExact(40)) },
+                { ItemID.CursedArrow, Do(DamageExact(14)) },
                 { ItemID.CursedDart, Do(DamageExact(25)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.Cutlass, Do(UseRatio(0.8f), DamageRatio(2f)) },
-                // { ItemID.Cutlass, Do(UseRatio(0.9f), DamageRatio(1.85f)) },
-
-                // Vanilla 1.4 nerfed Daedalus Stormbow themselves. If further nerfs are needed, apply them here.
-                // { ItemID.DaedalusStormbow, Do(DamageRatio(0.9f)) },
+                { ItemID.Cutlass, Do(UseRatio(0.9f), DamageExact(90)) },
+                { ItemID.DaedalusStormbow, Do(DamageExact(30)) },
                 { ItemID.DaoofPow, Do(DamageExact(160)) },
-                { ItemID.DarkBlueSolution, Do(Value(Item.buyPrice(silver: 5))) },
-                { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(68)) },
-                { ItemID.DartPistol, pointBlank },
+                { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(45)) },
                 { ItemID.DartRifle, Do(PointBlank, DamageExact(58)) },
+                { ItemID.DayBreak, Do(DamageExact(125), UseExact(20)) },
+                { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
+                { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
+                { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
+                { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(82), ShootSpeedExact(15f)) },
+                { ItemID.DemonBow, Do(PointBlank, DamageExact(12), AutoReuse) },
+                { ItemID.DemonScythe, Do(AutoReuse, DamageExact(33)) },
+                { ItemID.DyeTradersScimitar, Do(AutoReuse, UseTurn, DamageExact(24)) }, // Exotic Scimitar
+                { ItemID.ElectrosphereLauncher, Do(DamageExact(44)) },
+                { ItemID.ElfMelter, Do(ShootSpeedDelta(+5f)) },
+                { ItemID.EmeraldStaff, Do(DamageExact(27)) },
+                { ItemID.EmpressBlade, Do(AutoReuse, DamageExact(60), UseExact(20)) }, // Terraprisma
+                { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
+                { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
+                { ItemID.Excalibur, Do(TrueMelee, UseRatio(0.8f), DamageExact(125), UseAnimationExact(45)) },
+                { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
+                { ItemID.FalconBlade, Do(UseTurn, UseExact(15)) },
+                // For now, I think I will balance Celebration like a serious weapon. -CIT
+                { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
+                { ItemID.Flairon, Do(DamageExact(73)) },
+                { ItemID.Flamarang, Do(DamageExact(40)) },
+                { ItemID.Flamelash, Do(DamageExact(40)) },
+                { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) },
+                { ItemID.FlowerofFire, Do(AutoReuse, ManaExact(7), UseRatio(0.88f), DamageRatio(0.65f)) }, // Uses ratios due to remix seed
+                { ItemID.FlowerofFrost, Do(AutoReuse, ManaExact(7), UseExact(22), DamageExact(70), ShootSpeedExact(14)) },
+                { ItemID.FlyingKnife, Do(DamageExact(53)) },
+                { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
+                { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
+                { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
+                { ItemID.GoldenShower, Do(DamageExact(39)) },
+                { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
+                { ItemID.GolemFist, Do(DamageExact(150)) },
+                { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
+                { ItemID.GreenPhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.GreenPhasesaber, Do(DamageExact(60)) },
+                { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
+                { ItemID.Gungnir, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(92), ShootSpeedRatio(1.25f)) },
+                { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
+                { ItemID.Handgun, Do(PointBlank, UseExact(22), DamageExact(36)) },
+                { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
+                { ItemID.HighVelocityBullet, Do(DamageExact(13)) },
+                { ItemID.HiveFive, Do(AutoReuse, DamageExact(26)) },
+                { ItemID.HornetStaff, Do(AutoReuse, DamageExact(18), UseExact(30)) },
+                { ItemID.IceBlade, Do(UseMeleeSpeed) },
+                { ItemID.IceBoomerang, Do(UseExact(25), ShootSpeedExact(9)) },
+                { ItemID.IceRod, Do(UseExact(6), DamageExact(30), ShootSpeedExact(20)) },
+                { ItemID.IceSickle, Do(AutoReuse, UseMeleeSpeed, DamageExact(75), ShootSpeedExact(20f)) },
+                { ItemID.IchorArrow, Do(DamageExact(13)) },
+                { ItemID.IchorBullet, Do(DamageExact(11)) },
+                { ItemID.ImpStaff, Do(AutoReuse, UseExact(30), DamageExact(25)) },
+                { ItemID.InfernoFork, Do(DamageExact(99), ShootSpeedExact(11)) },
+                { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageExact(80), UseExact(25)) },
+                { ItemID.IronShortsword, Do(AutoReuse, TrueMelee, DamageExact(10)) },
+                { ItemID.Keybrand, Do(UseTurn) },
+                { ItemID.Kraken, Do(AutoReuse, DamageExact(85)) },
+                { ItemID.KOCannon, Do(DamageRatio(2.65f)) }, // Uses ratios due to remix seed
+                { ItemID.LaserMachinegun, Do(DamageExact(49)) },
+                { ItemID.LaserRifle, Do(DamageExact(46), UseExact(10), ManaExact(4)) },
+                { ItemID.LastPrism, Do(DamageExact(57), ManaExact(10)) },
+                { ItemID.LeadShortsword, Do(AutoReuse, TrueMelee, DamageExact(11)) },
+                { ItemID.LightDisc, Do(DamageExact(128), ShootSpeedExact(18)) },
+                { ItemID.LunarFlareBook, Do(DamageExact(120)) },
+                { ItemID.MagicalHarp, Do(DamageExact(50), ShootSpeedExact(12f)) },
+                { ItemID.MagicDagger, Do(DamageRatio(1.8f), UseRatio(1.88f), ShootSpeedExact(30)) }, // Uses ratios due to remix seed
+                { ItemID.MagicMissile, Do(DamageExact(23), ManaExact(10), UseAnimationExact(20), UseTimeExact(10)) },
+                { ItemID.MagnetSphere, Do(DamageExact(52)) },
+                { ItemID.Marrow, Do(PointBlank, DamageExact(69)) },
+                { ItemID.MedusaHead, Do(ManaExact(6), DamageExact(48)) },
+                { ItemID.Meowmere, Do(UseMeleeSpeed, DamageExact(240)) },
+                { ItemID.MeteorStaff, Do(DamageExact(58), ManaExact(7), ShootSpeedExact(13f)) },
+                { ItemID.MiniNukeI, Do(DamageExact(90)) },
+                { ItemID.MiniNukeII, Do(DamageExact(90)) },
+                { ItemID.Minishark, Do(PointBlank, DamageExact(4)) },
+                { ItemID.MoltenFury, Do(PointBlank, UseExact(29), AutoReuse) },
+                { ItemID.MonkStaffT1, Do(TrueMeleeNoSpeed, DamageExact(83)) }, // Sleepy Octopod
+                { ItemID.MonkStaffT2, Do(AutoReuse, TrueMelee, DamageExact(90)) }, // Ghastly Glaive
+                { ItemID.MonkStaffT3, Do(DamageExact(225)) }, // Sky Dragon's Fury
+                { ItemID.MoonlordBullet, Do(DamageExact(19)) }, // Luminite Bullet
+                { ItemID.MoonlordTurretStaff, Do(DamageExact(50), UseExact(15)) }, //Lunar Portal Staff
+                { ItemID.Muramasa, Do(CritDelta(+20)) },
+                { ItemID.MushroomSpear, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(100)) },
+                { ItemID.Musket, Do(PointBlank, DamageExact(22)) },
+                { ItemID.MythrilHalberd, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(95), ShootSpeedRatio(1.25f)) },
+                { ItemID.MythrilRepeater, Do(PointBlank, UseExact(16)) },
+                { ItemID.MythrilSword, Do(UseTurn, DamageExact(100)) },
+                { ItemID.NettleBurst, Do(ManaExact(10), DamageExact(70)) },
+                { ItemID.NightsEdge, Do(TrueMelee, DamageExact(45)) },
+                { ItemID.NorthPole, Do(AutoReuse, UseMeleeSpeed) },
+                { ItemID.OrangePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.OrangePhasesaber, Do(DamageExact(60)) },
+                { ItemID.OrichalcumHalberd, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(98), ShootSpeedRatio(1.25f)) },
+                { ItemID.OrichalcumRepeater, Do(PointBlank, DamageExact(48)) },
+                { ItemID.OrichalcumSword, Do(UseTurn, DamageExact(82)) },
+                { ItemID.PainterPaintballGun, Do(PointBlank, DamageExact(8)) },
+                { ItemID.PaladinsHammer, Do(DamageExact(100), ShootSpeedExact(23)) },
+                { ItemID.PalladiumPike, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(96)) },
+                { ItemID.PalladiumRepeater, Do(PointBlank, DamageExact(45)) },
+                { ItemID.PalladiumSword, Do(UseTurn, DamageExact(100)) },
+                { ItemID.PearlwoodBow, Do(AutoReuse, PointBlank, DamageExact(20), UseDelta(+8), ShootSpeedDelta(+3.4f), KnockbackDelta(+1f)) },
+                { ItemID.PearlwoodSword, Do(UseTurn, DamageExact(45)) },
+                { ItemID.PewMaticHorn, Do(DamageExact(25), ShootSpeedExact(15)) },
+                { ItemID.Phantasm, Do(PointBlank, DamageExact(48)) },
+                { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(18)) },
+                { ItemID.PiranhaGun, Do(DamageExact(48)) },
+                { ItemID.PlatinumBow, Do(PointBlank, DamageExact(12)) },
+                { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },
+                { ItemID.PoisonStaff, Do(DamageExact(57)) },
+                { ItemID.PossessedHatchet, Do(DamageExact(135)) },
+                { ItemID.PsychoKnife, Do(UseTurn, UseExact(11), DamageExact(255)) },
+                { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) },
+                { ItemID.PurplePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.PurplePhasesaber, Do(DamageExact(60)) },
+                { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(70)) },
+                { ItemID.QuadBarrelShotgun, Do(PointBlank, DamageExact(11)) },
+                { ItemID.RainbowRod, Do(DamageExact(35), ManaExact(15)) },
+                { ItemID.Rally, Do(AutoReuse, DamageExact(18)) },
+                { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
+                { ItemID.RavenStaff, Do(AutoReuse, UseExact(20), DamageExact(36)) },
+                { ItemID.RazorbladeTyphoon, Do(DamageExact(103)) },
+                { ItemID.Razorpine, Do(DamageExact(40)) },
+                { ItemID.RedPhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.RedPhasesaber, Do(DamageExact(60)) },
+                { ItemID.RedRyder, Do(PointBlank, DamageExact(24)) },
+                { ItemID.RedsYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
+                { ItemID.RocketLauncher, Do(DamageExact(70)) },
+                { ItemID.Sandgun, Do(PointBlank, DamageExact(22), UseExact(20)) },
+                { ItemID.SapphireStaff, Do(DamageExact(25)) },
+                { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(74), ShootSpeedDelta(+4f)) },
+                { ItemID.ShadowbeamStaff, Do(DamageExact(100)) },
+                { ItemID.ShadowFlameBow, Do(PointBlank, DamageExact(55)) },
+                { ItemID.ShadowFlameHexDoll, Do(DamageExact(40), ShootSpeedExact(30)) },
+                { ItemID.ShadowFlameKnife, Do(DamageExact(70)) },
+                { ItemID.SharpTears, Do(DamageExact(49)) }, // Blood Thorn
+                { ItemID.Shotgun, Do(PointBlank, DamageExact(36), AutoReuse) },
+                { ItemID.Shroomerang, Do(ShootSpeedExact(11)) },
+                { ItemID.SilverBullet, Do(DamageExact(8)) },
+                { ItemID.SilverShortsword, Do(AutoReuse, TrueMelee, DamageExact(14)) },
+                { ItemID.SkyFracture, Do(DamageExact(54), ShootSpeedExact(30f)) },
+                { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
+                { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) }, // Blade Staff
+                { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
+                { ItemID.SolarEruption, Do(DamageExact(157)) },
+                { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
+                { ItemID.SpaceGun, Do(DamageExact(25)) },
+                { ItemID.Spear, Do(AutoReuse, TrueMelee, DamageExact(14)) },
+                { ItemID.SpectreStaff, Do(DamageExact(78)) },
+                { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) },
+                { ItemID.StaffofEarth, Do(DamageExact(150)) },
+                { ItemID.StarCannon, Do(DamageExact(25)) },
+                { ItemID.StardustDragonStaff, Do(AutoReuse, DamageExact(20), UseExact(19)) },
+                { ItemID.StormTigerStaff, Do(AutoReuse, DamageExact(49), UseExact(20)) }, // Desert Tiger Staff
+                { ItemID.StylistKilLaKillScissorsIWish, Do(AutoReuse, UseTurn, DamageExact(18)) }, // Stylish Scissors
+                { ItemID.Stynger, Do(DamageExact(75)) },
+                { ItemID.Swordfish, Do(AutoReuse, TrueMelee, DamageExact(24)) },
+                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(41)) },
+                { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
+                { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
+                { ItemID.TerraBlade, Do(DamageExact(122)) },
+                // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
+                // Terrarian is extremely overpowered and requires a heavy nerf.
+                { ItemID.Terrarian, Do(AutoReuse, DamageExact(86)) },
+                { ItemID.TheEyeOfCthulhu, Do(AutoReuse, DamageExact(90)) },
+                { ItemID.TheRottedFork, Do(AutoReuse, TrueMelee, DamageExact(20)) },
+                { ItemID.TheUndertaker, Do(PointBlank, AutoReuse, DamageExact(15)) },
+                { ItemID.ThunderSpear, Do(AutoReuse, UseMeleeSpeed) }, // Storm Spear
+                { ItemID.ThunderStaff, Do(DamageExact(18)) }, //Thunder Zapper
+                { ItemID.TitaniumRepeater, Do(PointBlank, DamageExact(52)) },
+                { ItemID.TitaniumSword, Do(UseTurn, DamageExact(77)) },
+                { ItemID.TitaniumTrident, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(72), ShootSpeedRatio(1.25f)) },
+                { ItemID.TopazStaff, Do(ManaExact(2)) },
+                { ItemID.Toxikarp, Do(UseTimeExact(7), UseAnimationExact(14)) },
+                { ItemID.Trident, Do(AutoReuse, TrueMelee, DamageExact(20)) },
+                { ItemID.Trimarang, Do(DamageExact(24)) },
+                { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(107)) },
+                { ItemID.TrueNightsEdge, Do(DamageExact(105)) },
+                { ItemID.Tsunami, Do(PointBlank, DamageExact(49)) },
+                { ItemID.TungstenBullet, Do(DamageExact(8)) },
+                { ItemID.TungstenShortsword, Do(AutoReuse, TrueMelee, DamageExact(15)) },
+                { ItemID.UnholyArrow, Do(DamageExact(11)) },
+                { ItemID.UnholyTrident, Do(ManaRatio(0.78f), DamageRatio(0.91f)) },  // Uses ratios due to remix seed
+                { ItemID.VampireKnives, Do(DamageExact(38)) },
+                { ItemID.ValkyrieYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
+                { ItemID.VenomStaff, Do(DamageExact(55)) },
+                { ItemID.VenusMagnum, Do(PointBlank, DamageExact(65)) },
+                { ItemID.WaspGun, Do(UseExact(11), DamageExact(58)) },
+                { ItemID.WaterBolt, Do(DamageExact(23)) },
+                { ItemID.WhitePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.WhitePhasesaber, Do(DamageExact(60)) },
+                { ItemID.WoodenBoomerang, Do(DamageExact(16), Value(Item.sellPrice(copper: 20))) },
+                { ItemID.Yelets, Do(AutoReuse, DamageExact(53)) },
+                { ItemID.YellowPhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
+                { ItemID.YellowPhasesaber, Do(DamageExact(60)) },
+                { ItemID.Zenith, Do(DamageExact(210)) },
+                { ItemID.ZombieArm, Do(AutoReuse, UseTurn, KnockbackExact(12f)) },
+                #endregion
+
+                #region CATEGORY 2: Defense Balancing
+                { ItemID.AncientHallowedGreaves, Do(DefenseDelta(+2)) },
+                { ItemID.AncientHallowedPlateMail, Do(DefenseDelta(+3)) },
+                { ItemID.AnkhShield, Do(DefenseDelta(+4)) }, // 8 total
+                { ItemID.CobaltShield, Do(DefenseDelta(+3)) }, // 4 total
+                { ItemID.EoCShield, Do(DefenseDelta(+1)) }, // Shield of Cthulhu
+                { ItemID.FrozenShield, Do(DefenseDelta(+4)) }, // 10 total (plus the Frozen Turtle Shell DR effect)
+                { ItemID.FrozenTurtleShell, Do(DefenseExact(6)) },
+                { ItemID.HallowedGreaves, Do(DefenseDelta(+2)) },
+                { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
+                { ItemID.HeroShield, Do(DefenseDelta(+5)) }, // 15 total (plus increased max life)
+                { ItemID.LavaSkull, Do(DefenseExact(4)) }, // Magma Skull
+                { ItemID.MoltenSkullRose, Do(DefenseExact(8)) },
+                { ItemID.ObsidianShield, Do(DefenseDelta(+4)) }, // 6 total
+                { ItemID.ObsidianSkull, Do(DefenseDelta(+1)) }, // 2 total
+                { ItemID.ObsidianSkullRose, Do(DefenseExact(4)) },
+                { ItemID.OrichalcumBreastplate, Do(DefenseDelta(+3)) },
+                { ItemID.OrichalcumHeadgear, Do(DefenseDelta(+2)) },
+                { ItemID.OrichalcumHelmet, Do(DefenseDelta(+3)) },
+                { ItemID.OrichalcumLeggings, Do(DefenseDelta(+4)) },
+                { ItemID.OrichalcumMask, Do(DefenseDelta(+3)) },
+                { ItemID.PaladinsShield, Do(DefenseDelta(+2)) }, // 8 total
+                { ItemID.PalladiumBreastplate, Do(DefenseDelta(+3)) },
+                { ItemID.PalladiumHeadgear, Do(DefenseDelta(+2)) },
+                { ItemID.PalladiumHelmet, Do(DefenseDelta(+3)) },
+                { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
+                { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
+                { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
+                #endregion
+
+                #region CATEGORY 3: Tool Balancing
+                { ItemID.AcornAxe, Do(AxePower(125)) }, // Axe of Regrowth
+                { ItemID.AdamantiteChainsaw, Do(TrueMeleeNoSpeed, AxePower(90), UseTimeExact(4), TileBoostExact(+0), DamageExact(75)) },
+                { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, PickPower(180), UseTimeExact(4), TileBoostExact(+1), DamageExact(32)) },
+                { ItemID.AdamantitePickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) },
+                { ItemID.AdamantiteWaraxe, Do(AxePower(160), UseTimeExact(10), TileBoostExact(+1)) },
+                { ItemID.BloodLustCluster, Do(AxePower(100), UseTimeExact(13), TileBoostExact(+0)) },
+                { ItemID.BonePickaxe, Do(PickPower(55), UseTimeExact(6)) },
+                { ItemID.BorealWoodHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.ButchersChainsaw, Do(TrueMeleeNoSpeed, AxePower(150), UseTimeExact(3), TileBoostExact(+0), DamageExact(177)) },
+                { ItemID.CactusPickaxe, Do(PickPower(34), UseTimeExact(9)) },
+                { ItemID.CnadyCanePickaxe, Do(PickPower(55), UseTimeExact(9), TileBoostExact(+1)) }, // Candy Cane Pickaxe
+                { ItemID.ChlorophyteChainsaw, Do(TrueMeleeNoSpeed, AxePower(120), UseTimeExact(3), TileBoostExact(+0), DamageExact(112)) },
+                { ItemID.ChlorophyteDrill, Do(TrueMeleeNoSpeed, PickPower(200), UseTimeExact(4), TileBoostExact(+2), DamageExact(43)) },
+                { ItemID.ChlorophyteGreataxe, Do(AxePower(165), UseTimeExact(7), TileBoostExact(+2)) },
+                { ItemID.ChlorophyteJackhammer, Do(TrueMeleeNoSpeed, HammerPower(90), UseTimeExact(5), TileBoostExact(+0)) },
+                { ItemID.ChlorophytePickaxe, Do(PickPower(200), UseTimeExact(7), TileBoostExact(+2)) },
+                { ItemID.ChlorophyteWarhammer, Do(HammerPower(90), UseTimeExact(8), TileBoostExact(+2)) },
+                { ItemID.CobaltChainsaw, Do(TrueMeleeNoSpeed, AxePower(70), UseTimeExact(4), TileBoostExact(-1), DamageExact(51)) },
+                { ItemID.CobaltDrill, Do(TrueMeleeNoSpeed, PickPower(130), UseTimeExact(5), DamageExact(21)) },
+                { ItemID.CobaltPickaxe, Do(PickPower(130), UseTimeExact(9)) },
+                { ItemID.CobaltWaraxe, Do(AxePower(125), UseTimeExact(12), TileBoostExact(+0)) },
+                { ItemID.CopperAxe, Do(AxePower(50), UseTimeExact(16), TileBoostExact(+0)) },
+                { ItemID.CopperHammer, Do(HammerPower(35), UseTimeExact(12), TileBoostExact(+0)) },
+                { ItemID.CopperPickaxe, Do(PickPower(35), UseTimeExact(10), TileBoostExact(+0)) },
+                { ItemID.DeathbringerPickaxe, Do(PickPower(70), UseTimeExact(10)) },
+                { ItemID.Drax, Do(TrueMeleeNoSpeed, PickPower(200), AxePower(110), UseTimeExact(4), TileBoostExact(+1), DamageExact(80)) },
+                { ItemID.EbonwoodHammer, Do(HammerPower(25), UseTimeExact(9), TileBoostExact(+0)) },
+                { ItemID.FleshGrinder, Do(HammerPower(70), UseTimeExact(13), TileBoostExact(+0)) },
+                { ItemID.GoldAxe, Do(AxePower(80), UseTimeExact(14), TileBoostExact(+0)) },
+                { ItemID.GoldHammer, Do(HammerPower(60), UseTimeExact(9), TileBoostExact(+0)) },
+                { ItemID.GoldPickaxe, Do(PickPower(55), UseTimeExact(9)) },
+                { ItemID.Hammush, Do(HammerPower(85), UseTimeExact(10), TileBoostExact(+1)) },
+                { ItemID.IronAxe, Do(AxePower(60), UseTimeExact(15), TileBoostExact(+0)) },
+                { ItemID.IronHammer, Do(HammerPower(45), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.IronPickaxe, Do(PickPower(40), UseTimeExact(8)) },
+                { ItemID.LaserDrill, Do(PickPower(220), AxePower(120), UseTimeExact(4), DamageExact(54)) },
+                { ItemID.LeadAxe, Do(AxePower(60), UseTimeExact(15), TileBoostExact(+0)) },
+                { ItemID.LeadHammer, Do(HammerPower(45), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.LeadPickaxe, Do(PickPower(40), UseTimeExact(8)) },
+                { ItemID.LucyTheAxe, Do(AxePower(150), UseExact(13), TileBoostExact(+1)) },
+                { ItemID.LunarHamaxeNebula, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
+                { ItemID.LunarHamaxeSolar, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
+                { ItemID.LunarHamaxeStardust, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
+                { ItemID.LunarHamaxeVortex, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
+                { ItemID.MeteorHamaxe, Do(HammerPower(70), AxePower(100), UseTimeExact(16), TileBoostExact(+0)) },
+                { ItemID.MoltenHamaxe, Do(HammerPower(75), AxePower(125), UseTimeExact(14), TileBoostExact(+0)) },
+                { ItemID.MoltenPickaxe, Do(PickPower(100), UseTimeExact(10)) },
+                { ItemID.MythrilChainsaw, Do(TrueMeleeNoSpeed, AxePower(80), UseTimeExact(4), TileBoostExact(-1), DamageExact(63)) },
+                { ItemID.MythrilDrill, Do(TrueMeleeNoSpeed, PickPower(160), UseTimeExact(4), DamageExact(26)) },
+                { ItemID.MythrilPickaxe, Do(PickPower(160), UseTimeExact(8)) },
+                { ItemID.MythrilWaraxe, Do(AxePower(140), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.NebulaDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4), DamageExact(95)) },
+                { ItemID.NebulaPickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
+                { ItemID.NightmarePickaxe, Do(PickPower(66), UseTimeExact(9)) },
+                { ItemID.OrichalcumChainsaw, Do(TrueMeleeNoSpeed, AxePower(80), UseTimeExact(4), TileBoostExact(-1), DamageExact(63)) },
+                { ItemID.OrichalcumDrill, Do(TrueMeleeNoSpeed, PickPower(160), UseTimeExact(4), DamageExact(26)) },
+                { ItemID.OrichalcumPickaxe, Do(PickPower(160), UseTimeExact(8)) },
+                { ItemID.OrichalcumWaraxe, Do(AxePower(140), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.PalladiumChainsaw, Do(TrueMeleeNoSpeed, AxePower(70), UseTimeExact(4), TileBoostExact(-1), DamageExact(51)) },
+                { ItemID.PalladiumDrill, Do(TrueMeleeNoSpeed, PickPower(130), UseTimeExact(5), DamageExact(21)) },
+                { ItemID.PalladiumPickaxe, Do(PickPower(130), UseTimeExact(9)) },
+                { ItemID.PalladiumWaraxe, Do(AxePower(125), UseTimeExact(12), TileBoostExact(+0)) },
+                { ItemID.PalmWoodHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.PearlwoodHammer, Do(HammerPower(25), UseTimeExact(4), UseAnimationExact(20), DamageExact(36), TileBoostExact(+0)) },
+                { ItemID.PickaxeAxe, Do(PickPower(200), AxePower(110), UseTimeExact(7), TileBoostExact(+1)) },
+                { ItemID.Picksaw, Do(PickPower(210), AxePower(125), UseTimeExact(6), TileBoostExact(+1)) },
+                { ItemID.PlatinumAxe, Do(AxePower(80), UseTimeExact(14), TileBoostExact(+0)) },
+                { ItemID.PlatinumHammer, Do(HammerPower(60), UseTimeExact(9), TileBoostExact(+0)) },
+                { ItemID.PlatinumPickaxe, Do(PickPower(55), UseTimeExact(9)) },
+                { ItemID.Pwnhammer, Do(HammerPower(80), UseTimeExact(11), TileBoostExact(+1)) },
+                { ItemID.ReaverShark, Do(PickPower(100), UseTimeExact(16)) },
+                { ItemID.RichMahoganyHammer, Do(HammerPower(25), UseTimeExact(10), TileBoostExact(+0)) },
+                { ItemID.Rockfish, Do(HammerPower(50), UseTimeExact(10), TileBoostExact(+0)) },
+                { ItemID.SawtoothShark, Do(TrueMeleeNoSpeed, AxePower(45), UseTimeExact(4), TileBoostExact(-1)) },
+                { ItemID.ShadewoodHammer, Do(HammerPower(25), UseTimeExact(9), TileBoostExact(+0)) },
+                { ItemID.ShroomiteDiggingClaw, Do(PickPower(200), AxePower(125), UseTimeExact(4), TileBoostExact(-1)) },
+                { ItemID.SilverAxe, Do(AxePower(70), UseTimeExact(14), TileBoostExact(+0)) },
+                { ItemID.SilverHammer, Do(HammerPower(55), UseTimeExact(10), TileBoostExact(+0)) },
+                { ItemID.SilverPickaxe, Do(PickPower(50), UseTimeExact(11)) },
+                { ItemID.SolarFlareDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4), DamageExact(95)) },
+                { ItemID.SolarFlarePickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
+                { ItemID.SpectreHamaxe, Do(HammerPower(90), AxePower(170), TileBoostExact(+4)) },
+                { ItemID.SpectrePickaxe, Do(PickPower(200), TileBoostExact(+4)) },
+                { ItemID.StardustDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4), DamageExact(95)) },
+                { ItemID.StardustPickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
+                { ItemID.TheAxe, Do(HammerPower(100), AxePower(175), UseTimeExact(7), TileBoostExact(+1)) },
+                { ItemID.TheBreaker, Do(HammerPower(70), UseTimeExact(13), TileBoostExact(+0)) },
+                { ItemID.TinAxe, Do(AxePower(50), UseTimeExact(16), TileBoostExact(+0)) },
+                { ItemID.TinHammer, Do(HammerPower(35), UseTimeExact(12), TileBoostExact(+0)) },
+                { ItemID.TinPickaxe, Do(PickPower(35), UseTimeExact(10), TileBoostExact(+0)) },
+                { ItemID.TitaniumChainsaw, Do(TrueMeleeNoSpeed, AxePower(90), UseTimeExact(4), TileBoostExact(+0), DamageExact(75)) },
+                { ItemID.TitaniumDrill, Do(TrueMeleeNoSpeed, PickPower(180), UseTimeExact(4), TileBoostExact(+1), DamageExact(32)) },
+                { ItemID.TitaniumPickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) },
+                { ItemID.TitaniumWaraxe, Do(AxePower(160), UseTimeExact(10), TileBoostExact(+1)) },
+                { ItemID.TungstenAxe, Do(AxePower(70), UseTimeExact(14), TileBoostExact(+0)) },
+                { ItemID.TungstenHammer, Do(HammerPower(55), UseTimeExact(10), TileBoostExact(+0)) },
+                { ItemID.TungstenPickaxe, Do(PickPower(50), UseTimeExact(11)) },
+                { ItemID.VortexDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4), DamageExact(95)) },
+                { ItemID.VortexPickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
+                { ItemID.WarAxeoftheNight, Do(AxePower(100), UseTimeExact(13), TileBoostExact(+0)) },
+                { ItemID.WoodenHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
+                #endregion
+
+                #region CATEGORY 4: True Melee support
+                { ItemID.Arkhalis, trueMeleeNoSpeed },
+                { ItemID.CopperShortsword, Do(AutoReuse, TrueMelee) },
+                { ItemID.Gladius, Do(AutoReuse, TrueMelee) },
+                { ItemID.HallowJoustingLance, trueMelee },
+                { ItemID.JoustingLance, trueMelee },
+                { ItemID.NebulaChainsaw, trueMeleeNoSpeed },
+                { ItemID.ObsidianSwordfish, Do(AutoReuse, TrueMelee) },
+                { ItemID.PiercingStarlight, trueMelee }, // Starlight
+                { ItemID.Ruler, trueMelee },
+                { ItemID.ShadowJoustingLance, trueMelee },
+                { ItemID.SolarFlareChainsaw, trueMeleeNoSpeed },
+                { ItemID.StardustChainsaw, trueMeleeNoSpeed },
+                { ItemID.Terragrim, trueMeleeNoSpeed },
+                { ItemID.TheHorsemansBlade, trueMelee },
+                { ItemID.TinShortsword, Do(AutoReuse, TrueMelee) },
+                { ItemID.VortexChainsaw, trueMeleeNoSpeed },
+                #endregion
+
+                #region CATEGORY 5: Point Blank support
+                { ItemID.Blowpipe, pointBlank },
+                { ItemID.BorealWoodBow, pointBlank },
+                { ItemID.ChlorophyteShotbow, pointBlank },
+                { ItemID.CopperBow, pointBlank },
+                { ItemID.DartPistol, pointBlank },
+                { ItemID.DD2PhoenixBow, pointBlank }, // Phantom Phoenix
+                { ItemID.EbonwoodBow, pointBlank },
+                { ItemID.FairyQueenRangedItem, pointBlank }, //Eventide
+                { ItemID.FlintlockPistol, pointBlank },
+                { ItemID.FlareGun,  Do(PointBlank, Value(Item.sellPrice(silver: 10))) },
+                { ItemID.GoldBow, pointBlank },
+                { ItemID.Harpoon, pointBlank },
+                { ItemID.IceBow, pointBlank },
+                { ItemID.IronBow, pointBlank },
+                { ItemID.LeadBow, pointBlank },
+                { ItemID.Megashark, pointBlank },
+                { ItemID.OnyxBlaster, pointBlank },
+                { ItemID.PalmWoodBow, pointBlank },
+                { ItemID.PulseBow, pointBlank },
+                { ItemID.Revolver, Do(PointBlank, AutoReuse) },
+                { ItemID.RichMahoganyBow, pointBlank },
+                { ItemID.SDMG, pointBlank },
+                { ItemID.ShadewoodBow, pointBlank },
+                { ItemID.SilverBow, pointBlank },
+                { ItemID.SnowballCannon, pointBlank },
+                { ItemID.StakeLauncher, pointBlank },
+                { ItemID.TinBow, pointBlank },
+                { ItemID.TungstenBow, pointBlank },
+                { ItemID.Uzi, pointBlank },
+                { ItemID.VortexBeater, pointBlank },
+                { ItemID.WoodenBow, pointBlank },
+                #endregion
+
+                #region CATEGORY 6: Summoner Quality of Life
+                { ItemID.AbigailsFlower, autoReuse },
+                { ItemID.BabyBirdStaff, Do(AutoReuse, UseExact(35)) }, // Finch Staff
+                { ItemID.BlandWhip, autoReuse }, // Leather Whip
+                { ItemID.BoneWhip, autoReuse }, // Spinal Tap
+                { ItemID.CoolWhip, autoReuse },
                 { ItemID.DD2BallistraTowerT1Popper, autoReuse }, // Ballista Tier 1
                 { ItemID.DD2BallistraTowerT2Popper, Do(AutoReuse, UseExact(25)) }, // Ballista Tier 2
                 { ItemID.DD2BallistraTowerT3Popper, Do(AutoReuse, UseExact(20)) }, // Ballista Tier 3
-                { ItemID.DD2BetsyBow, Do(DamageRatio(1.1f)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2ExplosiveTrapT1Popper, autoReuse }, // Explosive Trap Tier 1
                 { ItemID.DD2ExplosiveTrapT2Popper, Do(AutoReuse, UseExact(25)) }, // Explosive Trap Tier 2
                 { ItemID.DD2ExplosiveTrapT3Popper, Do(AutoReuse, UseExact(20)) }, // Explosive Trap Tier 3
@@ -201,542 +487,125 @@ namespace CalamityMod.Items
                 { ItemID.DD2LightningAuraT1Popper, autoReuse }, // Lightning Aura Tier 1
                 { ItemID.DD2LightningAuraT2Popper, Do(AutoReuse, UseExact(25)) }, // Lightning Aura Tier 2
                 { ItemID.DD2LightningAuraT3Popper, Do(AutoReuse, UseExact(20)) }, // Lightning Aura Tier 3
-                { ItemID.DD2PhoenixBow, pointBlank }, // Phantom Phoenix
-                { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed) }, // Flying Dragon
-                { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
                 { ItemID.DeadlySphereStaff, Do(AutoReuse, UseExact(20)) },
-                { ItemID.DeathbringerPickaxe, Do(PickPower(70), UseTimeExact(10)) },
-                { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(82), ShootSpeedExact(15f)) },
-                { ItemID.DeerThing, nonConsumableBossSummon },
-                { ItemID.DemonBow, Do(PointBlank, DamageExact(12), AutoReuse) },
-                { ItemID.DemonScythe, Do(AutoReuse, DamageExact(33), ManaExact(10)) },
-                { ItemID.DiamondStaff, Do(DamageExact(26)) },
-                { ItemID.Dragonfruit, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Drax, Do(TrueMeleeNoSpeed, PickPower(200), AxePower(110), UseTimeExact(4), TileBoostExact(+1)) },
-                { ItemID.DyeTradersScimitar, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageRatio(1.33f)) },
-                { ItemID.EbonwoodBow, pointBlank },
-                { ItemID.EbonwoodHammer, Do(HammerPower(25), UseTimeExact(9), TileBoostExact(+0)) },
-                { ItemID.EbonwoodSword, Do(AutoReuse, UseTurn) },
-                { ItemID.Elderberry, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.ElectrosphereLauncher, Do(DamageRatio(1.1f)) },
-                { ItemID.EldMelter, Do(DamageExact(84), ShootSpeedDelta(+3f)) }, // Elf Melter, intentionally not in alphabetical order to correct for typo
-                { ItemID.EmeraldStaff, Do(DamageExact(28)) },
-                { ItemID.EmpressBlade, Do(AutoReuse, DamageExact(60), UseExact(20)) }, // Terraprisma
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.EnchantedBoomerang, Do(DamageRatio(2f), UseExact(28)) },
-                // { ItemID.EnchantedBoomerang, Do(DamageExact(26), UseExact(28)) },
-
-                { ItemID.EnchantedSword, Do(UseMeleeSpeed, ScaleRatio(1.5f), DamageExact(42), UseAnimationExact(20), ShootSpeedExact(15f)) },
-                { ItemID.EoCShield, Do(DefenseDelta(+1)) },
-                { ItemID.FairyQueenRangedItem, pointBlank },
-                { ItemID.Excalibur, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(125), UseAnimationExact(45)) },
-                { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.FalconBlade, Do(UseTurn, ScaleRatio(1.5f), DamageExact(35), UseExact(15)) },
-                // { ItemID.FalconBlade, Do(UseTurn, ScaleRatio(1.35f), DamageExact(35), UseExact(15)) },
-
-                { ItemID.FieryGreatsword, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(72), UseExact(45)) },
-                { ItemID.FireWhip, autoReuse },
-                // Unsure what to do with Celebration. Should it be treated as a serious weapon or not? Currently not changing it from vanilla.
-                // { ItemID.FireworksLauncher, Do(DamageRatio(2f)) }, // Celebration
-
-                // TODO -- DELETE THIS LINE IN 1.4.4 PORT
-                { ItemID.Flamarang, Do(DamageExact(45)) },
-
-                { ItemID.Flamelash, Do(DamageRatio(1.25f)) },
-                { ItemID.Flamethrower, Do(DamageExact(47), ShootSpeedDelta(+3f)) },
-                { ItemID.FlareGun, pointBlank },
-                { ItemID.FleshGrinder, Do(HammerPower(70), UseTimeExact(13), TileBoostExact(+0)) },
-                { ItemID.FlintlockPistol, pointBlank },
+                { ItemID.FireWhip, autoReuse }, // Firecracker
                 { ItemID.FlinxStaff, Do(AutoReuse, UseExact(35)) },
-                { ItemID.FlowerofFire, Do(AutoReuse, ManaExact(7), UseExact(14)) },
-                { ItemID.FlowerofFrost, Do(AutoReuse, ManaExact(7), UseExact(30), DamageExact(70), ShootSpeedExact(14)) },
-                { ItemID.FlyingKnife, Do(DamageExact(70)) },
+                { ItemID.MaceWhip, autoReuse }, // Morning Star
+                { ItemID.OpticStaff, Do(AutoReuse, UseExact(25)) },
+                { ItemID.PirateStaff, Do(AutoReuse, UseExact(25)) },
+                { ItemID.QueenSpiderStaff, Do(UseExact(25)) },
+                { ItemID.RainbowCrystalStaff, Do(UseExact(15)) },
+                { ItemID.RainbowWhip, autoReuse }, // Kaleidoscope
+                { ItemID.SanguineStaff, Do(AutoReuse, UseExact(25)) },
+                { ItemID.ScytheWhip, autoReuse }, // Dark Harvest
+                { ItemID.SlimeStaff, Do(AutoReuse, UseExact(30)) },
+                { ItemID.SpiderStaff, Do(AutoReuse, UseExact(25)) },
+                { ItemID.StaffoftheFrostHydra, Do(UseExact(20)) },
+                { ItemID.StardustCellStaff, Do(AutoReuse, UseExact(20)) },
+                { ItemID.SwordWhip, autoReuse }, // Durendal
+                { ItemID.TempestStaff, Do(AutoReuse, UseExact(20)) },
+                { ItemID.ThornWhip, autoReuse }, // Snapthorn
+                { ItemID.VampireFrogStaff, Do(AutoReuse, UseExact(30)) },
+                { ItemID.XenoStaff, Do(AutoReuse, UseExact(20)) },
+                #endregion
+
+                #region CATEGORY 7: Other Quality of Life (AutoReuse / UseTurn)
+                { ItemID.Amarok, autoReuse },
+                { ItemID.BatBat, autoReuse },
+                { ItemID.BladeofGrass, Do(AutoReuse, UseTurn) },
+                { ItemID.BloodButcherer, Do(AutoReuse, UseTurn) },
+                { ItemID.BoneSword, Do(AutoReuse, UseTurn) },
+                { ItemID.BorealWoodSword, Do(AutoReuse, UseTurn) },
+                { ItemID.CactusSword, Do(AutoReuse, UseTurn) },
+                { ItemID.CandyCaneSword, Do(AutoReuse, UseTurn) },
+                { ItemID.Chik, autoReuse },
+                { ItemID.Code1, autoReuse },
+                { ItemID.CopperBroadsword, Do(AutoReuse, UseTurn) },
+                { ItemID.EbonwoodSword, Do(AutoReuse, UseTurn) },
+                { ItemID.FieryGreatsword, Do(AutoReuse, UseTurn) }, // Volcano
                 { ItemID.FormatC, autoReuse },
-                { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(97)) },
-                { ItemID.FrostburnArrow, Do(DamageExact(8)) },
-                { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
-                { ItemID.FrozenShield, Do(DefenseDelta(+7)) },
-                { ItemID.FrozenTurtleShell, Do(DefenseExact(6)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.FruitcakeChakram, Do(DamageRatio(2f)) },
-                // { ItemID.FruitcakeChakram, Do(DamageRatio(1.5f)) },
-
-                { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
-                { ItemID.Gladius, Do(AutoReuse, TrueMelee) },
-                { ItemID.GlowingMushroom, Do(Value(0)) },
-                { ItemID.GoblinBattleStandard, nonConsumableBossSummon },
-                { ItemID.GoldAxe, Do(AxePower(80), UseTimeExact(14), TileBoostExact(+0)) },
-                { ItemID.GoldBow, Do(PointBlank, DamageExact(12)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.GoldBroadsword, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageRatio(2f)) },
-                // { ItemID.GoldBroadsword, Do(AutoReuse, UseTurn, ScaleRatio(1.25f), DamageRatio(1.75f)) },
-
-                { ItemID.GoldenShower, Do(DamageExact(44)) },
-                { ItemID.GoldHammer, Do(HammerPower(60), UseTimeExact(9), TileBoostExact(+0)) },
-                { ItemID.GoldPickaxe, Do(PickPower(55), UseTimeExact(9)) },
-                { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageRatio(2f)) },
-                { ItemID.GolemFist, Do(DamageExact(150)) },
-                { ItemID.Gradient, autoReuse },
-                { ItemID.Grapefruit, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.GreenPhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.GreenPhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.GreenPhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.GreenSolution, Do(Value(Item.buyPrice(silver: 5))) },
-                { ItemID.GrenadeLauncher, Do(DamageRatio(1.5f)) },
-                { ItemID.GuideVoodooDoll, maxStack9999 },
-                { ItemID.Gungnir, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(92), ShootSpeedRatio(1.25f)) },
-                { ItemID.HallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.HallowedRepeater, Do(PointBlank, UseExact(14), DamageExact(57)) },
-                { ItemID.HallowJoustingLance, trueMelee },
-                { ItemID.Hammush, Do(HammerPower(85), UseTimeExact(10), TileBoostExact(+1)) },
-                { ItemID.Handgun, Do(PointBlank, UseExact(27), DamageExact(36)) },
-                { ItemID.Harpoon, pointBlank },
+                { ItemID.GoldBroadsword, Do(AutoReuse, UseTurn) },
                 { ItemID.HelFire, autoReuse },
-                { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
-                { ItemID.HeroShield, Do(DefenseDelta(+10)) },
-                { ItemID.HighVelocityBullet, Do(DamageExact(15)) },
-                { ItemID.HornetStaff, Do(AutoReuse, UseExact(30)) },
-                { ItemID.IceBlade, Do(UseMeleeSpeed, DamageExact(26), UseTimeExact(33)) },
-                { ItemID.IceBoomerang, Do(DamageExact(28), UseExact(25), ShootSpeedExact(10)) },
-                { ItemID.IceBow, Do(PointBlank, AutoReuse, DamageExact(120), UseExact(35)) },
-                { ItemID.IceRod, Do(UseExact(6), DamageExact(30), ShootSpeedExact(20)) },
-                { ItemID.IceSickle, Do(AutoReuse, UseMeleeSpeed, DamageExact(95), ShootSpeedExact(20f)) },
-                { ItemID.ImpStaff, Do(AutoReuse, UseExact(30)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.InfernoFork, Do(DamageRatio(1.66f)) },
-                // { ItemID.InfernoFork, Do(DamageRatio(1.2f)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageRatio(0.75f)) },
-                // { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageExact(82)) },
-
-                { ItemID.IronAxe, Do(AxePower(60), UseTimeExact(15), TileBoostExact(+0)) },
-                { ItemID.IronBow, pointBlank },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.IronBroadsword, Do(AutoReuse, UseTurn, DamageRatio(1.25f), ScaleRatio(1.2f)) },
-                // { ItemID.IronBroadsword, Do(AutoReuse, UseTurn) },
-
-                { ItemID.IronHammer, Do(HammerPower(45), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.IronPickaxe, Do(PickPower(40), UseTimeExact(8)) },
-                { ItemID.IronShortsword, Do(AutoReuse, TrueMelee, DamageRatio(1.25f)) },
-                { ItemID.JestersArrow, Do(DamageExact(6)) },
-                { ItemID.JoustingLance, trueMelee },
-                { ItemID.JungleYoyo, autoReuse },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.Katana, Do(UseExact(15), DamageRatio(1.5f), CritDelta(+30)) },
-                // { ItemID.Katana, Do(UseExact(15), DamageRatio(1.35f), CritDelta(+30)) },
-
-                { ItemID.Keybrand, Do(UseTurn, ScaleRatio(1.5f), DamageExact(110)) },
-                { ItemID.KOCannon, Do(DamageRatio(2.65f)) },
-                { ItemID.Kraken, autoReuse },
-                { ItemID.LaserDrill, Do(PickPower(220), AxePower(120), UseTimeExact(4)) },
-                { ItemID.LaserRifle, Do(DamageExact(46), UseExact(10), ManaExact(4)) },
-                { ItemID.LastPrism, Do(DamageRatio(0.75f)) },
-                { ItemID.LavaSkull, Do(DefenseExact(4)) },
-                { ItemID.LeadAxe, Do(AxePower(60), UseTimeExact(15), TileBoostExact(+0)) },
-                { ItemID.LeadBow, pointBlank },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.LeadBroadsword, Do(AutoReuse, UseTurn, DamageRatio(1.25f), ScaleRatio(1.2f)) },
-                // { ItemID.LeadBroadsword, Do(AutoReuse, UseTurn) },
-
-                { ItemID.LeadHammer, Do(HammerPower(45), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.LeadPickaxe, Do(PickPower(40), UseTimeExact(8)) },
-                { ItemID.LeadShortsword, Do(AutoReuse, TrueMelee, DamageRatio(1.25f)) },
-                { ItemID.BlandWhip, autoReuse },
-                { ItemID.Lemon, Do(Value(Item.buyPrice(silver: 2))) },
+                { ItemID.IronBroadsword, Do(AutoReuse, UseTurn) },
+                { ItemID.JungleYoyo, autoReuse }, // Amazon
                 { ItemID.LifeCrystal, autoReuse },
+                { ItemID.LeadBroadsword, Do(AutoReuse, UseTurn) },
                 { ItemID.LifeFruit, autoReuse },
-                { ItemID.LightDisc, Do(DamageExact(128)) },
-                { ItemID.LightsBane, Do(AutoReuse, UseTurn, DamageExact(34)) },
-                { ItemID.LucyTheAxe, Do(AxePower(150), UseExact(13), TileBoostExact(+1)) },
-                { ItemID.LunarFlareBook, Do(DamageRatio(1.2f)) },
-                { ItemID.LunarHamaxeNebula, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
-                { ItemID.LunarHamaxeSolar, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
-                { ItemID.LunarHamaxeStardust, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
-                { ItemID.LunarHamaxeVortex, Do(HammerPower(100), AxePower(175), UseTimeExact(5), TileBoostExact(+4)) },
-                { ItemID.MaceWhip, autoReuse },
-                { ItemID.MagicalHarp, Do(DamageExact(50), ShootSpeedExact(12f)) },
-                { ItemID.MagicDagger, Do(AutoReuse, DamageExact(77), UseExact(16), ShootSpeedExact(30)) },
-                { ItemID.MagicMissile, Do(DamageExact(23), ManaExact(10), UseAnimationExact(20), UseTimeExact(10)) },
-                { ItemID.MagnetSphere, Do(DamageRatio(1.1f)) },
+                { ItemID.LightsBane, Do(AutoReuse, UseTurn) },
                 { ItemID.ManaCrystal, autoReuse },
-                { ItemID.Mango, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Marrow, Do(PointBlank, AutoReuse, DamageExact(69)) },
+                { ItemID.PalmWoodSword, Do(AutoReuse, UseTurn) },
+                { ItemID.PaperAirplaneA, autoReuse },
+                { ItemID.PaperAirplaneB, autoReuse }, // White Paper Airplane
+                { ItemID.PlatinumBroadsword, Do(AutoReuse, UseTurn) },
+                { ItemID.RichMahoganySword, Do(AutoReuse, UseTurn) },
+                { ItemID.ShadewoodSword, Do(AutoReuse, UseTurn) },
+                { ItemID.SilverBroadsword, Do(AutoReuse, UseTurn) },
+                { ItemID.Starfury, autoReuse },
+                { ItemID.TentacleSpike, autoReuse },
+                { ItemID.TinBroadsword, Do(AutoReuse, UseTurn) },
+                { ItemID.TragicUmbrella, autoReuse },
+                { ItemID.TungstenBroadsword, Do(AutoReuse, UseTurn) },
+                { ItemID.Umbrella, autoReuse },
+                { ItemID.Valor, autoReuse },
+                { ItemID.WandofFrosting, autoReuse },
+                { ItemID.WandofSparking, autoReuse },
+                { ItemID.WeatherPain, autoReuse },
+                { ItemID.WoodenSword, Do(AutoReuse, UseTurn) },
+                { ItemID.WoodYoyo, autoReuse },
+                { ItemID.ZapinatorGray, autoReuse },
+                { ItemID.ZapinatorOrange, autoReuse },
+                #endregion
+
+                #region CATEGORY 8: Non-consumable Quality of Life
+                { ItemID.Abeemination, nonConsumableBossSummon },
+                { ItemID.BloodMoonStarter, nonConsumableBossSummon }, // Bloody Tear
+                { ItemID.BloodySpine, nonConsumableBossSummon },
+                { ItemID.CelestialSigil, nonConsumableBossSummon },
+                { ItemID.DeerThing, nonConsumableBossSummon },
+                { ItemID.GoblinBattleStandard, nonConsumableBossSummon },
                 { ItemID.MechanicalEye, nonConsumableBossSummon },
                 { ItemID.MechanicalSkull, nonConsumableBossSummon },
                 { ItemID.MechanicalWorm, nonConsumableBossSummon },
-                { ItemID.MedusaHead, Do(ManaExact(6), DamageRatio(1.2f)) },
-                { ItemID.Megashark, pointBlank },
-                { ItemID.Meowmere, Do(UseMeleeSpeed/*, DamageRatio(1.33f) */) },
-                { ItemID.MeteorHamaxe, Do(HammerPower(70), AxePower(100), UseTimeExact(16), TileBoostExact(+0)) },
-                { ItemID.MeteorStaff, Do(DamageExact(58), ManaExact(7), ShootSpeedExact(13f)) },
-                { ItemID.Minishark, Do(PointBlank, DamageExact(4)) },
-                { ItemID.MoltenFury, Do(PointBlank, DamageRatio(1.1f), UseExact(29), AutoReuse) },
-                { ItemID.MoltenHamaxe, Do(HammerPower(75), AxePower(125), UseTimeExact(14), TileBoostExact(+0)) },
-                { ItemID.MoltenPickaxe, Do(PickPower(100), UseTimeExact(10)) },
-                { ItemID.MoltenSkullRose, Do(DefenseExact(8)) },
-                { ItemID.MonkStaffT1, Do(TrueMeleeNoSpeed, DamageExact(83)) }, // Sleepy Octopod
-                { ItemID.MonkStaffT2, Do(AutoReuse, TrueMelee, DamageRatio(2f)) }, // Ghastly Glaive
-                { ItemID.MonkStaffT3, Do(DamageExact(225)) }, // Sky Dragon's Fury
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.MoonlordTurretStaff, Do(UseExact(15), DamageRatio(1.5f)) },
-                // { ItemID.MoonlordTurretStaff, Do(UseExact(15)) }, // Lunar Portal Staff
-
-                { ItemID.Muramasa, Do(ScaleRatio(1.5f), DamageRatio(1.5f), UseExact(14), CritDelta(+30)) },
-                { ItemID.Mushroom, Do(Value(0)) },
-                { ItemID.MushroomSpear, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(100)) },
-                { ItemID.Musket, Do(PointBlank, DamageExact(25)) },
-                { ItemID.MythrilChainsaw, Do(TrueMeleeNoSpeed, AxePower(80), UseTimeExact(4), TileBoostExact(-1)) },
-                { ItemID.MythrilDrill, Do(TrueMeleeNoSpeed, PickPower(160), UseTimeExact(4)) },
-                { ItemID.MythrilHalberd, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(95), ShootSpeedRatio(1.25f)) },
-                { ItemID.MythrilPickaxe, Do(PickPower(160), UseTimeExact(8)) },
-                { ItemID.MythrilRepeater, Do(PointBlank, DamageExact(58), UseExact(19)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.MythrilSword, Do(UseTurn, ScaleRatio(1.5f), DamageExact(100), UseExact(25)) },
-                // { ItemID.MythrilSword, Do(UseTurn, ScaleRatio(1.45f), DamageExact(100)) },
-
-                { ItemID.MythrilWaraxe, Do(AxePower(140), UseTimeExact(11), TileBoostExact(+0)) },
+                { ItemID.MechdusaSummon, nonConsumableBossSummon }, // Ocram's Razor
                 { ItemID.NaughtyPresent, nonConsumableBossSummon },
-                { ItemID.NebulaChainsaw, trueMeleeNoSpeed },
-                { ItemID.NebulaDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4)) },
-                { ItemID.NebulaPickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
-                { ItemID.NettleBurst, Do(ManaExact(10), DamageExact(43)) },
-                { ItemID.NightmarePickaxe, Do(PickPower(66), UseTimeExact(9)) },
-                { ItemID.NightsEdge, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(98)) },
-                { ItemID.NorthPole, Do(AutoReuse, UseMeleeSpeed, AttackSpeedExact(0.33f)) },
-                { ItemID.ObsidianShield, Do(DefenseDelta(+5)) },
-                { ItemID.ObsidianSkull, Do(DefenseDelta(+1)) },
-                { ItemID.ObsidianSkullRose, Do(DefenseExact(4)) },
-                { ItemID.ObsidianSwordfish, Do(AutoReuse, TrueMelee, DamageExact(45)) },
-                { ItemID.OnyxBlaster, Do(PointBlank, UseTurn) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.OpticStaff, Do(AutoReuse, UseExact(25), DamageRatio(0.75f)) }, // NOTE: Optic Staff minions have local iframes, so they should be much better overall
-                // { ItemID.OpticStaff, Do(AutoReuse, UseExact(25)) },
-
-                { ItemID.OrangePhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.OrangePhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.OrangePhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.OrichalcumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumChainsaw, Do(TrueMeleeNoSpeed, AxePower(80), UseTimeExact(4), TileBoostExact(-1)) },
-                { ItemID.OrichalcumDrill, Do(TrueMeleeNoSpeed, PickPower(160), UseTimeExact(4)) },
-                { ItemID.OrichalcumHalberd, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(98), ShootSpeedRatio(1.25f)) },
-                { ItemID.OrichalcumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.OrichalcumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumLeggings, Do(DefenseDelta(+4)) },
-                { ItemID.OrichalcumMask, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumPickaxe, Do(PickPower(160), UseTimeExact(8)) },
-                { ItemID.OrichalcumRepeater, Do(PointBlank, DamageExact(86), UseExact(27)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.OrichalcumSword, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(82)) },
-                // { ItemID.OrichalcumSword, Do(UseTurn, ScaleRatio(1.45f), DamageExact(82)) },
-
-                { ItemID.OrichalcumWaraxe, Do(AxePower(140), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.PainterPaintballGun, Do(PointBlank, DamageExact(8)) },
-                { ItemID.PaladinsHammer, Do(AutoReuse, DamageExact(100)) },
-                { ItemID.PaladinsShield, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumChainsaw, Do(TrueMeleeNoSpeed, AxePower(70), UseTimeExact(4), TileBoostExact(-1)) },
-                { ItemID.PalladiumDrill, Do(TrueMeleeNoSpeed, PickPower(130), UseTimeExact(5)) },
-                { ItemID.PalladiumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.PalladiumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
-                { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumPickaxe, Do(PickPower(130), UseTimeExact(9)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.PalladiumPike, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageRatio(3f)) },
-                // { ItemID.PalladiumPike, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(96)) },
-
-                { ItemID.PalladiumRepeater, Do(PointBlank, UseExact(25), DamageExact(75)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.PalladiumSword, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(100)) },
-                // { ItemID.PalladiumSword, Do(UseTurn, ScaleRatio(1.4f), DamageExact(100)) },
-
-                { ItemID.PalladiumWaraxe, Do(AxePower(125), UseTimeExact(12), TileBoostExact(+0)) },
-                { ItemID.PalmWoodBow, pointBlank },
-
-                { ItemID.PalmWoodHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.PalmWoodSword, Do(AutoReuse, UseTurn) },
-                { ItemID.PaperAirplaneA, autoReuse },
-                { ItemID.PaperAirplaneB, autoReuse },
-                { ItemID.Peach, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.PearlwoodBow, Do(AutoReuse, PointBlank, DamageRatio(2.31f), UseDelta(+8), ShootSpeedDelta(+3.4f), KnockbackDelta(+1f)) },
-                { ItemID.PearlwoodHammer, Do(HammerPower(25), UseTimeExact(4), UseAnimationExact(20), DamageRatio(4f), TileBoostExact(+0)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.PearlwoodSword, Do(AutoReuse, UseTurn, DamageRatio(4f)) },
-                // { ItemID.PearlwoodSword, Do(UseTurn, DamageRatio(1.5f)) },
-
-                { ItemID.PewMaticHorn, Do(DamageExact(23)) },
-                { ItemID.Phantasm, pointBlank },
-                { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, DamageExact(36), UseExact(27)) },
-                { ItemID.PickaxeAxe, Do(PickPower(200), AxePower(110), UseTimeExact(7), TileBoostExact(+1)) },
-                { ItemID.Picksaw, Do(PickPower(210), AxePower(125), UseTimeExact(6), TileBoostExact(+1)) },
-                { ItemID.PiercingStarlight, Do(TrueMelee) },
-                { ItemID.Pineapple, Do(Value(Item.buyPrice(silver: 2))) },
                 { ItemID.PirateMap, nonConsumableBossSummon },
-                { ItemID.PirateStaff, Do(AutoReuse, UseExact(25)) },
-                { ItemID.PlatinumAxe, Do(AxePower(80), UseTimeExact(14), TileBoostExact(+0)) },
-                { ItemID.PlatinumBow, pointBlank },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.PlatinumBroadsword, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageRatio(2f)) },
-                // { ItemID.PlatinumBroadsword, Do(AutoReuse, UseTurn, ScaleRatio(1.25f), DamageExact(30)) },
-
-                { ItemID.PlatinumHammer, Do(HammerPower(60), UseTimeExact(9), TileBoostExact(+0)) },
-                { ItemID.PlatinumPickaxe, Do(PickPower(55), UseTimeExact(9)) },
-                { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageRatio(2f)) },
-                { ItemID.Plum, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.PoisonStaff, Do(DamageExact(57)) },
-
-                // TODO -- UNCOMMENT IN 1.4.4 PORT
-                // { ItemID.Pomegranate, Do(Value(Item.buyPrice(silver: 2))) },
-
-                { ItemID.PsychoKnife, Do(UseTurn, UseExact(11), AttackSpeedExact(0.5f), DamageRatio(3f)) },
-                { ItemID.PulseBow, Do(PointBlank, DamageRatio(1.2f)) },
                 { ItemID.PumpkinMoonMedallion, nonConsumableBossSummon },
-                { ItemID.PurpleClubberfish, Do(UseTurn, ScaleRatio(1.5f), DamageExact(45), KnockbackExact(10f)) },
-                { ItemID.PurplePhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.PurplePhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.PurplePhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.PurpleSolution, Do(Value(Item.buyPrice(silver: 5))) },
-                { ItemID.Pwnhammer, Do(HammerPower(80), UseTimeExact(11), TileBoostExact(+1)) },
-                { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20)) },
-                { ItemID.QuadBarrelShotgun, pointBlank },
-                { ItemID.QueenSlimeCrystal, nonConsumableBossSummon },
-                { ItemID.QueenSpiderStaff, Do(UseExact(25)) },
-                { ItemID.RainbowCrystalStaff, Do(UseExact(15)) },
-                { ItemID.RainbowRod, Do(DamageExact(35), ManaExact(15)) },
-                { ItemID.RainbowWhip, autoReuse },
-                { ItemID.Rally, Do(AutoReuse, DamageExact(20)) },
-                { ItemID.Rambutan, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.RavenStaff, Do(AutoReuse, UseExact(20)) },
-                { ItemID.Razorpine, Do(DamageRatio(0.75f)) },
-                { ItemID.ReaverShark, Do(PickPower(100), UseTimeExact(16)) },
-                { ItemID.RedPhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.RedPhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.RedPhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.RedRyder, Do(PointBlank, DamageExact(24)) },
-                { ItemID.RedSolution, Do(Value(Item.buyPrice(silver: 5))) },
-                { ItemID.RedsYoyo, autoReuse },
-                { ItemID.Revolver, Do(PointBlank, AutoReuse) },
-                { ItemID.RichMahoganyBow, pointBlank },
-
-                { ItemID.RichMahoganyHammer, Do(HammerPower(25), UseTimeExact(10), TileBoostExact(+0)) },
-                { ItemID.RichMahoganySword, Do(AutoReuse, UseTurn) },
-                { ItemID.RocketIII, Do(DamageRatio(0.75f)) },
-                { ItemID.RocketIV, Do(DamageRatio(0.75f)) },
-                { ItemID.RocketLauncher, Do(DamageRatio(1.1f)) },
-                { ItemID.Rockfish, Do(HammerPower(50), UseTimeExact(10), TileBoostExact(+0)) },
-                { ItemID.RubyStaff, Do(DamageExact(25)) },
-                { ItemID.Ruler, Do(TrueMelee) },
-                { ItemID.Sandgun, pointBlank },
-                { ItemID.SapphireStaff, Do(AutoReuse, DamageExact(25)) },
-                { ItemID.SanguineStaff, Do(AutoReuse, UseExact(25)) },
-                { ItemID.SawtoothShark, Do(TrueMeleeNoSpeed, AxePower(45), UseTimeExact(4), TileBoostExact(-1)) },
-                { ItemID.ScytheWhip, autoReuse },
-                { ItemID.SDMG, pointBlank },
-                { ItemID.Seedler, Do(UseMeleeSpeed, DamageRatio(1.5f)) },
-                { ItemID.Shackle, Do(DefenseDelta(+2)) },
-                { ItemID.ShadewoodBow, pointBlank },
-
-                { ItemID.ShadewoodHammer, Do(HammerPower(25), UseTimeExact(9), TileBoostExact(+0)) },
-                { ItemID.ShadewoodSword, Do(AutoReuse, UseTurn) },
-                { ItemID.ShadowbeamStaff, Do(DamageRatio(1.75f)) },
-                { ItemID.ShadowFlameBow, Do(PointBlank, DamageExact(55)) },
-                { ItemID.ShadowFlameHexDoll, Do(DamageExact(69), ShootSpeedExact(30)) },
-                { ItemID.ShadowFlameKnife, Do(DamageExact(70)) },
-                { ItemID.ShadowJoustingLance, trueMelee },
-
-                // TODO -- UNCOMMENT THE FOLLOWING LINES IN 1.4.4 PORT
-                // { ItemID.Shellphone, Do(UseExact(30)) },
-                // { ItemID.ShellphoneSpawn, Do(UseExact(30)) },
-                // { ItemID.ShellphoneOcean, Do(UseExact(30)) },
-                // { ItemID.ShellphoneHell, Do(UseExact(30)) },
-
-                { ItemID.Shotgun, Do(PointBlank, DamageExact(36), AutoReuse) },
-                { ItemID.ShroomiteDiggingClaw, Do(PickPower(200), AxePower(125), UseTimeExact(4), TileBoostExact(-1)) },
-                { ItemID.SilverAxe, Do(AxePower(70), UseTimeExact(14), TileBoostExact(+0)) },
-                { ItemID.SilverBow, pointBlank },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.SilverBroadsword, Do(AutoReuse, UseTurn, DamageRatio(1.5f), ScaleRatio(1.3f)) },
-                // { ItemID.SilverBroadsword, Do(AutoReuse, UseTurn, DamageRatio(1.15f), ScaleRatio(1.1f)) },
-
-                { ItemID.SilverBullet, Do(DamageExact(8)) },
-                { ItemID.SilverHammer, Do(HammerPower(55), UseTimeExact(10), TileBoostExact(+0)) },
-                { ItemID.SilverPickaxe, Do(PickPower(50), UseTimeExact(11)) },
-                { ItemID.SilverShortsword, Do(AutoReuse, TrueMelee, DamageRatio(1.5f)) },
-                { ItemID.SkyFracture, Do(DamageExact(54), ShootSpeedExact(30f)) },
-                { ItemID.SlapHand, Do(UseTurn, ScaleRatio(1.5f), DamageExact(120)) },
+                { ItemID.QueenSlimeCrystal, nonConsumableBossSummon }, // Gelatin Crystal
                 { ItemID.SlimeCrown, nonConsumableBossSummon },
-                { ItemID.SlimeStaff, Do(AutoReuse, UseExact(30)) },
-                { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) },
-                { ItemID.SniperRifle, pointBlank },
-                { ItemID.SnowballCannon, pointBlank },
                 { ItemID.SnowGlobe, nonConsumableBossSummon },
-                { ItemID.SolarEruption, Do(DamageRatio(1.5f)) },
-                { ItemID.SolarFlareChainsaw, trueMeleeNoSpeed },
-                { ItemID.SolarFlareDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4)) },
-                { ItemID.SolarFlarePickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
                 { ItemID.SolarTablet, nonConsumableBossSummon },
-                // Life Drain could probably get a bigger buff
-                { ItemID.SoulDrain, Do(DamageRatio(1.1f)) }, // Life Drain
-                { ItemID.SpaceGun, Do(DamageExact(25)) },
-                { ItemID.Spear, Do(AutoReuse, TrueMelee, DamageRatio(2f)) },
-                { ItemID.SpectreHamaxe, Do(HammerPower(90), AxePower(170), UseTimeExact(8), TileBoostExact(+4)) },
-                { ItemID.SpectrePickaxe, Do(PickPower(200), UseTimeExact(8), TileBoostExact(+4)) },
-                { ItemID.SpectreStaff, Do(DamageRatio(1.2f)) },
-
-                // TODO -- UNCOMMENT IN 1.4.4 PORT
-                // { ItemID.SpicyPepper, Do(Value(Item.buyPrice(silver: 2))) },
-
-                { ItemID.SpiderStaff, Do(AutoReuse, UseExact(25)) },
-                { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) },
-                { ItemID.StaffofEarth, Do(DamageRatio(1.2f)) },
-                { ItemID.StaffoftheFrostHydra, Do(UseExact(20)) },
-                { ItemID.StakeLauncher, Do(PointBlank, DamageRatio(2f), UseRatio(1.5f)) },
-                { ItemID.StarCannon, Do(DamageExact(25)) },
-                { ItemID.StardustCellStaff, Do(AutoReuse, UseExact(20)) },
-                { ItemID.StardustChainsaw, trueMeleeNoSpeed },
-                { ItemID.StardustDragonStaff, Do(AutoReuse, DamageExact(20), UseExact(19)) },
-                { ItemID.StardustDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4)) },
-                { ItemID.StardustPickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
-                { ItemID.Starfruit, Do(Value(Item.buyPrice(silver: 2))) },
-                { ItemID.Starfury, autoReuse },
-                { ItemID.PortableStool, Do(Value(Item.sellPrice(copper: 20))) }, // Step Stool
-                { ItemID.StarWrath, Do(DamageRatio(0.9f), AttackSpeedExact(0.33f)) },
-                { ItemID.StormTigerStaff, Do(AutoReuse, DamageExact(49), UseExact(20)) }, // Desert Tiger Staff
-                { ItemID.StylistKilLaKillScissorsIWish, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(33)) },
                 { ItemID.SuspiciousLookingEye, nonConsumableBossSummon },
-                { ItemID.Swordfish, Do(AutoReuse, TrueMelee, DamageExact(38)) },
-                { ItemID.SwordWhip, autoReuse },
-                { ItemID.TacticalShotgun, Do(PointBlank, DamageRatio(1.2f)) },
-                { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(70)) },
-                { ItemID.TempestStaff, Do(AutoReuse, UseExact(20)) },
-                { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
-                { ItemID.TentacleSpike, autoReuse },
-                { ItemID.TerraBlade, Do(UseMeleeSpeed) },
-                { ItemID.Terragrim, trueMeleeNoSpeed },
-                // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
-                // Terrarian is extremely overpowered and requires a heavy nerf.
-                { ItemID.Terrarian, Do(AutoReuse, DamageExact(106)) },
-                { ItemID.TheAxe, Do(HammerPower(100), AxePower(175), UseTimeExact(7), TileBoostExact(+1)) },
-                { ItemID.TheBreaker, Do(HammerPower(70), UseTimeExact(13), TileBoostExact(+0)) },
-                { ItemID.TheEyeOfCthulhu, autoReuse },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.TheHorsemansBlade, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(95)) },
-                // { ItemID.TheHorsemansBlade, Do(UseTurn, UseRatio(0.8f)) },
-
-                { ItemID.TheRottedFork, Do(AutoReuse, TrueMelee, DamageExact(20)) },
-                { ItemID.TheUndertaker, Do(PointBlank, AutoReuse, UseExact(21)) },
-                { ItemID.ThornChakram, Do(DamageExact(32)) },
-                { ItemID.ThornWhip, autoReuse },
-                { ItemID.ThunderSpear, Do(AutoReuse, UseMeleeSpeed) }, // Storm Spear
-                { ItemID.TinAxe, Do(AxePower(50), UseTimeExact(16), TileBoostExact(+0)) },
-                { ItemID.TinBow, pointBlank },
-                { ItemID.TinBroadsword, Do(AutoReuse, UseTurn) },
-                { ItemID.TinHammer, Do(HammerPower(35), UseTimeExact(12), TileBoostExact(+0)) },
-                { ItemID.TinPickaxe, Do(PickPower(35), UseTimeExact(10), TileBoostExact(+0)) },
-                { ItemID.TinShortsword, Do(AutoReuse, TrueMelee) },
-                { ItemID.TitaniumChainsaw, Do(TrueMeleeNoSpeed, AxePower(90), UseTimeExact(4), TileBoostExact(+0)) },
-                { ItemID.TitaniumDrill, Do(TrueMeleeNoSpeed, PickPower(180), UseTimeExact(4), TileBoostExact(+1)) },
-                { ItemID.TitaniumPickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) },
-                { ItemID.TitaniumRepeater, Do(PointBlank, UseExact(29), DamageExact(122)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.TitaniumSword, Do(UseTurn, ScaleRatio(1.5f), UseRatio(0.8f), DamageExact(77)) },
-                // { ItemID.TitaniumSword, Do(UseTurn, ScaleRatio(1.45f), DamageExact(77)) },
-
-                { ItemID.TitaniumTrident, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(72), ShootSpeedRatio(1.25f)) },
-                { ItemID.TitaniumWaraxe, Do(AxePower(160), UseTimeExact(10), TileBoostExact(+1)) },
-                { ItemID.TopazStaff, Do(ManaExact(2)) },
-                { ItemID.Toxikarp, Do(UseTimeExact(7), UseAnimationExact(14)) },
-                { ItemID.TragicUmbrella, autoReuse },
-                { ItemID.Trident, Do(AutoReuse, TrueMelee, DamageExact(22)) },
-                { ItemID.TrueExcalibur, Do(AutoReuse, UseTurn, UseMeleeSpeed, DamageExact(82)) },
-                { ItemID.TrueNightsEdge, Do(AutoReuse, UseTurn, UseMeleeSpeed, DamageExact(160), ShootSpeedExact(16), ScaleRatio(1.5f)) },
-                { ItemID.Tsunami, Do(PointBlank, DamageRatio(1.25f)) },
-                { ItemID.TungstenAxe, Do(AxePower(70), UseTimeExact(14), TileBoostExact(+0)) },
-                { ItemID.TungstenBow, Do(PointBlank, DamageRatio(1.1f)) },
-                { ItemID.TungstenBroadsword, Do(AutoReuse, UseTurn, DamageRatio(1.5f), ScaleRatio(1.3f)) },
-                { ItemID.TungstenHammer, Do(HammerPower(55), UseTimeExact(10), TileBoostExact(+0)) },
-                { ItemID.TungstenPickaxe, Do(PickPower(50), UseTimeExact(11)) },
-                { ItemID.TungstenShortsword, Do(AutoReuse, TrueMelee, DamageRatio(1.5f)) },
-                { ItemID.Umbrella, autoReuse },
-                { ItemID.UnholyArrow, Do(DamageExact(11)) },
-                { ItemID.UnholyTrident, Do(ManaExact(14), DamageRatio(1.25f)) },
-                { ItemID.Uzi, pointBlank },
-                { ItemID.ValkyrieYoyo, autoReuse },
-                { ItemID.Valor, Do(DamageExact(32)) },
-                { ItemID.VampireFrogStaff, Do(AutoReuse, UseExact(30)) },
-                { ItemID.VampireKnives, Do(DamageRatio(1.33f)) },
-                { ItemID.VenomStaff, Do(DamageRatio(1.5f)) },
-                { ItemID.VenusMagnum, Do(AutoReuse, PointBlank) },
-                { ItemID.ViciousMushroom, Do(Value(0)) },
-                { ItemID.VileMushroom, Do(Value(0)) },
-                { ItemID.Vilethorn, Do(DamageExact(14)) },
-                { ItemID.VortexBeater, pointBlank },
-                { ItemID.VortexChainsaw, trueMeleeNoSpeed },
-                { ItemID.VortexDrill, Do(TrueMeleeNoSpeed, PickPower(225), UseTimeExact(3), TileBoostExact(+4)) },
-                { ItemID.VortexPickaxe, Do(PickPower(225), UseTimeExact(6), TileBoostExact(+4)) },
-                { ItemID.WandofSparking, Do(AutoReuse) },
-                { ItemID.WarAxeoftheNight, Do(AxePower(100), UseTimeExact(13), TileBoostExact(+0)) },
-                { ItemID.WaspGun, Do(UseExact(11)) },
-                { ItemID.WaterBolt, Do(DamageExact(23)) },
-                { ItemID.WeatherPain, autoReuse },
-                { ItemID.WhitePhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
-
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.WhitePhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.WhitePhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.WoodenBoomerang, Do(DamageRatio(2f), Value(Item.sellPrice(copper: 20))) },
-                { ItemID.WoodenBow, pointBlank },
-                { ItemID.WoodenHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
-                { ItemID.WoodenSword, Do(AutoReuse, UseTurn) },
-                { ItemID.WoodYoyo, autoReuse },
                 { ItemID.WormFood, nonConsumableBossSummon },
-                { ItemID.Xenopopper, Do(DamageRatio(0.75f)) },
-                { ItemID.XenoStaff, Do(AutoReuse, UseExact(20)) },
-                { ItemID.Yelets, autoReuse },
-                { ItemID.YellowPhaseblade, Do(AutoReuse, UseTurn, ScaleRatio(1.5f), DamageExact(51)) },
+                #endregion
 
-                // TODO -- REPLACE WITH COMMENTED LINE IN 1.4.4 PORT
-                { ItemID.YellowPhasesaber, Do(ScaleRatio(1.5f), DamageExact(72)) },
-                // { ItemID.YellowPhasesaber, Do(ScaleRatio(1.5f), DamageExact(60)) },
-
-                { ItemID.ZapinatorGray, autoReuse },
-                { ItemID.ZapinatorOrange, autoReuse },
-                { ItemID.ZombieArm, Do(AutoReuse, UseTurn, ScaleRatio(1.25f), KnockbackExact(12f)) },
+                #region CATEGORY 9: Sell Prices
+                { ItemID.Apple, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Apricot, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Banana, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.BlackCurrant, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.BloodOrange, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Cherry, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Coconut, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Dragonfruit, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Elderberry, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.EncumberingStone, Do(Worthless) },
+                { ItemID.GlowingMushroom, Do(Worthless) },
+                { ItemID.Grapefruit, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Lemon, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Mango, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Mushroom, Do(Worthless) },
+                { ItemID.Peach, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Pineapple, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Plum, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Pomegranate, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Rambutan, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.SpicyPepper, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.Starfruit, Do(Value(Item.sellPrice(copper: 40))) },
+                { ItemID.PortableStool, Do(Value(Item.sellPrice(copper: 20))) }, // Step Stool
+                { ItemID.UncumberingStone, Do(Worthless) },
+                { ItemID.ViciousMushroom, Do(Worthless) },
+                { ItemID.VileMushroom, Do(Worthless) },
+                #endregion
             };
         }
 
@@ -1175,6 +1044,8 @@ namespace CalamityMod.Items
             public bool AppliesTo(Item it) => IsScalable(it);
             public void ApplyTweak(Item it)
             {
+                if (DisableScalingForOverhaul)
+                    return;
                 it.scale += delta;
                 if (it.scale < 0f)
                     it.scale = 0f;
@@ -1190,6 +1061,8 @@ namespace CalamityMod.Items
             public bool AppliesTo(Item it) => IsScalable(it);
             public void ApplyTweak(Item it)
             {
+                if (DisableScalingForOverhaul)
+                    return;
                 it.scale = newScale;
                 if (it.scale < 0f)
                     it.scale = 0f;
@@ -1205,6 +1078,8 @@ namespace CalamityMod.Items
             public bool AppliesTo(Item it) => IsScalable(it);
             public void ApplyTweak(Item it)
             {
+                if (DisableScalingForOverhaul)
+                    return;
                 it.scale *= ratio;
                 if (it.scale < 0f)
                     it.scale = 0f;
@@ -1504,6 +1379,38 @@ namespace CalamityMod.Items
         internal static IItemTweak Worthless => new ValueRule(0);
         #endregion
         #endregion
+        #endregion
+
+        #region Shimmer Transmutations
+        private void SetStaticDefaults_ShimmerRecipes()
+        {
+            var shimmerTransmute = ItemID.Sets.ShimmerTransformToItem;
+
+            // Note: Making Luminite Ore -> Astral Ore makes Deus almost completely skippable with no (recipe-related) downsides.
+
+            shimmerTransmute[ModContent.ItemType<AuricOre>()] = ModContent.ItemType<UelibloomOre>();
+            shimmerTransmute[ModContent.ItemType<UelibloomOre>()] = ModContent.ItemType<ExodiumCluster>();
+            shimmerTransmute[ModContent.ItemType<ExodiumCluster>()] = ItemID.LunarOre;
+            shimmerTransmute[ModContent.ItemType<AstralOre>()] = ModContent.ItemType<ScoriaOre>();
+            shimmerTransmute[ModContent.ItemType<ScoriaOre>()] = ModContent.ItemType<PerennialOre>();
+            shimmerTransmute[ModContent.ItemType<PerennialOre>()] = shimmerTransmute[ItemID.LunarOre];
+            shimmerTransmute[ModContent.ItemType<HallowedOre>()] = shimmerTransmute[ItemID.ChlorophyteOre];
+            shimmerTransmute[ModContent.ItemType<AerialiteOre>()] = shimmerTransmute[ItemID.CobaltOre];
+
+            //shimmerTransmute[ItemID.LunarOre] = ModContent.ItemType<AstralOre>();
+            shimmerTransmute[ItemID.LunarOre] = ModContent.ItemType<ScoriaOre>();
+            shimmerTransmute[ItemID.ChlorophyteOre] = ModContent.ItemType<HallowedOre>();
+            shimmerTransmute[ItemID.CobaltOre] = ModContent.ItemType<AerialiteOre>();
+
+            //Fuck vanilla's stupid Giant Shelly, Crawdad, and Salamander exclusivity 
+            shimmerTransmute[ModContent.ItemType<CrawCarapace>()] = ModContent.ItemType<GiantShell>();
+            shimmerTransmute[ModContent.ItemType<GiantShell>()] = ModContent.ItemType<CrawCarapace>();
+
+            //Jelly swap'n
+            shimmerTransmute[ModContent.ItemType<LifeJelly>()] = ModContent.ItemType<CleansingJelly>();
+            shimmerTransmute[ModContent.ItemType<CleansingJelly>()] = ModContent.ItemType<VitalJelly>();
+            shimmerTransmute[ModContent.ItemType<VitalJelly>()] = ModContent.ItemType<LifeJelly>();
+        }
         #endregion
     }
 }

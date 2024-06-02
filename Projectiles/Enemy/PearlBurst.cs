@@ -1,14 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class PearlBurst : ModProjectile
+    public class PearlBurst : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pearl Burst");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -31,7 +33,7 @@ namespace CalamityMod.Projectiles.Enemy
                 Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.5f / 255f);
                 if (Main.rand.NextBool(5))
                 {
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 92, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.7f);
+                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.7f);
                 }
             }
             Projectile.frameCounter++;
@@ -44,7 +46,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Projectile.frame = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.alpha -= 6;
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] <= 20f)
@@ -67,15 +69,15 @@ namespace CalamityMod.Projectiles.Enemy
                 Projectile.localAI[0] = 0f;
                 for (int l = 0; l < 12; l++)
                 {
-                    Vector2 vector3 = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
-                    vector3 += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
-                    vector3 = vector3.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int num9 = Dust.NewDust(Projectile.Center, 0, 0, 92, 0f, 0f, 160, default, 1f);
-                    Main.dust[num9].scale = 1.1f;
-                    Main.dust[num9].noGravity = true;
-                    Main.dust[num9].position = Projectile.Center + vector3;
-                    Main.dust[num9].velocity = Projectile.velocity * 0.1f;
-                    Main.dust[num9].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[num9].position) * 1.25f;
+                    Vector2 dustRotation = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
+                    dustRotation += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
+                    dustRotation = dustRotation.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
+                    int pearlDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.Frost, 0f, 0f, 160, default, 1f);
+                    Main.dust[pearlDust].scale = 1.1f;
+                    Main.dust[pearlDust].noGravity = true;
+                    Main.dust[pearlDust].position = Projectile.Center + dustRotation;
+                    Main.dust[pearlDust].velocity = Projectile.velocity * 0.1f;
+                    Main.dust[pearlDust].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[pearlDust].position) * 1.25f;
                 }
             }
         }

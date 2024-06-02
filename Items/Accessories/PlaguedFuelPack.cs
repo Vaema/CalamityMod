@@ -1,28 +1,18 @@
 ﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using System.Linq;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class PlaguedFuelPack : ModItem
+    public class PlaguedFuelPack : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plagued Fuel Pack");
-            Tooltip.SetDefault("8% increased rogue damage and 15% increased rogue projectile velocity\n" +
-                "Stealth generates 10% faster\n" +
-                "TOOLTIP LINE HERE" +
-                "This effect has a 1 second cooldown before it can be used again");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -40,13 +30,6 @@ namespace CalamityMod.Items.Accessories
             player.Calamity().stealthGenMoving += 0.1f;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            string hotkey = CalamityKeybinds.PlaguePackHotKey.TooltipHotkeyString();
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip2");
-
-            if (line != null)
-                line.Text = "Press " + hotkey + " to consume 25% of your maximum stealth to perform a swift upwards/diagonal dash which leaves a trail of plagued clouds";
-        }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.BoosterDashHotKey);
     }
 }

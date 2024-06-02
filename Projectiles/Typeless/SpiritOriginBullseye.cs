@@ -1,14 +1,15 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.IO;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class SpiritOriginBullseye : ModProjectile
+    public class SpiritOriginBullseye : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
         public NPC Target => Main.npc[(int)Projectile.ai[0]];
         public bool FadingOut

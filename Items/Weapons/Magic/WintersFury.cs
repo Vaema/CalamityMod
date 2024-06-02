@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -10,38 +10,34 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class WintersFury : ModItem
+    public class WintersFury : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Winter's Fury");
-            Tooltip.SetDefault("The pages are freezing to the touch");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Magic";
+
         public override void SetDefaults()
         {
-            Item.damage = 59;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 7;
             Item.width = 36;
             Item.height = 40;
+            Item.damage = 70;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 7;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTurn = false;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item9;
-            Item.scale = 0.9f;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Icicle>();
             Item.shootSpeed = 15f;
         }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (Main.rand.Next(4) != 0)
+            if (!Main.rand.NextBool(4))
             {
                 Vector2 speed = velocity.RotatedBy(MathHelper.ToRadians(Main.rand.Next(-15, 16)));
                 speed.Normalize();

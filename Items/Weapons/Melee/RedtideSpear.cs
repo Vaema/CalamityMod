@@ -7,24 +7,18 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("UrchinSpear")]
-    public class RedtideSpear : ModItem
+    public class RedtideSpear : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Redtide Spear");
-            Tooltip.SetDefault("Poisons enemies on hit\n"+
-                               "Aiming the spear in front of you while running holds it down with increased knockback\n"+
-                               "Releasing the attack button after the charge makes an upwards slash, sending enemies flying into the air\n"+
-                               //Lore tooltip time. Dark souls.
-                               "[c/5C95A1:The people of the sea were adept hunters, but they abhorred unnecessary violence.]\n" +
-                               "[c/5C95A1:Unfortunately, neighboring nations were brutish, so they fashioned their tools for war.]");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 56;
+            Item.height = 56;
             Item.damage = 25;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -37,8 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.height = 56;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<RedtideSpearProjectile>();
             Item.shootSpeed = 4f;

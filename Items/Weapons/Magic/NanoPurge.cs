@@ -8,24 +8,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Magic
 {
     [LegacyName("Purge")]
-    public class NanoPurge : ModItem
+    public class NanoPurge : ModItem, ILocalizedModType
     {
-        public const int UseTime = 20;
+        public static int UseTime = 20;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nano Purge");
-            Tooltip.SetDefault("Fires a barrage of nano lasers");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Magic";
 
         public override void SetDefaults()
         {
-            Item.damage = 73;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 6;
             Item.width = 62;
             Item.height = 34;
+            Item.damage = 60;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 8;
             Item.useTime = Item.useAnimation = UseTime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -33,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.channel = true;
             Item.knockBack = 3f;
             Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<NanoPurgeHoldout>();
             Item.shootSpeed = 16f;
@@ -41,11 +36,12 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Vector2 shootVelocity = velocity;
-            Vector2 shootDirection = shootVelocity.SafeNormalize(Vector2.UnitX * player.direction);
-            Projectile.NewProjectile(source, position, shootDirection, type, damage, knockback, player.whoAmI);
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<NanoPurgeHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
 

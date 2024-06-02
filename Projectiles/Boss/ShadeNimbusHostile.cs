@@ -4,11 +4,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ShadeNimbusHostile : ModProjectile
+    public class ShadeNimbusHostile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shade Nimbus");
             Main.projFrames[Projectile.type] = 6;
         }
 
@@ -51,19 +51,19 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.ai[0] >= (Main.getGoodWorld ? 10f : 36f))
                 {
                     Projectile.ai[0] = 0f;
-                    int num414 = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
-                    int num415 = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)num414, (float)num415, 0f, 4f, ModContent.ProjectileType<ShaderainHostile>(), Projectile.damage, 0f, Main.myPlayer, 0f, 0f);
+                    int rainSpawnX = (int)(Projectile.position.X + 14f + (float)Main.rand.Next(Projectile.width - 28));
+                    int rainSpawnY = (int)(Projectile.position.Y + (float)Projectile.height + 4f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)rainSpawnX, (float)rainSpawnY, 0f, 8f, ModContent.ProjectileType<ShaderainHostile>(), Projectile.damage, 0f, Main.myPlayer);
                 }
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 240);
         }
     }
 }

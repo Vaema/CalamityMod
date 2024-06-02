@@ -1,20 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class EquanimityProj : ModProjectile
+    public class EquanimityProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Equanimity";
 
         private bool recall = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Equanimity");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -65,13 +65,13 @@ namespace CalamityMod.Projectiles.Rogue
                 else
                 {
                     Projectile.timeLeft = 0;
-                    Kill(Projectile.timeLeft);
+                    OnKill(Projectile.timeLeft);
                 }
                 return;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Confused, 30);
 
@@ -83,16 +83,16 @@ namespace CalamityMod.Projectiles.Rogue
                     Vector2 shardVelocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                     shardVelocity.Normalize();
                     shardVelocity *= 5f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     if (Projectile.Calamity().stealthStrike)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     }
                 }
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Confused, 30);
 
@@ -104,10 +104,10 @@ namespace CalamityMod.Projectiles.Rogue
                     Vector2 shardVelocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                     shardVelocity.Normalize();
                     shardVelocity *= 5f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     if (Projectile.Calamity().stealthStrike)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     }
                 }
             }

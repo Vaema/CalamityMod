@@ -10,28 +10,26 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class VanquisherArrow : ModItem
+    public class VanquisherArrow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("Vanquisher Arrow");
-            Tooltip.SetDefault("Pierces through tiles\n" +
-                "Spawns extra homing arrows as it travels");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 24;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 22;
             Item.height = 46;
-            Item.maxStack = 999;
+            Item.damage = 30;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3.5f;
             Item.value = Item.sellPrice(copper: 28);
-            Item.shoot = ModContent.ProjectileType<VanquisherArrowMain>();
-            Item.shootSpeed = 10f;
+            Item.shoot = ModContent.ProjectileType<VanquisherArrowProj>();
+            Item.shootSpeed = 0.1f;
             Item.ammo = AmmoID.Arrow;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

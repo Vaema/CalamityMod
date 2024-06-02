@@ -11,33 +11,26 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class ScorchedEarth : ModItem
+    public class ScorchedEarth : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/ScorchedEarthShot", 3);
 
         private int counter = 0;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Scorched Earth");
-            Tooltip.SetDefault("Fires a burst of four fuel-air rockets which explode into cluster bombs\n" +
-            "Each burst consumes two rockets each\n" +
-            "Burns your targets to a fine crisp");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
+            Item.width = 104;
+            Item.height = 44;
             Item.damage = 500;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 8;
             Item.useAnimation = 32; // 4 shots in just over half a second
             Item.reuseDelay = 60; // 1 second recharge
-            Item.width = 104;
-            Item.height = 44;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8.7f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.autoReuse = true;
             Item.shootSpeed = 12.6f;

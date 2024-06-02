@@ -1,6 +1,8 @@
-﻿using CalamityMod.Events;
+﻿using System.IO;
+using CalamityMod.Events;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,17 +11,26 @@ namespace CalamityMod.NPCs.Leviathan
 {
     public class AnahitasIceShield : ModNPC
     {
+        public bool WaitingForLeviathan
+        {
+            get
+            {
+                if (Main.npc.IndexInRange(CalamityGlobalNPC.leviathan) && Main.npc[CalamityGlobalNPC.leviathan].life / (float)Main.npc[CalamityGlobalNPC.leviathan].lifeMax >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.7f : 0.4f))
+                    return true;
+
+                return CalamityUtils.FindFirstProjectile(ModContent.ProjectileType<LeviathanSpawner>()) != -1;
+            }
+        }
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            DisplayName.SetDefault("Ice Shield");
         }
 
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
             NPC.GetNPCDamage();
@@ -27,11 +38,9 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.height = 100;
             NPC.defense = 10;
             NPC.DR_NERD(0.5f);
-            NPC.lifeMax = 650;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax = 1000;
-            }
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 1000 : 650;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.alpha = 255;
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
@@ -55,28 +64,28 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void AI()
         {
-            int num989 = (int)NPC.ai[0];
-            if (Main.npc[num989].active && Main.npc[num989].type == ModContent.NPCType<Anahita>())
+            int anahitaID = (int)NPC.ai[0];
+            if (Main.npc[anahitaID].active && Main.npc[anahitaID].type == ModContent.NPCType<Anahita>())
             {
                 if (NPC.alpha > 100 && NPC.ai[1] == 0f)
                     NPC.alpha -= 2;
 
-                if (Main.npc[num989].damage == 0)
+                if (WaitingForLeviathan)
                     NPC.ai[1] = 1f;
                 else
                     NPC.ai[1] = 0f;
 
                 if (NPC.ai[1] == 1f)
-                    NPC.alpha = Main.npc[num989].alpha;
+                    NPC.alpha = Main.npc[anahitaID].alpha;
 
-                NPC.dontTakeDamage = Main.npc[num989].damage == 0;
-                NPC.rotation = Main.npc[num989].rotation;
-                NPC.spriteDirection = Main.npc[num989].direction;
+                NPC.dontTakeDamage = WaitingForLeviathan;
+                NPC.rotation = Main.npc[anahitaID].rotation;
+                NPC.spriteDirection = Main.npc[anahitaID].direction;
                 NPC.velocity = Vector2.Zero;
-                NPC.position = Main.npc[num989].Center;
+                NPC.position = Main.npc[anahitaID].Center;
                 NPC.position.X = NPC.position.X - (NPC.width / 2) + ((NPC.spriteDirection == 1) ? -20f : 20f) * NPC.scale;
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2) - (int)(30 * NPC.scale);
-                NPC.gfxOffY = Main.npc[num989].gfxOffY;
+                NPC.gfxOffY = Main.npc[anahitaID].gfxOffY;
                 Lighting.AddLight((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16, 0f, 0.8f, 1.1f);
                 return;
             }
@@ -88,50 +97,31 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.netUpdate = true;
         }
 
-        public override void ModifyHitByProjectile(Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => NPC.ai[1] == 0f && NPC.alpha <= 100;
+
+        public override Color? GetAlpha(Color drawColor) => NPC.ai[1] == 1f ? Color.Transparent : new Color(200, 200, 200, drawColor.A) * NPC.Opacity;
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => projectile.type != x))
-            {
-                if (projectile.penetrate == -1 && !projectile.minion)
-                {
-                    projectile.penetrate = 1;
-                }
-                else if (projectile.penetrate >= 1)
-                {
-                    projectile.penetrate = 1;
-                }
-            }
-        }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => NPC.ai[1] == 0f;
-
-        public override Color? GetAlpha(Color drawColor)
-        {
-            if (NPC.ai[1] == 1f)
-                return Color.Transparent;
-
-            return new Color(200, 200, 200, NPC.alpha);
-        }
-
-        public override void OnHitPlayer(Player player, int damage, bool crit)
-        {
-            if (NPC.ai[1] == 1f || damage <= 0)
+            if (NPC.ai[1] == 1f || hurtInfo.Damage <= 0)
                 return;
 
-            player.AddBuff(BuffID.Frostburn, 240, true);
+            target.AddBuff(BuffID.Frostburn, 240, true);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override bool CheckActive() => false;
+
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 67, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 67, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

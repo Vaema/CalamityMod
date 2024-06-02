@@ -7,17 +7,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Critters
 {
-    public class AndroombaItem : ModItem
+    public class AndroombaItem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Androomba");
-            Tooltip.SetDefault("Right click the roomba with a solution to insert it\n"+"While a solution is inserted, the roomba will start spreading its contents");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 16;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.autoReuse = true;
             Item.useTurn = true;
@@ -27,8 +28,6 @@ namespace CalamityMod.Items.Critters
             Item.consumable = true;
             Item.noUseGraphic = true;
             Item.value = Item.buyPrice(0, 0, 30, 0);
-            Item.width = 36;
-            Item.height = 16;
             Item.makeNPC = (short)ModContent.NPCType<AndroombaFriendly>();
             Item.rare = ModContent.RarityType<DarkOrange>();
         }

@@ -1,29 +1,27 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class DeathstareBeam : ModProjectile
+    public class DeathstareBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float OwnerUUID => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Beam");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.minion = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 10;
             Projectile.DamageType = DamageClass.Summon;
@@ -42,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D beamTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D beamTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
             Vector2 drawScale = new Vector2(0.55f, Projectile.velocity.Length() / beamTexture.Height * 20f);
             Color color = Color.White * 2.1f * Projectile.Opacity;

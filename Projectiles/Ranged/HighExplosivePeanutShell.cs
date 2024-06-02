@@ -1,18 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class HighExplosivePeanutShell : ModProjectile
+    public class HighExplosivePeanutShell : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         private const int Lifetime = 180;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("High Explosive Peanut Shell");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Grenade Launcher + Lunar Flare sounds for maximum meaty explosion
             SoundEngine.PlaySound(SoundID.Item62, Projectile.Center);

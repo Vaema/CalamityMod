@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Sounds;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.Summon;
-using System.IO;
+using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         // This is how many small, regular lasers will happen before the laser will charge up and prepare a laserbeam.
         public const int NormalLasersBeforeBeam = 6;
-        
+
         public override int ShootRate => ShootCounter % NormalLasersBeforeBeam == 0f ? 150 : AresExoskeleton.LaserCannonNormalShootRate;
 
         public override float ShootSpeed => 19f;
@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Laser Cannon");
             Main.projFrames[Type] = 6;
         }
 
@@ -70,7 +69,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             int laser = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, laserVelocity, laserID, (int)(Projectile.damage * AresExoskeleton.LaserDamageFactor), 0f, Projectile.owner);
             if (Main.projectile.IndexInRange(laser))
             {
-                Main.projectile[laser].originalDamage = (int)(Projectile.originalDamage * AresExoskeleton.LaserDamageFactor);
                 if (fireLaser)
                     Main.projectile[laser].ai[1] = Projectile.identity;
             }

@@ -1,23 +1,19 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ScorchedEarthBlast : ModProjectile
+    public class ScorchedEarthBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private static int Lifetime = 20;
         private static float ExplosionRadius = 150f;
         private static float StartDustQuantity = 36f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Earth Scorcher");
-        }
 
         public override void SetDefaults()
         {
@@ -79,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Daybreak, 300);
         }

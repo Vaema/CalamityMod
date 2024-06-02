@@ -8,22 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ElementalQuiver : ModItem
+    public class ElementalQuiver : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Elemental Quiver");
-            Tooltip.SetDefault("15% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage\n" +
-                "Grants a 20% chance to not consume arrows\n" +
-                "Greatly increases all ranged projectile velocity");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -41,7 +33,7 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddRecipeGroup("QuiversGroup").
+                AddRecipeGroup("AnyQuiver").
                 AddIngredient<DeadshotBrooch>().
                 AddIngredient(ItemID.LunarBar, 8).
                 AddIngredient<GalacticaSingularity>(4).

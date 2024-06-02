@@ -4,23 +4,18 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-using Terraria.DataStructures;
-
 namespace CalamityMod.Items.Fishing.FishingRods
 {
-    public class TheDevourerofCods : ModItem
+    public class TheDevourerofCods : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
             ItemID.Sets.CanFishInLava[Item.type] = true;
-
-            DisplayName.SetDefault("The Devourer of Cods");
-            Tooltip.SetDefault("Fires ten lines at once. Line never snaps and can fish from lava.\n" +
-                "The devourer was once just an Eater of Shoals.");
         }
 
         public override void SetDefaults()
@@ -34,19 +29,26 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 75;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<DevourerofCodsBobber>();
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int index = 0; index < 10; ++index)
+            for (int i = 0; i < 10; i++)
             {
-                float SpeedX = velocity.X + Main.rand.NextFloat(-3.75f, 3.75f);
-                float SpeedY = velocity.Y + Main.rand.NextFloat(-3.75f, 3.75f);
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(18f)), type, 0, 0f, player.whoAmI, ai2: Main.rand.Next(2));
             }
             return false;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(53f, -33f);
+            if (bobber.ai[2] == 0f)
+                lineColor = new Color(252, 109, 202, 100);
+            else
+                lineColor = new Color(39, 151, 171, 100);
         }
 
         public override void AddRecipes()

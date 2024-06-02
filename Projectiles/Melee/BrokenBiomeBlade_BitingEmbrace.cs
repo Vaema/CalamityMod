@@ -1,22 +1,23 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BitingEmbrace : ModProjectile
+    public class BitingEmbrace : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/BrokenBiomeBlade_BitingEmbraceSmall";
 
         private bool initialized = false;
@@ -60,7 +61,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Biting Embrace");
             Main.projFrames[Projectile.type] = 6; //The true trolling is that we only really use this for the third swing.
         }
         public override void SetDefaults()
@@ -78,29 +78,29 @@ namespace CalamityMod.Projectiles.Melee
         {
             //The hitbox is simplified into a line collision.
             float collisionPoint = 0f;
-            float bladeLenght = 0f;
+            float bladeLength = 0f;
             Vector2 displace = Vector2.Zero;
             switch (SwingMode)
             {
                 case 0:
-                    bladeLenght = 90f * Projectile.scale;
+                    bladeLength = 90f * Projectile.scale;
                     break;
                 case 1:
-                    bladeLenght = 110f * Projectile.scale;
+                    bladeLength = 110f * Projectile.scale;
                     break;
                 case 2:
-                    bladeLenght = Projectile.frame <= 2 ? 85f : 150f; //Only use the extended hitbox after the blade actually extends. For realism.
-                    bladeLenght *= Projectile.scale;
+                    bladeLength = Projectile.frame <= 2 ? 85f : 150f; //Only use the extended hitbox after the blade actually extends. For realism.
+                    bladeLength *= Projectile.scale;
                     displace = direction * ThrustDisplaceRatio() * 60f;
                     break;
 
             }
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + displace, Owner.Center + displace + (rotation.ToRotationVector2() * bladeLenght), 24, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + displace, Owner.Center + displace + (rotation.ToRotationVector2() * bladeLength), 24, ref collisionPoint);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            base.OnHitNPC(target, damage, knockback, crit);
+            base.OnHitNPC(target, hit, damageDone);
             if (SwingMode == 2)
                 target.AddBuff(BuffType<GlacialState>(), 20);
         }
@@ -119,7 +119,6 @@ namespace CalamityMod.Projectiles.Melee
                     case 1:
                         Projectile.width = Projectile.height = 140;
                         SoundEngine.PlaySound(SoundID.DD2_OgreSpit, Projectile.Center);
-                        Projectile.damage = (int)(Projectile.damage * BrokenBiomeBlade.ColdAttunement_SecondSwingBoost);
                         break;
                     case 2:
                         Projectile.width = Projectile.height = 130;
@@ -175,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(rotation.ToRotationVector2().X);
+            Owner.ChangeDir(Math.Sign(rotation.ToRotationVector2().X));
             Owner.itemRotation = rotation;
             if (Owner.direction != 1)
             {

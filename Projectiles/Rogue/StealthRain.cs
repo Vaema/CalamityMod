@@ -6,14 +6,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class StealthRain : ModProjectile
+    public class StealthRain : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Boss/ShaderainHostile";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rain");
-        }
 
         public override void SetDefaults()
         {
@@ -46,12 +42,12 @@ namespace CalamityMod.Projectiles.Rogue
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustType = Projectile.ai[0] == 0f ? 14 : 114;
 
-            int num310 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + (float)Projectile.height - 2f), 2, 2, dustType, 0f, 0f, 0, default, 1f);
-            Dust dust = Main.dust[num310];
+            int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + (float)Projectile.height - 2f), 2, 2, dustType, 0f, 0f, 0, default, 1f);
+            Dust dust = Main.dust[dusty];
             dust.position.X -= 2f;
             dust.alpha = 38;
             dust.velocity *= 0.1f;
@@ -59,9 +55,9 @@ namespace CalamityMod.Projectiles.Rogue
             dust.scale = 0.95f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int buffType = Projectile.ai[0] == 0f ? BuffID.CursedInferno : ModContent.BuffType<BurningBlood>();
+            int buffType = Projectile.ai[0] == 0f ? ModContent.BuffType<BrainRot>() : ModContent.BuffType<BurningBlood>();
             target.AddBuff(buffType, 90);
         }
     }

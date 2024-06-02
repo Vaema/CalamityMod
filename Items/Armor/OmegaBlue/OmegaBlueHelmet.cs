@@ -12,8 +12,10 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.OmegaBlue
 {
     [AutoloadEquip(EquipType.Head)]
-    public class OmegaBlueHelmet : ModItem
+    public class OmegaBlueHelmet : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+        internal static string TentacleEntitySourceContext => "SetBonus_Calamity_OmegaBlue";
 
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/OmegaBlueAbility");
 
@@ -27,11 +29,6 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Omega Blue Helmet");
-            Tooltip.SetDefault(@"You can move freely through liquids
-12% increased damage and 8% increased critical strike chance");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
             var equipSlotHead = EquipLoader.GetEquipSlot(Mod, "OmegaBlueTransformation", EquipType.Head);
@@ -42,7 +39,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 19;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -69,13 +66,8 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.SetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = "Increases armor penetration by 15\n" +
-                "10% increased damage and critical strike chance and +2 max minions\n" +
-                "Short-ranged tentacles heal you by sucking enemy life\n" +
-                "Press " + hotkey + " to activate abyssal madness for 5 seconds\n" +
-                "Abyssal madness increases damage, critical strike chance, and tentacle aggression/range\n" +
-                "This effect has a 25 second cooldown";
+            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
 
             var mp = player.Calamity();
             player.GetArmorPenetration<GenericDamageClass>() += 15;
@@ -87,7 +79,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
             var hasOmegaBlueCooldown = mp.cooldowns.TryGetValue(Cooldowns.OmegaBlue.ID, out var cd);
             if (hasOmegaBlueCooldown && cd.timeLeft > 1500)
             {
-                var d = Dust.NewDust(player.position, player.width, player.height, 20, 0, 0, 100, Color.Transparent, 1.6f);
+                var d = Dust.NewDust(player.position, player.width, player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 1.6f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].noLight = true;
                 Main.dust[d].fadeIn = 1f;
@@ -98,9 +90,9 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(8).
+                AddIngredient<ReaperTooth>(3).
                 AddIngredient<DepthCells>(12).
-                AddIngredient<RuinousSoul>(1).
+                AddIngredient<RuinousSoul>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

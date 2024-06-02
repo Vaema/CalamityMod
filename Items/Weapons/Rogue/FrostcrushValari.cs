@@ -1,11 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,25 +13,18 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class FrostcrushValari : RogueWeapon
     {
         public static float Speed = 14f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Frostcrush Valari");
-            Tooltip.SetDefault(@"Fires a long ranged boomerang that explodes into icicles on hit
-Stealth strikes throw three shorter ranged boomerangs that freeze along with a spread of icicles");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
+            Item.width = 32;
+            Item.height = 46;
             Item.damage = 89;
             Item.knockBack = 12;
-            Item.DamageType = DamageClass.Throwing;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.useTime = 21;
             Item.useAnimation = 21;
-            Item.width = 32;
-            Item.height = 46;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -40,13 +32,12 @@ Stealth strikes throw three shorter ranged boomerangs that freeze along with a s
             Item.shoot = ModContent.ProjectileType<ValariBoomerang>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.DamageType = RogueDamageClass.Instance;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
 
-		public override float StealthDamageMultiplier => 0.35f;
+        public override float StealthDamageMultiplier => 0.35f;
         public override float StealthKnockbackMultiplier => 0.3333f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -65,12 +56,12 @@ Stealth strikes throw three shorter ranged boomerangs that freeze along with a s
                     spread -= 10;
                 }
                 int spread2 = 3;
-                int icicleAmt = Main.rand.Next(6,11);
+                int icicleAmt = Main.rand.Next(6, 11);
                 for (int i = 0; i < icicleAmt; i++)
                 {
-                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3,4), velocity.Y + Main.rand.Next(-3,4)).RotatedBy(MathHelper.ToRadians(spread2));
-                    Projectile.NewProjectile(source, position, perturbedspeed, (Main.rand.NextBool(2) ? ModContent.ProjectileType<Valaricicle>() : ModContent.ProjectileType<Valaricicle2>()), damage, 0f, player.whoAmI, 0f, 0f);
-                    spread2 -= Main.rand.Next(1,4);
+                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3, 4), velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread2));
+                    Projectile.NewProjectile(source, position, perturbedspeed, (Main.rand.NextBool() ? ModContent.ProjectileType<Valaricicle>() : ModContent.ProjectileType<Valaricicle2>()), damage, 0f, player.whoAmI, 0f, 0f);
+                    spread2 -= Main.rand.Next(1, 4);
                 }
                 return false;
             }

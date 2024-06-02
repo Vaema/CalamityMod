@@ -8,12 +8,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class HadalUrnJellyfish : ModProjectile
+    public class HadalUrnJellyfish : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         bool neartarget = false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mirage Jelly");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -75,17 +75,17 @@ namespace CalamityMod.Projectiles.Magic
             //Detect if any enemies are very close
             int maxDistance = 10;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                if (n.CanBeChasedBy(Projectile, false))
                 {
-                    float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                    float extraDistance = (n.width / 2) + (n.height / 2);
 
                     bool canHit = true;
                     if (extraDistance < maxDistance)
-                        canHit = Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                        canHit = Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1);
 
-                    if (Projectile.WithinRange(Main.npc[i].Center, maxDistance + extraDistance) && canHit)
+                    if (Projectile.WithinRange(n.Center, maxDistance + extraDistance) && canHit)
                     {
                         neartarget = true;
                     }
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Magic
                     Bloom.Position = Projectile.Center;
 
                     Projectile.penetrate = -1;
-                    Projectile.localNPCHitCooldown = 6;
+                    Projectile.localNPCHitCooldown = 10;
                 }
             }
             //Once the aura dies, shrink back to normal size and disappear (it ran out of juice)
@@ -124,13 +124,13 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.timeLeft = 60;
             }
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int textureheight = tex.Height / Main.projFrames[Projectile.type];
             int y = textureheight * Projectile.frame;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y, tex.Width, textureheight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)tex.Width / 2f, (float)textureheight / 2f), Projectile.scale, SpriteEffects.None, 0);

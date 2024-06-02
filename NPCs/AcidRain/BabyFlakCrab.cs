@@ -1,10 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -15,7 +15,6 @@ namespace CalamityMod.NPCs.AcidRain
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Baby Flak Crab");
             Main.npcFrameCount[NPC.type] = 6;
             Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
@@ -47,7 +46,7 @@ namespace CalamityMod.NPCs.AcidRain
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
 
                 // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("Curiously, these seem to be intelligent enough to imprint a sort of parent figure if captured at a young enough age. They will stick with you forever!")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BabyFlakCrab")
             });
         }
 
@@ -63,12 +62,12 @@ namespace CalamityMod.NPCs.AcidRain
             }
             if (Main.rand.NextBool(8) && NPC.catchItem == (short)ModContent.ItemType<GeyserShell>())
             {
-                int dust = Dust.NewDust(NPC.position - new Vector2(2f, 2f), NPC.width + 4, NPC.height + 4, (int)CalamityDusts.SulfurousSeaAcid, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, 200, default, 1f);
+                int dust = Dust.NewDust(NPC.position - new Vector2(2f, 2f), NPC.width + 4, NPC.height + 4, (int)CalamityDusts.SulphurousSeaAcid, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, 200, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 1.1f;
                 Main.dust[dust].velocity.Y += 0.25f;
                 Main.dust[dust].noLight = true;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[dust].noGravity = false;
                     Main.dust[dust].scale *= 0.5f;
@@ -138,17 +137,17 @@ namespace CalamityMod.NPCs.AcidRain
             return 0.15f;
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

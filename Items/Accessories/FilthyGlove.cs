@@ -1,26 +1,20 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff } )]
-    public class FilthyGlove : ModItem
+    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
+    public class FilthyGlove : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Filthy Glove");
-            Tooltip.SetDefault("Stealth strikes have +8 armor penetration and deal 8% more damage");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Orange;
         }
@@ -34,9 +28,9 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 4).
-                AddIngredient<RottenMatter>(5).
-                AddIngredient(ItemID.RottenChunk, 4).
+                AddIngredient(ItemID.DemoniteBar, 2).
+                AddIngredient<RottenMatter>(6).
+                AddIngredient(ItemID.RottenChunk, 2).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

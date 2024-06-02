@@ -5,13 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Pylons
 {
-    public class SulphurPylon : ModItem
+    public class SulphurPylon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<SulphurPylonTile>());

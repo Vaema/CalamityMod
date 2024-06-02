@@ -1,16 +1,12 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class CelestialReaperAfterimage : ModProjectile
+    public class CelestialReaperAfterimage : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/CelestialReaper";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Celestial Reaper");
-        }
 
         public override void SetDefaults()
         {
@@ -23,6 +19,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = 180;
+            Projectile.Calamity().CannotProc = true;
         }
 
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 150 && target.CanBeChasedBy(Projectile);

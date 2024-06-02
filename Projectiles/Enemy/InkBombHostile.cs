@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class InkBombHostile : ModProjectile
+    public class InkBombHostile : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ink Bomb");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -46,7 +42,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawOrigin = new(tex.Width * 0.5f, Projectile.height * 0.5f);
             Vector2 vector = new Vector2(Projectile.Center.X, Projectile.Center.Y) - Main.screenPosition + new Vector2(0, Projectile.gfxOffY);
             Rectangle rectangle = new(0, tex.Height / Main.projFrames[Projectile.type] * Projectile.frame, tex.Width, tex.Height / Main.projFrames[Projectile.type]);
@@ -55,18 +51,18 @@ namespace CalamityMod.Projectiles.Enemy
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath28, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath28, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
-                int num320 = Main.rand.Next(5, 9);
-                for (int num321 = 0; num321 < num320; num321++)
+                int randProjAmt = Main.rand.Next(5, 9);
+                for (int i = 0; i < randProjAmt; i++)
                 {
-                    Vector2 vector15 = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
-                    vector15.Normalize();
-                    vector15 *= Main.rand.Next(50, 401) * 0.01f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, vector15.X, vector15.Y, ModContent.ProjectileType<InkPoisonCloud>(), (int)Math.Round(Projectile.damage * 0.165), 1f, Projectile.owner, Main.rand.Next(-45, 1));
+                    Vector2 randProjRotation = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                    randProjRotation.Normalize();
+                    randProjRotation *= Main.rand.Next(50, 401) * 0.01f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, randProjRotation.X, randProjRotation.Y, ModContent.ProjectileType<InkPoisonCloud>(), (int)Math.Round(Projectile.damage * 0.165), 1f, Projectile.owner, Main.rand.Next(-45, 1));
                 }
             }
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -75,31 +71,31 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.height = 60;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num621 = 0; num621 < 10; num621++)
+            for (int i = 0; i < 10; i++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 54, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                int inkDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Wraith, 0f, 0f, 100, default, 2f);
+                Main.dust[inkDust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Main.dust[inkDust].scale = 0.5f;
+                    Main.dust[inkDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 15; num623++)
+            for (int j = 0; j < 15; j++)
             {
-                int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 109, 0f, 0f, 100, default, 3f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 109, 0f, 0f, 100, default, 2f);
-                Main.dust[num624].velocity *= 2f;
+                int inkDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Asphalt, 0f, 0f, 100, default, 3f);
+                Main.dust[inkDust2].noGravity = true;
+                Main.dust[inkDust2].velocity *= 5f;
+                inkDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Asphalt, 0f, 0f, 100, default, 2f);
+                Main.dust[inkDust2].velocity *= 2f;
             }
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 12f, targetHitbox);
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.Darkness, 300, true);

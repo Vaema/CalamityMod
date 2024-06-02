@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Plasma Cannon");
             Main.projFrames[Type] = 6;
         }
 
@@ -38,11 +37,11 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             // Create a burst of dust.
             for (int i = 0; i < 40; i++)
             {
-                float dustSpeed = Main.rand.NextFloat(1.8f, 3f);                
+                float dustSpeed = Main.rand.NextFloat(1.8f, 3f);
                 Vector2 dustVel = shootDirection * dustSpeed;
                 dustVel = dustVel.RotatedBy(-0.35f);
                 dustVel = dustVel.RotatedByRandom(2.0f * 0.35f);
-                int randomDustType = Main.rand.NextBool(2) ? 107 : 110;
+                int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
                 Dust plasma = Dust.NewDustDirect(Projectile.TopLeft, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
                 plasma.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 4f;
@@ -65,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 Vector2 dustVel = shootDirection * dustSpeed;
                 dustVel = dustVel.RotatedBy(-0.35f);
                 dustVel = dustVel.RotatedByRandom(2.0f * 0.35f);
-                int randomDustType = Main.rand.NextBool(2) ? 107 : 110;
+                int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
                 Dust plasma = Dust.NewDustDirect(Projectile.TopLeft, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
                 plasma.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(shootDirection.ToRotation()) * Projectile.width / 5f;
@@ -79,9 +78,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 return;
 
             Vector2 fireballVelocity = shootDirection * ShootSpeed;
-            int fireball = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, fireballVelocity, ModContent.ProjectileType<MinionPlasmaBlast>(), (int)(Projectile.damage * AresExoskeleton.PlasmaCannonBlastFactor), 0f, Projectile.owner);
-            if (Main.projectile.IndexInRange(fireball))
-                Main.projectile[fireball].originalDamage = (int)(Projectile.originalDamage * AresExoskeleton.PlasmaCannonBlastFactor);
+            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, fireballVelocity, ModContent.ProjectileType<MinionPlasmaBlast>(), (int)(Projectile.damage * AresExoskeleton.PlasmaCannonBlastFactor), 0f, Projectile.owner);
         }
 
         public override bool PreDraw(ref Color lightColor)

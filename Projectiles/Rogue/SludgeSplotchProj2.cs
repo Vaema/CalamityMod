@@ -1,19 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SludgeSplotchProj2 : ModProjectile
+    public class SludgeSplotchProj2 : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sludge Splotch");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -36,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
 
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 191, 0f, 0f, 225, new Color(255, 255, 255), 2);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpookyWood, 0f, 0f, 225, new Color(255, 255, 255), 2);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].noLight = true;
             Main.dust[dust].velocity = Main.dust[dust].velocity * 0.25f;
@@ -53,22 +49,16 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Slimed, 60);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Slimed, 60);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.Slimed, 60);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Slimed, 60);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int numDust = 10;
             int dustType = 191;

@@ -1,18 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class CosmicOrb : ModProjectile
+    public class CosmicOrb : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Orb");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.extraUpdates = 0;
@@ -53,19 +49,20 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 8f, 5, ModContent.ProjectileType<CosmicBolt>());
+            if (Main.rand.NextBool(2))
+                CalamityUtils.MagnetSphereHitscan(Projectile, 500f, 6f, 8f, 5, ModContent.ProjectileType<CosmicBolt>());
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
             for (int i = 0; i < 10; i++)
             {
-                int num192 = (int)(10f * Projectile.scale);
-                int d = Dust.NewDust(Projectile.Center - Vector2.One * (float)num192, num192 * 2, num192 * 2, 242, 0f, 0f, 0, default, 1f);
+                int dustScale = (int)(10f * Projectile.scale);
+                int d = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, DustID.PinkTorch, 0f, 0f, 0, default, 1f);
                 Dust dust = Main.dust[d];
                 Vector2 offset = Vector2.Normalize(dust.position - Projectile.Center);
-                dust.position = Projectile.Center + offset * (float)num192 * Projectile.scale;
+                dust.position = Projectile.Center + offset * (float)dustScale * Projectile.scale;
                 if (i < 30)
                 {
                     dust.velocity = offset * dust.velocity.Length();

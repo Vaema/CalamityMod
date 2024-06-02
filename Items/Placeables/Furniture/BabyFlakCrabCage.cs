@@ -1,23 +1,18 @@
-﻿using CalamityMod.Tiles.Furniture;
-using CalamityMod.Items.Critters;
+﻿using CalamityMod.Items.Critters;
+using CalamityMod.Tiles.Furniture;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class BabyFlakCrabCage : ModItem
+    public class BabyFlakCrabCage : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Baby Flak Crab Cage");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;

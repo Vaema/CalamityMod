@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,8 +12,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Magic
 {
     [LegacyName("Judgement", "Judgment")]
-    public class TheDanceofLight : ModItem
+    public class TheDanceofLight : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public const int HitsPerFlash = 300;
         public const int FlashBaseDamage = 16000;
 
@@ -26,13 +27,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public static Color GetLightColor(float deviation) => new Color(1f, 0.5f + 0.35f * MathHelper.Clamp(deviation, 0f, 1f), 1f);
         public static Color GetSyncedLightColor() => GetLightColor(Main.DiscoG / 255f);
         public static Color GetRandomLightColor() => GetLightColor(Main.rand.NextFloat());
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("The Dance of Light");
-            Tooltip.SetDefault("Barrages enemies with a hailstorm of Light Blades\n'And in a flash of light, nothing remains'");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -47,6 +41,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useTime = 2;
             Item.useAnimation = 8;
             Item.reuseDelay = 5;
+            Item.useLimitPerAnimation = 4;
             Item.UseSound = SoundID.Item105;
             Item.autoReuse = true;
             Item.noMelee = true;
@@ -54,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<LightBlade>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -67,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile[] pair = new Projectile[2];
-            for(int i = 0; i < 2; ++i)
+            for (int i = 0; i < 2; ++i)
             {
                 // Pick a random direction somewhere behind the player
                 float shootAngle = (float)Math.Atan2(velocity.Y, velocity.X);

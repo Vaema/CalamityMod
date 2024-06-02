@@ -1,13 +1,15 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresGaussNukeProjectileBoom : BaseMassiveExplosionProjectile
+    public class AresGaussNukeProjectileBoom : BaseMassiveExplosionProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override int Lifetime => 60;
         public override bool UsesScreenshake => true;
         public override float GetScreenshakePower(float pulseCompletionRatio) => CalamityUtils.Convert01To010(pulseCompletionRatio) * 16f;
@@ -29,7 +31,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gauss Explosion");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -49,11 +50,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => CalamityUtils.CircularHitboxCollision(Projectile.Center, CurrentRadius * Projectile.scale * 0.4f, target.Hitbox) && Projectile.timeLeft > 6;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
-		{
-			if (damage <= 0)
-				return;
-			target.AddBuff(BuffID.OnFire, 480);
-		}
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            if (info.Damage <= 0)
+                return;
+
+            target.AddBuff(BuffID.OnFire, 480);
+        }
     }
 }

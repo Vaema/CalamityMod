@@ -1,19 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using System.IO;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PhantomicShield : ModProjectile
+    public class PhantomicShield : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public const float floatDist = 50f;
 
         public int deathTimer = 240;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phantomic Bulwark");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -43,13 +44,13 @@ namespace CalamityMod.Projectiles.Summon
             deathTimer = reader.ReadInt32();
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int d = 0; d < 6; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 2f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 2f);
                 Main.dust[shadow].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[shadow].scale = 0.5f;
                     Main.dust[shadow].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -57,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (int d = 0; d < 18; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 3f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 3f);
                 Main.dust[shadow].noGravity = true;
                 Main.dust[shadow].velocity *= 5f;
                 shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 2f);

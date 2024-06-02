@@ -9,23 +9,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Neck)]
-    public class LumenousAmulet : ModItem
+    public class LumenousAmulet : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Lumenous Amulet");
-            Tooltip.SetDefault("Attacks inflict the Crush Depth debuff\n" +
-                "Grants immunity to the Crush Depth debuff\n" +
-                "While in the abyss you gain 25% increased max life\n" +
-                "Provides a moderate amount of light in the abyss");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -33,8 +24,8 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.abyssalAmulet = true;
             modPlayer.lumenousAmulet = true;
+            player.buffImmune[ModContent.BuffType<RiptideDebuff>()] = true;
             player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;
         }
 

@@ -1,31 +1,25 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class FuelCellBundle : ModItem
+    public class FuelCellBundle : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Fuel Cell Bundle");
-            Tooltip.SetDefault("Releases a small, special variant of the plaguebringers");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.mana = 10;
-            Item.damage = 20;
-            Item.useStyle = ItemUseStyleID.Swing;
             Item.width = 32;
             Item.height = 32;
+            Item.mana = 10;
+            Item.damage = 25;
+            Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 20;
             Item.noMelee = true;
             Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item106;
             Item.autoReuse = true;

@@ -6,16 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Reaver
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class ReaverCuisses : ModItem
+    public class ReaverCuisses : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Reaver Cuisses");
-            Tooltip.SetDefault("5% increased critical strike chance\n" +
-                "12% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 22;

@@ -1,19 +1,19 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class CloudElementalMinion : ModProjectile
+    public class CloudElementalMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int dust = 3;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cloudy Waifu");
             Main.projFrames[Projectile.type] = 8;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 50;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int index = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 16, 0f, 0f, 0, default, 1f);
+                    int index = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Cloud, 0f, 0f, 0, default, 1f);
                     Main.dust[index].velocity *= 2f;
                     Main.dust[index].scale *= 1.15f;
                 }

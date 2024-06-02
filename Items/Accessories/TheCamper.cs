@@ -9,28 +9,17 @@ namespace CalamityMod.Items.Accessories
 {
     //Dedicated to Dzicozan
     [AutoloadEquip(EquipType.Back)]
-    public class TheCamper : ModItem
+    public class TheCamper : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         int auraCounter = 0;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("The Camper");
-            Tooltip.SetDefault("In rest may we find victory.\n" +
-                "You deal 90% less damage unless stationary\n" +
-                "Standing still grants buff(s) dependent on what weapon you're holding\n" +
-                "Standing still provides a damaging aura around you\n" +
-                "While moving, you regenerate health as if standing still\n" +
-                "Provides a small amount of light in the Abyss");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
             Item.defense = 10;
         }
@@ -57,7 +46,7 @@ namespace CalamityMod.Items.Accessories
                         player.buffTime[l] = 80;
                 }
             }
-            
+
             Lighting.AddLight(player.Center, 0.825f, 0.66f, 0f);
             if (Main.myPlayer == player.whoAmI)
             {
@@ -69,13 +58,12 @@ namespace CalamityMod.Items.Accessories
                     if (auraCounter == 9)
                     {
                         auraCounter = 0;
-                        for (int i = 0; i < Main.maxNPCs; i++)
+                        foreach (NPC npc in Main.ActiveNPCs)
                         {
-                            NPC npc = Main.npc[i];
-                            if (npc.active && !npc.friendly && npc.damage > -1 && !npc.dontTakeDamage && Vector2.Distance(player.Center, npc.Center) <= range)
+                            if (npc.IsAnEnemy() && !npc.dontTakeDamage && Vector2.Distance(player.Center, npc.Center) <= range)
                             {
                                 int campingFireDamage = (int)player.GetBestClassDamage().ApplyTo(Main.rand.Next(20, 41));
-                                Projectile.NewProjectileDirect(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), campingFireDamage, 0f, player.whoAmI, i);
+                                Projectile.NewProjectileDirect(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), campingFireDamage, 0f, player.whoAmI, npc.whoAmI);
                             }
                         }
                     }

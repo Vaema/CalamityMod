@@ -3,14 +3,15 @@ using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class LightBlade : ModProjectile
+    public class LightBlade : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const int Lifetime = 300;
         private const int NumAfterimages = 8;
         private const float LightBrightness = 0.7f;
@@ -22,7 +23,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Light Blade");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = NumAfterimages;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Magic
             // Spawn starting dust.
             Vector2 baseOffsetVec = new Vector2(1f, 4f);
             int numDust = 16;
-            for(int i = 0; i < numDust; ++i)
+            for (int i = 0; i < numDust; ++i)
             {
                 Vector2 dustOffset = Vector2.UnitY.RotatedBy(i * MathHelper.TwoPi / numDust) * baseOffsetVec;
                 dustOffset = dustOffset.RotatedBy(Projectile.velocity.ToRotation());
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, lightColor.ToVector3() * startingBrightness);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer calPlayer = player.Calamity();
@@ -127,9 +127,9 @@ namespace CalamityMod.Projectiles.Magic
 
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCHit3, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCHit3, Projectile.Center);
             int numDust = Main.rand.Next(4, 10);
             for (int i = 0; i < numDust; i++)
             {
@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Magic
             Point projTile = Projectile.Center.ToTileCoordinates();
             Color localLight = Lighting.GetColor(projTile.X, projTile.Y);
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rect = new Rectangle(38 * Projectile.frame, 0, 38, 38);
             Vector2 halfSpriteSize = rect.Size() / 2f;
 

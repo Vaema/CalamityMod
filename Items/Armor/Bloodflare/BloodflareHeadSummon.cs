@@ -9,21 +9,16 @@ namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("BloodflareHelmet")]
-    public class BloodflareHeadSummon : ModItem
+    public class BloodflareHeadSummon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Wyvern Helm");
-            Tooltip.SetDefault("You can move freely through liquids and have temporary immunity to lava\n" +
-                "5% increased minion damage");
-        }
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+        internal static string GhostMineEntitySourceContext => "SetBonus_Calamity_BloodflareSummon";
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 16; //85
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -44,13 +39,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.setBonus = "50% increased minion damage and +3 max minions\n" +
-                "Greatly increases life regen\n" +
-                "Enemies below 50% life drop a heart when struck\n" +
-                "This effect has a 5 second cooldown\n" +
-                "Summons polterghast mines to circle you\n" +
-                "At 90% life and above you gain 10% increased minion damage\n" +
-                "At 50% life and below you gain 20 defense and 2 life regen";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
             player.crimsonRegen = true;
             player.GetDamage<SummonDamageClass>() += 0.5f;
             player.maxMinions += 3;
@@ -58,8 +47,6 @@ namespace CalamityMod.Items.Armor.Bloodflare
 
         public override void UpdateEquip(Player player)
         {
-            player.lavaMax += 240;
-            player.ignoreWater = true;
             player.GetDamage<SummonDamageClass>() += 0.05f;
         }
 

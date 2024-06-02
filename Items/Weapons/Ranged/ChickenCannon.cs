@@ -9,27 +9,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class ChickenCannon : ModItem
+    public class ChickenCannon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Chicken Cannon");
-            Tooltip.SetDefault("Fires chicken flares which create enormous incendiary explosions\n" +
-                "Right click to detonate all airborne rockets");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 416;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 126;
             Item.height = 42;
+            Item.damage = 290;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 33;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             // No use sound is intentional
             Item.autoReuse = true;
@@ -73,10 +66,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         private void DetonateRockets(Player player)
         {
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (!p.active || p.owner != player.whoAmI || p.type != Item.shoot)
+                if (p.owner != player.whoAmI || p.type != Item.shoot)
                     continue;
 
                 // All rockets will instantly explode on the next frame and send packets to indicate as such.

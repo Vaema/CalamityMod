@@ -1,21 +1,13 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithPlatform : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpPlatform(true);
-            AddMapEntry(new Color(191, 142, 111));
-            ItemDrop = ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithPlatform>();
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Platforms };
-        }
+        public override void SetStaticDefaults() => this.SetUpPlatform(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithPlatform>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {

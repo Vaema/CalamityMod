@@ -8,24 +8,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class GodSlayerSlug : ModItem
+    public class GodSlayerSlug : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 99;
-            DisplayName.SetDefault("God Slayer Slug");
-            Tooltip.SetDefault("Heavy ammunition with unlimited piercing that tears through spacetime\n" +
-                "After a slug lands a hit, if it strikes a wall or runs out of targets to pierce,\n" +
-                "it warps backwards through space and supercharges, exploding on impact");
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 28;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 22;
             Item.height = 22;
-            Item.maxStack = 999;
+            Item.damage = 28;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.value = Item.sellPrice(copper: 28);

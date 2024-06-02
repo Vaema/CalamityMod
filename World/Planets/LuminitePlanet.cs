@@ -18,24 +18,24 @@ namespace CalamityMod.World.Planets
             // The worldgen structure map only gets created/regenerated when you generate a world, for some reason.
             // This means if you simply enter a world and generate this planetoid, the map will not exist yet, and errors will arise.
             // As a result, a new one is generated as necessary.
-            if (WorldGen.structures is null)
-                WorldGen.structures = new StructureMap();
+            if (GenVars.structures is null)
+                GenVars.structures = new StructureMap();
             var config = WorldGenConfiguration.FromEmbeddedPath("Terraria.GameContent.WorldBuilding.Configuration.json");
 
-            int totalPlanetoidsToGenerate = Main.maxTilesX / 4200 + 1;
+            int totalPlanetoidsToGenerate = Main.maxTilesX / 1200 + 2;
             for (int i = 0; i < totalPlanetoidsToGenerate; i++)
             {
-                for (int tries = 0; tries < 3000; tries++)
+                for (int tries = 0; tries < 15000; tries++)
                 {
-                    Point planetoidOrigin = new Point(WorldGen.genRand.Next(Main.maxTilesX / 2 - 700, Main.maxTilesX / 2 + 700), WorldGen.genRand.Next(85, 110));
+                    Point planetoidOrigin = new Point(WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15), (int)(Main.maxTilesX * 0.85)), WorldGen.genRand.Next(75, 125));
                     if (WorldGen.genRand.NextBool(2))
                     {
-                        if (config.CreateBiome<LuminitePlanet>().Place(planetoidOrigin, WorldGen.structures))
+                        if (config.CreateBiome<LuminitePlanet>().Place(planetoidOrigin, GenVars.structures))
                             break;
                     }
                     else
                     {
-                        if (config.CreateBiome<LuminitePlanet2>().Place(planetoidOrigin, WorldGen.structures))
+                        if (config.CreateBiome<LuminitePlanet2>().Place(planetoidOrigin, GenVars.structures))
                             break;
                     }
                 }
@@ -44,7 +44,7 @@ namespace CalamityMod.World.Planets
 
         public override bool Place(Point origin, StructureMap structures)
         {
-            int radius = _random.Next(18, 21);
+            int radius = _random.Next(14, 18);
 
             if (!CheckIfPlaceable(origin, radius, structures))
                 return false;

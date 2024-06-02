@@ -11,31 +11,24 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class AcesHigh : ModItem
+    public class AcesHigh : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ace's High");
-            Tooltip.SetDefault("Fires a string of cards with varying effects based on card type\n" +
-                "Hearts grant lifesteal. Spades pierce and ignore immunity frames.\n" +
-                "Diamonds explode. Clubs split into three.");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 325;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 48;
             Item.height = 30;
+            Item.damage = 325;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
-            Item.reuseDelay = 8;
             Item.useAnimation = 12;
+            Item.reuseDelay = 8;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
 

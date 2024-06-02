@@ -15,12 +15,13 @@ using static CalamityMod.CalamityUtils;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("WulfrumBow")]
-    public class WulfrumBlunderbuss : ModItem
+    public class WulfrumBlunderbuss : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f };
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.1f };
 
-        public static float MinSpreadDistance = 460f; 
+        public static float MinSpreadDistance = 460f;
         public static float MaxSpreadDistance = 60f;
         public static float MinSpread = 0.2f;
         public static float MaxSpread = 0.6f;
@@ -30,31 +31,19 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int ShotsPerScrap = 30;
         public int storedScrap = 0;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wulfrum Blunderbuss");
-            Tooltip.SetDefault("Consumes wulfrum scrap or silver coins to fire\n" +
-                               "The shot's spread can be diminished by aiming further away, at the cost of less damage\n" +
-							   "Ignores 3 points of enemy Defense\n" +
-                               "[c/83B87E:\"The good thing about Wulfrum is that while it breaks fast, it can be reused even faster\"]\n" +
-                               "[c/83B87E:\"In fact, it is quite common for a robot to be turned into ammo right after it stops functioning\"]");
-            //Funny lore quip about how it can perform ecgologically be recyling the scrap parts of the faulty robots youre forced to shoot at as new ammo.
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
+            Item.width = 23;
+            Item.height = 8;
             Item.damage = 11;
             Item.ArmorPenetration = 3;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 23;
-            Item.height = 8;
             Item.useTime = 55;
             Item.useAnimation = 55;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = ShootSound;
             Item.autoReuse = false;
@@ -68,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             player.Calamity().mouseWorldListener = true;
         }
 
-        public override bool CanUseItem(Player player) =>  storedScrap > 0 || (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()) || player.HasItem(ItemID.SilverCoin));
+        public override bool CanUseItem(Player player) => storedScrap > 0 || (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()) || player.HasItem(ItemID.SilverCoin));
 
         public override void UseAnimation(Player player)
         {
@@ -106,8 +95,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            float aimLenght = (Main.MouseWorld - player.MountedCenter).Length();
-            float damageMult = MathHelper.Lerp(1f, MaxDamageFalloff, Math.Clamp(aimLenght - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance));
+            float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
+            float damageMult = MathHelper.Lerp(1f, MaxDamageFalloff, Math.Clamp(aimLength - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance));
             damage = (int)(damage * damageMult);
         }
 
@@ -116,8 +105,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.Calamity().GeneralScreenShakePower < 3f)
                 player.Calamity().GeneralScreenShakePower = 3f;
 
-            float aimLenght = (Main.MouseWorld - player.MountedCenter).Length();
-            float spreadDistance = Math.Clamp(aimLenght - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance);
+            float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
+            float spreadDistance = Math.Clamp(aimLength - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance);
             float spread = MathHelper.Lerp(MaxSpread, MinSpread, spreadDistance);
 
             Vector2 nuzzleDir = velocity.SafeNormalize(Vector2.Zero);
@@ -136,7 +125,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 7f;
@@ -150,7 +139,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseItemFrame(Player player)
         {
-            player.direction = Math.Sign((player.Calamity().mouseWorld - player.Center).X);
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
@@ -184,7 +173,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             spriteBatch.Draw(barBG, drawPos, null, colorBG, 0f, origin, scale * barScale, 0f, 0f);
             spriteBatch.Draw(barFG, drawPos, frameCrop, colorFG * 0.8f, 0f, origin, scale * barScale, 0f, 0f);
 
-            DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, storedScrap.ToString(), drawPos + new Vector2(-3, -3) * scale, Color.GreenYellow, Color.Black, scale);
+            DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, storedScrap.ToString(), drawPos + new Vector2(-30, -3) * scale, Color.GreenYellow, Color.Black, scale);
         }
 
         public override void AddRecipes()
@@ -195,9 +184,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Register();
         }
 
-        public override void OnCreate (ItemCreationContext context)
+        public override void OnCreated(ItemCreationContext context)
         {
-            if (context is RecipeCreationContext)
+            if (context is RecipeItemCreationContext)
                 storedScrap = ShotsPerScrap;
         }
 

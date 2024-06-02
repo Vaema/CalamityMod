@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -21,9 +22,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Screen");
-            AddMapEntry(Color.DarkGray, name);
+            AddMapEntry(Color.DarkGray, CalamityUtils.GetText("Tiles.Screen"));
             TileID.Sets.FramesOnKillWall[Type] = true;
             DustType = 8;
         }
@@ -33,11 +32,6 @@ namespace CalamityMod.Tiles.DraedonStructures
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<LaboratoryScreenItem>());
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

@@ -1,16 +1,16 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Pets
 {
-    public class BabyGhostBell : ModProjectile
+    public class BabyGhostBell : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         private bool underwater = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Baby Ghost Bell");
             Main.projFrames[Projectile.type] = 4;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.LightPet[Projectile.type] = true;

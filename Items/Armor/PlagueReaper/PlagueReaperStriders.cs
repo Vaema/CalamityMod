@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.PlagueReaper
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class PlagueReaperStriders : ModItem
+    public class PlagueReaperStriders : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plague Reaper Striders");
-            Tooltip.SetDefault("3% increased ranged critical strike chance\n" +
-                "15% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 11;
         }

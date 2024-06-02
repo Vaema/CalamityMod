@@ -1,4 +1,4 @@
-using CalamityMod.Items;
+﻿using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -20,7 +20,6 @@ namespace CalamityMod.Tiles
             TileObjectData.addTile(Type);
 
             DustType = DustID.Stone;
-            ItemDrop = ModContent.ItemType<Rock>();
 
             AddMapEntry(new Color(83, 91, 102));
         }

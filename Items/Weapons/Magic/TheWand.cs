@@ -9,22 +9,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class TheWand : ModItem
+    public class TheWand : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         // The actual base damage of The Wand. The damage reported on the item is just the spark, which is irrelevant.
         public static int BaseDamage = 599;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Wand");
-            Tooltip.SetDefault("The ultimate wand");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
             Item.width = 40;
+            Item.height = 36;
             Item.damage = 14; // same as 1.4 Wand of Sparking
             Item.mana = 150;
             Item.DamageType = DamageClass.Magic;
@@ -36,8 +35,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 0.5f;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
-            Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ModContent.ProjectileType<SparkInfernal>();
             Item.shootSpeed = 24f;
             Item.rare = ModContent.RarityType<Violet>();
@@ -54,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 6);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
         }
 
         public override void AddRecipes()

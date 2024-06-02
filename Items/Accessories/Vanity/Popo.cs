@@ -5,8 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class Popo : ModItem
+    public class Popo : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -20,11 +21,6 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Magic Scarf and Hat");
-            Tooltip.SetDefault("Don't let the demons steal your nose\n" +
-                "Transforms the holder into a snowman");
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -38,10 +34,10 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 30;
+            Item.width = 36;
+            Item.height = 44;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().devItem = true;
         }

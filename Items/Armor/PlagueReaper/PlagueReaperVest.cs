@@ -7,21 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.PlagueReaper
 {
     [AutoloadEquip(EquipType.Body)]
-    public class PlagueReaperVest : ModItem
+    public class PlagueReaperVest : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plague Reaper Vest");
-            Tooltip.SetDefault("Grants immunity to the Plague\n" +
-                "15% increased ranged damage and 5% increased ranged critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 14;
         }

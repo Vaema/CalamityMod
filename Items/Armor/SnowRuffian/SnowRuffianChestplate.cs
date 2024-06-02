@@ -5,8 +5,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.SnowRuffian
 {
     [AutoloadEquip(EquipType.Body)]
-    public class SnowRuffianChestplate : ModItem
+    public class SnowRuffianChestplate : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void Load()
         {
             if (Main.netMode == NetmodeID.Server)
@@ -18,9 +19,6 @@ namespace CalamityMod.Items.Armor.SnowRuffian
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Snow Ruffian Chestplate");
-            Tooltip.SetDefault("3% increased rogue critical strike chance");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -35,7 +33,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 4; //9
         }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureVoid
 {
@@ -16,14 +16,13 @@ namespace CalamityMod.Tiles.FurnitureVoid
             HitSound = SoundID.Tink;
             MineResist = 7f;
             MinPick = 180;
-            ItemDrop = ModContent.ItemType<Items.Placeables.FurnitureVoid.VoidstoneSlab>();
             AddMapEntry(new Color(27, 24, 31));
             AnimationFrameHeight = 270;
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 180, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.DungeonSpirit, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -160,7 +159,6 @@ namespace CalamityMod.Tiles.FurnitureVoid
                 Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
                 Color drawColour = GetDrawColour(i, j, new Color(75, 75, 75, 75));
                 Tile trackTile = Main.tile[i, j];
-                double num6 = Main.time * 0.08;
                 if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
                 {
                     Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);

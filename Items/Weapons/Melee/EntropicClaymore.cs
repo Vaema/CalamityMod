@@ -1,23 +1,17 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("XerocsGreatsword")]
-    public class EntropicClaymore : ModItem
+    public class EntropicClaymore : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Entropic Claymore");
-            Tooltip.SetDefault("Fires a spread of homing plasma balls");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 130;
@@ -31,8 +25,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<EntropicFlechetteSmall>();
             Item.shootSpeed = 12f;
         }
@@ -44,8 +38,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int num6 = Main.rand.Next(4, 6);
-            for (int index = 0; index < num6; ++index)
+            int projAmt = Main.rand.Next(4, 6);
+            for (int index = 0; index < projAmt; ++index)
             {
                 float SpeedX = velocity.X + (float)Main.rand.Next(-20, 21) * 0.05f;
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-20, 21) * 0.05f;
@@ -75,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 27);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Shadowflame);
             }
         }
 

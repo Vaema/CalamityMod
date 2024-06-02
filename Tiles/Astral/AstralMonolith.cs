@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,7 +19,7 @@ namespace CalamityMod.Tiles.Astral
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Wood"]);
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Wood"]);
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeAstralTiles(Type);
@@ -27,8 +28,9 @@ namespace CalamityMod.Tiles.Astral
             CalamityUtils.SetMerge(Type, TileID.LivingWood);
             CalamityUtils.SetMerge(Type, TileID.LivingMahogany);
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.AstralMonolith>();
             AddMapEntry(new Color(45, 36, 63));
+
+            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -140,6 +142,12 @@ namespace CalamityMod.Tiles.Astral
                 colour.B = (byte)(paintCol.B / 255f * colour.B);
             }
             return colour;
+        }
+
+        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+        {
+            sightColor = Color.Cyan;
+            return true;
         }
     }
 }

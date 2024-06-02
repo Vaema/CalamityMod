@@ -1,16 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class ToxicMinnowCloud : ModProjectile
+    public class ToxicMinnowCloud : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Toxic Cloud");
             Main.projFrames[Projectile.type] = 10;
         }
 
@@ -31,11 +31,11 @@ namespace CalamityMod.Projectiles.Enemy
         {
             Lighting.AddLight(Projectile.Center, 0.1f * Projectile.Opacity, 1f * Projectile.Opacity, 0f);
 
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
                 Projectile.velocity *= 0.95f;
-            else if (Main.rand.NextBool(2))
+            else if (Main.rand.NextBool())
                 Projectile.velocity *= 0.9f;
-            else if (Main.rand.NextBool(2))
+            else if (Main.rand.NextBool())
                 Projectile.velocity *= 0.85f;
             else
                 Projectile.velocity *= 0.8f;
@@ -84,17 +84,17 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool CanHitPlayer(Player target) => Projectile.ai[0] < 560f;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
-            
+
             target.AddBuff(BuffID.Poisoned, 240);
         }
 
         public override bool? CanHitNPC(NPC target) => Projectile.ai[0] < 560f;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Poisoned, 240);
         }

@@ -1,14 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class ChickenCannonHeld : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<ChickenCannon>();
         static float FireRate = 33f;
         //The first shot from the holdout doesnt consume ammo, this is because the ammo is already consumed by the fact the player needs to consume ammo to shoot it
         public ref float FreeShotLoaded => ref Projectile.ai[0];
@@ -16,7 +19,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chicken Cannon");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -53,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FramesTillNextShot = FireRate;
                 shouldShoot = true;
             }
-            bool canShoot = player.channel && (player.HasAmmo(player.ActiveItem()) || FreeShotLoaded > 0) && !player.noItems && !player.CCed;
+            bool canShoot = !player.CantUseHoldout() && (player.HasAmmo(player.ActiveItem()) || FreeShotLoaded > 0);
             if (Projectile.soundDelay <= 0 && canShoot)
             {
                 Projectile.soundDelay = (int)FireRate;

@@ -10,16 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class CrescentMoon : ModItem
+    public class CrescentMoon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Crescent Moon");
-            Tooltip.SetDefault("People wanted the moon, let's bring the moon to them.\n" +
-            "Fires a whip sword that summons homing crescent moons");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 16;
@@ -35,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item82;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<CrescentMoonFlail>();

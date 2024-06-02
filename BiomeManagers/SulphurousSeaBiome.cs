@@ -1,6 +1,7 @@
 ﻿using System.Security.Policy;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -13,8 +14,9 @@ namespace CalamityMod.BiomeManagers
 {
     public class SulphurousSeaBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => CalamityWorld.getFixedBoi ? ModContent.Find<ModWaterStyle>("CalamityMod/PissWater") : ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater");
-        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => CalamityWorld.getFixedBoi ?ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/PissSeaSurfaceBGStyle") : ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/SulphurSeaSurfaceBGStyle");
+        public override ModWaterStyle WaterStyle => Main.zenithWorld ? ModContent.Find<ModWaterStyle>("CalamityMod/PissWater") : ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater");
+        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => Main.zenithWorld ? ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/PissSeaSurfaceBGStyle") : ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/SulphurSeaSurfaceBGStyle");
+        public override int BiomeTorchItemType => ModContent.ItemType<SulphurousTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/SulphurousSeaIcon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/SulphurBG";
@@ -43,14 +45,9 @@ namespace CalamityMod.BiomeManagers
                         ? CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaNight") ?? MusicID.Desert // Nighttime
                         : CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaDay") ?? MusicID.Desert; // Daytime
                 }
-                
+
                 return music;
             }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sulphurous Sea");
         }
 
         public override bool IsBiomeActive(Player player)
@@ -72,10 +69,13 @@ namespace CalamityMod.BiomeManagers
                     sulphurPosX = true;
                 }
             }
-            
-            return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y < (Main.rockLayer - Main.maxTilesY / 13) && sulphurPosX)) && !player.Calamity().ZoneAbyss;
+
+            if (Main.remixWorld)
+                return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y > SulphurousSea.YStart && point.Y < Main.UnderworldLayer && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
+
+            return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y < (Main.rockLayer - Main.maxTilesY / 13) && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
         }
-        
+
         public override void SpecialVisuals(Player player, bool isActive)
         {
             string biomeName = "CalamityMod:SulphurSea";

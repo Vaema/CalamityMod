@@ -1,15 +1,16 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class DarkIce : ModProjectile
+    public class DarkIce : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Melee/DarkIceZero";
 
         public override void SetDefaults()
@@ -26,11 +27,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.npcProj = true;
         }
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dark Ice");
-        }
-
         public override void AI()
         {
             if (Projectile.localAI[0] != 1f)
@@ -45,17 +41,11 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             //make pretty dust
-            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.25f);
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.25f);
             Main.dust[index2].noGravity = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(BuffID.Frostburn2, 180);
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
-        }
-
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
@@ -66,12 +56,12 @@ namespace CalamityMod.Projectiles.Typeless
             return new Color(198, 197, 246);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int i = 0; i < 30; i++)
             {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, 0f, 0f, 0, default, Main.rand.NextFloat(1f, 2f));
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, 0f, 0f, 0, default, Main.rand.NextFloat(1f, 2f));
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].velocity *= 4f;
             }

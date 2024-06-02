@@ -1,29 +1,29 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Particles.Metaballs;
+﻿using System;
+using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SmallSpirit : ModProjectile
+    public class SmallSpirit : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public Player Owner => Main.player[Projectile.owner];
         public Projectile ProjectileOwner
         {
             get
             {
                 int spiritType = ModContent.ProjectileType<SpiritCongregation>();
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != spiritType || Main.projectile[i].identity != Projectile.ai[0] ||
-                        Main.projectile[i].owner != Projectile.owner)
+                    if (p.type != spiritType || p.identity != Projectile.ai[0] ||
+                        p.owner != Projectile.owner)
                     {
                         continue;
                     }
 
-                    return Main.projectile[i];
+                    return p;
                 }
                 return null;
             }
@@ -33,7 +33,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Small Angry Spirit");
             Main.projFrames[Projectile.type] = 3;
         }
 
@@ -49,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            float radius = MathHelper.SmoothStep(84f, 44f, (float)Math.Sqrt(1f - Projectile.timeLeft / 360f));
+            float radius = MathHelper.SmoothStep(67f, 32f, (float)Math.Sqrt(1f - Projectile.timeLeft / 360f));
 
             // Handle frames.
             Projectile.frameCounter++;
@@ -68,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.hostile = false;
 
-                radius += 54f;
+                radius += 36f;
 
                 target = ProjectileOwner;
                 flySpeed = 29f;
@@ -109,20 +108,20 @@ namespace CalamityMod.Projectiles.Magic
 
             // Emit particles.
             Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(5f, 5f) * radius / 130f;
-            FusableParticleManager.GetParticleSetByType<GruesomeEminenceParticleSet>()?.SpawnParticle(spawnPosition, radius);
+            GruesomeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(6f, 6f), radius);
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.White * Projectile.Opacity;
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 6; i++)
             {
-                Dust phantoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
-                phantoplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
-                phantoplasm.scale = 1.2f;
-                phantoplasm.fadeIn = 0.55f;
-                phantoplasm.noGravity = true;
+                Dust necroplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
+                necroplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
+                necroplasm.scale = 1.2f;
+                necroplasm.fadeIn = 0.55f;
+                necroplasm.noGravity = true;
             }
         }
     }

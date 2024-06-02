@@ -8,24 +8,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class CosmicPlushie : ModItem
+    public class CosmicPlushie : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cosmic Plushie");
-            Tooltip.SetDefault("Summons the devourer of the cosmos...?\nSharp objects possibly included\nSuppresses friendly red devils");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 36;
             Item.damage = 0;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.noMelee = true;
-            Item.width = 28;
-            Item.height = 36;
             Item.shoot = ModContent.ProjectileType<ChibiiDoggo>();
             Item.buffType = ModContent.BuffType<ChibiiDoGBuff>();
             Item.UseSound = SoundID.Meowmere;

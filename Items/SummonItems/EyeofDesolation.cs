@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.CalClone;
@@ -13,8 +12,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.SummonItems
 {
     [LegacyName("BlightedEyeball")]
-    public class EyeofDesolation : ModItem
+    public class EyeofDesolation : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public Rectangle safeBox = default;
         public int spawnX = 0;
         public int spawnX2 = 0;
@@ -26,13 +26,7 @@ namespace CalamityMod.Items.SummonItems
         public int spawnYAdd = 0;
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Eye of Desolation");
-            Tooltip.SetDefault("Tonight is going to be a horrific night...\n" +
-                "Summons the Calamitas Clone when used during nighttime\n" +
-                "Enrages during the day\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 10; // Pirate Map
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Pirate Map (1 above Mechanical Skull)
         }
 
         public override void SetDefaults()
@@ -46,14 +40,14 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.dayTime && !NPC.AnyNPCs(ModContent.NPCType<CalamitasClone>()) && !BossRushEvent.BossRushActive;
+            return !Main.IsItDay() && !NPC.AnyNPCs(ModContent.NPCType<CalamitasClone>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
@@ -62,9 +56,9 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<CalamitasClone>());
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<CalamitasClone>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<CalamitasClone>());
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.getFixedBoi)
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
             {
                 safeBox.X = spawnX = spawnXReset = (int)(player.Center.X - 1250f);
                 spawnX2 = spawnXReset2 = (int)(player.Center.X + 1250f);
@@ -73,31 +67,31 @@ namespace CalamityMod.Items.SummonItems
                 safeBox.Height = 2500;
                 spawnYAdd = 125;
 
-                int num52 = (int)(safeBox.X + (float)(safeBox.Width / 2)) / 16;
-                int num53 = (int)(safeBox.Y + (float)(safeBox.Height / 2)) / 16;
-                int num54 = safeBox.Width / 2 / 16 + 1;
-                for (int num55 = num52 - num54; num55 <= num52 + num54; num55++)
+                int safeBoxTilesX = (int)(safeBox.X + (float)(safeBox.Width / 2)) / 16;
+                int safeBoxTilesY = (int)(safeBox.Y + (float)(safeBox.Height / 2)) / 16;
+                int safeBoxTilesWidth = safeBox.Width / 2 / 16 + 1;
+                for (int i = safeBoxTilesX - safeBoxTilesWidth; i <= safeBoxTilesX + safeBoxTilesWidth; i++)
                 {
-                    for (int num56 = num53 - num54; num56 <= num53 + num54; num56++)
+                    for (int j = safeBoxTilesY - safeBoxTilesWidth; j <= safeBoxTilesY + safeBoxTilesWidth; j++)
                     {
-                        if (!WorldGen.InWorld(num55, num56, 2))
+                        if (!WorldGen.InWorld(i, j, 2))
                             continue;
 
                         int xoffset = 0;
                         int yoffset = 0;
 
-                        if ((num55 == num52 - num54 || num55 == num52 + num54 || num56 == num53 - num54 || num56 == num53 + num54) && !Main.tile[num55 + xoffset, num56 + yoffset].HasTile)
+                        if ((i == safeBoxTilesX - safeBoxTilesWidth || i == safeBoxTilesX + safeBoxTilesWidth || j == safeBoxTilesY - safeBoxTilesWidth || j == safeBoxTilesY + safeBoxTilesWidth) && !Main.tile[i + xoffset, j + yoffset].HasTile)
                         {
-                            Main.tile[num55 + xoffset, num56 + yoffset].TileType = (ushort)ModContent.TileType<Tiles.ArenaTile>();
-                            Main.tile[num55 + xoffset, num56 + yoffset].Get<TileWallWireStateData>().HasTile = true;
+                            Main.tile[i + xoffset, j + yoffset].TileType = (ushort)ModContent.TileType<Tiles.ArenaTile>();
+                            Main.tile[i + xoffset, j + yoffset].Get<TileWallWireStateData>().HasTile = true;
                         }
                         if (Main.netMode == NetmodeID.Server)
                         {
-                            NetMessage.SendTileSquare(-1, num55 + xoffset, num56 + yoffset, 1, TileChangeType.None);
+                            NetMessage.SendTileSquare(-1, i + xoffset, j + yoffset, 1, TileChangeType.None);
                         }
                         else
                         {
-                            WorldGen.SquareTileFrame(num55 + xoffset, num56 + yoffset, true);
+                            WorldGen.SquareTileFrame(i + xoffset, j + yoffset, true);
                         }
                     }
                 }
@@ -105,22 +99,14 @@ namespace CalamityMod.Items.SummonItems
             return true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            Player player = Main.LocalPlayer;
-            TooltipLine line3 = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip2");
-
-            if (CalamityWorld.getFixedBoi)
-            {
-                line3.Text = "Creates a square arena of blocks, with you at its center\nEnrages during the day";
-            }
-        }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", Main.zenithWorld ? "\n" + this.GetLocalizedValue("GFBInfo") : string.Empty);
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.HellstoneBar, 10).
-                AddIngredient<EssenceofHavoc>(7).
+                // waffles% stipulation: you can only get 5 essences of havoc from the music box, not 7, and cal clone must be accessible
+                AddIngredient<EssenceofHavoc>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

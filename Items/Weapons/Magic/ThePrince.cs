@@ -9,29 +9,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class ThePrince : ModItem
+    public class ThePrince : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public const int FlameSplitCount = 6;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Prince");
-            Tooltip.SetDefault($"Casts a holy fireball that explodes into {FlameSplitCount} flames\n" +
-                               "So you're telling me that the prince exploded, and then turned into a flower?\n" +
-                               "-Dain, the sailor druid");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 102;
+            Item.height = 112;
             Item.damage = 166;
             Item.knockBack = 4.25f;
             Item.shootSpeed = 23.5f;
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
             Item.mana = 12;
-            Item.width = 102;
-            Item.height = 112;
             Item.useTime = Item.useAnimation = 21;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;

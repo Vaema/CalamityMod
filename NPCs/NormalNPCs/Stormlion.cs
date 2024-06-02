@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,11 +11,12 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Stormlion : ModNPC
     {
+        public static readonly SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/StormlionIdle");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/StormlionHit");
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/StormlionDeath");
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stormlion");
             Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
         }
 
         public override void SetDefaults()
@@ -28,37 +30,48 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.WalkingAntlion;
             NPC.value = Item.buyPrice(0, 0, 2, 0);
-            NPC.HitSound = SoundID.NPCHit31;
-            NPC.DeathSound = SoundID.NPCDeath34;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<StormlionBanner>();
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundDesert,
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("What these appear to feed on are the electric storms that brew over deserts. When the skies darken, they reach upwards with their mandibles that act as lightning rods.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Stormlion")
             });
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void AI()
+        {
+            if (Main.rand.NextBool(800))
+            {
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+            }
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -93,10 +106,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             return SpawnCondition.DesertCave.Chance * 0.3f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Electrified, 120, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Electrified, 30, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

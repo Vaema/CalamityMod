@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Moonshine : ModItem
+    public class Moonshine : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Moonshine");
-            Tooltip.SetDefault(@"This stuff is pretty strong but I'm sure you can handle it
-Increases defense by 10 and damage reduction by 3%
-Reduces life regen by 1");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ Reduces life regen by 1");
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Yellow;
             Item.useAnimation = 17;
             Item.useTime = 17;

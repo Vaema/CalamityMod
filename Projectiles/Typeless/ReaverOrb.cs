@@ -1,18 +1,15 @@
 ﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class ReaverOrb : ModProjectile
+    public class ReaverOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public int dust = 3;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Reaver Orb");
-        }
 
         public override void SetDefaults()
         {
@@ -55,7 +52,7 @@ namespace CalamityMod.Projectiles.Typeless
                 int dustAmt = 50;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int idx = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 157, 0f, 0f, 0, default, 1f);
+                    int idx = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.ChlorophyteWeapon, 0f, 0f, 0, default, 1f);
                     Main.dust[idx].velocity *= 2f;
                     Main.dust[idx].scale *= 1.15f;
                 }

@@ -17,22 +17,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.TreasureBags
 {
     [LegacyName("CalamitasBag")]
-    public class CalamitasCloneBag : ModItem
+    public class CalamitasCloneBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Bag (Calamitas Clone)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
@@ -60,7 +59,7 @@ namespace CalamityMod.Items.TreasureBags
 
             // Materials
             itemLoot.Add(ModContent.ItemType<AshesofCalamity>(), 1, 30, 35);
-            itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 10, 15);
+            itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 10, 12);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

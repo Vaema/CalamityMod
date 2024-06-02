@@ -1,43 +1,41 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Shredder : ModItem
+    public class Shredder : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shredder");
-            Tooltip.SetDefault("The myth, the legend, the weapon that drops more frames than any other\n" +
-                "Fires a barrage of energy bolts that split and bounce\n" +
-                "Right click to fire a barrage of normal bullets");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 27;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 56;
             Item.height = 24;
+            Item.damage = 45;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
-            Item.reuseDelay = 12;
             Item.useAnimation = 32;
+            Item.reuseDelay = 35;
+            Item.useLimitPerAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item31;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Bullet;
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 5f;
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -48,30 +46,20 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int bulletAmt = 4;
-            if (player.altFunctionUse == 2)
+            int shotType = (player.altFunctionUse == 2 ? type : ModContent.ProjectileType<ChargedBlast>());
+            int bulletAmt = 3;
+            Vector2 newPosition = position + velocity.SafeNormalize(Vector2.UnitY) * 50f;
+            for (int index = 0; index < bulletAmt; index++)
             {
-                for (int index = 0; index < bulletAmt; ++index)
-                {
-                    float SpeedX = velocity.X + Main.rand.Next(-30, 31) * 0.05f;
-                    float SpeedY = velocity.Y + Main.rand.Next(-30, 31) * 0.05f;
-                    int shot = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI, 0f, 0f);
-                    Main.projectile[shot].timeLeft = 180;
-                }
-                return false;
+                Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), shotType, damage, knockback, player.whoAmI);
             }
-            else
-            {
-                for (int index = 0; index < bulletAmt; ++index)
-                {
-                    float SpeedX = velocity.X + Main.rand.Next(-30, 31) * 0.05f;
-                    float SpeedY = velocity.Y + Main.rand.Next(-30, 31) * 0.05f;
-                    int shredderBoltDamage = (int)(0.85f * damage);
-                    int shot = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<ChargedBlast>(), shredderBoltDamage, knockback, player.whoAmI, 0f, 0f);
-                    Main.projectile[shot].timeLeft = 180;
-                }
+            return false;
+        }
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            if (Main.rand.Next(0, 100) < 60)
                 return false;
-            }
+            return true;
         }
 
         public override void AddRecipes()

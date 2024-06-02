@@ -5,14 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class RocketFire : ModProjectile
+    public class RocketFire : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Rogue/TotalityFire";
         private bool initialized = false;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fire");
             Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
             //dust
             if (Main.rand.NextBool(4))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(10))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;

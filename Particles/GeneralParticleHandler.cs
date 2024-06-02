@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,23 +28,26 @@ namespace CalamityMod.Particles
         private static List<Particle> batchedNonPremultipliedParticles;
         private static List<Particle> batchedAdditiveBlendParticles;
 
-        public static void LoadModParticleInstances(Mod mod)
+        public static void LoadModParticleInstances()
         {
             Type baseParticleType = typeof(Particle);
-            foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
+            foreach (Mod mod in ModLoader.Mods)
             {
-                if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
+                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
                 {
-                    int ID = particleTypes.Count; //Get the ID of the particle
-                    particleTypes[type] = ID;
+                    if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
+                    {
+                        int ID = particleTypes.Count; //Get the ID of the particle
+                        particleTypes[type] = ID;
 
-                    Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
-                    particleInstances.Add(instance);
+                        Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
+                        particleInstances.Add(instance);
 
-                    string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
-                    if (instance.Texture != "")
-                        texturePath = instance.Texture;
-                    particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                        string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                        if (instance.Texture != "")
+                            texturePath = instance.Texture;
+                        particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                    }
                 }
             }
         }
@@ -61,8 +64,6 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles = new List<Particle>();
             batchedNonPremultipliedParticles = new List<Particle>();
             batchedAdditiveBlendParticles = new List<Particle>();
-
-            LoadModParticleInstances(CalamityMod.Instance);
         }
 
         internal static void Unload()
@@ -133,9 +134,13 @@ namespace CalamityMod.Particles
         public static void DrawAllParticles(SpriteBatch sb)
         {
             if (particles.Count == 0)
-                return; 
+                return;
 
             sb.End();
+            var rasterizer = Main.Rasterizer;
+            rasterizer.ScissorTestEnable = true;
+            Main.instance.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
+            Main.instance.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
 
             //Batch the particles to avoid constant restarting of the spritebatch
             foreach (Particle particle in particles)
@@ -150,10 +155,9 @@ namespace CalamityMod.Particles
                 else
                     batchedAlphaBlendParticles.Add(particle);
             }
-
             if (batchedAlphaBlendParticles.Count > 0)
             {
-                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 foreach (Particle particle in batchedAlphaBlendParticles)
                 {
@@ -162,7 +166,8 @@ namespace CalamityMod.Particles
                     else
                     {
                         Rectangle frame = particleTextures[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f, particle.Scale, SpriteEffects.None, 0f);
+                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f,
+                            particle.Scale, SpriteEffects.None, 0f);
                     }
                 }
                 sb.End();
@@ -171,7 +176,11 @@ namespace CalamityMod.Particles
 
             if (batchedNonPremultipliedParticles.Count > 0)
             {
-                sb.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                rasterizer = Main.Rasterizer;
+                rasterizer.ScissorTestEnable = true;
+                Main.instance.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
+                Main.instance.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
+                sb.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 foreach (Particle particle in batchedNonPremultipliedParticles)
                 {
@@ -188,7 +197,11 @@ namespace CalamityMod.Particles
 
             if (batchedAdditiveBlendParticles.Count > 0)
             {
-                sb.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                rasterizer = RasterizerState.CullNone;
+                rasterizer.ScissorTestEnable = true;
+                Main.instance.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
+                Main.instance.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
+                sb.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 foreach (Particle particle in batchedAdditiveBlendParticles)
                 {
@@ -228,6 +241,8 @@ namespace CalamityMod.Particles
         /// </summary>
         public static Texture2D GetTexture(int type) => particleTextures[type];
 
+#pragma warning disable CS0414
         private static string noteToEveryone = "This particle system was inspired by spirit mod's own particle system, with permission granted by Yuyutsu. Love you spirit mod! -Iban";
+#pragma warning restore CS0414
     }
 }

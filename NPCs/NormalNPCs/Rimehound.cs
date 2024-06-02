@@ -1,13 +1,15 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using System.IO;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Rimehound : ModNPC
@@ -19,9 +21,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rimehound");
             Main.npcFrameCount[NPC.type] = 9;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.7f,
                 PortraitPositionXOverride = 10f,
@@ -56,16 +57,19 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A large and bulky hound, its fur is frosted to the point of forming near-icicles. Being tackled by one is a painful experience.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Rimehound")
             });
         }
 
@@ -99,10 +103,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     NPC.ai[1] += 1f;
                 }
-                CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+                CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
                 return;
             }
-            CalamityAI.UnicornAI(NPC, Mod, false, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 6f, CalamityWorld.death ? 0.1f : CalamityWorld.revenge ? 0.085f : 0.07f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, false, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 6f, CalamityWorld.death ? 0.1f : CalamityWorld.revenge ? 0.085f : 0.07f);
         }
 
         public override void FindFrame(int frameHeight)
@@ -149,23 +153,23 @@ namespace CalamityMod.NPCs.NormalNPCs
                 !spawnInfo.PlayerInTown && !spawnInfo.Player.ZoneOldOneArmy && !Main.snowMoon && !Main.pumpkinMoon ? 0.03f : 0f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Frostburn, 120, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Frostburn, 120, true);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -181,7 +185,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ItemID.Leather, 1, 1, 2); // 100% chance of 1-2 leather
             LeadingConditionRule postCryo = npcLoot.DefineConditionalDropSet(DropHelper.PostCryo());
-            postCryo.Add(ModContent.ItemType<EssenceofEleum>(), 3);
+            postCryo.Add(ModContent.ItemType<EssenceofEleum>());
         }
     }
 }

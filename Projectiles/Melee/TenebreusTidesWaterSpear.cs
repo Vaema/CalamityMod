@@ -1,23 +1,25 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TenebreusTidesWaterSpear : ModProjectile
+    public class TenebreusTidesWaterSpear : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Magic/UndinesRetributionSpear";
 
-        private int penetrationAmt = 4;
+        private int penetrationAmt = 2;
         private bool dontDraw = false;
         private int drawInt = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tenebreus Tides Water Spear");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -29,8 +31,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = penetrationAmt;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Melee;
+            Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 5;
+            Projectile.localNPCHitCooldown = 5 * Projectile.MaxUpdates;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
         }
@@ -58,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.frame = 0;
             }
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
 
             // If projectile hasn't hit anything yet
             if (Projectile.ai[0] == 0f)
@@ -66,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.localAI[0] += 1f;
                 if (Projectile.localAI[0] > 7f)
                 {
-                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                    int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
                     Main.dust[water].noGravity = true;
                     Main.dust[water].velocity *= 0.5f;
                     Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -120,9 +123,8 @@ namespace CalamityMod.Projectiles.Melee
                     int whoAmI = -1;
                     Vector2 targetSpot = Projectile.Center;
                     float detectRange = 700f;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
@@ -130,7 +132,7 @@ namespace CalamityMod.Projectiles.Melee
                             {
                                 detectRange = targetDist;
                                 targetSpot = npc.Center;
-                                whoAmI = i;
+                                whoAmI = npc.whoAmI;
                             }
                         }
                     }
@@ -149,7 +151,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Main.rand.NextBool(3))
                 {
-                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                    int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
                     Main.dust[water].noGravity = true;
                     Main.dust[water].velocity *= 0.5f;
                     Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -181,7 +183,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.localAI[0] += 1f;
 
-                int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
                 Main.dust[water].noGravity = true;
                 Main.dust[water].velocity *= 0.5f;
                 Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -203,7 +205,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (dontDraw)
                 return false;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, frameHeight, texture.Width, height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)height / 2f), Projectile.scale, SpriteEffects.None, 0);
@@ -218,7 +220,7 @@ namespace CalamityMod.Projectiles.Melee
             return true;
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // If 'split' projectile hits an enemy
             if (Projectile.ai[0] >= (float)(1 + penetrationAmt) && Projectile.ai[0] < (float)(1 + penetrationAmt * 2))
@@ -239,7 +241,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.netUpdate = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
         }

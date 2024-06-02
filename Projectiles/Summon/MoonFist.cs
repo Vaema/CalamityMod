@@ -1,20 +1,21 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Buffs.Summon;
-using System.IO;
-using Terraria.GameContent.Drawing;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MoonFist : ModProjectile
+    public class MoonFist : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int DelayUntilNextPunch;
 
         public int FistIndex => (int)Projectile.ai[0];
@@ -42,7 +43,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cosmic Fist");
             Main.projFrames[Type] = 18;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -203,7 +203,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netUpdate = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Rebound on collision.
             if (DelayUntilNextPunch > 0 || AttackTimer <= 0f)
@@ -239,7 +239,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

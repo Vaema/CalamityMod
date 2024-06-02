@@ -10,22 +10,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class MidnightSunBeacon : ModItem
+    public class MidnightSunBeacon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public const float MachineGunRate = 18f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Midnight Sun Beacon");
-            Tooltip.SetDefault("Summons a UFO to vaporize enemies");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 32;
             Item.damage = 150;
             Item.mana = 10;
-            Item.width = Item.height = 32;
             Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -37,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

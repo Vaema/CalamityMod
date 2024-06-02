@@ -8,18 +8,12 @@ namespace CalamityMod.Items.Armor.Reaver
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("ReaverHelm")]
-    public class ReaverHeadTank : ModItem
+    public class ReaverHeadTank : ModItem, ILocalizedModType
     {
-        //Defense and DR Helm
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Reaver Helm");
-            Tooltip.SetDefault("15% increased damage reduction but 30% decreased damage\n" +
-                "+50 max life\n" +
-                "Passively regenerates one health point every second");
-        }
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
+        internal static string HealOrbEntitySourceContext => "SetBonus_Calamity_ReaverTank";
 
+        //Defense and DR Helm
         public override void SetDefaults()
         {
             Item.width = 28;
@@ -44,20 +38,14 @@ namespace CalamityMod.Items.Armor.Reaver
         {
             var modPlayer = player.Calamity();
             player.thorns += 0.33f;
-            player.moveSpeed -= 0.2f;
+            player.moveSpeed -= 0.3f;
             player.statDefense += 10;
             player.lifeRegen += 3;
             player.aggro += 600;
             modPlayer.reaverDefense = true;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = "+10 defense and +3 life regen\n" +
-            "Enemies are more likely to target you\n" +
-            "Reduces the life regen lost from damage over time debuffs by 20%\n" +
-            "All attacks have a small chance to steal life and speed up the rate of life regen\n" +
-            "20% decreased movement speed and flight time\n" +
-            "Enemy damage is reflected and summons a thorn spike\n" +
-            "Reaver Rage has a 25% chance to activate when you are damaged";
-            //Reaver Rage provides 30% damage to offset the helm "bonus", 5 def, and 5% melee speed.
+            player.setBonus = this.GetLocalizedValue("SetBonus");
+            // Reaver Rage provides 10% damage, 5 def, and 5% melee speed.
         }
 
         public override void UpdateEquip(Player player)

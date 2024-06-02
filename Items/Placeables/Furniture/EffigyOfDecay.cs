@@ -6,22 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class EffigyOfDecay : ModItem
+    public class EffigyOfDecay : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Effigy of Decay");
-            Tooltip.SetDefault("When placed down, nearby players can breathe underwater\n" +
-                               "This effect does not work in the abyss\n" +
-                               "Nearby players are also immune to the sulphuric poisoning");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -34,9 +26,9 @@ namespace CalamityMod.Items.Placeables.Furniture
         }
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-                AddIngredient(ModContent.ItemType<SulphuricScale>(), 20).
-                AddIngredient(ModContent.ItemType<Acidwood>(), 10).
+            CreateRecipe().
+                AddIngredient<SulphuricScale>(20).
+                AddIngredient<Acidwood>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }

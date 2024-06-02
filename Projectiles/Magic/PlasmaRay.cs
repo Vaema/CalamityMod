@@ -1,19 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class PlasmaRay : ModProjectile
+    public class PlasmaRay : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ray");
-        }
 
         public override void SetDefaults()
         {
@@ -28,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 65, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.DemonTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             if (Projectile.velocity.X != Projectile.velocity.X)
             {
                 Projectile.position.X = Projectile.position.X + Projectile.velocity.X;
@@ -42,15 +38,15 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 9f)
             {
-                for (int num447 = 0; num447 < 4; num447++)
+                for (int i = 0; i < 4; i++)
                 {
-                    Vector2 vector33 = Projectile.position;
-                    vector33 -= Projectile.velocity * ((float)num447 * 0.25f);
+                    Vector2 projPos = Projectile.position;
+                    projPos -= Projectile.velocity * ((float)i * 0.25f);
                     Projectile.alpha = 255;
-                    int num448 = Dust.NewDust(vector33, 1, 1, 173, 0f, 0f, 0, default, 0.75f);
-                    Main.dust[num448].position = vector33;
-                    Main.dust[num448].scale = (float)Main.rand.Next(70, 110) * 0.013f;
-                    Main.dust[num448].velocity *= 0.2f;
+                    int purpDust = Dust.NewDust(projPos, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 0.75f);
+                    Main.dust[purpDust].position = projPos;
+                    Main.dust[purpDust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
+                    Main.dust[purpDust].velocity *= 0.2f;
                 }
             }
         }
@@ -80,17 +76,17 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.ShadowFlame, 360);
+            target.AddBuff(BuffID.ShadowFlame, 180);
         }
     }
 }

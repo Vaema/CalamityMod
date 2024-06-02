@@ -10,31 +10,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class FaceMelter : ModItem
+    public class FaceMelter : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Face Melter");
-            Tooltip.SetDefault("WOOO!! FAAAAAAANTASYY WORLDDDDD!\n" +
-                "Fires music notes\n" +
-                "Right click summons an amplifier that shoots towards your mouse");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 200;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
             Item.width = 56;
             Item.height = 50;
+            Item.damage = 165;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 10;
             Item.useTime = 5;
             Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 

@@ -1,34 +1,27 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class SunSpiritStaff : ModItem
+    public class SunSpiritStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sun Spirit Staff");
-            Tooltip.SetDefault("Summons a solar spirit to protect you\n" +
-                "There can only be one spirit");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 12;
-            Item.mana = 10;
             Item.width = 44;
             Item.height = 48;
+            Item.damage = 12;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 35;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 1.15f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item44;
             Item.shoot = ModContent.ProjectileType<SolarPixie>();
@@ -50,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.SandstoneBrick, 20).
-                AddIngredient<DesertFeather>(2).
+                AddIngredient<StormlionMandible>(2).
                 AddTile(TileID.Anvils).
                 Register();
         }

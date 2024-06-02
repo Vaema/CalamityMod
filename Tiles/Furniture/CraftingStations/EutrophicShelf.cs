@@ -18,6 +18,11 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
         //
         public override void SetStaticDefaults()
         {
+            // 12AUG2023: Ozzatron: I had to touch this code
+            // It was absolutely necessary to allow for right-facing Eutrophic Shelves to drop following the TML 1.4.4 change:
+            // https://github.com/tModLoader/tModLoader/pull/3420
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.EutrophicShelf>());
+
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
@@ -40,16 +45,14 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
             TileObjectData.addAlternate(1);
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Eutrophic Shelf");
-            AddMapEntry(new Color(191, 142, 111), name);
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.EutrophicShelf>());
             AnimationFrameHeight = 54;
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 51, 0f, 0f, 1, new Color(54, 69, 72), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.SnowBlock, 0f, 0f, 1, new Color(54, 69, 72), 1f);
             return false;
         }
 
@@ -63,11 +66,6 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             r = 0.5f;
             g = 1f;
             b = 1f;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.EutrophicShelf>());
         }
     }
 }

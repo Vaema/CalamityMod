@@ -1,67 +1,39 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class TheAbsorber : ModItem
+    public class TheAbsorber : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("The Absorber");
-            Tooltip.SetDefault("5% increased movement and jump speed\n" +
-                "+20 max life and mana\n" +
-                "Standing still boosts life and mana regen\n" +
-                "Enemies take damage when they touch you\n" +
-                "You emit a cloud of mushroom spores when you are hit\n" +
-                "7% increased damage reduction\n" +
-                "5% of the damage from enemy attacks is absorbed and converted into healing\n" +
-                "Grants immunity to Armor Crunch");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.defense = 15;
             Item.width = 20;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.defense = 10;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            // Removed Giant Shell speed boost from The Absorber
-            // modPlayer.gShell = true;
-            modPlayer.fCarapace = true;
+            player.noKnockback = true; // Inherited from Giant Tortoise Shell
             modPlayer.absorber = true;
-            player.statManaMax2 += 20;
-            player.buffImmune[ModContent.BuffType<ArmorCrunch>()] = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<GrandGelatin>().
-                AddIngredient<CrawCarapace>().
-                AddIngredient<FungalCarapace>().
+                AddIngredient<Baroclaw>().
                 AddIngredient<GiantTortoiseShell>().
                 AddIngredient<MolluskHusk>(5).
-                AddTile(TileID.LunarCraftingStation).
-                Register();
-
-            CreateRecipe().
-                AddIngredient<GrandGelatin>().
-                AddIngredient<GiantShell>().
-                AddIngredient<FungalCarapace>().
-                AddIngredient<GiantTortoiseShell>().
-                AddIngredient<MolluskHusk>(5).
+                AddIngredient<MeldConstruct>(6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

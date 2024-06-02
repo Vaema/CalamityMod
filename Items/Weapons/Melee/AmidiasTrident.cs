@@ -5,19 +5,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class AmidiasTrident : ModItem
+    public class AmidiasTrident : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Amidias' Trident");
-            Tooltip.SetDefault("Shoots homing whirlpools");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 44;
+            Item.height = 44;
             Item.damage = 12;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -29,8 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 4.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 44;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<AmidiasTridentProj>();
             Item.shootSpeed = 6f;

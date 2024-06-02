@@ -1,21 +1,23 @@
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using Terraria.ID;
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class NavystoneWall : ModItem
+    public class NavystoneWall : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
-            DisplayName.SetDefault("Unsafe Navystone Wall");
+            Item.ResearchUnlockCount = 400;
+            ItemID.Sets.DrawUnsafeIndicator[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<NavystoneWallSafe>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -23,11 +25,6 @@ namespace CalamityMod.Items.Placeables.Walls
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createWall = ModContent.WallType<WallTiles.NavystoneWall>();
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<Navystone>()).AddTile(TileID.WorkBenches).Register();
         }
     }
 }

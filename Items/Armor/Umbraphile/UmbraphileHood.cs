@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Umbraphile
 {
     [AutoloadEquip(EquipType.Head)]
-    public class UmbraphileHood : ModItem
+    public class UmbraphileHood : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Umbraphile Hood");
-            Tooltip.SetDefault("8% increased rogue damage and 10% increased rogue velocity");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 22;
@@ -40,9 +34,7 @@ namespace CalamityMod.Items.Armor.Umbraphile
             var modPlayer = player.Calamity();
             modPlayer.umbraphileSet = true;
             modPlayer.rogueStealthMax += 1.1f;
-            player.setBonus = "+110 maximum stealth\n" +
-				"Rogue weapons have a chance to create explosions on hit\n" +
-                "Stealth strikes always create an explosion";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             player.Calamity().wearingRogueArmor = true;
         }
 

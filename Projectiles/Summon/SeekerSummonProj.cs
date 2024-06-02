@@ -1,20 +1,20 @@
 ﻿using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SeekerSummonProj : ModProjectile
+    public class SeekerSummonProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
         public ref float CircleAngleRatio => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Soul Seeker");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
@@ -101,9 +101,8 @@ namespace CalamityMod.Projectiles.Summon
             // Make an imp laugh sound every so often if you're the first seeker in the projectile array.
             if (Main.rand.NextBool(1600))
 			{
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile seeker in Main.ActiveProjectiles)
                 {
-                    Projectile seeker = Main.projectile[i];
                     if (seeker.type == Projectile.type)
                     {
                         if (seeker == Projectile)
@@ -111,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
                         break;
                     }
                 }
-			}
+            }
 
             Vector2 destination = Owner.Center + (MathHelper.TwoPi * CircleAngleRatio / Owner.ownedProjectileCounts[Type] - MathHelper.PiOver2).ToRotationVector2() * 310f;
             Projectile.Center = Vector2.Lerp(Projectile.Center, destination, 0.03f);
@@ -148,9 +147,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.spriteDirection = (shootVelocity.X > 0f).ToDirectionInt();
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int dart = Projectile.NewProjectile(Projectile.GetSource_FromThis(), eyePosition, shootVelocity, ModContent.ProjectileType<BrimstoneDartSummon>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        if (Main.projectile.IndexInRange(dart))
-                            Main.projectile[dart].originalDamage = Projectile.originalDamage;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), eyePosition, shootVelocity, ModContent.ProjectileType<BrimstoneDartSummon>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
                 return;

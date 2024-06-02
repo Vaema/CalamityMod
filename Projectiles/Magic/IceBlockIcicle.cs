@@ -1,19 +1,15 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class IceBlockIcicle : ModProjectile
+    public class IceBlockIcicle : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ice Barrage");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 18;
@@ -30,7 +26,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + (MathHelper.Pi * 0.5f * Projectile.direction);
             Projectile.velocity.Y += 0.25f;
-            if(Projectile.velocity.Y > 16f)
+            if (Projectile.velocity.Y > 16f)
             {
                 Projectile.velocity.Y = 16f;
             }
@@ -47,11 +43,11 @@ namespace CalamityMod.Projectiles.Magic
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 20; i++)
             {
-                int dustType = Main.rand.NextBool(2) ? 68 : 67;
+                int dustType = Main.rand.NextBool() ? 68 : 67;
                 if (Main.rand.NextBool(4))
                 {
                     dustType = 80;

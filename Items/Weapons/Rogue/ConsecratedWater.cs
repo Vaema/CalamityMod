@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,29 +9,18 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ConsecratedWater : RogueWeapon
     {
-        public const int BaseDamage = 48;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Consecrated Water");
-            Tooltip.SetDefault("The bottle is surprisingly dusty\n" +
-                               "Throws a holy flask of water that explodes into a sacred flame pillar on death\n" +
-                               "The pillar is destroyed if there's no tiles below it\n" +
-                               "Stealth strikes create three flame pillars instead of one on impact");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
             Item.width = 22;
             Item.height = 24;
+            Item.damage = 48;
             Item.useAnimation = Item.useTime = 29;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item106;
             Item.autoReuse = true;

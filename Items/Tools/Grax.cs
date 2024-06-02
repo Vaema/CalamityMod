@@ -7,22 +7,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
 {
-    public class Grax : ModItem
+    public class Grax : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         private const int HammerPower = 110;
         private const int AxePower = 180 / 5;
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Grax");
-            Tooltip.SetDefault("Hitting an enemy will greatly boost your defense, melee damage and melee crit for a short time\n" +
-                "Right click to use without hammering down walls or chopping down trees");
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 62;
+            Item.height = 62;
             Item.damage = 472;
             Item.knockBack = 8f;
             Item.useTime = 4;
@@ -30,16 +29,12 @@ namespace CalamityMod.Items.Tools
             Item.hammer = HammerPower;
             Item.axe = AxePower;
             Item.tileBoost += 5;
-
-            Item.width = 62;
-            Item.height = 62;
-            Item.scale = 1.5f;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
@@ -71,7 +66,7 @@ namespace CalamityMod.Items.Tools
                 Register();
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             player.AddBuff(ModContent.BuffType<GraxBoost>(), 600);
         }

@@ -12,16 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ScarletDevil : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Scarlet Devil");
-            Tooltip.SetDefault("Throws an ultra high velocity spear, which creates more projectiles that home in\n" +
-                "The spear creates a Scarlet Blast upon hitting an enemy\n" +
-                "Stealth strikes grant you lifesteal and summon a star of projectiles upon hitting an enemy\n" +
-                "'Divine Spear \"Spear the Gungnir\"'");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 108;
@@ -38,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 30f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -58,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<Wrathwing>().
-                AddIngredient<PhantasmalRuin>().
+                AddIngredient<RealityRupture>().
                 AddIngredient<BloodstoneCore>(15).
                 AddIngredient(ItemID.SoulofNight, 15).
                 AddIngredient<ShadowspecBar>(5).

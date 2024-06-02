@@ -8,15 +8,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.LabFinders
 {
-    public class YellowSeekingMechanism : ModItem
+    [LegacyName("PurpleSeekingMechanism")]
+    public class YellowSeekingMechanism : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Yellow Seeking Mechanism");
-            Tooltip.SetDefault("Moves swiftly towards a lab within the sky");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 24;

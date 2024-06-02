@@ -1,18 +1,20 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ApotheosisWorm : ModProjectile
+    public class ApotheosisWorm : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         internal class Segment
         {
             // Doing a typical byte seems to cause the thing to flicker when doing super fast fades.
@@ -52,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Devourer of Gods");
+            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
         public override void SetDefaults()
@@ -250,7 +252,7 @@ namespace CalamityMod.Projectiles.Magic
                 JawRotation = MathHelper.Lerp(JawRotation, MathHelper.ToRadians(15f), 0.24f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300, true);
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300, true);
@@ -258,9 +260,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 headTextureOrigin = ModContent.Request<Texture2D>(Texture).Value.Size() * 0.5f;
+            Vector2 headTextureOrigin = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Size() * 0.5f;
             drawPosition -= headTexture.Size() * Projectile.scale * 0.5f;
             drawPosition += headTextureOrigin * Projectile.scale + new Vector2(0f, 4f + Projectile.gfxOffY);
 

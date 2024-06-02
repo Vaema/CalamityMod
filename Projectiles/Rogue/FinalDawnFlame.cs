@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class FinalDawnFlame : ModProjectile
+    public class FinalDawnFlame : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         internal struct Flame
         {
             public Vector2 Position;
@@ -26,7 +27,6 @@ namespace CalamityMod.Projectiles.Rogue
         public const int TotalFlames = 120;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Final Dawn");
             Main.projFrames[Projectile.type] = 8;
         }
         public override void SetDefaults()
@@ -59,8 +59,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int frameHeight = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
 
 
             if (Flames.Length > 0)
@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.Kill();
             }
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }

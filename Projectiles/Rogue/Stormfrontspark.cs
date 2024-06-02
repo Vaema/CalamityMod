@@ -1,17 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class Stormfrontspark : ModProjectile
+    public class Stormfrontspark : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         //At first I thought about deleting em but then had an idea to give em some flair.
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Spark");
-        }
 
         public override void SetDefaults()
         {
@@ -25,17 +23,17 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
-            Dust dust = Main.dust[num199];
+            int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+            Dust dust = Main.dust[dusty];
             dust.position.X -= 1f;
             dust.position.Y -= 1f;
             dust.scale += (float)Main.rand.Next(50) * 0.01f;
             dust.noGravity = true;
             dust.velocity.Y += 1f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
-                Dust dust2 = Main.dust[num200];
+                int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                Dust dust2 = Main.dust[dusty2];
                 dust2.position.X += 1f;
                 dust2.position.Y -= 1f;
                 dust2.scale += 0.2f + (float)Main.rand.Next(50) * 0.01f;

@@ -6,32 +6,30 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class GoldplumeSpear : ModItem
+    public class GoldplumeSpear : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Goldplume Spear");
-            Tooltip.SetDefault("Shoots falling feathers");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 54;
-            Item.damage = 48;
+            Item.height = 54;
+            Item.damage = 37;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 23;
+            Item.useAnimation = 28;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 23;
+            Item.useTime = 28;
             Item.knockBack = 5.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 54;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<GoldplumeSpearProjectile>();
             Item.shootSpeed = 8f;

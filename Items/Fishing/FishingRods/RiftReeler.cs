@@ -1,25 +1,20 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Fishing.FishingRods
 {
     [LegacyName("ChaoticSpreadRod")]
-    public class RiftReeler : ModItem
+    public class RiftReeler : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
             ItemID.Sets.CanFishInLava[Item.type] = true;
-
-            DisplayName.SetDefault("Rift Reeler");
-            Tooltip.SetDefault("Fires three to five lines at once. Can fish in lava.\n" +
-                "The battlefield is a scene of constant chaos.\n" + //Napoleon Bonaparte quote reference
-                "The winner will be the one who controls that chaos, both the pole and the fish.");
         }
 
         public override void SetDefaults()
@@ -33,19 +28,26 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 45;
             Item.shootSpeed = 17f;
             Item.shoot = ModContent.ProjectileType<RiftReelerBobber>();
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int index = 0; index < Main.rand.Next(3,6); ++index) //3 to 5 bobbers
+            for (int i = 0; i < Main.rand.Next(3, 6); i++) //3 to 5 bobbers
             {
-                float SpeedX = velocity.X + Main.rand.NextFloat(-3.75f, 3.75f);
-                float SpeedY = velocity.Y + Main.rand.NextFloat(-3.75f, 3.75f);
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(18f)), type, 0, 0f, player.whoAmI, ai2: Main.rand.Next(2));
             }
             return false;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(67f, -33f);
+            if (bobber.ai[2] == 0f)
+                lineColor = new Color(255, 165, 0, 100);
+            else
+                lineColor = new Color(0, 206, 209, 100);
         }
 
         public override void AddRecipes()

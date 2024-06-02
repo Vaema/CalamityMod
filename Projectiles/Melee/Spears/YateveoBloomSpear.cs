@@ -1,24 +1,21 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class YateveoBloomSpear : BaseSpearProjectile
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Yateveo Bloom");
-        }
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<YateveoBloom>();
 
         public override void SetDefaults()
         {
-            Projectile.width = 40;
-            Projectile.aiStyle = ProjAIStyleID.Spear;
+            Projectile.width = Projectile.height = 40;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
             Projectile.timeLeft = 90;
-            Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.tileCollide = false;
@@ -29,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.8f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(3))
@@ -57,7 +54,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Poisoned, 180);
         }

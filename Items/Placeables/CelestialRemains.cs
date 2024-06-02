@@ -7,17 +7,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables
 {
     [LegacyName("AstralFossil")]
-    public class CelestialRemains : ModItem
+    public class CelestialRemains : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Celestial Remains");
-            SacrificeTotal = 200;
-			ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
+            Item.ResearchUnlockCount = 200;
+            ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
             Item.createTile = ModContent.TileType<Tiles.AstralDesert.CelestialRemains>();
             Item.useStyle = ItemUseStyleID.Swing;
@@ -26,12 +28,10 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
         }
 
-        public override void ExtractinatorUse(ref int resultType, ref int resultStack)
+        public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
         {
             /*
                 Celestial remains will give stardust, fallen stars, ancient bone dust, gems and HM ores always by default
@@ -82,7 +82,7 @@ namespace CalamityMod.Items.Placeables
             }
             else if (val < 68.03f)
             {
-                resultType = ModContent.ItemType<Stardust>();
+                resultType = ModContent.ItemType<StarblightSoot>();
                 resultStack = Main.rand.Next(1, 11);
             }
             else if (val < 69.03f)

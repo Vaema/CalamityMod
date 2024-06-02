@@ -10,22 +10,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Fearmonger
 {
     [AutoloadEquip(EquipType.Head)]
-    public class FearmongerGreathelm : ModItem
+    public class FearmongerGreathelm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fearmonger Greathelm");
-            Tooltip.SetDefault("Pure terror radiates from your eyes\n" +
-            "+60 max mana and 10% decreased mana usage\n" +
-            "10% increased minion damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 38; // 132 total
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -49,12 +41,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "20% increased minion damage and +2 max minions\n" +
-            "Minions no longer deal less damage while wielding non-summoner weapons\n" +
-            "Immunity to all forms of frost and flame\n" +
-            "All minion attacks grant colossal life regeneration\n" +
-            "15% increased damage reduction during the Pumpkin and Frost Moons\n" +
-            "This extra damage reduction ignores the soft cap";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
 
             // This bool encompasses cross-class nerf immunity, colossal life regen on minion attack, and the holiday moon DR
             // TODO -- Fearmonger life regen from minion attacks needs some sort of cool visual effect

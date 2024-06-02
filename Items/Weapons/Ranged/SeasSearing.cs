@@ -1,43 +1,41 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class SeasSearing : ModItem
+    public class SeasSearing : ModItem, ILocalizedModType
     {
-        public static int BaseDamage = 40;
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sea's Searing");
-            Tooltip.SetDefault("Fires a string of bubbles summoning a shower of bubbles on hit\n" +
-                "Right click to fire a slower, larger water blast that summons a water spout");
-            SacrificeTotal = 1;
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 88;
             Item.height = 44;
+            Item.damage = 40;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
-            Item.useAnimation = 15;
-            Item.reuseDelay = 20;
+            Item.useAnimation = 10;
+            Item.reuseDelay = 16;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SeasSearingBubble>();
-            Item.shootSpeed = 11f;
+            Item.shootSpeed = 13f;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
 
@@ -62,8 +60,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             else
             {
                 Item.useTime = 5;
-                Item.useAnimation = 15;
-                Item.reuseDelay = 20;
+                Item.useAnimation = 10;
+                Item.reuseDelay = 16;
             }
             return base.CanUseItem(player);
         }

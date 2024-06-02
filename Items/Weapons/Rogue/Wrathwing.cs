@@ -11,14 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("ProfanedTrident")]
     public class Wrathwing : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wrathwing");
-            Tooltip.SetDefault("Throws an agile, homing winged spear that constantly spits fire\n" +
-            "Stealth strikes create an eruption of cinders on hit");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 152;
@@ -31,14 +23,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = Item.useAnimation = 13;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.shoot = ModContent.ProjectileType<WrathwingSpear>();
             Item.shootSpeed = 28f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.85f;
+        public override float StealthDamageMultiplier => 0.9f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

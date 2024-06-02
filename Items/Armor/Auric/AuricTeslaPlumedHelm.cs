@@ -1,31 +1,25 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.GodSlayer;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Items.Armor.Bloodflare;
-using CalamityMod.Items.Armor.GodSlayer;
-using CalamityMod.Items.Armor.Tarragon;
 
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaPlumedHelm : ModItem
+    public class AuricTeslaPlumedHelm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Tesla Plumed Helm");
-            Tooltip.SetDefault("20% increased rogue damage, critical strike chance and 5% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 34; //132
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -37,14 +31,12 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void ArmorSetShadows(Player player)
         {
-            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawOutlines = true;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Rogue Tarragon, Bloodflare and God Slayer armor effects\n" +
-                "All projectiles spawn healing auric orbs on enemy hits\n" +
-				"+130 maximum stealth";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraThrowing = true;
@@ -56,7 +48,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.rogueStealthMax += 1.3f;
             modPlayer.wearingRogueArmor = true;
             player.thorns += 3f;
-            player.lavaMax += 240;
             player.ignoreWater = true;
             player.crimsonRegen = true;
 

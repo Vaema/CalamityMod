@@ -5,15 +5,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Mounts
 {
     [LegacyName("SquishyBeanMount")]
-    public class SuspiciousLookingJellyBean : ModItem
+    public class SuspiciousLookingJellyBean : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Suspicious Looking Jelly Bean");
-            Tooltip.SetDefault("JELLY BEAN");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -25,7 +19,7 @@ namespace CalamityMod.Items.Mounts
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<SquishyBean>();
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().devItem = true;
         }

@@ -1,21 +1,21 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SarosSunfire : ModProjectile
+    public class SarosSunfire : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
-        
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Saros Sunfire");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
             Projectile.netImportant = true;
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.tileCollide = false;
         }
 
@@ -56,7 +55,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft) // Makes a dust explosion effect on death.
+        public override void OnKill(int timeLeft) // Makes a dust explosion effect on death.
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 60; i++)

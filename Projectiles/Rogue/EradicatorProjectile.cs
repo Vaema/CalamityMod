@@ -1,35 +1,36 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class EradicatorProjectile : ModProjectile
+    public class EradicatorProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Eradicator";
-        private const float RotationIncrement = 0.09f;
-        private const int Lifetime = 350;
-        public const int StealthExtraLifetime = 240; // 1 extra update means this is double what you'd expect for 2 seconds
-        private const float ReboundTime = 40f;
+        private static float RotationIncrement = 0.15f;
+        private static int Lifetime = 350;
+        public static int StealthExtraLifetime = 240; // 1 extra update means this is double what you'd expect for 2 seconds
+        private static int ReboundTime = 60;
 
         private float randomLaserCharge = 0f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eradicator");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 58;
+            Projectile.width = Projectile.height = 62;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
@@ -116,7 +117,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 // Fire lasers at up to 2 nearby targets every 8 frames for 40% damage.
                 // Stealth strike lasers have an intentionally lower ratio of 12%.
-                double laserDamageRatio = Projectile.Calamity().stealthStrike ? 0.12D : 0.4D;
+                double laserDamageRatio = Projectile.Calamity().stealthStrike ? 0.15D : 0.4D;
                 float laserFrames = Projectile.MaxUpdates * 8f;
                 CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, laserFrames, 2, ModContent.ProjectileType<NebulaShot>(), laserDamageRatio, true);
             }
@@ -167,22 +168,47 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+
+            // Spawn sparks; taken from Despair stone then adapted to a projectile
+            Vector2 particleSpawnDisplacement;
+            Vector2 splatterDirection;
+
+            particleSpawnDisplacement = new Vector2(2f * -Projectile.ai[2], 2f * -Projectile.ai[2]);
+            splatterDirection = new Vector2(Projectile.velocity.X, Projectile.velocity.Y);
+
+            Vector2 SparkSpawnPosition = target.Center + particleSpawnDisplacement;
+
+            if (Projectile.ai[1] % 4 == 0)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    int sparkLifetime = Main.rand.Next(14, 21);
+                    float sparkScale = Main.rand.NextFloat(0.8f, 1f) + 1f * 0.05f;
+                    Color sparkColor = Color.Lerp(Color.Fuchsia, Color.AliceBlue, Main.rand.NextFloat(0.5f));
+                    sparkColor = Color.Lerp(sparkColor, Color.Cyan, Main.rand.NextFloat());
+
+                    if (Main.rand.NextBool(5))
+                        sparkScale *= 1.4f;
+
+                    Vector2 sparkVelocity = splatterDirection.RotatedByRandom(MathHelper.TwoPi);
+                    sparkVelocity.Y -= 6f;
+                    SparkParticle spark = new SparkParticle(SparkSpawnPosition, sparkVelocity, true, sparkLifetime, sparkScale, sparkColor);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+            }
+
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
 
-        public override void ModifyHitPvp(Player target, ref int damage, ref bool crit) => OnHit();
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection) => OnHit();
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => OnHit();
 
         private void OnHit()
         {
-            // Non-stealth strikes do nothing special on hit.
+            // Non-stealth strikes do not stick on hit.
             if (!Projectile.Calamity().stealthStrike)
                 return;
 
@@ -196,7 +222,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Apply sticky AI.
-            Projectile.ModifyHitNPCSticky(3, true);
+            Projectile.ModifyHitNPCSticky(3);
         }
 
         public override bool PreDraw(ref Color lightColor)

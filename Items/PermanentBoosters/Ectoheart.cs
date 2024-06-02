@@ -8,18 +8,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class Ectoheart : ModItem
+    public class Ectoheart : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
         public int frameCounter = 0;
         public int frame = 0;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ectoheart");
-            Tooltip.SetDefault("Permanently increases Adrenaline Mode damage by 15% and damage reduction by 5%\n" +
-                "Revengeance drop");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 42;

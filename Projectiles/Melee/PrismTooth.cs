@@ -1,7 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent.Achievements;
 using Terraria.Graphics.Shaders;
@@ -10,18 +12,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class PrismTooth : ModProjectile
+    public class PrismTooth : ModProjectile, ILocalizedModType
     {
-        internal PrimitiveTrail TrailDrawer;
+        public new string LocalizationCategory => "Projectiles.Melee";
         public const int Lifetime = 80;
         public Player Owner => Main.player[Projectile.owner];
         public ref float ShootReach => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
+        public ref float CanBreakTrees => ref Projectile.ai[2];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Photon Ripper");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 90;
         }
 
         public override void SetDefaults()
@@ -41,6 +43,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            // Frame 1 effect: Prevent zeroed out garbage from messing up the trail rendering.
+            if (Projectile.localAI[1] == 0f)
+            {
+                Projectile.localAI[1] = 1f;
+                for (int i = 0; i < Projectile.oldPos.Length; ++i)
+                    Projectile.oldPos[i] = Projectile.position;
+            }
+
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi * Time / Lifetime;
 
             Vector2 baseDirection = (MathHelper.TwoPi * Time / Lifetime - MathHelper.PiOver2).ToRotationVector2();
@@ -65,10 +75,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Opacity = Utils.GetLerpValue(0f, 12f, Time, true) * Utils.GetLerpValue(Lifetime, Lifetime - 12f, Lifetime - Projectile.timeLeft, true);
 
             // Destroy trees within the range of the past 20 oldPos positions.
-            for (int i = 0; i < 20; i++)
+            if (CanBreakTrees == 1)
             {
-                Point pointToCheck = (Projectile.oldPos[i] + Projectile.Size * 0.5f).ToTileCoordinates();
-                AbsolutelyFuckingAnnihilateTrees(pointToCheck.X, pointToCheck.Y);
+                for (int i = 0; i < 20; i++)
+                {
+                    Point pointToCheck = (Projectile.oldPos[i] + Projectile.Size * 0.5f).ToTileCoordinates();
+                    AbsolutelyFuckingAnnihilateTrees(pointToCheck.X, pointToCheck.Y);
+                }
             }
 
             // Emit light.
@@ -115,27 +128,21 @@ namespace CalamityMod.Projectiles.Melee
             if (Time <= 5f)
                 return true;
 
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:PrismaticStreak"]);
-
             // Variable adjustment vector used to prevent the trail for starting somewhat that isn't behind
             // the crystal. This may appear in small amounts, with offsets of a few pixels, but at the speed
             // these crystals go, it's probably not something to worry too much about.
             Vector2 generalOffset = Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * 15f;
             generalOffset += Projectile.rotation.ToRotationVector2() * -5f * (float)Math.Sin(Projectile.rotation);
 
-            // Mess with the oldPos array so that the trail always points towards the crystal.
-            Vector2 oldPosition = Projectile.oldPos[1];
-            Projectile.oldPos[1] = Projectile.oldPos[0] - Projectile.rotation.ToRotationVector2() * Vector2.Distance(Projectile.oldPos[0], Projectile.oldPos[1]);
-
-            // Revert back if the above calculations caused any NaNs.
-            if (Projectile.oldPos[1].HasNaNs())
-                Projectile.oldPos[1] = oldPosition;
-
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:PrismaticStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f + generalOffset - Main.screenPosition, 65);
+            // Photon Ripper tracks 90 positions in oldPos.
+            // Provide 60 points for smoothing, but only render 12
+            int numPointsRendered = 12;
+            int numPointsProvided = 60;
+            var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"], smoothen: false), numPointsRendered);
             Main.spriteBatch.ExitShaderRegion();
             return true;
         }
@@ -143,8 +150,8 @@ namespace CalamityMod.Projectiles.Melee
         // Prevent the crystals from utilizing velocity. Their movement is entirely dependant on Center setting.
         public override bool ShouldUpdatePosition() => false;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
     }
 }

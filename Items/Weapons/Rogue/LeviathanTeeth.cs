@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,19 +9,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class LeviathanTeeth : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Leviathan Teeth");
-            Tooltip.SetDefault("Rapidly throws a variety of poisonous fangs that stick to enemies\n" +
-                "Stealth strikes cause 6 very fast teeth to be thrown, ignoring gravity and inflicting extreme knockback");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 38;
-            Item.damage = 66;
+            Item.damage = 64;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 15;
@@ -30,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<LeviathanTooth>();
             Item.shootSpeed = 12f;
@@ -48,15 +40,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             else
             {
-                teethCount = Main.rand.Next(1, 3);
+                teethCount = Main.rand.Next(2, 3 + 1);
             }
-
-            float spreadAngle = MathHelper.ToRadians(10);
 
             for (int i = 0; i < teethCount; i++)
             {
-                float offsetSpeedX = velocity.X + Main.rand.NextFloat(-4f, 4f);
-                float offsetSpeedY = velocity.Y + Main.rand.NextFloat(-4f, 4f);
+                float offsetSpeedX = velocity.X + Main.rand.NextFloat(-2f, 2f);
+                float offsetSpeedY = velocity.Y + Main.rand.NextFloat(-2f, 2f);
 
                 if (stealthStrike)
                 {

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Localization;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
@@ -10,9 +11,9 @@ namespace CalamityMod.Cooldowns
     {
         public static new string ID => "DivineBless";
         public override bool ShouldDisplay => true;
-        public override string DisplayName => "Divine Bless Cooldown";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
         public override string Texture => "CalamityMod/Cooldowns/DivineBless";
-        public override Color OutlineColor =>  new Color(233, 192, 68);
+        public override Color OutlineColor => new Color(233, 192, 68);
         public override Color CooldownStartColor => new Color(177, 105, 33);
         public override Color CooldownEndColor => new Color(233, 192, 68);
 

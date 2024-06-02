@@ -7,22 +7,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class BadgeofBravery : ModItem
+    public class BadgeofBravery : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Badge of Bravery");
-            Tooltip.SetDefault("15% increased melee speed\n" +
-                               "Increases melee damage and melee crit by 5%\n" +
-                               "+5 melee armor penetration");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
@@ -31,14 +23,13 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.badgeOfBravery = true;
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
             player.GetArmorPenetration<MeleeDamageClass>() += 5;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.FeralClaws).
+                AddIngredient(ItemID.WarriorEmblem).
                 AddIngredient<UelibloomBar>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

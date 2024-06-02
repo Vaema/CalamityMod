@@ -9,35 +9,31 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class DarkSpark : ModItem
+    public class DarkSpark : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dark Spark");
-            Tooltip.SetDefault("And everything under the sun is in tune,\n" +
-                "But the sun is eclipsed by the moon.");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 4));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             Item.damage = 60;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.width = 16;
-            Item.height = 16;
             Item.useTime = 10;
             Item.useAnimation = 10;
-            Item.reuseDelay = 5;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item13;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<DarkSparkPrism>();

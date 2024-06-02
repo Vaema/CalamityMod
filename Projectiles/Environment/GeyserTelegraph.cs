@@ -4,16 +4,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Environment
 {
-    public class GeyserTelegraph : ModProjectile
+    public class GeyserTelegraph : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private bool initialized = false;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Geyser");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -36,7 +32,7 @@ namespace CalamityMod.Projectiles.Environment
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.myPlayer != Projectile.owner)
                 return;

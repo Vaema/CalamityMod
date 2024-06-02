@@ -1,11 +1,11 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
@@ -15,6 +15,8 @@ namespace CalamityMod.Skies
 {
     public class SCalSky : CustomSky
     {
+        public Color cinderColortoBe = Color.Red;
+        public Color cinderColor = Color.Red;
         public class Cinder
         {
             public int Time;
@@ -25,6 +27,7 @@ namespace CalamityMod.Skies
             public Color DrawColor;
             public Vector2 Velocity;
             public Vector2 Center;
+
             public Cinder(int lifetime, int identity, float depth, Color color, Vector2 startingPosition, Vector2 startingVelocity)
             {
                 Lifetime = lifetime;
@@ -66,14 +69,22 @@ namespace CalamityMod.Skies
                 if (lifeRatio < 0.1f)
                 {
                     if (lifeRatio <= 0.01f)
-                        return 32;
+                        return 25;
 
                     return (int)Math.Round(MathHelper.Lerp(2f, 11f, Utils.GetLerpValue(0.03f, 0.1f, lifeRatio, true)));
                 }
 
+                // Once the music hits, release more cinders
+                if (scal.ModNPC<SupremeCalamitas>().postMusicHit)
+                    return 6;
+
                 // Release a good amount of cinders while brothers or Sepulcher-1 are alive. Sepulcher-2 falls into an above case and does not execute this return.
                 if (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) || NPC.AnyNPCs(ModContent.NPCType<SepulcherHead>()))
                     return 10;
+
+                // If one brother is alive release more cinders
+                if ((NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == false && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true) || (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == false && NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true))
+                    return 7;
 
                 // Release a moderate amount of cinders normally.
                 return 18;
@@ -102,10 +113,13 @@ namespace CalamityMod.Skies
                 if (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) || NPC.AnyNPCs(ModContent.NPCType<SepulcherHead>()))
                     return 7.4f;
 
+                if (scal.ModNPC<SupremeCalamitas>().postMusicHit)
+                    return 25 * MathHelper.Clamp(Utils.GetLerpValue(-60, 0, scal.ModNPC<SupremeCalamitas>().musicSyncCounter), 0.5f, 1f);
                 // Move moderately quickly usually.
                 return 5.6f;
             }
         }
+
         public static float OverridingIntensity = 0f;
 
         public override void Update(GameTime gameTime)
@@ -126,15 +140,24 @@ namespace CalamityMod.Skies
                     return Color.Transparent;
 
                 NPC scal = Main.npc[CalamityGlobalNPC.SCal];
+                bool cirrus = scal.ModNPC<SupremeCalamitas>().cirrus;
                 float lifeRatio = scal.life / (float)scal.lifeMax;
+
+                if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == false)
+                    return Color.Lerp(Color.MediumTurquoise, Color.Cyan, Main.rand.NextFloat(0.2f, 0.9f));
+                if (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == false)
+                    return Color.Lerp(Color.Magenta, Color.MediumVioletRed, Main.rand.NextFloat(0.2f, 0.9f));
+                if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true)
+                    return Color.Lerp(Color.Red, Color.IndianRed, Main.rand.NextFloat(0f, 1f));
+
                 if (lifeRatio > 0.5f)
-                    return Color.Lerp(Color.Red, Color.Orange, Main.rand.NextFloat(0.8f));
-                else if (lifeRatio > 0.3f)
-                    return Color.Lerp(Color.DarkRed, Color.Lerp(Color.Blue, Color.DarkBlue, Main.rand.NextFloat() * 0.65f), 0.45f);
+                    return Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Violet : Color.Crimson, Main.rand.NextFloat(0f, 1f));
+                else if (lifeRatio > 0.3f || scal.ModNPC<SupremeCalamitas>().postMusicHit == false)
+                    return Color.Lerp(cirrus ? Color.Cyan : Color.Red, cirrus ? Color.DarkCyan : Color.Magenta, Main.rand.NextFloat(0f, 0.7f));
                 else if (lifeRatio > 0.01f)
-                    return Color.Lerp(Color.Red, Color.Yellow, Main.rand.NextFloat(0.2f, 0.9f));
+                    return Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Green : Color.Yellow, Main.rand.NextFloat(0f, 0.88f));
                 else
-                    return Color.Gray;
+                    return Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0f, 0.65f));
             }
 
             // Randomly add cinders.
@@ -146,11 +169,27 @@ namespace CalamityMod.Skies
                 Vector2 startingVelocity = -Vector2.UnitY.RotatedByRandom(0.91f);
                 Cinders.Add(new Cinder(lifetime, Cinders.Count, depth, selectCinderColor(), startingPosition, startingVelocity));
             }
+            if ((!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>()) == false)
+            {
+                NPC scal = Main.npc[CalamityGlobalNPC.SCal];
+                if (scal.ModNPC<SupremeCalamitas>().musicSyncCounter == 0)
+                {
+                    for (int i = 0; i < 70; i++)
+                    { 
+                        int lifetime = Main.rand.Next(285, 445);
+                        float depth = Main.rand.NextFloat(1.8f, 5f);
+                        Vector2 startingPosition = Main.screenPosition + new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * Main.rand.NextFloat(1.05f, 1.45f));
+                        Vector2 startingVelocity = -Vector2.UnitY.RotatedByRandom(0.91f) * Main.rand.NextFloat(0.5f, 2.5f);
+
+                        Cinders.Add(new Cinder(lifetime, Cinders.Count, depth, selectCinderColor(), startingPosition, startingVelocity));
+                    }
+                }
+            }
 
             // Update all cinders.
             for (int i = 0; i < Cinders.Count; i++)
             {
-                Cinders[i].Scale = Utils.GetLerpValue(Cinders[i].Lifetime, Cinders[i].Lifetime / 3, Cinders[i].Time, true);
+                Cinders[i].Scale = Utils.GetLerpValue(Cinders[i].Lifetime, Cinders[i].Lifetime / 3, Cinders[i].Time, true) * 1.5f;
                 Cinders[i].Scale *= MathHelper.Lerp(0.6f, 0.9f, Cinders[i].IdentityIndex % 6f / 6f);
 
                 Vector2 idealVelocity = -Vector2.UnitY.RotatedBy(MathHelper.Lerp(-0.94f, 0.94f, (float)Math.Sin(Cinders[i].Time / 36f + Cinders[i].IdentityIndex) * 0.5f + 0.5f)) * CinderSpeed;
@@ -179,8 +218,9 @@ namespace CalamityMod.Skies
                     x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.SCalIndex].Center);
                 float intensityFactor = BossRushEvent.BossRushActive ? -0.2f : 1f;
 
-                return (1f - Utils.SmoothStep(3000f, 6000f, x)) * intensityFactor;
+                return (1f - Utils.SmoothStep(4500f, 9000f, x)) * intensityFactor;
             }
+
             return 0f;
         }
 
@@ -190,18 +230,10 @@ namespace CalamityMod.Skies
         {
             int SCalType = ModContent.NPCType<SupremeCalamitas>();
             if (SCalIndex >= 0 && Main.npc[SCalIndex].active && Main.npc[SCalIndex].type == SCalType)
-            {
                 return true;
-            }
-            SCalIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == SCalType)
-                {
-                    SCalIndex = i;
-                    break;
-                }
-            }
+
+            SCalIndex = NPC.FindFirstNPC(SCalType);
+
             return SCalIndex != -1;
         }
 
@@ -213,19 +245,50 @@ namespace CalamityMod.Skies
                 spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black * intensity);
             }
 
+            if (!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>())
+            {
+                cinderColortoBe = Color.Transparent;
+                cinderColor = Color.Transparent;
+                return;
+            }
+
+            NPC scal = Main.npc[CalamityGlobalNPC.SCal];
+            bool cirrus = scal.ModNPC<SupremeCalamitas>().cirrus;
+            float lifeRatio = scal.life / (float)scal.lifeMax;
+
+            if (lifeRatio > 0.5f)
+                cinderColortoBe = Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Violet : Color.Crimson, Main.rand.NextFloat(0f, 1f));
+            else if (lifeRatio > 0.3f || scal.ModNPC<SupremeCalamitas>().postMusicHit == false)
+                cinderColortoBe = Color.Lerp(cirrus ? Color.Cyan : Color.Red, cirrus ? Color.DarkCyan : Color.Magenta, Main.rand.NextFloat(0f, 0.7f));
+            else if (lifeRatio > 0.01f)
+                cinderColortoBe = Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Green : Color.Yellow, Main.rand.NextFloat(0f, 0.88f));
+            else
+                cinderColortoBe = Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0.8f));
+
+            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == false)
+                cinderColortoBe = Color.Lerp(Color.MediumTurquoise, Color.Cyan, Main.rand.NextFloat(0.2f, 0.9f));
+            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == false)
+                cinderColortoBe = Color.Lerp(Color.Magenta, Color.MediumVioletRed, Main.rand.NextFloat(0.2f, 0.9f));
+            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true)
+                cinderColortoBe = Color.Lerp(Color.Red, Color.IndianRed, Main.rand.NextFloat(0f, 1f));
+
+            cinderColor = Color.Lerp(cinderColor, cinderColortoBe, 0.0067f);
+
             // Draw cinders.
             Texture2D cinderTexture = ModContent.Request<Texture2D>("CalamityMod/Skies/CalamitasCinder").Value;
             for (int i = 0; i < Cinders.Count; i++)
             {
                 Vector2 drawPosition = Cinders[i].Center - Main.screenPosition;
+                Color offsetDrawColor = cinderColor * 0.56f;
+                offsetDrawColor.A = 0;
+                Vector2 cinderOrigin = cinderTexture.Size() * 0.5f;
                 for (int j = 0; j < 3; j++)
                 {
                     Vector2 offsetDrawPosition = drawPosition + (MathHelper.TwoPi * j / 3f).ToRotationVector2() * 1.4f;
-                    Color offsetDrawColor = Color.Red * 0.56f;
-                    offsetDrawColor.A = 0;
-                    spriteBatch.Draw(cinderTexture, offsetDrawPosition, null, offsetDrawColor, 0f, cinderTexture.Size() * 0.5f, Cinders[i].Scale * 1.5f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(cinderTexture, offsetDrawPosition, null, offsetDrawColor, 0f, cinderOrigin, Cinders[i].Scale * 1.5f, SpriteEffects.None, 0f);
                 }
-                spriteBatch.Draw(cinderTexture, drawPosition, null, Cinders[i].DrawColor, 0f, cinderTexture.Size() * 0.5f, Cinders[i].Scale, SpriteEffects.None, 0f);
+
+                spriteBatch.Draw(cinderTexture, drawPosition, null, Cinders[i].DrawColor, 0f, cinderOrigin, Cinders[i].Scale, SpriteEffects.None, 0f);
             }
         }
 

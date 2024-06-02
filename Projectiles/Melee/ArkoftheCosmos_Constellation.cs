@@ -1,16 +1,17 @@
-﻿using CalamityMod.Particles;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ArkoftheCosmosConstellation : ModProjectile
+    public class ArkoftheCosmosConstellation : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => Projectile.ai[0] - Projectile.timeLeft;
@@ -24,7 +25,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Constellation");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Melee
                     Line = new BloomLineVFX(previousStar, AnchorStart + SizeVector * i + offset - previousStar, 0.8f, constellationColor * 0.75f, 20, true, true);
                     BootlegSpawnParticle(Line);
 
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                     {
                         constellationColorHue = (constellationColorHue + 0.16f) % 1;
                         constellationColor = Main.hslToRgb(constellationColorHue, 1, 0.8f);

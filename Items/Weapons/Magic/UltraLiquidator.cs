@@ -8,34 +8,32 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class UltraLiquidator : ModItem
+    public class UltraLiquidator : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ultra Liquidator");
-            Tooltip.SetDefault("Summons liquidation blades that summon more blades on enemy hits\n" +
-                               "The blades inflict ichor, cursed inferno and brimstone flames");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 70;
             Item.damage = 120;
             Item.knockBack = 5f;
             Item.useTime = 3;
             Item.reuseDelay = Item.useAnimation = 15;
+            Item.useLimitPerAnimation = 5;
             Item.mana = 25;
             Item.DamageType = DamageClass.Magic;
             Item.autoReuse = true;
             Item.shootSpeed = 16f;
             Item.shoot = ModContent.ProjectileType<LiquidBlade>();
 
-            Item.width = Item.height = 70;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item9;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
         }
 

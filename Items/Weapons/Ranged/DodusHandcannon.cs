@@ -9,21 +9,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class DodusHandcannon : ModItem
+    public class DodusHandcannon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dodu's Handcannon");
-            Tooltip.SetDefault("The power of the nut rests in your hands\n" +
-                "Fires high explosive peanut shells, literally");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 34;
-            Item.damage = 857;
+            Item.damage = 1020;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;
@@ -39,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 13f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -55,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PearlGod>().
+                AddIngredient<Arietes41>().
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient(ItemID.LunarBar, 15).
                 AddTile(TileID.LunarCraftingStation).

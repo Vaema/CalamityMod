@@ -8,17 +8,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.SummonItems
 {
     [LegacyName("BulbofDoom")]
-    public class Portabulb : ModItem
+    public class Portabulb : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Portabulb");
-            Tooltip.SetDefault("Summons Plantera when used in the Jungle\n" +
-                "Enrages outside the Underground Jungle\n" +
-                "Not consumable");
-			NPCID.Sets.MPAllowedEnemies[NPCID.Plantera] = true;
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Truffle Worm
+            NPCID.Sets.MPAllowedEnemies[NPCID.Plantera] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Pirate Map (1 above Mechanical Skull)
         }
 
         public override void SetDefaults()
@@ -32,10 +28,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -48,7 +44,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, NPCID.Plantera);
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, NPCID.Plantera);
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, NPCID.Plantera);
 
             return true;
         }
@@ -59,7 +55,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.JungleSpores, 15).
                 AddIngredient<MurkyPaste>(3).
                 AddIngredient<TrapperBulb>().
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

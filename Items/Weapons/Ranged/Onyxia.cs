@@ -9,29 +9,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Onyxia : ModItem
+    public class Onyxia : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         const int NotConsumeAmmo = 50;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Onyxia");
-            Tooltip.SetDefault(NotConsumeAmmo.ToString() + "% chance to not consume ammo\n" +
-                "Fires a storm of bullets and onyx shards");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = 90;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 84;
             Item.height = 34;
+            Item.damage = 90;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.UseSound = SoundID.Item36;
             Item.autoReuse = true;

@@ -7,8 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class ValkyrieRay : ModItem
+    public class ValkyrieRay : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         // The base use time of the weapon is 47: 28 charge frames + 19 cooldown frames.
         // The rate at which it progresses through its charge and discharge cycle is dynamically sped up by reforges.
         // This math is handled in its holdout projectile, ValkyrieRayStaff.
@@ -19,10 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Valkyrie Ray");
-            Tooltip.SetDefault("Casts a devastating ray of holy power");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()

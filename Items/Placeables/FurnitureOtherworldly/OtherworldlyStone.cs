@@ -6,19 +6,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 {
     [LegacyName("OccultStone")]
-    public class OtherworldlyStone : ModItem
+    public class OtherworldlyStone : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Otherworldly Stone");
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -44,7 +44,6 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
                 Register();
             CreateRecipe().
                 AddIngredient<OtherworldlyPlatform>(2).
-                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

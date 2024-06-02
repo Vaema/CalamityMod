@@ -1,4 +1,4 @@
-using CalamityMod.Items.Mounts;
+﻿using CalamityMod.Items.Mounts;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.Mounts
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exo Chair");
-            Description.SetDefault("Riding a physics defying gamer chair");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
         }

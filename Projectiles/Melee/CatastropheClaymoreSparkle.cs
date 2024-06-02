@@ -1,21 +1,17 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class CatastropheClaymoreSparkle : ModProjectile
+    public class CatastropheClaymoreSparkle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public ref float ProjectileType => ref Projectile.ai[0];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Aura");
-        }
 
         public override void SetDefaults()
         {
@@ -39,7 +35,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             switch (ProjectileType)
             {
@@ -55,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustType = (ProjectileType == 2f ? 57 : ProjectileType == 1f ? 56 : 73); // Frostbite, Ichor, Hellfire respectively
             float effectiveVelocity = Projectile.velocity.Length() * Projectile.MaxUpdates;

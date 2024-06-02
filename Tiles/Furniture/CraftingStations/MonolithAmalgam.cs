@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Furniture.CraftingStations
@@ -12,11 +11,8 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpBookcase(true, false, false);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Monolith Amalgam");
-            AddMapEntry(new Color(191, 142, 111), name);
-            AnimationFrameHeight = 54;
+            this.SetUpBookcase(ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.MonolithAmalgam>(), true, false, false);
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.MonolithAmalgam>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -52,11 +48,6 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
                 colour.B = (byte)(paintCol.B / 255f * colour.B);
             }
             return colour;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.MonolithAmalgam>());
         }
     }
 }

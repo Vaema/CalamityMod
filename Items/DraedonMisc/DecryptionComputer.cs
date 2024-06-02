@@ -1,35 +1,27 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.TileEntities;
-using CalamityMod.CustomRecipes;
-using System.Collections.Generic;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class DecryptionComputer : ModItem
+    public class DecryptionComputer : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         public static readonly SoundStyle InstallSound = new("CalamityMod/Sounds/Custom/Codebreaker/DecryptionComputerInstall");
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Decryption Computer");
-            Tooltip.SetDefault("Can be placed on the Codebreaker\n" +
-                "Allows you to decrypt the Planetoid schematic\n" +
-                "Doing so allows you to learn how to craft new things");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 40;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ItemRarityID.Orange;
@@ -70,7 +62,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient(ItemID.Wire, 100).
                 AddRecipeGroup("AnyCopperBar", 10).
                 AddIngredient(ItemID.Glass, 15).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
                 Register();
         }

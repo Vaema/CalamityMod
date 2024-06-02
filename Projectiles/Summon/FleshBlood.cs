@@ -1,16 +1,16 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class FleshBlood : ModProjectile
+    public class FleshBlood : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public const int LifeTime = 300;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = LifeTime;
+            Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
         }
 

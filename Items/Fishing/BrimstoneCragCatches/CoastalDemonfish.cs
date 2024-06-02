@@ -1,16 +1,15 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
 {
-    public class CoastalDemonfish : ModItem
+    public class CoastalDemonfish : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Coastal Demonfish"); //Hadal Stew ingredient
-            Tooltip.SetDefault("The horns lay a curse on those who touch it");
-            SacrificeTotal = 3;
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
@@ -18,14 +17,14 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         {
             Item.width = 30;
             Item.height = 28;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 8);
             Item.rare = ItemRarityID.Blue;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
+        }
     }
 }

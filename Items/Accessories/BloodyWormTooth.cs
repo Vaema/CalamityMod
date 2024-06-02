@@ -1,25 +1,19 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class BloodyWormTooth : ModItem
+    public class BloodyWormTooth : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloody Worm Tooth");
-            Tooltip.SetDefault("7% increased melee damage and speed");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.defense = 7;
             Item.width = 12;
             Item.height = 15;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.defense = 7;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -35,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<RottenBrain>().
                 AddTile(TileID.TinkerersWorkbench).
-                AddCondition(Recipe.Condition.InGraveyardBiome).
+                AddCondition(Condition.InGraveyard).
                 Register();
         }
     }

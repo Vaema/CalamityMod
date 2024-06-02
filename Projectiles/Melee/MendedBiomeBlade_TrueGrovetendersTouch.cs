@@ -1,21 +1,22 @@
-﻿using CalamityMod.DataStructures;
-using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Melee;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TrueGrovetendersTouch : ModProjectile
+    public class TrueGrovetendersTouch : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private NPC[] excludedTargets = new NPC[4];
         public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_GrovetendersTouchBlade";
         private bool initialized = false;
@@ -43,7 +44,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Grovetender's Touch");
         }
         public override void SetDefaults()
         {
@@ -72,10 +72,10 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 previousPosition = chainPositions[i - 1];
                 if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), position, previousPosition, 6, ref collisionPoint))
                     return true;
-                if (i == numPoints - 1) //Extra lenght collision for the blade itself
+                if (i == numPoints - 1) //Extra length collision for the blade itself
                 {
-                    Vector2 projectileHalfLenght = 85 * Projectile.rotation.ToRotationVector2();
-                    return (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - projectileHalfLenght, Projectile.Center + projectileHalfLenght, 32, ref collisionPoint));
+                    Vector2 projectileHalfLength = 85 * Projectile.rotation.ToRotationVector2();
+                    return (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - projectileHalfLength, Projectile.Center + projectileHalfLength, 32, ref collisionPoint));
                 }
 
             }
@@ -83,33 +83,32 @@ namespace CalamityMod.Projectiles.Melee
             return base.Colliding(projHitbox, targetHitbox);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            Vector2 projectileHalfLenght = 85f * Projectile.rotation.ToRotationVector2();
+            Vector2 projectileHalfLength = 85f * Projectile.rotation.ToRotationVector2();
             float collisionPoint = 0;
             //If you hit the enemy during the coyote time with the blade of the whip, guarantee a crit & get some bonus damage
-            if (Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), Projectile.Center - projectileHalfLenght, Projectile.Center + projectileHalfLenght, 32, ref collisionPoint))
+            if (Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), Projectile.Center - projectileHalfLength, Projectile.Center + projectileHalfLength, 32, ref collisionPoint))
             {
                 if (SnapCoyoteTime > 0f)
                 {
-                    damage = (int)(damage * TrueBiomeBlade.TropicalAttunement_SweetSpotDamageMultiplier);
-                    crit = true;
+                    modifiers.SourceDamage *= TrueBiomeBlade.TropicalAttunement_SweetSpotDamageMultiplier;
+                    modifiers.SetCrit();
                     for (int i = 0; i < 4; i++)
                     {
                         Vector2 sparkSpeed = Owner.DirectionTo(target.Center).RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2)) * 9f;
                         Particle Spark = new CritSpark(target.Center, sparkSpeed, Color.White, Color.LimeGreen, 1f + Main.rand.NextFloat(0, 1f), 30, 0.4f, 0.6f);
                         GeneralParticleHandler.SpawnParticle(Spark);
                     }
-
                 }
             }
             else
-                damage = (int)(damage * TrueBiomeBlade.TropicalAttunement_ChainDamageReduction); //If the enemy is hit with the chain of the whip, the damage gets reduced
+                modifiers.SourceDamage *= TrueBiomeBlade.TropicalAttunement_ChainDamageReduction; //If the enemy is hit with the chain of the whip, the damage gets reduced
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (crit)
+            if (hit.Crit)
             {
                 bool boing = false;
                 excludedTargets[0] = target;
@@ -123,7 +122,7 @@ namespace CalamityMod.Projectiles.Melee
                         boing = true;
                         SoundEngine.PlaySound(SoundID.Item56);
                     }
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<GrovetendersEntanglingVines>(), (int)(damage * TrueBiomeBlade.TropicalAttunement_VineDamageReduction), 0, Owner.whoAmI, target.whoAmI, potentialTarget.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<GrovetendersEntanglingVines>(), (int)(damageDone * TrueBiomeBlade.TropicalAttunement_VineDamageReduction), 0, Owner.whoAmI, target.whoAmI, potentialTarget.whoAmI);
                 }
                 Array.Clear(excludedTargets, 0, 3);
             }
@@ -133,9 +132,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float longestReach = MaxTangleReach;
             NPC target = null;
-            for (int i = 0; i < 200; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (!excludedTargets.Contains(npc) && npc.CanBeChasedBy() && !npc.friendly && !npc.townNPC)
                 {
                     float distance = Vector2.Distance(hitFrom, npc.Center);
@@ -180,7 +178,7 @@ namespace CalamityMod.Projectiles.Melee
                 SnapCoyoteTime--;
             }
 
-            Owner.direction = Math.Sign(Projectile.velocity.X);
+            Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
             Projectile.rotation = Projectile.AngleFrom(Owner.Center); //Point away from playah
 
             float ratio = GetSwingRatio();

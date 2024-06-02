@@ -1,22 +1,22 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class Shellfish : ModProjectile
+    public class Shellfish : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private int playerStill = 0;
         private bool fly = false;
         private bool spawnDust = true;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shellfish");
             Main.projFrames[Projectile.type] = 2;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 20;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 33, 0f, 0f, 0, default, 1f);
+                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Water, 0f, 0f, 0, default, 1f);
                     Main.dust[water].velocity *= 2f;
                     Main.dust[water].scale *= 1.15f;
                 }
@@ -329,7 +329,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[Projectile.owner];
             Rectangle myRect = new Rectangle((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height);
@@ -425,7 +425,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool? CanDamage() => Projectile.ai[0] == 0f;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.buffImmune[ModContent.BuffType<ShellfishClaps>()] = target.Calamity().DR >= 0.99f;
             target.AddBuff(ModContent.BuffType<ShellfishClaps>(), 600000);

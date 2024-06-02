@@ -1,22 +1,23 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using CalamityMod.Sounds;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ArkoftheCosmosParryHoldout : ModProjectile
+    public class ArkoftheCosmosParryHoldout : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight";
 
         private bool initialized = false;
@@ -29,10 +30,6 @@ namespace CalamityMod.Projectiles.Melee
         public ref float AlreadyParried => ref Projectile.ai[1];
         public Player Owner => Main.player[Projectile.owner];
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ark of the Cosmos");
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
@@ -41,6 +38,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
@@ -49,8 +47,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             //The hitbox is simplified into a line collision.
             float collisionPoint = 0f;
-            float bladeLenght = 142f * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLenght), 44, ref collisionPoint);
+            float bladeLength = 142f * Projectile.scale;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 44, ref collisionPoint);
         }
 
         public void GeneralParryEffects()
@@ -58,35 +56,39 @@ namespace CalamityMod.Projectiles.Melee
             ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
             if (sword != null)
             {
-                sword.Charge = 10f;
+                sword.Charge = ArkoftheCosmos.MaxCharge;
                 sword.Combo = 0f;
             }
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
             SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
 
-            CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), "Parry!", true);
+            CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
 
-            for (int i = 0; i < 5; i ++) //Don't loose your way
+            for (int i = 0; i < 5; i++) //Don't loose your way
             {
                 Vector2 particleDispalce = Main.rand.NextVector2Circular(Owner.Hitbox.Width * 2f, Owner.Hitbox.Height * 1.2f);
                 float particleScale = Main.rand.NextFloat(0.5f, 1.4f);
-                Particle shine = new FlareShine(Owner.Center + particleDispalce, particleDispalce * 0.01f, Color.White, Color.Red, 0f, new Vector2(0.6f, 1f) * particleScale, new Vector2(1.5f, 2.7f) * particleScale, 20 + Main.rand.Next(6), bloomScale: 3f, spawnDelay : Main.rand.Next(7) * 2);
+                Particle shine = new FlareShine(Owner.Center + particleDispalce, particleDispalce * 0.01f, Color.White, Color.Red, 0f, new Vector2(0.6f, 1f) * particleScale, new Vector2(1.5f, 2.7f) * particleScale, 20 + Main.rand.Next(6), bloomScale: 3f, spawnDelay: Main.rand.Next(7) * 2);
                 GeneralParticleHandler.SpawnParticle(shine);
             }
 
             AlreadyParried = 1f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (AlreadyParried > 0)
                 return;
 
             GeneralParryEffects();
 
-            //only get iframes if the enemy has contact damage :)
+            // 17APR2024: Ozzatron: Ark of the Cosmos is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+            // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
             if (target.damage > 0)
-                Owner.GiveIFrames(35);
+            {
+                int arkParryIFrames = Owner.ComputeParryIFrames();
+                Owner.GiveUniversalIFrames(arkParryIFrames, false);
+            }
 
             Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
             Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);
@@ -117,14 +119,14 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //Manage position and rotation
-            Projectile.Center = Owner.Center + DistanceFromPlayer ;
+            Projectile.Center = Owner.Center + DistanceFromPlayer;
             Projectile.scale = 1.4f + ThrustDisplaceRatio() * 0.2f;
 
             if (Timer > ParryTime)
                 return;
 
             float collisionPoint = 0f;
-            float bladeLenght = 142f * Projectile.scale;
+            float bladeLength = 142f * Projectile.scale;
 
             for (int k = 0; k < Main.maxProjectiles; k++)
             {
@@ -133,7 +135,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (proj.active && proj.hostile && proj.damage > 1 && //Only parry harmful projectiles
                    proj.velocity.Length() * (proj.extraUpdates + 1) > 1f && //Only parry projectiles that move semi-quickly
                    proj.Size.Length() < 300 && //Only parry projectiles that aren't too large
-                   Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLenght), 24, ref collisionPoint))
+                   Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint))
                 {
                     if (AlreadyParried == 0)
                     {
@@ -142,11 +144,11 @@ namespace CalamityMod.Projectiles.Melee
                             Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
                     }
 
-                    //Reduce the projectile's damage by 300 for a second.
-                    if (proj.Calamity().damageReduction < 320)
-                        proj.Calamity().damageReduction = 320;
-                    if (proj.Calamity().damageReductionTimer < 60)
-                        proj.Calamity().damageReductionTimer = 60;
+                    //Reduce the projectile's damage by 160 for a second.
+                    if (proj.Calamity().flatDR < 160)
+                        proj.Calamity().flatDR = 160;
+                    if (proj.Calamity().flatDRTimer < 60)
+                        proj.Calamity().flatDRTimer = 60;
                     break;
                 }
             }
@@ -154,7 +156,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(Projectile.velocity.X);
+            Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
             Owner.itemRotation = Projectile.rotation;
             if (Owner.direction != 1)
             {
@@ -223,7 +225,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Play a blip when it dies, to indicate to the player its ready to get used again
             if (Main.myPlayer == Owner.whoAmI)

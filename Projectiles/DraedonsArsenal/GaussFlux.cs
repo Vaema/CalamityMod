@@ -5,8 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class GaussFlux : ModProjectile
+    public class GaussFlux : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
@@ -19,11 +20,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             get => Main.npc[(int)Projectile.ai[1]];
             set => Projectile.ai[1] = value.whoAmI;
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gauss Flux");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -33,7 +29,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.penetrate = -1;
             Projectile.timeLeft = 180;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 15;
         }
 
         public override void AI()

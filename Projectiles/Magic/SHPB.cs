@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SHPB : ModProjectile
+    public class SHPB : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public int explosionTimer = 120;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("SHPB");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -30,9 +30,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            float num = (float)Main.rand.Next(90, 111) * 0.01f;
-            num *= Main.essScale;
-            Lighting.AddLight(Projectile.Center, 1f * num, 0.2f * num, 0.75f * num);
+            float lights = (float)Main.rand.Next(90, 111) * 0.01f;
+            lights *= Main.essScale;
+            Lighting.AddLight(Projectile.Center, 1f * lights, 0.2f * lights, 0.75f * lights);
             Projectile.alpha -= 2;
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
@@ -64,25 +64,25 @@ namespace CalamityMod.Projectiles.Magic
             }
             Projectile.velocity.X *= 0.985f;
             Projectile.velocity.Y *= 0.985f;
-            float num472 = Projectile.Center.X;
-            float num473 = Projectile.Center.Y;
-            float num474 = 250f;
-            bool flag17 = false;
-            for (int num475 = 0; num475 < 200; num475++)
+            float projX = Projectile.Center.X;
+            float projY = Projectile.Center.Y;
+            float explodeRange = 250f;
+            bool canExplode = false;
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[num475].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[num475].Center, 1, 1))
+                if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                 {
-                    float num476 = Main.npc[num475].position.X + (float)(Main.npc[num475].width / 2);
-                    float num477 = Main.npc[num475].position.Y + (float)(Main.npc[num475].height / 2);
-                    float num478 = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - num476) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - num477);
-                    if (num478 < num474)
+                    float npcX = n.position.X + (float)(n.width / 2);
+                    float npcY = n.position.Y + (float)(n.height / 2);
+                    float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
+                    if (npcDist < explodeRange)
                     {
-                        num474 = num478;
-                        flag17 = true;
+                        explodeRange = npcDist;
+                        canExplode = true;
                     }
                 }
             }
-            if (flag17)
+            if (canExplode)
             {
                 explosionTimer--;
                 if (explosionTimer <= 0)
@@ -99,16 +99,16 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item105, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<SHPExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);

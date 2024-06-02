@@ -5,14 +5,10 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class BrimroseBeam : ModProjectile
+    public class BrimroseBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Brimrose Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -27,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.idStaticNPCHitCooldown = 10;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int numProj = 2;
             float rotation = MathHelper.ToRadians(Projectile.ai[0] >= 3f ? 20 : 10);
@@ -54,7 +50,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
 

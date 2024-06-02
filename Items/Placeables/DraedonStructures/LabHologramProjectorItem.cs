@@ -1,4 +1,4 @@
-using CalamityMod.Items.DraedonMisc;
+﻿using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
@@ -8,19 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.DraedonStructures
 {
-    public class LabHologramProjectorItem : ModItem
+    public class LabHologramProjectorItem : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Lab Hologram Projector");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -34,7 +29,13 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<Items.Placeables.DraedonStructures.LaboratoryPlating>(), 20).AddIngredient(ModContent.ItemType<MysteriousCircuitry>(), 3).AddIngredient(ModContent.ItemType<DubiousPlating>(), 3).AddIngredient(ModContent.ItemType<DraedonPowerCell>(), 8).AddTile(TileID.Anvils).Register();
+            CreateRecipe().
+                AddIngredient<LaboratoryPlating>(20).
+                AddIngredient<MysteriousCircuitry>(3).
+                AddIngredient<DubiousPlating>(3).
+                AddIngredient<DraedonPowerCell>(8).
+                AddTile(TileID.Anvils).
+                Register();
         }
     }
 }

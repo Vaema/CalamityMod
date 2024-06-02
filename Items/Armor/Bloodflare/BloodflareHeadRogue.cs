@@ -9,21 +9,14 @@ namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("BloodflareHelm")]
-    public class BloodflareHeadRogue : ModItem
+    public class BloodflareHeadRogue : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Imp Mask");
-            Tooltip.SetDefault("You can move freely through liquids and have temporary immunity to lava\n" +
-                "10% increased rogue damage and critical strike chance, 5% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 28; //85
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -45,20 +38,12 @@ namespace CalamityMod.Items.Armor.Bloodflare
             modPlayer.bloodflareThrowing = true;
             modPlayer.rogueStealthMax += 1.2f;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = "Greatly increases life regen\n" +
-                "Enemies below 50% life drop a heart when struck\n" +
-                "This effect has a 5 second cooldown\n" +
-				"+120 maximum stealth\n" +
-                "Being over 80% life boosts your defense by 30 and rogue crit by 5%\n" +
-                "Being below 80% life boosts your rogue damage by 10%\n" +
-                "Rogue critical strikes have a 50% chance to heal you";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
             player.crimsonRegen = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.lavaMax += 240;
-            player.ignoreWater = true;
             player.GetDamage<ThrowingDamageClass>() += 0.1f;
             player.GetCritChance<ThrowingDamageClass>() += 10;
             player.moveSpeed += 0.05f;

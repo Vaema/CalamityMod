@@ -7,13 +7,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Aerospec
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AerospecHeadgear : ModItem
+    public class AerospecHeadgear : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Aerospec Headgear");
-            Tooltip.SetDefault("8% increased rogue damage and 5% increased movement speed");
 
             if (Main.netMode != NetmodeID.Server)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
@@ -23,7 +21,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 4; //17
         }
@@ -40,10 +38,7 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased movement speed and rogue critical strike chance\n" +
-					"+80 maximum stealth\n" +
-                    "Taking over 25 damage in one hit will cause a spread of homing feathers to fall\n" +
-                    "Allows you to fall more quickly and disables fall damage";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<AerospecBreastplate>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.aeroSet = true;
             modPlayer.rogueStealthMax += 0.8f;
@@ -55,7 +50,7 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.08f;
+            player.GetDamage<ThrowingDamageClass>() += 0.1f;
             player.moveSpeed += 0.05f;
         }
 

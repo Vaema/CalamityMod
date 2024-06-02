@@ -10,36 +10,31 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Drataliornus : ModItem
+    public class Drataliornus : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         private const double RightClickDamageRatio = 0.6;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Drataliornus");
-            Tooltip.SetDefault(@"Fires an escalating stream of fireballs.
-Fireballs rain meteors, leave dragon dust trails, and launch additional bolts at max speed.
-Taking damage while firing the stream will interrupt it and reduce your wing flight time.
-Right click to fire two devastating barrages of five empowered fireballs.
-'Just don't get hit'");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 64;
+            Item.height = 84;
             Item.damage = 129;
             Item.knockBack = 1f;
             Item.shootSpeed = 18f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useAnimation = 24;
             Item.useTime = 12;
+            Item.useAnimation = 24;
             Item.reuseDelay = 48;
-            Item.width = 64;
-            Item.height = 84;
+            Item.useLimitPerAnimation = 2;
             Item.UseSound = SoundID.Item5;
             Item.shoot = ModContent.ProjectileType<DrataliornusBow>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;
@@ -80,15 +75,15 @@ Right click to fire two devastating barrages of five empowered fireballs.
                 const int numFlames = 5;
                 int flameDamage = (int)(damage * RightClickDamageRatio);
 
-                const float num3 = 0.471238898f;
+                const float fifteenHundredthPi = 0.471238898f;
                 Vector2 spinningpoint = velocity;
                 spinningpoint.Normalize();
                 spinningpoint *= 36f;
-                for (int index1 = 0; index1 < numFlames; ++index1)
+                for (int i = 0; i < numFlames; ++i)
                 {
-                    float num8 = index1 - (numFlames - 1) / 2;
-                    Vector2 vector2_5 = spinningpoint.RotatedBy(num3 * num8, new Vector2());
-                    Projectile.NewProjectile(source, position.X + vector2_5.X, position.Y + vector2_5.Y, velocity.X, velocity.Y, flameID, flameDamage, knockback, player.whoAmI, 1f, 0f);
+                    float piArrowOffset = i - (numFlames - 1) / 2;
+                    Vector2 offsetSpawn = spinningpoint.RotatedBy(fifteenHundredthPi * piArrowOffset, new Vector2());
+                    Projectile.NewProjectile(source, position.X + offsetSpawn.X, position.Y + offsetSpawn.Y, velocity.X, velocity.Y, flameID, flameDamage, knockback, player.whoAmI, 1f, 0f);
                 }
             }
             else

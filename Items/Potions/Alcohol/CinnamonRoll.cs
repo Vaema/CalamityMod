@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class CinnamonRoll : ModItem
+    public class CinnamonRoll : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Cinnamon Roll");
-            Tooltip.SetDefault(@"A great-tasting cinnamon whiskey with a touch of cream soda
-Boosts mana regeneration rate and multiplies all fire-based debuff damage by 1.5
-Reduces defense by 10%");
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ Reduces defense by 10%");
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Yellow;
             Item.useAnimation = 17;
             Item.useTime = 17;

@@ -8,31 +8,28 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class VenusianTrident : ModItem
+    public class VenusianTrident : ModItem, ILocalizedModType
     {
-        public static int BaseDamage = 108;
+        public new string LocalizationCategory => "Items.Weapons.Magic";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Venusian Trident");
-            Tooltip.SetDefault("Casts an infernal trident that erupts into a gigantic explosion of fire and magma shards");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
             Item.width = 70;
             Item.height = 68;
+            Item.damage = 256;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 20;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VenusianBolt>();

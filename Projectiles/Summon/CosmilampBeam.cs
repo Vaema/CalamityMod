@@ -1,7 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -9,9 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class CosmilampBeam : ModProjectile
+    public class CosmilampBeam : ModProjectile, ILocalizedModType
     {
-        internal PrimitiveTrail TrailDrawer;
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public ref float Timer => ref Projectile.ai[0];
 
@@ -23,7 +24,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cosmic Beam");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 32;
@@ -31,13 +31,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 16;
-            Projectile.height = 16;
+            Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Summon;
-            Projectile.minionSlots = 0f;
             Projectile.penetrate = 3;
             Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Projectile.MaxUpdates * Lifetime;
@@ -107,15 +105,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            // Initialize the trail drawer.
-            TrailDrawer ??= new(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
-
             Projectile.localAI[0] = 0f;
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 42);
 
+            var settings = new PrimitiveSettings(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 42);
             Projectile.localAI[0] = 1f;
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 42);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 42);
+
             return false;
         }
     }

@@ -1,18 +1,20 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Typeless;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
     public class RelicOfDeliveranceSpear : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<RelicOfDeliverance>();
         public Vector2 IdealVelocity = -Vector2.UnitY * MinChargeSpeed;
         public const int MaxCharges = 3;
         public const float DustSpawnInterval = 3f;
@@ -22,7 +24,6 @@ namespace CalamityMod.Projectiles.Typeless
         public const float MaxChargeSpeed = 30f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Relic of Deliverance");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             Main.projFrames[Projectile.type] = 4;
@@ -132,7 +133,7 @@ namespace CalamityMod.Projectiles.Typeless
                         }
                         SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact, Projectile.Center);
                     }
-                    player.direction = (Math.Cos(Projectile.rotation) > 0).ToDirectionInt();
+                    player.ChangeDir((Math.Cos(Projectile.rotation) > 0).ToDirectionInt());
                 }
             }
             else
@@ -175,11 +176,8 @@ namespace CalamityMod.Projectiles.Typeless
                 // Adjust the player's held projectile type.
                 if (player.heldProj == -1)
                     player.heldProj = Projectile.whoAmI;
-                if (player.mount != null)
-                {
-                    player.mount.Dismount(player);
-                }
-                player.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+                player.mount?.Dismount(player);
+                player.ChangeDir(Math.Sign(Projectile.velocity.X) <= 0 ? -1 : 1);
                 // Generate dust
                 if (Projectile.ai[0] % DustSpawnInterval == DustSpawnInterval - 1f)
                 {

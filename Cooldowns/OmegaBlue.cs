@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.Localization;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
@@ -12,7 +14,7 @@ namespace CalamityMod.Cooldowns
     {
         public static new string ID => "OmegaBlue";
         public override bool ShouldDisplay => true;
-        public override string DisplayName => instance.timeLeft > 1500 ? "Abyssal Madness" : "Abyssal Madness Cooldown";
+        public override LocalizedText DisplayName => CalamityUtils.GetText("UI.Cooldowns.OmegaBlue" + (instance.timeLeft > 1500 ? "Active" : "Cooldown"));
         public override string Texture => instance.timeLeft > 1500 ? "CalamityMod/Cooldowns/OmegaBlueActive" : "CalamityMod/Cooldowns/OmegaBlue";
         public override string OutlineTexture => "CalamityMod/Cooldowns/OmegaBlueOutline";
         public override string OverlayTexture => "CalamityMod/Cooldowns/OmegaBlueOverlay";
@@ -25,7 +27,7 @@ namespace CalamityMod.Cooldowns
         {
             for (int i = 0; i < 66; i++)
             {
-                int d = Dust.NewDust(instance.player.position, instance.player.width, instance.player.height, 20, 0, 0, 100, Color.Transparent, 2.6f);
+                int d = Dust.NewDust(instance.player.position, instance.player.width, instance.player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 2.6f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].noLight = true;
                 Main.dust[d].fadeIn = 1f;

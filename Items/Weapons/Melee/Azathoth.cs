@@ -8,18 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Azathoth : ModItem
+    public class Azathoth : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Azathoth");
-            Tooltip.SetDefault("Fires cosmic orbs that blast nearby enemies with lasers\n" +
-            "A very agile yoyo\n" +
-            "Destroy the universe in the blink of an eye");
             ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -27,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 40;
             Item.height = 54;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 80;
+            Item.damage = 90;
             Item.knockBack = 6f;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -45,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
         }
 
         public override void AddRecipes()

@@ -1,11 +1,11 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -17,29 +17,19 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Back)]
-    public class WulfrumAcrobaticsPack : ModItem
+    public class WulfrumAcrobaticsPack : ModItem, ILocalizedModType
     {
-        public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/WulfrumHookShoot") { Volume = 0.7f,  MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest};
+        public new string LocalizationCategory => "Items.Accessories";
+        public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/WulfrumHookShoot") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
         public static readonly SoundStyle GrabSound = new("CalamityMod/Sounds/Custom/WulfrumHookGrapple") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
         public static readonly SoundStyle ReleaseSound = new("CalamityMod/Sounds/Custom/WulfrumHookDisengage") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
 
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Wulfrum Acrobatics Pack");
-            Tooltip.SetDefault("Transforms equipped hooks into a wulfrum slingshot\n" +
-            "The slingshot allows for advanced rope-swinging physics\n" +
-            "Automatically grapples nearby walls if a lethal fall is detected\n" +
-            "This safety feature won't activate if DOWN is held\n" +
-            "8% increased movement speed");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Blue;
         }
@@ -50,7 +40,7 @@ namespace CalamityMod.Items.Accessories
             player.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped = true;
             player.GetModPlayer<WulfrumPackPlayer>().PackItem = Item;
 
-            Lighting.AddLight(player.Center, Color.Lerp(Color.DeepSkyBlue,Color.GreenYellow, (float)Math.Sin( Main.GlobalTimeWrappedHourly * 2f) * 0.5f + 0.5f).ToVector3());
+            Lighting.AddLight(player.Center, Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) * 0.5f + 0.5f).ToVector3());
         }
 
         public override void AddRecipes()
@@ -58,7 +48,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.Chain, 2).
                 AddIngredient<WulfrumMetalScrap>(6).
-                AddIngredient<EnergyCore>(1).
+                AddIngredient<EnergyCore>().
                 AddTile(TileID.Anvils).
                 Register();
         }
@@ -120,9 +110,9 @@ namespace CalamityMod.Items.Accessories
         /// </summary>
         public int Grapple = 0;
         /// <summary>
-        /// The lenght of the current rope. Determined when the grapple lands.
+        /// The length of the current rope. Determined when the grapple lands.
         /// </summary>
-        public float SwingLenght = 0f;
+        public float SwingLength = 0f;
         /// <summary>
         /// Used when we need to store the hook between instructions.
         /// </summary>
@@ -145,7 +135,7 @@ namespace CalamityMod.Items.Accessories
                 if (!PlayerOnGround)
                     return false;
 
-                if ((Player.Center - Main.projectile[Grapple].Center).Length() > SwingLenght)
+                if ((Player.Center - Main.projectile[Grapple].Center).Length() > SwingLength)
                     return false;
 
                 return true;
@@ -165,7 +155,7 @@ namespace CalamityMod.Items.Accessories
         public static float SafetyHookAngle = MathHelper.PiOver2 * 1.2f;
         public static float SafetyHookAngleResolution = 50f;
 
-        public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY* 2f * Player.gravDir, Player.width, Player.height, false);
+        public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY * 2f * Player.gravDir, Player.width, Player.height, false);
 
         public override void ResetEffects()
         {
@@ -223,7 +213,7 @@ namespace CalamityMod.Items.Accessories
 
             if (Grappled)
             {
-                if ((Main.projectile[Grapple].Center - Player.Center).Length() > SwingLenght + 80f)
+                if ((Main.projectile[Grapple].Center - Player.Center).Length() > SwingLength + 80f)
                 {
                     SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, Main.projectile[Grapple].Center);
                     Main.projectile[Grapple].Kill();
@@ -235,7 +225,7 @@ namespace CalamityMod.Items.Accessories
 
         public void SimulateMovement(Projectile grapple)
         {
-            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLenght / SimulationResolution, 50, 0.3f * Player.gravDir);
+            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, 0.3f * Player.gravDir);
 
             Vector2 CurrentPosition;
 
@@ -351,7 +341,7 @@ namespace CalamityMod.Items.Accessories
 
                     for (float angle = -halfSpread; angle < halfSpread; angle += SafetyHookAngle / SafetyHookAngleResolution)
                     {
-                        for (int i = 0; i < (int)(WulfrumHook.MaxReach / 16f); i++ )
+                        for (int i = 0; i < (int)(WulfrumHook.MaxReach / 16f); i++)
                         {
                             Vector2 checkSpot = Player.Center + (-Vector2.UnitY * Player.gravDir * i * 16f).RotatedBy(angle);
                             Point tilePos = checkSpot.ToSafeTileCoordinates();
@@ -371,10 +361,9 @@ namespace CalamityMod.Items.Accessories
                     if (bestGrapplePos != Point.Zero)
                     {
                         //Clear any hooks that might have been flying before then.
-                        for (int i = 0; i < Main.maxProjectiles; ++i)
+                        foreach (Projectile p in Main.ActiveProjectiles)
                         {
-                            Projectile p = Main.projectile[i];
-                            if (!p.active || p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
+                            if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
                                 continue;
 
                             if (p.ModProjectile is WulfrumHook)
@@ -422,10 +411,9 @@ namespace CalamityMod.Items.Accessories
             if (triggersSet.Grapple && Player.releaseHook)
             {
                 //Clear any previous non-wulfrum hooks / Any hooks that just got shot (should already be handled by the global proj
-                for (int i = 0; i < Main.maxProjectiles; ++i)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    Projectile p = Main.projectile[i];
-                    if (!p.active || p.owner != Player.whoAmI || p.aiStyle != 7 || p.type == ProjectileType<WulfrumHook>())
+                    if (p.owner != Player.whoAmI || p.aiStyle != 7 || p.type == ProjectileType<WulfrumHook>())
                         continue;
 
                     p.Kill();
@@ -453,10 +441,9 @@ namespace CalamityMod.Items.Accessories
             //Jumping out of the hook
             if (triggersSet.Jump && Player.releaseJump)
             {
-                for (int i = 0; i < Main.maxProjectiles; ++i)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    Projectile p = Main.projectile[i];
-                    if (!p.active || p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
+                    if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
                         continue;
 
                     //Only clear hooks that are attached to stuff
@@ -466,7 +453,7 @@ namespace CalamityMod.Items.Accessories
                         float angleToUpright = (Player.Center - p.Center).AngleBetween(-Vector2.UnitY);
                         bool canJumpOffHook = angleToUpright > MathHelper.PiOver2 || Player.Distance(p.Center) < 38;// Don't do any jump stuff if the player is jumping from above the hook.
 
-                        if (canJumpOffHook) 
+                        if (canJumpOffHook)
                         {
                             Vector2 velocityBoost = Vector2.Zero;
 

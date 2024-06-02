@@ -1,33 +1,26 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class TundraFlameBlossomsStaff : ModItem
+    public class TundraFlameBlossomsStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tundra Flame Blossoms Staff");
-            Tooltip.SetDefault("Summons three flarefrost orchids over your head\n" +
-                "Each flower consumes one minion slot");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 50;
+            Item.height = 60;
             Item.damage = 40;
             Item.mana = 10;
-            Item.width = 52;
-            Item.height = 60;
             Item.useTime = Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item46;
             Item.shoot = ModContent.ProjectileType<TundraFlameBlossom>();

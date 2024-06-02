@@ -8,8 +8,10 @@ using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,11 +46,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         }
         public bool Phase2 => NPC.life < NPC.lifeMax * 0.5f;
         public ref float AttackTimer => ref NPC.ai[1];
+
+        public static Asset<Texture2D> AttackTexture;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cloud Elemental");
             Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Position = new Vector2(28f, 20f),
                 Scale = 0.65f,
@@ -57,6 +61,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 PortraitPositionYOverride = 2f
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                AttackTexture = ModContent.Request<Texture2D>(Texture + "Attack", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -82,16 +90,19 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().VulnerableToHeat = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Events.Rain,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Once, outposts were created in the sky, for ease of worship towards the forces that occupied the clouds in order to please them. Now they lay abandoned and their deity angered.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ThiccWaifu")
             });
         }
 
@@ -131,6 +142,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void DoBehavior_Hover()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
             int hoverTime = (int)MathHelper.Lerp(330f, 180f, 1f - lifeRatio);
             float hoverAcceleration = MathHelper.Lerp(0.2f, 0.425f, 1f - lifeRatio);
@@ -140,7 +154,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust cloudDust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 16);
+                    Dust cloudDust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Cloud);
                     cloudDust.velocity = Main.rand.NextVector2CircularEdge(4f, 4f);
                     cloudDust.velocity.Y /= 3f;
                     cloudDust.scale = Main.rand.NextFloat(1.15f, 1.35f);
@@ -192,6 +206,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void DoBehavior_CloudTeleport()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             int teleportFadeoutTime = 75;
             int teleportFadeinTime = 60;
 
@@ -204,7 +221,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (Main.rand.NextFloat() < particleSpawnRate && !Main.dedServ)
                 {
-                    Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 16);
+                    Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Cloud);
 
                     if (Main.rand.NextBool(15) && Main.netMode != NetmodeID.Server)
                     {
@@ -231,7 +248,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.Opacity = fadeinCompletion;
 
                 if (Main.rand.NextFloat() < particleSpawnRate && !Main.dedServ)
-                    Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 16);
+                    Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Cloud);
             }
 
             if (AttackTimer >= teleportFadeoutTime + teleportFadeinTime)
@@ -244,10 +261,13 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void DoBehavior_LightningSummon()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             int cloudSummonDelay = 60;
             int cloudSummonRate = 30;
             int totalCloudWavesToSummon = 5;
-            int lightningDamage = Main.expertMode ? 23 : 36;
+            int lightningDamage = Main.masterMode ? 19 : Main.expertMode ? 23 : 36;
             if (Phase2)
             {
                 cloudSummonRate -= 5;
@@ -283,6 +303,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void DoBehavior_TornadoSummon()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             int tornadoSpawnDelay = 60;
             int totalTornadosToSummon = Phase2 ? 8 : 5;
 
@@ -311,6 +334,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void DoBehavior_NimbusSummon()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             int nimbusSummonDelay = 45;
             int totalNimbiToSummon = 5;
             int nimbusSummonRate = 50;
@@ -339,7 +365,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (!Main.dedServ)
                 {
                     for (int i = 0; i < 20; i++)
-                        Dust.NewDustDirect(spawnPosition.ToVector2(), -20, 20, 16);
+                        Dust.NewDustDirect(spawnPosition.ToVector2(), -20, 20, DustID.Cloud);
 
                     SoundEngine.PlaySound(SoundID.Item122, spawnPosition.ToVector2());
                 }
@@ -378,7 +404,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (AttackTimer >= (sliceChargeTime + sliceChargeDelay) * totalSlices)
             {
-                NPC.damage = NPC.defDamage;
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 CurrentAttackState = AttackState.Hover;
                 AttackTimer = 0f;
                 NPC.netUpdate = true;
@@ -387,16 +415,16 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ThiccWaifuAttack").Value;
+            Texture2D texture = AttackTexture.Value;
             SpriteEffects direction = NPC.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             if (CurrentAttackState != AttackState.Hover)
                 Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0);
             else
             {
-                texture = ModContent.Request<Texture2D>(Texture).Value;
+                texture = TextureAssets.Npc[NPC.type].Value;
                 Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0);
             }
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 // I ran out of ideas, so Cloud just gets a hat like how I wanted GSS to
                 Texture2D hattexture = ModContent.Request<Texture2D>("CalamityMod/Particles/WulfrumHat").Value;
@@ -423,33 +451,37 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !Main.hardMode || !Main.raining || NPC.AnyNPCs(ModContent.NPCType<ThiccWaifu>()))
+            if (spawnInfo.PlayerSafe || !Main.hardMode || !Main.raining || !spawnInfo.Player.ZoneSkyHeight)
+                return 0f;
+
+            // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.
+            if (NPC.AnyNPCs(NPC.type))
                 return 0f;
 
             return SpawnCondition.Sky.Chance * 0.1f;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Electrified, 180, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Electrified, 180, true);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 16, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Cloud, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 16, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Cloud, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 2, 3);
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<EssenceofSunlight>(), 1, 8, 10, 10, 12));
             npcLoot.Add(ModContent.ItemType<EyeoftheStorm>(), 3);
             npcLoot.Add(ModContent.ItemType<StormSaber>(), 5);
         }

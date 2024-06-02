@@ -1,21 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
-    public class DragonPowFlail : ModProjectile
+    public class DragonPowFlail : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dragon Pow");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
             Projectile.width = 50;
@@ -137,7 +133,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Only perform hit effects after reaching approximately 40% of the way out.
             if (Main.player[Projectile.owner].WithinRange(target.Center, 345f))
@@ -154,7 +150,7 @@ namespace CalamityMod.Projectiles.Melee
             Waterfalls(target.Center);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             // Only perform hit effects after reaching approximately 55% of the way out.
             if (Projectile.WithinRange(Main.player[Projectile.owner].Center, 345f))

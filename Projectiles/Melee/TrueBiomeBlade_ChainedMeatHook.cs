@@ -1,20 +1,21 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Particles;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.DataStructures;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ChainedMeatHook : ModProjectile
+    public class ChainedMeatHook : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_LamentationsOfTheChainedHook";
         public Player Owner => Main.player[Projectile.owner];
 
@@ -25,11 +26,6 @@ namespace CalamityMod.Projectiles.Melee
         public bool MayIExist => Owner.active && (Owner.HeldItem.ModItem is OmegaBiomeBlade blade) && blade.secondaryAttunement != null && blade.secondaryAttunement.id == AttunementID.FlailBlade;
 
         Particle smear;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Enchanted Meat Hook");
-        }
 
         public override void SetDefaults()
         {
@@ -113,13 +109,13 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             int debuffTime = 100;
             target.AddBuff(BuffType<GlacialState>(), debuffTime);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
             for (int i = 0; i < 10; i++)

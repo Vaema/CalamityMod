@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee.Yoyos;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -19,7 +18,22 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        public static int CountProjectiles(int Type) => Main.projectile.Count(proj => proj.type == Type && proj.active);
+        public static bool AnyProjectiles(int projectileID)
+        {
+            // Efficiently loop through all projectiles, using a specially designed continue continue that attempts to minimize the amount of OR
+            // checks per iteration.
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type != projectileID)
+                    continue;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public static int CountProjectiles(int projectileID) => Main.projectile.Count(proj => proj.type == projectileID && proj.active);
 
         public static int CountHookProj() => Main.projectile.Count(proj => Main.projHook[proj.type] && proj.ai[0] == 2f && proj.active && proj.owner == Main.myPlayer);
 
@@ -43,12 +57,12 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return Main.projectile[identity];
 
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].identity != identity || Main.projectile[i].owner != ownerIndex || !Main.projectile[i].active)
+                if (p.identity != identity || p.owner != ownerIndex)
                     continue;
 
-                return Main.projectile[i];
+                return p;
             }
             return null;
         }
@@ -65,7 +79,7 @@ namespace CalamityMod
         public static void ExpandHitboxBy(this Projectile projectile, Vector2 newSize) => projectile.ExpandHitboxBy((int)newSize.X, (int)newSize.Y);
         public static void ExpandHitboxBy(this Projectile projectile, float expandRatio) => projectile.ExpandHitboxBy((int)(projectile.width * expandRatio), (int)(projectile.height * expandRatio));
 
-        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float N)
+        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia)
         {
             if (!projectile.friendly)
                 return;
@@ -78,19 +92,27 @@ namespace CalamityMod
             float maxDistance = distanceRequired;
             bool locatedTarget = false;
 
-            // Find a target.
-            for (int i = 0; i < Main.maxNPCs; i++)
+            // Find the closest target.
+            float npcDistCompare = 25000f; // Initializing the value to a large number so the first entry is basically guaranteed to replace it.
+            int index = -1;
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
-                if (!Main.npc[i].CanBeChasedBy(projectile, false) || !projectile.WithinRange(Main.npc[i].Center, maxDistance + extraDistance))
+                float extraDistance = (n.width / 2) + (n.height / 2);
+                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance))
                     continue;
 
-                if (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                float currentNPCDist = Vector2.Distance(n.Center, projectile.Center);
+                if ((currentNPCDist < npcDistCompare) && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1)))
                 {
-                    destination = Main.npc[i].Center;
-                    locatedTarget = true;
-                    break;
+                    npcDistCompare = currentNPCDist;
+                    index = n.whoAmI;
                 }
+            }
+            // If the index was never changed, don't do anything. Otherwise, tell the projectile where to home.
+            if (index != -1)
+            {
+                destination = Main.npc[index].Center;
+                locatedTarget = true;
             }
 
             if (locatedTarget)
@@ -100,7 +122,7 @@ namespace CalamityMod
 
                 // Home in on the target.
                 Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
-                projectile.velocity = (projectile.velocity * N + homeDirection * homingVelocity) / (N + 1f);
+                projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
             }
             else
             {
@@ -147,6 +169,41 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Calculates a velocity that approximately predicts where some target will be in the future based on Euler's Method. This takes into account the projectile's max updates.
+        /// </summary>
+        /// <param name="startingPosition">The starting position from where the movement is calculated.</param>
+        /// <param name="targetPosition">The position of the target to hit.</param>
+        /// <param name="targetVelocity">The velocity of the target to hit.</param>
+        /// <param name="shootSpeed">The speed of the predictive velocity.</param>
+        /// <param name="projMaxUpdates">How many extra updates the resulting projectile will have.</param>
+        /// <param name="iterations">The number of iterations to perform. The more iterations, the more precise the results are.</param>
+        public static Vector2 CalculatePredictiveAimToTargetMaxUpdates(Vector2 startingPosition, Vector2 targetPosition, Vector2 targetVelocity, float shootSpeed, int projMaxUpdates, int iterations = 4)
+        {
+            float previousTimeToReachDestination = 0f;
+            Vector2 currentTargetPosition = targetPosition;
+            for (int i = 0; i < iterations; i++)
+            {
+                float timeToReachDestination = Vector2.Distance(startingPosition, currentTargetPosition) / shootSpeed / projMaxUpdates;
+                currentTargetPosition += targetVelocity * (timeToReachDestination - previousTimeToReachDestination);
+                previousTimeToReachDestination = timeToReachDestination;
+            }
+            return (currentTargetPosition - startingPosition).SafeNormalize(Vector2.UnitY) * shootSpeed;
+        }
+
+        /// <summary>
+        /// Calculates a velocity that approximately predicts where some target will be in the future based on Euler's Method. This takes into account the projectile's max updates.
+        /// </summary>
+        /// <param name="startingPosition">The starting position from where the movement is calculated.</param>
+        /// <param name="target">The target to hit.</param>
+        /// <param name="shootSpeed">The speed of the predictive velocity.</param>
+        /// <param name="projMaxUpdates">How many extra updates the resulting projectile will have.</param>
+        /// <param name="iterations">The number of iterations to perform. The more iterations, the more precise the results are.</param>
+        public static Vector2 CalculatePredictiveAimToTargetMaxUpdates(Vector2 startingPosition, Entity target, float shootSpeed, int projMaxUpdates, int iterations = 4)
+        {
+            return CalculatePredictiveAimToTargetMaxUpdates(startingPosition, target.Center, target.velocity, shootSpeed, projMaxUpdates, iterations);
+        }
+
+        /// <summary>
         /// Makes a projectile home in such a way that it attempts to fractionally move towards a target's expected future position.
         /// This is based on the results of the <see cref="CalculatePredictiveAimToTarget"/> method.
         /// </summary>
@@ -157,7 +214,7 @@ namespace CalamityMod
         public static Vector2 SuperhomeTowardsTarget(this Projectile projectile, NPC target, float homingSpeed, float inertia, float predictionStrength = 1f)
         {
             if (predictionStrength < 0.01f) { predictionStrength = 0.01f; }
-            Vector2 idealVelocity = CalculatePredictiveAimToTarget(projectile.Center, target, homingSpeed/predictionStrength) * predictionStrength;
+            Vector2 idealVelocity = CalculatePredictiveAimToTarget(projectile.Center, target, homingSpeed / predictionStrength) * predictionStrength;
             return (projectile.velocity * (inertia - 1f) + idealVelocity) / inertia;
         }
         #endregion
@@ -205,9 +262,8 @@ namespace CalamityMod
             int[] array = new int[Main.maxNPCs];
             int targetArrayA = 0;
             int targetArrayB = 0;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (npc.CanBeChasedBy(projectile, false))
                 {
                     float enemyDist = Vector2.Distance(projectile.Center, npc.Center);
@@ -215,12 +271,12 @@ namespace CalamityMod
                     {
                         if (Collision.CanHit(projectile.position, 1, 1, npc.position, npc.width, npc.height) && enemyDist > 50f)
                         {
-                            array[targetArrayB] = i;
+                            array[targetArrayB] = npc.whoAmI;
                             targetArrayB++;
                         }
                         else if (targetArrayB == 0)
                         {
-                            array[targetArrayA] = i;
+                            array[targetArrayA] = npc.whoAmI;
                             targetArrayA++;
                         }
                     }
@@ -251,21 +307,21 @@ namespace CalamityMod
                 int[] targetArray = new int[maxTargets];
                 int targetArrayIndex = 0;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(projectile, false))
+                    if (n.CanBeChasedBy(projectile, false))
                     {
-                        float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                        float extraDistance = (n.width / 2) + (n.height / 2);
 
                         bool canHit = true;
                         if (extraDistance < maxDistance)
-                            canHit = Collision.CanHit(projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                            canHit = Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1);
 
-                        if (projectile.WithinRange(Main.npc[i].Center, maxDistance + extraDistance) && canHit)
+                        if (projectile.WithinRange(n.Center, maxDistance + extraDistance) && canHit)
                         {
                             if (targetArrayIndex < maxTargets)
                             {
-                                targetArray[targetArrayIndex] = i;
+                                targetArray[targetArrayIndex] = n.whoAmI;
                                 targetArrayIndex++;
                                 homeIn = true;
                             }
@@ -314,14 +370,9 @@ namespace CalamityMod
                     {
                         int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                        if (projectile.type == ProjectileType<GodsGambitYoyo>() ||
-                            projectile.type == ProjectileType<ShimmersparkYoyo>() || projectile.type == ProjectileType<VerdantYoyo>())
+                        if (projectile.type == ProjectileType<GodsGambitYoyo>() || projectile.type == ProjectileType<ShimmersparkYoyo>())
                             if (projectile2.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[projectile2].DamageType = DamageClass.MeleeNoSpeed;
-
-                        if (projectile.type == ProjectileType<FishboneBoomerangProjectile>())
-                            if (projectile2.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile2].DamageType = RogueDamageClass.Instance;
                     }
                 }
             }
@@ -366,6 +417,127 @@ namespace CalamityMod
                 }
             }
         }
+
+        public struct RocketBehaviorInfo
+        {
+            internal int rocketItemType;
+
+            // Explosion radii for various rocket ammos. Defaults to the sizes used in vanilla launchers.
+            public int smallRadius = 3; // Rocket I and II
+            public int mediumRadius = 6; // Rocket III and IV
+            public int bigRadius = 7; // Cluster Rockets
+            public int largeRadius = 9; // Mini Nukes
+
+            public bool respectStandardBlastImmunity = true;
+            public List<int> tilesToCheck = null;
+            public List<int> wallsToCheck = null;
+
+            public int clusterProjectileID = ProjectileID.ClusterFragmentsI;
+            public int destructiveClusterProjectileID = ProjectileID.ClusterFragmentsII;
+            public float clusterSplitDamageMultiplier = 0.5f;
+
+            public RocketBehaviorInfo(int rocketID)
+            {
+                rocketItemType = rocketID;
+            }
+        }
+
+        /// <summary>
+        /// For a given projectile that is used as a rocket and uses rocket ammo, this utility provides a shorthand way to check for checking what behaviour should each type of ammo do. It can also return you the radius of the explosion that'll happen so you can use it for your effect's size.
+        /// </summary>
+        /// <param name="proj">The projectile in question.</param>
+        /// <param name="info">Struct containing information on the desired rocket behavior.</param>
+        public static int RocketBehavior(this Projectile proj, RocketBehaviorInfo info)
+        {
+            int explosionRadius = 0;
+
+            // Used for Cluster Rockets to determine damage.
+
+            // Used for Dry Rockets, Water Rockets etc. to place water. Not always needed.
+            Point center = proj.Center.ToTileCoordinates();
+            DelegateMethods.v2_1 = center.ToVector2();
+            DelegateMethods.f_1 = 3f;
+
+            void SpawnClusterFragments(bool destructiveVariant = false)
+            {
+                if (proj.owner != Main.myPlayer)
+                    return;
+
+                int projID = destructiveVariant ? info.destructiveClusterProjectileID : info.clusterProjectileID;
+                int clusterDamage = (int)(proj.damage * info.clusterSplitDamageMultiplier);
+
+                float thetaStart = Main.rand.NextFloat(0f, MathHelper.TwoPi);
+                for (float i = 0; i < 6; ++i)
+                {
+                    float thetaIter = thetaStart + (i * MathHelper.TwoPi / 6f);
+                    float dist = Main.rand.NextFloat(4f, 6f);
+
+                    Vector2 clusterVel = thetaIter.ToRotationVector2() * dist - Vector2.UnitY;
+
+                    Projectile clusterFragment = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), proj.Center, clusterVel, projID, clusterDamage, 0f, proj.owner);
+                    clusterFragment.timeLeft -= Main.rand.Next(30);
+                }
+            }
+
+            switch (info.rocketItemType)
+            {
+                case ItemID.RocketI:
+                    explosionRadius = info.smallRadius;
+                    break;
+
+                case ItemID.RocketII:
+                    explosionRadius = info.smallRadius;
+                    proj.ExplodeTiles(explosionRadius, info.respectStandardBlastImmunity, info.tilesToCheck, info.wallsToCheck);
+                    break;
+
+                case ItemID.RocketIII:
+                    explosionRadius = info.mediumRadius;
+                    break;
+
+                case ItemID.RocketIV:
+                    explosionRadius = info.mediumRadius;
+                    proj.ExplodeTiles(explosionRadius, info.respectStandardBlastImmunity, info.tilesToCheck, info.wallsToCheck);
+                    break;
+
+                case ItemID.MiniNukeI:
+                    explosionRadius = info.largeRadius;
+                    break;
+
+                case ItemID.MiniNukeII:
+                    explosionRadius = info.largeRadius;
+                    proj.ExplodeTiles(explosionRadius, info.respectStandardBlastImmunity, info.tilesToCheck, info.wallsToCheck);
+                    break;
+
+                case ItemID.ClusterRocketI:
+                    explosionRadius = info.bigRadius;
+                    SpawnClusterFragments(false);
+                    break;
+
+                case ItemID.ClusterRocketII:
+                    explosionRadius = info.bigRadius;
+                    SpawnClusterFragments(true);
+                    break;
+
+                case ItemID.DryRocket:
+                    DelegateMethods.f_1 = 3.5f;
+                    Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadDry);
+                    break;
+
+                case ItemID.WetRocket:
+                    Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadWater);
+                    break;
+
+                case ItemID.LavaRocket:
+                    Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadLava);
+                    break;
+
+                case ItemID.HoneyRocket:
+                    Utils.PlotTileArea(center.X, center.Y, DelegateMethods.SpreadHoney);
+                    break;
+            }
+
+            return explosionRadius;
+        }
         #endregion
 
         public static int FindFirstProjectile(int Type)
@@ -388,13 +560,12 @@ namespace CalamityMod
             int existingTurrets = player.ownedProjectileCounts[Type];
             if (existingTurrets > 0)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type == Type &&
-                        Main.projectile[i].owner == player.whoAmI &&
-                        Main.projectile[i].active)
+                    if (p.type == Type &&
+                        p.owner == player.whoAmI)
                     {
-                        Main.projectile[i].Kill();
+                        p.Kill();
                         existingTurrets--;
                         if (existingTurrets <= 0)
                             break;
@@ -484,6 +655,8 @@ namespace CalamityMod
                     maxTrailPoints = (int)projectile.localAI[0];
 
                 Vector2 cumulativeOffset = Vector2.Zero;
+                Color alpha = projectile.GetAlpha(lightColor);
+                float fixedRotation = projectile.rotation + MathHelper.PiOver2;
                 for (int i = 1; i <= (int)projectile.localAI[0]; i++)
                 {
                     Vector2 velToUseThisIter = projectile.velocity;
@@ -498,10 +671,9 @@ namespace CalamityMod
                         }
                     }
                     cumulativeOffset += Vector2.Normalize(velToUseThisIter) * spacer;
-                    Color color = projectile.GetAlpha(lightColor);
+                    Color color = alpha;
                     color *= (maxTrailPoints - (float)i) / maxTrailPoints;
                     color.A = 0;
-                    float fixedRotation = projectile.rotation + MathHelper.PiOver2;
                     Main.spriteBatch.Draw(texture, drawPos - cumulativeOffset, null, color, fixedRotation, origin, projectile.scale, spriteEffects, 0f);
                 }
             }
@@ -539,12 +711,68 @@ namespace CalamityMod
             Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, 0, 0f);
         }
 
-        public static void ExplodeandDestroyTiles(Projectile projectile, int explosionRadius, bool checkExplosions, List<int> tilesToCheck, List<int> wallsToCheck)
+        public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
         {
-            int minTileX = (int)projectile.position.X / 16 - explosionRadius;
-            int maxTileX = (int)projectile.position.X / 16 + explosionRadius;
-            int minTileY = (int)projectile.position.Y / 16 - explosionRadius;
-            int maxTileY = (int)projectile.position.Y / 16 + explosionRadius;
+            Texture2D aura = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
+            Vector2 offsets = new Vector2(0f, projectile.gfxOffY) - Main.screenPosition;
+            Rectangle auraRec = aura.Frame();
+            float auraRotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Vector2 auraOrigin = new Vector2(auraRec.Width / 2f, auraHeight);
+
+            // Outer trail
+            Vector2 drawStartOuter = offsets + projectile.Center + projectile.velocity;
+            Vector2 spinPoint = -Vector2.UnitY * auraHeight;
+            float time = Main.player[projectile.owner].miscCounter % 216000f / 60f;
+            Color outerColor = outer * 0.2f;
+            outerColor.A = 0;
+            float rotation = MathHelper.TwoPi * time;
+            for (int o = 0; o < 6; o += 2)
+            {
+                Vector2 spinStart = drawStartOuter + spinPoint.RotatedBy(rotation - MathHelper.Pi * o / 3f);
+                float scaleMultOuter = 1.5f - o * 0.1f;
+                Main.EntitySpriteDraw(aura, spinStart, auraRec, outerColor, auraRotation, auraOrigin, scaleMultOuter, SpriteEffects.None, 0);
+            }
+
+            // Inner trail
+            Vector2 drawStartInner = offsets + projectile.Center - projectile.velocity * 0.5f;
+            Color innerColor = inner * 0.5f;
+            innerColor.A = 0;
+            for (float i = 0f; i < 1f; i += 0.5f)
+            {
+                float scaleMult = time % 0.5f / 0.5f;
+                scaleMult = (scaleMult + i) % 1f;
+                float colorMult = scaleMult * 2f;
+                if (colorMult > 1f)
+                    colorMult = 2f - colorMult;
+
+                Main.EntitySpriteDraw(aura, drawStartInner, auraRec, innerColor * colorMult, auraRotation, auraOrigin, 0.3f + scaleMult * 0.5f, SpriteEffects.None, 0);
+            }
+        }
+
+        private static readonly List<int> vanillaBlastImmuneTiles = new List<int>()
+        {
+            TileID.DemonAltar,
+            TileID.Cobalt,
+            TileID.Mythril,
+            TileID.Adamantite,
+            TileID.Palladium,
+            TileID.Orichalcum,
+            TileID.Titanium,
+            TileID.Chlorophyte,
+            TileID.LihzahrdBrick,
+            TileID.LihzahrdAltar,
+            TileID.DesertFossil
+        };
+
+        public static void ExplodeTiles(this Projectile p, int explosionRadius, bool respectStandardBlastImmunity = true, IEnumerable<int> customBlastImmuneTiles = null, IEnumerable<int> customBlastImmuneWalls = null)
+            => ExplodeTiles(p.Center, explosionRadius, respectStandardBlastImmunity, customBlastImmuneTiles, customBlastImmuneWalls);
+        public static void ExplodeTiles(Vector2 explosionPos, int explosionRadius, bool respectStandardBlastImmunity = true, IEnumerable<int> customBlastImmuneTiles = null, IEnumerable<int> customBlastImmuneWalls = null)
+        {
+            // Define limits for explosion iteration.
+            int minTileX = (int)explosionPos.X / 16 - explosionRadius;
+            int maxTileX = (int)explosionPos.X / 16 + explosionRadius;
+            int minTileY = (int)explosionPos.Y / 16 - explosionRadius;
+            int maxTileY = (int)explosionPos.Y / 16 + explosionRadius;
             if (minTileX < 0)
             {
                 minTileX = 0;
@@ -562,112 +790,130 @@ namespace CalamityMod
                 maxTileY = Main.maxTilesY;
             }
 
-            bool canKillWalls = false;
+            // This checks for whether the explosion should be allowed to destroy walls. It's rather arbitrary, but it's how vanilla works.
+            bool allowWallDestruction = false;
+            float projTileX = explosionPos.X / 16f;
+            float projTileY = explosionPos.Y / 16f;
             for (int x = minTileX; x <= maxTileX; x++)
             {
                 for (int y = minTileY; y <= maxTileY; y++)
                 {
-                    Vector2 explodeArea = new Vector2(Math.Abs(x - projectile.position.X / 16f), Math.Abs(y - projectile.position.Y / 16f));
+                    Vector2 explodeArea = new Vector2(Math.Abs(x - projTileX), Math.Abs(y - projTileY));
                     float distance = explodeArea.Length();
                     if (distance < explosionRadius && Main.tile[x, y] != null && Main.tile[x, y].WallType == WallID.None)
                     {
-                        canKillWalls = true;
+                        allowWallDestruction = true;
                         break;
                     }
                 }
             }
 
-            List<int> tileExcludeList = new List<int>()
+            // Tiles which can never be exploded under any circumstances. Bad things happen if they blow up.
+            HashSet<int> blastImmuneTiles = new()
             {
                 TileID.DemonAltar,
                 TileID.ElderCrystalStand
             };
-            for (int i = 0; i < tilesToCheck.Count; ++i)
-                tileExcludeList.Add(tilesToCheck[i]);
-            List<int> wallExcludeList = new List<int>();
-            for (int i = 0; i < wallsToCheck.Count; ++i)
-                wallExcludeList.Add(wallsToCheck[i]);
 
-            List<int> explosionCheckList = new List<int>()
+            // If respecting vanilla blast immunities, toss in that whole list.
+            if (respectStandardBlastImmunity)
             {
-                TileID.DemonAltar,
-                TileID.Cobalt,
-                TileID.Mythril,
-                TileID.Adamantite,
-                TileID.Palladium,
-                TileID.Orichalcum,
-                TileID.Titanium,
-                TileID.Chlorophyte,
-                TileID.LihzahrdBrick,
-                TileID.LihzahrdAltar,
-                TileID.DesertFossil
-            };
-            AddWithCondition<int>(explosionCheckList, TileID.Hellstone, !Main.hardMode);
+                foreach (int tileID in vanillaBlastImmuneTiles)
+                    blastImmuneTiles.Add(tileID);
 
-            for (int i = minTileX; i <= maxTileX; i++)
+                // Conditionally toss in Hellstone if it's not Hardmode yet.
+                if (!Main.hardMode)
+                    blastImmuneTiles.Add(TileID.Hellstone);
+            }
+
+            // If specified, add custom blast immune tiles.
+            if (customBlastImmuneTiles is not null)
+                foreach (int tileID in customBlastImmuneTiles)
+                    blastImmuneTiles.Add(tileID);
+
+            // If specified, define custom blast immune walls.
+            HashSet<int> blastImmuneWalls = null;
+            if (customBlastImmuneWalls is not null)
             {
-                for (int j = minTileY; j <= maxTileY; j++)
+                blastImmuneWalls = new();
+                foreach (int wallID in customBlastImmuneWalls)
+                    blastImmuneWalls.Add(wallID);
+            }
+
+            // Actually perform the explosion.
+            bool refTrue = true, refFalse = false;
+            for (int tx = minTileX; tx <= maxTileX; tx++)
+            {
+                for (int ty = minTileY; ty <= maxTileY; ty++)
                 {
-                    Tile tile = Main.tile[i, j];
-                    bool t = 1 == 1; bool f = 1 == 2;
+                    Tile tile = Main.tile[tx, ty];
+                    ushort type = tile.TileType;
 
-                    Vector2 explodeArea = new Vector2(Math.Abs(i - projectile.position.X / 16f), Math.Abs(j - projectile.position.Y / 16f));
+                    Vector2 explodeArea = new Vector2(Math.Abs(tx - projTileX), Math.Abs(ty - projTileY));
                     float distance = explodeArea.Length();
-                    if (distance < explosionRadius)
-                    {
-                        bool canKillTile = true;
-                        if (tile != null && tile.HasTile)
-                        {
-                            if (checkExplosions)
-                            {
-                                if (Main.tileDungeon[tile.TileType] || explosionCheckList.Contains(tile.TileType))
-                                {
-                                    canKillTile = false;
-                                }
-                                if (!TileLoader.CanExplode(i, j))
-                                {
-                                    canKillTile = false;
-                                }
-                            }
-                            if (Main.tileContainer[tile.TileType])
-                                canKillTile = false;
-                            if (!TileLoader.CanKillTile(i, j, tile.TileType, ref t) || !TileLoader.CanKillTile(i, j, tile.TileType, ref f))
-                                canKillTile = false;
-                            if (tileExcludeList.Contains(tile.TileType))
-                                canKillTile = false;
+                    if (distance >= explosionRadius)
+                        continue;
 
-                            if (canKillTile)
-                            {
-                                WorldGen.KillTile(i, j, false, false, false);
-                                if (!tile.HasTile && Main.netMode != NetmodeID.SinglePlayer)
-                                {
-                                    NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, i, j, 0f, 0, 0, 0);
-                                }
-                            }
-                        }
-                        if (canKillTile)
+                    bool canBlastThisTile = true;
+                    if (tile != null && tile.HasTile)
+                    {
+                        if (blastImmuneTiles.Contains(type) || // Respects standard blast immunities if enabled, so they're covered
+                            Main.tileContainer[tile.TileType] || // Chests should never be exploded
+                                                                 // Dungeon tiles and TileLoader CanExplode are considered part of respecting standard blast immunities
+                            respectStandardBlastImmunity && (Main.tileDungeon[type] || !TileLoader.CanExplode(tx, ty)) ||
+                            // TileLoader CanKillTile can block the destruction of a tile regardless of whether it is via an explosion
+                            !TileLoader.CanKillTile(tx, ty, tile.TileType, ref refTrue) || !TileLoader.CanKillTile(tx, ty, tile.TileType, ref refFalse))
                         {
-                            for (int x = i - 1; x <= i + 1; x++)
+                            canBlastThisTile = false;
+                        }
+
+                        // Destroy the tile itself (not the wall).
+                        if (canBlastThisTile)
+                        {
+                            WorldGen.KillTile(tx, ty, false, false, false);
+
+                            // If the tile was actually destroyed (KillTile can fail) then send netcode indicating as such.
+                            if (!tile.HasTile && Main.netMode != NetmodeID.SinglePlayer)
+                                NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, tx, ty, 0f, 0, 0, 0);
+                        }
+                    }
+
+                    // Skip destroying walls if the tile was not blasted
+                    // Also skip destroying walls if this explosion is not allowed to destroy walls by vanilla rules
+                    if (!canBlastThisTile || !allowWallDestruction)
+                        continue;
+
+                    // For every destroyed tile, destroy a 3x3 area of walls around it to prevent ugly wall corners
+                    // This is what causes explosion packet spam, btw.
+                    for (int wx = tx - 1; wx <= tx + 1; wx++)
+                    {
+                        for (int wy = ty - 1; wy <= ty + 1; wy++)
+                        {
+                            // Check whether this wall is explodable.
+                            bool canBlastThisWall = !respectStandardBlastImmunity || WallLoader.CanExplode(wx, wy, Main.tile[wx, wy].WallType);
+
+                            // If custom wall blast immunities were defined, respect them.
+                            // If this is what stops a wall from being blown up, prevent all further wall destruction to prevent ugly floating walls.
+                            if (blastImmuneWalls is not null && blastImmuneWalls.Contains(Main.tile[wx, wy].WallType))
                             {
-                                for (int y = j - 1; y <= j + 1; y++)
-                                {
-                                    bool canExplode = true;
-                                    if (checkExplosions)
-                                        canExplode = WallLoader.CanExplode(x, y, Main.tile[x, y].WallType);
-                                    if (wallExcludeList.Any() && wallExcludeList.Contains(Main.tile[x, y].WallType))
-                                        canKillWalls = false;
-                                    if (Main.tile[x, y] != null && Main.tile[x, y].WallType > WallID.None && canKillWalls && canExplode)
-                                    {
-                                        WorldGen.KillWall(x, y, false);
-                                        if (Main.tile[x, y].WallType == WallID.None && Main.netMode != NetmodeID.SinglePlayer)
-                                        {
-                                            NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 2, x, y, 0f, 0, 0, 0);
-                                        }
-                                    }
-                                }
+                                allowWallDestruction = false;
+                                goto PostWallBlastLoop; // Walls cannot be destroyed for the remainder of this explosion. Stop now.
+                            }
+
+                            // Destroy the wall itself.
+                            if (Main.tile[wx, wy] != null && Main.tile[wx, wy].WallType > WallID.None && canBlastThisWall)
+                            {
+                                WorldGen.KillWall(wx, wy, false);
+
+                                // If the wall was actually destroyed (KillWall can fail) then send netcode indicating as such.
+                                if (Main.tile[wx, wy].WallType == WallID.None && Main.netMode != NetmodeID.SinglePlayer)
+                                    NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 2, wx, wy, 0f, 0, 0, 0);
                             }
                         }
                     }
+
+// Label to jump to if wall destruction is aborted.
+PostWallBlastLoop:;
                 }
             }
         }
@@ -682,9 +928,9 @@ namespace CalamityMod
             Vector2 corner = projectile.position;
             for (int i = 0; i < 40; i++)
             {
-                int idx = Dust.NewDust(corner, projectile.width, projectile.height, 31, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(corner, projectile.width, projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -692,10 +938,10 @@ namespace CalamityMod
             }
             for (int i = 0; i < 70; i++)
             {
-                int idx = Dust.NewDust(corner, projectile.width, projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int idx = Dust.NewDust(corner, projectile.width, projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(corner, projectile.width, projectile.height, 6, 0f, 0f, 100, default, 2f);
+                idx = Dust.NewDust(corner, projectile.width, projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 2f;
             }
 

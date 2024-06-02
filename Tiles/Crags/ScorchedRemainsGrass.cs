@@ -1,19 +1,19 @@
-﻿using CalamityMod.Tiles.Ores;
+﻿using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Tiles.Crags.Lily;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Crags
 {
     public class ScorchedRemainsGrass : ModTile
     {
-        private const short subsheetWidth = 450;
-        private const short subsheetHeight = 198;
+        private const short subsheetWidth = 234;
+        private const short subsheetHeight = 90;
         private int extraFrameHeight = 36;
         private int extraFrameWidth = 90;
 
@@ -28,22 +28,24 @@ namespace CalamityMod.Tiles.Crags
             CalamityUtils.SetMerge(Type, ModContent.TileType<ScorchedRemains>());
 
             HitSound = SoundID.Dig;
-            MineResist = 1f;
             MinPick = 100;
-            ItemDrop = ModContent.ItemType<Items.Placeables.ScorchedRemains>();
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedRemains>());
             AddMapEntry(new Color(212, 82, 227));
+
+            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-		{
-			r = 1.82f;
-			g = 0.56f;
-			b = 1.07f;
+        {
+            r = 1.82f;
+            g = 0.56f;
+            b = 1.07f;
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -72,7 +74,7 @@ namespace CalamityMod.Tiles.Crags
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemains>();
             }
 
-            if (WorldGen.genRand.Next(5) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
+            if (WorldGen.genRand.NextBool(5)&& !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
             {
                 up.TileType = (ushort)ModContent.TileType<CinderBlossomTallPlants>();
                 up.HasTile = true;
@@ -80,7 +82,7 @@ namespace CalamityMod.Tiles.Crags
                 up.TileFrameX = (short)(WorldGen.genRand.Next(20) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server) 
+                if (Main.netMode == NetmodeID.Server)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
@@ -103,7 +105,7 @@ namespace CalamityMod.Tiles.Crags
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemains>();
             }
 
-            if (WorldGen.genRand.Next(60) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
+            if (WorldGen.genRand.NextBool(60)&& !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
             {
                 up.TileType = (ushort)ModContent.TileType<LavaPistil>();
                 up.HasTile = true;
@@ -125,7 +127,7 @@ namespace CalamityMod.Tiles.Crags
 
             if (!Main.gamePaused && Main.instance.IsActive && !Above.HasTile && isPlayerNear)
             {
-                if (Main.rand.Next(300) == 0)
+                if (Main.rand.NextBool(300))
                 {
                     int newDust = Dust.NewDust(new Vector2((i - 2) * 16, (j - 1) * 16), 5, 5, ModContent.DustType<CinderBlossomDust>());
                     Main.dust[newDust].velocity.Y += 0.09f;

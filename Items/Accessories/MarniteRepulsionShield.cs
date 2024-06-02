@@ -1,14 +1,15 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System.Collections.Generic;
-using System.Linq;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Accessories
@@ -16,22 +17,15 @@ namespace CalamityMod.Items.Accessories
     [AutoloadEquip(EquipType.Back)]
     //Its not like its a renamed version of the bayonet, but i put this here more as a way to "refund" the item, so it doesnt end up rotting as an unloaded item.
     [LegacyName("MarniteBayonet")]
-    public class MarniteRepulsionShield : ModItem
+    public class MarniteRepulsionShield : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Marnite Repulsion Shield");
-            Tooltip.SetDefault("Enemies behind you are struck by high-knockback hardlight quills\n" +
-                "[c/FFF191:Backstabbers Beware!]");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 30;
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
             Item.defense = 2;
         }
@@ -43,7 +37,7 @@ namespace CalamityMod.Items.Accessories
 
             if (player.whoAmI == Main.myPlayer)
             {
-                int baseDamage = 5;
+                int baseDamage = player.ApplyArmorAccDamageBonusesTo(5);
                 var source = player.GetSource_Accessory(Item);
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<MarniteRepulsionHitbox>()] < 1)
                 {
@@ -80,16 +74,12 @@ namespace CalamityMod.Items.Accessories
         }
     }
 
-    public class MarniteRepulsionHitbox : ModProjectile
+    public class MarniteRepulsionHitbox : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public Player Owner => Main.player[Projectile.owner];
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Repulsion Matrix");
-        }
 
 
         public override void SetDefaults()
@@ -120,12 +110,14 @@ namespace CalamityMod.Items.Accessories
                     Vector2 dustDirection = (Vector2.UnitX * -1 * Owner.direction).RotatedByRandom(MathHelper.PiOver2 * 0.93f);
                     dustOrigin += dustDirection * 14f;
                     float spikeSpeed = Main.rand.NextFloat(1f, 3f);
+                    Vector2 dustVelocity = dustDirection * spikeSpeed + Owner.velocity;
+                    Vector2 dustOriginOffset = dustDirection * 4f;
 
                     for (int i = 0; i < 5; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(dustOrigin, 229, dustDirection * spikeSpeed + Owner.velocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
+                        Dust dust = Dust.NewDustPerfect(dustOrigin, 229, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
                         dust.noGravity = true;
-                        dustOrigin += dustDirection * 4f;
+                        dustOrigin += dustOriginOffset;
                     }
                 }
             }
@@ -135,7 +127,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         public override bool? CanHitNPC(NPC target)
-        { 
+        {
             //Only enemies that are behind the player (shouldn't happen but just in case
             if (Math.Sign((Owner.Center - target.Center).X) != Owner.direction)
                 return false;
@@ -147,9 +139,9 @@ namespace CalamityMod.Items.Accessories
             return base.CanHitNPC(target);
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            hitDirection = Math.Sign(-Owner.direction);
+            modifiers.HitDirectionOverride = Math.Sign(-Owner.direction);
         }
 
         public override bool? CanCutTiles() => false;

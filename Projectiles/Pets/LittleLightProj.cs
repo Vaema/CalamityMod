@@ -1,20 +1,20 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Pets
 {
-    public class LittleLightProj : ModProjectile
+    public class LittleLightProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public Player Owner => Main.player[Projectile.owner];
 
         public Color LightColor => new Color(160, 251, 255);
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Little Light");
             Main.projFrames[Projectile.type] = 9;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.LightPet[Projectile.type] = true;

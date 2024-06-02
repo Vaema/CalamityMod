@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -8,12 +8,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SeraphimDagger : ModProjectile
+    public class SeraphimDagger : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public const int SlowdownTime = 45;
         public const int AimTime = 25;
         public ref float Time => ref Projectile.ai[0];
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Seraphim");
 
         public override void SetDefaults()
         {
@@ -82,11 +82,11 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         // Halve damage every hit
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => Projectile.damage = Math.Max(1, (int)(Projectile.damage * 0.5));
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Projectile.damage = Math.Max(1, (int)(Projectile.damage * 0.5));
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
 

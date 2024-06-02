@@ -1,28 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class MOAB : ModItem
+    public class MOAB : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories.Wings";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("MOAB");
-            Tooltip.SetDefault("The mother of all balloons\n" +
-                "Counts as wings\n" +
-                "Horizontal speed: 6.50\n" +
-                "Acceleration multiplier: 1.0\n" +
-                "Good vertical speed\n" +
-                "Flight time: 75\n" +
-                "10% increased jump speed and allows constant jumping\n" +
-                "Grants the player cloud, blizzard, and sandstorm mid-air jumps");
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(75, 6.5f, 1f);
         }
 
@@ -30,14 +21,14 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.controlJump && player.wingTime > 0f && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
                 if (player.rocketDelay2 <= 0)
@@ -78,10 +69,10 @@ namespace CalamityMod.Items.Accessories.Wings
                     {
                         yStart += player.velocity.Y;
                     }
-                    int num69 = Dust.NewDust(new Vector2(xStart, yStart), 8, 8, type, 0f, 0f, alpha, default, scale);
-                    Dust dust = Main.dust[num69];
+                    int boosterDust = Dust.NewDust(new Vector2(xStart, yStart), 8, 8, type, 0f, 0f, alpha, default, scale);
+                    Dust dust = Main.dust[boosterDust];
                     dust.velocity.X *= 0.1f;
-                    dust.velocity.Y = Main.dust[num69].velocity.Y * 1f + 2f * player.gravDir - player.velocity.Y * 0.3f;
+                    dust.velocity.Y = Main.dust[boosterDust].velocity.Y * 1f + 2f * player.gravDir - player.velocity.Y * 0.3f;
                     dust.noGravity = true;
                     dust.shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
                     if (dustAmt == 4)
@@ -90,13 +81,16 @@ namespace CalamityMod.Items.Accessories.Wings
                     }
                 }
             }
-            player.hasJumpOption_Cloud = true;
-            player.hasJumpOption_Sandstorm = true;
-            player.hasJumpOption_Blizzard = true;
+
+            // Grants Cloud in a Bottle, Sandstorm in a Bottle, and Blizzard in a Bottle (like Bundle of Balloons)
+            player.GetJumpState(ExtraJump.CloudInABottle).Enable();
+            player.GetJumpState(ExtraJump.SandstormInABottle).Enable();
+            player.GetJumpState(ExtraJump.BlizzardInABottle).Enable();
             player.jumpBoost = true;
             player.autoJump = true;
             player.noFallDmg = true;
-            player.jumpSpeedBoost += 0.5f;
+            player.jumpSpeedBoost += 1.6f;
+            player.luck += 0.05f;
         }
 
         public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
@@ -112,8 +106,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient(ItemID.FrogLeg).
-                AddIngredient(ItemID.BundleofBalloons).
-                //TODO -- Use HorseshoeBundle for 1.4.4.
+                AddIngredient(ItemID.HorseshoeBundle).
                 AddIngredient(ItemID.Jetpack).
                 AddIngredient(ItemID.SoulofFright).
                 AddIngredient(ItemID.SoulofMight).

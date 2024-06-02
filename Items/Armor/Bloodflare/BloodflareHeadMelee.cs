@@ -9,21 +9,14 @@ namespace CalamityMod.Items.Armor.Bloodflare
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("BloodflareMask")]
-    public class BloodflareHeadMelee : ModItem
+    public class BloodflareHeadMelee : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Bloodflare Ram Mask");
-            Tooltip.SetDefault("You can move freely through liquids and have temporary immunity to lava\n" +
-                "10% increased melee damage and critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 49; //85
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -41,26 +34,18 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
+            player.GetAttackSpeed<MeleeDamageClass>() += 0.18f;
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareMelee = true;
-            player.setBonus = "Greatly increases life regen\n" +
-                "Enemies are more likely to target you\n" +
-                "Enemies below 50% life drop a heart when struck\n" +
-                "This effect has a 5 second cooldown\n" +
-                "True melee strikes will heal you\n" +
-                "After striking an enemy 15 times with true melee you will enter a blood frenzy for 5 seconds\n" +
-                "During this you will gain 25% increased melee damage, critical strike chance, and contact damage is halved\n" +
-                "This effect has a 30 second cooldown";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
             player.crimsonRegen = true;
             player.aggro += 900;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.lavaMax += 240;
-            player.ignoreWater = true;
             player.GetDamage<MeleeDamageClass>() += 0.1f;
-            player.GetCritChance<MeleeDamageClass>() += 10;
+            player.GetCritChance<MeleeDamageClass>() += 5;
         }
 
         public override void AddRecipes()

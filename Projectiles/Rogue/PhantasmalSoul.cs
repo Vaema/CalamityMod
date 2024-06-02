@@ -1,22 +1,22 @@
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class PhantasmalSoul : ModProjectile
+    public class PhantasmalSoul : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private const int Lifetime = 300;
-        private const int NoHomingFrames = 40;
+        private const int NoHomingFrames = 35;
         private const int NoHitFrames = 10;
         private const int NoDrawFrames = 5;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phantasmal Soul");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Rogue
             return new Color(255, 255, 255, 100);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustCount = 36;
             int dustID = 173;
@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Special quieter version of this noise used by Soul Edge and similar
-            SoundEngine.PlaySound(SoulEdge.ProjectileDeathSound, Projectile.Center);
+            SoundEngine.PlaySound(VoidEdge.ProjectileDeathSound, Projectile.Center);
         }
 
         // Cannot deal damage for the first several frames of existence.

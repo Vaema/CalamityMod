@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Victide
 {
     [AutoloadEquip(EquipType.Body)]
-    public class VictideBreastplate : ModItem, IBulkyArmor
+    public class VictideBreastplate : ModItem, IBulkyArmor, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/Victide/VictideBreastplate_Bulk";
 
         public override void Load()
@@ -21,10 +22,6 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Victide Breastplate");
-            Tooltip.SetDefault("5% increased damage reduction and critical strike chance\n" +
-                "+5 defense and 10% increased damage reduction while submerged in liquid");
 
             if (Main.netMode != NetmodeID.Server)
             {
@@ -38,7 +35,7 @@ namespace CalamityMod.Items.Armor.Victide
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 5; //9
         }

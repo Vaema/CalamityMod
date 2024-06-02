@@ -1,22 +1,23 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class FlowersOfMortalityPetal : ModProjectile
+    public class FlowersOfMortalityPetal : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
         public ref float OffsetAngle => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
         public float Hue => OffsetAngle % MathHelper.TwoPi / MathHelper.TwoPi % 1f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Elemental Petal");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
@@ -58,9 +59,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Time % 50f == 49f && Main.myPlayer == Projectile.owner && potentialTarget != null)
             {
                 Vector2 shootVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 10f;
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<MortalityBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<MortalityBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
             Projectile.Center = player.Center + OffsetAngle.ToRotationVector2() * (150f + (float)Math.Sin(Time * 0.08f) * 15f);
             Projectile.rotation += MathHelper.ToRadians(7f);
@@ -84,7 +83,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D petalTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D petalTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D coreTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/FlowersOfMortalityCore").Value;
             Color drawColor = Main.hslToRgb(Hue, 0.95f, 0.5f) * 2.3f;
 
@@ -94,7 +93,10 @@ namespace CalamityMod.Projectiles.Summon
 
             return false;
         }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
+        }
         public override bool? CanDamage() => false;
     }
 }

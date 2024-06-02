@@ -5,25 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class SupremeBaitTackleBoxFishingStation : ModItem
+    public class SupremeBaitTackleBoxFishingStation : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Supreme Bait Tackle Box Fishing Station");
-            Tooltip.SetDefault("The ultimate fishing accessory\n" +
-                "Increases fishing skill by 80\n" +
-                "Fishing line will never break and decreases chance of bait consumption\n" +
-                "Increases chance to catch crates\n" +
-                "Allows fishing in lava\n" +
-                "Sonar potion effect");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.width = 46;
+            Item.height = 52;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }

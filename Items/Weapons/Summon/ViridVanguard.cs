@@ -8,8 +8,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class ViridVanguard : ModItem
+    public class ViridVanguard : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int HorizontalSlashChargeTime = 14;
 
         public const float HorizontalSlashSpeed = 44f;
@@ -28,19 +29,16 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Virid Vanguard");
-            Tooltip.SetDefault("Summons a circular formation of blades that slice nearby enemies to pieces");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 26;
+            Item.height = 36;
             Item.damage = 73;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.width = 26;
-            Item.height = 36;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
@@ -65,13 +63,13 @@ namespace CalamityMod.Items.Weapons.Summon
                 }
 
                 int bladeIndex = 0;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type == type && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                    if (pro.type == type && pro.owner == player.whoAmI)
                     {
-                        Main.projectile[i].ModProjectile<ViridVanguardBlade>().BladeIndex = bladeIndex++;
-                        Main.projectile[i].ModProjectile<ViridVanguardBlade>().AITimer = 0f;
-                        Main.projectile[i].netUpdate = true;
+                        pro.ModProjectile<ViridVanguardBlade>().BladeIndex = bladeIndex++;
+                        pro.ModProjectile<ViridVanguardBlade>().AITimer = 0f;
+                        pro.netUpdate = true;
                     }
                 }
             }

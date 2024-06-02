@@ -7,11 +7,12 @@ using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Terraria.ID;
 
 namespace CalamityMod.Tiles.Astral
 {
@@ -28,11 +29,15 @@ namespace CalamityMod.Tiles.Astral
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileSpelunker[Type] = true;
+
+            // Various data sets to protect this tile from unintentional death
+            TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsSandfall[Type] = true;
+
             TileObjectData.newTile.CopyFrom(TileObjectData.Style5x4);
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Astral Beacon");
-            AddMapEntry(new Color(128, 128, 158), name);
+            AddMapEntry(new Color(128, 128, 158), CalamityUtils.GetItemName<AstralBeaconItem>());
             TileID.Sets.DisableSmartCursor[Type] = true;
             MinPick = 200;
         }
@@ -43,11 +48,6 @@ namespace CalamityMod.Tiles.Astral
         {
             type = Utils.SelectRandom(Main.rand, ModContent.DustType<AstralBlue>(), ModContent.DustType<AstralOrange>());
             return true;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, Width * 16, Height * 16, ModContent.ItemType<AstralBeaconItem>());
         }
 
         public override bool RightClick(int i, int j)
@@ -69,9 +69,9 @@ namespace CalamityMod.Tiles.Astral
 
             bool usingStarcore = Main.LocalPlayer.HasItem(ModContent.ItemType<Starcore>());
 
-            if (Main.dayTime)
+            if (Main.IsItDay())
             {
-                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.DeusAltarRejectNightText", FailColor);
+                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DeusAltarRejectNightText", FailColor);
                 return false;
             }
 

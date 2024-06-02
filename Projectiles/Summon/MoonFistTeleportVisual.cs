@@ -1,16 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MoonFistTeleportVisual : ModProjectile
+    public class MoonFistTeleportVisual : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Light");
-
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 2;
@@ -30,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D telegraphTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D telegraphTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color telegraphColor = Color.White * Projectile.Opacity * 0.2f;
             telegraphColor.A = 0;
 
@@ -47,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 20; i++)
             {

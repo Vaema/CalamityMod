@@ -1,17 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGFire : ModProjectile
+    public class DoGFire : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Death Fire");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 5)
                 Projectile.frame = 0;
 
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, 173, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 0.8f);
+            int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 0.8f);
             Main.dust[dust].noGravity = true;
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
@@ -68,63 +68,63 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 0);
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 160);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 64;
             Projectile.position.X = Projectile.position.X - Projectile.width / 2;
             Projectile.position.Y = Projectile.position.Y - Projectile.height / 2;
-            for (int num621 = 0; num621 < 5; num621++)
+            for (int i = 0; i < 5; i++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                Main.dust[godSlay].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                    Main.dust[godSlay].scale = 0.5f;
+                    Main.dust[godSlay].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 10; num623++)
+            for (int j = 0; j < 10; j++)
             {
-                int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 3f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
-                Main.dust[num624].velocity *= 2f;
+                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
+                Main.dust[godSlay2].noGravity = true;
+                Main.dust[godSlay2].velocity *= 5f;
+                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                Main.dust[godSlay2].velocity *= 2f;
             }
-            for (int num640 = 0; num640 < 200; num640++)
+            for (int k = 0; k < 200; k++)
             {
-                float num641 = 12f;
-                if (num640 < 150)
-                    num641 = 9f;
-                if (num640 < 100)
-                    num641 = 6f;
-                if (num640 < 50)
-                    num641 = 3f;
+                float dustScale = 12f;
+                if (k < 150)
+                    dustScale = 9f;
+                if (k < 100)
+                    dustScale = 6f;
+                if (k < 50)
+                    dustScale = 3f;
 
-                int num643 = Dust.NewDust(Projectile.Center, 6, 6, 173, 0f, 0f, 100, default, 1f);
-                float num644 = Main.dust[num643].velocity.X;
-                float num645 = Main.dust[num643].velocity.Y;
+                int scalingDust = Dust.NewDust(Projectile.Center, 6, 6, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
+                float scalingDustVelX = Main.dust[scalingDust].velocity.X;
+                float scalingDustVelY = Main.dust[scalingDust].velocity.Y;
 
-                if (num644 == 0f && num645 == 0f)
-                    num644 = 1f;
+                if (scalingDustVelX == 0f && scalingDustVelY == 0f)
+                    scalingDustVelX = 1f;
 
-                float num646 = (float)Math.Sqrt(num644 * num644 + num645 * num645);
-                num646 = num641 / num646;
-                num644 *= num646;
-                num645 *= num646;
+                float scalingDustVelocity = (float)Math.Sqrt(scalingDustVelX * scalingDustVelX + scalingDustVelY * scalingDustVelY);
+                scalingDustVelocity = dustScale / scalingDustVelocity;
+                scalingDustVelX *= scalingDustVelocity;
+                scalingDustVelY *= scalingDustVelocity;
 
                 float scale = 1f;
-                switch ((int)num641)
+                switch ((int)dustScale)
                 {
                     case 4:
                         scale = 1.2f;
@@ -142,10 +142,10 @@ namespace CalamityMod.Projectiles.Boss
                         break;
                 }
 
-                Dust dust = Main.dust[num643];
+                Dust dust = Main.dust[scalingDust];
                 dust.velocity *= 0.5f;
-                dust.velocity.X += num644;
-                dust.velocity.Y += num645;
+                dust.velocity.X += scalingDustVelX;
+                dust.velocity.Y += scalingDustVelY;
                 dust.scale = scale;
                 dust.noGravity = true;
             }

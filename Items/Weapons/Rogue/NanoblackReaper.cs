@@ -14,25 +14,14 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("NanoblackReaperMelee", "NanoblackReaperRogue")]
     public class NanoblackReaper : RogueWeapon
     {
-        public static int BaseDamage = 130;
         public static float Knockback = 9f;
         public static float Speed = 16f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nanoblack Reaper");
-            Tooltip.SetDefault("Unleashes a storm of nanoblack energy blades\n" +
-                "Blades target bosses whenever possible\n" +
-                "Stealth strikes cause the scythe to create a large amount of homing afterimages instead of energy blades\n" +
-                "'She smothered them in Her hatred'");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 64;
-            Item.damage = BaseDamage;
+            Item.damage = 130;
             Item.knockBack = Knockback;
             Item.useTime = 6;
             Item.useAnimation = 6;
@@ -43,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item18;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -52,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = Speed;
         }
 
-		public override float StealthDamageMultiplier => 1.0f;
+        public override float StealthDamageMultiplier => 1.0f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

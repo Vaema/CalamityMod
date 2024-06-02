@@ -11,20 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Sacrifice : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sacrifice");
-            Tooltip.SetDefault("Throws sacrificial daggers that lodge themselves in enemies\n" +
-                "Right click causes all stuck daggers to fly back at you and give you life\n" +
-                "Daggers stuck to enemies release bloodsplosions over time\n" +
-                "Stealth strikes lodge for longer and provide much more life when returning to you");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 310;
             Item.width = Item.height = 68;
+            Item.damage = 300;
             Item.useAnimation = Item.useTime = 9;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -42,26 +32,27 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool AltFunctionUse(Player player) => player.ownedProjectileCounts[Item.shoot] > 0;
 
-        public override float StealthDamageMultiplier => 1.7f;
-        public override float StealthVelocityMultiplier => 1.2f;
+        public override float StealthDamageMultiplier => 1.65f;
+        public override float StealthVelocityMultiplier => 1.5f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != type || !Main.projectile[i].active || Main.projectile[i].owner != player.whoAmI)
+                    if (p.type != type || p.owner != player.whoAmI)
                         continue;
 
-                    if (Main.projectile[i].ai[0] != 1f)
+                    if (p.ai[0] != 1f)
                         continue;
 
-                    NPC attachedNPC = Main.npc[(int)Main.projectile[i].ai[1]];
-                    Main.projectile[i].ai[0] = 2f;
-                    Main.projectile[i].ModProjectile<SacrificeProjectile>().AbleToHealOwner = attachedNPC.type != NPCID.TargetDummy && attachedNPC.type != ModContent.NPCType<SuperDummyNPC>();
-                    Main.projectile[i].netUpdate = true;
+                    NPC attachedNPC = Main.npc[(int)p.ai[1]];
+                    p.ai[0] = 2f;
+                    p.ModProjectile<SacrificeProjectile>().AbleToHealOwner = attachedNPC.type != NPCID.TargetDummy && attachedNPC.type != ModContent.NPCType<SuperDummyNPC>();
+                    p.netUpdate = true;
                 }
+                //TODO: Add something here to avoid stealth being consumed
                 return false;
             }
 

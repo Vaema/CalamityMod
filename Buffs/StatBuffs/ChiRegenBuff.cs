@@ -5,10 +5,9 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class ChiRegenBuff : ModBuff
     {
+        public override string Texture => "CalamityMod/Buffs/StatBuffs/ChiBuff";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chi");
-            Description.SetDefault("Life regen increased");
             Main.buffNoTimeDisplay[Type] = true;
             Main.debuff[Type] = false;
             Main.pvpBuff[Type] = true;

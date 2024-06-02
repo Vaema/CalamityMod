@@ -1,18 +1,18 @@
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class UndinesRetributionSpear : ModProjectile
+    public class UndinesRetributionSpear : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Undine's Retribution");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -43,9 +43,9 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.frame = 0;
             }
-            float num953 = 25f * Projectile.ai[1]; //100
-            float scaleFactor12 = 5f * Projectile.ai[1]; //5
-            float num954 = 500f;
+            float velocityMult = 25f * Projectile.ai[1]; //100
+            float velocityScale = 5f * Projectile.ai[1]; //5
+            float homingRange = 500f;
             if (Projectile.velocity.X < 0f)
             {
                 Projectile.spriteDirection = -1;
@@ -54,15 +54,15 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Lighting.AddLight(Projectile.Center, 0f, 0.1f, 0.7f);
             if (Main.player[Projectile.owner].active && !Main.player[Projectile.owner].dead)
             {
-                if (Projectile.Distance(Main.player[Projectile.owner].Center) > num954)
+                if (Projectile.Distance(Main.player[Projectile.owner].Center) > homingRange)
                 {
                     Vector2 moveDirection = Projectile.SafeDirectionTo(Main.player[Projectile.owner].Center, Vector2.UnitY);
-                    Projectile.velocity = (Projectile.velocity * (num953 - 1f) + moveDirection * scaleFactor12) / num953;
+                    Projectile.velocity = (Projectile.velocity * (velocityMult - 1f) + moveDirection * velocityScale) / velocityMult;
                     return;
                 }
 
@@ -83,12 +83,12 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 64;
@@ -100,19 +100,19 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localNPCHitCooldown = 10;
             Projectile.damage /= 2;
             Projectile.Damage();
-            SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
-            for (int num193 = 0; num193 < 4; num193++)
+            SoundEngine.PlaySound(SoundID.Item21, Projectile.Center);
+            for (int i = 0; i < 4; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
             }
-            for (int num194 = 0; num194 < 6; num194++)
+            for (int j = 0; j < 6; j++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 186, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 3f;
-                num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 186, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
-                Main.dust[num195].velocity *= 2f;
-                Main.dust[num195].noGravity = true;
+                int undust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedsWingsRun, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                Main.dust[undust].noGravity = true;
+                Main.dust[undust].velocity *= 3f;
+                undust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedsWingsRun, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                Main.dust[undust].velocity *= 2f;
+                Main.dust[undust].noGravity = true;
             }
         }
     }

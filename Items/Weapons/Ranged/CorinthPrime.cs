@@ -9,32 +9,26 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class CorinthPrime : ModItem
+    public class CorinthPrime : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Corinth Prime");
-            Tooltip.SetDefault(@"Shoots a tight burst of 6 high velocity bullets
-Converts musket balls into high velocity explosive bullets
-Right click to fire a grenade
-The grenade emits a massive explosion if it doesn't touch anything for 2 seconds
-Otherwise, the grenade emits an extremely weak explosion");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 100;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 106;
             Item.height = 42;
+            Item.damage = 140;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
             Item.UseSound = SoundID.Item38;
@@ -97,7 +91,7 @@ Otherwise, the grenade emits an extremely weak explosion");
                 AddIngredient(ItemID.VortexBeater).
                 AddIngredient(ItemID.IllegalGunParts).
                 AddIngredient<ArmoredShell>(2).
-                AddTile(TileID.Anvils).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

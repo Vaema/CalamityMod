@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -14,23 +15,17 @@ namespace CalamityMod.Items.Armor.Silva
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("SilvaHelmet")]
-    public class SilvaHeadSummon : ModItem
+    public class SilvaHeadSummon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaActivation");
         public static readonly SoundStyle DispelSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaDispel");
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Silva Horned Hood");
-            Tooltip.SetDefault("10% increased minion damage");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 13; //110
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -51,12 +46,7 @@ namespace CalamityMod.Items.Armor.Silva
             modPlayer.silvaSet = true;
             modPlayer.silvaSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.setBonus = "65% increased minion damage and +5 max minions\n" +
-                "All projectiles spawn healing leaf orbs on enemy hits\n" +
-                "Max run speed and acceleration boosted by 5%\n" +
-                "If you are reduced to 1 HP you will not die from any further damage for 8 seconds\n" +
-                "This effect has a 5 minute cooldown. The cooldown does not decrement if any bosses or events are active.\n" +
-                "Summons an ancient leaf prism to blast your enemies with life energy";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<SilvaArmor>("CommonSetBonus");
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_ItemUse(Item);
@@ -66,7 +56,10 @@ namespace CalamityMod.Items.Armor.Silva
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(600);
+                    // 08DEC2023: Ozzatron: Silva Crystals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(600);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
                         Main.projectile[p].originalDamage = 600;

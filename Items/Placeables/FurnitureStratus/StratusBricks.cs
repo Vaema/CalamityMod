@@ -5,19 +5,19 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureStratus
 {
-    public class StratusBricks : ModItem
+    public class StratusBricks : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Stratus Brick");
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -42,11 +42,9 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
                 Register();
             CreateRecipe().
                 AddIngredient<StratusPlatform>(2).
-                AddTile(TileID.LunarCraftingStation).
                 Register();
             CreateRecipe().
                 AddIngredient<StratusStarPlatformItem>(2).
-                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

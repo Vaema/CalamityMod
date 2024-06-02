@@ -1,16 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class EmpyreanEmber : ModProjectile
+    public class EmpyreanEmber : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Empyrean Ember");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -52,8 +49,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.rotation += Projectile.velocity.X * 0.1f;
             if (Main.rand.NextBool(3))
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 62, 0f, 0f, 100, default, 0.75f);
-                Dust dust2 = Main.dust[num200];
+                int ourpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 0.75f);
+                Dust dust2 = Main.dust[ourpleDust];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
                 dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
@@ -62,8 +59,8 @@ namespace CalamityMod.Projectiles.Typeless
             }
             else
             {
-                int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 62, 0f, 0f, 100, default, 0.75f);
-                Dust dust = Main.dust[num199];
+                int ourpleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 0.75f);
+                Dust dust = Main.dust[ourpleDust2];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
                 dust.scale += (float)Main.rand.Next(50) * 0.01f;

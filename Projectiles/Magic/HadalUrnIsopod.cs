@@ -1,17 +1,17 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class HadalUrnIsopod : ModProjectile
+    public class HadalUrnIsopod : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Abyssal Isopod"); //Calvan reference!?
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
@@ -24,6 +24,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 240;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -54,25 +56,25 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             //Black Anurian bubble dust
-            int num3;
-            for (int num246 = 0; num246 < 25; num246 = num3 + 1)
+            int inc;
+            for (int i = 0; i < 25; i = inc + 1)
             {
-                int num247 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 14, 0f, 0f, 0, default, 1f);
-                Main.dust[num247].position = (Main.dust[num247].position + Projectile.position) / 2f;
-                Main.dust[num247].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                Main.dust[num247].velocity.Normalize();
-                Dust dust = Main.dust[num247];
+                int hadalDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 0, default, 1f);
+                Main.dust[hadalDust].position = (Main.dust[hadalDust].position + Projectile.position) / 2f;
+                Main.dust[hadalDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                Main.dust[hadalDust].velocity.Normalize();
+                Dust dust = Main.dust[hadalDust];
                 dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
-                Main.dust[num247].alpha = Projectile.alpha;
-                num3 = num246;
+                Main.dust[hadalDust].alpha = Projectile.alpha;
+                inc = i;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
         }

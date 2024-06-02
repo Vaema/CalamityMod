@@ -1,19 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class GalileosMoon : ModProjectile
+    public class GalileosMoon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/CrescentMoonProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crescent Moon");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -26,12 +26,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 12;
-            Projectile.extraUpdates = 1;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 2;
             Projectile.timeLeft = 135 * Projectile.MaxUpdates;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 10;
+            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 13;
         }
 
         public override void AI()
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
         }

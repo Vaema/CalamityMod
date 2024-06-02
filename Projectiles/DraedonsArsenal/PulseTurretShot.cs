@@ -6,25 +6,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class PulseTurretShot : ModProjectile
+    public class PulseTurretShot : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public const int SpiralPrecision = 36;
         public const int SpiralRings = 6;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pulse Bolt");
             ProjectileID.Sets.SentryShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
@@ -56,7 +53,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
             }
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (!Main.dedServ)
             {

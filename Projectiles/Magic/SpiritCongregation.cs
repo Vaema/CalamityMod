@@ -1,20 +1,19 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
-using Terraria.Graphics.Shaders;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles.Metaballs;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SpiritCongregation : ModProjectile
+    public class SpiritCongregation : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public Vector2 HoverOffset = Vector2.Zero;
         public ref float Time => ref Projectile.ai[0];
         public ref float BaseDamage => ref Projectile.ai[1];
@@ -31,13 +30,13 @@ namespace CalamityMod.Projectiles.Magic
         {
             get
             {
-                float movementSpeed = 9f;
+                float movementSpeed = 10f;
 
                 // Make speed gradually build up over time, with growths at certain points.
                 movementSpeed += MathHelper.SmoothStep(0f, 2.2f, Utils.GetLerpValue(0.18f, 0.3f, CurrentPower, true));
                 movementSpeed += MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(0.4f, 0.52f, CurrentPower, true));
                 movementSpeed += MathHelper.SmoothStep(0f, 5f, Utils.GetLerpValue(0.6f, 0.72f, CurrentPower, true));
-                movementSpeed += MathHelper.SmoothStep(0f, 6f, Utils.GetLerpValue(0.8f, 0.92f, CurrentPower, true));
+                movementSpeed += MathHelper.SmoothStep(0f, 6f, Utils.GetLerpValue(0.8f, 1.2f, CurrentPower, true));
 
                 return movementSpeed;
             }
@@ -46,7 +45,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spirit Monster");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
         }
@@ -60,8 +58,9 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
+            Projectile.localNPCHitCooldown = 11;
             Projectile.timeLeft = 90000;
+            Projectile.hide = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -125,7 +124,7 @@ namespace CalamityMod.Projectiles.Magic
                 BaseDamage = Projectile.damage;
             else
             {
-                float damageBoostFactor = MathHelper.SmoothStep(1f, 3.3f, CurrentPower);
+                float damageBoostFactor = MathHelper.SmoothStep(1f, 1.85f, CurrentPower);
                 Projectile.damage = (int)(BaseDamage * damageBoostFactor);
             }
 
@@ -229,8 +228,8 @@ namespace CalamityMod.Projectiles.Magic
                 particleSize += (Projectile.oldPosition - Projectile.position).Length() * 4.2f;
 
             // Place a hard limit on particle sizes.
-            if (particleSize > 500f)
-                particleSize = 500f;
+            if (particleSize > 210f)
+                particleSize = 210f;
 
             // Make particles shrink when dying.
             particleSize *= MathHelper.Lerp(1f, 0.5f, Utils.GetLerpValue(0f, 35f, DeathCounter, true));
@@ -240,12 +239,15 @@ namespace CalamityMod.Projectiles.Magic
             {
                 // Summon a base particle.
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(1f, 1f) * particleSize / 26f;
-                FusableParticleManager.GetParticleSetByType<GruesomeEminenceParticleSet>()?.SpawnParticle(spawnPosition, particleSize);
+                GruesomeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(4.4f, 4.4f), particleSize);
 
                 // And an "ahead" particle that spawns based on current movement.
                 // This causes the "head" of the overall thing to have bumps when moving.
                 spawnPosition += Projectile.velocity.RotatedByRandom(1.38f) * particleSize / 105f;
-                FusableParticleManager.GetParticleSetByType<GruesomeEminenceParticleSet>()?.SpawnParticle(spawnPosition, particleSize * 0.4f);
+                GruesomeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(i * 1.5f + 7f, i * 1.5f + 7f), particleSize * 0.3f);
+
+                // Make particle sizes exponentially decrease across loop iterations.
+                particleSize *= 0.9f;
             }
 
             // Release gas projectiles randomly. This does not happen when dying.
@@ -263,44 +265,59 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.frame = Projectile.frameCounter / 5 % maxFrame;
         }
 
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            // Ensure that the teeth draw over the metaballs.
+            overPlayers.Add(index);
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-            int maxFrame = CurrentPower <= LargeMouthPowerLowerBound ? 6 : 9;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBack").Value;
-            Texture2D auraTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationAura").Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (CurrentPower > LargeMouthPowerLowerBound)
-            {
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBig").Value;
-                backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBackBig").Value;
-                auraTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationAuraBig").Value;
-            }
-            
-            float offsetFactor = Projectile.scale * ((CongregationDiameter - 54f) / 90f + 1.5f);
-            offsetFactor *= texture.Width / 90f;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * offsetFactor * 15f;
-            Rectangle frame = texture.Frame(1, maxFrame, 0, Projectile.frame);
-            Vector2 origin = frame.Size() * 0.5f;
-            SpriteEffects direction = Math.Cos(Projectile.rotation) > 0f ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
-            DrawData backTextureDraw = new(backTexture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale, direction, 0);
-            DrawData auraTextureDraw = new(auraTexture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale, direction, 0);
-            FusableParticleManager.GetParticleSetByType<GruesomeEminenceParticleSet>()?.PrepareSpecialDrawingForNextFrame(backTextureDraw, auraTextureDraw);
-            Main.EntitySpriteDraw(texture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale, direction, 0);
+            DrawHead(texture);
             return false;
         }
 
-        // TODO -- this damage should be after Terraria vanilla multipliers, so it won't one shot people
-        // Damage scales up over time as it grows
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public void DrawHead(Texture2D texture, float scaleFactor = 1f)
+        {
+            int maxFrame = CurrentPower <= LargeMouthPowerLowerBound ? 6 : 9;
+            float offsetFactor = Projectile.scale * ((CongregationDiameter - 54f) / 90f + 1.5f);
+            offsetFactor *= texture.Width / 90f;
+
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * offsetFactor * 15f;
+            Rectangle frame = texture.Frame(1, maxFrame, 0, Projectile.frame);
+            Vector2 origin = frame.Size() * 0.5f;
+            SpriteEffects direction = MathF.Cos(Projectile.rotation) > 0f ? SpriteEffects.None : SpriteEffects.FlipVertically;
+
+            Main.EntitySpriteDraw(texture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale * scaleFactor, direction, 0);
+        }
+
+        public void DrawHeadForMetaball()
+        {
+            Texture2D backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBack").Value;
+            if (CurrentPower > LargeMouthPowerLowerBound)
+                backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBackBig").Value;
+
+            DrawHead(backTexture, 1.04f);
+        }
+
+        // Damage scales up over time as it grows.
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             float damageFactor = 0.25f + 0.75f * CurrentPower;
             int fullPowerDamage;
-            if (Main.masterMode) fullPowerDamage = 540;
-            else if (Main.expertMode) fullPowerDamage = 450;
-            else fullPowerDamage = 360;
+            if (Main.masterMode)
+                fullPowerDamage = 540;
+            else if (Main.expertMode)
+                fullPowerDamage = 450;
+            else
+                fullPowerDamage = 360;
 
-            damage = (int)(damageFactor * fullPowerDamage);
+            modifiers.SourceDamage *= 0f;
+            modifiers.SourceDamage.Flat += (int)(damageFactor * fullPowerDamage);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

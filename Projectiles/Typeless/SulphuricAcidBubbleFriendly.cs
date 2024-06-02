@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,14 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class SulphuricAcidBubbleFriendly : ModProjectile
+    public class SulphuricAcidBubbleFriendly : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Enemy/SulphuricAcidBubble";
 
         private bool fromArmour = false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Acid Bubble");
             Main.projFrames[Projectile.type] = 7;
         }
 
@@ -101,14 +101,14 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.localAI[1] < 1f)
             {
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.Kill();
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (Projectile.localAI[1] < 1f)
             {
@@ -128,24 +128,24 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.Kill();
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 60;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int num3;
-            for (int num246 = 0; num246 < 25; num246 = num3 + 1)
+            int inc;
+            for (int i = 0; i < 25; i = inc + 1)
             {
-                int num247 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 0, default, 1f);
-                Main.dust[num247].position = (Main.dust[num247].position + Projectile.position) / 2f;
-                Main.dust[num247].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                Main.dust[num247].velocity.Normalize();
-                Dust dust = Main.dust[num247];
+                int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 0, default, 1f);
+                Main.dust[toxicDust].position = (Main.dust[toxicDust].position + Projectile.position) / 2f;
+                Main.dust[toxicDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                Main.dust[toxicDust].velocity.Normalize();
+                Dust dust = Main.dust[toxicDust];
                 dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
-                Main.dust[num247].alpha = Projectile.alpha;
-                num3 = num246;
+                Main.dust[toxicDust].alpha = Projectile.alpha;
+                inc = i;
             }
         }
     }

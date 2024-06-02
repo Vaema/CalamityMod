@@ -31,7 +31,7 @@ namespace CalamityMod.Items
                     return false;
                 return (NPC.downedMechBoss1.ToInt() + NPC.downedMechBoss2.ToInt() + NPC.downedMechBoss3.ToInt()) >= 2;
             }
-            
+
             switch (item.type)
             {
                 #region Boss Treasure Bags
@@ -132,6 +132,7 @@ namespace CalamityMod.Items
 
                 case ItemID.QueenSlimeBossBag:
                     loot.Add(ItemID.SoulofLight, 1, 15, 20); // 100% 15-20 Soul of Light
+                    loot.Add(ItemID.PinkGel, 1, 15, 20); // 100% 15-20 Pink Gel
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -192,7 +193,7 @@ namespace CalamityMod.Items
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, golemItems));
                     loot.Add(ModContent.ItemType<AegisBlade>(), 10); // 10% Aegis Blade
-                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 8, 13); // 100% 8-13 Essence of Sunlight
+                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 10, 12); // 100% 10-12 Essence of Sunlight
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -263,8 +264,8 @@ namespace CalamityMod.Items
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
-                    // The Celestial Onion only drops if the player hasn't used one.
-                    loot.AddIf((info) => !info.player.Calamity().extraAccessoryML, ModContent.ItemType<CelestialOnion>());
+                    // The Celestial Onion only drops if the player hasn't used one, or if the world is not in Master Mode.
+                    loot.AddIf((info) => !info.player.Calamity().extraAccessoryML && !Main.masterMode, ModContent.ItemType<CelestialOnion>());
                     break;
                 #endregion
 
@@ -309,7 +310,7 @@ namespace CalamityMod.Items
                 case ItemID.DungeonFishingCrate:
                 case ItemID.DungeonFishingCrateHard:
                     loot.AddIf(() => NPC.downedPlantBoss, ItemID.Ectoplasm, 10, 1, 5); // 10% 1-5 Ectoplasm
-                    loot.AddIf(() => DownedBossSystem.downedPolterghast, ModContent.ItemType<Phantoplasm>(), 10, 1, 5); // 10% 1-5 Phantoplasm
+                    loot.AddIf(() => DownedBossSystem.downedPolterghast, ModContent.ItemType<Necroplasm>(), 10, 1, 5); // 10% 1-5 Necroplasm
                     break;
 
                 case ItemID.JungleFishingCrate:
@@ -362,7 +363,7 @@ namespace CalamityMod.Items
                 case ItemID.GoodieBag:
                     RemoveBatHookFromGoodieBag(loot);
                     break;
-                #endregion
+                    #endregion
             }
         }
         #endregion

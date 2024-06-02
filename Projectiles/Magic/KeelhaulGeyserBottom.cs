@@ -1,12 +1,12 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class KeelhaulGeyserBottom : ModProjectile
+    public class KeelhaulGeyserBottom : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Geyser");
             Main.projFrames[Projectile.type] = 4;
         }
 

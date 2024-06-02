@@ -13,13 +13,12 @@ namespace CalamityMod.Items.Dyes
     {
         public override ArmorShaderData ShaderDataToBind
         {
-            get => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/ExoDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").UseImage("Images/Misc/Perlin");
+            get => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/ExoDyeShader"), "DyePass").UseImage("Images/Misc/Perlin");
         }
 
         public override void SafeSetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Exo Dye");
+            Item.ResearchUnlockCount = 3;
         }
 
         public override void SafeSetDefaults()

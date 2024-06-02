@@ -1,39 +1,29 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class TacticalPlagueEngine : ModItem
+    public class TacticalPlagueEngine : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int BulletShootRate = 125;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tactical Plague Engine");
-            Tooltip.SetDefault("Summons a plague jet to pummel your enemies into submission\n" +
-                               "Jets will fire bullets from your inventory\n" +
-                               "50% chance to not consume ammo\n" +
-                               "Sometimes shoots a missile instead of a bullet\n" +
-                               "Missiles do not consume ammo");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
-            Item.damage = 140;
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.damage = 140;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item14;
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Summon;
@@ -47,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (Main.projectile.IndexInRange(p))
-                   Main.projectile[p].originalDamage = Item.damage;
+                    Main.projectile[p].originalDamage = Item.damage;
             }
             return false;
         }

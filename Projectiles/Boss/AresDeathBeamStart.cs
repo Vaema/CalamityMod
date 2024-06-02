@@ -1,22 +1,24 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Ares;
+using CalamityMod.NPCs.Other;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresDeathBeamStart : BaseLaserbeamProjectile
+    public class AresDeathBeamStart : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public int OwnerIndex
@@ -36,11 +38,9 @@ namespace CalamityMod.Projectiles.Boss
         public override void SetStaticDefaults()
         {
             // Ares' eight-pointed-star (more on higher difficulties) laser beams
-            DisplayName.SetDefault("Blenderbeam");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
             // This is its serious name
-            // DisplayName.SetDefault("Exo Overload Beam");
         }
 
         public override void SetDefaults()
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AttachToSomething()
         {
-            if (Main.npc[OwnerIndex].active && Main.npc[OwnerIndex].type == ModContent.NPCType<AresBody>())
+            if (Main.npc[OwnerIndex].active && (Main.npc[OwnerIndex].type == ModContent.NPCType<AresBody>() || Main.npc[OwnerIndex].type == ModContent.NPCType<THELORDE>()))
             {
                 Vector2 fireFrom = new Vector2(Main.npc[OwnerIndex].Center.X - 1f, Main.npc[OwnerIndex].Center.Y + 23f);
                 fireFrom += Projectile.velocity.SafeNormalize(Vector2.UnitY) * MathHelper.Lerp(35f, 127f, Projectile.scale * Projectile.scale);
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Die if the owner is not performing Ares' deathray attack.
-            if (Main.npc[OwnerIndex].Calamity().newAI[0] != (float)AresBody.Phase.Deathrays)
+            if (Main.npc[OwnerIndex].Calamity().newAI[0] != (float)AresBody.Phase.Deathrays && Main.npc[OwnerIndex].type != ModContent.NPCType<THELORDE>())
             {
                 Projectile.Kill();
                 return;
@@ -234,9 +234,9 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);

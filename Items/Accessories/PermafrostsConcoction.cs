@@ -1,28 +1,21 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class PermafrostsConcoction : ModItem
+    public class PermafrostsConcoction : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Permafrost's Concoction");
-            Tooltip.SetDefault(@"Increases maximum mana by 50 and reduces mana cost by 15%
-Increases life regen as life decreases
-Increases life regen when afflicted with any fire debuff
-You will survive fatal damage and revive with 30% life on a 3 minute cooldown
-You are encased in an ice barrier for 3 seconds when revived");
-        }
-
+        // Boosted by Cross Necklace.
+        internal static readonly int EncasedIFrames = 90;
+        
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.accessory = true;
             Item.width = 36;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.accessory = true;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
 

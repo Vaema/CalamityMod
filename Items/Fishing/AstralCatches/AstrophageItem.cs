@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.AstralCatches
 {
-    public class AstrophageItem : ModItem
+    public class AstrophageItem : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Astrophage");
-            Tooltip.SetDefault("Summons an astrophage to follow you around");
-        }
-
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.ZephyrFish);

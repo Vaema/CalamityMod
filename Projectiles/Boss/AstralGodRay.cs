@@ -1,15 +1,16 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AstralGodRay : ModProjectile
+    public class AstralGodRay : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         private const float LaserLength = 80f;
         private const float LaserLengthChangeRate = 2f;
 
@@ -17,13 +18,13 @@ namespace CalamityMod.Projectiles.Boss
         // They are extremely carefully chosen and barely work as is!
         private const float WaveTheta = 0.09f;
         private const int WaveTwistFrames = 9;
+
         private ref float WaveFrameState => ref Projectile.localAI[1];
 
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Astral God Ray");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -81,12 +82,6 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.velocity = Projectile.velocity.RotatedBy(waveSign * WaveTheta);
             Projectile.rotation = Projectile.velocity.ToRotation();
 
-            // Emit light.
-            if (WaveFrameState < 0f)
-                Lighting.AddLight(Projectile.Center, 0.87f, 0.65f, 0.1725f);
-            else
-                Lighting.AddLight(Projectile.Center, 0.1725f, 0.87f, 0.65f);
-
             // Laser length shenanigans. If the laser is still growing, increase localAI 0 to indicate it is getting longer.
             Projectile.localAI[0] += 10f; // LaserLengthChangeRate;
 
@@ -103,12 +98,12 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -121,7 +116,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(LaserLength, 2f, lightColor, curve: true);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustID = WaveFrameState < 0f ? ModContent.DustType<AstralOrange>() : ModContent.DustType<AstralBlue>();
             int dustAmt = 4;

@@ -1,23 +1,25 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class HeresyProj : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Heresy>();
         public Player Owner => Main.player[Projectile.owner];
         public float ShootIntensity => MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0f, 275f, Time, true));
         public ref float Time => ref Projectile.ai[0];
         public ref float AttackTimer => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Heresy");
             Main.projFrames[Projectile.type] = 8;
         }
 
@@ -35,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             // If the player is no longer able to hold the book, kill it.
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -110,7 +112,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             float glowOutwardness = MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(90f, 270f, Time, true));
-            Texture2D bookTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D bookTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = bookTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 drawPosition;
             Vector2 origin = frame.Size() * 0.5f;

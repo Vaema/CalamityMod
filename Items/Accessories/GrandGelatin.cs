@@ -1,47 +1,35 @@
 ﻿using System;
+using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class GrandGelatin : ModItem
+    public class GrandGelatin : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Grand Gelatin");
-            Tooltip.SetDefault("10% increased movement and jump speed\n" +
-                "+20 max life and mana\n" +
-                "Standing still boosts life and mana regen");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 20;
-            Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.width = 34;
+            Item.height = 52;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.moveSpeed += 0.1f;
-            player.jumpSpeedBoost += 0.5f;
-            player.statLifeMax2 += 20;
-            player.statManaMax2 += 20;
-            if (Math.Abs(player.velocity.X) < 0.05f && Math.Abs(player.velocity.Y) < 0.05f && player.itemAnimation == 0)
-            {
-                player.lifeRegen += 4;
-                player.manaRegenBonus += 4;
-            }
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.GrandGelatin = true;
+            player.moveSpeed += 0.12f;
+            player.jumpSpeedBoost += 0.6f;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ManaJelly>().
+                AddIngredient<CleansingJelly>().
                 AddIngredient<LifeJelly>().
                 AddIngredient<VitalJelly>().
                 AddIngredient(ItemID.SoulofLight, 2).

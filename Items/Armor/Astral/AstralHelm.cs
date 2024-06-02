@@ -1,5 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,20 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Astral
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AstralHelm : ModItem
+    public class AstralHelm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Astral Helm");
-            Tooltip.SetDefault("Danger detection");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.defense = 17; //63
         }
@@ -37,10 +31,7 @@ namespace CalamityMod.Items.Armor.Astral
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased movement speed and +3 max minions\n" +
-                "35% increased damage and 25% increased critical strike chance\n" +
-                "Whenever you crit an enemy, a barrage of stars will rain down\n" +
-                "This effect has a 1 second cooldown before it can trigger again";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.astralStarRain = true;
             player.moveSpeed += 0.05f;

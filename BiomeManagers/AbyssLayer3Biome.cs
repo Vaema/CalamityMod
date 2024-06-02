@@ -1,5 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Placeables.FurnitureAbyss;
 using CalamityMod.Systems;
+using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,20 +21,22 @@ namespace CalamityMod.BiomeManagers
         }
 
         public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/MiddleAbyssWater");
-        public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
+        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer3Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer23";
         public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer23";
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Thermal Vents");
-        }
-
         public override bool IsBiomeActive(Player player)
         {
-            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&
-            playerYTileCoords > Main.rockLayer + Main.maxTilesY * 0.143 && playerYTileCoords <= Main.rockLayer + Main.maxTilesY * 0.268;
+            if (Main.remixWorld)
+            {
+                return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&
+                playerYTileCoords <= SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.4f) && playerYTileCoords > SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f);
+            }
+
+            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&
+            playerYTileCoords2 > Main.rockLayer + Main.maxTilesY * 0.143 && playerYTileCoords2 <= Main.rockLayer + Main.maxTilesY * 0.268;
         }
     }
 }

@@ -1,4 +1,4 @@
-using CalamityMod.Items.Mounts;
+﻿using CalamityMod.Items.Mounts;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Buffs.Mounts
@@ -7,8 +7,6 @@ namespace CalamityMod.Buffs.Mounts
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Alicorn");
-            Description.SetDefault("You beat DoG while drunk, you are truly fabulous!");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
         }

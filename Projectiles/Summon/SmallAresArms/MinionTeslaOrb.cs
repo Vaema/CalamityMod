@@ -1,46 +1,41 @@
-﻿using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Projectiles.Boss;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
-    public class MinionTeslaOrb : ModProjectile
+    public class MinionTeslaOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float Identity => ref Projectile.ai[0];
 
         public ref float Time => ref Projectile.ai[1];
-
-        public PrimitiveTrail LightningDrawer;
-        
-        public PrimitiveTrail LightningBackgroundDrawer;
 
         public override string Texture => "CalamityMod/Projectiles/Boss/AresTeslaOrb";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tesla Sphere");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 32;
-            Projectile.height = 32;
+            Projectile.width = Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 420;
             Projectile.Opacity = 0f;
             Projectile.usesLocalNPCImmunity = true;
@@ -79,15 +74,15 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public Projectile GetOrbToAttachTo()
         {
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type != Projectile.type || Main.projectile[i].ai[0] != Identity + 1f || !Main.projectile[i].active)
+                if (p.type != Projectile.type || p.ai[0] != Identity + 1f)
                     continue;
 
-                if (!Main.projectile[i].WithinRange(Projectile.Center, AresExoskeleton.TeslaOrbDetatchDistance))
+                if (!p.WithinRange(Projectile.Center, AresExoskeleton.TeslaOrbDetatchDistance))
                     continue;
 
-                return Main.projectile[i];
+                return p;
             }
 
             return null;
@@ -115,17 +110,12 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-            if (LightningBackgroundDrawer is null)
-                LightningBackgroundDrawer = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-
             Projectile orbToAttachTo = GetOrbToAttachTo();
             if (orbToAttachTo != null)
             {
                 List<Vector2> arcPoints = AresTeslaOrb.DetermineElectricArcPoints(Projectile.Center, orbToAttachTo.Center, 117);
-                LightningBackgroundDrawer.Draw(arcPoints, -Main.screenPosition, 90);
-                LightningDrawer.Draw(arcPoints, -Main.screenPosition, 90);
+                PrimitiveRenderer.RenderTrail(arcPoints, new(BackgroundWidthFunction, BackgroundColorFunction, smoothen: false), 90);
+                PrimitiveRenderer.RenderTrail(arcPoints, new(WidthFunction, ColorFunction, smoothen: false), 90);
             }
 
             lightColor.R = (byte)(255 * Projectile.Opacity);

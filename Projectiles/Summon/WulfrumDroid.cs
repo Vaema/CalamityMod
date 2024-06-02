@@ -1,25 +1,27 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Terraria.Audio;
-using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Items.Accessories;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.Graphics.Shaders;
-using Terraria.Graphics.Effects;
 using static Terraria.ModLoader.ModContent;
-using ReLogic.Content;
-using System.IO;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class WulfrumDroid : ModProjectile
+    public class WulfrumDroid : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public static readonly SoundStyle HelloSound = new("CalamityMod/Sounds/Custom/WulfrumDroidSpawnBeep") { PitchVariance = 0.4f };
         public static readonly SoundStyle PewSound = new("CalamityMod/Sounds/Custom/WulfrumDroidFire") { PitchVariance = 0.4f, Volume = 0.6f, MaxInstances = 0 };
         public static readonly SoundStyle RandomChirpSound = new("CalamityMod/Sounds/Custom/WulfrumDroidChirp", 4) { PitchVariance = 0.3f };
@@ -30,10 +32,9 @@ namespace CalamityMod.Projectiles.Summon
             get
             {
                 int minionCount = 1;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (proj.active && proj.owner == Owner.whoAmI && proj.type == Type && proj.whoAmI != Projectile.whoAmI)
+                    if (proj.owner == Owner.whoAmI && proj.type == Type && proj.whoAmI != Projectile.whoAmI)
                     {
                         minionCount++;
                     }
@@ -43,7 +44,6 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        internal PrimitiveTrail TrailDrawer;
         internal Color PrimColorMult;
         public Player healedPlayer;
 
@@ -98,7 +98,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wulfrum Droid");
             Main.projFrames[Projectile.type] = 12;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -315,14 +314,14 @@ namespace CalamityMod.Projectiles.Summon
 
                     if (Main.netMode == NetmodeID.MultiplayerClient && mouseDistanceToOwner > 120f)
                     {
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        foreach (Player p in Main.ActivePlayers)
                         {
-                            if (Main.player[i].active && !Main.player[i].dead && (Main.player[i].team == Owner.team || Main.player[i].team == 0))
+                            if (!p.dead && (p.team == Owner.team || p.team == 0))
                             {
-                                float mouseDistanceToPotentialTarget = (Main.player[i].MountedCenter - Owner.Calamity().mouseWorld).Length();
+                                float mouseDistanceToPotentialTarget = (p.MountedCenter - Owner.Calamity().mouseWorld).Length();
                                 if (mouseDistanceToPotentialTarget < 120f && mouseDistanceToOwner > mouseDistanceToPotentialTarget)
                                 {
-                                    playerToBuff = Main.player[i];
+                                    playerToBuff = p;
                                     mouseDistanceToOwner = mouseDistanceToPotentialTarget;
                                 }
                             }
@@ -368,15 +367,13 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             ShootTimer = ShootDelay;
 
-                            if (Main.rand.NextBool(3))
+                            // 1/3 chance to directly recharge the Rover Drive shield by 1 point
+                            if (Main.rand.NextBool(3) && modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
                             {
-                                RoverDrivePlayer shieldMan = playerToBuff.GetModPlayer<RoverDrivePlayer>();
-                                if (shieldMan.ProtectionMatrixDurability > 0 && shieldMan.ProtectionMatrixDurability < RoverDrive.ProtectionMatrixDurabilityMax)
-                                {
-                                    shieldMan.ProtectionMatrixDurability++;
-                                    if (playerToBuff.Calamity().cooldowns.TryGetValue(Cooldowns.WulfrumRoverDriveDurability.ID, out var cd))
-                                        cd.timeLeft = shieldMan.ProtectionMatrixDurability;
-                                }
+                                CalamityPlayer buffedCalPlayer = playerToBuff.Calamity();
+                                buffedCalPlayer.RoverDriveShieldDurability++;
+                                if (buffedCalPlayer.cooldowns.TryGetValue(Cooldowns.WulfrumRoverDriveDurability.ID, out var cd))
+                                    cd.timeLeft = buffedCalPlayer.RoverDriveShieldDurability;
                             }
                         }
                     }
@@ -466,8 +463,6 @@ namespace CalamityMod.Projectiles.Summon
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-                if (TrailDrawer is null)
-                    TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
                 GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
 
                 Vector2[] drawPos = new Vector2[] { Projectile.Center, Projectile.Center, healedPlayer.Center + (Projectile.Center - healedPlayer.Center) * 0.5f + Vector2.UnitY * 40f, healedPlayer.Center, healedPlayer.Center };
@@ -475,7 +470,7 @@ namespace CalamityMod.Projectiles.Summon
                 CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1.8f, delegate (Vector2 offset, Color colorMod)
                 {
                     PrimColorMult = colorMod;
-                    TrailDrawer.Draw(drawPos, - Main.screenPosition + offset, 30);
+                    PrimitiveRenderer.RenderTrail(drawPos, new(WidthFunction, ColorFunction, (_) => offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
                 });
 
                 Main.spriteBatch.End();

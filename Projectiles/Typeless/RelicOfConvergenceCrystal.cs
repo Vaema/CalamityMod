@@ -1,25 +1,23 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
     public class RelicOfConvergenceCrystal : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<RelicOfConvergence>();
         public const int SoundInterval = 15;
         public const int TotalCrystalsToDraw = 3;
         public const int CrystalsDrawTime = 90;
         public const float MaxCrystalOffsetRadius = 80f;
         public const float MaxDustOffsetRadius = 70f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Relic of Convergence");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -120,7 +118,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.ai[0] >= CrystalsDrawTime)
                 return true;
             float opacity = Projectile.ai[0] / CrystalsDrawTime;
-            Texture2D crystalTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D crystalTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < TotalCrystalsToDraw; i++)
             {
                 float angle = MathHelper.TwoPi / TotalCrystalsToDraw * i + Projectile.ai[0] / 10f;

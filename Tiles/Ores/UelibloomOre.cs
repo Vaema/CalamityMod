@@ -1,13 +1,17 @@
 ﻿
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
     public class UelibloomOre : ModTile
     {
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -19,14 +23,16 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.UelibloomOre>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Uelibloom");
-            AddMapEntry(new Color(0, 255, 0), name);
-            MineResist = 5f;
+            AddMapEntry(new Color(0, 255, 0), CreateMapEntryName());
+            MineResist = 3f;
             MinPick = 225;
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
+
+
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -37,12 +43,6 @@ namespace CalamityMod.Tiles.Ores
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, TileID.Mud, false, false, false, false, resetFrame);
-            return false;
         }
     }
 }

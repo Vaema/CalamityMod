@@ -1,15 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class GruesomeEminenceHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<GruesomeEminence>();
         public Player Owner => Main.player[Projectile.owner];
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Gruesome Eminence");
 
         public override void SetDefaults()
         {

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Furniture
@@ -12,12 +11,8 @@ namespace CalamityMod.Tiles.Furniture
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpCandle();
-            ItemDrop = ModContent.ItemType<Items.Placeables.Furniture.TranquilityCandle>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Tranquility Candle");
-            AddMapEntry(new Color(238, 145, 105), name);
-            AdjTiles = new int[] { TileID.Candles };
+            this.SetUpCandle(ModContent.ItemType<Items.Placeables.Furniture.TranquilityCandle>(), false, false);
+            AddMapEntry(new Color(238, 145, 105), CalamityUtils.GetItemName<Items.Placeables.Furniture.TranquilityCandle>());
         }
 
         public override void MouseOver(int i, int j)

@@ -1,18 +1,21 @@
-﻿using Terraria.ModLoader;
+﻿using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class AbyssGravel : ModItem
+    public class AbyssGravel : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Abyss Gravel");
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             Item.createTile = ModContent.TileType<Tiles.Abyss.AbyssGravel>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -20,9 +23,15 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<AbyssGravelWallItem>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

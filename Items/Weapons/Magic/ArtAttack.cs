@@ -6,32 +6,24 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class ArtAttack : ModItem
+    public class ArtAttack : ModItem, ILocalizedModType
     {
-        public const int MaxDamageBoostTime = 300;
-        public const float MaxDamageBoostFactor = 25f;
+        public new string LocalizationCategory => "Items.Weapons.Magic";
+        public const int MaxDamageBoostTime = 180;
+        public const float MaxDamageBoostFactor = 18f;
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/ArtAttackCast");
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Art Attack");
-            Tooltip.SetDefault("Casts a star that follows the mouse that creates a rainbow trail as it moves\n" +
-                "Once a full shape is created with the trail all enemies within it take damage proportional to how long it took to draw the shape\n" +
-                "And the audience goes wild!");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.damage = 80;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
             Item.width = 70;
             Item.height = 70;
+            Item.damage = 80;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 20;
             Item.useTime = Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = null;
             Item.autoReuse = true;

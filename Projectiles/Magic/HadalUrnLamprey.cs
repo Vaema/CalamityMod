@@ -2,16 +2,17 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class HadalUrnLamprey : ModProjectile
+    public class HadalUrnLamprey : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         int invistimer = 0;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sea Lamprey");
             Main.projFrames[Projectile.type] = 8;
         }
 
@@ -20,12 +21,12 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 18;
             Projectile.height = 18;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.alpha = 255;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 45;
+            Projectile.localNPCHitCooldown = 60;
         }
 
         public override void AI()
@@ -85,10 +86,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            Projectile.ModifyHitNPCSticky(5, true);
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(4);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -101,36 +99,36 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int textureheight = tex.Height / Main.projFrames[Projectile.type];
             int y = textureheight * Projectile.frame;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y, tex.Width, textureheight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(tex.Width, tex.Height / 16f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Black Anurian bubble dust
-            int num3;
-            for (int num246 = 0; num246 < 25; num246 = num3 + 1)
+            int inc;
+            for (int i = 0; i < 25; i = inc + 1)
             {
-                int num247 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 14, 0f, 0f, 0, default, 1f);
-                Main.dust[num247].position = (Main.dust[num247].position + Projectile.position) / 2f;
-                Main.dust[num247].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                Main.dust[num247].velocity.Normalize();
-                Dust dust = Main.dust[num247];
+                int hadalDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 0, default, 1f);
+                Main.dust[hadalDust].position = (Main.dust[hadalDust].position + Projectile.position) / 2f;
+                Main.dust[hadalDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                Main.dust[hadalDust].velocity.Normalize();
+                Dust dust = Main.dust[hadalDust];
                 dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
-                Main.dust[num247].alpha = Projectile.alpha;
-                num3 = num246;
+                Main.dust[hadalDust].alpha = Projectile.alpha;
+                inc = i;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
         }

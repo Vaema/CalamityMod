@@ -1,38 +1,29 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using System;
 using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class WulfrumController : ModItem
+    public class WulfrumController : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wulfrum Controller");
-            Tooltip.SetDefault("Summons a wulfrum droid to fight for you\n" +
-                "Hold right click while holding the remote to switch all of your drones into supercharge mode\n" +
-                "Supercharged droids will stop attacking and focus wulfrum energy onto you\n" +
-                "The beam provides extra regeneration and defense\n" +
-                "Can also be used to heal other players by keeping your mouse cursor close enough to them");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Summon";
 
         public override void SetDefaults()
         {
-            Item.damage = 16;
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.damage = 16;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item15; //phaseblade sound effect
             Item.autoReuse = true;
@@ -77,6 +68,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void ResetEffects()
         {
         }
+
         public override void UpdateDead()
         {
             buffingDrones = 0;
@@ -86,7 +78,10 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (buffingDrones > 0)
             {
-                Player.lifeRegen += (int)(buffingDrones * 3);
+                // 1 life regen per drone.
+                Player.lifeRegen += (int)(buffingDrones);
+
+                // 3 defense per drone.
                 Player.statDefense += buffingDrones * 3;
 
                 buffingDrones = 0;
@@ -97,9 +92,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (buffingDrones > 0 && Main.rand.NextBool(3))
             {
-                Vector2 dustPos = Player.position + (Player.height * Main.rand.NextFloat(0.7f, 1f)  + Player.gfxOffY) * Vector2.UnitY + Vector2.UnitX * Main.rand.NextFloat() * Player.width;
+                Vector2 dustPos = Player.position + (Player.height * Main.rand.NextFloat(0.7f, 1f) + Player.gfxOffY) * Vector2.UnitY + Vector2.UnitX * Main.rand.NextFloat() * Player.width;
 
-                Dust chust = Dust.NewDustPerfect(dustPos, 274, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity , Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                Dust chust = Dust.NewDustPerfect(dustPos, 274, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
                 chust.noGravity = true;
                 chust.noLight = true;
             }

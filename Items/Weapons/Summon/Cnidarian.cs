@@ -10,21 +10,10 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class Cnidarian : ModItem
+    public class Cnidarian : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override string Texture => "CalamityMod/Items/Weapons/Summon/CnidarianFishingRod";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cnidarian");
-            Tooltip.SetDefault("Fishes up an electric jellyfish\n" +
-            "Periodically sends out sparks to electrocute nearby enemies.\n" +
-            //Lore tooltip time. Elden Ring.
-            "[c/5C95A1:From looking at their less sapient brethren, the Old Kingdom's inhabitants adapted tools and weapons designed for underwater efficiency.]\n" +
-            "[c/5C95A1:The electric properties of ghost bells remain useful even after death, having been commonly used as conduits.]"
-            );
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
@@ -47,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
 
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
         public override bool CanUseItem(Player player)
@@ -82,7 +71,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 player.ChangeDir(-1);
             }
 
-            
+
             CalamityUtils.CleanHoldStyle(player, player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir, player.GetFrontHandPositionImproved(player.compositeFrontArm), new Vector2(42, 34), new Vector2(-15, 11), true);
         }
 

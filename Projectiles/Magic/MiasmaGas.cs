@@ -1,15 +1,15 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class MiasmaGas : ModProjectile
+    public class MiasmaGas : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gas");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -46,23 +46,23 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.rotation += Projectile.velocity.X * 0.0003f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
             Projectile.ai[1] = 1f;
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
             Projectile.ai[1] = 1f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 25; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 48, 30, 189, 0f, 0f);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 48, 30, DustID.Pumpkin, 0f, 0f);
                 dust.velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(39f));
                 dust.alpha = 127;
             }

@@ -1,17 +1,17 @@
-﻿using CalamityMod.NPCs;
+﻿using System.IO;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class SirenSong : ModProjectile
+    public class SirenSong : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Musical Note");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -79,9 +79,9 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.Opacity != 1f)
+            if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
             target.AddBuff(BuffID.Dazed, 120);

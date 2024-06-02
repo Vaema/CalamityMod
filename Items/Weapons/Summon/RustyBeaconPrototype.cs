@@ -1,42 +1,33 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class RustyBeaconPrototype : ModItem
+    public class RustyBeaconPrototype : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int PulseReleaseRate = 120;
 
         public const int PulseLifetime = 95;
 
         public const int IrradiatedDebuffTime = 120;
 
-        public const int PoisonedDebuffTime = 240;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rusty Beacon Prototype");
-            Tooltip.SetDefault("Summons a long-abandoned drone to support you\n" +
-                               "The drone hovers in place and releases toxic waves that inflict irradiated and poisoned");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.mana = 10;
             Item.damage = 8;
             Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item15; // Phaseblade sound effect
             Item.autoReuse = true;

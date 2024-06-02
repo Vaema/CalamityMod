@@ -5,20 +5,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class EarthenPike : ModItem
+    public class EarthenPike : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Earthen Pike");
-            Tooltip.SetDefault("Crushes enemy defenses\n" +
-                "Sprays fossil shards on use");
-            SacrificeTotal = 1;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 60;
+            Item.height = 60;
             Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -30,8 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 60;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<EarthenPikeSpear>();
             Item.shootSpeed = 8f;

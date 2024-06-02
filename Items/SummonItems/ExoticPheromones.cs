@@ -2,24 +2,19 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.Bumblebirb;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.SummonItems
 {
     [LegacyName("BirbPheromones")]
-    public class ExoticPheromones : ModItem
+    public class ExoticPheromones : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Exotic Pheromones");
-            Tooltip.SetDefault("Specifically formulated to attract draconic hybrids\n" +
-                "Summons The Dragonfolly when used in the Jungle\n" +
-                "Enrages outside the Jungle\n" +
-                "Not consumable");
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -49,7 +44,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Bumblefuck>());
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<Bumblefuck>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Bumblefuck>());
 
             return true;
         }

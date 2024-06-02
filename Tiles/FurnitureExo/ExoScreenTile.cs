@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -21,9 +22,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Screen");
-            AddMapEntry(new Color(71, 95, 114), name);
+            AddMapEntry(new Color(71, 95, 114), CalamityUtils.GetText("Tiles.Screen"));
             DustType = 8;
             AnimationFrameHeight = 36;
             TileID.Sets.FramesOnKillWall[Type] = true;
@@ -52,11 +51,6 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<ExoScreen>());
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

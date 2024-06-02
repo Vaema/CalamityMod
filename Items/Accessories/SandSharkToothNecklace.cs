@@ -5,21 +5,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class SandSharkToothNecklace : ModItem
+    public class SandSharkToothNecklace : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Sand Shark Tooth Necklace");
-            Tooltip.SetDefault("Increases armor penetration by 10\n" + "6% increased damage");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 44;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 

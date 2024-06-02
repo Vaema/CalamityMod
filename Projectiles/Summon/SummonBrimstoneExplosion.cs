@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SummonBrimstoneExplosion : ModProjectile
+    public class SummonBrimstoneExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Explosion");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 6;
         }
@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = Projectile.height = 160;
             Projectile.friendly = true;
             Projectile.hostile = true;
-            Projectile.minion = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = Main.projFrames[Projectile.type] * 5;
             Projectile.usesLocalNPCImmunity = true;
@@ -64,10 +63,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ExpandHitboxBy(48);
         }
 
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             // Prevent absurd quantities of damage to the player.
-            damage = (int)(damage * 0.018);
+            modifiers.SourceDamage *= 0.018f;
         }
     }
 }

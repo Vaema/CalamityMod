@@ -8,28 +8,28 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 {
     [LegacyName("FleshyGeodeT2")]
-    public class NecromanticGeode : ModItem
+    public class NecromanticGeode : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Necromantic Geode");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<FleshyGeode>();
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
+        }
 
         public override bool CanRightClick() => true;
 

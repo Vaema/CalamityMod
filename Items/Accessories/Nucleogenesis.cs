@@ -5,30 +5,26 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class Nucleogenesis : ModItem
+    public class Nucleogenesis : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Nucleogenesis");
-            Tooltip.SetDefault("Increases max minions by 4, does not stack with downgrades\n" +
-                "Grants immunity to Shadowflame and Irradiated\n" +
-                "15% increased minion damage\n" +
-                "Increased minion knockback\n" +
-                "Minions inflict a variety of debuffs\n" +
-                "Minions spawn damaging sparks on enemy hits"); //subject to change to be "cooler"
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 10));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.width = 50;
+            Item.height = 52;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

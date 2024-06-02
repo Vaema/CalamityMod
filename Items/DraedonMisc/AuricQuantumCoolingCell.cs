@@ -1,48 +1,36 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class AuricQuantumCoolingCell : ModItem
+    public class AuricQuantumCoolingCell : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.DraedonItems";
         public static readonly SoundStyle InstallSound = new("CalamityMod/Sounds/Custom/Codebreaker/AuricQuantumCoolingCellInstallNew");
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Auric Quantum Cooling Cell");
-            Tooltip.SetDefault("Can be placed in the Codebreaker, completing it\n" +
-                "The completion of the Codebreaker allows you to make contact with its original creator\n" +
-                "Attempting to do so may have dire consequences");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 44;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 15;
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.FirstOrDefault(x => x.Name == "Tooltip2" && x.Mod == "Terraria").OverrideColor = Color.DarkRed;
-            CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5, true);
-        }
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5, true);
 
         public override void Update(ref float gravity, ref float maxFallSpeed)
         {
@@ -77,12 +65,12 @@ namespace CalamityMod.Items.DraedonMisc
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AuricBar>(2).
+                AddIngredient<AuricBar>(5).
                 AddIngredient<MysteriousCircuitry>(8).
                 AddIngredient<DubiousPlating>(8).
                 AddIngredient<EndothermicEnergy>(40).
                 AddIngredient<CoreofEleum>(6).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
                 AddTile<CosmicAnvil>().
                 Register();
         }

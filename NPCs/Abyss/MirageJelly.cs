@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -21,17 +22,21 @@ namespace CalamityMod.NPCs.Abyss
         private bool teleporting = false;
         private bool rephasing = false;
         private bool hasBeenHit = false;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mirage Jelly");
             Main.npcFrameCount[NPC.type] = 7;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-               PortraitPositionYOverride = 20
+                PortraitPositionYOverride = 20
             };
             value.Position.Y += 30f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -56,14 +61,17 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer3Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("In the encapsulating darkness of the abyss, a drifting purple light that seems to ignore all physical boundaries is likely one of these. Many even doubt their existence and blame it on the rapture of the deep.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.MirageJelly")
             });
         }
 
@@ -109,43 +117,43 @@ namespace CalamityMod.NPCs.Abyss
                     {
                         teleporting = false;
                         NPC.TargetClosest(true);
-                        int num1249 = 0;
-                        int num1250;
-                        int num1251;
+                        int teleportTries = 0;
+                        int teleportTileX;
+                        int teleportTileY;
                         while (true)
                         {
-                            num1249++;
-                            num1250 = (int)player.Center.X / 16;
-                            num1251 = (int)player.Center.Y / 16;
+                            teleportTries++;
+                            teleportTileX = (int)player.Center.X / 16;
+                            teleportTileY = (int)player.Center.Y / 16;
 
                             int min = 6;
                             int max = 9;
 
-                            if (Main.rand.NextBool(2))
-                                num1250 += Main.rand.Next(min, max);
+                            if (Main.rand.NextBool())
+                                teleportTileX += Main.rand.Next(min, max);
                             else
-                                num1250 -= Main.rand.Next(min, max);
+                                teleportTileX -= Main.rand.Next(min, max);
 
                             min = 11;
                             max = 26;
 
-                            num1251 += Main.rand.Next(min, max);
+                            teleportTileY += Main.rand.Next(min, max);
 
-                            if (!WorldGen.SolidTile(num1250, num1251) && Collision.CanHit(new Vector2((float)(num1250 * 16), (float)(num1251 * 16)), 1, 1, player.position, player.width, player.height) &&
-                                Main.tile[num1250, num1251].LiquidAmount > 204)
+                            if (!WorldGen.SolidTile(teleportTileX, teleportTileY) && Collision.CanHit(new Vector2((float)(teleportTileX * 16), (float)(teleportTileY * 16)), 1, 1, player.position, player.width, player.height) &&
+                                Main.tile[teleportTileX, teleportTileY].LiquidAmount > 204)
                             {
                                 break;
                             }
-                            if (num1249 > 100)
+                            if (teleportTries > 100)
                             {
                                 goto Block;
                             }
                         }
                         NPC.ai[0] = 1f;
-                        NPC.ai[1] = (float)num1250;
-                        NPC.ai[2] = (float)num1251;
+                        NPC.ai[1] = (float)teleportTileX;
+                        NPC.ai[2] = (float)teleportTileY;
                         NPC.netUpdate = true;
-                        Block:
+Block:
                         ;
                     }
                 }
@@ -191,11 +199,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/MirageJellyGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -212,7 +218,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer3 && spawnInfo.Water)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                return Main.remixWorld ? 5.4f : SpawnCondition.CaveJellyfish.Chance * 0.6f;
             }
             return 0f;
         }
@@ -221,34 +227,47 @@ namespace CalamityMod.NPCs.Abyss
         {
             npcLoot.AddIf(() => NPC.downedBoss3, ModContent.ItemType<AbyssShocker>(), 10);
 
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 5, 7, 10, 14));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 5, 7, 10, 14));
 
             npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 7, 5));
-            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<ManaJelly>(), 7, 5));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 7, 5));
             npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 7, 5));
+            npcLoot.Add(ItemID.JellyfishNecklace, 10);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        // Can only hit the target if they're touching the tentacles
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            if (damage > 0)
+            Vector2 npcCenter = NPC.Center;
+            Rectangle tentacleHitbox = new Rectangle((int)(npcCenter.X - (NPC.width / 4f)), (int)npcCenter.Y, NPC.width / 2, NPC.height / 2);
+
+            Rectangle targetHitbox = target.Hitbox;
+            bool insideTentacleHitbox = targetHitbox.Intersects(tentacleHitbox);
+
+            return insideTentacleHitbox;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
             {
-                player.AddBuff(BuffID.Venom, 240, true);
-                player.AddBuff(BuffID.Electrified, 120, true);
+                target.AddBuff(BuffID.Venom, 240, true);
+                target.AddBuff(BuffID.Electrified, 120, true);
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

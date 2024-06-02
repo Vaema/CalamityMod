@@ -1,18 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class CrimsonSpike : ModProjectile
+    public class CrimsonSpike : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Spike");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -29,10 +25,10 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Color dustColor = Color.Crimson;
                 dustColor.A = 150;
-                int num67 = Dust.NewDust(Projectile.position - Projectile.velocity * 3f, Projectile.width, Projectile.height, 260, 0f, 0f, 50, dustColor, 1.2f);
-                Main.dust[num67].velocity *= 0.3f;
-                Main.dust[num67].velocity += Projectile.velocity * 0.3f;
-                Main.dust[num67].noGravity = true;
+                int redSpiky = Dust.NewDust(Projectile.position - Projectile.velocity * 3f, Projectile.width, Projectile.height, DustID.SparksMech, 0f, 0f, 50, dustColor, 1.2f);
+                Main.dust[redSpiky].velocity *= 0.3f;
+                Main.dust[redSpiky].velocity += Projectile.velocity * 0.3f;
+                Main.dust[redSpiky].noGravity = true;
             }
 
             Projectile.Opacity += 0.2f;
@@ -42,7 +38,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item17, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item17, Projectile.Center);
             }
 
             Projectile.ai[0] += 1f;
@@ -53,21 +49,21 @@ namespace CalamityMod.Projectiles.Enemy
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.Darkness, 90);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Color dustColor = Color.Crimson;
             dustColor.A = 150;
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 260, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 50, dustColor, 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.SparksMech, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 50, dustColor, 1f);
             }
         }
 

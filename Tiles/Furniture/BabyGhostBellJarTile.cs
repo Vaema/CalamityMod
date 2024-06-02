@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -18,15 +19,13 @@ namespace CalamityMod.Tiles.Furniture
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AnimationFrameHeight = 36;
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Baby Ghost Bell Jar");
-            AddMapEntry(new Color(64, 224, 208), name);
+            AddMapEntry(new Color(64, 224, 208), CalamityUtils.GetItemName<BabyGhostBellJar>());
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 13, 0f, 0f, 0, new Color(), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Glass, 0f, 0f, 0, new Color(), 1f);
             return false;
         }
 
@@ -61,11 +60,6 @@ namespace CalamityMod.Tiles.Furniture
             r = 0.25f;
             g = 0.88f;
             b = 0.82f;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<BabyGhostBellJar>());
         }
     }
 }

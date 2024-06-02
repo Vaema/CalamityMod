@@ -5,8 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SquirrelSquireMinion : ModProjectile
+    public class SquirrelSquireMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float AttackTimer => ref Projectile.ai[1];
         public bool Attacking
         {
@@ -32,7 +33,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Squirrel Squire");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 16;
@@ -48,7 +48,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = Projectile.SentryLifeTime;
             Projectile.penetrate = -1;
             Projectile.tileCollide = true;
-            Projectile.minion = true;
             Projectile.sentry = true;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -101,7 +100,6 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.rotation = 0f;
             Projectile.tileCollide = true;
-            Projectile.StickToTiles(false, false);
         }
 
         public void DoInitializationEffects()
@@ -109,7 +107,8 @@ namespace CalamityMod.Projectiles.Summon
             int dustQuantity = 36;
             for (int d = 0; d < dustQuantity; d++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 7);
+                // The ground squirrel is very slightly off-center
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * 16f, 7);
                 dust.scale = 1.4f;
                 dust.velocity = (MathHelper.TwoPi * d / dustQuantity).ToRotationVector2() * 4f;
                 dust.noGravity = true;
@@ -139,9 +138,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.WithinRange(target.Center, 200f))
                     acornShootVelocity = (target.Center - acornSpawnPosition).SafeNormalize(-Vector2.UnitY) * acornShootSpeed;
 
-                int acorn = Projectile.NewProjectile(Projectile.GetSource_FromThis(), acornSpawnPosition, acornShootVelocity, ModContent.ProjectileType<SquirrelSquireAcorn>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                if (Main.projectile.IndexInRange(acorn))
-                    Main.projectile[acorn].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), acornSpawnPosition, acornShootVelocity, ModContent.ProjectileType<SquirrelSquireAcorn>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
         }
 
@@ -149,7 +146,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void Kill(int timeLeft)
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
+
+        public override void OnKill(int timeLeft)
         {
             if (Main.netMode != NetmodeID.Server)
             {

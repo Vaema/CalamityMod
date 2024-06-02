@@ -1,30 +1,21 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class DevilsDevastation : ModItem
+    public class DevilsDevastation : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Devil's Devastation");
-            Tooltip.SetDefault("Fires a spread of demonic scythes\n" +
-                "Pitchforks rise from the underworld to skewer your foes\n" +
-                "Critical hits cause shadowflame explosions\n" +
-                "Receives 33% benefit from melee speed bonuses");
-            SacrificeTotal = 1;
-            ItemID.Sets.BonusAttackSpeedMultiplier[Item.type] = 0.33f;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
@@ -111,66 +102,60 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 173);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.ShadowbeamStaff);
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.ShadowFlame, 150);
             target.AddBuff(BuffID.OnFire, 300);
-            if (crit)
+            if (hit.Crit)
             {
-                damage /= 2;
                 target.AddBuff(BuffID.ShadowFlame, 450);
                 target.AddBuff(BuffID.OnFire, 900);
-                player.ApplyDamageToNPC(target, damage * 4, 0f, 0, false);
-                float scalar1 = 1.7f;
-                float scalar2 = 0.8f;
-                float scalar3 = 2f;
-                Vector2 value3 = (target.rotation - MathHelper.PiOver2).ToRotationVector2();
-                Vector2 value4 = value3 * target.velocity.Length();
+                player.ApplyDamageToNPC(target, Item.damage * 4, 0f, 0, false);
+                float firstDustScale = 1.7f;
+                float secondDustScale = 0.8f;
+                float thirdDustScale = 2f;
+                Vector2 dustRotation = (target.rotation - MathHelper.PiOver2).ToRotationVector2();
+                Vector2 dustVelocity = dustRotation * target.velocity.Length();
                 SoundEngine.PlaySound(SoundID.Item14, target.Center);
                 for (int i = 0; i < 40; i++)
                 {
-                    int dustInt = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 200, default, scalar1);
+                    int dustInt = Dust.NewDust(target.position, target.width, target.height, DustID.ShadowbeamStaff, 0f, 0f, 200, default, firstDustScale);
                     Dust dust = Main.dust[dustInt];
                     dust.position = target.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * Main.rand.NextFloat() * target.width / 2f;
                     dust.noGravity = true;
                     dust.velocity.Y -= 4.5f;
                     dust.velocity *= 3f;
-                    dust.velocity += value4 * Main.rand.NextFloat();
-                    dustInt = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 100, default, scalar2);
+                    dust.velocity += dustVelocity * Main.rand.NextFloat();
+                    dustInt = Dust.NewDust(target.position, target.width, target.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, secondDustScale);
                     dust.position = target.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * Main.rand.NextFloat() * target.width / 2f;
                     dust.velocity.Y -= 3f;
                     dust.velocity *= 2f;
                     dust.noGravity = true;
                     dust.fadeIn = 1f;
                     dust.color = Color.Crimson * 0.5f;
-                    dust.velocity += value4 * Main.rand.NextFloat();
+                    dust.velocity += dustVelocity * Main.rand.NextFloat();
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int dustInt = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 0, default, scalar3);
+                    int dustInt = Dust.NewDust(target.position, target.width, target.height, DustID.ShadowbeamStaff, 0f, 0f, 0, default, thirdDustScale);
                     Dust dust = Main.dust[dustInt];
                     dust.position = target.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)target.velocity.ToRotation(), default) * target.width / 3f;
                     dust.noGravity = true;
                     dust.velocity.Y -= 1.5f;
                     dust.velocity *= 0.5f;
-                    dust.velocity += value4 * (0.6f + 0.6f * Main.rand.NextFloat());
+                    dust.velocity += dustVelocity * (0.6f + 0.6f * Main.rand.NextFloat());
                 }
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 150);
-            target.AddBuff(BuffID.OnFire, 300);
-            if (crit)
-            {
-                target.AddBuff(ModContent.BuffType<Shadowflame>(), 450);
-                target.AddBuff(BuffID.OnFire, 900);
-                SoundEngine.PlaySound(SoundID.Item14, target.Center);
-            }
+            target.AddBuff(ModContent.BuffType<Shadowflame>(), 450);
+            target.AddBuff(BuffID.OnFire, 900);
+            SoundEngine.PlaySound(SoundID.Item14, target.Center);
         }
 
         public override void AddRecipes()
@@ -180,7 +165,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<ExaltedOathblade>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
-                AddTile(ModContent.TileType<CosmicAnvil>()).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

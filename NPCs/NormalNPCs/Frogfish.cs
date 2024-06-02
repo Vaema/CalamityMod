@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -12,9 +13,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Frogfish");
             Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
         }
 
         public override void SetDefaults()
@@ -38,25 +37,28 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("Ambush predators that lay in wait for their prey. They are not particularly strong, and if you come across one, are dispatched with ease.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Frogfish")
             });
         }
 
         public override void AI()
         {
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
-            int num = 200;
+            int alphaControl = 200;
             if (NPC.ai[2] == 0f)
             {
-                NPC.alpha = num;
+                NPC.alpha = alphaControl;
                 NPC.TargetClosest(true);
                 if (!Main.player[NPC.target].dead && (Main.player[NPC.target].Center - NPC.Center).Length() < 170f &&
                     Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
@@ -73,7 +75,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (NPC.alpha > 0)
                 {
-                    NPC.alpha -= num / 16;
+                    NPC.alpha -= alphaControl / 16;
                     if (NPC.alpha < 0)
                     {
                         NPC.alpha = 0;
@@ -91,14 +93,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.ai[2] == 1f)
             {
                 NPC.chaseable = true;
-                CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.15f, 0.15f, 3.5f, 1.5f, 0.1f);
+                CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.15f, 0.15f, 3.5f, 1.5f, 0.1f);
             }
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.Venom, 180, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Venom, 180, true);
         }
 
         public override void FindFrame(int frameHeight)
@@ -125,17 +127,17 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<AnechoicCoating>(), 2);
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

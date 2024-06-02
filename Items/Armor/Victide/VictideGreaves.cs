@@ -7,14 +7,11 @@ namespace CalamityMod.Items.Armor.Victide
 {
     [AutoloadEquip(EquipType.Legs)]
     [LegacyName("VictideLeggings")]
-    public class VictideGreaves : ModItem
+    public class VictideGreaves : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Victide Greaves");
-            Tooltip.SetDefault("Movement speed increased by 8%\n" +
-                "Movement speed increased by 30% while submerged in liquid");
 
             if (Main.netMode != NetmodeID.Server)
             {
@@ -27,7 +24,7 @@ namespace CalamityMod.Items.Armor.Victide
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 4; //9
         }

@@ -7,13 +7,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Statigel
 {
     [AutoloadEquip(EquipType.Body)]
-    public class StatigelArmor : ModItem
+    public class StatigelArmor : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statigel Armor");
-            Tooltip.SetDefault("5% increased critical strike chance");
 
             if (Main.netMode == NetmodeID.Server)
                 return;

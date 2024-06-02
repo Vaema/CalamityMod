@@ -12,23 +12,17 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     // TODO -- This weapon is a disgrace to its Armored Core heritage. It needs a full rework.
-    public class Karasawa : ModItem
+    public class Karasawa : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/MechGaussRifle");
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Karasawa");
-            Tooltip.SetDefault("...This is heavy... too heavy.");
-            SacrificeTotal = 1;
-        }
 
         public override void SetDefaults()
         {
             Item.width = 94;
             Item.height = 44;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 900;
+            Item.damage = 2400;
             Item.knockBack = 12f;
             Item.useTime = 52;
             Item.useAnimation = 52;
@@ -38,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 
@@ -54,13 +48,12 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-
             if (velocity.Length() > 5f)
             {
                 velocity.Normalize();
                 velocity *= 5f;
             }
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<KarasawaShot>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
 
             // Consume 5 ammo per shot
             CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 5);

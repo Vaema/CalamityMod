@@ -1,21 +1,16 @@
-using CalamityMod.Tiles.Furniture.BossTrophies;
+﻿using CalamityMod.Tiles.Furniture.BossTrophies;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.Trophies
 {
-    public class RavagerTrophy : ModItem
+    public class RavagerTrophy : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ravager Trophy");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;

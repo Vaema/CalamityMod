@@ -8,46 +8,38 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class CosmicShiv : ModItem
+    public class CosmicShiv : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cosmic Shiv");
-            Tooltip.SetDefault("Fires a cosmic beam that homes in on enemies\n" +
-                "Upon hitting an enemy, a barrage of offscreen objects home in on the enemy as well as raining stars\n" +
-                "Receives 33% benefit from melee speed bonuses");
-            SacrificeTotal = 1;
-            ItemID.Sets.BonusAttackSpeedMultiplier[Item.type] = 0.33f;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public override void SetDefaults()
         {
-            Item.useStyle = ItemUseStyleID.Rapier;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 18;
-            Item.useTime = 18;
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 218;
-            Item.knockBack = 9f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
             Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.autoReuse = true;
+            Item.useStyle = ItemUseStyleID.Rapier;
+            Item.damage = 270;
+            Item.DamageType = DamageClass.Melee;
+            Item.useAnimation = Item.useTime = 40;
             Item.shoot = ModContent.ProjectileType<CosmicShivProj>();
             Item.shootSpeed = 2.4f;
-
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.knockBack = 9f;
+            Item.UseSound = SoundID.Item1;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.Calamity().donorItem = true; //Yatagarasu#0001
+            Item.Calamity().donorItem = true; // revertusernamechange on Discord (Yatagarasu)
         }
+
+        public override bool MeleePrefix() => true;
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<ElementalShiv>().
                 AddIngredient<CosmiliteBar>(8).
-                AddTile(ModContent.TileType<CosmicAnvil>()).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

@@ -2,30 +2,24 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Armor.Mollusk
 {
     [AutoloadEquip(EquipType.Head)]
-    public class MolluskShellmet : ModItem
+    public class MolluskShellmet : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Mollusk Shellmet");
-            Tooltip.SetDefault("5% increased damage and 4% increased critical strike chance\n" +
-                               "You can move freely through liquids");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 18;
         }
@@ -44,9 +38,7 @@ namespace CalamityMod.Items.Armor.Mollusk
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Two shellfishes aid you in combat\n" +
-                              "10% increased damage\n" +
-                              "Your horizontal movement is slowed";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             player.GetDamage<GenericDamageClass>() += 0.1f;
             modPlayer.molluskSet = true;
@@ -60,9 +52,12 @@ namespace CalamityMod.Items.Armor.Mollusk
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<Shellfish>()] < 2)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(140);
-                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), damage, 0f, player.whoAmI);
-                    clam.originalDamage = damage;
+                    // 08DEC2023: Ozzatron: Clams spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(140);
+                    // wait why does this not scale with summon damage
+
+                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), baseDamage, 0f, player.whoAmI);
+                    clam.originalDamage = baseDamage;
                 }
             }
             player.Calamity().wearingRogueArmor = true;

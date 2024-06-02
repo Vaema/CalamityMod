@@ -6,24 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class HideofAstrumDeus : ModItem
+    public class HideofAstrumDeus : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hide of Astrum Deus");
-            Tooltip.SetDefault("Taking damage, or inflicting a true melee strike, drops an immense amount of astral stars from the sky\n" +
-                                "Taking damage boosts true melee damage by 50%\n" +
-                                "Boost duration is based on the amount of damage you took, the higher the damage the longer the boost\n" +
-                                "Provides immunity to the astral infection, cursed inferno, on fire, and frostburn debuffs\n" +
-                                "Enemies take damage when they hit you and are inflicted with the astral infection debuff");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.accessory = true;
         }
@@ -34,7 +24,7 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[ModContent.BuffType<AstralInfectionDebuff>()] = true;
             modPlayer.hideOfDeus = true;
             if (modPlayer.hideOfDeusMeleeBoostTimer > 0)
-                player.GetDamage<TrueMeleeDamageClass>() += 0.5f;
+                player.GetDamage<TrueMeleeDamageClass>() += 0.3f;
             player.buffImmune[BuffID.CursedInferno] = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.buffImmune[BuffID.Frostburn] = true;

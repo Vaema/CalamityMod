@@ -8,38 +8,30 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class Metastasis : ModItem
+    public class Metastasis : ModItem, ILocalizedModType
     {
-        public const string PoeticTooltipLine = "A contemplated possible future of the cosmic serpent,\n" +
-            "A gruesome warning for those blinded by the hunger for power.";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Metastasis");
-            Tooltip.SetDefault("Summons a sepulcher to fight for you\n" +
-                "While the sepulcher is active brimstone hearts will begin to appear and orbit you\n" +
-                "It will attempt to attack you more and more frequently depending on how many hearts are present\n" +
-                "It takes up 4 minion slots and it can only be summoned once\n" +
-               CalamityUtils.ColorMessage(PoeticTooltipLine, CalamityGlobalItem.ExhumedTooltipColor));
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 400;
-            Item.mana = 10;
             Item.width = 66;
             Item.height = 78;
+            Item.damage = 400;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.UseSound = SoundID.DD2_BetsySummon;
             Item.shoot = ModContent.ProjectileType<SepulcherMinion>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+        }
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StaffoftheMechworm>();
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

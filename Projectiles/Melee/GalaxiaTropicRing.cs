@@ -1,25 +1,21 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class GalaxiaTropicRing : ModProjectile
+    public class GalaxiaTropicRing : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public Player Owner => Main.player[Projectile.owner];
         public ref float Mode => ref Projectile.ai[0];
         public ref float Fade => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Star Ring");
-        }
 
         public override void SetDefaults()
         {
@@ -31,7 +27,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Mode == 0f && Main.rand.NextFloat() < FourSeasonsGalaxia.CancerPassiveLifeStealProc)
             {

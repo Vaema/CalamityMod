@@ -1,34 +1,37 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Summon
 {
-    public class DeathstareEyeball : ModProjectile
+    public class DeathstareEyeball : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         // This does not need to be synced. It is used solely for drawcode/visuals and is intended to be local.
         public float PupilScale = 1f;
         public const int BeamFireRate = 60;
         public Player Owner => Main.player[Projectile.owner];
+        public NPC Target => Owner.Center.MinionHoming(720f, Owner, CalamityPlayer.areThereAnyDamnBosses);
         public ref float Time => ref Projectile.ai[1];
         public ref float PupilAngle => ref Projectile.localAI[0];
         public ref float PupilOutwardness => ref Projectile.localAI[1];
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eyeball");
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 16;
+            Projectile.width = Projectile.height = 22;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -74,12 +77,11 @@ namespace CalamityMod.Projectiles.Summon
                 Initialize(Owner);
                 Projectile.ai[0] = 1f;
             }
-            NPC potentialTarget = Projectile.Center.MinionHoming(720f, Owner);
 
-            if (potentialTarget is null)
+            if (Target is null)
                 DoHoveringAI();
             else
-                DoAttackingAI(potentialTarget);
+                DoAttackingAI(Target);
 
             Projectile.frame = (int)(Time / 5) % 4;
 
@@ -118,7 +120,6 @@ namespace CalamityMod.Projectiles.Summon
                     int beam = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, velocity, ModContent.ProjectileType<DeathstareBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     if (Main.projectile.IndexInRange(beam))
                     {
-                        Main.projectile[beam].originalDamage = Projectile.originalDamage;
                         Main.projectile[beam].ai[0] = Projectile.identity;
                         Main.projectile[beam].Damage();
                     }
@@ -156,17 +157,16 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D eyeTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = eyeTexture.Frame(1, 4, 0, Projectile.frame);
-            Vector2 origin = frame.Size() * 0.5f;
+            Texture2D eyeTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle frame = eyeTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             SpriteEffects spriteEffects = Owner.gravDir == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
-            Main.EntitySpriteDraw(eyeTexture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(eyeTexture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
 
             // Pupil drawing.
             Texture2D pupilTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/DeathstareEyePupil").Value;
             Vector2 pupilDrawPosition = Projectile.Center - Main.screenPosition + PupilAngle.ToRotationVector2() * PupilOutwardness;
-            pupilDrawPosition -= Vector2.UnitY * 4f;
-            Main.EntitySpriteDraw(pupilTexture, pupilDrawPosition, null, Projectile.GetAlpha(lightColor), PupilAngle, pupilTexture.Size() * 0.5f, PupilScale, SpriteEffects.None, 0);
+            pupilDrawPosition -= Vector2.UnitY * 6f;
+            Main.EntitySpriteDraw(pupilTexture, pupilDrawPosition, null, Projectile.GetAlpha(lightColor), PupilAngle, pupilTexture.Size() * 0.5f, PupilScale, SpriteEffects.None);
             return false;
         }
 

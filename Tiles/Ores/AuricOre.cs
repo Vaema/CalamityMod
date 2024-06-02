@@ -1,14 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Tiles.Astral;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
-using Terraria.ID;
-using ReLogic.Content;
-using Terraria.ObjectData;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Ores
 {
@@ -17,14 +19,15 @@ namespace CalamityMod.Tiles.Ores
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AuricMine", 3);
         public static bool Animate;
         internal static Texture2D GlowTexture;
+
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Ores/AuricOreGlow", AssetRequestMode.ImmediateLoad).Value;
-            AnimationFrameHeight = 270;
+            AnimationFrameHeight = 90;
             Main.tileLighted[Type] = true;
             Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileSpelunker[Type] = true;
             Main.tileOreFinderPriority[Type] = 1000;
@@ -37,13 +40,13 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.OreMergesWithMud[Type] = true;
 
             DustType = 55;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.AuricOre>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Auric");
-            AddMapEntry(new Color(255, 200, 0), name);
-            MineResist = 10f;
+            AddMapEntry(new Color(255, 200, 0), CreateMapEntryName());
+            MineResist = 5f;
             MinPick = 250;
             HitSound = MineSound;
+            
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -59,7 +62,7 @@ namespace CalamityMod.Tiles.Ores
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             if (!Animate)
-            {return;}
+            { return; }
             r = 0.24f;
             g = 0.40f;
             b = 0.47f;
@@ -67,8 +70,8 @@ namespace CalamityMod.Tiles.Ores
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {
             if (!Animate)
-            {return;}
-                frameCounter++;
+            { return; }
+            frameCounter++;
             if (frameCounter > 4)
             {
                 frameCounter = 0;
@@ -91,15 +94,9 @@ namespace CalamityMod.Tiles.Ores
             Color drawColour = GetDrawColour(i, j, new Color(225, 255, 255, 255));
             Tile trackTile = Main.tile[i, j];
             double num6 = Main.time * 0.08;
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
-            {
-                Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            else if (trackTile.IsHalfBlock)
-            {
-                Main.spriteBatch.Draw(glowmask, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
+            TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
+
         private Color GetDrawColour(int i, int j, Color colour)
         {
             int colType = Main.tile[i, j].TileColor;

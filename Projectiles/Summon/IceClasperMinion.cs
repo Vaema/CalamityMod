@@ -1,105 +1,217 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class IceClasperMinion : ModProjectile
+    public class IceClasperMinion : BaseMinionProjectile
     {
+        public override int AssociatedProjectileTypeID => ModContent.ProjectileType<IceClasperMinion>();
+        public override int AssociatedBuffTypeID => ModContent.BuffType<IceClasperBuff>();
+        public override ref bool AssociatedMinionBool => ref ModdedOwner.IceClasperBool;
 
-        private int dust = 3;
+        public enum AIState { Follow, Ram }
+        public AIState State
+        {
+            get => (AIState)Projectile.ai[0];
+            set
+            {
+                Projectile.ai[0] = (int)value;
+                SyncVariables();
+            }
+        }
+
+        public ref float TimerForShooting => ref Projectile.ai[1];
+
+        public ref float AfterimageInterpolant => ref Projectile.localAI[0];
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ice Clasper");
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            base.SetStaticDefaults();
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 30;
-            Projectile.height = 30;
-            Projectile.netImportant = true;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.minionSlots = 1f;
-            Projectile.timeLeft = 18000;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.timeLeft *= 5;
-            Projectile.minion = true;
+            base.SetDefaults();
             Projectile.coldDamage = true;
-            Projectile.DamageType = DamageClass.Summon;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 16;
+            Projectile.width = Projectile.height = 62;
         }
 
-        public override void AI()
+        public override void MinionAI()
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (dust > 0)
+            switch (State)
             {
-                int num226 = 36;
-                for (int num227 = 0; num227 < num226; num227++)
-                {
-                    Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                    vector6 = vector6.RotatedBy((double)((float)(num227 - (num226 / 2 - 1)) * 6.28318548f / (float)num226), default) + Projectile.Center;
-                    Vector2 vector7 = vector6 - Projectile.Center;
-                    int num228 = Dust.NewDust(vector6 + vector7, 0, 0, 67, vector7.X * 1.75f, vector7.Y * 1.75f, 100, default, 1.1f);
-                    Main.dust[num228].noGravity = true;
-                    Main.dust[num228].velocity = vector7;
-                }
-                dust--;
-            }
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame > 5)
-            {
-                Projectile.frame = 0;
-            }
-            Lighting.AddLight((int)(Projectile.Center.X / 16f), (int)(Projectile.Center.Y / 16f), 0.05f, 0.15f, 0.2f);
-            bool flag64 = Projectile.type == ModContent.ProjectileType<IceClasperMinion>();
-            player.AddBuff(ModContent.BuffType<IceClasperBuff>(), 3600);
-            if (flag64)
-            {
-                if (player.dead)
-                {
-                    modPlayer.iClasper = false;
-                }
-                if (modPlayer.iClasper)
-                {
-                    Projectile.timeLeft = 2;
-                }
+                case AIState.Follow:
+                    FollowState();
+                    break;
+                case AIState.Ram:
+                    RamState();
+                    break;
             }
 
-            Projectile.ChargingMinionAI(1200f, 1500f, 2200f, 150f, 0, 12f, 9f, 4f, new Vector2(0f, -60f), 12f, 18f, true, true, 2);
+            Projectile.MinionAntiClump(0.5f);
 
-            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+            if (!Main.dedServ)
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    Dust ghostDust = Dust.NewDustPerfect(Projectile.Center, 56, -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(2f, 3f));
+                    ghostDust.customData = false;
+                    ghostDust.noLight = true;
+                    ghostDust.noLightEmittence = true;
+                }
+
+                Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3());
+            }
         }
+
+        #region AI Methods
+
+        public void FollowState()
+        {
+            // Teleport to the owner if sufficiently far away.
+            if (!Projectile.WithinRange(Owner.Center, 1200f))
+            {
+                Projectile.Center = Owner.Center;
+                SyncVariables();
+            }
+
+            // If the minion starts to get far, force the minion to go to you.
+            else if (!Projectile.WithinRange(Owner.Center, AncientIceChunk.MaxDistanceFromOwner))
+            {
+                Projectile.velocity = (Projectile.velocity + Projectile.SafeDirectionTo(Owner.Center)) * 0.9f;
+                SyncVariables();
+            }
+
+            // If the target is not null but not in range to dash: shoot.
+            // If in range to dash: dash.
+            if (Target != null)
+            {
+                if (Owner.WithinRange(Target.Center, AncientIceChunk.DistanceToDash))
+                    State = AIState.Ram;
+                else
+                    ShootTarget();
+
+                Projectile.rotation = Projectile.rotation.AngleTowards(Projectile.AngleTo(Target.Center), .15f);
+            }
+            else
+                Projectile.rotation = Projectile.rotation.AngleTowards(Projectile.velocity.ToRotation(), .15f);
+        }
+
+        public void RamState()
+        {
+            if (Target is not null && Owner.WithinRange(Projectile.Center, AncientIceChunk.DistanceToStopDash))
+            {
+                // The distance to the target plus a small number so it's not 0, it'd break calculations.
+                float distanceToTarget = Projectile.Distance(Target.Center) + .01f;
+
+                // The minion will head towards it's rotation.
+                // If the target's close, the minion'll speed up, and viceversa, so it doesn't circle around the target doing nothing.
+                Projectile.velocity = Projectile.rotation.ToRotationVector2() * (AncientIceChunk.MinVelocity + (12f / (distanceToTarget * .01f)));
+                Projectile.velocity = Vector2.Clamp(Projectile.velocity, Vector2.One * -25f, Vector2.One * 25f);
+                Projectile.rotation = Projectile.rotation.AngleTowards(Projectile.AngleTo(Target.Center), .001f * distanceToTarget);
+            }
+
+            // If there's no target while dashing or the player's gone far enough from the target: back to shooting.
+            else
+                State = AIState.Follow;
+        }
+
+        public void ShootTarget()
+        {
+            ++TimerForShooting;
+            if (TimerForShooting >= AncientIceChunk.TimeToShoot && Projectile.owner == Main.myPlayer)
+            {
+                Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, 25f);
+
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                    Projectile.Center,
+                    velocity,
+                    ModContent.ProjectileType<IceClasperSummonProjectile>(),
+                    (int)(Projectile.damage * AncientIceChunk.ProjectileDMGMultiplier),
+                    Projectile.knockBack,
+                    Projectile.owner);
+
+                // Flavor recoil effect.
+                Projectile.velocity -= velocity * .1f;
+
+                if (!Main.dedServ)
+                {
+                    // For the fucking love of any god you can think of, this sound sucks but I can't find another one that fits better.
+                    SoundEngine.PlaySound(SoundID.Item28, Projectile.Center);
+                }
+
+                TimerForShooting = 0f;
+                SyncVariables();
+            }
+        }
+
+        public void SyncVariables()
+        {
+            Projectile.netUpdate = true;
+            if (Projectile.netSpam >= 10)
+                Projectile.netSpam = 9;
+        }
+
+        #endregion
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            IFrames = AncientIceChunk.IFrames;
+            TrailingMode = 2;
+            TrailCacheLength = 6;
+
+            if (!Main.dedServ)
+            {
+                int dustAmount = 45;
+                for (int dustIndex = 0; dustIndex < dustAmount; dustIndex++)
+                {
+                    float angle = MathHelper.TwoPi / dustAmount * dustIndex;
+                    Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 7f);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 56, velocity);
+                    spawnDust.customData = false;
+                    spawnDust.noGravity = true;
+                    spawnDust.velocity *= .75f;
+                    spawnDust.scale = velocity.Length() * .2f;
+                }
+            }
+        }
+
+        public override bool? CanDamage() => (State == AIState.Ram) ? null : false;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = texture2D13.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.EntitySpriteDraw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
-            return false;
-        }
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Vector2 origin = frame.Size() * 0.5f;
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[Projectile.owner] = 7;
+            // Flavor fade-in-and-out for afterimages.
+            AfterimageInterpolant += ((Target is not null && Owner.WithinRange(Target.Center, 450f)) || State == AIState.Ram) ? .05f : -.05f;
+            AfterimageInterpolant = MathHelper.Clamp(AfterimageInterpolant, 0f, 1f);
+            float AfterimageFade = MathHelper.Lerp(0f, 1f, AfterimageInterpolant);
+
+            if (CalamityConfig.Instance.Afterimages)
+            {
+                for (int i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    Color afterimageDrawColor = new Color(0.05f, 0.33f, 0.63f) with { A = 25 } * Projectile.Opacity * (1f - i / (float)Projectile.oldPos.Length) * AfterimageFade;
+                    Vector2 afterimageDrawPosition = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    Main.EntitySpriteDraw(texture, afterimageDrawPosition, frame, afterimageDrawColor, Projectile.rotation - MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
+                }
+            }
+
+            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation - MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
+
+            return false;
         }
     }
 }

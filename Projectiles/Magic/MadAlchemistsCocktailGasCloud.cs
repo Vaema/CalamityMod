@@ -1,13 +1,9 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class MadAlchemistsCocktailGasCloud : ModProjectile
+    public class MadAlchemistsCocktailGasCloud : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mad Alchemist's Gas");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 32;

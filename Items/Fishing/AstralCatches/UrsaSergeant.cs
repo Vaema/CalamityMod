@@ -6,23 +6,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.AstralCatches
 {
-    public class UrsaSergeant : ModItem
+    public class UrsaSergeant : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ursa Sergeant");
-            Tooltip.SetDefault("15% decreased movement speed\n" +
-                "Immune to Astral Infection and Feral Bite\n" +
-                "Increased regeneration at lower health");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
-            Item.defense = 20;
             Item.width = 36;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.defense = 20;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }

@@ -1,17 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SeasSearingBubble : ModProjectile
+    public class SeasSearingBubble : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Searing Bubble");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -23,12 +22,10 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = 2;
+            Projectile.penetrate = 1;
             Projectile.timeLeft = 480;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 2;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -41,25 +38,25 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.timeLeft < 475)
             {
-                for (int num105 = 0; num105 < 2; num105++)
+                for (int i = 0; i < 2; i++)
                 {
-                    float num99 = Projectile.velocity.X / 3f * (float)num105;
-                    float num100 = Projectile.velocity.Y / 3f * (float)num105;
-                    int num101 = 4;
-                    int num102 = Dust.NewDust(new Vector2(Projectile.position.X + (float)num101, Projectile.position.Y + (float)num101), Projectile.width - num101 * 2, Projectile.height - num101 * 2, 202, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 1.2f);
-                    Dust dust = Main.dust[num102];
+                    float dustVelX = Projectile.velocity.X / 3f * (float)i;
+                    float dustVelY = Projectile.velocity.Y / 3f * (float)i;
+                    int four = 4;
+                    int dustID = Dust.NewDust(new Vector2(Projectile.position.X + (float)four, Projectile.position.Y + (float)four), Projectile.width - four * 2, Projectile.height - four * 2, DustID.GlowingSnail, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 1.2f);
+                    Dust dust = Main.dust[dustID];
                     dust.noGravity = true;
                     dust.velocity *= 0.1f;
                     dust.velocity += Projectile.velocity * 0.1f;
-                    dust.position.X -= num99;
-                    dust.position.Y -= num100;
+                    dust.position.X -= dustVelX;
+                    dust.position.Y -= dustVelY;
                 }
                 if (Main.rand.NextBool(10))
                 {
-                    int num103 = 4;
-                    int num104 = Dust.NewDust(new Vector2(Projectile.position.X + (float)num103, Projectile.position.Y + (float)num103), Projectile.width - num103 * 2, Projectile.height - num103 * 2, 202, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 0.6f);
-                    Main.dust[num104].velocity *= 0.25f;
-                    Main.dust[num104].velocity += Projectile.velocity * 0.5f;
+                    int otherFour = 4;
+                    int otherDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFour, Projectile.position.Y + (float)otherFour), Projectile.width - otherFour * 2, Projectile.height - otherFour * 2, DustID.GlowingSnail, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 0.6f);
+                    Main.dust[otherDust].velocity *= 0.25f;
+                    Main.dust[otherDust].velocity += Projectile.velocity * 0.5f;
                 }
             }
         }
@@ -75,27 +72,27 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item96, Projectile.position);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 202, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, new Color(60, Main.DiscoG, 190));
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GlowingSnail, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, new Color(60, Main.DiscoG, 190));
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             OnHitEffects(target.Center);
             target.AddBuff(BuffID.Wet, 300);
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+            target.AddBuff(BuffID.Venom, 180);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             OnHitEffects(target.Center);
             target.AddBuff(BuffID.Wet, 300);
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+            target.AddBuff(BuffID.Venom, 180);
         }
 
         private void OnHitEffects(Vector2 targetPos)
@@ -112,8 +109,6 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile bubble = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 1000f, 1400f, 80f, 900f, Main.rand.NextFloat(20f, 25f), ModContent.ProjectileType<SeasSearingBubble>(), Projectile.damage / 2, 1f, Projectile.owner);
                         bubble.rotation = angle;
                         bubble.tileCollide = false;
-                        bubble.usesLocalNPCImmunity = true;
-                        bubble.localNPCHitCooldown = -1;
                     }
                 }
             }

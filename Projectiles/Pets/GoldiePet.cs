@@ -1,14 +1,15 @@
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Pets
 {
-    public class GoldiePet : ModProjectile
+    public class GoldiePet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public Player Owner => Main.player[Projectile.owner];
 
         public ref float RotationTimer => ref Projectile.ai[0];
@@ -19,7 +20,6 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Goldie");
             Main.projFrames[Projectile.type] = 5;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.LightPet[Projectile.type] = true;
@@ -39,10 +39,10 @@ namespace CalamityMod.Projectiles.Pets
         {
             if (OwnerCheck())
                 return;
-        
+
             Projectile.frameCounter++;
             Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
-            Lighting.AddLight(Projectile.Center, GoldColor.ToVector3() * 0.9f);
+            Lighting.AddLight(Projectile.Center, GoldColor.ToVector3() * (0.9f + 0.45f * SparkleTimer / MaxSparkleTime));
 
             if (SparkleTimer < MaxBloomTime)
                 SparkleTimer++;
@@ -56,15 +56,24 @@ namespace CalamityMod.Projectiles.Pets
             Vector2 targetLocation = Projectile.position;
             bool foundCoin = false;
             float range = 800f; //50 block range
+            float magnetRange = 128f; //8 block range
 
             for (int itemIndex = 0; itemIndex < Main.maxItems; itemIndex++)
             {
                 Item item = Main.item[itemIndex];
-                if (item.active && ItemID.Sets.CommonCoin[item.type] && item.noGrabDelay == 0 && item.playerIndexTheItemIsReservedFor == Projectile.owner && 
+                if (item.active && ItemID.Sets.CommonCoin[item.type] && item.noGrabDelay == 0 && item.playerIndexTheItemIsReservedFor == Projectile.owner &&
                     ItemLoader.CanPickup(item, Main.player[item.playerIndexTheItemIsReservedFor]) && Main.player[item.playerIndexTheItemIsReservedFor].ItemSpace(item).CanTakeItemToPersonalInventory)
                 {
                     float itemDist = Vector2.Distance(item.Center, Projectile.Center);
                     float distanceToPotential = Vector2.Distance(Projectile.Center, targetLocation);
+
+                    if (itemDist > range)
+                        continue;
+
+                    //Magnetize the items if close enough
+                    if (itemDist <= magnetRange)
+                        item.velocity = item.SafeDirectionTo(Projectile.Center) * 6f;
+
                     //Pick it up
                     if (Projectile.owner == Main.myPlayer && Projectile.getRect().Intersects(new Rectangle((int)item.position.X, (int)item.position.Y, item.width, item.height)))
                     {
@@ -78,7 +87,7 @@ namespace CalamityMod.Projectiles.Pets
                         SparkleTimer = MaxSparkleTime;
                     }
                     //Otherwise, start chasing
-                    if (distanceToPotential < itemDist && itemDist < range)
+                    if (distanceToPotential < itemDist)
                     {
                         range = itemDist;
                         targetLocation = item.Center;
@@ -102,7 +111,7 @@ namespace CalamityMod.Projectiles.Pets
                 Vector2 restingSpot = Owner.Center + Vector2.UnitY * -80f;
                 Projectile.velocity = (restingSpot - Projectile.Center) / 15f;
                 Projectile.rotation = Projectile.velocity.X * 0.05f;
-                
+
                 //Start spinning again when rested
                 if (Vector2.Distance(restingSpot, Projectile.Center) <= 2f)
                     RotationTimer++;
@@ -143,17 +152,17 @@ namespace CalamityMod.Projectiles.Pets
             Texture2D shineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
             float shinePercent = Utils.SmoothStep(MaxBloomTime, MaxSparkleTime, SparkleTimer);
             float shineScale = (float)Math.Log10(shinePercent + 0.01) + 2f;
-            
-            Texture2D bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            Texture2D bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/Light").Value;
             float bloomPercent = Math.Clamp(SparkleTimer / MaxBloomTime, 0f, 5f); //Max of 500% when collecting coins
             float bloomScale = Math.Clamp(bloomPercent, 0f, 2.5f);
 
             if (bloomPercent > 0f)
             {
                 Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-                
-                Main.EntitySpriteDraw(bloomTex, Projectile.Center - Main.screenPosition, null, GoldColor * bloomPercent * 0.2f, Projectile.rotation, bloomTex.Size() / 2f, bloomPercent * Projectile.scale * 0.3f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(shineTex, Projectile.Center - Main.screenPosition, null, GoldColor * shinePercent, Projectile.rotation, shineTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
+
+                Main.EntitySpriteDraw(bloomTex, Projectile.Center - Main.screenPosition, null, GoldColor * bloomPercent * 0.2f, Projectile.rotation, bloomTex.Size() / 2f, bloomPercent * Projectile.scale * 0.3f, SpriteEffects.None);
+                Main.EntitySpriteDraw(shineTex, Projectile.Center - Main.screenPosition, null, GoldColor * shinePercent, Projectile.rotation, shineTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None);
 
                 Main.spriteBatch.ExitShaderRegion();
             }

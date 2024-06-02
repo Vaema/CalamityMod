@@ -9,11 +9,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Terratomere : ModItem
+    public class Terratomere : ModItem, ILocalizedModType
     {
-        public const int SwingTime = 83;
+        public new string LocalizationCategory => "Items.Weapons.Melee";
+        public const int SwingTime = 54;
 
-        public const int SlashLifetime = 27;
+        public const int SlashLifetime = 135;
 
         public const int SmallSlashCreationRate = 9;
 
@@ -33,20 +34,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public static readonly SoundStyle SwingSound = new("CalamityMod/Sounds/Item/TerratomereSwing");
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Terratomere");
-            Tooltip.SetDefault("Linked to the essence of Terraria\n" +
-                               "Heals the player on true melee hits\n" +
-                               "Fires a piercing energy bolt that causes hit targets to explode and be slashed");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 66;
-            Item.damage = 303;
+            Item.damage = 145;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 21;
             Item.useTime = 21;
@@ -56,14 +48,14 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<TerratomereHoldoutProj>();
             Item.shootSpeed = 60f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

@@ -1,15 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    
+
     public class SeaPrismBrick : ModTile
     {
         private static int sheetWidth = 216;
         private static int sheetHeight = 72;
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -20,11 +22,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = 33;
-            ItemDrop = ModContent.ItemType<Items.Placeables.SeaPrismBrick>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Sea Prism Brick");
-            AddMapEntry(new Color(47, 193, 236), name);
-            MineResist = 3f;
+            AddMapEntry(new Color(47, 193, 236));
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
             MinPick = 55;
@@ -34,6 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             num = fail ? 1 : 3;
         }
+
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
             int xPos = i % 3;

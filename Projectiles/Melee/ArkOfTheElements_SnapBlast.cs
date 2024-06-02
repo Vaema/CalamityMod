@@ -1,21 +1,22 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ArkoftheElementsSnapBlast : ModProjectile
+    public class ArkoftheElementsSnapBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight";
 
         private bool initialized = false;
@@ -43,7 +44,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rending Scissors");
         }
         public override void SetDefaults()
         {
@@ -70,8 +70,8 @@ namespace CalamityMod.Projectiles.Melee
 
             //The hitbox is simplified into a line collision.
             float collisionPoint = 0f;
-            float bladeLenght = ThrustDisplaceRatio() * 242f;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (Projectile.velocity * bladeLenght), 30, ref collisionPoint);
+            float bladeLength = ThrustDisplaceRatio() * 242f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (Projectile.velocity * bladeLength), 30, ref collisionPoint);
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Color pulseColor = Main.rand.NextBool() ? (Main.rand.NextBool() ? Color.Orange : Color.Coral) : (Main.rand.NextBool() ? Color.OrangeRed : Color.Gold);
             Particle pulse = new PulseRing(target.Center, Vector2.Zero, pulseColor, 0.05f, 0.2f + Main.rand.NextFloat(0f, 1f), 30);
@@ -160,10 +160,10 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
         }
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             //Add some damage falloff
-            damage = (int)(damage * Math.Pow((1 - ArkoftheElements.blastFalloffStrenght), Projectile.numHits * ArkoftheElements.blastFalloffSpeed));
+            modifiers.SourceDamage *= (float)Math.Pow(1 - ArkoftheElements.blastFalloffStrenght, Projectile.numHits * ArkoftheElements.blastFalloffSpeed);
         }
 
         //Animation keys
@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
             Color sliceColor = Color.Lerp(Color.OrangeRed, Color.White, SnapProgress);
             float rot = Projectile.rotation + MathHelper.PiOver2;
             Vector2 nitpickShiftCorrection = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 10f; //Ngl these minor nitpick variables probably be horrible to understand when decompiled into Vector43
-            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress) ,ThrustDisplaceRatio() * 242f);
+            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress), ThrustDisplaceRatio() * 242f);
             Main.EntitySpriteDraw(sliceTex, Projectile.Center + nitpickShiftCorrection - Main.screenPosition, null, sliceColor, rot, new Vector2(sliceTex.Width / 2f, sliceTex.Height), sliceScale, 0f, 0);
 
             //Draw the scissors
@@ -241,13 +241,13 @@ namespace CalamityMod.Projectiles.Melee
                         rot = Projectile.rotation + MathHelper.PiOver2 + StitchRotations[i];
                         origin = new Vector2(lineTex.Width / 2f, lineTex.Height / 2f);
 
-                        float stitchLenght = (float)Math.Sin(i / (float)(maxStitches - 1) * MathHelper.Pi) * 0.5f + 0.5f;
+                        float stitchLength = (float)Math.Sin(i / (float)(maxStitches - 1) * MathHelper.Pi) * 0.5f + 0.5f;
                         float stitchScale = (1f + (float)Math.Sin(MathHelper.Clamp(StitchLifetimes[i] / 7f, 0f, 1f) * MathHelper.Pi) * 0.3f) * 0.85f;
                         if (CurrentStitches == maxStitches)
                         {
                             stitchScale *= 1 - ((StitchTimer - (MaxTime - SnapTime - HoldTime * 0.5f) * 0.3f) / (MaxTime - SnapTime - HoldTime * 0.5f) * 0.7f) * 0.8f;
                         }
-                        scale = new Vector2(0.2f, stitchLenght) * stitchScale;
+                        scale = new Vector2(0.2f, stitchLength) * stitchScale;
 
                         Color stitchColor = Color.Lerp(Color.White, Color.CornflowerBlue * 0.7f, (float)Math.Sin(MathHelper.Clamp(StitchLifetimes[i] / 7f, 0f, 1f) * MathHelper.PiOver2));
 

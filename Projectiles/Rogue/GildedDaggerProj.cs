@@ -1,23 +1,19 @@
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class GildedDaggerProj : ModProjectile
+    public class GildedDaggerProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         private bool hasHitEnemy = false;
         private int targetNPC = -1;
         private List<int> previousNPCs = new List<int>() { -1 };
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gilded Dagger");
-        }
 
         public override void SetDefaults()
         {
@@ -70,25 +66,24 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             float minDist = 999f;
             int index = 0;
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
                 bool hasHitNPC = false;
                 for (int j = 0; j < previousNPCs.Count; j++)
                 {
-                    if (previousNPCs[j] == i)
+                    if (previousNPCs[j] == npc.whoAmI)
                     {
                         hasHitNPC = true;
                     }
                 }
 
-                NPC npc = Main.npc[i];
                 if (npc == target)
                 {
-                    previousNPCs.Add(i);
+                    previousNPCs.Add(npc.whoAmI);
                 }
                 if (npc.CanBeChasedBy(Projectile, false) && npc != target && !hasHitNPC)
                 {
@@ -96,7 +91,7 @@ namespace CalamityMod.Projectiles.Rogue
                     if (dist < minDist)
                     {
                         minDist = dist;
-                        index = i;
+                        index = npc.whoAmI;
                     }
                 }
             }
@@ -127,16 +122,16 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int num621 = 0; num621 < 8; num621++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 1f);
+                int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[num622].velocity *= 1f;
             }
         }

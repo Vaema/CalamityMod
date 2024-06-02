@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent.Drawing;
 using Terraria.Graphics.Shaders;
@@ -11,11 +12,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class EternityHex : ModProjectile
+    public class EternityHex : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        internal PrimitiveTrail LemniscateDrawer = null;
         public int TargetNPCIndex
         {
             get => (int)Projectile.ai[0];
@@ -41,7 +42,6 @@ namespace CalamityMod.Projectiles.Magic
         public const float NormalEnemyLifeMaxDamageMult = 1f / 100f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eternity");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 63;
         }
@@ -177,11 +177,8 @@ namespace CalamityMod.Projectiles.Magic
             TargetNPCIndex = newTarget.whoAmI;
 
             // Adjust the target index for the other components of the projectile.
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (!proj.active)
-                    continue;
                 if (proj.owner != Projectile.owner)
                     continue;
                 if (proj.type != ModContent.ProjectileType<EternityCrystal>() && proj.type != ModContent.ProjectileType<EternityCircle>())
@@ -228,11 +225,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LemniscateDrawer is null)
-                LemniscateDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, null, GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
-            LemniscateDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 84);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 84);
             return false;
         }
     }

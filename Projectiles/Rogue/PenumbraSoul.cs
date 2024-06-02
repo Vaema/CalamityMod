@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class PenumbraSoul : ModProjectile
+    public class PenumbraSoul : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Penumbra Soul");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -42,9 +42,9 @@ namespace CalamityMod.Projectiles.Rogue
             int trailDust = 1;
             for (int i = 0; i < trailDust; ++i)
             {
-                int dustID = DustID.Shadowflame;
+                int dustID = 54; //Used by Wraiths and other shadowy stuff
 
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, Projectile.width, Projectile.height, dustID,0f,0f, 0, new Color(38, 30, 43));
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity += Projectile.velocity * 0.8f;
             }
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         private void HomingAI()
         {
-            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, Penumbra.ShootSpeed * 1.5f, 35f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 35f);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Rapidly screech to a halt upon touching an enemy and disable homing.
             Projectile.velocity *= 0.4f;
@@ -84,8 +84,8 @@ namespace CalamityMod.Projectiles.Rogue
             int onHitDust = Main.rand.Next(6, 11);
             for (int i = 0; i < onHitDust; ++i)
             {
-                int dustID = DustID.Shadowflame;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f,0, new Color(38, 30, 43));
+                int dustID = 54;
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
 
                 Main.dust[idx].noGravity = true;
                 float speed = Main.rand.NextFloat(1.4f, 2.6f);
@@ -95,13 +95,13 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Create a burst of dust
             int killDust = Main.rand.Next(30, 41);
             for (int i = 0; i < killDust; ++i)
             {
-                int dustID = DustID.Shadowflame;
+                int dustID = 54;
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
 
                 Main.dust[idx].noGravity = true;

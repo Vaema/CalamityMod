@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ThanatosBeamTelegraph : ModProjectile
+    public class ThanatosBeamTelegraph : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public NPC ThingToAttachTo => Main.npc.IndexInRange((int)Projectile.ai[0]) ? Main.npc[(int)Projectile.ai[0]] : null;
@@ -21,7 +22,6 @@ namespace CalamityMod.Projectiles.Boss
         public const float BeamPosOffset = 16f;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gamma Disintegration Beam Telegraph");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 scaleInner = new Vector2(TelegraphWidth / laserTelegraph.Width, verticalScale);
             Vector2 scaleOuter = scaleInner * new Vector2(1f, 2.2f);
 
-            Color colorOuter = Color.Lerp(Color.Red, Color.Crimson, Time / Lifetime * 2f % 1f); // Iterate through crimson and red twice and then flash.
+            Color colorOuter = Color.Lerp(Color.Red, Color.CornflowerBlue, Time / Lifetime); // Smoothly scale from red to blue, as if heating up.
             colorOuter = Color.Lerp(colorOuter, Color.White, Utils.GetLerpValue(40f, 0f, Projectile.timeLeft, true) * 0.8f);
             Color colorInner = Color.Lerp(colorOuter, Color.White, 0.5f);
 

@@ -1,4 +1,7 @@
-﻿using CalamityMod.Schematics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -6,9 +9,6 @@ using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -20,6 +20,8 @@ namespace CalamityMod.World
 {
     public class AstralBiome
     {
+        public static int YStart { get; set; } = (int)Main.worldSurface;
+
         public static readonly SoundStyle MeteorSound = new("CalamityMod/Sounds/Custom/AstralStarFall");
         public static bool CanAstralMeteorSpawn()
         {
@@ -81,13 +83,10 @@ namespace CalamityMod.World
             // Clients in multiplayer don't drop meteors.
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
-            for (int i = 0; i < 255; i++)
+            foreach (Player _ in Main.ActivePlayers)
             {
-                if (Main.player[i].active)
-                {
-                    meteorDropped = false;
-                    break;
-                }
+                meteorDropped = false;
+                break;
             }
 
             // Check whether there is already too much ore.
@@ -96,7 +95,7 @@ namespace CalamityMod.World
 
             UnifiedRandom rand = WorldGen.genRand;
             float solidTileRequirement = 600f;
-            bool localAbyssSide = WorldGen.dungeonX < Main.maxTilesX / 2;
+            bool localAbyssSide = GenVars.dungeonX < Main.maxTilesX / 2;
 
             // Pre-cache a list of Ancients Awakened tiles to avoid, for performance reasons
             IList<ushort> aaTilesToAvoid = new List<ushort>(16);
@@ -117,7 +116,11 @@ namespace CalamityMod.World
                     "Depthice",
                 };
                 foreach (string tileName in aaTileNames)
-                    aaTilesToAvoid.Add(ancientsAwakened.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (ancientsAwakened.TryFind(tileName, out ModTile value))
+                        aaTilesToAvoid.Add(value.Type);
+                }
             }
 
             while (!meteorDropped)
@@ -129,7 +132,7 @@ namespace CalamityMod.World
 
                 //clamp so it doesnt crash hopefully
                 int x = Utils.Clamp(realX, SulphurousSea.BiomeWidth + 400, Main.maxTilesX - SulphurousSea.BiomeWidth - 400);
-                
+
                 //world surface = 920 large 740 medium 560 small
                 int y = (int)(Main.worldSurface * 0.5); //Large = 522, Medium = 444, Small = 336
                 while (y < Main.maxTilesY)
@@ -192,7 +195,7 @@ namespace CalamityMod.World
                         // If the meteor actually dropped, post the message stating as such.
                         if (meteorDropped)
                         {
-                            string key = "Mods.CalamityMod.AstralText";
+                            string key = "Mods.CalamityMod.Status.Progression.AstralText";
                             Color messageColor = Color.Gold;
 
                             CalamityUtils.DisplayLocalizedText(key, messageColor);
@@ -216,13 +219,52 @@ namespace CalamityMod.World
         {
             WorldGen.gen = true;
 
+            // Pre-cache a list of Magic Storage tiles to avoid, for performance reasons
+            // It is plausible that only StorageComponent and StorageConnector are needed, but I aint gonna risk corrupting worlds
+            // or crashes as containers can do some serious shit as seen with the Abyss chests - Shade
+            Mod magicStorage = CalamityMod.Instance.magicStorage;
+            IList<ushort> MSTilesToAvoid = new List<ushort>(16);
+            if (magicStorage is not null)
+            {
+                //yes I added the combined stations and fake altars due to them having tiles (despite no one actually placing em since MS Crafting UI exists)
+                //also thank fuck MS makes all Storage Units the same tile cuz otherwise the list would be massive
+                //decrafter may or may not exist by the time I added the new tiles, saw it while snooping around the MS github repo
+                //Idk what the TE tiles are for and they dont seem to have a tile
+                string[] MSTileNames = new string[]
+                {
+                    "CombinedFurnitureStations1Tile",
+                    "CombinedFurnitureStations2Tile",
+                    "CombinedStations1Tile",
+                    "CombinedStations2Tile",
+                    "CombinedStations3Tile",
+                    "CombinedStations4Tile",
+                    "CraftingAccess",
+                    "CreativeStorageUnit",
+                    "DecraftingAccess",
+                    "EnvironmentAccess",
+                    "EvilAltarTile",
+                    "RemoteAccess",
+                    "StorageAccess",
+                    "StorageComponent",
+                    "StorageConnector",
+                    "StorageHeart",
+                    "StorageUnit",
+                };
+                foreach (string tileName in MSTileNames)
+                {
+                    //Defensive coding
+                    if (magicStorage.TryFind(tileName, out ModTile value))
+                        MSTilesToAvoid.Add(value.Type);
+                }
+            }
+
             UnifiedRandom rand = WorldGen.genRand;
             if (i < 50 || i > Main.maxTilesX - 50)
             {
                 return false;
             }
             // Avoid the dungeon so that the beacon doesn't eat it.
-            if (Math.Abs(i - WorldGen.dungeonX) < 65)
+            if (Math.Abs(i - GenVars.dungeonX) < 65)
             {
                 return false;
             }
@@ -230,13 +272,13 @@ namespace CalamityMod.World
             {
                 return false;
             }
-            int num = 35;
-            Rectangle rectangle = new Rectangle((i - num) * 16, (j - num) * 16, num * 2 * 16, num * 2 * 16);
-            for (int k = 0; k < Main.maxPlayers; k++)
+            int avoidRectangleSize = 35;
+            Rectangle rectangle = new Rectangle((i - avoidRectangleSize) * 16, (j - avoidRectangleSize) * 16, avoidRectangleSize * 2 * 16, avoidRectangleSize * 2 * 16);
+            foreach (Player player in Main.ActivePlayers)
             {
-                if (Main.player[k].active)
+                if (player.active)
                 {
-                    Rectangle value = new Rectangle((int)(Main.player[k].position.X + (float)(Main.player[k].width / 2) - (float)(NPC.sWidth / 2) - (float)NPC.safeRangeX), (int)(Main.player[k].position.Y + (float)(Main.player[k].height / 2) - (float)(NPC.sHeight / 2) - (float)NPC.safeRangeY), NPC.sWidth + NPC.safeRangeX * 2, NPC.sHeight + NPC.safeRangeY * 2);
+                    Rectangle value = new Rectangle((int)(player.position.X + (float)(player.width / 2) - (float)(NPC.sWidth / 2) - (float)NPC.safeRangeX), (int)(player.position.Y + (float)(player.height / 2) - (float)(NPC.sHeight / 2) - (float)NPC.safeRangeY), NPC.sWidth + NPC.safeRangeX * 2, NPC.sHeight + NPC.safeRangeY * 2);
                     if (rectangle.Intersects(value))
                     {
                         return false;
@@ -254,9 +296,9 @@ namespace CalamityMod.World
                     }
                 }
             }
-            for (int m = i - num; m < i + num; m++)
+            for (int m = i - avoidRectangleSize; m < i + avoidRectangleSize; m++)
             {
-                for (int n = j - num; n < j + num; n++)
+                for (int n = j - avoidRectangleSize; n < j + avoidRectangleSize; n++)
                 {
                     if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == 21)
                     {
@@ -264,130 +306,130 @@ namespace CalamityMod.World
                     }
                 }
             }
-            num = rand.Next(17, 23);
-            for (int num2 = i - num; num2 < i + num; num2++)
+            avoidRectangleSize = rand.Next(17, 23);
+            for (int inc = i - avoidRectangleSize; inc < i + avoidRectangleSize; inc++)
             {
-                for (int num3 = j - num; num3 < j + num; num3++)
+                for (int doubleinc = j - avoidRectangleSize; doubleinc < j + avoidRectangleSize; doubleinc++)
                 {
-                    if (num3 > j + rand.Next(-2, 3) - 5)
+                    if (doubleinc > j + rand.Next(-2, 3) - 5)
                     {
-                        float num4 = (float)Math.Abs(i - num2);
-                        float num5 = (float)Math.Abs(j - num3);
-                        float num6 = (float)Math.Sqrt((double)(num4 * num4 + num5 * num5));
-                        if ((double)num6 < (double)num * 0.9 + (double)rand.Next(-4, 5))
+                        float tileXDist = (float)Math.Abs(i - inc);
+                        float tileYDist = (float)Math.Abs(j - doubleinc);
+                        float tileDistance = (float)Math.Sqrt((double)(tileXDist * tileXDist + tileYDist * tileYDist));
+                        if ((double)tileDistance < (double)avoidRectangleSize * 0.9 + (double)rand.Next(-4, 5))
                         {
-                            if (Main.tile[num2, num3] != null)
+                            if (Main.tile[inc, doubleinc] != null)
                             {
-                                if (!Main.tileSolid[(int)Main.tile[num2, num3].TileType])
+                                if (!Main.tileSolid[(int)Main.tile[inc, doubleinc].TileType])
                                 {
-                                    Main.tile[num2, num3].Get<TileWallWireStateData>().HasTile = false;
+                                    Main.tile[inc, doubleinc].Get<TileWallWireStateData>().HasTile = false;
                                 }
-                                Main.tile[num2, num3].TileType = (ushort)ModContent.TileType<AstralOre>();
+                                Main.tile[inc, doubleinc].TileType = (ushort)ModContent.TileType<AstralOre>();
                             }
                         }
                     }
                 }
             }
-            num = WorldGen.genRand.Next(8, 14);
-            for (int num7 = i - num; num7 < i + num; num7++)
+            avoidRectangleSize = WorldGen.genRand.Next(8, 14);
+            for (int inc2 = i - avoidRectangleSize; inc2 < i + avoidRectangleSize; inc2++)
             {
-                for (int num8 = j - num; num8 < j + num; num8++)
+                for (int doubleinc2 = j - avoidRectangleSize; doubleinc2 < j + avoidRectangleSize; doubleinc2++)
                 {
-                    if (num8 > j + rand.Next(-2, 3) - 4)
+                    if (doubleinc2 > j + rand.Next(-2, 3) - 4)
                     {
-                        float num9 = (float)Math.Abs(i - num7);
-                        float num10 = (float)Math.Abs(j - num8);
-                        float num11 = (float)Math.Sqrt((double)(num9 * num9 + num10 * num10));
-                        if ((double)num11 < (double)num * 0.8 + (double)rand.Next(-3, 4))
+                        float tileXDist2 = (float)Math.Abs(i - inc2);
+                        float tileYDist2 = (float)Math.Abs(j - doubleinc2);
+                        float tileDistance2 = (float)Math.Sqrt((double)(tileXDist2 * tileXDist2 + tileYDist2 * tileYDist2));
+                        if ((double)tileDistance2 < (double)avoidRectangleSize * 0.8 + (double)rand.Next(-3, 4))
                         {
-                            if (Main.tile[num7, num8] != null)
-                                Main.tile[num7, num8].Get<TileWallWireStateData>().HasTile = false;
+                            if (Main.tile[inc2, doubleinc2] != null)
+                                Main.tile[inc2, doubleinc2].Get<TileWallWireStateData>().HasTile = false;
                         }
                     }
                 }
             }
-            num = WorldGen.genRand.Next(25, 35);
-            for (int num12 = i - num; num12 < i + num; num12++)
+            avoidRectangleSize = WorldGen.genRand.Next(25, 35);
+            for (int inc3 = i - avoidRectangleSize; inc3 < i + avoidRectangleSize; inc3++)
             {
-                for (int num13 = j - num; num13 < j + num; num13++)
+                for (int doubleinc3 = j - avoidRectangleSize; doubleinc3 < j + avoidRectangleSize; doubleinc3++)
                 {
-                    float num14 = (float)Math.Abs(i - num12);
-                    float num15 = (float)Math.Abs(j - num13);
-                    float num16 = (float)Math.Sqrt((double)(num14 * num14 + num15 * num15));
-                    if (Main.tile[num12, num13] != null)
+                    float tileXDist3 = (float)Math.Abs(i - inc3);
+                    float tileYDist3 = (float)Math.Abs(j - doubleinc3);
+                    float tileDistance3 = (float)Math.Sqrt((double)(tileXDist3 * tileXDist3 + tileYDist3 * tileYDist3));
+                    if (Main.tile[inc3, doubleinc3] != null)
                     {
-                        if ((double)num16 < (double)num * 0.7)
+                        if ((double)tileDistance3 < (double)avoidRectangleSize * 0.7)
                         {
-                            if (Main.tile[num12, num13].TileType == 5 || Main.tile[num12, num13].TileType == 32 || Main.tile[num12, num13].TileType == 352)
+                            if (Main.tile[inc3, doubleinc3].TileType == 5 || Main.tile[inc3, doubleinc3].TileType == 32 || Main.tile[inc3, doubleinc3].TileType == 352)
                             {
                                 try
-                                { WorldGen.KillTile(num12, num13, false, false, true); }
+                                { WorldGen.KillTile(inc3, doubleinc3, false, false, true); }
                                 catch (NullReferenceException)
                                 { }
                             }
-                            Main.tile[num12, num13].LiquidAmount = 0;
+                            Main.tile[inc3, doubleinc3].LiquidAmount = 0;
                         }
-                        if (Main.tile[num12, num13].TileType == (ushort)ModContent.TileType<AstralOre>())
+                        if (Main.tile[inc3, doubleinc3].TileType == (ushort)ModContent.TileType<AstralOre>())
                         {
-                            if (!WorldGen.SolidTile(num12 - 1, num13) && !WorldGen.SolidTile(num12 + 1, num13) && !WorldGen.SolidTile(num12, num13 - 1) && !WorldGen.SolidTile(num12, num13 + 1))
+                            if (!WorldGen.SolidTile(inc3 - 1, doubleinc3) && !WorldGen.SolidTile(inc3 + 1, doubleinc3) && !WorldGen.SolidTile(inc3, doubleinc3 - 1) && !WorldGen.SolidTile(inc3, doubleinc3 + 1))
                             {
-                                Main.tile[num12, num13].Get<TileWallWireStateData>().HasTile = false;
+                                Main.tile[inc3, doubleinc3].Get<TileWallWireStateData>().HasTile = false;
                             }
-                            else if ((Main.tile[num12, num13].IsHalfBlock || Main.tile[num12 - 1, num13].TopSlope) && !WorldGen.SolidTile(num12, num13 + 1))
+                            else if ((Main.tile[inc3, doubleinc3].IsHalfBlock || Main.tile[inc3 - 1, doubleinc3].TopSlope) && !WorldGen.SolidTile(inc3, doubleinc3 + 1))
                             {
-                                Main.tile[num12, num13].Get<TileWallWireStateData>().HasTile = false;
+                                Main.tile[inc3, doubleinc3].Get<TileWallWireStateData>().HasTile = false;
                             }
                         }
-                        WorldGen.SquareTileFrame(num12, num13, true);
-                        WorldGen.SquareWallFrame(num12, num13, true);
+                        WorldGen.SquareTileFrame(inc3, doubleinc3, true);
+                        WorldGen.SquareWallFrame(inc3, doubleinc3, true);
                     }
                 }
             }
-            num = WorldGen.genRand.Next(23, 32);
-            for (int num17 = i - num; num17 < i + num; num17++)
+            avoidRectangleSize = WorldGen.genRand.Next(23, 32);
+            for (int inc4 = i - avoidRectangleSize; inc4 < i + avoidRectangleSize; inc4++)
             {
-                for (int num18 = j - num; num18 < j + num; num18++)
+                for (int doubleinc4 = j - avoidRectangleSize; doubleinc4 < j + avoidRectangleSize; doubleinc4++)
                 {
-                    if (num18 > j + WorldGen.genRand.Next(-3, 4) - 3 && Main.tile[num17, num18].HasTile && rand.NextBool(10))
+                    if (doubleinc4 > j + WorldGen.genRand.Next(-3, 4) - 3 && Main.tile[inc4, doubleinc4].HasTile && rand.NextBool(10))
                     {
-                        float num19 = (float)Math.Abs(i - num17);
-                        float num20 = (float)Math.Abs(j - num18);
-                        float num21 = (float)Math.Sqrt((double)(num19 * num19 + num20 * num20));
-                        if ((double)num21 < (double)num * 0.8)
+                        float tileXDist4 = (float)Math.Abs(i - inc4);
+                        float tileYDist4 = (float)Math.Abs(j - doubleinc4);
+                        float tileDistance4 = (float)Math.Sqrt((double)(tileXDist4 * tileXDist4 + tileYDist4 * tileYDist4));
+                        if ((double)tileDistance4 < (double)avoidRectangleSize * 0.8)
                         {
-                            if (Main.tile[num17, num18] != null)
+                            if (Main.tile[inc4, doubleinc4] != null)
                             {
-                                if (Main.tile[num17, num18].TileType == 5 || Main.tile[num17, num18].TileType == 32 || Main.tile[num17, num18].TileType == 352)
+                                if (Main.tile[inc4, doubleinc4].TileType == 5 || Main.tile[inc4, doubleinc4].TileType == 32 || Main.tile[inc4, doubleinc4].TileType == 352)
                                 {
-                                    WorldGen.KillTile(num17, num18, false, false, false);
+                                    WorldGen.KillTile(inc4, doubleinc4, false, false, false);
                                 }
-                                Main.tile[num17, num18].TileType = (ushort)ModContent.TileType<AstralOre>();
-                                WorldGen.SquareTileFrame(num17, num18, true);
+                                Main.tile[inc4, doubleinc4].TileType = (ushort)ModContent.TileType<AstralOre>();
+                                WorldGen.SquareTileFrame(inc4, doubleinc4, true);
                             }
                         }
                     }
                 }
             }
-            num = WorldGen.genRand.Next(30, 38);
-            for (int num22 = i - num; num22 < i + num; num22++)
+            avoidRectangleSize = WorldGen.genRand.Next(30, 38);
+            for (int inc5 = i - avoidRectangleSize; inc5 < i + avoidRectangleSize; inc5++)
             {
-                for (int num23 = j - num; num23 < j + num; num23++)
+                for (int doubleinc5 = j - avoidRectangleSize; doubleinc5 < j + avoidRectangleSize; doubleinc5++)
                 {
-                    if (num23 > j + WorldGen.genRand.Next(-2, 3) && Main.tile[num22, num23].HasTile && rand.NextBool(20))
+                    if (doubleinc5 > j + WorldGen.genRand.Next(-2, 3) && Main.tile[inc5, doubleinc5].HasTile && rand.NextBool(20))
                     {
-                        float num24 = (float)Math.Abs(i - num22);
-                        float num25 = (float)Math.Abs(j - num23);
-                        float num26 = (float)Math.Sqrt((double)(num24 * num24 + num25 * num25));
-                        if ((double)num26 < (double)num * 0.85)
+                        float tileXDist5 = (float)Math.Abs(i - inc5);
+                        float tileYDist5 = (float)Math.Abs(j - doubleinc5);
+                        float tileDistance5 = (float)Math.Sqrt((double)(tileXDist5 * tileXDist5 + tileYDist5 * tileYDist5));
+                        if ((double)tileDistance5 < (double)avoidRectangleSize * 0.85)
                         {
-                            if (Main.tile[num22, num23] != null)
+                            if (Main.tile[inc5, doubleinc5] != null)
                             {
-                                if (Main.tile[num22, num23].TileType == 5 || Main.tile[num22, num23].TileType == 32 || Main.tile[num22, num23].TileType == 352)
+                                if (Main.tile[inc5, doubleinc5].TileType == 5 || Main.tile[inc5, doubleinc5].TileType == 32 || Main.tile[inc5, doubleinc5].TileType == 352)
                                 {
-                                    WorldGen.KillTile(num22, num23, false, false, false);
+                                    WorldGen.KillTile(inc5, doubleinc5, false, false, false);
                                 }
-                                Main.tile[num22, num23].TileType = (ushort)ModContent.TileType<AstralOre>();
-                                WorldGen.SquareTileFrame(num22, num23, true);
+                                Main.tile[inc5, doubleinc5].TileType = (ushort)ModContent.TileType<AstralOre>();
+                                WorldGen.SquareTileFrame(inc5, doubleinc5, true);
                             }
                         }
                     }
@@ -404,6 +446,8 @@ namespace CalamityMod.World
                     if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
                         SoundEngine.PlaySound(MeteorSound, Main.player[Main.myPlayer].position);
 
+                    // Immediately prior to mass-converting blocks to Astral, write down the Y position of this event.
+                    YStart = j;
                     DoAstralConversion(new Point(i, j));
 
                     // Upward checks go up 180 tiles. If for whatever reason the placement Y position
@@ -411,7 +455,7 @@ namespace CalamityMod.World
                     if (j < 181)
                         j = 181;
 
-                    int xOffset = WorldGen.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-80, -40) : WorldGen.genRand.Next(40, 80);
+                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-80, -40) : WorldGen.genRand.Next(40, 80);
 
                     bool altarPlaced = false;
                     while (!altarPlaced)
@@ -426,7 +470,8 @@ namespace CalamityMod.World
                             y += 5;
                         }
 
-                        if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0)
+                        if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && !TileID.Sets.Torch[Main.tile[x, y].TileType] && !TileID.Sets.IsAContainer[Main.tile[x, y].TileType]
+                            && (magicStorage is not null && MSTilesToAvoid.Contains(Main.tile[x, y].TileType))) //AVOID HOUSES
                         {
                             bool place = true;
                             SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(x, y - 5), SchematicAnchor.Center, ref place);
@@ -569,7 +614,7 @@ namespace CalamityMod.World
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
-                                case WallID.LivingWood:
+                                case WallID.LivingWoodUnsafe:
                                     Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralMonolithWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);

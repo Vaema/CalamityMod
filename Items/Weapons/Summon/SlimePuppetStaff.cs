@@ -1,38 +1,29 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Items.Materials;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class SlimePuppetStaff : ModItem
+    public class SlimePuppetStaff : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Slime Puppet Staff");
-            Tooltip.SetDefault("Summons a slime ball that follows you\n" +
-                                "The ball flies toward nearby enemies and explodes into slime on enemy hits\n" +
-                                "Does not consume minion slots"); // In other words, bootleg mage :TaxEvasion:
-            Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 26;
+            Item.width = 32;
+            Item.height = 34;
+            Item.damage = 10;
             Item.mana = 10;
-            Item.width = 48;
-            Item.height = 56;
             Item.useTime = Item.useAnimation = 29;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 3.6f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SlimeGodCore.PossessionSound;
             Item.shoot = ModContent.ProjectileType<SlimePuppet>();

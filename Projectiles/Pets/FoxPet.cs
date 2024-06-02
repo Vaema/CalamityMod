@@ -2,15 +2,19 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
-    public class FoxPet : ModProjectile
+    public class FoxPet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fox");
             Main.projFrames[Projectile.type] = 11;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 7, 6)
+            .WithOffset(-35f, 0f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

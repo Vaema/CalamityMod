@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Enums;
@@ -12,13 +12,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class FreedomStarBeam : ModProjectile
+    public class FreedomStarBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         private const int Lifetime = 840;
         private const int TimeToReachMaxSize = 480;
         private const int TimeToShrink = 60;
         private const float MaxBeamScale = 3f;
         private const int DustType = 226;
+        private const int PierceLimit = 50;
 
         private const float MaxBeamLength = 1200f;
         private const float BeamTileCollisionWidth = 1f;
@@ -37,11 +39,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Player Owner => Main.player[Projectile.owner];
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Freedom Star Beam");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -52,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
             // The beam itself still stops on tiles, but its invisible "source" projectile ignores them.
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 15;
             Projectile.timeLeft = Lifetime;
         }
 
@@ -92,20 +89,27 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = rotation - (float)Math.PI / 2f;
             Projectile.velocity = rotation.ToRotationVector2();
 
+            // Preventing DoG abuse
+            bool pierceCapped = Projectile.numHits >= PierceLimit;
+
             // Figure out the scale.
-            if (Projectile.timeLeft > Lifetime - TimeToReachMaxSize)
+            if (Projectile.timeLeft > Lifetime - TimeToReachMaxSize && !pierceCapped)
                 Projectile.localAI[0]++;
-            else if (Projectile.timeLeft < TimeToShrink)
+            else if (Projectile.timeLeft < TimeToShrink || pierceCapped)
                 Projectile.localAI[0] -= TimeToReachMaxSize / TimeToShrink;
 
             // Set initial damage.
-            if (Projectile.localAI[1] == 0f)
+            if (Projectile.localAI[1] == 0f && !pierceCapped)
                 Projectile.localAI[1] = Projectile.damage;
 
             // Reduce the "power" and thus scale of the projectile over its lifetime.
             float power = MathHelper.Clamp(Projectile.localAI[0] / TimeToReachMaxSize, 0.1f, 1f);
             Projectile.scale = MaxBeamScale * power;
             Projectile.damage = (int)MathHelper.Lerp(Projectile.localAI[1], Projectile.localAI[1] * 3f, power);
+
+            // If pierce capped and power is getting low, kill it
+            if (power <= 0.1f && pierceCapped)
+                Projectile.Kill();
 
             // Perform a laser scan to calculate the correct length of the beam.
             float[] laserScanResults = new float[NumSamplePoints];
@@ -176,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // Spawn lunar flare explosions on hit.
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Main.myPlayer == Projectile.owner)
             {
@@ -186,6 +190,10 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.projectile[proj].DamageType = DamageClass.Ranged;
                 Main.projectile[proj].scale = Projectile.scale * 0.7f;
                 Main.projectile[proj].netUpdate = true;
+
+                // Starts decaying damage once pierce capped
+                if (Projectile.numHits >= PierceLimit)
+                    Projectile.localAI[1] *= 0.8f;
             }
         }
 
@@ -195,7 +203,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + Projectile.velocity * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

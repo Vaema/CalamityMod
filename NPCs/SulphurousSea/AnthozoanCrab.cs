@@ -1,12 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -17,14 +17,16 @@ namespace CalamityMod.NPCs.SulphurousSea
     public class AnthozoanCrab : ModNPC
     {
         public int boulderIndex;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Anthozoan Crab");
             Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
+            value.Position.Y += 8;
+            value.PortraitPositionYOverride = 28f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
@@ -35,7 +37,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 22;
-            NPC.lifeMax = 920;
+            NPC.lifeMax = 900;
             NPC.aiStyle = AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit38;
@@ -48,14 +50,17 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("A crab that has placed upon its back, a sturdy structure of stone. It is quite strong and displays this extraordinary strength by hurling boulders at those who encroach on its territory.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AnthozoanCrab")
             });
         }
 
@@ -63,12 +68,17 @@ namespace CalamityMod.NPCs.SulphurousSea
         {
             writer.Write(boulderIndex);
         }
+
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             boulderIndex = reader.ReadInt32();
         }
+
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             if (NPC.ai[1]++ % 360f < 280f)
             {
                 if (NPC.ai[2] > 1f)
@@ -163,9 +173,10 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     NPC.velocity.X = 0f;
                     Vector2 rockSpawnPosition = new Vector2(16f * -NPC.spriteDirection + NPC.Center.X, NPC.Bottom.Y - 6f);
+                    int damage = Main.masterMode ? 18 : Main.expertMode ? 21 : 29;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        boulderIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), rockSpawnPosition, Vector2.Zero, ModContent.ProjectileType<CrabBoulder>(), 29, 6f);
+                        boulderIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), rockSpawnPosition, Vector2.Zero, ModContent.ProjectileType<CrabBoulder>(), damage, 6f);
                         NPC.netUpdate = true;
                     }
                 }
@@ -214,19 +225,19 @@ namespace CalamityMod.NPCs.SulphurousSea
             npcLoot.Add(ModContent.ItemType<CorrodedFossil>(), 15);
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<Irradiated>(), 180);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

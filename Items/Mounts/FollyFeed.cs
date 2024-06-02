@@ -5,15 +5,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Mounts
 {
     [LegacyName("BirdSeed")]
-    public class FollyFeed : ModItem
+    public class FollyFeed : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Folly Feed");
-            Tooltip.SetDefault("Summons a monstrosity");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()
         {
             Item.width = 34;

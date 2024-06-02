@@ -3,31 +3,29 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Tools
 {
-    public class WulfrumDiggingTurtle : ModItem
+    public class WulfrumDiggingTurtle : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wulfrum Digging Turtle");
-            Tooltip.SetDefault("Throws a rickety mining contraption to dig out a small tunnel\n" +
-            "In case of an emergency, right click to instantly detonate all your digging turtles");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 38;
             Item.useTime = Item.useAnimation = 8;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.consumable = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<WulfrumDiggingTurtleProjectile>();
-            Item.width = 30;
-            Item.height = 38;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -36,10 +34,10 @@ namespace CalamityMod.Items.Tools
             Item.rare = ItemRarityID.Blue;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override bool AltFunctionUse(Player player) => true;
 
@@ -55,10 +53,9 @@ namespace CalamityMod.Items.Tools
             {
                 bool explodedAny = false;
 
-                for (int i = 0; i < Main.maxProjectiles; ++i)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    Projectile p = Main.projectile[i];
-                    if (!p.active || p.owner != player.whoAmI || p.type != Item.shoot)
+                    if (p.owner != player.whoAmI || p.type != Item.shoot)
                         continue;
 
                     p.ai[1] = 1f;

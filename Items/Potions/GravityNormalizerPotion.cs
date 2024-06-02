@@ -1,19 +1,18 @@
 ﻿using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Fishing.AstralCatches;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class GravityNormalizerPotion : ModItem
+    public class GravityNormalizerPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Gravity Normalizer Potion");
-            Tooltip.SetDefault("Disables the low gravity of space and grants immunity to the distorted debuff");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.Lime;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -40,7 +39,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<AldebaranAlewife>().
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe().
@@ -48,7 +47,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<BloodOrb>(10).
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

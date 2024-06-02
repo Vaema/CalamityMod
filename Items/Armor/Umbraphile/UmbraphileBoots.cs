@@ -6,16 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Umbraphile
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class UmbraphileBoots : ModItem
+    public class UmbraphileBoots : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Umbraphile Boots");
-            Tooltip.SetDefault("9% increased rogue damage and 6% increased rogue crit\n" +
-                               "20% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 22;

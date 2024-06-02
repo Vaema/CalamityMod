@@ -7,12 +7,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class OmegaHealingPotion : ModItem
+    public class OmegaHealingPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Omega Healing Potion");
-            SacrificeTotal = 30;
+            Item.ResearchUnlockCount = 30;
         }
 
         public override void SetDefaults()
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 24;
             Item.height = 32;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.healLife = 300;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -38,7 +38,8 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<SupremeHealingPotion>(20).
                 AddIngredient<AscendantSpiritEssence>().
                 AddTile(TileID.Bottles).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

@@ -1,23 +1,16 @@
-﻿using CalamityMod.Items.Placeables;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.FishingRods
 {
-    public class NavyFishingRod : ModItem
+    public class NavyFishingRod : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Navy Fishing Rod");
-            Tooltip.SetDefault("While held, slowly electrifies nearby enemies.\n" +
-                "The sea is a city.\n" + //Life of Pi ref Ch.59
-                "Just below are highways, boulevards, streets and roundabouts bustling with submarine traffic.");
-        }
-
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
             Item.width = 24;
@@ -29,14 +22,20 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 20;
             Item.shootSpeed = 13f;
             Item.shoot = ModContent.ProjectileType<NavyBobber>();
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(56f, -37f);
+            lineColor = new Color(36, 61, 111, 100);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PearlShard>(1).
+                AddIngredient<PearlShard>().
                 AddIngredient<SeaPrism>(5).
                 AddIngredient<Navystone>(8).
                 AddTile(TileID.Anvils).

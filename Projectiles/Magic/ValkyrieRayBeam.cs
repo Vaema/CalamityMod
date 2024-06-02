@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
@@ -11,8 +11,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ValkyrieRayBeam : ModProjectile
+    public class ValkyrieRayBeam : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const int Lifetime = 24;
         private const int BeamDustID = 73;
 
@@ -34,11 +35,6 @@ namespace CalamityMod.Projectiles.Magic
         private const float BeamLengthReductionFactor = 14.5f;
 
         private Vector2 beamVector = Vector2.Zero;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Valkyrie Ray");
-        }
 
         public override void SetDefaults()
         {
@@ -68,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             // On frame 1, set the beam vector and rotation, but set the real velocity to zero.
-            if(Projectile.velocity != Vector2.Zero)
+            if (Projectile.velocity != Vector2.Zero)
             {
                 beamVector = Vector2.Normalize(Projectile.velocity);
                 Projectile.rotation = Projectile.velocity.ToRotation();
@@ -127,9 +123,9 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         // Ensure that the hit direction is correct when hitting enemies.
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            hitDirection = (Projectile.Center.X < target.Center.X).ToDirectionInt();
+            modifiers.HitDirectionOverride = (Projectile.Center.X < target.Center.X).ToDirectionInt();
         }
 
         private Color GetBeamColor()
@@ -145,7 +141,7 @@ namespace CalamityMod.Projectiles.Magic
             if (beamVector == Vector2.Zero || Projectile.velocity != Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + beamVector * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

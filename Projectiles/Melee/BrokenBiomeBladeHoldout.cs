@@ -1,20 +1,21 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Melee;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class BrokenBiomeBladeHoldout : ModProjectile //Visuals
+    public class BrokenBiomeBladeHoldout : ModProjectile, ILocalizedModType //Visuals
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private Player Owner => Main.player[Projectile.owner];
 
         public bool OwnerCanUseItem => Owner.HeldItem == associatedItem ? (Owner.HeldItem.ModItem as BrokenBiomeBlade).CanUseItem(Owner) : false;
@@ -28,7 +29,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Broken Biome Blade");
         }
         public override string Texture => "CalamityMod/Items/Weapons/Melee/BrokenBiomeBlade";
         public bool drawIndrawHeldProjInFrontOfHeldItemAndArms = true;
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Melee
             item.mainAttunement = attunement;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (associatedItem == null)
             {
@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

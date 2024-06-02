@@ -10,13 +10,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class OldDukeVortex : ModProjectile
+    public class OldDukeVortex : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortex");
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sulphurous Vortex");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            if (CalamityWorld.getFixedBoi)
+            if (Main.zenithWorld)
             {
                 if (Projectile.scale < 2f)
                 {
@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Boss
                     if (Main.rand.NextBool(var))
                     {
                         dustOffset = dustOffset.RotatedBy(angleIncrement);
-                        int dust = Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulfurousSeaAcid);
+                        int dust = Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulphurousSeaAcid);
                         Main.dust[dust].position = Projectile.Center + dustOffset;
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity = Vector2.Normalize(Projectile.Center - Main.dust[dust].position) * 24f;
@@ -123,11 +123,9 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 float distanceRequired = 800f * Projectile.scale;
-                float succPower = CalamityWorld.getFixedBoi ? 1f : 0.5f;
-                for (int i = 0; i < Main.maxPlayers; i++)
+                float succPower = Main.zenithWorld ? 1f : 0.5f;
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[i];
-
                     float distance = Vector2.Distance(player.Center, Projectile.Center);
                     if (distance < distanceRequired && player.grappling[0] == -1)
                     {
@@ -160,9 +158,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 210f * Projectile.scale, targetHitbox);
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             if (Projectile.timeLeft <= 1680 && Projectile.timeLeft > 85)

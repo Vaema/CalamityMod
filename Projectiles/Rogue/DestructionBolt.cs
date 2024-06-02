@@ -1,17 +1,18 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class DestructionBolt : ModProjectile
+    public class DestructionBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public int dustType = 191;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Destruction Bolt");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -31,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Main.rand.Next(8) == 0)
+            if (Main.rand.NextBool(8))
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
@@ -41,11 +42,8 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-            float num29 = 5f;
-            float num30 = 300f;
+            float constant = 5f;
             float scaleFactor = 6f;
-            Vector2 value7 = new Vector2(10f, 20f);
-            int num32 = 3 * Projectile.MaxUpdates;
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
@@ -55,39 +53,39 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.alpha < 128)
                 {
-                    int num35 = -1;
-                    float num36 = num30;
-                    for (int num37 = 0; num37 < Main.maxNPCs; num37++)
+                    int index = -1;
+                    float otherConstant = 300f;
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[num37].active && Main.npc[num37].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            Vector2 center3 = Main.npc[num37].Center;
-                            float num38 = Vector2.Distance(center3, Projectile.Center);
-                            if (num38 < num36 && num35 == -1 && Collision.CanHitLine(Projectile.Center, 1, 1, center3, 1, 1))
+                            Vector2 npcCenter = n.Center;
+                            float targetDist = Vector2.Distance(npcCenter, Projectile.Center);
+                            if (targetDist < otherConstant && index == -1 && Collision.CanHitLine(Projectile.Center, 1, 1, npcCenter, 1, 1))
                             {
-                                num36 = num38;
-                                num35 = num37;
+                                otherConstant = targetDist;
+                                index = n.whoAmI;
                             }
                         }
                     }
-                    if (num36 < 4f)
+                    if (otherConstant < 4f)
                     {
                         Projectile.Kill();
                         return;
                     }
-                    if (num35 != -1)
+                    if (index != -1)
                     {
-                        Projectile.ai[1] = num29 + 1f;
-                        Projectile.ai[0] = (float)num35;
+                        Projectile.ai[1] = constant + 1f;
+                        Projectile.ai[0] = (float)index;
                         Projectile.netUpdate = true;
                     }
                 }
             }
-            else if (Projectile.ai[1] > num29)
+            else if (Projectile.ai[1] > constant)
             {
                 Projectile.ai[1] += 1f;
-                int num39 = (int)Projectile.ai[0];
-                if (!Main.npc[num39].active || !Main.npc[num39].CanBeChasedBy(Projectile, false))
+                int otherIndex = (int)Projectile.ai[0];
+                if (!Main.npc[otherIndex].active || !Main.npc[otherIndex].CanBeChasedBy(Projectile, false))
                 {
                     Projectile.ai[1] = 1f;
                     Projectile.ai[0] = 0f;
@@ -96,25 +94,24 @@ namespace CalamityMod.Projectiles.Rogue
                 else
                 {
                     Projectile.velocity.ToRotation();
-                    Vector2 vector6 = Main.npc[num39].Center - Projectile.Center;
-                    if (vector6.Length() < 10f)
+                    Vector2 enemyCenterDist = Main.npc[otherIndex].Center - Projectile.Center;
+                    if (enemyCenterDist.Length() < 10f)
                     {
                         Projectile.Kill();
                         return;
                     }
-                    if (vector6 != Vector2.Zero)
+                    if (enemyCenterDist != Vector2.Zero)
                     {
-                        vector6.Normalize();
-                        vector6 *= scaleFactor;
+                        enemyCenterDist.Normalize();
+                        enemyCenterDist *= scaleFactor;
                     }
-                    float num40 = 30f;
-                    Projectile.velocity = (Projectile.velocity * (num40 - 1f) + vector6) / num40;
+                    Projectile.velocity = (Projectile.velocity * 29f + enemyCenterDist) / 30f;
                 }
             }
-            if (Projectile.ai[1] >= 1f && Projectile.ai[1] < num29)
+            if (Projectile.ai[1] >= 1f && Projectile.ai[1] < constant)
             {
                 Projectile.ai[1] += 1f;
-                if (Projectile.ai[1] == num29)
+                if (Projectile.ai[1] == constant)
                 {
                     Projectile.ai[1] = 1f;
                 }
@@ -137,7 +134,7 @@ namespace CalamityMod.Projectiles.Rogue
             return Projectile.alpha < 128 ? null : false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 50;
@@ -149,23 +146,23 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int num621 = 0; num621 < 20; num621++)
+            for (int j = 0; j < 20; j++)
             {
-                int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
+                Main.dust[dust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Main.dust[dust].scale = 0.5f;
+                    Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 45; num623++)
+            for (int k = 0; k < 45; k++)
             {
-                int num624 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[num624].velocity *= 2f;
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
+                Main.dust[dusty].noGravity = true;
+                Main.dust[dusty].velocity *= 5f;
+                dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
+                Main.dust[dusty].velocity *= 2f;
             }
 
             if (Main.netMode != NetmodeID.Server)

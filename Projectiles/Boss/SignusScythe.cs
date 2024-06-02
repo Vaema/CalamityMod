@@ -1,19 +1,19 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class SignusScythe : ModProjectile
+    public class SignusScythe : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         private int counter = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Scythe");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -54,20 +54,20 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
             }
 
-            int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
-            Main.dust[num469].noGravity = true;
-            Main.dust[num469].velocity *= 0f;
+            int shadowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
+            Main.dust[shadowDust].noGravity = true;
+            Main.dust[shadowDust].velocity *= 0f;
 
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= 150f)
             {
                 if (Projectile.ai[1] > 0f && Projectile.ai[0] < 160f)
                 {
-                    int num625 = (int)Projectile.ai[1] - 1;
-                    if (num625 < Main.maxPlayers)
+                    int playerTracker = (int)Projectile.ai[1] - 1;
+                    if (playerTracker < Main.maxPlayers)
                     {
-                        Vector2 value16 = Main.player[num625].Center - Projectile.Center;
-                        Projectile.velocity = Vector2.Normalize(value16) * 22f;
+                        Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
+                        Projectile.velocity = Vector2.Normalize(playerDirection) * 22f;
                     }
                 }
             }
@@ -84,34 +84,34 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
-            for (int num621 = 0; num621 < 5; num621++)
+            for (int i = 0; i < 5; i++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
+                Main.dust[killDust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                    Main.dust[killDust].scale = 0.5f;
+                    Main.dust[killDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 10; num623++)
+            for (int j = 0; j < 10; j++)
             {
-                int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.5f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
-                Main.dust[num624].velocity *= 2f;
+                int killDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.5f);
+                Main.dust[killDust2].noGravity = true;
+                Main.dust[killDust2].velocity *= 5f;
+                killDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
+                Main.dust[killDust2].velocity *= 2f;
             }
         }
     }

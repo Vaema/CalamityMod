@@ -1,187 +1,93 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+using CalamityMod.Buffs.Summon.Whips;
+using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MiniGuardianAttack : ModProjectile
+    public class MiniGuardianAttack : ModProjectile, ILocalizedModType
     {
-        private int ai = 3;
-        private void updateDamage(int type)
+        public new string LocalizationCategory => "Projectiles.Summon";
+        public Player Owner => Main.player[Projectile.owner];
+
+        public bool SpawnedFromPSC => Projectile.ai[0] == 1f;
+
+        internal int phaseTimer
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            float baseDamage = (modPlayer.profanedCrystal && !modPlayer.profanedCrystalBuffs) ? 0f : (75f +
-                        (modPlayer.profanedCrystalBuffs ? 420f : 0f));
-            Projectile.damage = baseDamage == 0 ? 0 : (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage * 0.7f);
-            ai = type;
-            if (baseDamage >= 420f)
+            get => (int)Projectile.ai[1];
+            set
             {
-                Projectile.localNPCHitCooldown = 6;
+                Projectile.ai[1] = value;
+                Projectile.netUpdate = true;
             }
-            else if (baseDamage == 0)
+        }
+
+        private int attackDelay = 0;
+
+        public enum MiniOffenseAIState
+        {
+            Vanity,
+            Psa,
+            Spears,
+            Charges,
+            Fireballs
+        }
+
+        public MiniOffenseAIState getAiState => SpawnedFromPSC ?
+            (MiniOffenseAIState)Math.Clamp(Projectile.ai[2], (int)MiniOffenseAIState.Spears, (int)MiniOffenseAIState.Fireballs) :
+            MiniOffenseAIState.Psa;
+
+        public MiniOffenseAIState updateAiState(Player player, MiniOffenseAIState currentAIState)
+        {
+            MiniOffenseAIState? result = null;
+            if (SpawnedFromPSC && ForcedVanity)
+                result = MiniOffenseAIState.Vanity;
+            else if (!SpawnedFromPSC)
+                result = MiniOffenseAIState.Psa;
+            if (result != null)
             {
-                Projectile.localNPCHitCooldown = 69;
+                Projectile.ai[2] = (int)result;
+                return (MiniOffenseAIState)result;
+                //Return early as the phaseTimer would overwrite the spears on hit counter
+            }
+
+            int currentPhase = (int)currentAIState;
+
+            if (phaseTimer <= 0)
+            {
+                currentPhase++;
+                if (currentPhase > (int)MiniOffenseAIState.Fireballs) //if it is beyond the last possible phase (in terms of enum order) reset to beginning
+                    currentPhase = (int)MiniOffenseAIState.Spears;
+                result = (MiniOffenseAIState)currentPhase;
+                bool whip = player.HasBuff<ProfanedCrystalWhipBuff>();
+                int newPhaseTimer = result == MiniOffenseAIState.Charges ? 60 * (whip ? 10 : 6) : //charge time
+                    result == MiniOffenseAIState.Fireballs ? 60 * (whip ? 10 : 6) : //fireball time
+                    60 * (whip ? 8 : 6); //spears time
+                phaseTimer = newPhaseTimer;
             }
             else
             {
-                Projectile.localNPCHitCooldown = 9;
+                result = (MiniOffenseAIState)currentPhase;
+                phaseTimer--;
             }
+
+            Projectile.ai[2] = (int)result;
+            return (MiniOffenseAIState)result;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(ai);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-             ai = reader.ReadInt32();
-        }
-
-        private void AI(int type, float num535, float num536, Player player)
-        {
-            updateDamage(type);
-            switch (ai)
-            {
-                case 1: //offensive bab (profaned soul artifact)
-                case 2: //Empowered bab WEEEEEEEEEE (profaned soul crystal)
-                    if (Projectile.ai[1] <= -1f)
-                    {
-                        Projectile.ai[1] = 17f;
-                    }
-                    if (Projectile.ai[1] > 0f)
-                    {
-                        Projectile.ai[1] -= type;
-                    }
-                    if (Projectile.ai[1] == 0f)
-                    {
-                        float num550 = 24f; //12
-                        Vector2 vector43 = Projectile.Center;
-                        float num551 = num535 - vector43.X;
-                        float num552 = num536 - vector43.Y;
-                        float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-                        if (num553 < 100f)
-                        {
-                            num550 = 28f; //14
-                        }
-
-                        if (type == 2)
-                            num550 *= 2f;
-                        else if (player.Calamity().gDefense)
-                            num550 *= 0.95f;
-
-                        num553 = num550 / num553;
-                        num551 *= num553;
-                        num552 *= num553;
-                        Projectile.velocity.X = (Projectile.velocity.X * (type == 1 ? 12f : 20f) + num551) / (type == 1 ? 13f : 21f);
-                        Projectile.velocity.Y = (Projectile.velocity.Y * (type == 1 ? 12f : 20f) + num552) / (type == 1 ? 13f : 21f);
-                    }
-                    else
-                    {
-                        if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < 10f)
-                        {
-                            Projectile.velocity *= 1.05f;
-                        }
-                    }
-                    break;
-                case 3: //bored bab - (idle)
-                    float num16 = 0.5f;
-                    Projectile.tileCollide = false;
-                    int num17 = 100;
-                    Vector2 vector3 = Projectile.Center;
-                    float num18 = player.Center.X - vector3.X;
-                    float num19 = player.Center.Y - vector3.Y;
-                    num19 += (float)Main.rand.Next(-10, 21);
-                    num18 += (float)Main.rand.Next(-10, 21);
-                    num18 += (float)(60 * -(float)Main.player[Projectile.owner].direction);
-                    num19 -= 60f;
-                    float num20 = (float)Math.Sqrt((double)(num18 * num18 + num19 * num19));
-                    float num21 = 18f;
-
-                    if (num20 < (float)num17 && player.velocity.Y == 0f &&
-                        Projectile.position.Y + (float)Projectile.height <= player.position.Y + (float)player.height &&
-                        !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
-                    {
-                        Projectile.ai[0] = 0f;
-                        if (Projectile.velocity.Y < -6f)
-                        {
-                            Projectile.velocity.Y = -6f;
-                        }
-                    }
-                    if (num20 > 2000f)
-                    {
-                        Projectile.position = player.position;
-                        Projectile.netUpdate = true;
-                    }
-                    if (num20 < 50f)
-                    {
-                        if (Math.Abs(Projectile.velocity.X) > 2f || Math.Abs(Projectile.velocity.Y) > 2f)
-                        {
-                            Projectile.velocity *= 0.90f;
-                        }
-                        num16 = 0.01f;
-                    }
-                    else
-                    {
-                        if (num20 < 100f)
-                        {
-                            num16 = 0.1f;
-                        }
-                        if (num20 > 300f)
-                        {
-                            num16 = 1f;
-                        }
-                        num20 = num21 / num20;
-                        num18 *= num20;
-                        num19 *= num20;
-                    }
-
-                    if (Projectile.velocity.X < num18)
-                    {
-                        Projectile.velocity.X += num16;
-                        if (num16 > 0.05f && Projectile.velocity.X < 0f)
-                        {
-                            Projectile.velocity.X += num16;
-                        }
-                    }
-                    if (Projectile.velocity.X > num18)
-                    {
-                        Projectile.velocity.X -= num16;
-                        if (num16 > 0.05f && Projectile.velocity.X > 0f)
-                        {
-                            Projectile.velocity.X -= num16;
-                        }
-                    }
-                    if (Projectile.velocity.Y < num19)
-                    {
-                        Projectile.velocity.Y += num16;
-                        if (num16 > 0.05f && Projectile.velocity.Y < 0f)
-                        {
-                            Projectile.velocity.Y += num16 * 2f;
-                        }
-                    }
-                    if (Projectile.velocity.Y > num19)
-                    {
-                        Projectile.velocity.Y -= num16;
-                        if (num16 > 0.05f && Projectile.velocity.Y > 0f)
-                        {
-                            Projectile.velocity.Y -= num16 * 2f;
-                        }
-                    }
-                    break;
-            }
-        }
+        public bool ForcedVanity => SpawnedFromPSC && !Owner.Calamity().profanedCrystalBuffs;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Offensive Guardian"); // *swears at u*
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -192,146 +98,375 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.width = 60;
             Projectile.height = 88;
-            Projectile.minionSlots = 0f;
             Projectile.minion = true;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 18000;
-            Projectile.timeLeft *= 5;
             Projectile.usesLocalNPCImmunity = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
-        public override bool PreDraw(ref Color lightColor)
+        private void BaseAI(NPC potentialTarget)
         {
-            if (Main.player[Projectile.owner].Calamity().profanedCrystalBuffs && !Main.player[Projectile.owner].Calamity().endoCooper)
+            if (potentialTarget != null && !ForcedVanity)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
-                return false;
+                Vector2 targetDestination = potentialTarget.Center - Projectile.Center;
+                float targetDist = targetDestination.Length();
+                // Moves faster if from PSC
+                float baseSpeed = (targetDist < 100f ? 28f : 24f) * (SpawnedFromPSC ? 2f : 0.95f);
+                float inertia = SpawnedFromPSC ? 20f : 12f;
+
+                targetDist = baseSpeed / targetDist;
+                targetDestination *= targetDist;
+                Projectile.velocity = (Projectile.velocity * inertia + targetDestination) / (inertia + 1f);
+            }
+            else // Idle movement
+            {
+                //Set rotation in case it's offset from the buffed charging
+                Projectile.rotation = (float)(Math.Atan(0));
+                Vector2 playerDestination = Owner.Center - Projectile.Center;
+                playerDestination.X += Main.rand.NextFloat(-10f, 20f) - (60f * Owner.direction);
+                playerDestination.Y += Main.rand.NextFloat(-10f, 20f) - 60f;
+                float playerDist = playerDestination.Length();
+                float acceleration = 0.5f;
+                float returnSpeed = 28f;
+
+                // Teleport if too far
+                if (playerDist > 2000f)
+                {
+                    Projectile.position = Owner.position;
+                    Projectile.netUpdate = true;
+                }
+                // Slow down a lot when close
+                else if (playerDist < 50f)
+                {
+                    acceleration = 0.01f;
+                    if (Math.Abs(Projectile.velocity.X) > 2f || Math.Abs(Projectile.velocity.Y) > 2f)
+                        Projectile.velocity *= 0.9f;
+                }
+                else
+                {
+                    if (playerDist < 100f)
+                        acceleration = 0.1f;
+
+                    if (playerDist > 300f)
+                        acceleration = 1f;
+
+                    playerDist = returnSpeed / playerDist;
+                    playerDestination *= playerDist;
+                }
+
+                // Turning (wtf is this)
+                // idk ask phup lmao
+                if (Projectile.velocity.X < playerDestination.X)
+                {
+                    Projectile.velocity.X += acceleration;
+                    if (acceleration > 0.05f && Projectile.velocity.X < 0f)
+                        Projectile.velocity.X += acceleration;
+                }
+                if (Projectile.velocity.X > playerDestination.X)
+                {
+                    Projectile.velocity.X -= acceleration;
+                    if (acceleration > 0.05f && Projectile.velocity.X > 0f)
+                        Projectile.velocity.X -= acceleration;
+                }
+                if (Projectile.velocity.Y < playerDestination.Y)
+                {
+                    Projectile.velocity.Y += acceleration;
+                    if (acceleration > 0.05f && Projectile.velocity.Y < 0f)
+                        Projectile.velocity.Y += acceleration * 2f;
+                }
+                if (Projectile.velocity.Y > playerDestination.Y)
+                {
+                    Projectile.velocity.Y -= acceleration;
+                    if (acceleration > 0.05f && Projectile.velocity.Y > 0f)
+                        Projectile.velocity.Y -= acceleration * 2f;
+                }
+
+            }
+        }
+
+        public void AdvancedAI(NPC potentialTarget, Player owner, MiniOffenseAIState aiState)
+        {
+            bool buffedAi = owner.HasBuff<ProfanedCrystalWhipBuff>();
+
+            Vector2 targetDestination = potentialTarget.Center - Projectile.Center;
+            if (attackDelay > 0)
+                attackDelay--;
+            switch (aiState)
+            {
+                case MiniOffenseAIState.Charges:
+                    break;
+                case MiniOffenseAIState.Fireballs:
+                    targetDestination.X += Main.rand.NextFloat(-5f, 5f);
+                    targetDestination.Y += Main.rand.NextFloat(155f, 160f);
+                    break;
+                case MiniOffenseAIState.Spears:
+                    targetDestination.X += Main.rand.NextFloat(-5f, 5f);
+                    targetDestination.Y += Main.rand.NextFloat(155f, 160f);
+                    break;
+            }
+
+            if (aiState != MiniOffenseAIState.Charges)
+            {
+
+                Projectile.rotation = (float)(Math.Atan(0));
+                float targetDist = targetDestination.Length();
+
+                float baseSpeed = (targetDist < 100f ? 28f : 24f) * 2f;
+                float inertia = 20f;
+
+                targetDist = baseSpeed / targetDist;
+                targetDestination *= targetDist;
+                Projectile.velocity = (Projectile.velocity * inertia + targetDestination) / (inertia + 1f);
+
+                if (aiState == MiniOffenseAIState.Fireballs)
+                {
+                    if (attackDelay == 0)
+                    {
+                        if (buffedAi)
+                        {
+                            attackDelay = 100;
+                            Projectile.velocity = Projectile.Center - potentialTarget.Center;
+                            Projectile.velocity.Normalize();
+                            Projectile.velocity *= 29f;
+                            int damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
+                            var velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, potentialTarget, 28f);
+                            int shotCount = 3;
+                            int spread = -20;
+                            for (int i = 0; i < shotCount; i++)
+                            {
+                                Vector2 perturbedspeed = new Vector2(velocity.X, velocity.Y).RotatedBy(MathHelper.ToRadians(spread));
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedspeed, ModContent.ProjectileType<MiniGuardianFireball>(), damage, 1f, Projectile.owner, 1f);
+                                spread += 20;
+                            }
+                        }
+                        else
+                        {
+                            Projectile.velocity = Projectile.Center - potentialTarget.Center;
+                            Projectile.velocity.Normalize();
+                            Projectile.velocity *= 20f;
+                            attackDelay = 75;
+                            int damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
+                            var velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, potentialTarget, 25f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MiniGuardianFireball>(), damage, 1f, Projectile.owner);
+                        }
+                    }
+                }
+                else //Spears
+                {
+                    if (attackDelay % (buffedAi ? 6 : 8) == 0)
+                    {
+                        //fire spear
+                        SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+
+                        bool shouldShotGun = attackDelay == 0;
+                        if (shouldShotGun)
+                        {
+                            int numProj = 5;
+                            var velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, potentialTarget, buffedAi ? 28f : 20f);
+                            int spread = buffedAi ? -10 : -20;
+                            for (int i = 0; i < numProj; i++)
+                            {
+                                Vector2 perturbedspeed = velocity.RotatedBy(MathHelper.ToRadians(spread));
+                                int separation = (i * 4) - 8;
+                                int spearBaseDamage = (int)(Projectile.originalDamage * 0.5f);
+                                int spearDamage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(spearBaseDamage);
+                                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y - separation, perturbedspeed.X, perturbedspeed.Y, ModContent.ProjectileType<MiniGuardianSpear>(), spearDamage, 1f, Projectile.owner, 1f, 1f);
+                                if (proj.WithinBounds(Main.maxProjectiles))
+                                {
+                                    Main.projectile[proj].DamageType = DamageClass.Summon;
+                                    Main.projectile[proj].originalDamage = spearBaseDamage;
+                                }
+                                spread += buffedAi ? 5 : 10;
+                            }
+                        }
+                        else
+                        {
+                            int spearBaseDamage = Projectile.originalDamage;
+                            int spearDamage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(spearBaseDamage);
+                            var velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, potentialTarget, buffedAi ? 28f : 20f);
+                            var proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MiniGuardianSpear>(), spearDamage, 1f, Projectile.owner, 1f, 1f);
+                            if (proj.WithinBounds(Main.maxProjectiles))
+                            {
+                                Main.projectile[proj].DamageType = DamageClass.Summon;
+                                Main.projectile[proj].originalDamage = Projectile.originalDamage;
+                            }
+                        }
+                    }
+
+                    if (attackDelay == 0)
+                        attackDelay = buffedAi ? 30 : 40;
+                }
             }
             else
             {
-                return true;
-            }
-        }
+                var shouldDrawDust = buffedAi || attackDelay > 0;
+                if (buffedAi)
+                {
+                    if (attackDelay <= 0)
+                        owner.Calamity().rollBabSpears(1, true);
+                    float distToTarget = Projectile.Distance(potentialTarget.Center) + .01f;
+                    Projectile.velocity = Projectile.rotation.ToRotationVector2() * (28f + (28f / (distToTarget * .01f)));
+                    Projectile.velocity = Vector2.Clamp(Projectile.velocity, Vector2.One * -50f, Vector2.One * 50f);
+                    Projectile.rotation = Projectile.rotation.AngleTowards(Projectile.AngleTo(potentialTarget.Center), .001f * distToTarget);
+                }
+                else
+                {
+                    if (attackDelay == 24)
+                    {
+                        Projectile.velocity = Projectile.SuperhomeTowardsTarget(potentialTarget, 35f, 1f);
+                        Projectile.velocity *= 1.369f;
+                    }
 
-        public override bool? CanCutTiles()
-        {
-            if (Projectile.damage == 0)
-                return false;
-            return null;
+                }
+                if (attackDelay <= 0)
+                    attackDelay = buffedAi ? 20 : 25;
+
+                if (shouldDrawDust)
+                {
+                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
+                    var shouldAdjust = !Main.dayTime && buffedAi;
+                    int dustId = ProvUtils.GetDustID(pscState);
+                    for (int i = 0; i < 6; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + (Projectile.Size / 2f).RotatedBy(Projectile.rotation), dustId);
+                        dust.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(20f * (i % 2 == 0).ToDirectionInt()));
+                        dust.noGravity = true;
+                        dust.fadeIn = shouldAdjust ? 0.9f : 1.8f;
+                        dust.scale = Main.dayTime ? dust.scale : 0.45f;
+                    }
+                }
+            }
         }
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.dead)
-            {
-                modPlayer.gOffense = false;
-            }
-            if (modPlayer.gOffense)
-            {
+            Player owner = Owner;
+            // Despawn properly
+            if (owner.Calamity().pSoulGuardians)
                 Projectile.timeLeft = 2;
-            }
-            if (!modPlayer.pArtifact && !modPlayer.profanedCrystal)
+            if (!owner.Calamity().pSoulArtifact || owner.dead || !owner.active)
             {
-                modPlayer.gOffense = false;
+                owner.Calamity().pSoulGuardians = false;
                 Projectile.active = false;
                 return;
             }
-            Projectile.MinionAntiClump();
-            float num535 = Projectile.position.X;
-            float num536 = Projectile.position.Y;
-            float num537 = 3000f;
-            bool flag19 = false;
-            NPC ownerMinionAttackTargetNPC2 = Projectile.OwnerMinionAttackTargetNPC;
-            if (ownerMinionAttackTargetNPC2 != null && ownerMinionAttackTargetNPC2.CanBeChasedBy(Projectile, false))
+
+            var psc = owner.Calamity().profanedCrystal;
+            if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
             {
-                float num539 = ownerMinionAttackTargetNPC2.Center.X;
-                float num540 = ownerMinionAttackTargetNPC2.Center.Y;
-                float num541 = Math.Abs(Projectile.Center.X - num539) + Math.Abs(Projectile.Center.Y - num540);
-                if (num541 < num537)
-                {
-                    num537 = num541;
-                    num535 = num539;
-                    num536 = num540;
-                    flag19 = true;
-                }
+                Projectile.active = false;
             }
-            if (!flag19)
+
+            // Dynamically update stats here, originalDamage can be found in MiscEffects
+            Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
+            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
+            Projectile.localNPCHitCooldown = SpawnedFromPSC ? 6 : 9;
+
+            var currentAIState = getAiState;
+
+            if (owner.Calamity().profanedCrystalAnim != -1)
+                currentAIState = MiniOffenseAIState.Vanity;
+
+            var newAIState = updateAiState(owner, currentAIState);
+
+            if (newAIState != currentAIState)
             {
-                int num3;
-                for (int num542 = 0; num542 < Main.maxNPCs; num542 = num3 + 1)
-                {
-                    if (Main.npc[num542].CanBeChasedBy(Projectile, false))
-                    {
-                        float num543 = Main.npc[num542].Center.X;
-                        float num544 = Main.npc[num542].Center.Y;
-                        float num545 = Math.Abs(Projectile.Center.X - num543) + Math.Abs(Projectile.Center.Y - num544);
-                        if (num545 < num537)
-                        {
-                            num537 = num545;
-                            num535 = num543;
-                            num536 = num544;
-                            flag19 = true;
-                        }
-                    }
-                    num3 = num542;
-                }
+                Projectile.netUpdate = true;
             }
-            if (!flag19 || Projectile.damage == 0)
+
+            // Find minion and charge if possible, make sure vanity minions are not chasing
+            NPC potentialTarget = Projectile.Center.MinionHoming(3000f, owner);
+
+            switch (currentAIState)
             {
-                AI(3, num535, num536, player);
+                case MiniOffenseAIState.Vanity:
+                case MiniOffenseAIState.Psa:
+                    BaseAI(potentialTarget);
+                    break;
+                default:
+                    if (potentialTarget != null && !ForcedVanity)
+                        AdvancedAI(potentialTarget, owner, newAIState);
+                    else
+                        BaseAI(null);
+                    break;
+            }
+
+            // Direction and frames
+            if (Math.Abs(Projectile.velocity.X) > 0.2f)
+                Projectile.direction = Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
+
+            Projectile.frameCounter++;
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+        }
+
+        // Vanity stuff can't damage
+        public override bool? CanDamage() => !ForcedVanity;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Owner.Calamity().angelicAlliance)
+                target.AddBuff(ModContent.BuffType<BanishingFire>(), 300);
+            if (!Owner.Calamity().profanedCrystal)
+            {
+                if (Projectile.ai[1] == 0f)
+                    Owner.Calamity().rollBabSpears(1, target.chaseable);
+                Projectile.ai[1] -= 1f;
+                if (Projectile.ai[1] < 0f)
+                    Projectile.ai[1] = 15;
             }
             else
             {
+                var buffedAI = Owner.HasBuff<ProfanedCrystalWhipBuff>();
+                var state = getAiState;
+                if (state == MiniOffenseAIState.Charges && !buffedAI)
                 {
-                    if (player.Calamity().profanedCrystalBuffs)
-                        AI(2, num535, num536, player);
-                    else
-                        AI(1, num535, num536, player);
+                    Owner.Calamity().rollBabSpears(1, true);
                 }
             }
-            if (Projectile.velocity.X > 0.25f)
-            {
-                Projectile.direction = -1;
-            }
-            else if (Projectile.velocity.X < -0.25f)
-            {
-                Projectile.direction = 1;
-            }
+        }
 
-            if (Math.Abs(Projectile.velocity.X) > 0.2f)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            if (Owner.Calamity().angelicAlliance)
+                target.AddBuff(ModContent.BuffType<BanishingFire>(), 300);
+            if (!Owner.Calamity().profanedCrystal)
             {
-                Projectile.spriteDirection = -Projectile.direction;
+                if (Projectile.ai[1] == 0f)
+                    Owner.Calamity().rollBabSpears(1, true);
+                Projectile.ai[1] -= 1f;
+                if (Projectile.ai[1] < 0f)
+                    Projectile.ai[1] = 15;
             }
-
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 5)
+            else
             {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-                if (Projectile.frame % 2 == 0)
-                    Projectile.netUpdate = true;
-            }
-            if (Projectile.frame > 3)
-            {
-                Projectile.frame = 0;
+                var buffedAI = Owner.HasBuff<ProfanedCrystalWhipBuff>();
+                var state = getAiState;
+                if (state == MiniOffenseAIState.Charges && !buffedAI)
+                {
+                    Owner.Calamity().rollBabSpears(1, true);
+                }
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override bool PreDraw(ref Color lightColor)
         {
-            if (Main.player[Projectile.owner].Calamity().angelicAlliance)
-                target.AddBuff(ModContent.BuffType<BanishingFire>(), 300);
+            // Has afterimages if maximum empowerment
+            if (!ForcedVanity && SpawnedFromPSC)
+            {
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                return false;
+            }
+            return true;
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void ReceiveExtraAI(BinaryReader reader)
         {
-            if (Main.player[Projectile.owner].Calamity().angelicAlliance)
-                target.AddBuff(ModContent.BuffType<BanishingFire>(), 300);
+            attackDelay = reader.ReadInt32();
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(attackDelay);
         }
     }
 }

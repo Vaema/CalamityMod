@@ -1,4 +1,9 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
@@ -9,21 +14,16 @@ using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FurnitureAncient;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
-using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 
 namespace CalamityMod.World
 {
@@ -38,26 +38,26 @@ namespace CalamityMod.World
             while (!validHeightFound && attempts++ < 100000)
             {
                 while (!WorldGen.SolidTile(origin.X, treeHeight))
-				{
-					treeHeight++;
-				}
+                {
+                    treeHeight++;
+                }
 
                 if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > 0)
-				{
+                {
                     validHeightFound = true;
-				}
+                }
             }
 
             int extraWidth = 0;
-            
+
             while (validHeightFound)
             {
                 //place the roots first so the bottom of the hole doesnt look strange
                 for (int k = 0; k < 6; k++)
                 {
                     double angle = (double)k / 3.0 * 2.0 + 0.57075;
-                    WorldUtils.Gen(new Point(origin.X + 2, origin.Y - 30), new ShapeRoot((int)angle, WorldGen.genRand.Next(80, 120)), 
-                    Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), 
+                    WorldUtils.Gen(new Point(origin.X + 2, origin.Y - 30), new ShapeRoot((int)angle, WorldGen.genRand.Next(80, 120)),
+                    Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87),
                     new Actions.SetTile(TileID.LivingMahogany, setSelfFrames: true)));
                 }
 
@@ -75,28 +75,28 @@ namespace CalamityMod.World
                         //create a list of points for the ends of each branch
                         List<Point> list = new List<Point>();
 
-                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433, 
-                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), 
+                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433,
+                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
                         new Modifiers.SkipWalls(87), new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames(frameNeighbors: true)));
 
-                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-2.45619455575943, 
-                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), 
+                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-2.45619455575943,
+                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
                         new Modifiers.SkipWalls(87), new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames(frameNeighbors: true)));
 
                         //place living mahogany leaves at the end of each branch
                         foreach (Point item in list)
                         {
-                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)), 
+                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)),
                             new Modifiers.SkipTiles(383, 21, 467, 226, 237), new Modifiers.SkipWalls(78, 87), new Actions.SetTile(TileID.LivingMahoganyLeaves), new Actions.SetFrames(frameNeighbors: true)));
                         }
                     }
 
                     //place the tree itself
-                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1 - extraWidth, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth), 
+                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1 - extraWidth, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth),
                     Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), new Actions.RemoveWall(),
                     new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames()));
 
-                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth), 
+                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth),
                     Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), new Actions.RemoveWall(),
                     new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames()));
 
@@ -124,7 +124,7 @@ namespace CalamityMod.World
                     }));
 
                     //chance to place blocks inside the tree for randomness
-                    if (WorldGen.genRand.Next(20) == 0)
+                    if (WorldGen.genRand.NextBool(20))
                     {
                         WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-2, 2), y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                         {
@@ -145,7 +145,7 @@ namespace CalamityMod.World
 
             return false;
         }
-        
+
         public static bool CanPlaceGiantHive(Point origin, StructureMap structures)
         {
             if (!structures.CanPlace(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100)))
@@ -161,7 +161,7 @@ namespace CalamityMod.World
             if (ref2.Value / (float)ref1.Value < 0.75f || ref3.Value < 2)
                 return false;
 
-            int num = 0;
+            int arrayInc = 0;
             int[] array = new int[1000];
             int[] array2 = new int[1000];
             Vector2 larvaLocation = origin.ToVector2();
@@ -169,32 +169,32 @@ namespace CalamityMod.World
 
             for (int i = 0; i < numHiveTunnels; i++)
             {
-                Vector2 vector2 = larvaLocation;
-                int num3 = WorldGen.genRand.Next(2, 5);
-                for (int j = 0; j < num3; j++)
-                    vector2 = CreateHiveTunnel((int)larvaLocation.X, (int)larvaLocation.Y, WorldGen.genRand);
+                Vector2 movingLarvaLocation = larvaLocation;
+                int hiveTunnelTries = WorldGen.genRand.Next(2, 5);
+                for (int j = 0; j < hiveTunnelTries; j++)
+                    movingLarvaLocation = CreateHiveTunnel((int)larvaLocation.X, (int)larvaLocation.Y, WorldGen.genRand);
 
-                larvaLocation = vector2;
-                array[num] = (int)larvaLocation.X;
-                array2[num] = (int)larvaLocation.Y;
-                num++;
+                larvaLocation = movingLarvaLocation;
+                array[arrayInc] = (int)larvaLocation.X;
+                array2[arrayInc] = (int)larvaLocation.Y;
+                arrayInc++;
             }
 
             FrameOutAllHiveContents(origin, 50);
 
-            for (int k = 0; k < num; k++)
+            for (int k = 0; k < arrayInc; k++)
             {
-                int num4 = array[k];
+                int x = array[k];
                 int y = array2[k];
-                int num5 = 1;
+                int treeIndentDirection = 1;
                 if (WorldGen.genRand.NextBool())
-                    num5 = -1;
+                    treeIndentDirection = -1;
 
                 bool flag = false;
-                while (WorldGen.InWorld(num4, y, 10) && BadSpotForHoneyFall(num4, y))
+                while (WorldGen.InWorld(x, y, 10) && BadSpotForHoneyFall(x, y))
                 {
-                    num4 += num5;
-                    if (Math.Abs(num4 - array[k]) > 50)
+                    x += treeIndentDirection;
+                    if (Math.Abs(x - array[k]) > 50)
                     {
                         flag = true;
                         break;
@@ -203,11 +203,11 @@ namespace CalamityMod.World
 
                 if (!flag)
                 {
-                    num4 += num5;
-                    if (!SpotActuallyNotInHive(num4, y))
+                    x += treeIndentDirection;
+                    if (!SpotActuallyNotInHive(x, y))
                     {
-                        CreateBlockedHoneyCube(num4, y);
-                        CreateDentForHoneyFall(num4, y, num5);
+                        CreateBlockedHoneyCube(x, y);
+                        CreateDentForHoneyFall(x, y, treeIndentDirection);
                     }
                 }
             }
@@ -221,13 +221,13 @@ namespace CalamityMod.World
             int maxAttempts = 1000;
             for (int l = 0; l < maxAttempts; l++)
             {
-                Vector2 vector3 = larvaLocation;
-                vector3.X += WorldGen.genRand.Next(-50, 51);
-                vector3.Y += WorldGen.genRand.Next(-50, 51);
-                if (WorldGen.InWorld((int)vector3.X, (int)vector3.Y) && Vector2.Distance(larvaLocation, vector3) > 10f && !Main.tile[(int)vector3.X, (int)vector3.Y].HasTile && Main.tile[(int)vector3.X, (int)vector3.Y].WallType == WallID.HiveUnsafe)
+                Vector2 newStructureLocation = larvaLocation;
+                newStructureLocation.X += WorldGen.genRand.Next(-50, 51);
+                newStructureLocation.Y += WorldGen.genRand.Next(-50, 51);
+                if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
                 {
-                    secondLarvaLocation = vector3;
-                    CreateStandForLarva(vector3);
+                    secondLarvaLocation = newStructureLocation;
+                    CreateStandForLarva(newStructureLocation);
                     break;
                 }
             }
@@ -236,41 +236,41 @@ namespace CalamityMod.World
             Vector2 honeyChestLocation = default;
             for (int l = 0; l < maxAttempts; l++)
             {
-                Vector2 vector3 = larvaLocation;
-                vector3.X += WorldGen.genRand.Next(-100, 101);
-                vector3.Y += WorldGen.genRand.Next(-100, 101);
-                if (WorldGen.InWorld((int)vector3.X, (int)vector3.Y) && Vector2.Distance(larvaLocation, vector3) > 10f && Vector2.Distance(secondLarvaLocation, vector3) > 10f && !Main.tile[(int)vector3.X, (int)vector3.Y].HasTile && Main.tile[(int)vector3.X, (int)vector3.Y].WallType == WallID.HiveUnsafe)
+                Vector2 newStructureLocation = larvaLocation;
+                newStructureLocation.X += WorldGen.genRand.Next(-100, 101);
+                newStructureLocation.Y += WorldGen.genRand.Next(-100, 101);
+                if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && Vector2.Distance(secondLarvaLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
                 {
-                    honeyChestLocation = vector3;
-                    CreateStandAndPlaceHoneyChest(vector3);
+                    honeyChestLocation = newStructureLocation;
+                    CreateStandAndPlaceHoneyChest(newStructureLocation);
                     break;
                 }
             }
             for (int l = 0; l < maxAttempts; l++)
             {
-                Vector2 vector3 = larvaLocation;
-                vector3.X += WorldGen.genRand.Next(-100, 101);
-                vector3.Y += WorldGen.genRand.Next(-100, 101);
-                if (WorldGen.InWorld((int)vector3.X, (int)vector3.Y) && Vector2.Distance(larvaLocation, vector3) > 10f && Vector2.Distance(secondLarvaLocation, vector3) > 10f && Vector2.Distance(honeyChestLocation, vector3) > 10f && !Main.tile[(int)vector3.X, (int)vector3.Y].HasTile && Main.tile[(int)vector3.X, (int)vector3.Y].WallType == WallID.HiveUnsafe)
+                Vector2 newStructureLocation = larvaLocation;
+                newStructureLocation.X += WorldGen.genRand.Next(-100, 101);
+                newStructureLocation.Y += WorldGen.genRand.Next(-100, 101);
+                if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && Vector2.Distance(secondLarvaLocation, newStructureLocation) > 10f && Vector2.Distance(honeyChestLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
                 {
-                    CreateStandAndPlaceHoneyChest(vector3);
+                    CreateStandAndPlaceHoneyChest(newStructureLocation);
                     break;
                 }
             }
 
-            structures.AddProtectedStructure(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100), 5);
+            CalamityUtils.AddProtectedStructure(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100), 5);
             return true;
         }
 
         private static void FrameOutAllHiveContents(Point origin, int squareHalfWidth)
         {
-            int num = Math.Max(10, origin.X - squareHalfWidth);
-            int num2 = Math.Min(Main.maxTilesX - 10, origin.X + squareHalfWidth);
-            int num3 = Math.Max(10, origin.Y - squareHalfWidth);
-            int num4 = Math.Min(Main.maxTilesY - 10, origin.Y + squareHalfWidth);
-            for (int i = num; i < num2; i++)
+            int maxXsize = Math.Max(10, origin.X - squareHalfWidth);
+            int minXsize = Math.Min(Main.maxTilesX - 10, origin.X + squareHalfWidth);
+            int maxYSize = Math.Max(10, origin.Y - squareHalfWidth);
+            int minYSize = Math.Min(Main.maxTilesY - 10, origin.Y + squareHalfWidth);
+            for (int i = maxXsize; i < minXsize; i++)
             {
-                for (int j = num3; j < num4; j++)
+                for (int j = maxYSize; j < minYSize; j++)
                 {
                     Tile tile = Main.tile[i, j];
                     if (tile.HasTile && tile.TileType == TileID.Hive)
@@ -284,73 +284,73 @@ namespace CalamityMod.World
 
         private static Vector2 CreateHiveTunnel(int i, int j, UnifiedRandom random)
         {
-            double num = random.Next(20, 26);
-            float num2 = random.Next(30, 41);
-            float num3 = Main.maxTilesX / 4200;
-            num3 = (num3 + 1f) / 2f;
-            num *= (double)num3;
-            num2 *= num3;
+            double randOffset = random.Next(20, 26);
+            float tunnelPlacementAttempts = random.Next(30, 41);
+            float miniMaxXTiles = Main.maxTilesX / 4200;
+            miniMaxXTiles = (miniMaxXTiles + 1f) / 2f;
+            randOffset *= (double)miniMaxXTiles;
+            tunnelPlacementAttempts *= miniMaxXTiles;
 
-            double num4 = num;
+            double randOffsetCopy = randOffset;
             Vector2 result = default;
             result.X = i;
             result.Y = j;
-            Vector2 vector = default;
-            vector.X = random.Next(-10, 11) * 0.2f;
-            vector.Y = random.Next(-10, 11) * 0.2f;
-            while (num > 0.0 && num2 > 0f)
+            Vector2 defaultTunnelPos = default;
+            defaultTunnelPos.X = random.Next(-10, 11) * 0.2f;
+            defaultTunnelPos.Y = random.Next(-10, 11) * 0.2f;
+            while (randOffset > 0.0 && tunnelPlacementAttempts > 0f)
             {
                 if (result.Y > (Main.maxTilesY - 250))
-                    num2 = 0f;
+                    tunnelPlacementAttempts = 0f;
 
-                num = num4 * (double)(1f + random.Next(-20, 20) * 0.01f);
-                num2 -= 1f;
-                int num5 = (int)(result.X - num);
-                int num6 = (int)(result.X + num);
-                int num7 = (int)(result.Y - num);
-                int num8 = (int)(result.Y + num);
-                if (num5 < 1)
-                    num5 = 1;
+                randOffset = randOffsetCopy * (double)(1f + random.Next(-20, 20) * 0.01f);
+                tunnelPlacementAttempts -= 1f;
+                int mainXOffset = (int)(result.X - randOffset);
+                int maxXOffset = (int)(result.X + randOffset);
+                int minYOffset = (int)(result.Y - randOffset);
+                int maxYOffset = (int)(result.Y + randOffset);
+                if (mainXOffset < 1)
+                    mainXOffset = 1;
 
-                if (num6 > Main.maxTilesX - 1)
-                    num6 = Main.maxTilesX - 1;
+                if (maxXOffset > Main.maxTilesX - 1)
+                    maxXOffset = Main.maxTilesX - 1;
 
-                if (num7 < 1)
-                    num7 = 1;
+                if (minYOffset < 1)
+                    minYOffset = 1;
 
-                if (num8 > Main.maxTilesY - 1)
-                    num8 = Main.maxTilesY - 1;
+                if (maxYOffset > Main.maxTilesY - 1)
+                    maxYOffset = Main.maxTilesY - 1;
 
-                for (int k = num5; k < num6; k++)
+                for (int k = mainXOffset; k < maxXOffset; k++)
                 {
-                    for (int l = num7; l < num8; l++)
+                    for (int l = minYOffset; l < maxYOffset; l++)
                     {
                         if (!WorldGen.InWorld(k, l, 50))
                         {
-                            num2 = 0f;
+                            tunnelPlacementAttempts = 0f;
                         }
                         else
                         {
                             if (Main.tile[k - 10, l].WallType == WallID.LihzahrdBrickUnsafe)
-                                num2 = 0f;
+                                tunnelPlacementAttempts = 0f;
 
                             if (Main.tile[k + 10, l].WallType == WallID.LihzahrdBrickUnsafe)
-                                num2 = 0f;
+                                tunnelPlacementAttempts = 0f;
 
                             if (Main.tile[k, l - 10].WallType == WallID.LihzahrdBrickUnsafe)
-                                num2 = 0f;
+                                tunnelPlacementAttempts = 0f;
 
                             if (Main.tile[k, l + 10].WallType == WallID.LihzahrdBrickUnsafe)
-                                num2 = 0f;
+                                tunnelPlacementAttempts = 0f;
                         }
 
                         if (l < Main.worldSurface && Main.tile[k, l - 5].WallType == WallID.None)
-                            num2 = 0f;
+                            tunnelPlacementAttempts = 0f;
 
-                        float num9 = Math.Abs(k - result.X);
-                        float num10 = Math.Abs(l - result.Y);
-                        double num11 = Math.Sqrt(num9 * num9 + num10 * num10);
-                        if (num11 < num4 * 0.4 * (1.0 + random.Next(-10, 11) * 0.005))
+                        float tileXDist = Math.Abs(k - result.X);
+                        float tileYDist = Math.Abs(l - result.Y);
+                        double tileDistance = Math.Sqrt(tileXDist * tileXDist + tileYDist * tileYDist);
+                        if (tileDistance < randOffsetCopy * 0.4 * (1.0 + random.Next(-10, 11) * 0.005))
                         {
                             Main.tile[k, l].LiquidAmount = byte.MaxValue;
                             Main.tile[k, l].Get<LiquidData>().LiquidType = LiquidID.Honey;
@@ -359,7 +359,7 @@ namespace CalamityMod.World
                             Main.tile[k, l].Get<TileWallWireStateData>().IsHalfBlock = false;
                             Main.tile[k, l].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
                         }
-                        else if (num11 < num4 * 0.75 * (1.0 + random.Next(-10, 11) * 0.005))
+                        else if (tileDistance < randOffsetCopy * 0.75 * (1.0 + random.Next(-10, 11) * 0.005))
                         {
                             Main.tile[k, l].LiquidAmount = 0;
                             if (Main.tile[k, l].WallType != WallID.HiveUnsafe)
@@ -371,7 +371,7 @@ namespace CalamityMod.World
                             }
                         }
 
-                        if (num11 < num4 * 0.6 * (1.0 + random.Next(-10, 11) * 0.005))
+                        if (tileDistance < randOffsetCopy * 0.6 * (1.0 + random.Next(-10, 11) * 0.005))
                         {
                             Main.tile[k, l].WallType = WallID.HiveUnsafe;
                             if (random.NextBool())
@@ -383,10 +383,10 @@ namespace CalamityMod.World
                     }
                 }
 
-                result += vector;
-                num2 -= 1f;
-                vector.Y += random.Next(-10, 11) * 0.05f;
-                vector.X += random.Next(-10, 11) * 0.05f;
+                result += defaultTunnelPos;
+                tunnelPlacementAttempts -= 1f;
+                defaultTunnelPos.Y += random.Next(-10, 11) * 0.05f;
+                defaultTunnelPos.X += random.Next(-10, 11) * 0.05f;
             }
 
             return result;
@@ -396,13 +396,13 @@ namespace CalamityMod.World
         {
             int x = origin.X;
             int y = origin.Y;
-            int num = 150;
-            for (int i = x - num; i < x + num; i += 10)
+            int checkRadius = 150;
+            for (int i = x - checkRadius; i < x + checkRadius; i += 10)
             {
                 if (i <= 0 || i > Main.maxTilesX - 1)
                     continue;
 
-                for (int j = y - num; j < y + num; j += 10)
+                for (int j = y - checkRadius; j < y + checkRadius; j += 10)
                 {
                     if (j > 0 && j <= Main.maxTilesY - 1)
                     {
@@ -410,6 +410,8 @@ namespace CalamityMod.World
                             return true;
 
                         if (Main.tile[i, j].WallType == WallID.CrimstoneUnsafe || Main.tile[i, j].WallType == WallID.EbonstoneUnsafe || Main.tile[i, j].WallType == WallID.LihzahrdBrickUnsafe)
+                            return true;
+                        if (Main.tile[i, j].LiquidAmount != 0 && Main.tile[i, j].LiquidType == LiquidID.Shimmer)
                             return true;
                     }
                 }
@@ -422,10 +424,10 @@ namespace CalamityMod.World
         {
             dir *= -1;
             y++;
-            int num = 0;
-            while ((num < 4 || WorldGen.SolidTile(x, y)) && x > 10 && x < Main.maxTilesX - 10)
+            int honeyDentTries = 0;
+            while ((honeyDentTries < 4 || WorldGen.SolidTile(x, y)) && x > 10 && x < Main.maxTilesX - 10)
             {
-                num++;
+                honeyDentTries++;
                 x += dir;
                 if (WorldGen.SolidTile(x, y))
                 {
@@ -487,19 +489,19 @@ namespace CalamityMod.World
 
         public static void CreateStandForLarva(Vector2 position)
         {
-            WorldGen.larvaX[WorldGen.numLarva] = Utils.Clamp((int)position.X, 5, Main.maxTilesX - 5);
-            WorldGen.larvaY[WorldGen.numLarva] = Utils.Clamp((int)position.Y, 5, Main.maxTilesY - 5);
-            WorldGen.numLarva++;
-            if (WorldGen.numLarva >= WorldGen.larvaX.Length)
-                WorldGen.numLarva = WorldGen.larvaX.Length - 1;
+            GenVars.larvaX[GenVars.numLarva] = Utils.Clamp((int)position.X, 5, Main.maxTilesX - 5);
+            GenVars.larvaY[GenVars.numLarva] = Utils.Clamp((int)position.Y, 5, Main.maxTilesY - 5);
+            GenVars.numLarva++;
+            if (GenVars.numLarva >= GenVars.larvaX.Length)
+                GenVars.numLarva = GenVars.larvaX.Length - 1;
 
-            int num = (int)position.X;
-            int num2 = (int)position.Y;
-            for (int i = num - 1; i <= num + 1 && i > 0 && i < Main.maxTilesX; i++)
+            int larvaX = (int)position.X;
+            int larvaY = (int)position.Y;
+            for (int i = larvaX - 1; i <= larvaX + 1 && i > 0 && i < Main.maxTilesX; i++)
             {
-                for (int j = num2 - 2; j <= num2 + 1 && j > 0 && j < Main.maxTilesY; j++)
+                for (int j = larvaY - 2; j <= larvaY + 1 && j > 0 && j < Main.maxTilesY; j++)
                 {
-                    if (j != num2 + 1)
+                    if (j != larvaY + 1)
                     {
                         Main.tile[i, j].Get<TileWallWireStateData>().HasTile = false;
                         continue;
@@ -518,13 +520,13 @@ namespace CalamityMod.World
             int chestPlacementX = Utils.Clamp((int)position.X, 5, Main.maxTilesX - 5);
             int chestPlacementY = Utils.Clamp((int)position.Y, 5, Main.maxTilesY - 5);
 
-            int num = (int)position.X;
-            int num2 = (int)position.Y;
-            for (int i = num; i <= num + 1 && i > 0 && i < Main.maxTilesX; i++)
+            int chestX = (int)position.X;
+            int chestY = (int)position.Y;
+            for (int i = chestX; i <= chestX + 1 && i > 0 && i < Main.maxTilesX; i++)
             {
-                for (int j = num2 - 1; j <= num2 + 1 && j > 0 && j < Main.maxTilesY; j++)
+                for (int j = chestY - 1; j <= chestY + 1 && j > 0 && j < Main.maxTilesY; j++)
                 {
-                    if (j != num2 + 1)
+                    if (j != chestY + 1)
                     {
                         Main.tile[i, j].Get<TileWallWireStateData>().HasTile = false;
                         continue;
@@ -537,27 +539,27 @@ namespace CalamityMod.World
                 }
             }
 
-            int num144 = chestPlacementX;
-            int num145 = chestPlacementY;
-            for (int num146 = num144; num146 <= num144 + 1; num146++)
+            int finalChestX = chestPlacementX;
+            int finalChestY = chestPlacementY;
+            for (int i = finalChestX; i <= finalChestX + 1; i++)
             {
-                for (int num147 = num145 - 1; num147 <= num145 + 1; num147++)
+                for (int j = finalChestY - 1; j <= finalChestY + 1; j++)
                 {
-                    if (num147 != num145 + 1)
+                    if (j != finalChestY + 1)
                     {
-                        Main.tile[num146, num147].Get<TileWallWireStateData>().HasTile = false;
+                        Main.tile[i, j].Get<TileWallWireStateData>().HasTile = false;
                     }
                     else
                     {
-                        Main.tile[num146, num147].Get<TileWallWireStateData>().HasTile = true;
-                        Main.tile[num146, num147].TileType = TileID.Hive;
-                        Main.tile[num146, num147].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
-                        Main.tile[num146, num147].Get<TileWallWireStateData>().IsHalfBlock = false;
+                        Main.tile[i, j].Get<TileWallWireStateData>().HasTile = true;
+                        Main.tile[i, j].TileType = TileID.Hive;
+                        Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
+                        Main.tile[i, j].Get<TileWallWireStateData>().IsHalfBlock = false;
                     }
                 }
             }
 
-            int chestID = WorldGen.PlaceChest(num144, num145, 21, false, 29);
+            int chestID = WorldGen.PlaceChest(finalChestX, finalChestY, 21, false, 29);
             FillHoneyChest(chestID, WorldGen.genRand);
         }
 
@@ -581,8 +583,8 @@ namespace CalamityMod.World
 
         private static int[] BarLootHoney = new int[]
         {
-            WorldGen.silverBar == TileID.Silver ? ItemID.SilverBar : ItemID.TungstenBar,
-            WorldGen.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar
+            GenVars.silverBar == TileID.Silver ? ItemID.SilverBar : ItemID.TungstenBar,
+            GenVars.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar
         };
 
         public static void FillHoneyChest(int id, UnifiedRandom random)

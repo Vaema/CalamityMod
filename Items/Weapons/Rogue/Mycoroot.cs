@@ -10,18 +10,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Mycoroot : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mycoroot");
-            Tooltip.SetDefault("Fires a stream of short-range fungal roots\n" +
-                "Stealth strikes spawn an explosion of fungi spores\n" +
-				"and grant you and all other players the Mushy buff for 15 seconds");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;
+            Item.height = 32;
             Item.damage = 12;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -31,9 +23,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 32;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.shoot = ModContent.ProjectileType<MycorootProj>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -45,24 +36,23 @@ namespace CalamityMod.Items.Weapons.Rogue
             if (player.Calamity().StealthStrikeAvailable() && player.ownedProjectileCounts[ModContent.ProjectileType<ShroomerangSpore>()] < 20 && stealth.WithinBounds(Main.maxProjectiles))
             {
                 Main.projectile[stealth].Calamity().stealthStrike = true;
-				int projAmt = Main.rand.Next(7,11);
+                int projAmt = Main.rand.Next(7, 11);
                 for (int i = 0; i < projAmt; i++)
                 {
                     int spore = Projectile.NewProjectile(source, player.Center, velocity, ModContent.ProjectileType<ShroomerangSpore>(), (int)(damage * 0.5f), knockback, player.whoAmI);
                     if (spore.WithinBounds(Main.maxProjectiles))
                         Main.projectile[spore].ai[1] = 1f;
                 }
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player other in Main.ActivePlayers)
                 {
-					Player other = Main.player[i];
-					if (other is null || !other.active || other.dead)
-						continue;
-					if ((other.team == player.team && player.team != 0) || player.whoAmI == i)
+                    if (other.dead)
+                        continue;
+                    if ((other.team == player.team && player.team != 0) || player.whoAmI == other.whoAmI)
                     {
                         if (player.Distance(other.Center) <= 800f)
                             other.AddBuff(ModContent.BuffType<Mushy>(), 900);
                     }
-				}
+                }
             }
             return false;
         }

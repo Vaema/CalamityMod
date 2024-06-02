@@ -1,12 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class UnstableMatter : ModProjectile
+    public class UnstableMatter : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public bool HasCollidedWithATile
@@ -19,11 +20,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             get => Projectile.ai[1];
             set => Projectile.ai[1] = value;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Unstable Matter");
         }
 
         public override void SetDefaults()
@@ -70,10 +66,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (!HasCollidedWithATile)
-                damage /= 3;
+                modifiers.SourceDamage /= 3;
             else if (Projectile.penetrate == -1)
                 Projectile.penetrate = 1;
         }

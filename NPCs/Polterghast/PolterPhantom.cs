@@ -1,15 +1,16 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Polterghast
 {
@@ -19,24 +20,33 @@ namespace CalamityMod.NPCs.Polterghast
         private int despawnTimer = 600;
         private bool reachedChargingPoint = false;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Polterghast");
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers(0) { Hide = true };
+            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
+            NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.GetNPCDamage();
             NPC.width = 90;
             NPC.height = 120;
             NPC.defense = 45;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(Main.expertMode ? 45000 : 35000, CalamityWorld.death ? 90000 : 75000, 60000);
+            NPC.LifeMaxNERB(62500, 75000, 60000);
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.lifeMax *= 4;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
@@ -46,7 +56,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.netAlways = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;
@@ -173,17 +182,19 @@ namespace CalamityMod.NPCs.Polterghast
             // Rotation
             if (NPC.Calamity().newAI[3] == 0f)
             {
-                float num740 = player.Center.X + predictionVector.X - vector.X;
-                float num741 = player.Center.Y + predictionVector.Y - vector.Y;
-                NPC.rotation = (float)Math.Atan2(num741, num740) + MathHelper.PiOver2;
+                float playerXDestination = player.Center.X + predictionVector.X - vector.X;
+                float playerYDestination = player.Center.Y + predictionVector.Y - vector.Y;
+                NPC.rotation = (float)Math.Atan2(playerYDestination, playerXDestination) + MathHelper.PiOver2;
             }
             else
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
-            NPC.damage = NPC.defDamage;
+            int reducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
 
             if (!chargePhase)
             {
+                NPC.damage = reducedSetDamage;
+
                 // Set this here to avoid despawn issues
                 reachedChargingPoint = false;
 
@@ -196,29 +207,29 @@ namespace CalamityMod.NPCs.Polterghast
                 float movementLimitX = 0f;
                 float movementLimitY = 0f;
                 int numHooks = 4;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (var n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<PolterghastHook>())
+                    if (n.type == ModContent.NPCType<PolterghastHook>())
                     {
-                        movementLimitX += Main.npc[i].Center.X;
-                        movementLimitY += Main.npc[i].Center.Y;
+                        movementLimitX += n.Center.X;
+                        movementLimitY += n.Center.Y;
                     }
                 }
                 movementLimitX /= numHooks;
                 movementLimitY /= numHooks;
 
-                Vector2 vector91 = new Vector2(movementLimitX, movementLimitY);
-                float num736 = player.Center.X - vector91.X;
-                float num737 = player.Center.Y - vector91.Y;
+                Vector2 movementLimitVector = new Vector2(movementLimitX, movementLimitY);
+                float movementLimitedXDist = player.Center.X - movementLimitVector.X;
+                float movementLimitedYDist = player.Center.Y - movementLimitVector.Y;
 
                 if (despawnBoost)
                 {
-                    num737 *= -1f;
-                    num736 *= -1f;
+                    movementLimitedYDist *= -1f;
+                    movementLimitedXDist *= -1f;
                     velocity += 8f;
                 }
 
-                float num738 = (float)Math.Sqrt(num736 * num736 + num737 * num737);
+                float movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
                 float maxDistanceFromHooks = expertMode ? 650f : 500f;
                 if (speedBoost || bossRush)
                     maxDistanceFromHooks += 250f;
@@ -235,54 +246,54 @@ namespace CalamityMod.NPCs.Polterghast
                     acceleration += acceleration * 0.15f * (1f - lifeRatio);
                 }
 
-                if (num738 >= maxDistanceFromHooks)
+                if (movementLimitedDistance >= maxDistanceFromHooks)
                 {
-                    num738 = maxDistanceFromHooks / num738;
-                    num736 *= num738;
-                    num737 *= num738;
+                    movementLimitedDistance = maxDistanceFromHooks / movementLimitedDistance;
+                    movementLimitedXDist *= movementLimitedDistance;
+                    movementLimitedYDist *= movementLimitedDistance;
                 }
 
-                movementLimitX += num736;
-                movementLimitY += num737;
-                vector91 = vector;
-                num736 = movementLimitX - vector91.X;
-                num737 = movementLimitY - vector91.Y;
-                num738 = (float)Math.Sqrt(num736 * num736 + num737 * num737);
+                movementLimitX += movementLimitedXDist;
+                movementLimitY += movementLimitedYDist;
+                movementLimitVector = vector;
+                movementLimitedXDist = movementLimitX - movementLimitVector.X;
+                movementLimitedYDist = movementLimitY - movementLimitVector.Y;
+                movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
 
-                if (num738 < velocity)
+                if (movementLimitedDistance < velocity)
                 {
-                    num736 = NPC.velocity.X;
-                    num737 = NPC.velocity.Y;
+                    movementLimitedXDist = NPC.velocity.X;
+                    movementLimitedYDist = NPC.velocity.Y;
                 }
                 else
                 {
-                    num738 = velocity / num738;
-                    num736 *= num738;
-                    num737 *= num738;
+                    movementLimitedDistance = velocity / movementLimitedDistance;
+                    movementLimitedXDist *= movementLimitedDistance;
+                    movementLimitedYDist *= movementLimitedDistance;
                 }
 
-                if (NPC.velocity.X < num736)
+                if (NPC.velocity.X < movementLimitedXDist)
                 {
                     NPC.velocity.X += acceleration;
-                    if (NPC.velocity.X < 0f && num736 > 0f)
+                    if (NPC.velocity.X < 0f && movementLimitedXDist > 0f)
                         NPC.velocity.X += acceleration * 2f;
                 }
-                else if (NPC.velocity.X > num736)
+                else if (NPC.velocity.X > movementLimitedXDist)
                 {
                     NPC.velocity.X -= acceleration;
-                    if (NPC.velocity.X > 0f && num736 < 0f)
+                    if (NPC.velocity.X > 0f && movementLimitedXDist < 0f)
                         NPC.velocity.X -= acceleration * 2f;
                 }
-                if (NPC.velocity.Y < num737)
+                if (NPC.velocity.Y < movementLimitedYDist)
                 {
                     NPC.velocity.Y += acceleration;
-                    if (NPC.velocity.Y < 0f && num737 > 0f)
+                    if (NPC.velocity.Y < 0f && movementLimitedYDist > 0f)
                         NPC.velocity.Y += acceleration * 2f;
                 }
-                else if (NPC.velocity.Y > num737)
+                else if (NPC.velocity.Y > movementLimitedYDist)
                 {
                     NPC.velocity.Y -= acceleration;
-                    if (NPC.velocity.Y > 0f && num737 < 0f)
+                    if (NPC.velocity.Y > 0f && movementLimitedYDist < 0f)
                         NPC.velocity.Y -= acceleration * 2f;
                 }
             }
@@ -299,18 +310,26 @@ namespace CalamityMod.NPCs.Polterghast
 
                     if (NPC.Calamity().newAI[1] == 0f)
                     {
+                        NPC.damage = NPC.defDamage;
+
                         NPC.velocity = Vector2.Normalize(rotationVector) * chargeVelocity;
                         NPC.Calamity().newAI[1] = 1f;
                     }
                     else
                     {
+                        NPC.damage = NPC.defDamage;
+
                         NPC.Calamity().newAI[2] += 1f;
 
                         // Slow down for a few frames
                         float totalChargeTime = chargeDistance * 4f / chargeVelocity;
                         float slowDownTime = chargeVelocity;
-                        if (NPC.Calamity().newAI[2] >= totalChargeTime - slowDownTime)
-                            NPC.velocity *= 0.9f;
+                        {
+                            NPC.damage = reducedSetDamage;
+
+                            if (NPC.Calamity().newAI[2] >= totalChargeTime - slowDownTime)
+                                NPC.velocity *= 0.9f;
+                        }
 
                         // Reset and either go back to normal or charge again
                         if (NPC.Calamity().newAI[2] >= totalChargeTime)
@@ -332,6 +351,9 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 else
                 {
+                    // Do not deal damage during movement to avoid cheap bullshit hits
+                    NPC.damage = 0;
+
                     // Random location choice
                     if (NPC.ai[0] == 0f)
                     {
@@ -352,9 +374,6 @@ namespace CalamityMod.NPCs.Polterghast
                         NPC.Calamity().newAI[2] = NPC.ai[0] == 2f ? player.Center.Y - chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[2];
                     else
                         NPC.Calamity().newAI[2] = NPC.ai[0] == 2f ? player.Center.Y + chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[2];
-
-                    // Do not deal damage during movement to avoid cheap bullshit hits
-                    NPC.damage = 0;
 
                     // Charge location
                     Vector2 chargeVector = new Vector2(NPC.Calamity().newAI[1], NPC.Calamity().newAI[2]);
@@ -384,7 +403,7 @@ namespace CalamityMod.NPCs.Polterghast
                             SoundEngine.PlaySound(SoundID.Item125, NPC.Center);
                             for (int i = 0; i < 30; i++)
                             {
-                                int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                                int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
                                 Main.dust[dust].noGravity = true;
                                 Main.dust[dust].velocity *= 5f;
                             }
@@ -414,10 +433,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public override Color? GetAlpha(Color drawColor)
-        {
-            return new Color(200, 150, 255) * NPC.Opacity;
-        }
+        public override Color? GetAlpha(Color drawColor) => new Color(200, 150, 255) * NPC.Opacity;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -434,28 +450,26 @@ namespace CalamityMod.NPCs.Polterghast
             float changeColorGateValue = chargePhaseGateValue - colorChangeTime;
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector11 = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
-            Color color36 = Color.White;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
             Color lightRed = new Color(255, 100, 100, 255) * NPC.Opacity;
-            float amount9 = 0.5f;
-            int num153 = 7;
+            int afterimageAmt = 7;
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int num155 = 1; num155 < num153; num155 += 2)
+                for (int i = 1; i < afterimageAmt; i += 2)
                 {
-                    Color color38 = drawColor;
+                    Color afterimageColor = drawColor;
 
                     if (!NPC.IsABestiaryIconDummy && Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
-                        color38 = Color.Lerp(color38, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
+                        afterimageColor = Color.Lerp(afterimageColor, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-                    color38 = Color.Lerp(color38, color36, amount9);
-                    color38 = NPC.GetAlpha(color38);
-                    color38 *= (num153 - num155) / 15f;
-                    Vector2 vector41 = NPC.oldPos[num155] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    vector41 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                    vector41 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, vector41, NPC.frame, color38, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                    afterimageColor = NPC.GetAlpha(afterimageColor);
+                    afterimageColor *= (afterimageAmt - i) / 15f;
+                    Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                    spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
@@ -464,34 +478,33 @@ namespace CalamityMod.NPCs.Polterghast
             if (!NPC.IsABestiaryIconDummy && Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
                 color = Color.Lerp(color, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-            Vector2 vector43 = NPC.Center - screenPos;
-            vector43 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-            vector43 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, color, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            Vector2 drawLocation = NPC.Center - screenPos;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            Texture2D texture2D16 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterPhantomGlow").Value;
             Color c = Color.Red;
             if (!NPC.IsABestiaryIconDummy && (Main.npc[CalamityGlobalNPC.ghostBoss].ai[2] < changeColorGateValue || Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue))
                 c = Color.Black;
 
-            Color color42 = Color.Lerp(Color.White, c, 0.5f);
+            Color blackWhiteLerp = Color.Lerp(Color.White, c, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int num163 = 1; num163 < num153; num163++)
+                for (int j = 1; j < afterimageAmt; j++)
                 {
-                    Vector2 vector44 = NPC.oldPos[num163] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    vector44 -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                    vector44 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    Color color43 = color42;
-                    color43 = Color.Lerp(color43, color36, amount9);
-                    color43 = NPC.GetAlpha(color43);
-                    color43 *= (num153 - num163) / 15f;
-                    spriteBatch.Draw(texture2D16, vector44, NPC.frame, color43, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                    Vector2 otherAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    otherAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                    Color otherAfterimageColor = blackWhiteLerp;
+                    otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
+                    otherAfterimageColor = NPC.GetAlpha(otherAfterimageColor);
+                    otherAfterimageColor *= (afterimageAmt - j) / 15f;
+                    spriteBatch.Draw(GlowTexture.Value, otherAfterimagePos, NPC.frame, otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
-            spriteBatch.Draw(texture2D16, vector43, NPC.frame, color42, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(GlowTexture.Value, drawLocation, NPC.frame, blackWhiteLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -518,10 +531,10 @@ namespace CalamityMod.NPCs.Polterghast
             return false;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(BuffID.MoonLeech, 360, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.MoonLeech, 360, true);
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -530,15 +543,15 @@ namespace CalamityMod.NPCs.Polterghast
             return true;
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * bossLifeScale);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
-            Dust.NewDust(NPC.position, NPC.width, NPC.height, 180, hitDirection, -1f, 0, default, 1f);
+            Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 NPC.position.X = NPC.position.X + (NPC.width / 2);
@@ -547,23 +560,23 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.height = 90;
                 NPC.position.X = NPC.position.X - (NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-                for (int num621 = 0; num621 < 10; num621++)
+                for (int i = 0; i < 10; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Phantoplasm, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                    Main.dust[ghostDust].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[ghostDust].scale = 0.5f;
+                        Main.dust[ghostDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 60; num623++)
+                for (int j = 0; j < 60; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 180, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 180, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 3f);
+                    Main.dust[ghostDust2].noGravity = true;
+                    Main.dust[ghostDust2].velocity *= 5f;
+                    ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 2f);
+                    Main.dust[ghostDust2].velocity *= 2f;
                 }
             }
         }

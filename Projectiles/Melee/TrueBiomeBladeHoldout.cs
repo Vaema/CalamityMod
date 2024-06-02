@@ -1,21 +1,22 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TrueBiomeBladeHoldout : ModProjectile //Visuals
+    public class TrueBiomeBladeHoldout : ModProjectile, ILocalizedModType //Visuals
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         private Player Owner => Main.player[Projectile.owner];
         public bool OwnerCanUseItem => Owner.HeldItem == associatedItem ? (Owner.HeldItem.ModItem as OmegaBiomeBlade).CanUseItem(Owner) : false;
         public bool OwnerMayChannel => Owner.itemAnimation == 0 && OwnerCanUseItem && Owner.Calamity().mouseRight && Owner.active && !Owner.dead;
@@ -26,10 +27,6 @@ namespace CalamityMod.Projectiles.Melee
         private Item associatedItem;
         const int ChannelTime = 120;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("True Biome Blade");
-        }
         public override string Texture => "CalamityMod/Items/Weapons/Melee/OmegaBiomeBlade";
         public bool drawIndrawHeldProjInFrontOfHeldItemAndArms = true;
         public override void SetDefaults()
@@ -173,7 +170,7 @@ namespace CalamityMod.Projectiles.Melee
             item.mainAttunement = attunement;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (associatedItem == null)
             {
@@ -193,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (ChanneledState == 0f && ChannelTimer > 10f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, 1, 0, 0);
 
                 return false;
@@ -201,7 +198,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

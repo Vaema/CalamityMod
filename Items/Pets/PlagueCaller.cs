@@ -7,15 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class PlagueCaller : ModItem
+    public class PlagueCaller : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plague Caller");
-            Tooltip.SetDefault("Summons a baby Plaguebringer pet");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.ZephyrFish);

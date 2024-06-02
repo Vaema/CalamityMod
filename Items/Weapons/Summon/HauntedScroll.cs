@@ -1,32 +1,32 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class HauntedScroll : ModItem
+    public class HauntedScroll : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Haunted Scroll");
-            Tooltip.SetDefault("Summons a stack of haunted dishes to fight for you");
-            SacrificeTotal = 1;
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(6, 6));
         }
 
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 48;
             Item.damage = 25;
             Item.mana = 10;
-            Item.width = 52;
-            Item.height = 52;
             Item.useTime = Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;

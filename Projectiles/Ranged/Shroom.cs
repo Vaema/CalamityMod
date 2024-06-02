@@ -1,15 +1,15 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class Shroom : ModProjectile
+    public class Shroom : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shroom");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -22,8 +22,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.alpha = 80;
             Projectile.penetrate = 2;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Ranged;
+            Projectile.extraUpdates = 1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
 
         public override void AI()
@@ -31,11 +34,6 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, 0f, 0.2f, 0.6f);
             Projectile.rotation += 1f;
             CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 20f);
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[Projectile.owner] = 5;
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -9,22 +9,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class FetidEmesis : ModItem
+    public class FetidEmesis : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Fetid Emesis");
-            Tooltip.SetDefault("40% chance to not consume ammo\n" +
-            "Has a chance to release rotten chunks instead of bullets");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 129;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 76;
             Item.height = 46;
+            Item.damage = 129;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -35,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -52,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     ModContent.ProjectileType<EmesisGore>(), damage, knockback, player.whoAmI);
                 for (int i = 0; i < 5; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(position, 10, 10, 27);
+                    Dust dust = Dust.NewDustDirect(position, 10, 10, DustID.Shadowflame);
                     dust.velocity = Vector2.Normalize(velocity).RotatedByRandom(MathHelper.ToRadians(15f));
                     dust.noGravity = true;
                 }

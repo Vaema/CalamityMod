@@ -2,23 +2,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithCandle : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpCandle(true);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Candle");
-            AddMapEntry(new Color(253, 221, 3), name);
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Candles };
-            ItemDrop = ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithCandle>();
-        }
+        public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithCandle>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {

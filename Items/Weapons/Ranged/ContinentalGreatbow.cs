@@ -1,36 +1,28 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("GreatbowofTurmoil")]
-    public class ContinentalGreatbow : ModItem
+    public class ContinentalGreatbow : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Continental Greatbow");
-            Tooltip.SetDefault("Wooden arrows are set alight with fire\n" +
-                "Fires 3 arrows at once\n" +
-                "Fires 2 additional cursed, hellfire, or ichor arrows");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 34;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 18;
             Item.height = 36;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.damage = 34;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 24;
+            Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item5;
             Item.autoReuse = true;
@@ -61,8 +53,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     type = ProjectileID.FireArrow;
                 }
-                int num121 = Projectile.NewProjectile(spawnSource, source + offset, velocity, type, damage, knockback, player.whoAmI);
-                Main.projectile[num121].noDropItem = true;
+                int baseArrow = Projectile.NewProjectile(spawnSource, source + offset, velocity, type, damage, knockback, player.whoAmI);
+                Main.projectile[baseArrow].noDropItem = true;
             }
             for (int i = 0; i < 2; i++)
             {
@@ -70,7 +62,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-10, 11) * 0.05f;
                 type = Utils.SelectRandom(Main.rand, new int[]
                 {
-                    ProjectileID.CursedArrow,
                     ProjectileID.HellfireArrow,
                     ProjectileID.IchorArrow
                 });

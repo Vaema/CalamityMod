@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Daedalus
 {
     [AutoloadEquip(EquipType.Body)]
-    public class DaedalusBreastplate : ModItem
+    public class DaedalusBreastplate : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void Load()
         {
             if (Main.netMode == NetmodeID.Server)
@@ -16,18 +17,11 @@ namespace CalamityMod.Items.Armor.Daedalus
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Daedalus/DaedalusBreastplate_Waist", EquipType.Waist, this);
         }
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daedalus Breastplate");
-            Tooltip.SetDefault("3% increased damage and critical strike chance");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 19; //41
         }

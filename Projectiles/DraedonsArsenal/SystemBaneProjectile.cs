@@ -1,13 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class SystemBaneProjectile : ModProjectile
+    public class SystemBaneProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/SystemBane";
 
         public float Time
@@ -18,15 +19,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const int LightningFireRate = 60;
         public const int FieldLightningFireRate = 45;
         public const float FieldRadius = 360f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("System Bane");
-        }
-
         public override void SetDefaults()
         {
-            Projectile.width = 36;
-            Projectile.height = 36;
+            Projectile.width = Projectile.height = 34;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
@@ -39,8 +34,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void AI()
         {
-            Projectile.StickToTiles(false, true);
-
             Time++;
             Projectile.rotation = Projectile.velocity.ToRotation();
             if (Projectile.velocity.Y < 15f)
@@ -110,6 +103,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             Projectile.velocity.X *= 0.8f;
             return false;
+        }
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
         }
     }
 }

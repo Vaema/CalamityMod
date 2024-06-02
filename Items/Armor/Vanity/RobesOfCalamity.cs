@@ -6,8 +6,9 @@ namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Body)]
     [LegacyName("CalamityRobes")]
-    public class RobesOfCalamity : ModItem
+    public class RobesOfCalamity : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -16,12 +17,6 @@ namespace CalamityMod.Items.Armor.Vanity
             }
         }
 
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Robes of Calamity");
-        }
 
         public override void SetDefaults()
         {

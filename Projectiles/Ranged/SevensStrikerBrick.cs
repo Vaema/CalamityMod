@@ -1,25 +1,22 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SevensStrikerBrick : ModProjectile
+    public class SevensStrikerBrick : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ThrowingBrick";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Brick");
-        }
 
         public override void SetDefaults()
         {
-            Projectile.width = 19;
-            Projectile.height = 19;
+            Projectile.width = 20;
+            Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
+            Projectile.timeLeft = 300;
         }
 
         public override void AI()
@@ -34,18 +31,18 @@ namespace CalamityMod.Projectiles.Ranged
             //Dust trail
             if (Main.rand.NextBool(13))
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 22, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pot, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item50, Projectile.position);
             //Dust on impact
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 9, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
                 dust_splash += 1;
             }
         }

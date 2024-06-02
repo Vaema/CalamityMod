@@ -1,21 +1,23 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class DevilsSunriseProj : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<DevilsSunrise>();
         private int red;
         private const int greenAndBlue = 100;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Devil's Sunrise");
             Main.projFrames[Projectile.type] = 28;
         }
 
@@ -34,22 +36,15 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (Projectile.ai[1] < 255f)
-                Projectile.ai[1] += 1f;
+            Player Owner = Main.player[Projectile.owner];
+            if (Projectile.ai[1] < 300f)
+                Projectile.ai[1]++;
 
-            if (Projectile.ai[1] == 255f)
-                Projectile.damage = 2 * Projectile.originalDamage;
+            Projectile.damage = (int)(Owner.GetTotalDamage(Projectile.DamageType).ApplyTo(Projectile.originalDamage) * (1f + Utils.GetLerpValue(0f, 300f, Projectile.ai[1], true)));
 
-            red = 64 + (int)(Projectile.ai[1] * 0.75f);
+            red = 30 + (int)(Projectile.ai[1] * 0.75f);
             if (red > 255)
                 red = 255;
-
-            Player player = Main.player[Projectile.owner];
-            float num = 0f;
-            Vector2 vector = player.RotatedRelativePoint(player.MountedCenter, true);
-
-            if (Projectile.spriteDirection == -1)
-                num = 3.14159274f;
 
             if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 Projectile.frame = 0;
@@ -63,47 +58,49 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.myPlayer == Projectile.owner)
             {
-                if (player.channel && !player.noItems && !player.CCed)
+                if (!Owner.CantUseHoldout())
                 {
                     float scaleFactor6 = 1f;
 
-                    if (player.ActiveItem().shoot == Projectile.type)
-                        scaleFactor6 = player.ActiveItem().shootSpeed * Projectile.scale;
+                    if (Owner.ActiveItem().shoot == Projectile.type)
+                        scaleFactor6 = Owner.ActiveItem().shootSpeed * Projectile.scale;
 
-                    Vector2 vector13 = Main.MouseWorld - vector;
-                    vector13.Normalize();
-                    if (vector13.HasNaNs())
-                        vector13 = Vector2.UnitX * (float)player.direction;
+                    Vector2 slashDirection = Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true);
+                    slashDirection.Normalize();
+                    if (slashDirection.HasNaNs())
+                        slashDirection = Vector2.UnitX * (float)Owner.direction;
 
-                    vector13 *= scaleFactor6;
-                    if (vector13.X != Projectile.velocity.X || vector13.Y != Projectile.velocity.Y)
+                    slashDirection *= scaleFactor6;
+                    if (slashDirection.X != Projectile.velocity.X || slashDirection.Y != Projectile.velocity.Y)
                         Projectile.netUpdate = true;
 
-                    Projectile.velocity = vector13;
+                    Projectile.velocity = slashDirection;
                 }
                 else
                     Projectile.Kill();
             }
 
-            Vector2 vector14 = Projectile.Center + Projectile.velocity * 3f;
-            Lighting.AddLight(vector14, (float)((double)red * 0.001), 0.1f, 0.1f);
+            Vector2 dustSpawn = Projectile.Center + Projectile.velocity * 3f;
+            Lighting.AddLight(dustSpawn, red * 0.001f, 0.1f, 0.1f);
 
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(vector14 - Projectile.Size / 2f, Projectile.width, Projectile.height, 66, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(red, greenAndBlue, greenAndBlue), 1f);
+                int dust = Dust.NewDust(dustSpawn - Projectile.Size * 0.5f, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(red, greenAndBlue, greenAndBlue), 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].position -= Projectile.velocity;
             }
 
-            Projectile.position = player.RotatedRelativePoint(player.MountedCenter, true) - Projectile.Size / 2f;
-            Projectile.rotation = Projectile.velocity.ToRotation() + num;
+            Projectile.position = Owner.RotatedRelativePoint(Owner.MountedCenter, true) - Projectile.Size * 0.5f;
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            if (Projectile.spriteDirection == -1)
+                Projectile.rotation += MathHelper.Pi;
             Projectile.spriteDirection = Projectile.direction;
             Projectile.timeLeft = 2;
-            player.ChangeDir(Projectile.direction);
-            player.heldProj = Projectile.whoAmI;
-            player.itemTime = 2;
-            player.itemAnimation = 2;
-            player.itemRotation = (float)Math.Atan2((double)(Projectile.velocity.Y * (float)Projectile.direction), (double)(Projectile.velocity.X * (float)Projectile.direction));
+            Owner.ChangeDir(Projectile.direction);
+            Owner.heldProj = Projectile.whoAmI;
+            Owner.itemTime = 2;
+            Owner.itemAnimation = 2;
+            Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -111,7 +108,7 @@ namespace CalamityMod.Projectiles.Melee
             return new Color(red, greenAndBlue, greenAndBlue, Projectile.alpha);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
         }

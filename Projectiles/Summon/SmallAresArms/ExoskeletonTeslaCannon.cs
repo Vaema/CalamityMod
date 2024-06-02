@@ -1,11 +1,11 @@
-﻿using CalamityMod.Sounds;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.Summon;
-using System.IO;
+using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -25,7 +25,6 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tesla Cannon");
             Main.projFrames[Type] = 6;
         }
 
@@ -43,19 +42,15 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         {
             // Play the plasma bolt fire sound.
             SoundEngine.PlaySound(CommonCalamitySounds.PlasmaBoltSound with { Volume = 0.4f }, Projectile.Center);
-            
+
             // Shoot the tesla orb. This only happens for the owner client.
             if (Main.myPlayer != Projectile.owner)
                 return;
 
             int damage = (int)(Projectile.damage * AresExoskeleton.TeslaOrbDamageFactor);
             Vector2 teslaOrbVelocity = shootDirection * ShootSpeed;
-            int teslaOrb = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, teslaOrbVelocity, ModContent.ProjectileType<MinionTeslaOrb>(), damage, 0f, Projectile.owner);
-            if (Main.projectile.IndexInRange(teslaOrb))
-            {
-                Main.projectile[teslaOrb].originalDamage = (int)(Projectile.originalDamage * AresExoskeleton.TeslaOrbDamageFactor);
-                Main.projectile[teslaOrb].ai[0] = TeslaOrbIndex++ % 6;
-            }
+            Projectile teslaOrb = Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), Projectile.Center, teslaOrbVelocity, ModContent.ProjectileType<MinionTeslaOrb>(), damage, 0f, Projectile.owner);
+            teslaOrb.ai[0] = TeslaOrbIndex++ % 6;
         }
 
         public override bool PreDraw(ref Color lightColor)

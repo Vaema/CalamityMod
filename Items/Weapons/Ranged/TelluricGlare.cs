@@ -7,29 +7,24 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class TelluricGlare : ModItem
+    public class TelluricGlare : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Telluric Glare");
-            Tooltip.SetDefault("Fires volleys of four colossal radiant arrows which can pass through walls");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 176;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 54;
             Item.height = 92;
+            Item.damage = 216;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 20;
             Item.reuseDelay = 23;
+            Item.useLimitPerAnimation = 4;
             Item.knockBack = 7.5f;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
 
             Item.UseSound = SoundID.Item102;

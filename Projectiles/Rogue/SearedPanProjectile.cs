@@ -1,17 +1,18 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Rogue;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SearedPanProjectile : ModProjectile
+    public class SearedPanProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         internal enum SearedPanTypes
         {
             VenLocket = 0,
@@ -28,7 +29,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pan");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -47,20 +47,21 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 5, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Don't increment the Seared Pan counter when hitting dummies
-            bool dummy = target.type != NPCID.TargetDummy && target.type != ModContent.NPCType<SuperDummyNPC>();
+            //&& target.type != ModContent.NPCType<SuperDummyNPC>() this is here just in case its needed again
+            bool dummy = target.type != NPCID.TargetDummy;
             OnHitEffects(target.whoAmI, target.life, dummy);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Bleeding, 300);
             OnHitEffects(-1, target.statLife, true);
@@ -128,18 +129,18 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active || Main.projectile[i].owner != Projectile.owner)
+                    if (p.owner != Projectile.owner)
                         continue;
-                    if (Main.projectile[i].ModProjectile is NiceCock)
+                    if (p.ModProjectile is NiceCock)
                     {
                         if (!activate)
-                            Main.projectile[i].Kill();
+                            p.Kill();
                         else
                         {
-                            Main.projectile[i].ModProjectile<NiceCock>().homing = true;
-                            Main.projectile[i].extraUpdates += 2;
+                            p.ModProjectile<NiceCock>().homing = true;
+                            p.extraUpdates += 2;
                         }
                     }
                 }
@@ -150,14 +151,14 @@ namespace CalamityMod.Projectiles.Rogue
         {
             int fireballCount = 0;
             // Count how many fireballs exist already around the given target
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
                 // Keep the loop as short as possible
-                if (!Main.projectile[i].active || Main.projectile[i].owner != Projectile.owner || !Main.projectile[i].CountsAsClass<ThrowingDamageClass>() || targetIndex != (int)Main.projectile[i].ai[1])
+                if (p.owner != Projectile.owner || !p.CountsAsClass<ThrowingDamageClass>() || targetIndex != (int)p.ai[1])
                     continue;
-                if (Main.projectile[i].ModProjectile is NiceCock)
+                if (p.ModProjectile is NiceCock)
                 {
-                    if (Main.projectile[i].ModProjectile<NiceCock>().homing)
+                    if (p.ModProjectile<NiceCock>().homing)
                         continue;
                     fireballCount++;
                 }
@@ -165,16 +166,16 @@ namespace CalamityMod.Projectiles.Rogue
             // Adjust the angle of the existing fireballs around a target
             float angleVariance = MathHelper.TwoPi / fireballCount;
             float angle = 0f;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (!Main.projectile[i].active || Main.projectile[i].owner != Projectile.owner || !Main.projectile[i].CountsAsClass<ThrowingDamageClass>() || targetIndex != (int)Main.projectile[i].ai[1])
+                if (p.owner != Projectile.owner || !p.CountsAsClass<ThrowingDamageClass>() || targetIndex != (int)p.ai[1])
                     continue;
-                if (Main.projectile[i].ModProjectile is NiceCock)
+                if (p.ModProjectile is NiceCock)
                 {
-                    if (Main.projectile[i].ModProjectile<NiceCock>().homing)
+                    if (p.ModProjectile<NiceCock>().homing)
                         continue;
-                    Main.projectile[i].ai[0] = angle;
-                    Main.projectile[i].netUpdate = true;
+                    p.ai[0] = angle;
+                    p.netUpdate = true;
                     angle += angleVariance;
                 }
             }

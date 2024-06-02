@@ -1,20 +1,17 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("UnstablePrism")]
-    public class UnstableGraniteCore : ModItem
+    public class UnstableGraniteCore : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Unstable Granite Core");
-            Tooltip.SetDefault("Periodically gain an unstable energy field that repeatedly zaps nearby enemies with arcing energy\n" +
-                "The arcing energy ignores a substantial amount of enemy defense");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(7, 5));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
@@ -23,7 +20,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 40;
             Item.height = 44;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

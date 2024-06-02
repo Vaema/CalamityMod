@@ -1,4 +1,4 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -9,16 +9,9 @@ namespace CalamityMod.Items.Armor.Statigel
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("StatigelMask")]
-    public class StatigelHeadRogue : ModItem
+    public class StatigelHeadRogue : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Statigel Mask");
-            Tooltip.SetDefault("10% increased rogue damage and 34% chance to not consume rogue items\n" +
-                "7% increased rogue critical strike chance and 5% increased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -35,13 +28,10 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "When you take over 100 damage in one hit you become immune to damage for an extended period of time\n" +
-                    "Grants an extra jump and increased jump height\n" +
-                    "12% increased jump speed\n" +
-                    "+90 maximum stealth";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<StatigelArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
-            modPlayer.statigelJump = true;
+            player.GetJumpState<StatigelJump>().Enable();
             modPlayer.rogueStealthMax += 0.9f;
             modPlayer.wearingRogueArmor = true;
             Player.jumpHeight += 5;

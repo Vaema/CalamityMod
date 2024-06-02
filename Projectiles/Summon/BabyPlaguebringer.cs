@@ -1,21 +1,21 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class BabyPlaguebringer : ModProjectile
+    public class BabyPlaguebringer : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Pets/PlaguebringerBab";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Baby Plaguebringer");
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -29,12 +29,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15;
             Projectile.MaxUpdates = 2;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 360;
             Projectile.penetrate = 3;
             Projectile.tileCollide = false;
             Projectile.timeLeft *= 5;
-            Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -45,17 +43,14 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.spriteDirection = -Projectile.direction;
             }
-            float num633 = 800f;
-            float num634 = 1200f;
-            float num635 = 3000f;
-            float num636 = 500f;
+            float maxTargetDist = 800f;
 
             //lighting
-            float num = (float)Main.rand.Next(90, 111) * 0.01f;
-            num *= Main.essScale;
-            Lighting.AddLight(Projectile.Center, 0f * num, 0.75f * num, 0f * num);
+            float lights = (float)Main.rand.Next(90, 111) * 0.01f;
+            lights *= Main.essScale;
+            Lighting.AddLight(Projectile.Center, 0f * lights, 0.75f * lights, 0f * lights);
 
-            bool flag24 = false;
+            bool decelerate = false;
             if (Projectile.ai[0] == 2f)
             {
                 Projectile.ai[1] += 1f;
@@ -66,9 +61,9 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.frame++;
                     Projectile.frameCounter = 0;
                 }
-                if (Projectile.frame > 2)
+                if (Projectile.frame > 5 || Projectile.frame < 4)
                 {
-                    Projectile.frame = 0;
+                    Projectile.frame = 4;
                 }
                 if (Projectile.ai[1] > 30f)
                 {
@@ -80,109 +75,107 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    flag24 = true;
+                    decelerate = true;
                 }
             }
-            if (flag24)
+            if (decelerate)
             {
                 return;
             }
-            Vector2 vector46 = Projectile.position;
-            bool flag25 = false;
+            Vector2 projPos = Projectile.position;
+            bool canAttack = false;
             if (player.HasMinionAttackTargetNPC)
             {
                 NPC npc = Main.npc[player.MinionAttackTargetNPC];
                 if (npc.CanBeChasedBy(Projectile, false))
                 {
-                    float num646 = Vector2.Distance(npc.Center, Projectile.Center);
-                    if (!flag25 && num646 < num633)
+                    float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
+                    if (!canAttack && targetDist < maxTargetDist)
                     {
-                        num633 = num646;
-                        vector46 = npc.Center;
-                        flag25 = true;
+                        maxTargetDist = targetDist;
+                        projPos = npc.Center;
+                        canAttack = true;
                     }
                 }
             }
-            if (!flag25)
+            if (!canAttack)
             {
-                for (int num645 = 0; num645 < Main.maxNPCs; num645++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[num645];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
-                        float num646 = Vector2.Distance(nPC2.Center, Projectile.Center);
-                        if (!flag25 && num646 < num633)
+                        float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
+                        if (!canAttack && targetDist < maxTargetDist)
                         {
-                            num633 = num646;
-                            vector46 = nPC2.Center;
-                            flag25 = true;
+                            maxTargetDist = targetDist;
+                            projPos = nPC2.Center;
+                            canAttack = true;
                         }
                     }
                 }
             }
-            float num647 = num634;
-            if (flag25)
+            float separationAnxietyRange = 1200f;
+            if (canAttack)
             {
-                num647 = num635;
+                separationAnxietyRange = 3000f;
             }
-            if (Vector2.Distance(player.Center, Projectile.Center) > num647)
+            if (Vector2.Distance(player.Center, Projectile.Center) > separationAnxietyRange)
             {
                 Projectile.ai[0] = 1f;
                 Projectile.netUpdate = true;
             }
-            if (flag25 && Projectile.ai[0] == 0f)
+            if (canAttack && Projectile.ai[0] == 0f)
             {
-                Vector2 vector47 = vector46 - Projectile.Center;
-                float num648 = vector47.Length();
-                vector47.Normalize();
-                if (num648 > 200f)
+                Vector2 projDirection = projPos - Projectile.Center;
+                float projLength = projDirection.Length();
+                projDirection.Normalize();
+                if (projLength > 200f)
                 {
                     float scaleFactor2 = 8f;
-                    vector47 *= scaleFactor2;
-                    Projectile.velocity = (Projectile.velocity * 40f + vector47) / 41f;
+                    projDirection *= scaleFactor2;
+                    Projectile.velocity = (Projectile.velocity * 40f + projDirection) / 41f;
                 }
                 else
                 {
-                    float num649 = 4f;
-                    vector47 *= -num649;
-                    Projectile.velocity = (Projectile.velocity * 40f + vector47) / 41f;
+                    projDirection *= -4f;
+                    Projectile.velocity = (Projectile.velocity * 40f + projDirection) / 41f;
                 }
             }
             else
             {
-                bool flag26 = false;
-                if (!flag26)
+                bool isReturning = false;
+                if (!isReturning)
                 {
-                    flag26 = Projectile.ai[0] == 1f;
+                    isReturning = Projectile.ai[0] == 1f;
                 }
-                float num650 = 6f;
-                if (flag26)
+                float returnSpeed = 6f;
+                if (isReturning)
                 {
-                    num650 = 15f;
+                    returnSpeed = 15f;
                 }
                 Vector2 center2 = Projectile.Center;
-                Vector2 vector48 = player.Center - center2 + new Vector2(0f, -60f);
-                float num651 = vector48.Length();
-                if (num651 > 200f && num650 < 8f)
+                Vector2 playerDirection = player.Center - center2 + new Vector2(0f, -60f);
+                float playerDistance = playerDirection.Length();
+                if (playerDistance > 200f && returnSpeed < 8f)
                 {
-                    num650 = 8f;
+                    returnSpeed = 8f;
                 }
-                if (num651 < num636 && flag26 && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
+                if (playerDistance < 500f && isReturning && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
                 {
                     Projectile.ai[0] = 0f;
                     Projectile.netUpdate = true;
                 }
-                if (num651 > 2000f)
+                if (playerDistance > 2000f)
                 {
                     Projectile.position.X = Main.player[Projectile.owner].Center.X - (float)(Projectile.width / 2);
                     Projectile.position.Y = Main.player[Projectile.owner].Center.Y - (float)(Projectile.height / 2);
                     Projectile.netUpdate = true;
                 }
-                if (num651 > 70f)
+                if (playerDistance > 70f)
                 {
-                    vector48.Normalize();
-                    vector48 *= num650;
-                    Projectile.velocity = (Projectile.velocity * 40f + vector48) / 41f;
+                    playerDirection.Normalize();
+                    playerDirection *= returnSpeed;
+                    Projectile.velocity = (Projectile.velocity * 40f + playerDirection) / 41f;
                 }
                 else if (Projectile.velocity.X == 0f && Projectile.velocity.Y == 0f)
                 {
@@ -198,7 +191,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (Projectile.frame >= 4)
             {
-                Projectile.frame = 2;
+                Projectile.frame = 0;
             }
             if (Projectile.ai[1] > 0f)
             {
@@ -211,22 +204,22 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (Projectile.ai[0] == 0f)
             {
-                if (Projectile.ai[1] == 0f && flag25 && num633 < 500f)
+                if (Projectile.ai[1] == 0f && canAttack && maxTargetDist < 500f)
                 {
                     Projectile.ai[1] += 1f;
                     if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.ai[0] = 2f;
-                        Vector2 value20 = vector46 - Projectile.Center;
-                        value20.Normalize();
-                        Projectile.velocity = value20 * 8f;
+                        Vector2 npcCenter = projPos - Projectile.Center;
+                        npcCenter.Normalize();
+                        Projectile.velocity = npcCenter * 8f;
                         Projectile.netUpdate = true;
                     }
                 }
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCHit4, Projectile.position);
         }
@@ -234,22 +227,16 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = texture.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Vector2 origin = new Vector2(texture.Width / 2f, num214 / 2f);
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Rectangle(0, y6, texture.Width, num214), Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = texture.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Vector2 origin = new Vector2(texture.Width / 2f, framing / 2f);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Rectangle(0, y6, texture.Width, framing), Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 120);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 120);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Plague>(), 120);
     }
 }

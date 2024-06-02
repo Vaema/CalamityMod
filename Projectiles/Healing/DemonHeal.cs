@@ -1,14 +1,13 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Healing
 {
-    public class DemonHeal : ModProjectile
+    public class DemonHeal : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Healing";
         public Player Owner => Main.player[Projectile.owner];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Heal");
 
         public override void SetDefaults()
         {
@@ -17,7 +16,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 640;
-			Projectile.tileCollide = false;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()

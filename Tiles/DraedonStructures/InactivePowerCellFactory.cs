@@ -1,8 +1,11 @@
-using CalamityMod.Items.Placeables.DraedonStructures;
+﻿using CalamityMod.Items.Placeables.DraedonStructures;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -31,27 +34,23 @@ namespace CalamityMod.Tiles.DraedonStructures
             TileObjectData.newTile.CoordinatePadding = 0;
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Inactive Power Cell Factory");
-            AddMapEntry(new Color(67, 72, 81), name);
+            AddMapEntry(new Color(67, 72, 81), CreateMapEntryName());
+
+            RegisterItemDrop(ModContent.ItemType<PowerCellFactoryItem>());
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<PowerCellFactoryItem>(), Type, 0);
         }
 
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ModContent.ItemType<PowerCellFactoryItem>());
         }
     }
 }

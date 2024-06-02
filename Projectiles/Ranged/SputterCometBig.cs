@@ -1,18 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SputterCometBig : ModProjectile
+    public class SputterCometBig : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Comet");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -35,10 +35,10 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
             if (Main.rand.NextBool(3))
             {
-                int num137 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), 1, 1, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 0.5f);
-                Main.dust[num137].alpha = Projectile.alpha;
-                Main.dust[num137].velocity *= 0f;
-                Main.dust[num137].noGravity = true;
+                int dust = Dust.NewDust(Projectile.position, 1, 1, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 0.5f);
+                Main.dust[dust].alpha = Projectile.alpha;
+                Main.dust[dust].velocity *= 0f;
+                Main.dust[dust].noGravity = true;
             }
             if (Projectile.soundDelay == 0)
             {
@@ -57,12 +57,12 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item93, Projectile.position);
             if (Projectile.owner == Main.myPlayer)
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.netMode != NetmodeID.Server)
             {
-                for (int num480 = 0; num480 < 3; num480++)
+                for (int i = 0; i < 3; i++)
                 {
                     Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, new Vector2(Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f), Main.rand.Next(16, 18), 1f);
                 }

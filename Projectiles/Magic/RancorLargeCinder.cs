@@ -1,17 +1,16 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Particles.Metaballs;
+﻿using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class RancorLargeCinder : ModProjectile
+    public class RancorLargeCinder : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public ref float Time => ref Projectile.ai[0];
         public ref float Lifetime => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Lava Cinder");
 
         public override void SetDefaults()
         {
@@ -45,14 +44,15 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.velocity.Y += 0.04f;
 
             // Create lava particles.
-            FusableParticleManager.GetParticleSetByType<RancorLavaParticleSet>().SpawnParticle(Projectile.Center + Main.rand.NextVector2Circular(6f, 6f), Projectile.scale * 36f);
+            RancorLavaMetaball.SpawnParticle(Projectile.Center + Main.rand.NextVector2Circular(6f, 6f), Projectile.scale * 36f);
 
             Time++;
         }
 
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            damage = Main.rand.Next(80, 90);
+            modifiers.SourceDamage *= 0f;
+            modifiers.SourceDamage.Flat += Main.rand.Next(80, 90);
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.White * Projectile.Opacity;

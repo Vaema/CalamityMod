@@ -1,24 +1,25 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class BloodSample : ModItem
+    public class BloodSample : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Blood Sample");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 68; // Sturdy Fossil
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 68; // Sturdy Fossil
         }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 34;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 50, 0);
             Item.rare = ItemRarityID.Orange;
-        }    }
+        }
+    }
 }

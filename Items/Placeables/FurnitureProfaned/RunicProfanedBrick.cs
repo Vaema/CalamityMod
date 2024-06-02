@@ -4,18 +4,19 @@ using Terraria.ModLoader; // If you are using c# 6, you can use: "using static T
 
 namespace CalamityMod.Items.Placeables.FurnitureProfaned
 {
-    public class RunicProfanedBrick : ModItem
+    public class RunicProfanedBrick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -27,8 +28,15 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
 
         public override void AddRecipes()
         {
-            CreateRecipe(5).AddIngredient(ModContent.ItemType<ProfanedRock>(), 4).AddIngredient(ModContent.ItemType<ProfanedCrystal>(), 1).AddTile(TileID.LunarCraftingStation).Register();
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<RunicProfanedBrickWall>(), 4).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(5).
+                AddIngredient<ProfanedRock>(4).
+                AddIngredient<ProfanedCrystal>().
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+            CreateRecipe().
+                AddIngredient<RunicProfanedBrickWall>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

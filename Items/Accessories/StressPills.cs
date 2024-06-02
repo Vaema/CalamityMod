@@ -5,15 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class StressPills : ModItem
+    public class StressPills : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Stress Pills");
-            Tooltip.SetDefault("Adrenaline charges 20% faster\n" +
-                "Increases your max movement speed and acceleration by 5%\n" +
-                "Revengeance drop");
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Laudanum>();
         }
 
         public override void SetDefaults()
@@ -21,7 +18,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 26;
             Item.height = 26;
             Item.defense = 4;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

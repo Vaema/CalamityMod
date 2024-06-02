@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Balancing;
+using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -6,8 +8,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class BloodsoakedCrashax : ModProjectile
+    public class BloodsoakedCrashax : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/BloodsoakedCrasher";
 
         private int bounce = 3; //number of times it bounces
@@ -16,7 +19,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloodsoaked Crasher");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -83,17 +85,18 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            OnHitEffects(!target.canGhostHeal || Main.player[Projectile.owner].moonLeech);
+            if (target.lifeMax > 5)
+                OnHitEffects(hit.Damage);
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            OnHitEffects(Main.player[Projectile.owner].moonLeech);
+            OnHitEffects(info.Damage);
         }
 
-        private void OnHitEffects(bool cannotLifesteal)
+        private void OnHitEffects(int damage)
         {
             grind += 5; //THE GRIND NEVER STOPS
             if (grind > 15)
@@ -112,12 +115,14 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            if (cannotLifesteal || Main.rand.NextBool(2)) //canGhostHeal be like lol
+            int heal = (int)Math.Round(damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 
-            Player player = Main.player[Projectile.owner];
-            player.statLife += 1;
-            player.HealEffect(1);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override bool PreDraw(ref Color lightColor) //afterimages

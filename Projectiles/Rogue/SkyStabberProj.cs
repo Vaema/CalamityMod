@@ -1,21 +1,15 @@
-﻿using Terraria;
-using Microsoft.Xna.Framework;
-using Terraria.ModLoader;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SkyStabberProj : ModProjectile
+    public class SkyStabberProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SkyStabber";
-
-        private static int Lifetime = 1200;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("SkyStabberProj");
-        }
 
         public override void SetDefaults()
         {
@@ -24,8 +18,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.tileCollide = true;
-            Projectile.penetrate = 20;
-            Projectile.timeLeft = Lifetime;
+            Projectile.penetrate = 10;
+            Projectile.timeLeft = 1000;
 
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
@@ -69,15 +63,9 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            OnHitEffects(target.Center);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(target.Center);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            OnHitEffects(target.Center);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(target.Center);
 
         private void OnHitEffects(Vector2 targetPos)
         {

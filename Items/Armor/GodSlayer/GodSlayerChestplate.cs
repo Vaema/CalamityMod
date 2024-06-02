@@ -8,24 +8,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.GodSlayer
 {
     [AutoloadEquip(EquipType.Body)]
-    public class GodSlayerChestplate : ModItem
+    public class GodSlayerChestplate : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public const int DashIFrames = 12;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("God Slayer Chestplate");
-            Tooltip.SetDefault("+60 max life\n" +
-                       "Enemies take damage when they hit you\n" +
-                       "11% increased damage and 6% increased critical strike chance");
-        }
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 41;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

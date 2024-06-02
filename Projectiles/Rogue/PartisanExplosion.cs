@@ -1,18 +1,15 @@
-using Terraria;
-using Terraria.ModLoader;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class PartisanExplosion : ModProjectile
+    public class PartisanExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Profaned Explosion");
-        }
 
         public override void SetDefaults()
         {
@@ -28,7 +25,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = -1;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
         }
@@ -39,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float speedx = Main.rand.NextFloat(-0.9f, 0.9f);
                 float speedy = Main.rand.NextFloat(-0.9f, 0.9f);
-                int d = Dust.NewDust(Projectile.position, 33, 33, 244, speedx, speedy, 120, default(Color), 2.6f);
+                int d = Dust.NewDust(Projectile.position, 33, 33, DustID.CopperCoin, speedx, speedy, 120, default(Color), 2.6f);
                 Main.dust[d].position = Projectile.Center;
             }
         }

@@ -1,162 +1,152 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class Greentide : ModItem
+    public class Greentide : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Greentide");
-            Tooltip.SetDefault("Summons teeth from the sky on hit");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        internal const float ShootSpeed = 32f;
+
+        internal const float TeethSpread = 960f;
+
+        internal const float HalvedTeethSpread = TeethSpread * 0.5f;
+
+        internal const int TotalRows = 2;
+
+        internal const int TotalTeeth = 5;
 
         public override void SetDefaults()
         {
-            Item.damage = 95;
-            Item.DamageType = DamageClass.Melee;
             Item.width = 62;
             Item.height = 62;
-            Item.scale = 1.5f;
-            Item.useTime = 24;
-            Item.useAnimation = 24;
+            Item.damage = 87; // IS THAT THE BITE OF '87
+            Item.DamageType = DamageClass.Melee;
+            Item.useTime = 31;
+            Item.useAnimation = 31;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 7;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.knockBack = 7f;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.shootSpeed = 18f;
+            Item.shootSpeed = ShootSpeed;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            var source = player.GetSource_ItemUse(Item);
-            int i = Main.myPlayer;
-            float num72 = Item.shootSpeed;
-            float num74 = knockback;
-            num74 = player.GetWeaponKnockback(Item, num74);
-            player.itemTime = Item.useTime;
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            float num78 = (float)Main.mouseX - Main.screenPosition.X - vector2.X;
-            float num79 = (float)Main.mouseY - Main.screenPosition.Y - vector2.Y;
-            if (player.gravDir == -1f)
-            {
-                num79 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - vector2.Y;
-            }
-            float num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-            if ((float.IsNaN(num78) && float.IsNaN(num79)) || (num78 == 0f && num79 == 0f))
-            {
-                num78 = (float)player.direction;
-                num79 = 0f;
-                num80 = num72;
-            }
-            else
-            {
-                num80 = num72 / num80;
-            }
+            Vector2 destination = target.Center;
 
-            for (int num108 = 0; num108 < 3; num108++)
+            Vector2 position = destination - (Vector2.UnitY * (destination.Y - Main.screenPosition.Y + 80f));
+            Vector2 cachedPosition = position;
+            Vector2 secondPosition = cachedPosition + (Vector2.UnitY * (Main.screenHeight + 160f));
+            Vector2 secondCachedPosition = secondPosition;
+
+            Vector2 velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 cachedVelocity = velocity;
+            Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 secondCachedVelocity = secondVelocity;
+
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.5));
+            float teethKnockback = Item.knockBack * 0.2f;
+            bool evenNumberOfProjectiles = TotalTeeth % 2 == 0;
+            float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;
+            int centralProjectile = TotalTeeth / 2;
+            int otherCentralProjectile = centralProjectile - 1;
+            float teethXVelocityReduction = 0.9f;
+            float minVelocityAdjustment = 0.8f;
+            float maxVelocityAdjustment = 1f;
+            float velocityAdjustment = minVelocityAdjustment;
+            for (int i = 0; i < TotalRows; i++)
             {
-                vector2 = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                vector2.X = (vector2.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                vector2.Y -= (float)(100 * num108);
-                num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-                num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
-                if (num79 < 0f)
+                bool topTeeth = i == 0;
+                for (int j = 0; j < TotalTeeth; j++)
                 {
-                    num79 *= -1f;
+                    velocityAdjustment = ((j == centralProjectile || j == otherCentralProjectile) && evenNumberOfProjectiles) ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs((j + amountToAdd) - centralProjectile) / (float)centralProjectile);
+                    if (topTeeth)
+                    {
+                        position.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
+                        velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(position, target, ShootSpeed, 1) * velocityAdjustment;
+                        velocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target.Center.Y);
+                        position = cachedPosition;
+                        velocity = cachedVelocity;
+                    }
+                    else
+                    {
+                        secondPosition.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
+                        secondVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(secondPosition, target, ShootSpeed, 1) * velocityAdjustment;
+                        secondVelocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), secondPosition, secondVelocity, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target.Center.Y);
+                        secondPosition = secondCachedPosition;
+                        secondVelocity = secondCachedVelocity;
+                    }
                 }
-                if (num79 < 20f)
-                {
-                    num79 = 20f;
-                }
-                num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-                num80 = num72 / num80;
-                num78 *= num80;
-                num79 *= num80;
-                float speedX4 = num78;
-                float speedY5 = num79 + (float)Main.rand.Next(-180, 181) * 0.02f;
-                int greenWaterDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                Projectile.NewProjectile(source, vector2.X, vector2.Y, speedX4, speedY5, ModContent.ProjectileType<GreenWater>(), greenWaterDamage, num74, i, 0f, (float)Main.rand.Next(10));
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            var source = player.GetSource_ItemUse(Item);
-            int i = Main.myPlayer;
-            float num72 = Item.shootSpeed;
-            float num74 = Item.knockBack;
-            num74 = player.GetWeaponKnockback(Item, num74);
-            player.itemTime = Item.useTime;
-            Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-            float num78 = (float)Main.mouseX - Main.screenPosition.X - vector2.X;
-            float num79 = (float)Main.mouseY - Main.screenPosition.Y - vector2.Y;
-            if (player.gravDir == -1f)
-            {
-                num79 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - vector2.Y;
-            }
-            float num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-            if ((float.IsNaN(num78) && float.IsNaN(num79)) || (num78 == 0f && num79 == 0f))
-            {
-                num78 = (float)player.direction;
-                num79 = 0f;
-                num80 = num72;
-            }
-            else
-            {
-                num80 = num72 / num80;
-            }
+            Vector2 destination = target.Center;
 
-            int num107 = 4;
-            for (int num108 = 0; num108 < num107; num108++)
+            Vector2 position = destination - (Vector2.UnitY * (destination.Y - Main.screenPosition.Y + 80f));
+            Vector2 cachedPosition = position;
+            Vector2 secondPosition = cachedPosition + (Vector2.UnitY * (Main.screenHeight + 160f));
+            Vector2 secondCachedPosition = secondPosition;
+
+            Vector2 velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 cachedVelocity = velocity;
+            Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 secondCachedVelocity = secondVelocity;
+
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.5));
+            float teethKnockback = Item.knockBack * 0.2f;
+            bool evenNumberOfProjectiles = TotalTeeth % 2 == 0;
+            float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;
+            int centralProjectile = TotalTeeth / 2;
+            int otherCentralProjectile = centralProjectile - 1;
+            float teethXVelocityReduction = 0.9f;
+            float minVelocityAdjustment = 0.8f;
+            float maxVelocityAdjustment = 1f;
+            float velocityAdjustment = minVelocityAdjustment;
+            for (int i = 0; i < TotalRows; i++)
             {
-                vector2 = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                vector2.X = (vector2.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                vector2.Y -= (float)(100 * num108);
-                num78 = (float)Main.mouseX + Main.screenPosition.X - vector2.X;
-                num79 = (float)Main.mouseY + Main.screenPosition.Y - vector2.Y;
-                if (num79 < 0f)
+                bool topTeeth = i == 0;
+                for (int j = 0; j < TotalTeeth; j++)
                 {
-                    num79 *= -1f;
+                    velocityAdjustment = ((j == centralProjectile || j == otherCentralProjectile) && evenNumberOfProjectiles) ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs((j + amountToAdd) - centralProjectile) / (float)centralProjectile);
+                    if (topTeeth)
+                    {
+                        position.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
+                        velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(position, target, ShootSpeed, 1) * velocityAdjustment;
+                        velocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target.Center.Y);
+                        position = cachedPosition;
+                        velocity = cachedVelocity;
+                    }
+                    else
+                    {
+                        secondPosition.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
+                        secondVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(secondPosition, target, ShootSpeed, 1) * velocityAdjustment;
+                        secondVelocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), secondPosition, secondVelocity, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target.Center.Y);
+                        secondPosition = secondCachedPosition;
+                        secondVelocity = secondCachedVelocity;
+                    }
                 }
-                if (num79 < 20f)
-                {
-                    num79 = 20f;
-                }
-                num80 = (float)Math.Sqrt((double)(num78 * num78 + num79 * num79));
-                num80 = num72 / num80;
-                num78 *= num80;
-                num79 *= num80;
-                float speedX4 = num78;
-                float speedY5 = num79 + (float)Main.rand.Next(-180, 181) * 0.02f;
-                int greenWaterDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                Projectile.NewProjectile(source, vector2.X, vector2.Y, speedX4, speedY5, ModContent.ProjectileType<GreenWater>(), greenWaterDamage, num74, i, 0f, (float)Main.rand.Next(10));
             }
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            int randomDust = Main.rand.Next(2);
-            if (randomDust == 0)
-            {
-                randomDust = 33;
-            }
-            else
-            {
-                randomDust = 89;
-            }
             if (Main.rand.NextBool(4))
-            {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, randomDust);
-            }
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, Main.rand.NextBool() ? 33 : 89);
         }
     }
 }

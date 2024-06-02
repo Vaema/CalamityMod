@@ -1,7 +1,9 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
@@ -12,22 +14,21 @@ using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.AcidRain;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Armor.Vanity;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.NPCs.AcidRain;
 
 namespace CalamityMod.NPCs.AquaticScourge
 {
@@ -36,9 +37,8 @@ namespace CalamityMod.NPCs.AquaticScourge
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aquatic Scourge");
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.6f,
                 PortraitScale = 0.6f,
@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             value.Position.X += 40f;
             value.Position.Y += 20f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
         public override void SetDefaults()
@@ -60,7 +60,10 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.DR_NERD(0.05f);
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.LifeMaxNERB(77000, 92000, 1000000);
+            NPC.LifeMaxNERB(80000, 96000, 1000000);
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.lifeMax *= 2;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
@@ -94,10 +97,11 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A species of scourge which has had its exoskeleton hardened and tempered by years of diving through sulphuric waters for prey. Its own jaws are now imbued with the venom of those seas.")
+            bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[Type], quickUnlock: true);
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new BossBestiaryInfoElement(),
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticScourge")
             });
         }
 
@@ -125,7 +129,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void AI()
         {
-            CalamityAI.AquaticScourgeAI(NPC, Mod, true);
+            AquaticScourgeAI.VanillaAquaticScourgeAI(NPC, Mod, true);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -135,14 +139,14 @@ namespace CalamityMod.NPCs.AquaticScourge
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector11 = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Vector2 scaledDraw = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
 
-            Vector2 vector43 = NPC.Center - screenPos;
-            vector43 -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;
-            vector43 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            Vector2 drawLocation = NPC.Center - screenPos;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;
+            drawLocation += scaledDraw * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color color = NPC.GetAlpha(drawColor);
 
-            if (CalamityWorld.revenge || BossRushEvent.BossRushActive || CalamityWorld.getFixedBoi)
+            if (CalamityWorld.revenge || BossRushEvent.BossRushActive || Main.zenithWorld)
             {
                 if (NPC.Calamity().newAI[3] > 300f)
                     color = Color.Lerp(color, Color.SandyBrown, MathHelper.Clamp((NPC.Calamity().newAI[3] - 300f) / 180f, 0f, 1f));
@@ -150,7 +154,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     color = Color.Lerp(color, Color.SandyBrown, MathHelper.Clamp(NPC.localAI[3] / 90f, 0f, 1f));
             }
 
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, color, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, color, NPC.rotation, scaledDraw, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -159,18 +163,18 @@ namespace CalamityMod.NPCs.AquaticScourge
         {
             Rectangle targetHitbox = target.Hitbox;
 
-            float dist1 = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
-            float dist2 = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
-            float dist3 = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
-            float dist4 = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+            float topLeftHitbox = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float topRightHitbox = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float bottomLeftHitbox = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float bottomRightHitbox = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
 
-            float minDist = dist1;
-            if (dist2 < minDist)
-                minDist = dist2;
-            if (dist3 < minDist)
-                minDist = dist3;
-            if (dist4 < minDist)
-                minDist = dist4;
+            float minDist = topLeftHitbox;
+            if (topRightHitbox < minDist)
+                minDist = topRightHitbox;
+            if (bottomLeftHitbox < minDist)
+                minDist = bottomLeftHitbox;
+            if (bottomRightHitbox < minDist)
+                minDist = bottomRightHitbox;
 
             return minDist <= 50f * NPC.scale;
         }
@@ -225,7 +229,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
             {
                 // Weapons
-                int[] weapons = new int[] 
+                int[] weapons = new int[]
                 {
                     ModContent.ItemType<SubmarineShocker>(),
                     ModContent.ItemType<Barinautical>(),
@@ -242,21 +246,23 @@ namespace CalamityMod.NPCs.AquaticScourge
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AquaticEmblem>()));
                 normalOnly.Add(ModContent.ItemType<CorrosiveSpine>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(ModContent.ItemType<DeepDiver>(), 10);
                 normalOnly.Add(ModContent.ItemType<SeasSearing>(), 10);
 
                 // Fishing
                 normalOnly.Add(ModContent.ItemType<BleachedAnglingKit>());
             }
 
-			npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
+            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
             npcLoot.Add(ModContent.ItemType<AquaticScourgeTrophy>(), 10);
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AquaticScourgeRelic>());
+
+            // GFB troll drop
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<SupremeBaitTackleBoxFishingStation>(), hideLootReport: true);
 
             // Lore
             bool firstASKill() => !DownedBossSystem.downedAquaticScourge;
             npcLoot.AddConditionalPerPlayer(firstASKill, ModContent.ItemType<LoreAquaticScourge>(), desc: DropHelper.FirstKillText);
-            npcLoot.AddConditionalPerPlayer(firstASKill, ModContent.ItemType<LoreSulphurSea>(), desc: DropHelper.FirstKillText);            
+            npcLoot.AddConditionalPerPlayer(firstASKill, ModContent.ItemType<LoreSulphurSea>(), desc: DropHelper.FirstKillText);
         }
 
         public override void OnKill()
@@ -271,7 +277,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
                     SoundEngine.PlaySound(Mauler.RoarSound, Main.player[Main.myPlayer].Center);
 
-                string sulfSeaBoostKey = "Mods.CalamityMod.WetWormBossText";
+                string sulfSeaBoostKey = "Mods.CalamityMod.Status.Progression.WetWormBossText";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
 
                 CalamityUtils.DisplayLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
@@ -285,21 +291,21 @@ namespace CalamityMod.NPCs.AquaticScourge
             CalamityNetcode.SyncWorld();
         }
 
-        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * bossLifeScale);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -316,10 +322,10 @@ namespace CalamityMod.NPCs.AquaticScourge
             return true;
         }
 
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            if (damage > 0)
-                player.AddBuff(ModContent.BuffType<Irradiated>(), 480, true);
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 480, true);
         }
     }
 }

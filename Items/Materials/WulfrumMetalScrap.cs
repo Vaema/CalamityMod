@@ -1,56 +1,39 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.DataStructures;
+﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Wulfrum;
+using Terraria;
 using Terraria.Audio;
-using CalamityMod.Cooldowns;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("WulfrumShard")]
-    public class WulfrumMetalScrap : ModItem
+    public class WulfrumMetalScrap : ModItem, ILocalizedModType
     {
-        public override void Load()
-        {
-            On.Terraria.Item.CanFillEmptyAmmoSlot += AvoidDefaultingToAmmoSlot;
-        }
-
-        public override void Unload()
-        {
-            On.Terraria.Item.CanFillEmptyAmmoSlot -= AvoidDefaultingToAmmoSlot;
-        }
-
-        private bool AvoidDefaultingToAmmoSlot(On.Terraria.Item.orig_CanFillEmptyAmmoSlot orig, Item self)
-        {
-            if (self.type == Type)
-                return false;
-
-            return orig(self);
-        }
+        public new string LocalizationCategory => "Items.Materials";
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Wulfrum Metal Scrap");
+            Item.ResearchUnlockCount = 25;
         }
 
         public override void SetDefaults()
         {
             Item.width = 13;
             Item.height = 10;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(copper: 80);
             Item.rare = ItemRarityID.Blue;
             Item.ammo = Item.type;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Material;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Material;
+        }
 
         public override void OnSpawn(IEntitySource source)
         {
@@ -61,9 +44,9 @@ namespace CalamityMod.Items.Materials
 
                 bool closePlayer = false;
 
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if ((Main.player[i].Center - Item.Center).Length() < 1200 && Main.player[i].GetModPlayer<WulfrumBatteryPlayer>().battery)
+                    if ((player.Center - Item.Center).Length() < 1200 && player.GetModPlayer<WulfrumBatteryPlayer>().battery)
                     {
                         closePlayer = true;
                         break;
@@ -82,6 +65,15 @@ namespace CalamityMod.Items.Materials
                     }
                 }
             }
+        }
+
+        public override void Load() => Terraria.On_Item.CanFillEmptyAmmoSlot += AvoidDefaultingToAmmoSlot;
+
+        private bool AvoidDefaultingToAmmoSlot(Terraria.On_Item.orig_CanFillEmptyAmmoSlot orig, Item self)
+        {
+            if (self.type == Type)
+                return false;
+            return orig(self);
         }
     }
 }

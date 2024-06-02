@@ -4,22 +4,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing
 {
-    public class StuffedFish : ModItem
+    public class StuffedFish : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stuffed Fish");
-            Tooltip.SetDefault("Right click to extract herbs and seeds");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
             ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 34;
             Item.height = 30;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(silver: 50);
         }
@@ -62,9 +61,9 @@ namespace CalamityMod.Items.Fishing
             itemLoot.Add(ItemID.PumpkinSeed, 20, seedMin, seedMax);
 
             // Biome grass seeds
-            itemLoot.AddIf(() => !WorldGen.crimson , ItemID.CorruptSeeds, 20, seedMin, seedMax);
-            itemLoot.AddIf(() => WorldGen.crimson , ItemID.CrimsonSeeds, 20, seedMin, seedMax);
-            itemLoot.AddIf(() => Main.hardMode , ItemID.HallowedSeeds, 20, seedMin, seedMax);
+            itemLoot.AddIf(() => !WorldGen.crimson, ItemID.CorruptSeeds, 20, seedMin, seedMax);
+            itemLoot.AddIf(() => WorldGen.crimson, ItemID.CrimsonSeeds, 20, seedMin, seedMax);
+            itemLoot.AddIf(() => Main.hardMode, ItemID.HallowedSeeds, 20, seedMin, seedMax);
 
             // Add Thorium Marine Kelp if Thorium is loaded.
             Mod thorium = CalamityMod.Instance.thorium;

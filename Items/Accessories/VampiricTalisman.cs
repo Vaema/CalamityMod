@@ -6,21 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class VampiricTalisman : ModItem
+    public class VampiricTalisman : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Vampiric Talisman");
-            Tooltip.SetDefault(@"Rogue projectiles give lifesteal on crits
-12% increased rogue damage");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 58;
-            Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.width = 86;
+            Item.height = 48;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Lime;
         }

@@ -7,16 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class StrangeOrb : ModItem
+    public class StrangeOrb : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Strange Orb");
-            Tooltip.SetDefault("Summons a miniature Ocean Spirit light pet\n" +
-                "Provides a large amount of light while underwater");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.WispinaBottle);

@@ -5,22 +5,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff } )]
-    public class ElectriciansGlove : ModItem
+    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
+    public class ElectriciansGlove : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Electrician's Glove");
-            Tooltip.SetDefault(@"Stealth strikes summon sparks on enemy hits
-Stealth strikes also have +8 armor penetration, deal 8% more damage, and heal for 2 HP");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Pink;
         }

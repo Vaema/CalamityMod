@@ -1,17 +1,20 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -64,7 +67,6 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Tiles.LivingFire;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -77,54 +79,44 @@ namespace CalamityMod
     {
         public static IList<string> donatorList;
         public static List<int> projectileDestroyExceptionList;
-        public static List<int> projectileMinionList;
         public static List<int> enemyImmunityList;
         public static List<int> confusionEnemyList;
         public static List<int> dungeonEnemyBuffList;
         public static List<int> dungeonProjectileBuffList;
         public static List<int> bossHPScaleList;
-        public static List<int> beeEnemyList;
-        public static List<int> beeProjectileList;
         public static List<int> friendlyBeeList;
-        public static List<int> hardModeNerfList;
         public static List<int> debuffList;
+        public static List<int> fireDebuffList;
+        public static List<int> sicknessDebuffList;
         public static List<int> alcoholList;
         public static List<int> spearAutoreuseList;
         public static List<int> pumpkinMoonBuffList;
         public static List<int> frostMoonBuffList;
         public static List<int> eclipseBuffList;
         public static List<int> eventProjectileBuffList;
-        public static List<int> revengeanceEnemyBuffList25Percent;
-        public static List<int> revengeanceEnemyBuffList20Percent;
-        public static List<int> revengeanceEnemyBuffList15Percent;
-        public static List<int> revengeanceEnemyBuffList10Percent;
-        public static List<int> revengeanceProjectileBuffList25Percent;
-        public static List<int> revengeanceProjectileBuffList20Percent;
-        public static List<int> revengeanceProjectileBuffList15Percent;
-        public static List<int> revengeanceLifeStealExceptionList;
         public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
-        public static List<int> trapProjectileList;
         public static List<int> scopedWeaponList;
-        public static List<int> lavaFishList;
         public static List<int> highTestFishList;
-        public static List<int> flamethrowerList;
         public static List<int> forceItemList;
         public static List<int> livingFireBlockList;
         public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
+        public static List<int> MagicGunIDs;
         public static List<int> MushroomWeaponIDs;
         public static List<int> MushroomProjectileIDs;
 
+        // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
         public static List<int> zombieList;
         public static List<int> demonEyeList;
         public static List<int> skeletonList;
         public static List<int> angryBonesList;
         public static List<int> hornetList;
         public static List<int> mossHornetList;
-        public static List<int> bossMinionList;
         public static List<int> minibossList;
+
         public static List<int> pierceResistList;
+        public static List<int> pierceResistExceptionLeviAureusList;
         public static List<int> pierceResistExceptionList;
 
         public static List<int> AstrumDeusIDs;
@@ -157,14 +149,12 @@ namespace CalamityMod
 
         public static List<int> kamiDebuffColorImmuneList;
 
-        public static List<int> MinionsToNotResurrectList;
-        public static List<int> ZeroMinionSlotExceptionList;
-        public static List<int> DontCopyOriginalMinionAIList;
-
         public static Dictionary<int, int> EncryptedSchematicIDRelationship;
 
         public static List<int> DisabledSummonerNerfItems;
         public static List<int> DisabledSummonerNerfMinions;
+
+        public static List<int> VeneratedLocketBanlist; //To ban projectiles from locket, mainly spikeballs altho Toasty asked me to add mod calls for adding stuff like Dreamtastic
 
         public static void LoadLists()
         {
@@ -174,7 +164,7 @@ namespace CalamityMod
                 "SoloMael",
                 "Chaotic Reks",
                 "The Buildmonger",
-                "Yuh",
+                "YuH",
                 "Littlepiggy",
                 "LompL",
                 "Lilith",
@@ -209,7 +199,7 @@ namespace CalamityMod
                 "Luis",
                 "Alexander",
                 "BakaQing",
-                "Laura",
+                "Taylor",
                 "Xaphlactus",
                 "MajinBagel",
                 "Bendy",
@@ -511,7 +501,294 @@ namespace CalamityMod
                 "Face",
                 "Carboniferous",
                 "James",
-                "Taitou1"
+                "Taitou1",
+                "Yumi",
+                "NEBULA",
+                "Blackbluue",
+                "Alex",
+                "Ruben",
+                "Rixu",
+                "Antonie",
+                "Zerimore",
+                "Oblivionisbruh",
+                "Loser",
+                "Patrick",
+                "Magic Love",
+                "gluten tag",
+                "RetroRed",
+                "Katherine",
+                "SoyScoutSmasher",
+                "Jersey",
+                "Reiter splash",
+                "Conner",
+                "Ekun",
+                "Driser",
+                "bikmin",
+                "MittoMan",
+                "Pyromaniac146",
+                "Eddie Spaghetti",
+                "Colin",
+                "ZyferDex_",
+                "LumiEvi",
+                "Anish",
+                "MissMudflaps",
+                "Valkyrie",
+                "anglerraptor",
+                "Scribbles",
+                "Pneuma",
+                "OrrangProto",
+                "Tomat (Stevie)",
+                "That Katsafaros",
+                "PsychoGrizzly",
+                "Dayne",
+                "Hargestar",
+                "The Pyro",
+                "Lucas",
+                "Superbeepig",
+                "Larry That Barry",
+                "Monti",
+                "StarryFox",
+                "Kevin",
+                "Poopifier Poopifly",
+                "Lacuna",
+                "Nathan",
+                "Handburger",
+                "XusTingo9",
+                "Underlost",
+                "julius",
+                "Mark",
+                "Habb",
+                "Reanamet",
+                "Empress Vega",
+                "Team",
+                "GP",
+                "Xsiana",
+                "NyanLegacy215",
+                "ethan",
+                "Trinity Series",
+                "M001NG",
+                "WrathOfOlympus",
+                "dennis",
+                "Darkweb",
+                "Chaozhi",
+                "Mars",
+                "Elijah",
+                "Tezguin",
+                "Shpee",
+                "Archie",
+                "Meow",
+                "CosmicStarIight",
+                "Alfragiste",
+                "Number1piratepan",
+                "Noah",
+                "Max Kim",
+                "Anton",
+                "edm vibes",
+                "Hunter",
+                "Doodled_lynx",
+                "3en",
+                "Kiyotu",
+                "Aero",
+                "Iguy",
+                "병현 송",
+                "Tyler",
+                "Leonidas",
+                "GregTheSpinarak",
+                "Cheddar",
+                "Alex N",
+                "Magicoal",
+                "Seanツ",
+                "Ariscottle",
+                "Kevin",
+                "OnTheAirPogs",
+                "Zerafir",
+                "Bill",
+                "Starmitzy",
+                "FaeLoPondering",
+                "Brian",
+                "Smart2004",
+                "sherk",
+                "Squishy",
+                "Ash",
+                "rawpie2",
+                "Hokojin",
+                "sk",
+                "Done",
+                "MeanieG",
+                "Sanctuary",
+                "Landon",
+                "Moonicento",
+                "Hayden",
+                "Steven",
+                "Hana",
+                "Mikabul",
+                "Nathaniel",
+                "Brutus",
+                "EdelVollMilch",
+                "garfu",
+                "NuT NiTe",
+                "adain",
+                "Dylan",
+                "Lucas",
+                "Arthur",
+                "sweatingdishes",
+                "pomp neigh",
+                "Proffesor prostate",
+                "Saladify",
+                "26-4-1",
+                "VeryMasterNinja",
+                "Vorbis",
+                "Nyapano",
+                "Shadoku",
+                "allosar",
+                "jes",
+                "Paltham",
+                "Fartein",
+                "Derdjin",
+                "A_Normal_Person",
+                "Duck Satan",
+                "Jalapeno9",
+                "Grylken",
+                "Nexus",
+                "KJ",
+                "Goober",
+                "ChAoS DiScOrD",
+                "Mayhem",
+                "Zombified _G",
+                "Madd Cat",
+                "Natalie",
+                "Solaire",
+                "Dakota C",
+                "The Davester",
+                "Jose",
+                "Him",
+                "Umberto",
+                "Lance",
+                "Navigator",
+                "Ferret4T",
+                "Rooki",
+                "LvL-94",
+                "Feels Fishy",
+                "Korb Orb",
+                "Calcium Comrade",
+                "Talmadge",
+                "ddoogg88 tdog",
+                "CasualNoLifer",
+                "Bossy Punch",
+                "Creamy",
+                "Tyler",
+                "topnormal",
+                "Gilded Gryphon",
+                "Nightskyflyer",
+                "Schlarfblrfsch",
+                "MrNobody",
+                "Aden C.N.",
+                "zombie wolf",
+                "n0tacat",
+                "Marko",
+                "dexxer65",
+                "DeLordeyeee",
+                "Kaledoulas",
+                "Mohammad",
+                "Skeli_G",
+                "Arcxus",
+                "Sigil",
+                "Dull",
+                "DjackV",
+                "Misinput",
+                "Gameology",
+                "KugelBlitz",
+                "TheGreatSako",
+                "Joep",
+                "Rottingwood",
+                "anything5000",
+                "Gretchen",
+                "Spirit Shield",
+                "Briny_Coffee",
+                "_Skeggy_",
+                "just akkolite",
+                "J.U.N.E.S",
+                "Bruggs",
+                "Vimek Xol",
+                "Oceanman232",
+                "Sadouken",
+                "srxe",
+                "ProfessorWinston",
+                "OctolingGrimm",
+                "Cole",
+                "Markie",
+                "Met Vox",
+                "Tweee",
+                "Kaimonick",
+                "Chow Chow",
+                "drenmus!",
+                "Nitronium Productions",
+                "Goomfrontlut",
+                "Akkolite",
+                "Shaun",
+                "Bruh.PNG",
+                "James",
+                "Lord_Lucerne",
+                "Ulmod",
+                "Adamko",
+                "Gamma Freya",
+                "Finnrua",
+                "Maskedmilo",
+                "RockRecker39",
+                "Konorango",
+                "Indeciiissive",
+                "Curtis",
+                "Ponynator",
+                "Crippling-Ambition",
+                "TitaniumLlama",
+                "OriginForme487",
+                "FishBread",
+                "Real mystlc",
+                "Levi",
+                "jc.",
+                "Medi",
+                "Jakob",
+                "Borb9834",
+                "Georgios",
+                "KeL",
+                "Cody",
+                "Cristian(Mihaii)",
+                "Marco",
+                "RuskieThe3rd",
+                "BreachNClear747",
+                "happy thoughts",
+                "Azure",
+                "theHoopty",
+                "porglesupreme",
+                "XDkilljoy65XX",
+                "Mr. Bones",
+                "dawnboi",
+                "Joe",
+                "Sailor Jolt",
+                "SomeRando",
+                "Nuclear Chaos",
+                "Jankle",
+                "The Roborex",
+                "everquartz",
+                "discokittie",
+                "IsaacInsomnia",
+                "xElectrix_",
+                "Forge",
+                "MiyoshiEira",
+                "thebettercat",
+                "Darthlego",
+                "Azzilan",
+                "Griffin",
+                "LucasHM",
+                "ChrigTopher",
+                "Colin V",
+                "Scrumlet",
+                "Darkus",
+                "Homunculus Derelictus",
+                "Professor Pissington",
+                "Buppercups - Roblox",
+                "Pusheen_",
+                "Patrera"
             };
 
             projectileDestroyExceptionList = new List<int>()
@@ -564,7 +841,7 @@ namespace CalamityMod
                 ProjectileType<ContagionBow>(),
                 ProjectileType<DaemonsFlameBow>(),
                 ProjectileType<DrataliornusBow>(),
-                ProjectileType<FlakKrakenGun>(),
+                ProjectileType<FlakKrakenHoldout>(),
                 ProjectileType<ButcherGun>(),
                 ProjectileType<StarfleetMK2Gun>(),
                 ProjectileType<NorfleetCannon>(),
@@ -575,6 +852,7 @@ namespace CalamityMod
                 ProjectileType<UltimaBowProjectile>(),
                 ProjectileType<CondemnationHoldout>(),
                 ProjectileType<SurgeDriverHoldout>(),
+                ProjectileType<StarmageddonHeld>(),
 
                 ProjectileType<NanoPurgeHoldout>(),
                 ProjectileType<AetherfluxCannonHoldout>(),
@@ -586,9 +864,9 @@ namespace CalamityMod
                 ProjectileType<ApotheosisWorm>(),
                 ProjectileType<SpiritCongregation>(),
                 ProjectileType<RancorLaserbeam>(),
-                ProjectileType<GrandStaffoftheNebulaMage_Held>(),
+                ProjectileType<NebulousCataclysm_Held>(),
 
-                ProjectileType<FlakKrakenProj>(),
+                ProjectileType<FlakKrakenProjectile>(),
                 ProjectileType<InfernadoFriendly>(),
                 ProjectileType<DragonRageStaff>(),
                 ProjectileType<MurasamaSlash>(),
@@ -620,39 +898,19 @@ namespace CalamityMod
                 ProjectileType<ThanatosBeamStart>()
             };
 
-            projectileMinionList = new List<int>()
-            {
-                ProjectileID.PygmySpear,
-                ProjectileID.UFOMinion,
-                ProjectileID.UFOLaser,
-                ProjectileID.StardustCellMinionShot,
-                ProjectileID.MiniSharkron,
-                ProjectileID.MiniRetinaLaser,
-                ProjectileID.ImpFireball,
-                ProjectileID.HornetStinger,
-                ProjectileID.DD2FlameBurstTowerT1Shot,
-                ProjectileID.DD2FlameBurstTowerT2Shot,
-                ProjectileID.DD2FlameBurstTowerT3Shot,
-                ProjectileID.DD2BallistraProj,
-                ProjectileID.DD2ExplosiveTrapT1Explosion,
-                ProjectileID.DD2ExplosiveTrapT2Explosion,
-                ProjectileID.DD2ExplosiveTrapT3Explosion,
-                ProjectileID.SpiderEgg,
-                ProjectileID.BabySpider,
-                ProjectileID.FrostBlastFriendly,
-                ProjectileID.MoonlordTurretLaser,
-                ProjectileID.RainbowCrystalExplosion
-            };
-
             enemyImmunityList = new List<int>()
             {
                 NPCID.KingSlime,
+                NPCType<KingSlimeJewelRuby>(),
+                NPCType<KingSlimeJewelSapphire>(),
+                NPCType<KingSlimeJewelEmerald>(),
                 NPCID.EaterofWorldsHead,
                 NPCID.EaterofWorldsBody,
                 NPCID.EaterofWorldsTail,
                 NPCID.BrainofCthulhu,
                 NPCID.Creeper,
                 NPCID.EyeofCthulhu,
+                NPCType<BloodlettingServant>(),
                 NPCID.QueenBee,
                 NPCID.SkeletronHead,
                 NPCID.SkeletronHand,
@@ -665,12 +923,14 @@ namespace CalamityMod
                 NPCID.Retinazer,
                 NPCID.Spazmatism,
                 NPCID.SkeletronPrime,
+                NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,
                 NPCID.PrimeSaw,
                 NPCID.PrimeLaser,
                 NPCID.PrimeVice,
                 NPCID.Plantera,
                 NPCID.PlanterasTentacle,
+                NPCType<PlanterasFreeTentacle>(),
                 NPCID.HallowBoss,
                 NPCID.Everscream,
                 NPCID.SantaNK1,
@@ -722,6 +982,9 @@ namespace CalamityMod
                 NPCType<DesertNuisanceHead>(),
                 NPCType<DesertNuisanceBody>(),
                 NPCType<DesertNuisanceTail>(),
+                NPCType<DesertNuisanceHeadYoung>(),
+                NPCType<DesertNuisanceBodyYoung>(),
+                NPCType<DesertNuisanceTailYoung>(),
                 NPCType<GiantClam>(),
                 NPCType<PerforatorHeadLarge>(),
                 NPCType<PerforatorHeadMedium>(),
@@ -732,10 +995,10 @@ namespace CalamityMod
                 NPCType<PerforatorTailLarge>(),
                 NPCType<PerforatorTailMedium>(),
                 NPCType<PerforatorTailSmall>(),
-                NPCType<EbonianSlimeGod>(),
-                NPCType<CrimulanSlimeGod>(),
-                NPCType<SplitEbonianSlimeGod>(),
-                NPCType<SplitCrimulanSlimeGod>(),
+                NPCType<EbonianPaladin>(),
+                NPCType<CrimulanPaladin>(),
+                NPCType<SplitEbonianPaladin>(),
+                NPCType<SplitCrimulanPaladin>(),
                 NPCType<Horse>(),
                 NPCType<ThiccWaifu>(),
                 NPCType<CryogenShield>(),
@@ -759,6 +1022,8 @@ namespace CalamityMod
                 NPCType<RavagerLegRight>(),
                 NPCType<RockPillar>(),
                 NPCType<RavagerHead>(),
+                NPCType<ProfanedGuardianDefender>(),
+                NPCType<ProfanedGuardianHealer>(),
                 NPCType<Bumblefuck2>(),
                 NPCType<ProvSpawnDefense>(),
                 NPCType<ProvSpawnHealer>(),
@@ -785,11 +1050,10 @@ namespace CalamityMod
                 NPCType<BloomSlime>(),
                 NPCType<Bohldohr>(),
                 NPCType<CalamityEye>(),
-                NPCType<CosmicElemental>(),
                 NPCType<CrimulanBlightSlime>(),
                 NPCType<Cryon>(),
                 NPCType<CryoSlime>(),
-                NPCType<CultistAssassin>(),
+                NPCType<RenegadeWarlock>(),
                 NPCType<DespairStone>(),
                 NPCType<EbonianBlightSlime>(),
                 NPCType<FearlessGoldfishWarrior>(),
@@ -870,33 +1134,6 @@ namespace CalamityMod
                 NPCID.MoonLordHand
             };
 
-            beeEnemyList = new List<int>()
-            {
-                NPCID.GiantMossHornet,
-                NPCID.BigMossHornet,
-                NPCID.LittleMossHornet,
-                NPCID.TinyMossHornet,
-                NPCID.MossHornet,
-                NPCID.VortexHornetQueen,
-                NPCID.VortexHornet,
-                NPCID.Bee,
-                NPCID.BeeSmall,
-                NPCID.QueenBee,
-                NPCType<PlaguebringerGoliath>(),
-                NPCType<PlaguebringerMiniboss>(),
-                NPCType<PlagueChargerLarge>(),
-                NPCType<PlagueCharger>()
-            };
-
-            beeProjectileList = new List<int>()
-            {
-                ProjectileID.Stinger,
-                ProjectileID.HornetStinger,
-                ProjectileType<PlagueStingerGoliath>(),
-                ProjectileType<PlagueStingerGoliathV2>(),
-                ProjectileType<PlagueExplosion>()
-            };
-
             friendlyBeeList = new List<int>()
             {
                 ProjectileID.GiantBee,
@@ -906,25 +1143,6 @@ namespace CalamityMod
                 ProjectileType<PlaguePrincess>(),
                 ProjectileType<BabyPlaguebringer>(),
                 ProjectileType<PlagueBeeSmall>()
-            };
-
-            hardModeNerfList = new List<int>()
-            {
-                ProjectileID.PinkLaser,
-                ProjectileID.FrostBlastHostile,
-                ProjectileID.GoldenShowerHostile,
-                ProjectileID.RainNimbus,
-                ProjectileID.FlamingArrow,
-                ProjectileID.BulletDeadeye,
-                ProjectileID.CannonballHostile,
-                ProjectileID.UnholyTridentHostile,
-                ProjectileID.FrostBeam,
-                ProjectileID.CursedFlameHostile,
-                ProjectileID.Stinger,
-                ProjectileID.BloodShot,
-                ProjectileID.BloodNautilusTears,
-                ProjectileID.BloodNautilusShot,
-                ProjectileID.RockGolemRock
             };
 
             debuffList = new List<int>()
@@ -962,6 +1180,8 @@ namespace CalamityMod
                 BuffType<Shadowflame>(),
                 BuffType<BrimstoneFlames>(),
                 BuffType<BurningBlood>(),
+                BuffType<BrainRot>(),
+                BuffType<ElementalMix>(),
                 BuffType<GlacialState>(),
                 BuffType<GodSlayerInferno>(),
                 BuffType<AstralInfectionDebuff>(),
@@ -969,14 +1189,57 @@ namespace CalamityMod
                 BuffType<Irradiated>(),
                 BuffType<Plague>(),
                 BuffType<CrushDepth>(),
+                BuffType<RiptideDebuff>(),
                 BuffType<MarkedforDeath>(),
+                BuffType<AbsorberAffliction>(),
                 BuffType<ArmorCrunch>(),
+                BuffType<Crumbling>(),
                 BuffType<Vaporfied>(),
                 BuffType<Eutrophication>(),
                 BuffType<Dragonfire>(),
                 BuffType<Nightwither>(),
                 BuffType<VulnerabilityHex>(),
-                BuffType<MiracleBlight>()
+                BuffType<MiracleBlight>(),
+                BuffType<WhisperingDeath>(),
+                BuffType<FrozenLungs>(),
+                BuffType<FishAlert>(),
+                BuffType<HolyInferno>(),
+                BuffType<IcarusFolly>(),
+                BuffType<DoGExtremeGravity>(),
+                // BuffType<NOU>(),
+                BuffType<PopoNoselessBuff>(),
+                BuffType<SearingLava>(),
+                BuffType<WeakBrimstoneFlames>(),
+                BuffType<Withered>()
+            };
+
+            fireDebuffList = new List<int>()
+            {
+                BuffID.OnFire,
+                BuffID.OnFire3, // Hellfire
+                BuffID.Burning, // Touching meteorite ore or hellstone without obsidian skull
+                BuffID.CursedInferno,
+                BuffID.ShadowFlame, // Vanilla Shadowflame, can normally never be applied to players
+                BuffType<Shadowflame>(), // Calamity Shadowflame copy for players
+                BuffType<SearingLava>(), // Crags lava
+                BuffType<BrimstoneFlames>(),
+                BuffType<HolyFlames>(),
+                BuffType<GodSlayerInferno>(),
+                BuffType<Dragonfire>(),
+                BuffType<WeakBrimstoneFlames>(), // Aflame enchant self damage
+                BuffType<BanishingFire>(),
+            };
+
+            sicknessDebuffList = new List<int>()
+            {
+                BuffID.Poisoned,
+                BuffID.Venom,
+                BuffType<SulphuricPoisoning>(),
+                BuffType<AstralInfectionDebuff>(),
+                BuffType<Plague>(),
+                BuffType<AbsorberAffliction>(),
+                BuffType<WhisperingDeath>(),
+                BuffType<Irradiated>()
             };
 
             alcoholList = new List<int>()
@@ -992,6 +1255,7 @@ namespace CalamityMod
                 BuffType<MargaritaBuff>(),
                 BuffType<MoonshineBuff>(),
                 BuffType<MoscowMuleBuff>(),
+                BuffType<OldFashionedBuff>(),
                 BuffType<RedWineBuff>(),
                 BuffType<RumBuff>(),
                 BuffType<ScrewdriverBuff>(),
@@ -1021,8 +1285,8 @@ namespace CalamityMod
                 ItemID.Swordfish,
                 ItemID.TheRottedFork,
                 ItemID.TitaniumTrident,
-                ItemID.Trident
-                //ItemID.StormSpear
+                ItemID.Trident,
+                ItemID.ThunderSpear
             };
 
             pumpkinMoonBuffList = new List<int>()
@@ -1108,172 +1372,6 @@ namespace CalamityMod
                 ProjectileID.DrManFlyFlask
             };
 
-            // Enemies that inflict an average of 1 to 50 damage in Expert Mode
-            revengeanceEnemyBuffList25Percent = new List<int>()
-            {
-                NPCID.GiantWormHead,
-                NPCID.BlazingWheel,
-                NPCType<Cnidrion>(),
-                NPCType<PrismBack>(),
-                NPCType<GhostBell>()
-            };
-
-            // Enemies that inflict an average of 51 to 100 damage in Expert Mode
-            revengeanceEnemyBuffList20Percent = new List<int>()
-            {
-                NPCID.DevourerHead,
-                NPCID.MeteorHead,
-                NPCID.BoneSerpentHead,
-                NPCID.ManEater,
-                NPCID.Snatcher,
-                NPCID.Piranha,
-                NPCID.Shark,
-                NPCID.SpikeBall,
-                NPCID.DiggerHead,
-                NPCID.WallCreeper,
-                NPCID.WallCreeperWall,
-                NPCID.Lihzahrd,
-                NPCID.Pumpking,
-                NPCID.SlimeSpiked,
-                NPCType<EutrophicRay>(),
-                NPCType<Clam>(),
-                NPCType<SeaSerpent1>(),
-                NPCType<GiantClam>(),
-                NPCType<FearlessGoldfishWarrior>()
-            };
-
-            // Enemies that inflict an average of 101 to 200 damage in Expert Mode
-            revengeanceEnemyBuffList15Percent = new List<int>()
-            {
-                NPCID.DD2Betsy,
-                NPCID.Mimic,
-                NPCID.WyvernHead,
-                NPCID.SeekerHead,
-                NPCID.AnglerFish,
-                NPCID.Werewolf,
-                NPCID.Wraith,
-                NPCID.Arapaima,
-                NPCID.BlackRecluse,
-                NPCID.BlackRecluseWall,
-                NPCID.AngryTrapper,
-                NPCID.LihzahrdCrawler,
-                NPCID.PirateCaptain,
-                NPCID.FlyingSnake,
-                NPCID.Reaper,
-                NPCID.Paladin,
-                NPCID.BoneLee,
-                NPCID.MourningWood,
-                NPCID.PumpkingBlade,
-                NPCID.PresentMimic,
-                NPCID.Everscream,
-                NPCID.IceQueen,
-                NPCID.SantaNK1,
-                NPCID.StardustWormHead,
-                NPCID.Butcher,
-                NPCID.Psycho,
-                NPCID.DeadlySphere,
-                NPCID.BigMimicCorruption,
-                NPCID.BigMimicCrimson,
-                NPCID.BigMimicHallow,
-                NPCID.Mothron,
-                NPCID.DuneSplicerHead,
-                NPCID.SandShark,
-                NPCID.SandsharkCorrupt,
-                NPCID.SandsharkCrimson,
-                NPCID.SandsharkHallow,
-                NPCType<Atlas>(),
-                NPCType<ArmoredDiggerHead>(),
-                NPCType<GreatSandShark>(),
-                NPCType<Horse>(),
-                NPCType<ScornEater>(),
-                NPCType<BlindedAngler>()
-            };
-
-            // Enemies that inflict an average of 201 to 400 damage in Expert Mode
-            revengeanceEnemyBuffList10Percent = new List<int>()
-            {
-                NPCID.SolarCrawltipedeHead,
-                NPCType<BobbitWormHead>(),
-                NPCType<ColossalSquid>(),
-                NPCType<EidolonWyrmHead>(),
-                NPCType<GulperEelHead>(),
-                NPCType<Mauler>(),
-                NPCType<ReaperShark>()
-            };
-
-            revengeanceProjectileBuffList25Percent = new List<int>()
-            {
-                ProjectileID.SandBallFalling,
-                ProjectileID.AshBallFalling,
-                ProjectileID.EbonsandBallFalling,
-                ProjectileID.PearlSandBallFalling,
-                ProjectileID.CrimsandBallFalling,
-                ProjectileID.GeyserTrap
-            };
-
-            revengeanceProjectileBuffList20Percent = new List<int>()
-            {
-                ProjectileID.PoisonDartTrap,
-                ProjectileID.DemonSickle,
-                ProjectileID.SandnadoHostile,
-                ProjectileID.DD2BetsyFireball,
-                ProjectileID.DD2BetsyFlameBreath
-            };
-
-            revengeanceProjectileBuffList15Percent = new List<int>()
-            {
-                ProjectileID.SpikyBallTrap,
-                ProjectileID.SpearTrap,
-                ProjectileID.FlamethrowerTrap,
-                ProjectileID.FlamesTrap,
-                ProjectileID.PaladinsHammerHostile,
-                ProjectileID.FlamingWood,
-                ProjectileID.FlamingScythe,
-                ProjectileID.FrostWave,
-                ProjectileID.Present,
-                ProjectileID.Spike,
-                ProjectileID.SaucerDeathray,
-                ProjectileID.NebulaBolt,
-                ProjectileID.NebulaSphere,
-                ProjectileID.NebulaLaser,
-                ProjectileID.StardustSoldierLaser,
-                ProjectileID.VortexLaser,
-                ProjectileID.VortexVortexLightning,
-                ProjectileID.VortexLightning,
-                ProjectileID.VortexAcid,
-                ProjectileType<PearlBurst>(),
-                ProjectileType<PearlRain>()
-            };
-
-            revengeanceLifeStealExceptionList = new List<int>()
-            {
-                NPCID.Probe,
-                NPCID.CultistDragonHead,
-                NPCID.CultistDragonBody1,
-                NPCID.CultistDragonBody2,
-                NPCID.CultistDragonBody3,
-                NPCID.CultistDragonBody4,
-                NPCID.CultistDragonTail,
-                NPCID.AncientCultistSquidhead,
-                NPCID.AncientLight,
-                NPCID.Sharkron,
-                NPCID.Sharkron2,
-                NPCID.PlanterasTentacle,
-                NPCID.Spore,
-                NPCID.TheHungryII,
-                NPCID.LeechHead,
-                NPCID.LeechBody,
-                NPCID.LeechTail,
-                NPCID.QueenSlimeMinionBlue,
-                NPCID.QueenSlimeMinionPink,
-                NPCID.QueenSlimeMinionPurple,
-                NPCID.TheDestroyerBody,
-                NPCID.TheDestroyerTail,
-                NPCID.EaterofWorldsBody,
-                NPCID.EaterofWorldsTail,
-                NPCID.MoonLordCore
-            };
-
             noRageWormSegmentList = new List<int>()
             {
                 NPCType<DesertScourgeBody>(),
@@ -1298,41 +1396,17 @@ namespace CalamityMod
 
             needsDebuffIconDisplayList = new List<int>()
             {
-                NPCID.WallofFleshEye
+                NPCID.TargetDummy,
+                NPCID.WallofFleshEye,
+                NPCType<SuperDummyNPC>()
             };
 
-            trapProjectileList = new List<int>()
-            {
-                ProjectileID.PoisonDartTrap,
-                ProjectileID.SpikyBallTrap,
-                ProjectileID.SpearTrap,
-                ProjectileID.FlamethrowerTrap,
-                ProjectileID.FlamesTrap,
-                ProjectileID.PoisonDart,
-                ProjectileID.GeyserTrap
-            };
-
-            scopedWeaponList = new List<int>()
-            {
-                ItemType<AntiMaterielRifle>(),
-                ItemType<Auralis>(),
-                ItemType<HalleysInferno>(),
-                ItemType<Shroomer>(),
-                ItemType<Svantechnical>(),
-                ItemType<TyrannysEnd>()
-            };
-
+            // TODO -- override HoldItem => Player.accFishingLine = true; on these items, just like the scope fix...
             highTestFishList = new List<int>()
             {
                 ItemID.GoldenFishingRod,
                 ItemType<EarlyBloomRod>(),
                 ItemType<TheDevourerofCods>()
-            };
-
-            flamethrowerList = new List<int>()
-            {
-                ItemType<DragoonDrizzlefish>(),
-                ItemType<BloodBoiler>()
             };
 
             forceItemList = new List<int>()
@@ -1531,6 +1605,47 @@ namespace CalamityMod
                 BuffID.WeaponImbueNanites,
                 BuffID.WeaponImbueConfetti,
                 BuffID.WeaponImbuePoison
+            };
+
+            MagicGunIDs = new List<int>()
+            {
+                ItemType<AbyssShocker>(),
+                ItemType<AcidGun>(),
+                ItemType<AethersWhisper>(),
+                ItemType<AetherfluxCannon>(),
+                ItemType<Omicron>(),
+                ItemType<ApoctosisArray>(),
+                ItemType<Cryophobia>(),
+                ItemType<Effervescence>(),
+                ItemType<EidolicWail>(),
+                ItemType<GatlingLaser>(),
+                ItemType<GaussPistol>(),
+                ItemType<Genesis>(),
+                ItemType<IonBlaster>(),
+                ItemType<Lazhar>(),
+                ItemType<NanoPurge>(),
+                ItemType<PlasmaCaster>(),
+                ItemType<PlasmaRifle>(),
+                ItemType<PulsePistol>(),
+                ItemType<PurgeGuzzler>(),
+                ItemType<RainbowPartyCannon>(),
+                ItemType<SHPC>(),
+                ItemType<TeslaCannon>(),
+                ItemType<TheSwarmer>(),
+                ItemType<Thunderstorm>(),
+                ItemType<Wingman>(),
+                ItemID.BeeGun,
+                ItemID.BubbleGun,
+                ItemID.ChargedBlasterCannon,
+                ItemID.HeatRay,
+                ItemID.LaserMachinegun,
+                ItemID.LaserRifle,
+                ItemID.LeafBlower,
+                ItemID.RainbowGun,
+                ItemID.SpaceGun,
+                ItemID.WaspGun,
+                ItemID.ZapinatorGray,
+                ItemID.ZapinatorOrange
             };
 
             MushroomWeaponIDs = new List<int>()
@@ -1742,6 +1857,8 @@ namespace CalamityMod
                 NPCType<AquaticScourgeBody>(),
                 NPCType<AquaticScourgeBodyAlt>(),
                 NPCType<AquaticScourgeTail>(),
+                NPCType<AstrumAureus>(),
+                NPCType<Leviathan>(),
                 NPCType<RavagerHead>(),
                 NPCType<RavagerClawLeft>(),
                 NPCType<RavagerClawRight>(),
@@ -1770,60 +1887,83 @@ namespace CalamityMod
                 NPCType<AresGaussNuke>()
             };
 
+            pierceResistExceptionLeviAureusList = new List<int>()
+            {
+                ProjectileID.NettleBurstEnd,
+                ProjectileID.NettleBurstLeft,
+                ProjectileID.NettleBurstRight,
+                ProjectileType<AtlantisSpear>(),
+                ProjectileType<AuroraFire>(),
+                ProjectileType<BallisticPoisonCloud>(),
+                ProjectileType<DuststormCloudHitbox>()
+            };
+
             pierceResistExceptionList = new List<int>()
             {
-                ProjectileID.FlyingKnife,
                 ProjectileID.Arkhalis,
-                ProjectileID.Terragrim,
-                ProjectileID.MonkStaffT3,
-                ProjectileID.LastPrismLaser,
                 ProjectileID.ChargedBlasterLaser,
-                ProjectileType<FlakKrakenProj>(),
-                ProjectileType<MurasamaSlash>(),
-                ProjectileType<OmnibladeSwing>(),
-                ProjectileType<DragonRageStaff>(),
-                ProjectileType<YateveoBloomProj>(),
-                ProjectileType<UrchinBall>(),
-                ProjectileType<UrchinMaceProjectile>(),
-                ProjectileType<TyphonsGreedStaff>(),
-                ProjectileType<DevilsSunriseProj>(),
-                ProjectileType<DevilsSunriseCyclone>(),
-                ProjectileType<PhaseslayerProjectile>(),
-                ProjectileType<TaserHook>(),
-                ProjectileType<Snowflake>(),
-                ProjectileType<InsidiousHarpoon>(),
-                ProjectileType<PhotonRipperProjectile>(),
+                ProjectileID.ClingerStaff,
+                ProjectileID.FinalFractal,
+                ProjectileID.FlyingKnife,
+                ProjectileID.LastPrismLaser,
+                ProjectileID.MechanicalPiranha,
+                ProjectileID.MonkStaffT3,
+                ProjectileID.PiercingStarlight,
+                ProjectileID.Terragrim,
                 ProjectileType<AcidicSaxBubble>(),
-                ProjectileType<WaterLeechProj>(),
+                ProjectileType<BlushieStaffProj>(),
                 ProjectileType<BonebreakerProjectile>(),
-                ProjectileType<UrchinBallSpike>(),
-                ProjectileType<EmesisGore>(),
-                ProjectileType<ExoFlareCluster>(),
-                ProjectileType<SulphuricBlast>(),
+                ProjectileType<DarkSparkBeam>(),
+                ProjectileType<DevilsSunriseCyclone>(),
+                ProjectileType<DevilsSunriseProj>(),
+                ProjectileType<DragonRageStaff>(),
                 ProjectileType<EclipsesStealth>(),
+                ProjectileType<EidolicWailSoundwave>(),
+                ProjectileType<EmesisGore>(),
                 ProjectileType<EradicatorProjectile>(),
+                ProjectileType<ExoFlareCluster>(),
+                ProjectileType<EyeOfNightCell>(),
                 ProjectileType<FantasyTalismanProj>(),
                 ProjectileType<FantasyTalismanStealth>(),
                 ProjectileType<GodsParanoiaProj>(),
+                ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
                 ProjectileType<LeviathanTooth>(),
+                ProjectileType<LiliesOfFinalityAoE>(),
                 ProjectileType<LionfishProj>(),
+                ProjectileType<MechanicalBarracuda>(),
                 ProjectileType<MetalShard>(),
+                ProjectileType<MurasamaSlash>(),
                 ProjectileType<NastyChollaBol>(),
+                ProjectileType<OmnibladeSwing>(),
+                ProjectileType<PhaseslayerProjectile>(),
+                ProjectileType<PhotonRipperProjectile>(),
+                ProjectileType<PlaguedFuelPackCloud>(),
+                ProjectileType<PlantationStaffSporeCloud>(),
+                ProjectileType<PrismaticBeam>(),
+                ProjectileType<RancorLaserbeam>(),
+                ProjectileType<ReaperProjectile>(),
+                ProjectileType<RespiteblockHoldout>(),
                 ProjectileType<SacrificeProjectile>(),
                 ProjectileType<SnapClamProj>(),
                 ProjectileType<SnapClamStealth>(),
-                ProjectileType<StickyBol>(),
-                ProjectileType<UrchinStingerProj>(),
-                ProjectileType<EyeOfNightCell>(),
-                ProjectileType<ViolenceThrownProjectile>(),
-                ProjectileType<BlushieStaffProj>(),
-                ProjectileType<DarkSparkBeam>(),
-                ProjectileType<EidolicWailSoundwave>(),
-                ProjectileType<RancorLaserbeam>(),
+                ProjectileType<Snowflake>(),
                 ProjectileType<SparklingLaser>(),
+                ProjectileType<SpiritCongregation>(),
+                ProjectileType<StarmageddonBinaryStarCenter>(),
+                ProjectileType<StickyBol>(),
+                ProjectileType<SulphuricBlast>(),
+                ProjectileType<TaserHook>(),
+                ProjectileType<Teslabeam>(),
+                ProjectileType<TyphonsGreedStaff>(),
+                ProjectileType<UrchinBall>(),
+                ProjectileType<UrchinBallSpike>(),
+                ProjectileType<UrchinMaceProjectile>(),
+                ProjectileType<UrchinStingerProj>(),
+                ProjectileType<ViolenceThrownProjectile>(),
+                ProjectileType<WaterLeechProj>(),
+                ProjectileType<YateveoBloomProj>(),
                 ProjectileType<YharimsCrystalBeam>(),
-                ProjectileType<PrismaticBeam>(),
             };
 
             // Lists of enemies that resist piercing to some extent (mostly worms).
@@ -1887,10 +2027,10 @@ namespace CalamityMod
 
             SlimeGodIDs = new List<int>
             {
-                NPCType<EbonianSlimeGod>(),
-                NPCType<CrimulanSlimeGod>(),
-                NPCType<SplitEbonianSlimeGod>(),
-                NPCType<SplitCrimulanSlimeGod>(),
+                NPCType<EbonianPaladin>(),
+                NPCType<CrimulanPaladin>(),
+                NPCType<SplitEbonianPaladin>(),
+                NPCType<SplitCrimulanPaladin>(),
                 NPCType<SlimeGodCore>()
             };
 
@@ -1934,6 +2074,7 @@ namespace CalamityMod
             SkeletronPrimeIDs = new List<int>
             {
                 NPCID.SkeletronPrime,
+                NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,
                 NPCID.PrimeLaser,
                 NPCID.PrimeSaw,
@@ -1991,6 +2132,22 @@ namespace CalamityMod
 
             ZeroContactDamageNPCList = new List<int>
             {
+                NPCID.Harpy,
+                NPCID.Salamander,
+                NPCID.Salamander2,
+                NPCID.Salamander3,
+                NPCID.Salamander4,
+                NPCID.Salamander5,
+                NPCID.Salamander6,
+                NPCID.Salamander7,
+                NPCID.Salamander8,
+                NPCID.Salamander9,
+                NPCID.GiantCursedSkull,
+                NPCID.FungiBulb,
+                NPCID.GiantFungiBulb,
+                NPCID.IcyMerman,
+                NPCID.AngryNimbus,
+                NPCID.SandElemental,
                 NPCID.DarkCaster,
                 NPCID.FireImp,
                 NPCID.Tim,
@@ -2022,12 +2179,23 @@ namespace CalamityMod
                 NPCID.DrManFly,
                 NPCID.Eyezor,
                 NPCID.Nailhead,
+                NPCID.BrainScrambler,
+                NPCID.GigaZapper,
+                NPCID.RayGunner,
+                NPCID.ScutlixRider,
                 NPCID.MartianWalker,
                 NPCID.MartianTurret,
                 NPCID.ElfCopter,
                 NPCID.ElfArcher,
                 NPCID.NebulaBrain,
+                NPCID.NebulaSoldier,
+                NPCID.StardustCellSmall,
                 NPCID.StardustJellyfishBig,
+                NPCID.StardustSoldier,
+                NPCID.StardustSpiderBig,
+                NPCID.VortexHornetQueen,
+                NPCID.VortexRifleman,
+                NPCID.VortexSoldier,
                 NPCID.PirateShipCannon,
                 NPCID.MartianSaucer,
                 NPCID.MartianSaucerCannon,
@@ -2035,11 +2203,67 @@ namespace CalamityMod
                 NPCID.MartianSaucerTurret,
                 NPCID.Probe,
                 NPCID.CultistBoss,
+                NPCID.GolemHead,
                 NPCID.GolemHeadFree,
                 NPCID.MoonLordFreeEye,
                 NPCID.BloodSquid,
                 NPCID.PlanterasHook,
-                NPCID.Dandelion
+                NPCID.Dandelion,
+                NPCID.DD2DarkMageT1,
+                NPCID.DD2DarkMageT3,
+                NPCID.DD2OgreT2,
+                NPCID.DD2OgreT3,
+                NPCID.DD2GoblinBomberT1,
+                NPCID.DD2GoblinBomberT2,
+                NPCID.DD2GoblinBomberT3,
+                NPCID.DD2JavelinstT1,
+                NPCID.DD2JavelinstT2,
+                NPCID.DD2JavelinstT3,
+                NPCID.DD2KoboldWalkerT2,
+                NPCID.DD2KoboldWalkerT3,
+                NPCID.DD2DrakinT2,
+                NPCID.DD2DrakinT3,
+                NPCID.DD2KoboldFlyerT2,
+                NPCID.DD2KoboldFlyerT3,
+                NPCID.DD2WitherBeastT2,
+                NPCID.DD2WitherBeastT3,
+                NPCID.DD2LightningBugT3,
+                NPCID.MourningWood,
+                NPCID.Pumpking,
+                NPCID.Everscream,
+                NPCID.IceQueen,
+                NPCID.SantaNK1,
+                NPCID.DevourerBody,
+                NPCID.DevourerTail,
+                NPCID.DiggerBody,
+                NPCID.DiggerTail,
+                NPCID.TombCrawlerBody,
+                NPCID.TombCrawlerTail,
+                NPCID.DuneSplicerBody,
+                NPCID.DuneSplicerTail,
+                NPCID.GiantWormBody,
+                NPCID.GiantWormTail,
+                NPCID.LeechBody,
+                NPCID.LeechTail,
+                NPCID.StardustWormBody,
+                NPCID.StardustWormTail,
+                NPCID.SeekerBody,
+                NPCID.SeekerTail,
+                NPCID.BoneSerpentBody,
+                NPCID.BoneSerpentTail,
+                NPCID.WyvernBody,
+                NPCID.WyvernTail,
+                NPCID.WyvernBody2,
+                NPCID.WyvernBody3,
+                NPCID.WyvernLegs,
+                NPCID.CultistDragonBody1,
+                NPCID.CultistDragonBody2,
+                NPCID.CultistDragonBody3,
+                NPCID.CultistDragonBody4,
+                NPCID.CultistDragonTail,
+                NPCID.BloodEelBody,
+                NPCID.BloodEelTail,
+                NPCID.AncientDoom
             };
 
             // Reduce contact damage by 25%
@@ -2074,27 +2298,20 @@ namespace CalamityMod
                 NPCID.Derpling,
                 NPCID.Herpling,
                 NPCID.DiggerHead,
-                NPCID.DiggerBody,
-                NPCID.DiggerTail,
                 NPCID.DesertGhoul,
                 NPCID.DesertGhoulCorruption,
                 NPCID.DesertGhoulCrimson,
                 NPCID.DesertGhoulHallow,
                 NPCID.DuneSplicerHead,
-                NPCID.DuneSplicerBody,
-                NPCID.DuneSplicerTail,
                 NPCID.EnchantedSword,
                 NPCID.FloatyGross,
                 NPCID.GiantBat,
                 NPCID.GiantFlyingFox,
-                NPCID.GiantFungiBulb,
                 NPCID.FungiSpore,
                 NPCID.GiantTortoise,
                 NPCID.IceTortoise,
                 NPCID.HoppinJack,
                 NPCID.Mimic,
-                NPCID.IchorSticker,
-                NPCID.IcyMerman,
                 NPCID.IlluminantBat,
                 NPCID.IlluminantSlime,
                 NPCID.JungleCreeper,
@@ -2123,12 +2340,8 @@ namespace CalamityMod
                 NPCID.Werewolf,
                 NPCID.Wolf,
                 NPCID.SeekerHead,
-                NPCID.SeekerBody,
-                NPCID.SeekerTail,
                 NPCID.Wraith,
                 NPCID.ChatteringTeethBomb,
-                NPCID.Clown,
-                NPCID.AngryNimbus,
                 NPCID.IceGolem,
                 NPCID.RainbowSlime,
                 NPCID.SandShark,
@@ -2149,8 +2362,6 @@ namespace CalamityMod
                 NPCID.HellArmoredBonesSpikeShield,
                 NPCID.HellArmoredBonesSword,
                 NPCID.MisterStabby,
-                NPCID.SnowBalla,
-                NPCID.SnowmanGangsta,
                 NPCID.Butcher,
                 NPCID.CreatureFromTheDeep,
                 NPCID.DeadlySphere,
@@ -2187,8 +2398,6 @@ namespace CalamityMod
                 NPCID.ZombieElfBeard,
                 NPCID.ZombieElfGirl,
                 NPCID.BloodEelHead,
-                NPCID.BloodEelBody,
-                NPCID.BloodEelTail,
                 NPCID.GoblinShark,
                 NPCID.EyeballFlyingFish,
                 NPCID.ZombieMerman
@@ -2220,9 +2429,13 @@ namespace CalamityMod
                 { NPCID.UmbrellaSlime, 5400 },
                 { NPCID.RainbowSlime, 30000 },
                 { NPCID.Pinky, 15000 },
+                { NPCType<KingSlimeJewelRuby>(), 21000 },
+                { NPCType<KingSlimeJewelSapphire>(), 18000 },
+                { NPCType<KingSlimeJewelEmerald>(), 24000 },
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },
+                { NPCType<BloodlettingServant>(), 12000 },
 
                 { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
                 { NPCID.EaterofWorldsBody, 10000 },
@@ -2232,6 +2445,11 @@ namespace CalamityMod
                 { NPCID.Creeper, 10000 },
 
                 { NPCID.QueenBee, 315000 }, // 30 seconds
+                { NPCID.Bee, 3000 },
+                { NPCID.BeeSmall, 2000 },
+                { NPCID.BigHornetHoney, 10000 },
+                { NPCID.HornetHoney, 7500 },
+                { NPCID.LittleHornetHoney, 5000 },
 
                 { NPCID.Deerclops, 315000 }, // 30 seconds
 
@@ -2240,6 +2458,11 @@ namespace CalamityMod
 
                 { NPCID.WallofFlesh, 450000 }, // 30 seconds
                 { NPCID.WallofFleshEye, 450000 },
+                { NPCID.TheHungry, 10000 },
+                { NPCID.TheHungryII, 5000 },
+                { NPCID.LeechHead, 5000 },
+                { NPCID.LeechBody, 5000 },
+                { NPCID.LeechTail, 5000 },
 
                 // Tier 2
                 { NPCID.QueenSlimeBoss, 150000 }, // 30 seconds
@@ -2253,16 +2476,18 @@ namespace CalamityMod
                 { NPCID.TheDestroyer, 250000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 250000 },
                 { NPCID.TheDestroyerTail, 250000 },
-                { NPCID.Probe, 10000 },
+                { NPCID.Probe, 5000 },
 
                 { NPCID.SkeletronPrime, 160000 }, // 30 seconds
+                { NPCType<SkeletronPrime2>(), 160000 },
                 { NPCID.PrimeVice, 54000 },
                 { NPCID.PrimeCannon, 45000 },
                 { NPCID.PrimeSaw, 45000 },
                 { NPCID.PrimeLaser, 38000 },
 
                 { NPCID.Plantera, 160000 }, // 30 seconds
-                { NPCID.PlanterasTentacle, 40000 },
+                { NPCID.PlanterasTentacle, 5000 },
+                { NPCType<PlanterasFreeTentacle>(), 5000 },
 
                 // Tier 3
                 { NPCID.Golem, 50000 }, // 30 seconds
@@ -2328,8 +2553,8 @@ namespace CalamityMod
                 { NPCID.QueenBee, 9 },
                 { NPCID.SkeletronHead, 10 },
                 { NPCType<SlimeGodCore>(), 11 },
-                { NPCType<SplitEbonianSlimeGod>(), 11 },
-                { NPCType<SplitCrimulanSlimeGod>(), 11 },
+                { NPCType<SplitEbonianPaladin>(), 11 },
+                { NPCType<SplitCrimulanPaladin>(), 11 },
                 { NPCID.WallofFlesh, 12 },
                 { NPCType<Cryogen>(), 13 },
                 { NPCID.Retinazer, 14 },
@@ -2370,112 +2595,6 @@ namespace CalamityMod
                 { NPCID.Deerclops, 44 }
             };
 
-            bossMinionList = new List<int>()
-            {
-                NPCType<KingSlimeJewel>(),
-                NPCType<DesertNuisanceHead>(),
-                NPCType<DesertNuisanceBody>(),
-                NPCType<DesertNuisanceTail>(),
-                NPCID.SlimeSpiked,
-                NPCID.ServantofCthulhu,
-                NPCType<CrabShroom>(),
-                NPCID.EaterofWorldsHead,
-                NPCID.EaterofWorldsBody,
-                NPCID.EaterofWorldsTail,
-                NPCID.Creeper,
-                NPCType<PerforatorHeadSmall>(),
-                NPCType<PerforatorBodySmall>(),
-                NPCType<PerforatorTailSmall>(),
-                NPCType<PerforatorHeadMedium>(),
-                NPCType<PerforatorBodyMedium>(),
-                NPCType<PerforatorTailMedium>(),
-                NPCType<PerforatorHeadLarge>(),
-                NPCType<PerforatorBodyLarge>(),
-                NPCType<PerforatorTailLarge>(),
-                NPCType<HiveBlob>(),
-                NPCType<HiveBlob2>(),
-                NPCType<DankCreeper>(),
-                NPCID.SkeletronHand,
-                NPCType<EbonianSlimeGod>(),
-                NPCType<SplitEbonianSlimeGod>(),
-                NPCType<CrimulanSlimeGod>(),
-                NPCType<SplitCrimulanSlimeGod>(),
-                NPCType<CorruptSlimeSpawn>(),
-                NPCType<CorruptSlimeSpawn2>(),
-                NPCType<CrimsonSlimeSpawn>(),
-                NPCType<CrimsonSlimeSpawn2>(),
-                NPCID.LeechHead,
-                NPCID.LeechBody,
-                NPCID.LeechTail,
-                NPCID.WallofFleshEye,
-                NPCID.TheHungry,
-                NPCID.TheHungryII,
-                NPCID.QueenSlimeMinionBlue,
-                NPCID.QueenSlimeMinionPink,
-                NPCID.QueenSlimeMinionPurple,
-                NPCType<CryogenShield>(),
-                NPCID.PrimeCannon,
-                NPCID.PrimeLaser,
-                NPCID.PrimeSaw,
-                NPCID.PrimeVice,
-                NPCType<Brimling>(),
-                NPCID.Probe,
-                NPCID.TheDestroyer,
-                NPCID.TheDestroyerBody,
-                NPCID.TheDestroyerTail,
-                NPCType<AquaticScourgeHead>(),
-                NPCType<AquaticScourgeBody>(),
-                NPCType<AquaticScourgeBodyAlt>(),
-                NPCType<AquaticScourgeTail>(),
-                NPCType<Cataclysm>(),
-                NPCType<Catastrophe>(),
-                NPCType<SoulSeeker>(),
-                NPCID.PlanterasTentacle,
-                NPCType<AnahitasIceShield>(),
-                NPCType<AquaticAberration>(),
-                NPCType<AureusSpawn>(),
-                NPCID.Spore,
-                NPCID.GolemHead,
-                NPCID.GolemHeadFree,
-                NPCID.GolemFistLeft,
-                NPCID.GolemFistRight,
-                NPCType<PlagueMine>(),
-                NPCType<PlagueHomingMissile>(),
-                NPCType<RavagerClawLeft>(),
-                NPCType<RavagerClawRight>(),
-                NPCType<RavagerLegLeft>(),
-                NPCType<RavagerLegRight>(),
-                NPCType<RavagerHead>(),
-                NPCID.CultistDragonHead,
-                NPCID.CultistDragonBody1,
-                NPCID.CultistDragonBody2,
-                NPCID.CultistDragonBody3,
-                NPCID.CultistDragonBody4,
-                NPCID.CultistDragonTail,
-                NPCID.AncientCultistSquidhead,
-                NPCID.AncientDoom,
-                NPCID.MoonLordLeechBlob,
-                NPCID.MoonLordFreeEye,
-                NPCID.MoonLordHand,
-                NPCID.MoonLordHead,
-                NPCType<ProfanedGuardianDefender>(),
-                NPCType<ProfanedGuardianHealer>(),
-                NPCType<Bumblefuck2>(),
-                NPCType<ProvSpawnOffense>(),
-                NPCType<ProvSpawnDefense>(),
-                NPCType<ProvSpawnHealer>(),
-                NPCType<ProfanedRocks>(),
-                NPCType<DarkEnergy>(),
-                NPCType<CosmicLantern>(),
-                NPCType<PolterPhantom>(),
-                NPCType<CosmicGuardianHead>(),
-                NPCType<CosmicGuardianBody>(),
-                NPCType<CosmicGuardianTail>(),
-                NPCType<BrimstoneHeart>(),
-                NPCType<SupremeCataclysm>(),
-                NPCType<SupremeCatastrophe>()
-            };
-
             legOverrideList = new List<int>()
             {
                 EquipLoader.GetEquipSlot(CalamityMod.Instance, "ProfanedSoulCrystal", EquipType.Legs),
@@ -2493,35 +2612,6 @@ namespace CalamityMod
                 NPCType<OldDuke>()
             };
 
-            MinionsToNotResurrectList = new List<int>()
-            {
-                ProjectileID.StardustDragon1,
-                ProjectileID.StardustDragon2,
-                ProjectileID.StardustDragon3,
-                ProjectileID.StardustDragon4,
-                ProjectileType<DeathstareEyeball>(),
-                ProjectileType<MechwormHead>(),
-                ProjectileType<MechwormBody>(),
-                ProjectileType<MechwormTail>(),
-                ProjectileType<EndoHydraHead>(),
-                ProjectileType<EndoHydraBody>(),
-                ProjectileType<SeekerSummonProj>(),
-                ProjectileType<SepulcherMinion>(),
-                ProjectileType<MountedScannerLaser>()
-            };
-
-            ZeroMinionSlotExceptionList = new List<int>()
-            {
-                ProjectileID.StardustDragon1,
-                ProjectileType<MechwormHead>(),
-                ProjectileType<EndoHydraBody>()
-            };
-
-            DontCopyOriginalMinionAIList = new List<int>()
-            {
-                ProjectileType<GammaHead>()
-            };
-
             EncryptedSchematicIDRelationship = new Dictionary<int, int>()
             {
                 [1] = ItemType<EncryptedSchematicPlanetoid>(),
@@ -2532,48 +2622,48 @@ namespace CalamityMod
 
             DisabledSummonerNerfItems = new();
             DisabledSummonerNerfMinions = new();
+
+            VeneratedLocketBanlist = new List<int>()
+            {
+                ItemType<PoisonPack>(),
+                ItemType<SkyStabber>(),
+                ItemType<Nychthemeron>(),
+                ItemType<HellsSun>(),
+                ItemType<GodsParanoia>(),
+                ItemType<SlickCane>(),
+                ItemType<Mycoroot>(),
+                ItemType<CosmicKunai>()
+            };
         }
 
         public static void UnloadLists()
         {
             donatorList = null;
             projectileDestroyExceptionList = null;
-            projectileMinionList = null;
             enemyImmunityList = null;
             confusionEnemyList = null;
             dungeonEnemyBuffList = null;
             dungeonProjectileBuffList = null;
             bossHPScaleList = null;
-            beeEnemyList = null;
             friendlyBeeList = null;
-            beeProjectileList = null;
-            hardModeNerfList = null;
             debuffList = null;
+            fireDebuffList = null;
+            sicknessDebuffList = null;
             alcoholList = null;
             spearAutoreuseList = null;
             pumpkinMoonBuffList = null;
             frostMoonBuffList = null;
             eclipseBuffList = null;
             eventProjectileBuffList = null;
-            revengeanceEnemyBuffList25Percent = null;
-            revengeanceEnemyBuffList20Percent = null;
-            revengeanceEnemyBuffList15Percent = null;
-            revengeanceEnemyBuffList10Percent = null;
-            revengeanceProjectileBuffList25Percent = null;
-            revengeanceProjectileBuffList20Percent = null;
-            revengeanceProjectileBuffList15Percent = null;
-            revengeanceLifeStealExceptionList = null;
             noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
-            trapProjectileList = null;
             scopedWeaponList = null;
-            lavaFishList = null;
             highTestFishList = null;
-            flamethrowerList = null;
             forceItemList = null;
             livingFireBlockList = null;
-			amalgamBuffList = null;
-			persistentBuffList = null;
+            amalgamBuffList = null;
+            persistentBuffList = null;
+            MagicGunIDs = null;
             MushroomWeaponIDs = null;
             MushroomProjectileIDs = null;
 
@@ -2583,9 +2673,9 @@ namespace CalamityMod
             angryBonesList = null;
             hornetList = null;
             mossHornetList = null;
-            bossMinionList = null;
             minibossList = null;
             pierceResistList = null;
+            pierceResistExceptionLeviAureusList = null;
             pierceResistExceptionList = null;
 
             AstrumDeusIDs = null;
@@ -2603,7 +2693,7 @@ namespace CalamityMod
             SkeletronPrimeIDs = null;
             StormWeaverIDs = null;
             RavagerIDs = null;
-			GolemIDs = null;
+            GolemIDs = null;
             BoundNPCIDs = null;
             GrenadeResistIDs = null;
             ZeroContactDamageNPCList = null;
@@ -2620,14 +2710,12 @@ namespace CalamityMod
 
             kamiDebuffColorImmuneList = null;
 
-            MinionsToNotResurrectList = null;
-            ZeroMinionSlotExceptionList = null;
-            DontCopyOriginalMinionAIList = null;
-
             EncryptedSchematicIDRelationship = null;
 
             DisabledSummonerNerfItems = null;
             DisabledSummonerNerfMinions = null;
+
+            VeneratedLocketBanlist = null;
         }
     }
 }

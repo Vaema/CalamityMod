@@ -1,17 +1,20 @@
+﻿using System.Collections.Generic;
 using CalamityMod.Tiles.Crags;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
     [LegacyName("CharredOre")]
     public class InfernalSuevite : ModTile
     {
-        private int sheetWidth = 288;
-        private int sheetHeight = 270;
-
+        private int sheetWidth = 234;
+        private int sheetHeight = 90;
+        
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -24,15 +27,15 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.Ore[Type] = true;
 
-            ItemDrop = ModContent.ItemType<Items.Placeables.Ores.InfernalSuevite>();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Infernal Suevite");
-            AddMapEntry(new Color(17, 16, 26), name);
-            MineResist = 6f;
+            AddMapEntry(new Color(17, 16, 26), CreateMapEntryName());
+            MineResist = 2f;
             MinPick = 150;
             HitSound = SoundID.Tink;
             DustType = 235;
             Main.tileSpelunker[Type] = true;
+
+            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -53,15 +56,9 @@ namespace CalamityMod.Tiles.Ores
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.50f;
-            g = 0.00f;
-            b = 0.00f;
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<BrimstoneSlag>(), false, false, false, false, resetFrame);
-            return false;
+            r = 0.5f;
+            g = 0f;
+            b = 0f;
         }
     }
 }

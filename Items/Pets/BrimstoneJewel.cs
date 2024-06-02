@@ -8,16 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class BrimstoneJewel : ModItem
+    public class BrimstoneJewel : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Brimstone Jewel");
-            Tooltip.SetDefault("The ultimate reward for defeating such a beast...\n" +
-                "Who knew she'd be so darn cute!");
-        }
-
+        public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.ZephyrFish);

@@ -6,15 +6,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class CnidarianSpark : ModProjectile
+    public class CnidarianSpark : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float Target => ref Projectile.ai[0];
         public Vector2 initialVelocity;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Spark");
-        }
 
         public override void SetDefaults()
         {
@@ -54,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon
             GeneralParticleHandler.SpawnParticle(particle);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(CnidarianJellyfishOnTheString.ZapSound, Projectile.Center);
 

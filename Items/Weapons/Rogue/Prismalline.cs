@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,27 +11,19 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Prismalline : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Prismalline");
-            Tooltip.SetDefault("Throws daggers that split after a while\n" +
-            "Stealth strikes additionally explode into prism shards and briefly stun enemies");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
-            Item.width = 46;
+            Item.width = 54;
+            Item.height = 54;
             Item.damage = 36;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 46;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<PrismallineProj>();
             Item.shootSpeed = 16f;

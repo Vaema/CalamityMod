@@ -1,18 +1,22 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Melee;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
     public class AirSpinnerYoyo : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<AirSpinner>();
+        public const int MaxUpdates = 2;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Air Spinner");
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = 8f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 300f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 10.5f;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = 30f * MaxUpdates;
+            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 330f;
+            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 32f / MaxUpdates;
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -21,15 +25,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override void SetDefaults()
         {
             Projectile.aiStyle = ProjAIStyleID.Yoyo;
-            Projectile.width = 16;
-            Projectile.height = 16;
-            Projectile.scale = 1.05f;
+            Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
-            Projectile.MaxUpdates = 2;
+            Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 15 * MaxUpdates;
         }
 
         public override void AI()

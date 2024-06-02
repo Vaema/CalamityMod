@@ -1,12 +1,12 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -15,45 +15,37 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class TheAnomalysNanogun : ModItem
+    public class TheAnomalysNanogun : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle PlasmaChargeSFX = new("CalamityMod/Sounds/Item/AnomalysNanogunPlasmaCharge");
         public static readonly SoundStyle MPFBShotSFX = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
         public static readonly SoundStyle PlasmaShotSFX = new("CalamityMod/Sounds/Item/AnomalysNanogunPlasmaShot");
         public bool PlasmaChargeSelected = true;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("The Anomaly's Nanogun");
-            Tooltip.SetDefault("'Welcome to the party, pal'\n" +
-                "Left click to charge up 5 rapid-fire plasma beams\n" +
-                "Right click to launch 3 fission bombs");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = 2000;
+            Item.width = 102;
+            Item.height = 44;
+            Item.damage = 1675;
             Item.knockBack = 4.5f;
             Item.useTime = Item.useAnimation = AnomalysNanogunHoldout.PlasmaFireTimer;
             Item.shootSpeed = 5f;
-            Item.width = 102;
-            Item.height = 44;
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<AnomalysNanogunHoldout>();
             Item.UseSound = null;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.rare = ModContent.RarityType<DarkBlue>();
             modItem.donorItem = true;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.2f;
-            modItem.ChargePerAltUse = 0.125f;
+            modItem.ChargePerUse = 0.3f;
+            modItem.ChargePerAltUse = 0.15f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 4);
@@ -81,8 +73,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             // Right click is the MPBF Devastator
             if (player.altFunctionUse == 2)
             {
-                damage = (int)(damage * 0.16f);
-                knockback *= 0.8f;
+                damage = (int)(damage * 0.77f);
+                knockback *= 5f;
                 velocity = rotationVector * 13f;
             }
         }
@@ -110,7 +102,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 .AddIngredient<DubiousPlating>(20)
                 .AddIngredient<CosmiliteBar>(8)
                 .AddIngredient<AscendantSpiritEssence>(2)
-                .AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Predicate<Recipe> condition), condition)
+                .AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition)
                 .AddTile<CosmicAnvil>()
                 .Register();
         }

@@ -11,17 +11,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class NecroplasmicBeacon : ModItem
+    public class NecroplasmicBeacon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
+
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Necroplasmic Beacon");
-            Tooltip.SetDefault("It's spooky\n" +
-                "Summons Polterghast when used in the Dungeon\n" +
-                "Enrages in large spaces\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -35,10 +31,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
@@ -56,7 +52,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Polterghast>());
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<Polterghast>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Polterghast>());
 
             return true;
         }
@@ -65,7 +61,7 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe().
                 AddRecipeGroup("Wood", 25).
-                AddIngredient<Phantoplasm>(50).
+                AddIngredient<Necroplasm>(50).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

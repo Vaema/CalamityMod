@@ -1,13 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using Terraria;
-using Terraria.Audio;
-using Terraria.Graphics.Shaders;
-using static Terraria.ModLoader.ModContent;
+﻿using System;
 using CalamityMod.Items.Armor.DesertProwler;
 using CalamityMod.Particles;
 using CalamityMod.UI;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
+using Terraria.Localization;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
 {
@@ -19,7 +20,7 @@ namespace CalamityMod.Cooldowns
 
         public static new string ID => "SandsmokeBomb";
         public override bool ShouldDisplay => true;
-        public override string DisplayName => PowerActive ? "Sandsmoke Bomb Duration" : "Sandsmoke Bomb Cooldown";
+        public override LocalizedText DisplayName => CalamityUtils.GetText("UI.Cooldowns.SandsmokeBomb" + (PowerActive ? "Active" : "Cooldown"));
         public override string Texture => "CalamityMod/Cooldowns/SandsmokeBomb";
         public override string OutlineTexture => "CalamityMod/Cooldowns/SandsmokeBombOutline";
         public override string OverlayTexture => "CalamityMod/Cooldowns/SandsmokeBombOverlay";
@@ -30,13 +31,15 @@ namespace CalamityMod.Cooldowns
 
         public override void OnCompleted()
         {
+            Vector2 playerVelocity = instance.player.velocity / 8f;
+            Vector2 particleGravity = Vector2.UnitY * 0.03f;
             for (int i = 0; i < 16; i++)
             {
                 Vector2 dustDisplace = Main.rand.NextVector2Circular(80f, 50f);
                 Vector2 dustPosition = instance.player.MountedCenter + dustDisplace;
-                Vector2 dustSpeed = Main.rand.NextVector2Circular(0.5f, 0.5f) + instance.player.velocity / 8f - Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * 0.06f;
+                Vector2 dustSpeed = Main.rand.NextVector2Circular(0.5f, 0.5f) + playerVelocity - Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * 0.06f;
                 dustSpeed.X += 1.4f * (float)Math.Sin(((dustDisplace.X + 80f) / 160f) * MathHelper.Pi) * (Main.rand.NextBool() ? -1 : 1);
-                Particle dust = new SandyDustParticle(dustPosition, dustSpeed, Color.White, Main.rand.NextFloat(0.7f, 1.2f), Main.rand.Next(20, 50), 0.03f, Vector2.UnitY * 0.03f);
+                Particle dust = new SandyDustParticle(dustPosition, dustSpeed, Color.White, Main.rand.NextFloat(0.7f, 1.2f), Main.rand.Next(20, 50), 0.03f, particleGravity);
                 GeneralParticleHandler.SpawnParticle(dust);
             }
         }

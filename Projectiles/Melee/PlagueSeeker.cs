@@ -1,17 +1,15 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
-    public class PlagueSeeker : ModProjectile
+    public class PlagueSeeker : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Seeker");
-        }
 
         public override void SetDefaults()
         {
@@ -26,17 +24,12 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         // Reduce damage of projectiles if more than the cap are active
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            int projectileCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
             int cap = 3;
-            int oldDamage = damage;
-            if (projectileCount > cap)
-            {
-                damage -= (int)(oldDamage * ((projectileCount - cap) * 0.05));
-                if (damage < 1)
-                    damage = 1;
-            }
+            float capDamageFactor = 0.05f;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
         }
 
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 150 && target.CanBeChasedBy(Projectile);
@@ -46,11 +39,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                for (int num468 = 0; num468 < 3; num468++)
+                for (int i = 0; i < 3; i++)
                 {
-                    int num469 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, default, 0.75f);
-                    Main.dust[num469].noGravity = true;
-                    Main.dust[num469].velocity *= 0f;
+                    int plagued = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 0.75f);
+                    Main.dust[plagued].noGravity = true;
+                    Main.dust[plagued].velocity *= 0f;
                 }
             }
 
@@ -58,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 600f, 12f, 20f);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }

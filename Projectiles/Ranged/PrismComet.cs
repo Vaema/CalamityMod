@@ -1,19 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PrismComet : ModProjectile
+    public class PrismComet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Projectiles/Melee/Exocomet";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Comet");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -62,11 +62,11 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.dedServ)
                 return;
 
-            Dust prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, 107, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
+            Dust prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, DustID.TerraBlade, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
             prismEnergy.velocity *= -0.25f;
             prismEnergy.velocity -= Projectile.velocity * 0.3f;
 
-            prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, 107, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
+            prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, DustID.TerraBlade, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
             prismEnergy.velocity *= -0.25f;
             prismEnergy.position -= Projectile.velocity * 0.5f;
             prismEnergy.velocity -= Projectile.velocity * 0.3f;
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
             return color;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Zombie103, Projectile.position);
             Projectile.ExpandHitboxBy(80);

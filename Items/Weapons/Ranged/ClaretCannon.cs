@@ -9,29 +9,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class ClaretCannon : ModItem
+    public class ClaretCannon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Claret Cannon");
-            Tooltip.SetDefault("Fires strings of 3 bullets\n" +
-                "Converts musket balls into bloody tears that drain enemy health");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 140;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 48;
             Item.height = 30;
+            Item.damage = 140;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
-            Item.reuseDelay = 10;
             Item.useAnimation = 9;
+            Item.reuseDelay = 10;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item40;
             Item.autoReuse = true;

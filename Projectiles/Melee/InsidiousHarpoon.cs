@@ -1,17 +1,20 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class InsidiousHarpoon : ModProjectile
+    public class InsidiousHarpoon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<InsidiousImpaler>();
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Harpoon");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
@@ -23,8 +26,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = 8;
             Projectile.alpha = 255;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.extraUpdates = 2;
+            Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.scale = 1.3f;
+            Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20 * Projectile.extraUpdates;
             Projectile.tileCollide = true;
@@ -37,16 +41,30 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.alpha -= 25;
             }
             if (Projectile.alpha < 0)
-                Projectile.alpha = 0;
-
-            int num297 = 171;
-            if (Main.rand.Next(3) == 0)
             {
-                num297 = 46;
+                Projectile.alpha = 0;
+            }
+            if (Projectile.ai[0] == 0f)
+            {
+                Projectile.localAI[1] += 1f;
+                if (Projectile.localAI[1] >= 60f)
+                {
+                    Projectile.velocity.X *= 0.99f;
+                    Projectile.velocity.Y += 0.3f;
+
+                    if (Projectile.velocity.Y > 16f)
+                        Projectile.velocity.Y = 16f;
+                }
+            }
+
+            int dustType = 171;
+            if (Main.rand.NextBool(3))
+            {
+                dustType = 46;
             }
             if (Main.rand.NextBool(9))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, num297, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             if (Projectile.ai[0] == 0f)
             {
@@ -62,10 +80,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            Projectile.ModifyHitNPCSticky(20, true);
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(20);
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -74,12 +89,12 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            int num297 = 171;
-            if (Main.rand.Next(3) == 0)
+            int dustType = 171;
+            if (Main.rand.NextBool(3))
             {
-                num297 = 46;
+                dustType = 46;
             }
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -89,23 +104,23 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             Projectile.Damage();
-            for (int num621 = 0; num621 < 15; num621++)
+            for (int i = 0; i < 15; i++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, num297, 0f, 0f, 100, default, 1.2f);
-                Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1.2f);
+                Main.dust[deathDust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Main.dust[deathDust].scale = 0.5f;
+                    Main.dust[deathDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 30; num623++)
+            for (int j = 0; j < 30; j++)
             {
-                int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, num297, 0f, 0f, 100, default, 1.7f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, num297, 0f, 0f, 100, default, 1f);
-                Main.dust[num624].velocity *= 2f;
+                int deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1.7f);
+                Main.dust[deathDust2].noGravity = true;
+                Main.dust[deathDust2].velocity *= 5f;
+                deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1f);
+                Main.dust[deathDust2].velocity *= 2f;
             }
         }
 
@@ -115,7 +130,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 120);
             target.AddBuff(BuffID.Venom, 60);

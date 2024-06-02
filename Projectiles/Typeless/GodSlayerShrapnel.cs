@@ -1,18 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class GodSlayerShrapnel : ModProjectile
+    public class GodSlayerShrapnel : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Flame");
-        }
 
         public override void SetDefaults()
         {
@@ -58,17 +54,17 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item13, Projectile.position);
             }
-            int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 0.5f);
-            Dust dust = Main.dust[num199];
+            int godDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 0.5f);
+            Dust dust = Main.dust[godDust];
             dust.position.X -= 2f;
             dust.position.Y += 2f;
             dust.scale += (float)Main.rand.Next(50) * 0.01f;
             dust.noGravity = true;
             dust.velocity.Y -= 2f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 0.5f);
-                Dust dust2 = Main.dust[num200];
+                int godDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 0.5f);
+                Dust dust2 = Main.dust[godDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
                 dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;

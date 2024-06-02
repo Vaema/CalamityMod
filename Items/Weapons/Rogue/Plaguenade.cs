@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,15 +12,13 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Plaguenade");
-            Tooltip.SetDefault("Releases a swarm of angry plague bees\n" +
-                "Stealth strikes spawn more bees and generate a larger explosion");
-            SacrificeTotal = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
             Item.width = 20;
+            Item.height = 28;
             Item.damage = 63;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -29,10 +27,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 15;
             Item.knockBack = 1.5f;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 28;
             Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;

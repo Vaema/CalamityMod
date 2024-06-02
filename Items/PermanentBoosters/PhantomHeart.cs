@@ -1,62 +1,59 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System.Linq;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class PhantomHeart : ModItem
+    public class PhantomHeart : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Misc";
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PhantomHeartUse");
+        public const int ManaBoost = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ManaBoost);
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phantom Heart");
-            Tooltip.SetDefault("Permanently increases maximum mana by 50");
-            SacrificeTotal = 1;
-			// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Mana Crystal
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
         }
 
         public override void SetDefaults()
         {
-            Item.width = 20;
-            Item.height = 20;
+            Item.width = 28;
+            Item.height = 46;
             Item.useAnimation = 30;
             Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item29;
             Item.consumable = true;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.pHeart)
-            {
-                string key = "Mods.CalamityMod.PhantomHeartText";
-                Color messageColor = Color.Magenta;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-
-                return false;
-            }
-            return true;
-        }
+        public override bool CanUseItem(Player player) => player.ConsumedManaCrystals == Player.ManaCrystalMax;
 
         public override bool? UseItem(Player player)
         {
+            SoundEngine.PlaySound(UseSound, player.Center);
+            CalamityPlayer modPlayer = player.Calamity();
             if (player.itemAnimation > 0 && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
-                if (Main.myPlayer == player.whoAmI)
+                if (modPlayer.pHeart)
                 {
-                    player.ManaEffect(50);
+                    string key = "Mods.CalamityMod.Misc.PhantomHeartText";
+                    Color messageColor = Color.Pink;
+                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    return false;
                 }
-                CalamityPlayer modPlayer = player.Calamity();
+
+                player.UseManaMaxIncreasingItem(ManaBoost);
                 modPlayer.pHeart = true;
             }
             return true;
@@ -64,17 +61,17 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip2");
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
 
             if (line != null && Main.LocalPlayer.Calamity().pHeart)
-                line.Text = "[c/8a8a8a:You have already consumed this item]";
+                line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Phantoplasm>(25).
+                AddIngredient<Necroplasm>(25).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -6,13 +6,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
-    public class CalciumPotion : ModItem
+    public class CalciumPotion : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 20;
-            DisplayName.SetDefault("Calcium Potion");
-            Tooltip.SetDefault("Grants immunity to fall damage");
+            Item.ResearchUnlockCount = 20;
         }
 
         public override void SetDefaults()
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Potions
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 20, 0);
             Item.rare = ItemRarityID.Blue;
             Item.useAnimation = 17;
@@ -38,13 +37,15 @@ namespace CalamityMod.Items.Potions
                 AddIngredient(ItemID.BottledWater, 4).
                 AddIngredient<AncientBoneDust>().
                 AddTile(TileID.Bottles).
-                Register();
+                Register()
+                .DisableDecraft();
 
-            CreateRecipe(4).
+            CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>().
+                AddIngredient<BloodOrb>(10).
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

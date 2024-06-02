@@ -1,13 +1,13 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using System;
+using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.GameContent;
-using CalamityMod.Items.VanillaArmorChanges;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.VanillaProjectileOverrides
 {
@@ -51,7 +51,9 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             {
                 if (Main.myPlayer == projectile.owner)
                 {
-                    int pulseDamage = (int)Main.player[projectile.owner].GetBestClassDamage().ApplyTo(ChlorophyteArmorSetChange.BaseDamageToEnemies);
+                    int pulseDamage = (int)owner.GetBestClassDamage().ApplyTo(ChlorophyteArmorSetChange.BaseDamageToEnemies);
+                    pulseDamage = owner.ApplyArmorAccDamageBonusesTo(pulseDamage);
+
                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ModContent.ProjectileType<ChlorophyteLifePulse>(), pulseDamage, 0f, projectile.owner);
                 }
             }

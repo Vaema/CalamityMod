@@ -7,21 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.GodSlayer
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class GodSlayerLeggings : ModItem
+    public class GodSlayerLeggings : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("God Slayer Leggings");
-            Tooltip.SetDefault("5% increased movement speed\n" +
-                "10% increased damage and critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 35;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

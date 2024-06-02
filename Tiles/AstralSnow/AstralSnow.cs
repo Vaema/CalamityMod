@@ -1,5 +1,7 @@
-﻿using CalamityMod.Tiles.Astral;
+﻿using System.Collections.Generic;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
@@ -9,19 +11,19 @@ namespace CalamityMod.Tiles.AstralSnow
 {
     public class AstralSnow : ModTile
     {
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Snow"]);
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Snow"]);
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
             DustType = 173;
-            ItemDrop = ModContent.ItemType<Items.Placeables.AstralSnow>();
 
             HitSound = SoundID.Item48;
 
@@ -30,6 +32,9 @@ namespace CalamityMod.Tiles.AstralSnow
             TileID.Sets.Snow[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
+
+            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
+            this.RegisterUniversalMerge(TileID.SnowBlock, "CalamityMod/Tiles/Merges/SnowMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -37,11 +42,10 @@ namespace CalamityMod.Tiles.AstralSnow
             num = fail ? 1 : 3;
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
         {
-            // CustomTileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AstralDirt>(), false, false, false, false, resetFrame);
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AstralDirt>(), false, false, false);
-            return false;
+            sightColor = Color.Cyan;
+            return true;
         }
     }
 }

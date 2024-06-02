@@ -3,36 +3,33 @@ using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class TearsofHeaven : ModItem
+    public class TearsofHeaven : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tears of Heaven");
-            Tooltip.SetDefault("Casts slow-moving homing balls of heavenly light");
-            SacrificeTotal = 1;
-        }
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/TearsOfHeavenUse");
 
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 54;
+            Item.width = 38;
+            Item.height = 48;
+            Item.damage = 45;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 18;
-            Item.width = 28;
-            Item.height = 30;
-            Item.useTime = 15;
-            Item.useAnimation = 15;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.UseSound = SoundID.Item8;
+            Item.UseSound = UseSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<TearsofHeavenProjectile>();
             Item.shootSpeed = 5.5f;

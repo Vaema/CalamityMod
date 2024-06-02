@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,21 +9,15 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.GemTech
 {
     [AutoloadEquip(EquipType.Body)]
-    public class GemTechBodyArmor : ModItem
+    public class GemTechBodyArmor : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Gem Tech Body Armor");
-            Tooltip.SetDefault("You sunk low enough for me to reach.");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 48;
             Item.height = 32;
             Item.defense = 31;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }

@@ -1,18 +1,19 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.Items;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon.AndromedaUI;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class GiantIbanRobotOfDoom : ModProjectile
+    public class GiantIbanRobotOfDoom : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public int FrameX = 0;
         public int FrameY = 0;
         public int CurrentFrame
@@ -52,7 +53,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Andromeda");
             ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
         }
 
@@ -114,13 +114,13 @@ namespace CalamityMod.Projectiles.Summon
 
                     Vector2 center = player.Center + new Vector2(6f, -2f).RotatedBy(player.velocity.ToRotation());
 
-                    int idx = Dust.NewDust(center, 0, 0, 226, 0f, 0f, 100, default, 0.5f);
+                    int idx = Dust.NewDust(center, 0, 0, DustID.Electric, 0f, 0f, 100, default, 0.5f);
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].position = center + spinningPoint;
                     Main.dust[idx].velocity = Vector2.Zero;
                     spinningPoint *= -1f;
 
-                    idx = Dust.NewDust(center, 0, 0, 226, 0f, 0f, 100, default, 0.5f);
+                    idx = Dust.NewDust(center, 0, 0, DustID.Electric, 0f, 0f, 100, default, 0.5f);
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].position = center + spinningPoint;
                     Main.dust[idx].velocity = Vector2.Zero;
@@ -156,13 +156,12 @@ namespace CalamityMod.Projectiles.Summon
                 // If the player has any existing UIs, kill them all.
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<AndromedaUI_Background>()] > 0)
                 {
-                    for (int i = 0; i < Main.projectile.Length; i++)
+                    foreach (Projectile p in Main.ActiveProjectiles)
                     {
-                        if (Main.projectile[i].active &&
-                            Main.projectile[i].type == ModContent.ProjectileType<AndromedaUI_Background>() &&
-                            Main.projectile[i].owner == player.whoAmI)
+                        if (p.type == ModContent.ProjectileType<AndromedaUI_Background>() &&
+                            p.owner == player.whoAmI)
                         {
-                            Main.projectile[i].Kill();
+                            p.Kill();
                         }
                     }
                 }
@@ -171,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (Main.myPlayer == player.whoAmI)
                     {
-                        Projectile ui = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), 
+                        Projectile ui = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
                                                  Main.MouseWorld,
                                                  Vector2.Zero,
                                                  ModContent.ProjectileType<AndromedaUI_Background>(),
@@ -289,13 +288,12 @@ namespace CalamityMod.Projectiles.Summon
             }
             int slashIndex = -1;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == ModContent.ProjectileType<AndromedaRegislash>() &&
-                    Main.projectile[i].owner == Projectile.owner)
+                if (p.type == ModContent.ProjectileType<AndromedaRegislash>() &&
+                    p.owner == Projectile.owner)
                 {
-                    slashIndex = i;
+                    slashIndex = p.whoAmI;
                     break;
                 }
             }
@@ -310,13 +308,12 @@ namespace CalamityMod.Projectiles.Summon
 
             int laserBeamIndex = -1;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == ModContent.ProjectileType<AndromedaDeathRay>() &&
-                    Main.projectile[i].owner == Projectile.owner)
+                if (p.type == ModContent.ProjectileType<AndromedaDeathRay>() &&
+                    p.owner == Projectile.owner)
                 {
-                    laserBeamIndex = i;
+                    laserBeamIndex = p.whoAmI;
                     break;
                 }
             }
@@ -408,7 +405,7 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor) => false; // Drawing is done completely by the player.
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
         public override bool? CanDamage() => false;
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
             player.width = 20;

@@ -7,22 +7,22 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("CoreofChaos")]
-    public class CoreofHavoc : ModItem
+    public class CoreofHavoc : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
+            Item.ResearchUnlockCount = 25;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
 
-            DisplayName.SetDefault("Core of Havoc");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 94; // Spectre Bar
+            ItemID.Sets.SortingPriorityMaterials[Type] = 94; // Spectre Bar
         }
 
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 36;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.Yellow;
         }

@@ -5,11 +5,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class PuffCloud : ModProjectile
+    public class PuffCloud : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cloud");
             Main.projFrames[Projectile.type] = 7;
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
         }
 
-		public override void AI()
-		{
+        public override void AI()
+        {
             Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3());
             Projectile.velocity *= 0.97f;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -37,6 +37,6 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.frame >= Main.projFrames[Projectile.type])
                     Projectile.Kill();
             }
-		}
+        }
     }
 }

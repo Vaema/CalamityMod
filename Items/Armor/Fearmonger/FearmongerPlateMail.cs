@@ -8,21 +8,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Fearmonger
 {
     [AutoloadEquip(EquipType.Body)]
-    public class FearmongerPlateMail : ModItem
+    public class FearmongerPlateMail : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fearmonger Plate Mail");
-            Tooltip.SetDefault("+100 max life and 8% increased damage reduction\n" +
-            "5% increased damage and critical strike chance");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 50;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

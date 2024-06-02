@@ -10,15 +10,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    public class CosmicWorm : ModItem
+    public class CosmicWorm : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Cosmic Worm");
-            Tooltip.SetDefault("Summons the Devourer of Gods\n" +
-                "Not consumable");
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -32,10 +29,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -44,7 +41,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            string key = "Mods.CalamityMod.EdgyBossText7";
+            string key = "Mods.CalamityMod.Status.Boss.EdgyBossText7";
             Color messageColor = Color.Cyan;
             CalamityUtils.DisplayLocalizedText(key, messageColor);
 
@@ -52,7 +49,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<DevourerofGodsHead>());
             else
-                NetMessage.SendData(MessageID.SpawnBoss, -1, -1, null, player.whoAmI, ModContent.NPCType<DevourerofGodsHead>());
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<DevourerofGodsHead>());
 
             return true;
         }
@@ -64,15 +61,17 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient<TwistingNether>().
                 AddIngredient<DarkPlasma>().
                 AddTile(TileID.LunarCraftingStation).
-                Register();
+                Register()
+                .DisableDecraft();
 
             // sequence breaking recipe
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 40).
                 AddIngredient<GalacticaSingularity>(10).
-                AddIngredient<Phantoplasm>(40).
+                AddIngredient<Necroplasm>(40).
                 AddTile(TileID.LunarCraftingStation).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

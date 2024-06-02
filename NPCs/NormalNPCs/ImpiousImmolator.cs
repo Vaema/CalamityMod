@@ -1,4 +1,6 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
@@ -6,8 +8,6 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -21,7 +21,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Impious Immolator");
             Main.npcFrameCount[NPC.type] = 4;
         }
 
@@ -29,11 +28,11 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.damage = 0;
+            NPC.damage = 50;
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 30;
-            NPC.lifeMax = 5775;
+            NPC.lifeMax = 3000;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 50, 0);
@@ -46,16 +45,19 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
-
-				// Will move to localization whenever that is cleaned up.
-				new FlavorTextBestiaryInfoElement("A burning spirit, with no regard or acknowledgment for its surroundings. Anyone who intrudes upon the Profaned Goddess' holy grounds will be turned to ash.")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ImpiousImmolator")
             });
         }
 
@@ -73,6 +75,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
             if (NPC.direction == 0)
@@ -86,13 +91,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.chaseable = hasBeenHit;
             if (!NPC.wet)
             {
-                bool flag14 = hasBeenHit;
+                bool canAttack = hasBeenHit;
                 NPC.TargetClosest(false);
-                if ((Main.player[NPC.target].wet || Main.player[NPC.target].dead) && flag14)
+                if ((Main.player[NPC.target].wet || Main.player[NPC.target].dead) && canAttack)
                 {
-                    flag14 = false;
+                    canAttack = false;
                 }
-                if (!flag14)
+                if (!canAttack)
                 {
                     if (NPC.collideX)
                     {
@@ -117,7 +122,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                if (flag14)
+                if (canAttack)
                 {
                     NPC.TargetClosest(true);
                     NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.2f;
@@ -150,19 +155,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                         {
                             float speed = 12f;
-                            Vector2 vector = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)(NPC.height / 2));
-                            float num6 = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - vector.X + (float)Main.rand.Next(-20, 21);
-                            float num7 = Main.player[NPC.target].position.Y + (float)Main.player[NPC.target].height * 0.5f - vector.Y + (float)Main.rand.Next(-20, 21);
-                            float num8 = (float)Math.Sqrt((double)(num6 * num6 + num7 * num7));
-                            num8 = speed / num8;
-                            num6 *= num8;
-                            num7 *= num8;
-                            int damage = 55;
-                            if (Main.expertMode)
-                            {
-                                damage = 42;
-                            }
-                            int beam = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, num6, num7, ModContent.ProjectileType<FlameBurstHostile>(), damage, 0f, Main.myPlayer, 0f, 0f);
+                            Vector2 beamPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)(NPC.height / 2));
+                            float targetXDist = Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width * 0.5f - beamPosition.X + (float)Main.rand.Next(-20, 21);
+                            float targetYDist = Main.player[NPC.target].position.Y + (float)Main.player[NPC.target].height * 0.5f - beamPosition.Y + (float)Main.rand.Next(-20, 21);
+                            float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                            targetDistance = speed / targetDistance;
+                            targetXDist *= targetDistance;
+                            targetYDist *= targetDistance;
+                            int damage = Main.masterMode ? 35 : Main.expertMode ? 42 : 55;
+                            int beam = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, targetXDist, targetYDist, ModContent.ProjectileType<FlameBurstHostile>(), damage, 0f, Main.myPlayer, 0f, 0f);
                             Main.projectile[beam].tileCollide = true;
                         }
                     }
@@ -191,15 +192,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                int num258 = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int num259 = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[num258, num259 - 1].LiquidAmount < 128) //problem?
+                int tileCheckX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                int tileCheckY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                if (Main.tile[tileCheckX, tileCheckY - 1].LiquidAmount < 128) //problem?
                 {
-                    if (Main.tile[num258, num259 + 1].HasTile)
+                    if (Main.tile[tileCheckX, tileCheckY + 1].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
-                    else if (Main.tile[num258, num259 + 2].HasTile)
+                    else if (Main.tile[tileCheckX, tileCheckY + 2].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
@@ -256,7 +257,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord)
+            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity)
             {
                 return 0f;
             }
@@ -274,17 +275,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             npcLoot.Add(ModContent.ItemType<BlasphemousDonut>(), 20);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

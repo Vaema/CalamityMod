@@ -1,7 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
+using log4net.Core;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,35 +11,37 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CursedDagger : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cursed Dagger");
-            Tooltip.SetDefault("Throws bouncing daggers\n" +
-            "Stealth strikes are showered in cursed fireballs");
-            SacrificeTotal = 1;
-        }
-
+        public static readonly SoundStyle ThrowSound = new("CalamityMod/Sounds/Item/CursedDaggerThrow") { Volume = 0.3f, PitchVariance = 0.4f };
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.damage = 34;
+            Item.width = 14;
+            Item.height = 48;
+            Item.damage = 45;
+            Item.useAnimation = Item.useTime = 18;
+            Item.shootSpeed = 19f;
+            Item.knockBack = 4.5f;
+
+            Item.shoot = ModContent.ProjectileType<CursedDaggerProj>();
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.UseSound = ThrowSound;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
+            Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 8;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 4.5f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.shoot = ModContent.ProjectileType<CursedDaggerProj>();
-            Item.shootSpeed = 12f;
-            Item.DamageType = RogueDamageClass.Instance;
         }
-
+        public override float StealthDamageMultiplier => 0.75f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(23f)) * 0.6f;
+            Vector2 newVel2 = velocity.RotatedByRandom(MathHelper.ToRadians(23f)) * 0.8f;
+            if (!player.Calamity().StealthStrikeAvailable())
+            {
+                Projectile.NewProjectile(source, position, newVel, type, damage / 2, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, newVel2, type, damage / 2, knockback, player.whoAmI);
+            }
+
             if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
             {
                 int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);

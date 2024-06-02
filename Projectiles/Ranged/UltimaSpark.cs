@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class UltimaSpark : ModProjectile
+    public class UltimaSpark : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
@@ -15,11 +16,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public const int DustType = 261;
         public const float MaxHomingDistance = 1200f;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ultima Spark");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 8;
@@ -73,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
             Time++;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(60, 60);
             Projectile.Damage();

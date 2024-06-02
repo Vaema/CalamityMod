@@ -1,21 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Dusts;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class RegulusRiotProj : ModProjectile
+    public class RegulusRiotProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/RegulusRiot";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Regulus Riot");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (behaviorInt == 0)
             {
-                Projectile.rotation -= 0.104719758f;
+                Projectile.rotation -= MathHelper.Pi / 30f;
 
                 if (Projectile.ai[0] >= 30f)
                 {
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else if (behaviorInt == 1)
             {
-                Projectile.rotation -= 0.104719758f;
+                Projectile.rotation -= MathHelper.Pi / 30f;
                 Vector2 targetCenter = Projectile.Center;
                 float homingRange = 300f;
                 bool homeIn = false;
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     float homeSpeed = 24f;
                     float turnMult = 10f;
-                    Vector2 projCenter = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 projCenter = Projectile.Center;
                     float xDist = targetCenter.X - projCenter.X;
                     float yDist = targetCenter.Y - projCenter.Y;
                     float totalDist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
@@ -147,15 +147,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -163,7 +157,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int i = 0; i < 10; i++)

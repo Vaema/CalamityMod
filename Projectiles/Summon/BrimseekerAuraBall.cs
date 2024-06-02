@@ -6,8 +6,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class BrimseekerAuraBall : ModProjectile
+    public class BrimseekerAuraBall : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public bool Initialized = false;
         public Projectile ParentProjectile => CalamityUtils.FindProjectileByIdentity((int)Projectile.ai[0], Projectile.owner);
         public float Outwardness
@@ -25,18 +26,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Seeker");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 8;
-            Projectile.height = 8;
+            Projectile.width = Projectile.height = 8;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -71,14 +67,8 @@ namespace CalamityMod.Projectiles.Summon
             brimstoneFire.velocity.Y = -0.15f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
     }
 }

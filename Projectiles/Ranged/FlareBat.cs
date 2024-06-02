@@ -5,11 +5,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class FlareBat : ModProjectile
+    public class FlareBat : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bat");
             Main.projFrames[Projectile.type] = 5;
         }
 
@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 24;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 2;
             Projectile.timeLeft = 300;
             Projectile.light = 0.25f;
             Projectile.usesLocalNPCImmunity = true;
@@ -29,15 +29,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            int num103 = (int)Player.FindClosest(Projectile.Center, 1, 1);
+            int originPlayer = (int)Player.FindClosest(Projectile.Center, 1, 1);
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] < 110f && Projectile.ai[1] > 30f)
             {
                 float scaleFactor2 = Projectile.velocity.Length();
-                Vector2 vector11 = Main.player[num103].Center - Projectile.Center;
-                vector11.Normalize();
-                vector11 *= scaleFactor2;
-                Projectile.velocity = (Projectile.velocity * 24f + vector11) / 25f;
+                Vector2 projDirection = Main.player[originPlayer].Center - Projectile.Center;
+                projDirection.Normalize();
+                projDirection *= scaleFactor2;
+                Projectile.velocity = (Projectile.velocity * 24f + projDirection) / 25f;
                 Projectile.velocity.Normalize();
                 Projectile.velocity *= scaleFactor2;
             }
@@ -48,10 +48,10 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.velocity *= 1.02f;
                 }
             }
-            int num192 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 0, default, 1f);
-            Main.dust[num192].noGravity = true;
-            Main.dust[num192].velocity *= 0.2f;
-            Main.dust[num192].position = (Main.dust[num192].position + Projectile.Center) / 2f;
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 0, default, 1f);
+            Main.dust[dust].noGravity = true;
+            Main.dust[dust].velocity *= 0.2f;
+            Main.dust[dust].position = (Main.dust[dust].position + Projectile.Center) / 2f;
             Projectile.frameCounter++;
             if (Projectile.frameCounter >= 2)
             {
@@ -64,46 +64,32 @@ namespace CalamityMod.Projectiles.Ranged
             }
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) * Projectile.direction;
+
+            if (Projectile.localAI[0] > 0f)
+                Projectile.localAI[0]--;
+
+            // Makes the bat home onto enemies after piercing once
+            if (Projectile.penetrate == 1 && Projectile.localAI[0] <= 0f)
+                CalamityUtils.HomeInOnNPC(Projectile, false, 550f, 12f, 20f);
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.penetrate--;
-            if (Projectile.penetrate <= 0)
-            {
-                Projectile.Kill();
-            }
-            else
-            {
-                if (Projectile.velocity.X != oldVelocity.X)
-                {
-                    Projectile.velocity.X = -oldVelocity.X;
-                }
-                if (Projectile.velocity.Y != oldVelocity.Y)
-                {
-                    Projectile.velocity.Y = -oldVelocity.Y;
-                }
-            }
-            return false;
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 480);
-
-            Projectile.Kill();
+            Projectile.localAI[0] = 8f;
+            Projectile.damage /= 2;
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.OnFire3, 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 10; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 6, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Torch, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
     }

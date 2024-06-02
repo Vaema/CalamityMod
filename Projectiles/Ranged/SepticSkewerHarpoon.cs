@@ -1,17 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ModLoader;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SepticSkewerHarpoon : ModProjectile
+    public class SepticSkewerHarpoon : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Septic Skewer");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -33,9 +31,9 @@ namespace CalamityMod.Projectiles.Ranged
             Player player = Main.player[Projectile.owner];
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 171, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Venom, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            Vector2 vector62 = player.Center - Projectile.Center;
+            Vector2 playerDist = player.Center - Projectile.Center;
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] > 5f)
             {
@@ -43,11 +41,11 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.ai[1] % 8f == 0f && Projectile.owner == Main.myPlayer && Main.rand.NextBool(5))
             {
-                Vector2 vector63 = vector62 * -1f;
-                vector63.Normalize();
-                vector63 *= Main.rand.Next(45, 65) * 0.1f;
-                vector63 = vector63.RotatedBy((Main.rand.NextDouble() - 0.5) * MathHelper.PiOver2);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, vector63.X, vector63.Y, ModContent.ProjectileType<SepticSkewerBacteria>(), (int)(Projectile.damage * 0.175), Projectile.knockBack * 0.2f, Projectile.owner, -10f, 0f);
+                Vector2 harpoonPos = playerDist * -1f;
+                harpoonPos.Normalize();
+                harpoonPos *= Main.rand.Next(45, 65) * 0.1f;
+                harpoonPos = harpoonPos.RotatedBy((Main.rand.NextDouble() - 0.5) * MathHelper.PiOver2);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, harpoonPos.X, harpoonPos.Y, ModContent.ProjectileType<SepticSkewerBacteria>(), (int)(Projectile.damage * 0.175), Projectile.knockBack * 0.2f, Projectile.owner, -10f, 0f);
             }
             if (player.dead)
             {
@@ -73,17 +71,17 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.extraUpdates = 3;
             }
-            Vector2 vector14 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-            float xDist = player.position.X + (float)(player.width / 2) - vector14.X;
-            float yDist = player.position.Y + (float)(player.height / 2) - vector14.Y;
-            float playerDist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
+            Vector2 halfDist = Projectile.Center;
+            float xDist = player.position.X + (float)(player.width / 2) - halfDist.X;
+            float yDist = player.position.Y + (float)(player.height / 2) - halfDist.Y;
+            float playerDistance = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
             if (Projectile.ai[0] == 0f)
             {
-                if (playerDist > 2000f)
+                if (playerDistance > 2000f)
                 {
                     Projectile.ai[0] = 1f;
                 }
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 Projectile.ai[1] += 1f;
                 if (Projectile.ai[1] > 5f)
                 {
@@ -102,15 +100,15 @@ namespace CalamityMod.Projectiles.Ranged
             else if (Projectile.ai[0] == 1f)
             {
                 Projectile.tileCollide = false;
-                Projectile.rotation = (float)Math.Atan2((double)yDist, (double)xDist) - 1.57f;
+                Projectile.rotation = (float)Math.Atan2((double)yDist, (double)xDist) - MathHelper.PiOver2;
                 float returnSpeed = 20f;
-                if (playerDist < 50f)
+                if (playerDistance < 50f)
                 {
                     Projectile.Kill();
                 }
-                playerDist = returnSpeed / playerDist;
-                xDist *= playerDist;
-                yDist *= playerDist;
+                playerDistance = returnSpeed / playerDistance;
+                xDist *= playerDistance;
+                yDist *= playerDistance;
                 Projectile.velocity.X = xDist;
                 Projectile.velocity.Y = yDist;
             }
@@ -122,7 +120,7 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }

@@ -1,15 +1,18 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
     public class SulphurousGrabberYoyo : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<SulphurousGrabber>();
         private int bubbleCounter = 0;
         private bool bubbleStronk = false;
         private int bubbleStronkCounter = 0;
@@ -17,10 +20,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sulphurous Grabber Yoyo");
             ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 350f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 16f;
+            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 400f;
+            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 16f; // 32 effective, 48 bubbled
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -29,14 +31,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override void SetDefaults()
         {
             Projectile.aiStyle = ProjAIStyleID.Yoyo;
-            Projectile.width = 18;
-            Projectile.height = 18;
-            Projectile.scale = 1f;
+            Projectile.width = Projectile.height = 18;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            // Hit cooldown set in AI
         }
 
         public override void AI()
@@ -45,27 +45,23 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             {
                 if (bubbleStronk)
                 {
-                    ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 20f;
-                    Projectile.extraUpdates = 2;
-                    Projectile.usesLocalNPCImmunity = true;
-                    Projectile.localNPCHitCooldown = 10 * Projectile.extraUpdates;
+                    Projectile.MaxUpdates = 3;
+                    Projectile.localNPCHitCooldown = 12 * Projectile.MaxUpdates;
                     bubbleStronkCounter++;
                 }
                 else
                 {
-                    ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 16f;
-                    Projectile.extraUpdates = 1;
-                    Projectile.usesLocalNPCImmunity = false;
+                    Projectile.MaxUpdates = 2;
+                    Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
                     bubbleStronkCounter = 0;
                 }
 
-                if (bubbleStronkCounter >= 240)
+                if (bubbleStronkCounter >= 180)
                     bubbleStronk = false;
 
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (proj.active && proj.type == ModContent.ProjectileType<SulphurousGrabberBubble2>() && proj.ai[0] >= 40f && proj.owner == Projectile.owner)
+                    if (proj.type == ModContent.ProjectileType<SulphurousGrabberBubble2>() && proj.ai[0] >= 40f && proj.owner == Projectile.owner)
                     {
                         if (Projectile.Hitbox.Intersects(proj.Hitbox))
                         {
@@ -82,14 +78,14 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 bubbleCounter++;
                 if (bubbleCounter >= 60)
                 {
-                    int bubbleAmt = 7;
+                    int bubbleAmt = 3;
                     for (float i = 0; i < bubbleAmt; i++)
                     {
                         int projType = ModContent.ProjectileType<SulphurousGrabberBubble>();
-                        if (Main.rand.NextBool(10))
+                        if (Main.rand.NextBool(8))
                             projType = ModContent.ProjectileType<SulphurousGrabberBubble2>();
                         float angle = MathHelper.TwoPi / bubbleAmt * i + (float)Math.Sin(arbitraryTimer / 20f) * MathHelper.PiOver2;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, angle.ToRotationVector2() * 8f, projType, Projectile.damage / 4, Projectile.knockBack / 4, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, angle.ToRotationVector2() * 10f, projType, Projectile.damage / 2, Projectile.knockBack / 4, Projectile.owner);
                     }
                     bubbleCounter = 0;
                 }
@@ -101,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             if (bubbleStronk)
             {
@@ -111,9 +107,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
     }
 }

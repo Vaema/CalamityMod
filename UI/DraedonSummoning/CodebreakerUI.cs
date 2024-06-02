@@ -50,11 +50,11 @@ namespace CalamityMod.UI.DraedonSummoning
             set;
         } = 1f;
 
-        public static float CancelButtonScale
+        public static float ExitButtonScale
         {
             get;
             set;
-        } = 0.75f;
+        } = 1f;
 
         public static float ContactButtonScale
         {
@@ -68,14 +68,28 @@ namespace CalamityMod.UI.DraedonSummoning
             set;
         } = 1f;
 
+        public static float CancelButtonScale
+        {
+            get;
+            set;
+        } = 1f;
+
         public static float MechIconScale
         {
             get;
             set;
         } = 1f;
 
+        // This variable is currently permanently set to false due to being deemed unfinished and not fit for release.
+        // It used to be a local variable but has been moved to a property so that addon mods can easily enable it.
+        /*public static bool DraedonTalkFeatureEnabled
+        {
+            get;
+            set;
+        }*/
+
         public static Vector2 BackgroundCenter => new(500f, Main.screenHeight * 0.5f + 115f);
-        
+
         public static float GeneralScale => MathHelper.Lerp(1f, 0.7f, Utils.GetLerpValue(1325f, 750f, Main.screenWidth, true)) * Main.UIScale;
 
         public static Rectangle MouseScreenArea => Utils.CenteredRectangle(Main.MouseScreen, Vector2.One * 2f);
@@ -88,17 +102,25 @@ namespace CalamityMod.UI.DraedonSummoning
         {
             // If not viewing the specific tile entity's interface anymore, if the ID is for some reason invalid, or if the player is not equipped to continue viewing the UI
             // don't do anything other than resetting necessary data.
-            if (!TileEntity.ByID.ContainsKey(ViewedTileEntityID) || TileEntity.ByID[ViewedTileEntityID] is not TECodebreaker codebreakerTileEntity || !Main.LocalPlayer.WithinRange(codebreakerTileEntity.Center, 270f) || !Main.playerInventory)
+            if (!TileEntity.ByID.ContainsKey(ViewedTileEntityID) || TileEntity.ByID[ViewedTileEntityID] is not TECodebreaker codebreakerTileEntity || !Main.LocalPlayer.WithinRange(codebreakerTileEntity.Center, 270f) || !Main.playerInventory || Main.LocalPlayer.channel)
             {
                 VerificationButtonScale = 1f;
                 CancelButtonScale = 0.75f;
                 ContactButtonScale = 1f;
                 CommunicateButtonScale = 1f;
+                ExitButtonScale = 1f;
                 CommunicationPanelScale = 0f;
                 ViewedTileEntityID = -1;
                 AwaitingCloseConfirmation = false;
                 DisplayingCommunicationText = false;
                 MechIconScale = 1f;
+                DialogScroller.Reset();
+                TopicOptionsScroller.Reset();
+                DialogVerticalOffset = 0f;
+                DialogOffYCache = 0;
+                OptionsTextVerticalOffset = 0f;
+                DialogHeight = 0f;
+                LatestDialogHeightIncrease = 0f;
                 return;
             }
 
@@ -122,6 +144,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 DraedonScreenStaticInterpolant = 0f;
             }
 
+            // Disable the codebreaker UI's typical functions if currently speaking with Draedon, ignoring everything else in this method.
             if (DisplayingCommunicationText)
             {
                 DisplayCommunicationPanel();
@@ -131,17 +154,14 @@ namespace CalamityMod.UI.DraedonSummoning
 
             // Reset communication things.
             DraedonTextCreationTimer = 0;
-            if (!string.IsNullOrEmpty(DraedonText) && DraedonTextComplete == DraedonDialogRegistry.DialogOptions[0].Inquiry)
+            if (!string.IsNullOrEmpty(WrittenDraedonText) && FullDraedonText == DraedonDialogRegistry.DialogOptions[0].Inquiry)
                 Main.LocalPlayer.Calamity().HasTalkedAtCodebreaker = true;
 
-            DraedonText = DraedonTextComplete = string.Empty;
+            WrittenDraedonText = FullDraedonText = string.Empty;
             DialogHistory.Clear();
 
             bool canSummonDraedon = codebreakerTileEntity.ReadyToSummonDraedon && CalamityWorld.AbleToSummonDraedon;
-            // canTalkToDraedon is currently permanently set to false due to being deemed unfinished and not fit for release.
-            // If there is a desire to re-enable it, replace the following line with the commented line beneath it.
-            bool canTalkToDraedon = false;
-            // bool canTalkToDraedon = codebreakerTileEntity.ReadyToSummonDraedon && DownedBossSystem.downedExoMechs;
+            bool canTalkToDraedon = codebreakerTileEntity.ReadyToSummonDraedon && DownedBossSystem.downedExoMechs;
             Vector2 backgroundTopLeft = BackgroundCenter - backgroundTexture.Size() * GeneralScale * 0.5f;
 
             // Draw the cell payment slot icon.
@@ -227,18 +247,53 @@ namespace CalamityMod.UI.DraedonSummoning
             // If cells are present, make the item reflect that.
             Item temporaryPowerCell = new Item();
             if (codebreakerTileEntity.ContainsBloodSample)
-            {
                 temporaryPowerCell.SetDefaults(ModContent.ItemType<BloodSample>());
-            }
             else
-            { 
                 temporaryPowerCell.SetDefaults(ModContent.ItemType<DraedonPowerCell>());
-            }
+
+            // Copy the cell stack from the amount of cells in the tile entity.
             temporaryPowerCell.stack = codebreakerTileEntity.InputtedCellCount;
 
             Vector2 cellInteractionArea = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonsArsenal/PowerCellSlot_Empty").Value.Size() * GeneralScale;
             CalamityUtils.DrawPowercellSlot(spriteBatch, temporaryPowerCell, cellDrawCenter, GeneralScale);
             HandleCellSlotInteractions(codebreakerTileEntity, temporaryPowerCell, cellDrawCenter, cellInteractionArea);
+
+            // Draw the exit button.
+            // The prevent confusion, this does not draw if the player is attempting to cancel an ongoing decryption.
+            if (!AwaitingCloseConfirmation)
+                DrawExitButton(Vector2.Lerp(summonButtonCenter, talkButtonCenter, 0.5f), 1f);
+        }
+
+        public static void DrawExitButton(Vector2 drawPosition, float opacity)
+        {
+            Texture2D cancelButton = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonSummoning/DecryptCancelIcon").Value;
+            Rectangle clickArea = Utils.CenteredRectangle(drawPosition, cancelButton.Size() * VerificationButtonScale);
+
+            // Check if the mouse is hovering over the exit button area.
+            if (MouseScreenArea.Intersects(clickArea))
+            {
+                // If so, cause the button to inflate a little bit.
+                ExitButtonScale = MathHelper.Clamp(ExitButtonScale + 0.035f, 1f, 1.4f);
+
+                // If a click is done, leave the Codebreaker UI.
+                if (Main.mouseLeft && Main.mouseLeftRelease)
+                    ViewedTileEntityID = -1;
+            }
+
+            // Otherwise, if not hovering, cause the button to deflate back to its normal size.
+            else
+                ExitButtonScale = MathHelper.Clamp(ExitButtonScale - 0.05f, 1f, 1.4f);
+
+            // Draw the exit button.
+            Main.spriteBatch.Draw(cancelButton, drawPosition, null, Color.White, 0f, cancelButton.Size() * 0.5f, ExitButtonScale * GeneralScale, 0, 0f);
+
+            // And display a text indicator that describes the function of the button.
+            string exitText = CalamityUtils.GetTextValue("UI.Exit");
+
+            // Center the draw position.
+            drawPosition.X -= FontAssets.MouseText.Value.MeasureString(exitText).X * GeneralScale * 0.5f;
+            drawPosition.Y += GeneralScale * 20f;
+            Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, exitText, drawPosition.X, drawPosition.Y, Color.Red * opacity, Color.Black * opacity, Vector2.Zero, GeneralScale);
         }
 
         public static void HandleCellSlotInteractions(TECodebreaker codebreakerTileEntity, Item temporaryItem, Vector2 cellIconCenter, Vector2 area)
@@ -276,7 +331,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 // If the slot is normally clicked, behavior depends on whether the player is holding power cells.
                 else
                 {
-                    bool holdingPowercell = playerHandItem.type == powercellID || (playerHandItem.type == sampleID && CalamityWorld.getFixedBoi);
+                    bool holdingPowercell = playerHandItem.type == powercellID || (playerHandItem.type == sampleID && Main.zenithWorld);
                     bool powercellsinserted = !codebreakerTileEntity.ContainsBloodSample && temporaryItem.stack > 0;
                     bool cansummon = codebreakerTileEntity.ReadyToSummonDraedon && CalamityWorld.AbleToSummonDraedon;
 
@@ -284,7 +339,7 @@ namespace CalamityMod.UI.DraedonSummoning
                     if (holdingPowercell && temporaryItem.stack < TECodebreaker.MaxCellCapacity)
                     {
                         // If theres no power cells inside, it's GFB, and the player has a blood sample, it can be inserted
-                        if (playerHandItem.type == sampleID && CalamityWorld.getFixedBoi && !powercellsinserted && cansummon)
+                        if (playerHandItem.type == sampleID && Main.zenithWorld && !powercellsinserted && cansummon)
                         {
                             // Play a gross sound if no samples are in yet
                             if (temporaryItem.stack == 0)
@@ -409,7 +464,7 @@ namespace CalamityMod.UI.DraedonSummoning
         public static void DisplayCostText(Vector2 drawPosition, int totalCellsCost)
         {
             // Display the cost text.
-            string text = "Cost: ";
+            string text = CalamityUtils.GetTextValue("UI.Cost");
             drawPosition.X -= GeneralScale * 30f;
             Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, text, drawPosition.X, drawPosition.Y + GeneralScale * 20f, Color.White * (Main.mouseTextColor / 255f), Color.Black, Vector2.Zero, GeneralScale);
 
@@ -417,7 +472,7 @@ namespace CalamityMod.UI.DraedonSummoning
             Texture2D cellTexture = ModContent.Request<Texture2D>("CalamityMod/Items/DraedonMisc/DraedonPowerCell").Value;
             Vector2 offsetDrawPosition = new Vector2(drawPosition.X + ChatManager.GetStringSize(FontAssets.MouseText.Value, text, Vector2.One, -1f).X * GeneralScale + GeneralScale * 15f, drawPosition.Y + GeneralScale * 30f);
             Main.spriteBatch.Draw(cellTexture, offsetDrawPosition, null, Color.White, 0f, cellTexture.Size() * 0.5f, GeneralScale, 0, 0f);
-            
+
             // Display the cell quantity numerically below the drawn cells.
             Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.ItemStack.Value, totalCellsCost.ToString(), offsetDrawPosition.X - GeneralScale * 11f, offsetDrawPosition.Y, Color.White, Color.Black, new Vector2(0.3f), GeneralScale * 0.75f);
         }
@@ -507,7 +562,7 @@ namespace CalamityMod.UI.DraedonSummoning
             Vector2 scale = new Vector2(1f, 0.3f) * GeneralScale;
             Main.spriteBatch.Draw(textPanelTexture, drawPosition, null, Color.White, 0f, textPanelTexture.Size() * 0.5f, scale, 0, 0);
 
-            string confirmationText = "Are you sure?";
+            string confirmationText = CalamityUtils.GetTextValue("UI.ConfirmationText");
             Vector2 confirmationTextPosition = drawPosition - FontAssets.MouseText.Value.MeasureString(confirmationText) * GeneralScale * 0.5f + Vector2.UnitY * GeneralScale * 4f;
             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, confirmationText, confirmationTextPosition, Color.Red, 0f, Vector2.Zero, Vector2.One * GeneralScale);
         }
@@ -589,7 +644,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 {
                     CalamityWorld.DraedonSummonCountdown = CalamityWorld.DraedonSummonCountdownMax;
                     CalamityWorld.DraedonSummonPosition = codebreakerTileEntity.Center + new Vector2(-8f, -100f);
-                    if (CalamityWorld.getFixedBoi && codebreakerTileEntity.ContainsBloodSample)
+                    if (Main.zenithWorld && codebreakerTileEntity.ContainsBloodSample)
                     {
                         CalamityWorld.DraedonMechdusa = true;
                     }
@@ -616,11 +671,12 @@ namespace CalamityMod.UI.DraedonSummoning
 
             // And display a text indicator that describes the function of the button.
             // The color of the text cycles through the exo mech crystal palette.
-            string contactText = "Contact";
+            string contactTextKey = "Contact";
             if (DownedBossSystem.downedExoMechs)
-                contactText = "Summon";
+                contactTextKey = "Summon";
             if (codebreakerTileEntity.ContainsBloodSample)
-                contactText = "Evoke";
+                contactTextKey = "Evoke";
+            string contactText = CalamityUtils.GetTextValue("UI." + contactTextKey);
 
             Color contactTextColor = CalamityUtils.MulticolorLerp((float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.7f) * 0.5f + 0.5f, CalamityUtils.ExoPalette);
 
@@ -656,7 +712,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
             // And display a text indicator that describes the function of the button.
             // The color of the text is the same as Draedon's talk color.
-            string communicateText = "Communicate";
+            string communicateText = CalamityUtils.GetTextValue("UI.Communicate");
 
             // Center the draw position.
             drawPosition.X -= FontAssets.MouseText.Value.MeasureString(communicateText).X * GeneralScale * 0.5f;
@@ -666,7 +722,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
         public static void DisplayNotStrongEnoughErrorText(Vector2 drawPosition)
         {
-            string text = "Encryption unsolveable: Upgrades required.";
+            string text = CalamityUtils.GetTextValue("UI.UpgradesRequired");
             Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, text, drawPosition.X, drawPosition.Y, Color.IndianRed * (Main.mouseTextColor / 255f), Color.Black, Vector2.Zero, GeneralScale);
         }
     }

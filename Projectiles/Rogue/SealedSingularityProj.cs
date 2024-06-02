@@ -1,19 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SealedSingularityProj : ModProjectile
+    public class SealedSingularityProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SealedSingularity";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Sealed Singularity");
-        }
 
         public override void SetDefaults()
         {
@@ -39,7 +35,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill (int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner != Main.myPlayer)
                 return;

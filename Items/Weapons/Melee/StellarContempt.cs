@@ -1,31 +1,25 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("StellarContemptMelee", "StellarContemptRogue")]
-    public class StellarContempt : ModItem
+    public class StellarContempt : ModItem, ILocalizedModType
     {
-        public static int BaseDamage = 300;
-        public static float Speed = 18f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Stellar Contempt");
-            Tooltip.SetDefault("Lunar flares rain down on enemy hits");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Melee";
+        public static float Speed = 25f;
 
         public override void SetDefaults()
         {
             Item.width = 74;
             Item.height = 74;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = BaseDamage;
-            Item.knockBack = 9f;
-            Item.useTime = 13;
-            Item.useAnimation = 13;
+            Item.damage = 650;
+            Item.knockBack = 28f;
+            Item.useTime = 45;
+            Item.useAnimation = 45;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -33,8 +27,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
 
             Item.shoot = ModContent.ProjectileType<StellarContemptHammer>();
             Item.shootSpeed = Speed;
@@ -45,8 +39,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<FallenPaladinsHammer>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient(ItemID.FragmentSolar, 10).
-                AddIngredient(ItemID.FragmentNebula, 10).
+                AddIngredient<GalacticaSingularity>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

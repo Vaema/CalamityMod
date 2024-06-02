@@ -1,30 +1,29 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("EssenceofCinder")]
-    public class EssenceofSunlight : ModItem
+    public class EssenceofSunlight : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
+            Item.ResearchUnlockCount = 25;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
 
-            DisplayName.SetDefault("Essence of Sunlight");
-            Tooltip.SetDefault("The essence of sky, light, and storm creatures");
-			ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
+            ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 26;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightRed;
         }

@@ -12,26 +12,18 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("StarfleetMK2")]
-    public class Starmada : ModItem
+    public class Starmada : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Starmada");
-            Tooltip.SetDefault("Fires a barrage of stars and plasma blasts");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 122;
+            Item.height = 50;
             Item.damage = 135;
             Item.knockBack = 15f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useAnimation = 27;
-            Item.useTime = 27;
-            Item.reuseDelay = 0;
-            Item.width = 122;
-            Item.height = 50;
+            Item.useTime = Item.useAnimation = 27;
             Item.UseSound = SoundID.Item92;
             Item.shoot = ModContent.ProjectileType<StarfleetMK2Gun>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
@@ -46,6 +38,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        // Spawning the holdout cannot consume ammo
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool(3) && player.ownedProjectileCounts[Item.shoot] > 0;
 
         public override Vector2? HoldoutOffset()
         {
@@ -66,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
-                AddTile(ModContent.TileType<CosmicAnvil>()).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

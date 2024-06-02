@@ -8,23 +8,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TenebreusTides : ModItem
+    public class TenebreusTides : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tenebreus Tides");
-            Tooltip.SetDefault("Inundatio ex Laminis\n" +
-                "Shoots a water spear that pierces enemies and terrain\n" +
-                "Striking enemies summon liquid blades and spears to assault the struck foe\n" +
-                "Receives 33% benefit from melee speed bonuses");
-            SacrificeTotal = 1;
-            ItemID.Sets.BonusAttackSpeedMultiplier[Item.type] = 0.33f;
             ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 80;
+            Item.width = Item.height = 68;
+            Item.damage = 120;
             Item.knockBack = 4.5f;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 14;
@@ -32,11 +27,10 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<TenebreusTidesProjectile>();
             Item.shootSpeed = 12f;
 
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.Calamity().donorItem = true;
 
-            Item.width = Item.height = 68;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
             Item.noMelee = true;

@@ -1,27 +1,27 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.Skies;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.NPCs.ExoMechs.Ares;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresGaussNukeProjectile : ModProjectile
+    public class AresGaussNukeProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         private const int timeLeft = 180;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gauss Nuke");
             Main.projFrames[Projectile.type] = 12;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 45f, targetHitbox);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Nuke explosion sound.
             SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, Projectile.Center);

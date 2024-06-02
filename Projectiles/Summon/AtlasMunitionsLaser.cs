@@ -5,25 +5,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class AtlasMunitionsLaser : ModProjectile
+    public class AtlasMunitionsLaser : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Exo Pulse Laser");
             Main.projFrames[Type] = 4;
             ProjectileID.Sets.SentryShot[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 18;
-            Projectile.height = 18;
+            Projectile.width = Projectile.height = 18;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.timeLeft = 240;
-            Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.MaxUpdates = 3;
             Projectile.Opacity = 0f;
@@ -33,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * Projectile.Opacity * 0.67f);
 
-            Projectile.Opacity = Utils.GetLerpValue(240f, 235f, Projectile.timeLeft, true);            
+            Projectile.Opacity = Utils.GetLerpValue(240f, 235f, Projectile.timeLeft, true);
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.frameCounter++;
             if (Projectile.frameCounter >= 5)

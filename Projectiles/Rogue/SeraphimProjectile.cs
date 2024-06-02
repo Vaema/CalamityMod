@@ -1,14 +1,15 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SeraphimProjectile : ModProjectile
+    public class SeraphimProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public const float InitialSpeed = 64f;
         public const float SlowdownSpeed = 7f;
         public const int SlowdownTime = 50;
@@ -17,8 +18,6 @@ namespace CalamityMod.Projectiles.Rogue
         public ref float Time => ref Projectile.ai[0];
 
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Seraphim";
-
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Seraphim");
 
         public override void SetDefaults()
         {
@@ -60,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
             Time++;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.myPlayer != Projectile.owner)
                 return;
@@ -85,14 +84,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.velocity *= 0.4f;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
 

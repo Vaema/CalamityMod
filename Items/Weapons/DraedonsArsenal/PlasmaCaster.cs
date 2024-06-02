@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,17 +14,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
     // still awkward that the item called Plasma Rifle is the same class and exact same tier as this item
-    public class PlasmaCaster : ModItem
+    public class PlasmaCaster : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PlasmaCasterFire");
-
-        public const int BaseDamage = 705;
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Plasma Caster");
-            Tooltip.SetDefault("Industrial tool used to fuse metal together with super-heated plasma\n" +
-                "Right click for turbo mode");
 
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
@@ -36,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 30;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = BaseDamage;
+            Item.damage = 705;
             Item.knockBack = 7f;
             Item.useTime = 45;
             Item.useAnimation = 45;
@@ -48,7 +43,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.rare = ModContent.RarityType<Turquoise>();
 
             Item.shoot = ModContent.ProjectileType<PlasmaCasterShot>();
             Item.shootSpeed = 5f;
@@ -112,7 +107,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(12).
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

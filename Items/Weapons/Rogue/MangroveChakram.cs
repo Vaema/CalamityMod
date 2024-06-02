@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,16 +10,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class MangroveChakram : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mangrove Chakram");
-            Tooltip.SetDefault("Stealth strikes leave a trail of lingering flowers");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 38;
+            Item.height = 38;
             Item.damage = 84;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -29,15 +23,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 14;
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
-            Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<MangroveChakramProjectile>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 1.25f;
+        public override float StealthDamageMultiplier => 1.25f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

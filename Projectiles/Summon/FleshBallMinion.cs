@@ -1,83 +1,55 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class FleshBallMinion : ModProjectile
+    public class FleshBallMinion : BaseMinionProjectile
     {
-        public Player Owner => Main.player[Projectile.owner];
-        public bool SittingOnGround => Math.Abs(Projectile.velocity.X) < 1.55f && Projectile.velocity.Y == 0f;
+        public override int AssociatedProjectileTypeID => ModContent.ProjectileType<FleshBallMinion>();
+        public override int AssociatedBuffTypeID => ModContent.BuffType<FleshBallBuff>();
+        public override ref bool AssociatedMinionBool => ref ModdedOwner.fleshBall;
+        public override bool PreHardmodeMinionTileVision => true;
+
         public ref float HopTimer => ref Projectile.ai[0];
         public ref float HopAmount => ref Projectile.ai[1];
+        public bool SittingOnGround => Math.Abs(Projectile.velocity.X) < 1.55f && Projectile.velocity.Y == 0f;
         public const float Gravity = 0.25f;
         public const float MaxFallSpeed = 12f;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flesh Ball");
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            base.SetStaticDefaults();
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Projectile.width = 46;
             Projectile.height = 38;
-            Projectile.netImportant = true;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.minionSlots = 1f;
-            Projectile.timeLeft = 90000;
-            Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
-            Projectile.tileCollide = false;
-            Projectile.minion = true;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 60;
-            Projectile.DamageType = DamageClass.Summon;
         }
 
-        public override void AI()
+        public override void MinionAI()
         {
-            ProvidePlayerMinionBuffs();
-            DetermineFrames();
             GenerateVisuals();
 
             HopTimer++;
             SufferFromSeparationAnxiety();
-            NPC potentialTarget = Projectile.Center.MinionHoming(950f, Owner, false);
-            if (potentialTarget is null)
+            if (Target is null)
                 GoNearOwner();
             else
-                AttackTarget(potentialTarget);
+                AttackTarget(Target);
             EnforceGravity();
         }
 
-        internal void ProvidePlayerMinionBuffs()
-        {
-            Owner.AddBuff(ModContent.BuffType<FleshBallBuff>(), 3600);
-
-            // Verify player/minion state integrity. The minion cannot stay alive if the
-            // owner is dead or if the caller of the AI is invalid.
-            if (Projectile.type != ModContent.ProjectileType<FleshBallMinion>())
-                return;
-
-            if (Owner.dead)
-                Owner.Calamity().fleshBall = false;
-            if (Owner.Calamity().fleshBall)
-                Projectile.timeLeft = 2;
-        }
-
-        internal void DetermineFrames()
-        {
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter % 5 == 6)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
-        }
+        #region AI Methods
 
         internal void EnforceGravity()
         {
@@ -150,6 +122,10 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.netUpdate = true;
             }
         }
+
+        #endregion
+
+        public override void OnSpawn(IEntitySource source) => IFrames = 30;
 
         // Prevent immediate death on tile collision, and slow down on tile collision.
         public override bool OnTileCollide(Vector2 oldVelocity)

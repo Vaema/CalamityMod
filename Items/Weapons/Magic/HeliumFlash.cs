@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -11,17 +11,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class HeliumFlash : ModItem
+    public class HeliumFlash : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         internal const float ExplosionDamageMultiplier = 0.125f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Helium Flash");
-            Tooltip.SetDefault("The power of a galaxy, if only for mere moments\n" +
-            "Launches volatile star cores which erupt into colossal fusion blasts");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -31,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.damage = 1800;
             Item.knockBack = 9.5f;
-            Item.mana = 26;
+            Item.mana = 40;
             Item.useAnimation = 40;
             Item.useTime = 40;
             Item.autoReuse = true;
@@ -40,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item73;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
 
             Item.shoot = ModContent.ProjectileType<VolatileStarcore>();
@@ -94,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             return true;
         }
-        
+
 
         public override void AddRecipes()
         {

@@ -13,19 +13,11 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public static float Speed = 10.5f;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Eradicator");
-            Tooltip.SetDefault("Throws a disk that fires lasers at nearby enemies\n" +
-            "Stealth strikes stick to enemies and unleash a barrage of lasers in all directions");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 58;
-            Item.damage = 563;
+            Item.damage = 620;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -34,14 +26,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 33;
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.shoot = ModContent.ProjectileType<EradicatorProjectile>();
             Item.shootSpeed = Speed;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.5f;
+        public override float StealthDamageMultiplier => 0.6f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -6,15 +6,15 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class HermitCrabMinion : ModProjectile
+    public class HermitCrabMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private int playerStill = 0;
         private bool fly = false;
         private bool spawnDust = true;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hermit Crab");
             Main.projFrames[Projectile.type] = 9;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -48,18 +48,17 @@ namespace CalamityMod.Projectiles.Summon
             CalamityPlayer modPlayer = player.Calamity();
             if (spawnDust)
             {
-                int num501 = 20;
-                for (int num502 = 0; num502 < num501; num502++)
+                for (int i = 0; i < 20; i++)
                 {
-                    int num503 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 33, 0f, 0f, 0, default, 1f);
-                    Main.dust[num503].velocity *= 2f;
-                    Main.dust[num503].scale *= 1.15f;
+                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Water, 0f, 0f, 0, default, 1f);
+                    Main.dust[dust].velocity *= 2f;
+                    Main.dust[dust].scale *= 1.15f;
                 }
                 spawnDust = false;
             }
-            bool flag64 = Projectile.type == ModContent.ProjectileType<HermitCrabMinion>();
+            bool isMinion = Projectile.type == ModContent.ProjectileType<HermitCrabMinion>();
             player.AddBuff(ModContent.BuffType<HermitCrab>(), 3600);
-            if (flag64)
+            if (isMinion)
             {
                 if (player.dead)
                 {
@@ -70,12 +69,12 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
-            Vector2 vector46 = Projectile.position;
+            Vector2 projPos = Projectile.position;
             if (!fly)
             {
                 Vector2 center2 = Projectile.Center;
-                Vector2 vector48 = player.Center - center2;
-                float playerDistance = vector48.Length();
+                Vector2 destination = player.Center - center2;
+                float playerDistance = destination.Length();
                 if (Projectile.velocity.Y == 0 && (HoleBelow() || (playerDistance > 205f && Projectile.position.X == Projectile.oldPosition.X)))
                 {
                     Projectile.velocity.Y = -10f;
@@ -98,7 +97,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Projectile.frame = 1;
                 }
-                float num633 = 600f;
+                float attackDistance = 600f;
                 bool chaseNPC = false;
                 float npcPositionX = 0f;
                 if (player.HasMinionAttackTargetNPC)
@@ -106,11 +105,11 @@ namespace CalamityMod.Projectiles.Summon
                     NPC npc = Main.npc[player.MinionAttackTargetNPC];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
-                        float num646 = Vector2.Distance(npc.Center, Projectile.Center);
-                        if (!chaseNPC && num646 < num633)
+                        float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
+                        if (!chaseNPC && targetDist < attackDistance)
                         {
-                            num633 = num646;
-                            vector46 = npc.Center;
+                            attackDistance = targetDist;
+                            projPos = npc.Center;
                             npcPositionX = npc.position.X;
                             chaseNPC = true;
                         }
@@ -118,16 +117,15 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!chaseNPC)
                 {
-                    for (int num645 = 0; num645 < Main.maxNPCs; num645++)
+                    foreach (NPC npcTarget in Main.ActiveNPCs)
                     {
-                        NPC npcTarget = Main.npc[num645];
                         if (npcTarget.CanBeChasedBy(Projectile, false))
                         {
-                            float num646 = Vector2.Distance(npcTarget.Center, Projectile.Center);
-                            if (!chaseNPC && num646 < num633)
+                            float targetDist = Vector2.Distance(npcTarget.Center, Projectile.Center);
+                            if (!chaseNPC && targetDist < attackDistance)
                             {
-                                num633 = num646;
-                                vector46 = npcTarget.Center;
+                                attackDistance = targetDist;
+                                projPos = npcTarget.Center;
                                 npcPositionX = npcTarget.position.X;
                                 chaseNPC = true;
                             }
@@ -288,11 +286,11 @@ namespace CalamityMod.Projectiles.Summon
             else if (fly)
             {
                 Vector2 center2 = Projectile.Center;
-                Vector2 vector48 = player.Center - center2 + new Vector2(0f, 0f);
-                float playerDistance = vector48.Length();
-                vector48.Normalize();
-                vector48 *= 8f;
-                Projectile.velocity = (Projectile.velocity * 40f + vector48) / 41f;
+                Vector2 destination = player.Center - center2 + new Vector2(0f, 0f);
+                float playerDistance = destination.Length();
+                destination.Normalize();
+                destination *= 8f;
+                Projectile.velocity = (Projectile.velocity * 40f + destination) / 41f;
 
                 Projectile.rotation = Projectile.velocity.X * 0.03f;
                 Projectile.frameCounter++;

@@ -1,18 +1,19 @@
 ﻿using CalamityMod.Items.DraedonMisc;
 using CalamityMod.TileEntities;
 using CalamityMod.UI;
+using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.UI.DraedonSummoning;
 
 namespace CalamityMod.Tiles.DraedonSummoner
 {
@@ -49,6 +50,12 @@ namespace CalamityMod.Tiles.DraedonSummoner
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
             Main.tileWaterDeath[Type] = false;
+
+            // Various data sets to protect this tile from unintentional death
+            TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            //TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true; Since this is a furniture item this may be unnecessary?
+            TileID.Sets.PreventsSandfall[Type] = true;
+
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.Width = Width;
             TileObjectData.newTile.Height = Height;
@@ -65,9 +72,7 @@ namespace CalamityMod.Tiles.DraedonSummoner
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TECodebreaker>().Hook_AfterPlacement, -1, 0, true);
 
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("The Codebreaker");
-            AddMapEntry(new Color(92, 107, 112), name);
+            AddMapEntry(new Color(92, 107, 112), CreateMapEntryName());
             AnimationFrameHeight = 144;
         }
 
@@ -94,7 +99,7 @@ namespace CalamityMod.Tiles.DraedonSummoner
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 182);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TheDestroyer);
             return false;
         }
 
@@ -102,9 +107,6 @@ namespace CalamityMod.Tiles.DraedonSummoner
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            // Drop the base of the codebreaker.
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ModContent.ItemType<CodebreakerBase>());
-
             Tile t = Main.tile[i, j];
             int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
             int top = j - t.TileFrameY % (Height * SheetSquare) / SheetSquare;
@@ -131,7 +133,7 @@ namespace CalamityMod.Tiles.DraedonSummoner
             {
                 // Create a warning if someone attempts to click on a codebreaker without a computer with which to open the UI.
                 if (!codebreakerTileEntity.ContainsDecryptionComputer)
-                    CombatText.NewText(player.Hitbox, Color.Cyan, "No decryption computer installed");
+                    CombatText.NewText(player.Hitbox, Color.Cyan, CalamityUtils.GetTextValue("Misc.NoComputer"));
 
                 CodebreakerUI.ViewedTileEntityID = -1;
                 SoundEngine.PlaySound(SoundID.MenuClose);

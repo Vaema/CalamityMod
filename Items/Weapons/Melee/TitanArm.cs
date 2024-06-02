@@ -5,22 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TitanArm : ModItem
+    public class TitanArm : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Titan Arm");
-            Tooltip.SetDefault("Slap Hand but better\n" +
-            "Sends enemies straight to the stars at the speed of light");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 46;
             Item.height = 58;
             Item.damage = 69;
-            Item.scale = 1.75f;
             Item.knockBack = 80f; //This number doesn't mean anything, but it's not 9001f because that caused bugs.
             Item.useAnimation = Item.useTime = 12;
             Item.DamageType = DamageClass.Melee;
@@ -29,19 +21,19 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.rare = ItemRarityID.Lime;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
         }
 
         // Boosting crit in SetDefaults along with knockback seemed to severely inflate the reforging price. Guaranteed crits for more knockback.
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit = 100;
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
-            YeetEnemies(player, target, crit);
+            YeetEnemies(player, target, hit.Crit);
         }
 
-        public override void OnHitPvp(Player player, Player target, int damage, bool crit)
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
         }

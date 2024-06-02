@@ -9,28 +9,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class DragonbloodDisgorger : ModItem
+    public class DragonbloodDisgorger : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Dragonblood Disgorger");
-            Tooltip.SetDefault("Summons a skeletal dragon and her two children\n" +
-                               "Requires 6 minion slots to be summoned\n" +
-                               "There can only be one family");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 215;
-            Item.mana = 10;
             Item.width = 64;
             Item.height = 62;
+            Item.damage = 215;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.DD2_SkeletonDeath;
             Item.shoot = ModContent.ProjectileType<SkeletalDragonMother>();

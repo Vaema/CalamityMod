@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using CalamityMod.Tiles.Astral;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
@@ -8,19 +11,19 @@ namespace CalamityMod.Tiles.AstralSnow
 {
     public class AstralIce : ModTile
     {
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Ice"]);
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Ice"]);
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
             DustType = 173;
-            ItemDrop = ModContent.ItemType<Items.Placeables.AstralIce>();
 
             HitSound = SoundID.Item50;
 
@@ -32,6 +35,9 @@ namespace CalamityMod.Tiles.AstralSnow
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.Conversion.Ice[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
+
+            this.RegisterUniversalMerge(ModContent.TileType<AstralSnow>(), "CalamityMod/Tiles/Merges/AstralSnowMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -45,10 +51,10 @@ namespace CalamityMod.Tiles.AstralSnow
             base.FloorVisuals(player);
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
         {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AstralSnow>(), false, false, false, false, resetFrame);
-            return false;
+            sightColor = Color.Cyan;
+            return true;
         }
     }
 }

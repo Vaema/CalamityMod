@@ -1,20 +1,16 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class PlagueFang : ModProjectile
+    public class PlagueFang : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Plague Fang");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -30,7 +26,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.alpha > 0)
             {
                 Projectile.alpha -= 50;
@@ -41,15 +37,15 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.alpha == 0)
             {
-                int num159 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 163, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
-                Main.dust[num159].noGravity = true;
-                Main.dust[num159].velocity *= 0.6f;
-                Main.dust[num159].velocity -= Projectile.velocity * 0.4f;
+                int plagued = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PoisonStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
+                Main.dust[plagued].noGravity = true;
+                Main.dust[plagued].velocity *= 0.6f;
+                Main.dust[plagued].velocity -= Projectile.velocity * 0.4f;
 
-                int num160 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 205, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
-                Main.dust[num160].noGravity = true;
-                Main.dust[num160].velocity *= 0.2f;
-                Main.dust[num160].velocity -= Projectile.velocity * 0.4f;
+                int venomed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.VenomStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
+                Main.dust[venomed].noGravity = true;
+                Main.dust[venomed].velocity *= 0.2f;
+                Main.dust[venomed].velocity -= Projectile.velocity * 0.4f;
             }
         }
 
@@ -62,25 +58,25 @@ namespace CalamityMod.Projectiles.Magic
             return null;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            for (int num301 = 0; num301 < 7; num301++)
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
+            for (int i = 0; i < 7; i++)
             {
-                int num302 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 163, 0f, 0f, 100, default, 1f);
-                Main.dust[num302].noGravity = true;
-                Main.dust[num302].velocity *= 1.2f;
-                Main.dust[num302].velocity -= Projectile.oldVelocity * 0.3f;
+                int killPlague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PoisonStaff, 0f, 0f, 100, default, 1f);
+                Main.dust[killPlague].noGravity = true;
+                Main.dust[killPlague].velocity *= 1.2f;
+                Main.dust[killPlague].velocity -= Projectile.oldVelocity * 0.3f;
 
-                int num402 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 205, 0f, 0f, 100, default, 1f);
-                Dust dust = Main.dust[num402];
+                int killVenom = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.VenomStaff, 0f, 0f, 100, default, 1f);
+                Dust dust = Main.dust[killVenom];
                 dust.noGravity = true;
                 dust.velocity *= 1.2f;
                 dust.velocity -= Projectile.oldVelocity * 0.3f;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }

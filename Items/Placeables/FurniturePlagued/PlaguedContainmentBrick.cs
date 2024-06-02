@@ -1,24 +1,25 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Walls;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurniturePlagued
 {
     [LegacyName("PlaguedPlate")]
-    public class PlaguedContainmentBrick : ModItem
+    public class PlaguedContainmentBrick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Plagued Containment Brick");
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -34,14 +35,14 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<PlagueCellCanister>().
                 AddTile<PlagueInfuser>().
+                AddDecraftCondition(Condition.DownedGolem).
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlateWall>(4).
-                AddTile<PlagueInfuser>().
+                AddTile(TileID.WorkBenches).
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlatePlatform>(2).
-                AddTile<PlagueInfuser>().
                 Register();
         }
     }

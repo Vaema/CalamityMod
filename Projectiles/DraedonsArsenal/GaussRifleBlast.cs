@@ -1,25 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class GaussRifleBlast : ModProjectile
+    public class GaussRifleBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public float Time
         {
             get => Projectile.ai[0];
             set => Projectile.ai[0] = value;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gauss Blast");
         }
 
         public override void SetDefaults()
@@ -61,7 +57,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.myPlayer == Projectile.owner)
             {

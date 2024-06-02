@@ -1,34 +1,32 @@
-using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class CoralCannon : ModItem
+    public class CoralCannon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Coral Cannon");
-            Tooltip.SetDefault("Has a 20% chance to shoot a big coral that stuns enemies\n" +
-                                "Does not consume ammo");
-            SacrificeTotal = 1;
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
         }
-
         public override void SetDefaults()
         {
-            Item.damage = 24;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 52;
             Item.height = 40;
+            Item.damage = 24;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item61;
             Item.autoReuse = true;

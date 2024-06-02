@@ -4,19 +4,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureProfaned
 {
     [LegacyName("ProfanedBath")]
-    public class ProfanedBathtub : ModItem
+    public class ProfanedBathtub : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Profaned Bathtub");
             Item.width = 28;
             Item.height = 20;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,7 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<ProfanedRock>(), 14).AddTile(ModContent.TileType<ProfanedCrucible>()).Register();
+            CreateRecipe().
+                AddIngredient<ProfanedRock>(14).
+                AddTile<ProfanedCrucible>().
+                Register();
         }
     }
 }

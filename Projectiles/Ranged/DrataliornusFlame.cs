@@ -1,21 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class DrataliornusFlame : ModProjectile
+    public class DrataliornusFlame : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Drataliornus Arrow");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 18;
@@ -77,11 +73,9 @@ namespace CalamityMod.Projectiles.Ranged
                     int possibleTarget = -1;
                     float closestDistance = 700f;
 
-                    for (int i = 0; i < 200; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
-
-                        if (npc.active && npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly &&
+                        if (npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly &&
                             !npc.immortal && Collision.CanHit(Projectile.Center, 0, 0, npc.Center, 0, 0))
                         {
                             float distance = Vector2.Distance(Projectile.Center, npc.Center);
@@ -89,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
                             if (closestDistance > distance)
                             {
                                 closestDistance = distance;
-                                possibleTarget = i;
+                                possibleTarget = npc.whoAmI;
                             }
                         }
                     }
@@ -136,7 +130,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f + Main.rand.NextFloat());
+            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f + Main.rand.NextFloat());
             Main.dust[d].noGravity = true;
 
             Lighting.AddLight(Projectile.Center, 255f / 255f, 154f / 255f, 58f / 255f);
@@ -149,12 +143,12 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture2D13.Width, texture2D13.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)texture2D13.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (timeLeft != 0)
             {
@@ -162,10 +156,10 @@ namespace CalamityMod.Projectiles.Ranged
 
                 if (Projectile.ai[0] != 0f && Projectile.owner == Main.myPlayer) //if empowered, make exo arrow and dragon dust
                 {
-                    Vector2 vector3 = Projectile.Center + new Vector2(600, 0).RotatedBy(MathHelper.ToRadians(Main.rand.Next(360)));
-                    Vector2 speed = Projectile.Center - vector3;
+                    Vector2 randomAngle = Projectile.Center + new Vector2(600, 0).RotatedBy(MathHelper.ToRadians(Main.rand.Next(360)));
+                    Vector2 speed = Projectile.Center - randomAngle;
                     speed /= 30f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), vector3.X, vector3.Y, speed.X, speed.Y, ModContent.ProjectileType<DrataliornusExoArrow>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), randomAngle.X, randomAngle.Y, speed.X, speed.Y, ModContent.ProjectileType<DrataliornusExoArrow>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DragonDust>(), Projectile.damage / 3, Projectile.knockBack * 2f, Projectile.owner);
                 }
@@ -177,30 +171,30 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.position.Y = Projectile.position.Y - 90;
 
                 //just dusts
-                const int num226 = 24;
+                const int constant = 24;
                 float modifier = 4f + 8f * Main.rand.NextFloat();
-                for (int num227 = 0; num227 < num226; num227++)
+                for (int i = 0; i < constant; i++)
                 {
-                    Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * modifier;
-                    vector6 = vector6.RotatedBy((num227 - (num226 / 2 - 1)) * 6.28318548f / num226, default) + Projectile.Center;
-                    Vector2 vector7 = vector6 - Projectile.Center;
-                    int num228 = Dust.NewDust(vector6 + vector7, 0, 0, 174, 0f, 0f, 45, default, 2f);
-                    Main.dust[num228].noGravity = true;
-                    Main.dust[num228].velocity = vector7;
+                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * modifier;
+                    rotate = rotate.RotatedBy((i - (constant / 2 - 1)) * 6.28318548f / constant, default) + Projectile.Center;
+                    Vector2 faceDirection = rotate - Projectile.Center;
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.InfernoFork, 0f, 0f, 45, default, 2f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity = faceDirection;
                 }
-                for (int num193 = 0; num193 < 4; num193++)
+                for (int j = 0; j < 4; j++)
                 {
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 174, 0f, 0f, 50, default, 1.5f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 50, default, 1.5f);
 
-                    int num195 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 174, 0f, 0f, 50, default, 1f);
-                    Main.dust[num195].noGravity = true;
-                    Main.dust[num195].velocity *= 2f;
+                    int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 50, default, 1f);
+                    Main.dust[fieryDust].noGravity = true;
+                    Main.dust[fieryDust].velocity *= 2f;
                 }
-                for (int num194 = 0; num194 < 12; num194++)
+                for (int k = 0; k < 12; k++)
                 {
-                    int num195 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 0, default, 3f);
-                    Main.dust[num195].noGravity = true;
-                    Main.dust[num195].velocity *= 3f;
+                    int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 0, default, 3f);
+                    Main.dust[fieryDust].noGravity = true;
+                    Main.dust[fieryDust].velocity *= 3f;
                 }
 
                 Projectile.timeLeft = 0; //should avoid infinite loop if a hit npc calls proj.Kill()
@@ -212,7 +206,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 240);
 
@@ -221,10 +215,10 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.timeLeft != 0) //will not be called on npcs hit by explosion (only direct hits)
                 {
                     //make exo arrow, make meteor
-                    Vector2 vector3 = target.Center + new Vector2(600, 0).RotatedBy(MathHelper.ToRadians(Main.rand.Next(360)));
-                    Vector2 speed = target.Center - vector3;
+                    Vector2 randomAngle = target.Center + new Vector2(600, 0).RotatedBy(MathHelper.ToRadians(Main.rand.Next(360)));
+                    Vector2 speed = target.Center - randomAngle;
                     speed /= 30f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), vector3.X, vector3.Y, speed.X, speed.Y, ModContent.ProjectileType<DrataliornusExoArrow>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), randomAngle.X, randomAngle.Y, speed.X, speed.Y, ModContent.ProjectileType<DrataliornusExoArrow>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
 
                     Vector2 vel = new Vector2(Main.rand.Next(-400, 401), Main.rand.Next(500, 801));
                     Vector2 pos = target.Center - vel;
@@ -236,10 +230,8 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 0;
-
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 240);
 
             if (Projectile.ai[0] != 0f && Projectile.owner == Main.myPlayer) //if empowered
@@ -247,10 +239,10 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.timeLeft != 0) //will not be called on npcs hit by explosion (only direct hits)
                 {
                     //make exo arrow, make meteor
-                    Vector2 vector3 = target.Center + new Vector2(600, 0).RotatedBy(MathHelper.ToRadians(Main.rand.Next(360)));
-                    Vector2 speed = target.Center - vector3;
+                    Vector2 randomAngle = target.Center + new Vector2(600, 0).RotatedBy(MathHelper.ToRadians(Main.rand.Next(360)));
+                    Vector2 speed = target.Center - randomAngle;
                     speed /= 30f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), vector3.X, vector3.Y, speed.X, speed.Y, ModContent.ProjectileType<DrataliornusExoArrow>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), randomAngle.X, randomAngle.Y, speed.X, speed.Y, ModContent.ProjectileType<DrataliornusExoArrow>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
 
                     Vector2 vel = new Vector2(Main.rand.Next(-400, 401), Main.rand.Next(500, 801));
                     Vector2 pos = target.Center - vel;

@@ -8,16 +8,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Prismatic
 {
     [AutoloadEquip(EquipType.Body)]
-    public class PrismaticRegalia : ModItem
+    public class PrismaticRegalia : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Prismatic Regalia");
-            Tooltip.SetDefault("12% increased magic damage and 15% increased magic crit\n" +
-                "20% decreased non-magic damage\n" +
-                "+20 max life and +40 max mana\n" +
-                "Magic attacks occasionally fire a pair of homing rockets");
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -34,7 +29,7 @@ namespace CalamityMod.Items.Armor.Prismatic
             Item.height = 18;
             Item.defense = 33;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }

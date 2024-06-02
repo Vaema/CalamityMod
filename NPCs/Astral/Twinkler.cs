@@ -13,7 +13,6 @@ namespace CalamityMod.NPCs.Astral
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Twinkler");
             Main.npcFrameCount[NPC.type] = 8;
             Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
@@ -27,15 +26,14 @@ namespace CalamityMod.NPCs.Astral
             AIType = NPCID.LightningBug;
             AnimationType = NPCID.LightningBug;
             NPC.catchItem = (short)ModContent.ItemType<TwinklerItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-
-                // Will move to localization whenever that is cleaned up.
-                new FlavorTextBestiaryInfoElement("A rare case of the astral infection creating a harmless creature. They flicker rather prettily, and you're not going to be the only one who thinks so. They make useful bait.")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Twinkler")
             });
         }
 
@@ -43,14 +41,14 @@ namespace CalamityMod.NPCs.Astral
 
         public override bool? CanBeHitByProjectile(Projectile projectile) => null;
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life <= 0)
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 2 * hitDirection, -2f);
-                    if (Main.rand.NextBool(2))
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 2 * hit.HitDirection, -2f);
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].scale = 1.2f * NPC.scale;

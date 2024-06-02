@@ -1,24 +1,21 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
-using System;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class AmidiasTridentProj : BaseSpearProjectile
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Trident");
-        }
-
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<AmidiasTrident>();
         public override void SetDefaults()
         {
-            Projectile.width = 70;
-            Projectile.aiStyle = ProjAIStyleID.Spear;
+            Projectile.width = Projectile.height = 28;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.timeLeft = 90;
-            Projectile.height = 70;
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.tileCollide = false;

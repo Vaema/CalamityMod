@@ -7,13 +7,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SarosMicrosun : ModProjectile
+    public class SarosMicrosun : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Saros Microsun");
             Main.projFrames[Projectile.type] = 6;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.ignoreWater = true;
         }
 
@@ -59,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor) // Makes the afterimages of the disk.
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Summon
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustAmount = 180;
             for (int d = 0; d < dustAmount; d++)

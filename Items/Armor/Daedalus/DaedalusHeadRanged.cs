@@ -8,21 +8,14 @@ namespace CalamityMod.Items.Armor.Daedalus
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("DaedalusHelmet")]
-    public class DaedalusHeadRanged : ModItem
+    public class DaedalusHeadRanged : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Daedalus Headgear");
-            Tooltip.SetDefault("13% increased ranged damage and 7% increased ranged critical strike chance\n" +
-                "Reduces ammo usage by 20%");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 9; //39
         }
@@ -40,8 +33,7 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased ranged damage\n" +
-                "Getting hit causes you to emit a blast of crystal shards";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.daedalusShard = true;
             player.GetDamage<RangedDamageClass>() += 0.05f;

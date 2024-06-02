@@ -9,8 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class UrchinMaceProjectile : ModProjectile
+    public class UrchinMaceProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public Player Owner => Main.player[Projectile.owner];
         public override string Texture => "CalamityMod/Items/Weapons/Melee/UrchinMace";
 
@@ -18,11 +19,6 @@ namespace CalamityMod.Projectiles.Melee
         public ref float Windup => ref Projectile.ai[0];
         public float WindupProgress => MathHelper.Clamp(Windup, 0, MaxWindup) / MaxWindup;
         public static float whirlpoolDamageMultiplier = 2f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Urchin Mace");
-        }
 
         public override void SetDefaults()
         {
@@ -45,14 +41,14 @@ namespace CalamityMod.Projectiles.Melee
                 return false;
 
             float collisionPoint = 0f;
-            float bladeLenght = 70 * Projectile.scale;
+            float bladeLength = 70 * Projectile.scale;
             float bladeWidth = 30 * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (Projectile.rotation.ToRotationVector2() * bladeLenght), bladeWidth, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (Projectile.rotation.ToRotationVector2() * bladeLength), bladeWidth, ref collisionPoint);
         }
 
         public override void AI()
         {
-            Owner.direction = Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X);
+            Owner.ChangeDir(Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X));
 
             Projectile.velocity = Vector2.Zero;
 
@@ -123,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemAnimation = 2;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -135,20 +131,20 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         //If we don't do that, the hit enemies get knocked back towards you if you hit them from the right??
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // This would knock enemies away consistently, but i'm choosing to go with the other option
             //hitDirection = Math.Sign(target.Center.X - Owner.Center.X);
-            
+
             //Doing it this way lets the player choose if they want to knockback enemies towards them by pointing away from them
-            hitDirection = Owner.direction;
+            modifiers.HitDirectionOverride = Owner.direction;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Owner.direction = Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X);
+            Owner.ChangeDir(Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X));
 
-            Texture2D maceTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D maceTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D whirlpoolTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/RedtideWhirlpool").Value;
 
             float whirlpoolScale = MathHelper.Clamp(WindupProgress * 3f - 0.4f, 0f, 1f) * 2f;
@@ -166,7 +162,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Spawn a whirlpool typhoon after sending it out
             if (WindupProgress >= 1f && Projectile.owner == Main.myPlayer)

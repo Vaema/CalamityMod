@@ -1,11 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,15 +12,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class PulsePistol : ModItem
+    public class PulsePistol : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Pulse Pistol");
-            Tooltip.SetDefault("Fires a pulse that arcs to a new target on enemy hits");
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -29,9 +22,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 22;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 26;
+            Item.damage = 27;
             Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 21;
             Item.autoReuse = true;
             Item.mana = 6;
 
@@ -39,10 +32,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = PulseRifle.FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
 
-            Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
+            Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
             Item.shootSpeed = 5.2f; // This may seem low but the shot has 10 extra updates.
 
             modItem.UsesCharge = true;
@@ -67,7 +60,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(7).
                 AddIngredient<AerialiteBar>(4).
                 AddIngredient<SeaPrism>(7).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
                 Register();
         }

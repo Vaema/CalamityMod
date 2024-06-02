@@ -7,29 +7,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.FathomSwarmer
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class FathomSwarmerBoots : ModItem
+    public class FathomSwarmerBoots : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fathom Swarmer Greaves");
-            Tooltip.SetDefault("4% increased minion damage\n" +
-                "Grants the ability to swim\n" +
-                "Movement speed increased by 40% while submerged in liquid");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 15;
+            Item.defense = 13;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.04f;
+            player.GetDamage<SummonDamageClass>() += 0.08f;
             if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
             {
                 player.moveSpeed += 0.4f;
@@ -40,7 +32,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         }
 
 
-        
+
 
         public override void AddRecipes()
         {

@@ -1,15 +1,16 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class HomingGammaBullet : ModProjectile
+    public class HomingGammaBullet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         private int targetNPC = -1;
         private List<int> previousNPCs = new List<int>() { -1 };
 
@@ -17,7 +18,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gamma Bullet");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
         }
 
@@ -26,8 +26,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 24;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.tileCollide = true;
@@ -56,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * 6f + Projectile.SafeDirectionTo(potentialTarget.Center) * 15f) / 7f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             previousNPCs.Add(target.whoAmI);
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 240);
@@ -94,7 +92,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                 }
             }
-			hasHitNPC = false;
+            hasHitNPC = false;
             if (!foundTarget)
             {
                 for (int k = 0; k < Main.maxNPCs; k++)
@@ -121,14 +119,14 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.dedServ)
                 return;
 
             for (int i = 0; i < 3; i++)
             {
-                Dust sulphuricAcid = Dust.NewDustDirect(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                Dust sulphuricAcid = Dust.NewDustDirect(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 sulphuricAcid.noGravity = true;
                 sulphuricAcid.velocity *= 1.8f;
 

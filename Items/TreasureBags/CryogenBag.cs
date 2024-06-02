@@ -18,34 +18,33 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags
 {
-    public class CryogenBag : ModItem
+    public class CryogenBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Bag (Cryogen)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
-			ItemID.Sets.BossBag[Item.type] = true;
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -56,11 +55,11 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Cryogen>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Cryogen>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<EssenceofEleum>(), 1, 5, 9);
+            itemLoot.Add(ModContent.ItemType<EssenceofEleum>(), 1, 10, 12);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
@@ -70,7 +69,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<HoarfrostBow>(),
                 ModContent.ItemType<SnowstormStaff>(),
             }));
-            itemLoot.Add(ModContent.ItemType<ColdDivinity>(), 10);
+            itemLoot.Add(ModContent.ItemType<GlacialEmbrace>(), 10);
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<SoulofCryogen>());

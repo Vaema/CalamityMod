@@ -3,28 +3,21 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Armor.Brimflame
 {
     [AutoloadEquip(EquipType.Head)]
-    public class BrimflameScowl : ModItem
+    public class BrimflameScowl : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/AngelicAllianceActivation");
 
+        // TODO -- what the fuck is this? this is not how you implement a set bonus
         private bool frenzy = false;
         public static int CooldownLength = 1800;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Brimflame Cowl");
-            Tooltip.SetDefault("5% increased magic damage and critical strike chance\n" +
-                "Increases maximum mana by 70 and reduces mana usage by 10%\n" +
-                "Immunity to On Fire!, Brimstone Flames and Frostburn");
-        }
 
         public override void SetDefaults()
         {
@@ -51,6 +44,9 @@ namespace CalamityMod.Items.Armor.Brimflame
                     player.AddCooldown(BrimflameFrenzy.ID, CooldownLength);
                 }
             }
+
+            if (frenzy)
+                player.GetDamage<MagicDamageClass>() += 0.4f;
         }
 
         public override void UpdateEquip(Player player)
@@ -81,12 +77,8 @@ namespace CalamityMod.Items.Armor.Brimflame
             modPlayer.brimflameSet = true;
             player.GetDamage<MagicDamageClass>() += 0.15f;
             player.GetCritChance<MagicDamageClass>() += 15;
-            var hotkey = CalamityKeybinds.SetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = "Grants an additional 15% increased magic damage and crit\n" +
-                "Press " + hotkey + " to trigger a brimflame frenzy effect\n" +
-                "While under this effect, your damage is significantly boosted\n" +
-                "However, this comes at the cost of rapid life loss and no mana regeneration\n" +
-                "This can be toggled off, however, a brimflame frenzy has a 30 second cooldown";
+            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
+            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
         }
 
         public override void AddRecipes()

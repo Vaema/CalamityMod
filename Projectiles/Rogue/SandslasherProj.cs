@@ -5,13 +5,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SandslasherProj : ModProjectile
+    public class SandslasherProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Sandslasher";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sandslasher");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -35,20 +35,20 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ai[1] += 1f;
             if (Projectile.ai[0] == 3f)
                 Projectile.tileCollide = true;
-            if(Projectile.velocity.X < 0f)
+            if (Projectile.velocity.X < 0f)
             {
                 Projectile.velocity.X -= 0.07f;
                 if ((Projectile.ai[0] %= 30f) == 0f)
                     Projectile.damage -= (int)(Projectile.velocity.X * 2f);
             }
-            else if(Projectile.velocity.X > 0f)
+            else if (Projectile.velocity.X > 0f)
             {
                 Projectile.velocity.X += 0.07f;
                 if ((Projectile.ai[0] %= 30f) == 0f)
                     Projectile.damage += (int)(Projectile.velocity.X * 2f);
             }
-            Projectile.rotation += 0.1f * Projectile.direction + (Projectile.velocity.X /85);
-            if(Projectile.Calamity().stealthStrike && Projectile.ai[1] >= 5f)
+            Projectile.rotation += 0.1f * Projectile.direction + (Projectile.velocity.X / 85);
+            if (Projectile.Calamity().stealthStrike && Projectile.ai[1] >= 5f)
             {
                 Vector2 speed = new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f));
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, speed, ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage * 0.4), 0f, Projectile.owner);
@@ -56,11 +56,11 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 15; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 85, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, default, 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedBrown, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, default, 1f);
             }
         }
 

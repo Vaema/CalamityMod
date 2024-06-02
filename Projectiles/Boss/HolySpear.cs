@@ -1,25 +1,25 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class HolySpear : ModProjectile
+    public class HolySpear : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         Vector2 velocity = Vector2.Zero;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Holy Spear");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -60,6 +60,16 @@ namespace CalamityMod.Projectiles.Boss
             {
                 if (Main.npc[CalamityGlobalNPC.holyBoss].active)
                     Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
+            }
+            else if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
             }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
@@ -135,7 +145,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D value = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             bool aimedSpear = Projectile.ai[0] > 0f;
 
             int red = 255;
@@ -178,19 +188,17 @@ namespace CalamityMod.Projectiles.Boss
                 default:
                     break;
             }
-            Color baseColor = new Color(red, green, blue, 255);
+            Color baseColor = new Color(red, green, blue, 0);
 
-            Color color33 = baseColor * 0.5f;
-            color33.A = 0;
-            Vector2 vector28 = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            Color color34 = color33;
-            Vector2 origin5 = value.Size() / 2f;
-            Color color35 = color33 * 0.5f;
-            float num162 = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * ((float)Math.PI * 2f) * 3f)) * 0.8f;
-            Vector2 vector29 = new Vector2(1f, 1.5f) * num162;
-            Vector2 vector30 = new Vector2(0.5f, 1f) * num162;
-            color34 *= num162;
-            color35 *= num162;
+            Color baseColor2 = baseColor;
+            Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            Vector2 halfTextureSize = drawTexture.Size() / 2f;
+            Color halfOfHalfBaseColor = baseColor2 * 0.5f;
+            float timeLeftColorScale = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * ((float)Math.PI * 2f) * 3f)) * 0.8f;
+            Vector2 timeLeftDrawEffect = new Vector2(1f, 1.5f) * timeLeftColorScale;
+            Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
+            baseColor2 *= timeLeftColorScale;
+            halfOfHalfBaseColor *= timeLeftColorScale;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
@@ -200,36 +208,39 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {
-                    Vector2 drawPos = Projectile.oldPos[i] + vector28;
-                    Color color = Projectile.GetAlpha(color34) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
-                    Main.spriteBatch.Draw(value, drawPos, null, color, Projectile.rotation, origin5, vector29, SpriteEffects.None, 0);
-                    Main.spriteBatch.Draw(value, drawPos, null, color, Projectile.rotation, origin5, vector30, SpriteEffects.None, 0);
+                    Vector2 drawPos = Projectile.oldPos[i] + projDirection;
+                    Color baseColorAlpha = Projectile.GetAlpha(baseColor2) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
+                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, SpriteEffects.None, 0);
 
-                    color = Projectile.GetAlpha(color35) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
-                    Main.spriteBatch.Draw(value, drawPos, null, color, Projectile.rotation, origin5, vector29 * 0.6f, SpriteEffects.None, 0);
-                    Main.spriteBatch.Draw(value, drawPos, null, color, Projectile.rotation, origin5, vector30 * 0.6f, SpriteEffects.None, 0);
+                    baseColorAlpha = Projectile.GetAlpha(halfOfHalfBaseColor) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
+                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, SpriteEffects.None, 0);
                 }
             }
 
-            Main.EntitySpriteDraw(value, vector28, null, color34, Projectile.rotation, origin5, vector29, spriteEffects, 0);
-            Main.EntitySpriteDraw(value, vector28, null, color34, Projectile.rotation, origin5, vector30, spriteEffects, 0);
-            Main.EntitySpriteDraw(value, vector28, null, color35, Projectile.rotation, origin5, vector29 * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(value, vector28, null, color35, Projectile.rotation, origin5, vector30 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, projDirection, null, baseColor2, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, projDirection, null, baseColor2, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, projDirection, null, halfOfHalfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, projDirection, null, halfOfHalfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
 
             return false;
         }
 
-        public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
             //In GFB, "real damage" is replaced with negative healing
             if (Projectile.maxPenetrate >= (int)Providence.BossMode.Red)
-                damage = 0;
+                modifiers.SourceDamage *= 0f;
+        }
 
-            //If the player is dodging, don't apply debuffs
-            if (damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red || target.creativeGodMode)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            // If the player is dodging, don't apply debuffs
+            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 180, 20);
+            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 120, 20);
         }
     }
 }

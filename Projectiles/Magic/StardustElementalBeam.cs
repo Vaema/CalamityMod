@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -8,8 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class StardustElementalBeam : BaseLaserbeamProjectile
+    public class StardustElementalBeam : BaseLaserbeamProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override float MaxScale => 0.85f;
         public override float MaxLaserLength => 1000f;
         public override float Lifetime => 30f;
@@ -17,11 +19,6 @@ namespace CalamityMod.Projectiles.Magic
         public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayStart", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayMid", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayEnd", AssetRequestMode.ImmediateLoad).Value;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Beam");
-        }
 
         public override void SetDefaults()
         {
@@ -62,20 +59,21 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
             if (!Main.rand.NextBool(7))
                 return;
 
             float spawnOffsetSpread = Main.rand.NextFloat(MathHelper.ToRadians(36f), MathHelper.ToRadians(64f));
             float baseOffsetAngle = Main.rand.NextFloat(-0.6f, 0.6f);
             int type = ModContent.ProjectileType<BeamStar>();
-            damage = (int)(Projectile.damage * 0.7);
+            hit.Damage = (int)(Projectile.damage * 0.7);
             for (int i = 0; i < 4; i++)
             {
                 float spawnOffsetAngle = MathHelper.Lerp(spawnOffsetSpread * -0.5f, spawnOffsetSpread * 0.5f, i / 4f) + baseOffsetAngle;
                 Vector2 spawnPosition = target.Top - Vector2.UnitY.RotatedBy(spawnOffsetAngle) * 65f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, -Vector2.UnitY.RotatedBy(spawnOffsetAngle) * 2f, type, damage, knockback, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, -Vector2.UnitY.RotatedBy(spawnOffsetAngle) * 2f, type, hit.Damage, hit.Knockback, Projectile.owner);
             }
         }
     }

@@ -6,22 +6,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureAbyss
 {
-    public class AbyssTorch : ModItem
+    public class AbyssTorch : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            Tooltip.SetDefault("Can be placed in water");
-			ItemID.Sets.Torches[Item.type] = true;
-			// Right now this causes some Cursed Inferno dust until tmod fixes AutoLightSelect, it's a small sacrifice
-			ItemID.Sets.WaterTorches[Item.type] = true;
+            Item.ResearchUnlockCount = 100;
+            ItemID.Sets.Torches[Item.type] = true;
+            ItemID.Sets.SingleUseInGamepad[Type] = true;
+            ItemID.Sets.WaterTorches[Item.type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ShimmerTorch;
         }
 
         public override void SetDefaults()
         {
             Item.width = 10;
             Item.height = 12;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.holdStyle = 1;
             Item.noWet = false;
             Item.useTurn = true;
@@ -35,17 +36,11 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
             Item.value = 500;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			// Vanilla usually matches sorting methods with the right type of item, but sometimes, like with torches, it doesn't. Make sure to set whichever items manually if need be.
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Torches;
-		}
-
         public override void HoldItem(Player player)
         {
             if (Main.rand.NextBool(player.itemAnimation > 0 ? 10 : 20))
             {
-                Dust.NewDust(new Vector2(player.itemLocation.X + 16f * player.direction, player.itemLocation.Y - 14f * player.gravDir), 4, 4, 180);
+                Dust.NewDust(new Vector2(player.itemLocation.X + 16f * player.direction, player.itemLocation.Y - 14f * player.gravDir), 4, 4, DustID.DungeonSpirit);
             }
             Vector2 position = player.RotatedRelativePoint(new Vector2(player.itemLocation.X + 12f * player.direction + player.velocity.X, player.itemLocation.Y - 14f + player.velocity.Y), true);
             Lighting.AddLight(position, 0.5f, 0.5f, 2f);
@@ -56,15 +51,12 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
             Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 0.5f, 0.5f, 2f);
         }
 
-		// This function doesn't even work....
-        public override void AutoLightSelect(ref bool dryTorch, ref bool wetTorch, ref bool glowstick)
-        {
-            wetTorch = true;
-        }
-
         public override void AddRecipes()
         {
-            CreateRecipe(3).AddIngredient(ItemID.Torch, 3).AddIngredient(ModContent.ItemType<AbyssGravel>()).Register();
+            CreateRecipe(3).
+                AddIngredient(ItemID.Torch, 3).
+                AddIngredient<AbyssGravel>().
+                Register();
         }
     }
 }

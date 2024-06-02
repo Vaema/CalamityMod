@@ -8,20 +8,14 @@ namespace CalamityMod.Items.Armor.Victide
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("VictideHelm")]
-    public class VictideHeadMelee : ModItem
+    public class VictideHeadMelee : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Victide Shellmet");
-            Tooltip.SetDefault("5% increased melee damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 4; //11
         }
@@ -33,11 +27,7 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Enemies are more likely to target you\n" +
-                    "+3 life regen and 10% increased melee damage while submerged in liquid\n" +
-                    "When using any weapon you have a 10% chance to throw a returning seashell projectile\n" +
-                    "This seashell does true damage and does not benefit from any damage class\n" +
-                    "Provides increased underwater mobility and slightly reduces breath loss in the abyss";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<VictideBreastplate>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.victideSet = true;
             player.ignoreWater = true;

@@ -9,12 +9,14 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
     public class WulfrumScaffoldKitHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<WulfrumScaffoldKit>();
         public override void Load()
         {
             PipeCleanupManager = new WulfrumPipeManager();
@@ -60,11 +62,6 @@ namespace CalamityMod.Projectiles.Typeless
         }
 
         public static TemporaryTileManager PipeCleanupManager;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Wulfrum Scaffold Kit");
-        }
 
         public static int tileGlowTime = 10;
 
@@ -120,7 +117,7 @@ namespace CalamityMod.Projectiles.Typeless
                             SoundEngine.PlaySound(SoundID.Item65);
                             if (Main.netMode != NetmodeID.Server)
                             {
-                                Gore shard = Gore.NewGoreDirect(Projectile.GetSource_ItemUse(Owner.HeldItem), Owner.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("WulfrumPinger2").Type, Main.rand.NextFloat(0.5f, 1f));
+                                Gore shard = Gore.NewGoreDirect(Projectile.GetSource_FromThis(), Owner.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("WulfrumPinger2").Type, Main.rand.NextFloat(0.5f, 1f));
                                 shard.timeLeft = 10;
                                 shard.alpha = 100 - Main.rand.Next(0, 60);
                             }
@@ -143,7 +140,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.myPlayer != Owner.whoAmI)
                 return false;
 
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Effect tileEffect = Filters.Scene["CalamityMod:WulfrumScaffoldSelection"].GetShader().Shader;
 
@@ -191,10 +188,10 @@ namespace CalamityMod.Projectiles.Typeless
         public bool Connected(Point pos, int displaceX, int displaceY) => SelectedTiles.ContainsKey(new Point(pos.X + displaceX, pos.Y + displaceY));
 
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (SelectedTiles.Keys.Count > 0)
-                SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f}, Owner.Center);
+                SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f }, Owner.Center);
 
             if (Main.myPlayer == Owner.whoAmI)
             {
@@ -204,7 +201,7 @@ namespace CalamityMod.Projectiles.Typeless
                         PipeCleanupManager = new WulfrumPipeManager();
 
                     TempTilesManagerSystem.AddTemporaryTile(pos, PipeCleanupManager);
-                    WorldGen.PlaceTile(pos.X, pos.Y, WulfrumScaffoldKit.PlacedTileType) ;
+                    WorldGen.PlaceTile(pos.X, pos.Y, WulfrumScaffoldKit.PlacedTileType);
                     NetMessage.SendTileSquare(-1, pos.X, pos.Y, TileChangeType.None);
                 }
             }

@@ -1,34 +1,26 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Buffs.DamageOverTime;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class YharimsGift : ModItem
+    public class YharimsGift : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
         public int dragonTimer = 60;
-
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Yharim's Gift");
-            Tooltip.SetDefault("The power of a god pulses from within this artifact\n" +
-                               "Flaming meteors rain down after getting hit\n" +
-                               "Exploding dragon dust is left behind as you move\n" +
-                               "Damage and movement speed increased by 15%");
-        }
 
         public override void SetDefaults()
         {
-            Item.defense = 30;
             Item.width = 20;
             Item.height = 22;
+            Item.defense = 15; // Why did this give 30 defense? This thing really needs a rework lol
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
 
@@ -45,6 +37,8 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(175);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         int projectile1 = Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<DragonDust>(), damage, 5f, player.whoAmI, 0f, 0f);
                         Main.projectile[projectile1].timeLeft = 60;
                     }
@@ -62,6 +56,8 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(375);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<SkyFlareFriendly>(), damage, 9f, player.whoAmI);
                     }
                 }

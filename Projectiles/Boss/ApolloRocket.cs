@@ -1,21 +1,21 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ApolloRocket : ModProjectile
+    public class ApolloRocket : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("High Explosive Plasma Rocket");
             Main.projFrames[Projectile.type] = 5;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -67,53 +67,53 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.localAI[0] = 1f;
 
-                float speed1 = 1.8f;
-                float speed2 = 2.8f;
+                float randDustSpeed1 = 1.8f;
+                float randDustSpeed2 = 2.8f;
                 float angleRandom = 0.35f;
 
-                for (int num53 = 0; num53 < 20; num53++)
+                for (int i = 0; i < 20; i++)
                 {
-                    float dustSpeed = Main.rand.NextFloat(speed1, speed2);
+                    float dustSpeed = Main.rand.NextFloat(randDustSpeed1, randDustSpeed2);
                     Vector2 dustVel = new Vector2(dustSpeed, 0.0f).RotatedBy(Projectile.velocity.ToRotation());
                     dustVel = dustVel.RotatedBy(-angleRandom);
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
-                    int randomDustType = Main.rand.NextBool(2) ? 107 : 110;
+                    int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int num54 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
-                    Main.dust[num54].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
-                    Main.dust[num54].noGravity = true;
+                    int plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
+                    Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
+                    Main.dust[plasmaDust].noGravity = true;
 
-                    Dust dust = Main.dust[num54];
+                    Dust dust = Main.dust[plasmaDust];
                     dust.velocity *= 3f;
-                    dust = Main.dust[num54];
+                    dust = Main.dust[plasmaDust];
 
-                    num54 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
-                    Main.dust[num54].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
+                    plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
+                    Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
-                    dust = Main.dust[num54];
+                    dust = Main.dust[plasmaDust];
                     dust.velocity *= 2f;
 
-                    Main.dust[num54].noGravity = true;
-                    Main.dust[num54].fadeIn = 1f;
-                    Main.dust[num54].color = Color.Green * 0.5f;
+                    Main.dust[plasmaDust].noGravity = true;
+                    Main.dust[plasmaDust].fadeIn = 1f;
+                    Main.dust[plasmaDust].color = Color.Green * 0.5f;
 
-                    dust = Main.dust[num54];
+                    dust = Main.dust[plasmaDust];
                 }
-                for (int num55 = 0; num55 < 10; num55++)
+                for (int j = 0; j < 10; j++)
                 {
-                    float dustSpeed = Main.rand.NextFloat(speed1, speed2);
+                    float dustSpeed = Main.rand.NextFloat(randDustSpeed1, randDustSpeed2);
                     Vector2 dustVel = new Vector2(dustSpeed, 0.0f).RotatedBy(Projectile.velocity.ToRotation());
                     dustVel = dustVel.RotatedBy(-angleRandom);
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
-                    int randomDustType = Main.rand.NextBool(2) ? 107 : 110;
+                    int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int num56 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
-                    Main.dust[num56].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
-                    Main.dust[num56].noGravity = true;
+                    int plasmaDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
+                    Main.dust[plasmaDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
+                    Main.dust[plasmaDust2].noGravity = true;
 
-                    Dust dust = Main.dust[num56];
+                    Dust dust = Main.dust[plasmaDust2];
                     dust.velocity *= 0.5f;
-                    dust = Main.dust[num56];
+                    dust = Main.dust[plasmaDust2];
                 }
             }
 
@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Boss
             bool expertMode = Main.expertMode || bossRush;
 
             // Light
-            Lighting.AddLight(Projectile.Center, 0f, 0.6f, 0f);
+            Lighting.AddLight(Projectile.Center, 0.2f, 1f, 0f);
 
             // Get a target and calculate distance from it
             int target = Player.FindClosest(Projectile.Center, 1, 1);
@@ -179,9 +179,9 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.OnFire, 360);
@@ -196,14 +196,14 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ApolloRocketGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Rocket explosion
             int height = 90;
@@ -214,20 +214,20 @@ namespace CalamityMod.Projectiles.Boss
 
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
-            for (int num621 = 0; num621 < 12; num621++)
+            for (int i = 0; i < 12; i++)
             {
-                int randomDustType = Main.rand.NextBool(2) ? 107 : 110;
+                int randomDustType = Main.rand.NextBool() ? 107 : 110;
                 int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[dust].scale = 0.5f;
                     Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 15; num623++)
+            for (int j = 0; j < 15; j++)
             {
-                int randomDustType = Main.rand.NextBool(2) ? 107 : 110;
+                int randomDustType = Main.rand.NextBool() ? 107 : 110;
                 int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, 0f, 0f, 100, default, 3f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 5f;

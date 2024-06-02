@@ -1,21 +1,16 @@
-using CalamityMod.Tiles.Furniture.BossTrophies;
+﻿using CalamityMod.Tiles.Furniture.BossTrophies;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture.Trophies
 {
-    public class ApolloTrophy : ModItem
+    public class ApolloTrophy : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Apollo Trophy");
-        }
-
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.width = Item.height = 32;
-            Item.maxStack = 99;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;

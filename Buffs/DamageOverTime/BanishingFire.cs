@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Banishing Fire");
-            Description.SetDefault("You shall not be forgiven for your sins");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;

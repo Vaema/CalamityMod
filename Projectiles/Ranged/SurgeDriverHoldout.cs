@@ -1,17 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class SurgeDriverHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<SurgeDriver>();
         public Player Owner => Main.player[Projectile.owner];
-        public bool OwnerCanShoot => Owner.channel && Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
         public ref float ShootCountdown => ref Projectile.ai[0];
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Surge Driver");
 
         public override void SetDefaults()
         {
@@ -26,9 +27,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (!OwnerCanShoot)
-                Projectile.Kill();
-
             Vector2 armPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
             armPosition += Projectile.velocity.SafeNormalize(Owner.direction * Vector2.UnitX) * 32f;
             armPosition.Y -= 12f;
@@ -36,18 +34,23 @@ namespace CalamityMod.Projectiles.Ranged
             UpdateProjectileHeldVariables(armPosition);
             ManipulatePlayerVariables();
 
-            ShootCountdown--;
-            if (ShootCountdown <= 0f)
+            // Prevent spam clicking by letting the animation run if the player just stops holding
+            if (Owner.CantUseHoldout() && ShootCountdown < 0f)
+                Projectile.Kill();
+
+            // Can't shoot on frame 1 as it can't use ammo yet
+            else if (ShootCountdown < 0f && Owner.HasAmmo(Owner.ActiveItem()))
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
                     ShootProjectiles(armPosition);
-                    ShootCountdown = 28f;
+                    ShootCountdown = Owner.ActiveItem().useAnimation - 1;
                     Projectile.netUpdate = true;
                 }
 
                 SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }
+            ShootCountdown--;
         }
 
         public void ShootProjectiles(Vector2 armPosition)
@@ -56,13 +59,9 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             Item heldItem = Owner.ActiveItem();
-            int projectileType = ModContent.ProjectileType<PrismaticEnergyBlast>();
-            float shootSpeed = heldItem.shootSpeed * Projectile.scale * 0.64f;
-            int damage = (int)(Owner.GetWeaponDamage(heldItem) * 6.66);
-            float knockback = heldItem.knockBack;
-
-            bool uselessFuckYou = OwnerCanShoot;
-            Owner.PickAmmo(heldItem, out projectileType, out shootSpeed, out damage, out knockback, out _);
+            Owner.PickAmmo(heldItem, out int projectileType, out float shootSpeed, out int damage, out float knockback, out _);
+            damage *= 4;
+            shootSpeed = heldItem.shootSpeed * Projectile.scale * 0.64f;
             projectileType = ModContent.ProjectileType<PrismaticEnergyBlast>();
 
             knockback = Owner.GetWeaponKnockback(heldItem, knockback);
@@ -97,5 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
             Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
         }
+
+        public override bool? CanDamage() => false;
     }
 }

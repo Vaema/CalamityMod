@@ -6,17 +6,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class NychthemeronOrb : ModProjectile
+    public class NychthemeronOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public static float[] playerDists = new float[10] { 48f, 80f, 80f, 80f, 80f, 112f, 112f, 112f, 112f, 112f };
         public static float[] rotationSpeeds = new float[10] { 0.1f, -0.075f, -0.075f, -0.075f, -0.075f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f };
 
         private Vector2 velocity = Vector2.Zero;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Nychthemeron Orb");
-        }
 
         public override void SetDefaults()
         {
@@ -34,10 +30,9 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             bool isActive = false;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p.identity == Projectile.ai[1] && p.active)
+                if (p.identity == Projectile.ai[1])
                 {
                     isActive = true;
                 }
@@ -68,16 +63,15 @@ namespace CalamityMod.Projectiles.Rogue
                 // Follow Enemy
                 float minDist = 999f;
                 int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }
@@ -104,7 +98,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texLight = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texLight = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D texDark = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/NychthemeronOrb2").Value;
             if (Projectile.ai[0] == 0f)
             {

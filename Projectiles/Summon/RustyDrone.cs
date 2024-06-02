@@ -8,13 +8,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class RustyDrone : ModProjectile
+    public class RustyDrone : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rusty Drone");
             Main.projFrames[Projectile.type] = 12;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Hover in place.
             Projectile.velocity = -Vector2.UnitY * (float)Math.Sin(MathHelper.TwoPi * Projectile.timeLeft / 96f) * 3f;
-            
+
             // Look at nearby enemies.
             NPC potentialTarget = Projectile.Center.MinionHoming(1000f, Owner);
             if (potentialTarget is not null)

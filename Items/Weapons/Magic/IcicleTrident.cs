@@ -7,28 +7,26 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class IcicleTrident : ModItem
+    public class IcicleTrident : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Icicle Trident");
-            Tooltip.SetDefault("Shoots piercing icicles");
             Item.staff[Item.type] = true;
-            SacrificeTotal = 1;
         }
         public override void SetDefaults()
         {
+            Item.width = Item.height = 44;
             Item.damage = 69;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 21;
-            Item.width = Item.height = 44;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTurn = false;
             Item.noMelee = true;
             Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;

@@ -8,23 +8,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Fearmonger
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class FearmongerGreaves : ModItem
+    public class FearmongerGreaves : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fearmonger Greaves");
-            Tooltip.SetDefault("6% increased damage\n" +
-            "50% increased minion knockback\n" +
-            "10% increased movement speed\n" +
-            "Taking damage makes you move very fast for a short time");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 44;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

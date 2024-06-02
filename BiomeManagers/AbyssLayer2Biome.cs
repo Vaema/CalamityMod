@@ -1,5 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Placeables.FurnitureAbyss;
 using CalamityMod.Systems;
+using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,20 +21,22 @@ namespace CalamityMod.BiomeManagers
         }
 
         public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/UpperAbyssWater");
-        public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
+        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer2Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer23";
         public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer23";
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Murky Waters");
-        }
-
         public override bool IsBiomeActive(Player player)
         {
-            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer2Tiles >= 200 && 
-            playerYTileCoords > Main.rockLayer - 10 && playerYTileCoords <= Main.rockLayer + Main.maxTilesY * 0.143;
+            if (Main.remixWorld)
+            {
+                return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer2Tiles >= 200 &&
+                playerYTileCoords <= SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.2f) && playerYTileCoords > SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.4f);
+            }
+
+            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && BiomeTileCounterSystem.Layer2Tiles >= 200 &&
+            playerYTileCoords2 > Main.rockLayer - 10 && playerYTileCoords2 <= Main.rockLayer + Main.maxTilesY * 0.143;
         }
     }
 }

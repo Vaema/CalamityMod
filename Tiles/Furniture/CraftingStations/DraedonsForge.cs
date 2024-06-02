@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -23,9 +24,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.newTile.Origin = new Point16(2, 1);
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Draedon's Forge");
-            AddMapEntry(new Color(230, 157, 41), name);
+            AddMapEntry(new Color(230, 157, 41), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.DraedonsForge>());
 
             AnimationFrameHeight = 54;
             TileID.Sets.DisableSmartCursor[Type] = true;
@@ -55,11 +54,6 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
                 frame = (frame + 1) % 4;
                 frameCounter = 0;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 16, ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.DraedonsForge>());
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
-using Terraria.Audio;
-using Terraria.GameContent;
 
 namespace CalamityMod.UI.CalamitasEnchants
 {
@@ -59,7 +60,7 @@ namespace CalamityMod.UI.CalamitasEnchants
                 // If an item was stored, release it back into the world.
                 if (!CurrentlyHeldItem.IsAir)
                 {
-                    Main.LocalPlayer.QuickSpawnClonedItem(Main.LocalPlayer.GetSource_Misc(CurrentlyHeldItem.Name), CurrentlyHeldItem, CurrentlyHeldItem.stack);
+                    Main.LocalPlayer.QuickSpawnItem(Main.LocalPlayer.GetSource_Misc(CurrentlyHeldItem.Name), CurrentlyHeldItem, CurrentlyHeldItem.stack);
                     CurrentlyHeldItem.TurnToAir();
                 }
 
@@ -174,22 +175,23 @@ namespace CalamityMod.UI.CalamitasEnchants
             int cost = CurrentlyHeldItem.value * 4;
 
             // Increase the cost of enchanting significantly if doing so would upgrade the item directly.
-            if (SelectedEnchantment.HasValue && SelectedEnchantment.Value.Name == EnchantmentManager.UpgradeEnchantName)
+            if (SelectedEnchantment.HasValue && SelectedEnchantment.Value.Name == CalamityUtils.GetText(EnchantmentManager.ExhumedNamePath))
                 cost = (int)MathHelper.Min(cost, Item.buyPrice(5)) * 5;
 
             // Make it 20% cheaper if the player has the Discount Card or Greedy Ring
-            if (Main.LocalPlayer.discount)
+            if (Main.LocalPlayer.discountAvailable)
                 cost = (int)(cost * 0.8);
 
             // Draw the coin costs.
-            string costText = "Cost: ";
+            string costText = CalamityUtils.GetTextValue("UI.Cost");
             Utils.DrawBorderStringFourWay(spriteBatch, FontAssets.MouseText.Value, costText, costDrawPositionTopLeft.X, costDrawPositionTopLeft.Y + 45f * Main.UIScale, Color.White * (Main.mouseTextColor / 255f), Color.Black, Vector2.Zero, Main.UIScale);
             costDrawPositionTopLeft.X += (int)((FontAssets.MouseText.Value.MeasureString(costText).X * 0.5f + 12f) * Main.UIScale);
 
             int[] coinsArray = Utils.CoinsSplit(cost);
+            float y = costDrawPositionTopLeft.Y + 54f * Main.UIScale;
             for (int i = 0; i < 4; i++)
             {
-                Vector2 drawPosition = new Vector2(costDrawPositionTopLeft.X + (ChatManager.GetStringSize(FontAssets.MouseText.Value, costText, Vector2.One, -1f).X + ((24 * i) - 24f)) * Main.UIScale, costDrawPositionTopLeft.Y + 54f * Main.UIScale);
+                Vector2 drawPosition = new Vector2(costDrawPositionTopLeft.X + (ChatManager.GetStringSize(FontAssets.MouseText.Value, costText, Vector2.One, -1f).X + ((24 * i) - 24f)) * Main.UIScale, y);
                 spriteBatch.Draw(TextureAssets.Item[ItemID.PlatinumCoin - i].Value, drawPosition, null, Color.White, 0f, TextureAssets.Item[ItemID.PlatinumCoin - i].Size() * 0.5f, Main.UIScale, SpriteEffects.None, 0f);
                 Utils.DrawBorderStringFourWay(spriteBatch, FontAssets.ItemStack.Value, coinsArray[3 - i].ToString(), drawPosition.X - 11f, drawPosition.Y, Color.White, Color.Black, new Vector2(0.3f), 0.75f * Main.UIScale);
             }
@@ -202,7 +204,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             Vector2 vectorDrawPosition = descriptionDrawPositionTopLeft.ToVector2();
             Vector2 scale = new Vector2(0.8f, 0.825f) * MathHelper.Clamp(ResolutionRatio, 0.825f, 1f) * Main.UIScale;
 
-            string unifiedDescription = SelectedEnchantment.Value.Description.Replace("\n", " ");
+            string unifiedDescription = SelectedEnchantment.Value.Description.ToString().Replace("\n", " ");
             foreach (string line in Utils.WordwrapString(unifiedDescription, FontAssets.MouseText.Value, 400, 16, out _))
             {
                 if (string.IsNullOrEmpty(line))
@@ -349,10 +351,11 @@ namespace CalamityMod.UI.CalamitasEnchants
         public static void DrawEnchantmentName(SpriteBatch spriteBatch, Vector2 nameDrawCenter)
         {
             Vector2 scale = new Vector2(0.8f, 0.745f) * Main.UIScale;
-            float textWidth = FontAssets.MouseText.Value.MeasureString(SelectedEnchantment.Value.Name).X * scale.X;
+            string enchName = SelectedEnchantment.Value.Name.ToString();
+            float textWidth = FontAssets.MouseText.Value.MeasureString(enchName).X * scale.X;
             Color drawColor = SelectedEnchantment.Value.Equals(EnchantmentManager.ClearEnchantment) ? Color.White : Color.Orange;
             nameDrawCenter.X -= textWidth * 0.5f;
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, SelectedEnchantment.Value.Name, nameDrawCenter, drawColor, 0f, Vector2.Zero, scale);
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, enchName, nameDrawCenter, drawColor, 0f, Vector2.Zero, scale);
         }
 
         public static void InteractWithEnchantIcon(int cost)
@@ -366,16 +369,17 @@ namespace CalamityMod.UI.CalamitasEnchants
                 return;
 
             // If there is no cost or the player cannot afford it, do nothing.
-            if (cost <= 0 || !Main.LocalPlayer.CanBuyItem(cost))
+            if (cost <= 0 || !Main.LocalPlayer.CanAfford(cost))
                 return;
 
-            Item originalItem = CurrentlyHeldItem.Clone();
+            bool IsExhuming = SelectedEnchantment.Value.Name == CalamityUtils.GetText(EnchantmentManager.ExhumedNamePath);
+
             int oldPrefix = CurrentlyHeldItem.prefix;
             CurrentlyHeldItem.SetDefaults(CurrentlyHeldItem.type);
             CurrentlyHeldItem.Prefix(oldPrefix);
-            CurrentlyHeldItem = CurrentlyHeldItem.CloneWithModdedDataFrom(originalItem);
+            CurrentlyHeldItem = CurrentlyHeldItem.Clone();
 
-            if (SelectedEnchantment.Value.Name == EnchantmentManager.UpgradeEnchantName)
+            if (IsExhuming)
             {
                 CurrentlyHeldItem.SetDefaults(EnchantmentManager.ItemUpgradeRelationship[CurrentlyHeldItem.type]);
                 CurrentlyHeldItem.Prefix(oldPrefix);
@@ -386,6 +390,10 @@ namespace CalamityMod.UI.CalamitasEnchants
                 SelectedEnchantment.Value.CreationEffect?.Invoke(CurrentlyHeldItem);
             }
 
+            /*
+            TODO -- Currently bugged. Apparently, CalamityGlobalItem isn't loaded for tooltipPrefixComparisonItem
+            This makes the modifier texts warped in numbers but at least it's not destroying the UI
+
             // Update the compare item. This is used to check comparisons when showing reforge tooltip bonuses.
             // Updating it with the same bonuses as what was applied to the real item will negate the incorrect numbers,
             // such as absurd damage boosts.
@@ -393,11 +401,12 @@ namespace CalamityMod.UI.CalamitasEnchants
                 Main.tooltipPrefixComparisonItem = new Item();
             Main.tooltipPrefixComparisonItem.SetDefaults(Main.tooltipPrefixComparisonItem.type);
 
-            if (SelectedEnchantment.Value.Name != EnchantmentManager.UpgradeEnchantName)
+            if (!IsExhuming)
             {
                 Main.tooltipPrefixComparisonItem.Calamity().AppliedEnchantment = SelectedEnchantment.Value;
                 SelectedEnchantment.Value.CreationEffect?.Invoke(Main.tooltipPrefixComparisonItem);
             }
+            */
 
             // Take away the money for the cost.
             Main.LocalPlayer.BuyItem(cost);
@@ -405,7 +414,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             // Reset the enchantment index to prevent index problems on a different item.
             EnchantIndex = 0;
 
-            if (SelectedEnchantment.Value.Name == EnchantmentManager.UpgradeEnchantName)
+            if (IsExhuming)
                 SoundEngine.PlaySound(EXSound, Main.LocalPlayer.Center);
             else
                 SoundEngine.PlaySound(EnchSound, Main.LocalPlayer.Center);

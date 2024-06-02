@@ -2,19 +2,15 @@
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class HydraHeadLaunch : ModProjectile
+    public class HydraHeadLaunch : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/Hydra";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Hydra Head");
-        }
 
         public override void SetDefaults()
         {
@@ -38,11 +34,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ai[0] += 12f;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ai[1] = 1f;
             Projectile.ExpandHitboxBy(180);

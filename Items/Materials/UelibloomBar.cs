@@ -8,21 +8,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Materials
 {
     [LegacyName("UeliaceBar")]
-    public class UelibloomBar : ModItem
+    public class UelibloomBar : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 25;
-            DisplayName.SetDefault("Uelibloom Bar"); // Yoo-luh Bloom
-			ItemID.Sets.SortingPriorityMaterials[Type] = 106;
+            Item.ResearchUnlockCount = 25;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 106;
         }
 
         public override void SetDefaults()
         {
-            Item.createTile = ModContent.TileType<Tiles.UelibloomBar>();
             Item.width = 15;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.createTile = ModContent.TileType<Tiles.UelibloomBar>();
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.useStyle = ItemUseStyleID.Swing;

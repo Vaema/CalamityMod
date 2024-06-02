@@ -7,21 +7,14 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Mollusk
 {
     [AutoloadEquip(EquipType.Body)]
-    public class MolluskShellplate : ModItem
+    public class MolluskShellplate : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Mollusk Shellplate");
-            Tooltip.SetDefault("10% increased damage and 6% increased critical strike chance\n" +
-                               "15% decreased movement speed");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 22;
         }

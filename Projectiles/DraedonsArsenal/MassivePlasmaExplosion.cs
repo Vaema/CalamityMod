@@ -1,15 +1,17 @@
 ﻿using System;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Sounds;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class MassivePlasmaExplosion : ModProjectile
+    public class MassivePlasmaExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public float Time
         {
             get => Projectile.ai[0];
@@ -23,11 +25,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         private const int verticalFrames = 5;
         private const int frameLength = 5;
         private const float radius = 191.5f;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Plasma Explosion");
-        }
 
         public override void SetDefaults()
         {
@@ -71,9 +68,19 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.CursedInferno, 180);
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(BuffID.CursedInferno, 180);
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int length = texture.Width / horizontalFrames;
             int height = texture.Height / verticalFrames;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);

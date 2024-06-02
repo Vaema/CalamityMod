@@ -1,39 +1,37 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class LucreciaProj: BaseShortswordProjectile
+    public class LucreciaProj : BaseShortswordProjectile
     {
-        public const int OnHitIFrames = 5;
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Lucrecia>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Lucrecia";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Lucrecia");
-        }
 
         public override void SetDefaults()
         {
-            Projectile.Size = new Vector2(31);
+            Projectile.width = Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.scale = 1f;
-            Projectile.DamageType = TrueMeleeDamageClass.Instance;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.ownerHitCheck = true;
             Projectile.timeLeft = 360;
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
         }
 
         public override Action<Projectile> EffectBeforePullback => (proj) =>
         {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<DNA>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 10f, ModContent.ProjectileType<DNA>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
         };
 
 
@@ -54,26 +52,6 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             if (Main.rand.NextBool(5))
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BoneTorch);
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            Main.player[Projectile.owner].GiveIFrames(OnHitIFrames, false);
-        }
-
-        public override void OnHitPvp(Player target, int damage, bool crit)
-        {
-            Player player = Main.player[Projectile.owner];
-            bool isImmune = false;
-            for (int j = 0; j < player.hurtCooldowns.Length; j++)
-            {
-                if (player.hurtCooldowns[j] > 0)
-                    isImmune = true;
-            }
-            if (!isImmune)
-            {
-                Owner.GiveIFrames(OnHitIFrames, true);
-            }
         }
     }
 }

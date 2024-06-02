@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,23 +10,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class RecitationoftheBeast : ModItem
+    public class RecitationoftheBeast : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Recitation of the Beast");
-            Tooltip.SetDefault("A thousand years sealed in the demon's realm will teach you a thing or two\n" +
-                               "Summons beast scythes around the player in a small circle,\n" +
-                               "before firing toward the cursor and home in to nearby enemies");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.mana = 24;
             Item.width = 38;
             Item.height = 54;
             Item.damage = 128;
+            Item.mana = 17;
             Item.noMelee = true;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;

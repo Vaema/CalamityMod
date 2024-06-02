@@ -1,5 +1,7 @@
 ﻿using System;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,13 +10,13 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Summon
 {
     //Mostly a retread of the magic one, with altered visuals
-    public class WulfrumFusionBolt : ModProjectile
+    public class WulfrumFusionBolt : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public ref float OriginalRotation => ref Projectile.ai[0];
         public NPC Target
         {
@@ -38,14 +40,12 @@ namespace CalamityMod.Projectiles.Summon
         public static float HomingRange = 250;
         public static float HomingAngle = MathHelper.PiOver4 * 1.65f;
 
-        internal PrimitiveTrail TrailDrawer;
         internal Color PrimColorMult = Color.White;
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fusion Bolt");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -68,10 +68,8 @@ namespace CalamityMod.Projectiles.Summon
             float bestScore = 0;
             NPC bestTarget = null;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC potentialTarget in Main.ActiveNPCs)
             {
-                NPC potentialTarget = Main.npc[i];
-
                 if (!potentialTarget.CanBeChasedBy(null, false))
                     continue;
 
@@ -187,15 +185,12 @@ namespace CalamityMod.Projectiles.Summon
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
             CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 0.5f, delegate (Vector2 offset, Color colorMod)
             {
                 PrimColorMult = colorMod;
 
-                TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + offset, 30);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             });
 
             Main.spriteBatch.End();
@@ -204,7 +199,7 @@ namespace CalamityMod.Projectiles.Summon
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(WulfrumProsthesis.HitSound with { Volume = WulfrumProsthesis.HitSound.Volume * 0.6f }, Projectile.Center);
         }
@@ -215,7 +210,7 @@ namespace CalamityMod.Projectiles.Summon
             return base.OnTileCollide(oldVelocity);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Main.player[Projectile.owner].MinionAttackTargetNPC = target.whoAmI; //There exists a "whoAmIToTargettingIndex but idk if thats needed question mark
 

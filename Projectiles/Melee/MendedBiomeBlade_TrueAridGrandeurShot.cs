@@ -1,17 +1,18 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TrueAridGrandeurShot : ModProjectile
+    public class TrueAridGrandeurShot : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_AridGrandeurExtra";
         private bool initialized = false;
         Vector2 direction = Vector2.Zero;
@@ -23,7 +24,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Arid Shredder");
         }
         public override void SetDefaults()
         {
@@ -41,10 +41,10 @@ namespace CalamityMod.Projectiles.Melee
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLenght = 84 * Projectile.scale;
+            float bladeLength = 84 * Projectile.scale;
             float bladeWidth = 76 * Projectile.scale;
 
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - direction * bladeLenght / 2, Projectile.Center + direction * bladeLenght / 2, bladeWidth, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - direction * bladeLength / 2, Projectile.Center + direction * bladeLength / 2, bladeWidth, ref collisionPoint);
         }
 
         public override void AI()
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item60, Projectile.Center);
             for (int i = 0; i < 4; i++) //Particel

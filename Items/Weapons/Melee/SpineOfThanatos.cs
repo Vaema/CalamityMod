@@ -8,21 +8,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class SpineOfThanatos : ModItem
+    public class SpineOfThanatos : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Spine of Thanatos");
-            Tooltip.SetDefault("Releases 3 fast metallic whips outward\n" +
-                               "Once all three collide, a prism of light is shot outward\n" +
-                               "If an enemy is within the line of sight of the whips on collision, the light will fire towards it");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = Item.height = 28;
-            Item.damage = 150;
+            Item.damage = 128;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.noMelee = true;

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -16,40 +17,39 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags
 {
-    public class LeviathanBag : ModItem
+    public class LeviathanBag : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 3;
-            DisplayName.SetDefault("Treasure Bag (Leviathan and Anahita)");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
-			ItemID.Sets.BossBag[Item.type] = true;
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.maxStack = 999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate()
-		{
-			CalamityUtils.ForceItemIntoWorld(Item);
-			Item.TreasureBagLightAndDust();
-		}
+        {
+            CalamityUtils.ForceItemIntoWorld(Item);
+            Item.TreasureBagLightAndDust();
+        }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -58,8 +58,8 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Leviathan>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Leviathan>()));
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
@@ -82,15 +82,8 @@ namespace CalamityMod.Items.TreasureBags
             // Vanity
             itemLoot.Add(ModContent.ItemType<AnahitaMask>(), 7);
             itemLoot.Add(ModContent.ItemType<LeviathanMask>(), 7);
+            itemLoot.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-
-            // Fishing
-            itemLoot.Add(ItemID.HotlineFishingHook, 10);
-            itemLoot.Add(ItemID.BottomlessBucket, 10);
-            itemLoot.Add(ItemID.SuperAbsorbantSponge, 10);
-            itemLoot.Add(ItemID.FishingPotion, 5, 5, 8);
-            itemLoot.Add(ItemID.SonarPotion, 5, 5, 8);
-            itemLoot.Add(ItemID.CratePotion, 5, 5, 8);
         }
     }
 }

@@ -5,12 +5,11 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AshenHorns : ModItem
+    public class AshenHorns : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Ashen Horns");
 
             if (Main.netMode != NetmodeID.Server)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;

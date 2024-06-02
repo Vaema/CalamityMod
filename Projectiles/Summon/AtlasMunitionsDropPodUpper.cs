@@ -6,15 +6,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class AtlasMunitionsDropPodUpper : ModProjectile
+    // Purely visual -- spawns when the cannon drops
+    public class AtlasMunitionsDropPodUpper : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Drop Pod Cover");
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -24,11 +23,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.height = 80;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 1f;
             Projectile.timeLeft = 240;
-            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
 

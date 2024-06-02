@@ -1,17 +1,18 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class StarSwallowerSummon : ModProjectile
+    public class StarSwallowerSummon : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public bool FlyUntilNearPlayer;
         public float HopCooldown = 0f;
         public float AcidShootTimer = 0f;
@@ -26,7 +27,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pet Froge");
             Main.projFrames[Projectile.type] = 12;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
@@ -231,14 +231,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Projectile.spriteDirection = (potentialTarget.Center.X - Projectile.Center.X > 0).ToDirectionInt();
                     Vector2 fireVelocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(spawnPosition, potentialTarget.Center, StarSwallowerAcid.Gravity, 14f);
 
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition,
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition,
                                              fireVelocity,
                                              ModContent.ProjectileType<StarSwallowerAcid>(),
                                              Projectile.damage,
                                              Projectile.knockBack,
                                              Projectile.owner);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Projectile.originalDamage;
                     SoundEngine.PlaySound(SoundID.Item13, spawnPosition);
                 }
                 if (AcidShootTimer > 48)
@@ -273,7 +271,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(2, Main.projFrames[Projectile.type], ReleasingAcid.ToInt(), Projectile.frame);
             Main.EntitySpriteDraw(texture,
                              Projectile.Center - Main.screenPosition,

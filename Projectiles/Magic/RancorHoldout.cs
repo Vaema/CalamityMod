@@ -1,17 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class RancorHoldout : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Rancor>();
         public Player Owner => Main.player[Projectile.owner];
         public ref float Time => ref Projectile.ai[0];
         public const int ManaConsumeRate = 12;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rancor");
             Main.projFrames[Projectile.type] = 16;
         }
 

@@ -10,10 +10,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class TheSevensStriker : ModItem
+    public class TheSevensStriker : ModItem, ILocalizedModType
     {
-        public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest};
-        public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f};
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
+        public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f };
         public static readonly SoundStyle BustSound = new("CalamityMod/Sounds/Item/SevensStrikerBust");
         public static readonly SoundStyle DoublesSound = new("CalamityMod/Sounds/Item/SevensStrikerDoubles");
         public static readonly SoundStyle TriplesSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
@@ -23,28 +24,23 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int ShotCoin = 0; // projectile ID to use for right click, affects damage multiplier
         public static readonly float RightClickCopperMultiplier = 0.04f;
         public static readonly float RightClickSilverMultiplier = 0.08f;
-        public static readonly float RightClickGoldMultiplier   = 0.16f;
+        public static readonly float RightClickGoldMultiplier = 0.16f;
 
-        public static readonly float DoublesMultiplier = 2f; // Doubles means double damage!
+        public static readonly float DoublesMultiplier = 1f; // Unfortunately doubles can't be doubles. Balancing!
         public static readonly float TriplesCherryMultiplier = 1f;
+        public static readonly float TriplesCherrySplitMultiplier = 0.333f;
         public static readonly float TriplesGrapeMultiplier = 0.333f; // fixed the grapes interfering with each other's iframes
         public static readonly float JackpotMultiplier = 0.5f; // Jackpot fires 49 shots total and thus needs to be reduced somehow
 
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("The Sevens Striker");
-            Tooltip.SetDefault("Left click to consume 1 coin and play a slot machine\n" +
-                "Quality of the outcome depends on the coin used\n" +
-                "Right click to rapidly fire a barrage of coins\n" +
-                "Right click has an 80% chance to not consume coins and will not fire platinum coins\n" +
-                "'A gun given to a great gunslinger\n" +
-                "Forged by the arms of a man given no name'");
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 170;
+            Item.height = 56;
             Item.damage = 777;
             Item.knockBack = 9f;
             Item.useTime = 30;
@@ -54,14 +50,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.useTurn = true;
             Item.autoReuse = true;
-            Item.width = 170;
-            Item.height = 56;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useAmmo = AmmoID.Coin;
             Item.shootSpeed = 24f;
-            Item.reuseDelay = 0;
             Item.shoot = ProjectileID.PlatinumCoin;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
@@ -172,7 +165,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.CoinGun).
-                AddIngredient<ClockGatlignum>(1).
+                AddIngredient<ClockGatlignum>().
                 AddIngredient(ItemID.PlatinumCoin, 7).
                 AddIngredient(ItemID.GoldCoin, 77).
                 AddIngredient<TwistingNether>(2).

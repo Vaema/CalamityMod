@@ -41,7 +41,7 @@ namespace CalamityMod
         internal static bool _downedArtemisAndApollo = false; // only used for loot drops
         internal static bool _downedExoMechs = false;
         internal static bool _downedCalamitas = false;
-        internal static bool _downedAdultEidolonWyrm = false;
+        internal static bool _downedPrimordialWyrm = false;
 
         // Minibosses
         internal static bool _downedGSS = false;
@@ -54,6 +54,7 @@ namespace CalamityMod
         // Events
         internal static bool _downedEoCAcidRain = false;
         internal static bool _downedAquaticScourgeAcidRain = false;
+        internal static bool _startedBossRushAtLeastOnce = false;
         internal static bool _downedBossRush = false;
 
         // Betsy and Dreadnautilus because vanilla doesn't track them
@@ -369,15 +370,15 @@ namespace CalamityMod
                     NPC.SetEventFlagCleared(ref _downedCalamitas, -1);
             }
         }
-        public static bool downedAdultEidolonWyrm
+        public static bool downedPrimordialWyrm
         {
-            get => _downedAdultEidolonWyrm;
+            get => _downedPrimordialWyrm;
             set
             {
                 if (!value)
-                    _downedAdultEidolonWyrm = false;
+                    _downedPrimordialWyrm = false;
                 else
-                    NPC.SetEventFlagCleared(ref _downedAdultEidolonWyrm, -1);
+                    NPC.SetEventFlagCleared(ref _downedPrimordialWyrm, -1);
             }
         }
         public static bool downedCLAM
@@ -493,6 +494,11 @@ namespace CalamityMod
                     NPC.SetEventFlagCleared(ref _downedAquaticScourgeAcidRain, -1);
             }
         }
+        public static bool startedBossRushAtLeastOnce
+        {
+            get => _startedBossRushAtLeastOnce;
+            set => _startedBossRushAtLeastOnce = value; // Starting Boss Rush for the first time does not trigger a Lantern Night
+        }
         public static bool downedBossRush
         {
             get => _downedBossRush;
@@ -538,7 +544,7 @@ namespace CalamityMod
             downedArtemisAndApollo = false;
             downedExoMechs = false;
             downedCalamitas = false;
-            downedAdultEidolonWyrm = false;
+            downedPrimordialWyrm = false;
 
             downedSecondSentinels = false;
 
@@ -552,6 +558,8 @@ namespace CalamityMod
 
             downedMauler = false;
             downedNuclearTerror = false;
+
+            startedBossRushAtLeastOnce = false;
             downedBossRush = false;
         }
 
@@ -632,7 +640,7 @@ namespace CalamityMod
                 downed.Add("exoMechs");
             if (downedCalamitas)
                 downed.Add("supremeCalamitas");
-            if (downedAdultEidolonWyrm)
+            if (downedPrimordialWyrm)
                 downed.Add("adultEidolonWyrm");
 
             // Minibosses and events
@@ -654,6 +662,9 @@ namespace CalamityMod
                 downed.Add("mauler");
             if (downedNuclearTerror)
                 downed.Add("nuclearTerror");
+
+            if (startedBossRushAtLeastOnce)
+                downed.Add("startedBossRush");
             if (downedBossRush)
                 downed.Add("bossRush");
 
@@ -698,7 +709,7 @@ namespace CalamityMod
             downedAres = downed.Contains("ares");
             downedExoMechs = downed.Contains("exoMechs");
             downedCalamitas = downed.Contains("supremeCalamitas");
-            downedAdultEidolonWyrm = downed.Contains("adultEidolonWyrm");
+            downedPrimordialWyrm = downed.Contains("adultEidolonWyrm");
 
             downedCLAM = downed.Contains("clam");
             downedEoCAcidRain = downed.Contains("eocRain");
@@ -710,6 +721,8 @@ namespace CalamityMod
 
             downedMauler = downed.Contains("mauler");
             downedNuclearTerror = downed.Contains("nuclearTerror");
+
+            startedBossRushAtLeastOnce = downed.Contains("startedBossRush");
             downedBossRush = downed.Contains("bossRush");
         }
     }

@@ -6,8 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ArcticBearPawProj : ModProjectile
+    public class ArcticBearPawProj : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 40;
@@ -24,15 +25,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localNPCHitCooldown = 10;
         }
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Arctic Bear Paw");
-        }
-
         public override void AI()
         {
             //make pretty dust
-            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 88);
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire);
             Main.dust[index2].noGravity = true;
 
             if (Projectile.velocity.X > -0.05f && Projectile.velocity.X < 0.05f &
@@ -46,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 30);

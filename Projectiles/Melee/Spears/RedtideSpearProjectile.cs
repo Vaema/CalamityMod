@@ -1,11 +1,12 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -13,6 +14,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class RedtideSpearProjectile : ModProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<RedtideSpear>();
         public Player Owner => Main.player[Projectile.owner];
         public static int Lifetime = 28;
         public int Timer => Lifetime - Projectile.timeLeft;
@@ -82,13 +84,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
                 //Mirror the angle if facing left.
                 return MathHelper.Pi - rotation - MathHelper.TwoPi;
-            } 
+            }
         }
 
         //Properly wrap the angle. Indeed, the angles on the left suddenly go from Pi to -Pi
         public float ProjectileRotationButWrappedForTransition
         {
-            get 
+            get
             {
                 if (ChargeDirection < 0 && Projectile.rotation > 0)
                     return Projectile.rotation - MathHelper.TwoPi;
@@ -159,11 +161,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
         }
         #endregion
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Redtide Spear");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 56;
@@ -186,9 +183,9 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLenght = 85 * Projectile.scale;
+            float bladeLength = 85 * Projectile.scale;
             float bladeWidth = 20 * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + AppropriateRotation.ToRotationVector2() * bladeLenght * -0.5f, Projectile.Center + ThrustRotation.ToRotationVector2() * bladeLenght * 0.5f, bladeWidth, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + AppropriateRotation.ToRotationVector2() * bladeLength * -0.5f, Projectile.Center + ThrustRotation.ToRotationVector2() * bladeLength * 0.5f, bladeWidth, ref collisionPoint);
         }
 
         public override void AI()
@@ -285,7 +282,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public void UpdateOwnerVars()
         {
-            Owner.direction = Math.Sign(BaseRotation.ToRotationVector2().X);
+            Owner.ChangeDir(Math.Sign(BaseRotation.ToRotationVector2().X));
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, AppropriateRotation - MathHelper.PiOver2);
             Owner.heldProj = Projectile.whoAmI;
             Owner.itemTime = 2;
@@ -299,7 +296,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Send the enemy flying up if hit by the upwards thrust.
             if (CurrentAttackState == AttackState.UpwardsThrust)
@@ -310,21 +307,25 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
             target.AddBuff(BuffID.Poisoned, 180);
 
-            //Give a sliver of iframes to the player so its safer to ram into hordes (which is fun and should be encouraged)
             if (CurrentAttackState == AttackState.RunAttack)
-                Owner.GiveIFrames(5);
+            {
+                // 17APR2024: Ozzatron: Redtide Spear's charge gives iframes when striking enemies in a similar manner to a ram dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                int redtideRamIFrames = 5;
+                Owner.GiveUniversalIFrames(redtideRamIFrames);
+            }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             //Boost the knockback during the run attack
             if (CurrentAttackState == AttackState.RunAttack)
-                knockback *= 1.35f;
+                modifiers.Knockback *= 1.35f;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, AppropriateRotation + MathHelper.PiOver2 * 1.5f - MathHelper.ToRadians(12), texture.Size() / 2f, Projectile.scale, 0, 0);
             return false;

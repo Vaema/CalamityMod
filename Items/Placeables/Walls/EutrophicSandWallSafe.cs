@@ -1,22 +1,23 @@
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using Terraria.ID;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
-    public class EutrophicSandWallSafe : ModItem
+    public class EutrophicSandWallSafe : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 400;
-            DisplayName.SetDefault("Eutrophic Sand Wall");
+            Item.ResearchUnlockCount = 400;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EutrophicSandWall>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
@@ -28,7 +29,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<EutrophicSand>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(4).
+                AddIngredient<EutrophicSand>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

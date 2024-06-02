@@ -4,18 +4,14 @@ using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class CorrodedShell : ModProjectile
+    public class CorrodedShell : ModProjectile, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shell");
-        }
-
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -27,7 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 6;
             Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 12;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
@@ -37,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.velocity *= 0.9995f;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            if (Projectile.timeLeft % 3 == 0)
+            if (Projectile.timeLeft % 5 == 0)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
@@ -45,13 +41,13 @@ namespace CalamityMod.Projectiles.Ranged
                     if (aura.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[aura].DamageType = DamageClass.Ranged;
-                        Main.projectile[aura].timeLeft = 40;
+                        Main.projectile[aura].timeLeft = 20;
                     }
                 }
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 32;
@@ -63,13 +59,13 @@ namespace CalamityMod.Projectiles.Ranged
             int count = Main.rand.Next(6, 15);
             for (int i = 0; i < count; i++)
             {
-                int idx = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 2f;
                 Main.dust[idx].noGravity = true;
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
         }

@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.StatDebuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Clamity");
-            Description.SetDefault("The clams have been angered!");
             Main.buffNoTimeDisplay[Type] = true;
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;

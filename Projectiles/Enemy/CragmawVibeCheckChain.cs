@@ -6,15 +6,11 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class CragmawVibeCheckChain : ModProjectile
+    public class CragmawVibeCheckChain : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public bool ReelingPlayer = false;
         public const int Lifetime = 360;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("You Think You're Safe");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 12;
@@ -61,9 +57,9 @@ namespace CalamityMod.Projectiles.Enemy
                 }
                 if (Projectile.WithinRange(Main.player[toTarget].Center, 16f))
                 {
-                    if (CalamityWorld.getFixedBoi)
+                    if (Main.zenithWorld)
                     {
-                        CombatText.NewText(Main.player[toTarget].getRect(), Color.Red, "Vibe check.", true);
+                        CombatText.NewText(Main.player[toTarget].getRect(), Color.Red, CalamityUtils.GetTextValue("Misc.CragmawVibeCheck"), true);
                     }
                     Projectile.localAI[0] = 1f;
                     ReelingPlayer = true;
@@ -85,7 +81,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D endTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D endTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D chainTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Enemy/CragmawVibeCheckMid").Value;
             Vector2 drawPosition = ReelingPlayer ? Main.player[(int)Projectile.ai[1]].Center : Projectile.Center;
             Vector2 distanceVectorToStart = Main.npc[(int)Projectile.ai[0]].Top + Vector2.UnitY * 30f - drawPosition;

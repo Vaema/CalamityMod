@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,9 +13,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class Phaseslayer : ModItem
+    public class Phaseslayer : ModItem, ILocalizedModType
     {
-        public const int Damage = 980;
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         // When below this percentage of charge, the sword is small instead of big.
         public const float SizeChargeThreshold = 0.25f;
         // The small sword barely affects damage on its own because damage is already dropping significantly at low charge.
@@ -25,23 +25,14 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         // This is the amount of charge consumed every time a sword beam is fired.
         public const float SwordBeamChargeUse = 0.1f;
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Phaseslayer");
-            Tooltip.SetDefault("A rough prototype of the Murasama blade, it is formed entirely from laser energy\n" +
-                               "Wield a colossal laser blade which is controlled by the cursor\n" +
-                               "Faster swings deal more damage and release sword beams\n" +
-                               "When at low charge, the blade is smaller and weaker");
-        }
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = Damage;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.width = 26;
             Item.height = 26;
+            Item.damage = 980;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -50,8 +41,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -83,7 +74,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(25).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<AscendantSpiritEssence>(2).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
                 AddTile<CosmicAnvil>().
                 Register();
         }

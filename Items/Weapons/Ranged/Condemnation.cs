@@ -8,27 +8,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Condemnation : ModItem
+    public class Condemnation : ModItem, ILocalizedModType
     {
-        public const int MaxLoadedArrows = 8;
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public static int MaxLoadedArrows = 9;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Condemnation");
-            Tooltip.SetDefault("Fires powerful scarlet bolts suffused with hateful magics\n" +
-                "Hold left click to load up to eight bolts for powerful burst fire\n" +
-                "Hold right click to use the repeater full auto");
-            SacrificeTotal = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 1914;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 130;
             Item.height = 42;
-            Item.useTime = Item.useAnimation = 23;
+            Item.damage = 2130;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.channel = true;
             Item.noMelee = true;
@@ -37,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ModContent.RarityType<Violet>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CondemnationArrow>();
-            Item.shootSpeed = 14.5f;
+            Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Arrow;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -48,10 +44,15 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player)
         {
-            if (Main.myPlayer == player.whoAmI)
-                player.Calamity().rightClickListener = true;
+            var calPlayer = player.Calamity();
 
-            if (player.Calamity().mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0)
+            if (Main.myPlayer == player.whoAmI)
+            {
+                calPlayer.rightClickListener = true;
+                calPlayer.mouseRotationListener = true;
+            }
+
+            if (calPlayer.mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0)
             {
                 Item.noUseGraphic = false;
             }
@@ -63,12 +64,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0;
 
+        // Spawning the holdout cannot consume ammo
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.altFunctionUse == 2f || player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] > 0;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 shootVelocity = velocity;
             Vector2 shootDirection = shootVelocity.SafeNormalize(Vector2.UnitX * player.direction);
-
-
 
             // Single arrow firing.
             if (player.Calamity().mouseRight)

@@ -9,23 +9,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("AtaxiaHelm")]
 
-    public class HydrothermicHeadMelee : ModItem
+    public class HydrothermicHeadMelee : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Hydrothermic Helm");
-            Tooltip.SetDefault("12% increased melee damage and 10% increased melee critical strike chance\n" +
-                "18% increased melee speed\n" +
-                "Melee attacks and melee projectiles inflict on fire\n" +
-                "Temporary immunity to lava and immunity to fire damage");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 33; //67
         }
@@ -43,15 +34,11 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "5% increased melee damage\n" +
-                "Enemies are more likely to target you\n" +
-                "Inferno effect when below 50% life\n" +
-                "Melee attacks and projectiles cause chaos flames to erupt on enemy hits\n" +
-                "You emit a blazing explosion when you are hit";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<HydrothermicArmor>("CommonSetBonus");
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaGeyser = true;
-            player.GetDamage<MeleeDamageClass>() += 0.05f;
+            player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
             player.aggro += 700;
         }
 
@@ -59,10 +46,9 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         {
             var modPlayer = player.Calamity();
             modPlayer.ataxiaFire = true;
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.18f;
-            player.GetDamage<MeleeDamageClass>() += 0.12f;
+            player.GetDamage<MeleeDamageClass>() += 0.17f;
             player.GetCritChance<MeleeDamageClass>() += 10;
-            player.lavaMax += 240;
+            player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
         }
 

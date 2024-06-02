@@ -1,29 +1,23 @@
-﻿using CalamityMod.CustomRecipes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.DraedonMisc;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Rarities;
+using CalamityMod.UI;
+using CalamityMod.UI.DraedonLogs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.UI.DraedonLogs;
 
 namespace CalamityMod.Items.DraedonMisc
 {
-    public class EncryptedSchematicHell : ModItem
+    public class EncryptedSchematicHell : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Encrypted Schematic (Underworld)");
-            Tooltip.SetDefault("Requires a Codebreaker with a sophisticated display to decrypt");
-        }
-
+        public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -49,33 +43,37 @@ namespace CalamityMod.Items.DraedonMisc
             if (RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes)
             {
                 if (line != null)
-                    line.Text = "Has already been decrypted.\n" +
-                        "Click to view its contents.\n" +
-                        "Unlocked recipes:";
+                    line.Text = CalamityUtils.GetTextValue($"{LocalizationCategory}.SchematicUnlocked");
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
-                    TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{ModContent.ItemType<PulseDragon>()}] Pulse Dragon");
+                    int meleeItem = ModContent.ItemType<PulseDragon>();
+                    TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{ModContent.ItemType<HeavyLaserRifle>()}] Heavy Laser Rifle");
+                    int rangedItem = ModContent.ItemType<HeavyLaserRifle>();
+                    TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 2, rangedDisplay);
 
-                    TooltipLine mageDisplay = new TooltipLine(this.Mod, "CalamityMod:MageDisplay", $"[i:{ModContent.ItemType<PlasmaCaster>()}] Plasma Caster");
+                    int mageItem = ModContent.ItemType<PlasmaCaster>();
+                    TooltipLine mageDisplay = new TooltipLine(this.Mod, "CalamityMod:MageDisplay", $"[i:{mageItem}] {CalamityUtils.GetItemName(mageItem)}");
                     mageDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 3, mageDisplay);
 
-                    TooltipLine summonDisplay = new TooltipLine(this.Mod, "CalamityMod:SummonDisplay", $"[i:{ModContent.ItemType<SnakeEyes>()}] Snake Eyes");
+                    int summonItem = ModContent.ItemType<SnakeEyes>();
+                    TooltipLine summonDisplay = new TooltipLine(this.Mod, "CalamityMod:SummonDisplay", $"[i:{summonItem}] {CalamityUtils.GetItemName(summonItem)}");
                     summonDisplay.OverrideColor = new Color(31, 242, 245);
                     list.Insert(insertIndex + 4, summonDisplay);
 
-                    TooltipLine rogueDisplay = new TooltipLine(this.Mod, "CalamityMod:RogueDisplay", $"[i:{ModContent.ItemType<WavePounder>()}] Wave Pounder");
+                    int rogueItem = ModContent.ItemType<WavePounder>();
+                    TooltipLine rogueDisplay = new TooltipLine(this.Mod, "CalamityMod:RogueDisplay", $"[i:{rogueItem}] {CalamityUtils.GetItemName(rogueItem)}");
                     rogueDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 5, rogueDisplay);
 
-                    TooltipLine machineDisplay = new TooltipLine(this.Mod, "CalamityMod:CodeDisplay", $"[i:{ModContent.ItemType<VoltageRegulationSystem>()}] Voltage Regulation System");
+                    int codeItem = ModContent.ItemType<VoltageRegulationSystem>();
+                    TooltipLine machineDisplay = new TooltipLine(this.Mod, "CalamityMod:CodeDisplay", $"[i:{codeItem}] {CalamityUtils.GetItemName(codeItem)}");
                     machineDisplay.OverrideColor = new Color(165, 118, 104);
                     list.Insert(insertIndex + 6, machineDisplay);
 
@@ -90,7 +88,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<MysteriousCircuitry>(10).
                 AddIngredient<DubiousPlating>(10).
                 AddIngredient(ItemID.Glass, 50).
-                AddCondition(SchematicRecipe.ConstructRecipeCondition("Hell", out Predicate<Recipe> condition), condition).
+                AddCondition(SchematicRecipe.ConstructRecipeCondition("Hell", out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
                 Register();
         }

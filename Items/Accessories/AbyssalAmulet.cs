@@ -1,29 +1,21 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Neck)]
-    public class AbyssalAmulet : ModItem
+    public class AbyssalAmulet : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Abyssal Amulet");
-            Tooltip.SetDefault("Attacks inflict the Crush Depth debuff\n" +
-                "Grants immunity to the Crush Depth debuff\n" +
-                "While in the abyss you gain 10% increased max life");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }
 
@@ -31,7 +23,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.abyssalAmulet = true;
-            player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;
+            player.buffImmune[ModContent.BuffType<RiptideDebuff>()] = true;
         }
     }
 }

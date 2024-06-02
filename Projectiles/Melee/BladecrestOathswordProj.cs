@@ -1,17 +1,21 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using System.IO;
+using CalamityMod.Effects;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class BladecrestOathswordProj : BaseIdleHoldoutProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<BladecrestOathsword>();
         public enum SwingState
         {
             Default,
@@ -32,7 +36,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bladecrest Oathsword");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
         }
@@ -47,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 90000;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
-            Projectile.noEnchantments = true;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -75,9 +78,16 @@ namespace CalamityMod.Projectiles.Melee
 
             Direction = Owner.direction;
 
+            //Set the owner's arm to rotate with the blade
+            if (Owner.itemAnimation > 0)
+            {
+                float armPointingDirection = Projectile.rotation + MathHelper.ToRadians(240);
+                Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, armPointingDirection);
+            }
+
             // Glue the sword to its owner.
             Projectile.Opacity = 1f;
-            Projectile.position = Owner.RotatedRelativePoint(Owner.MountedCenter, true) - Projectile.Size / 2f + Vector2.UnitY * Owner.gfxOffY;
+            Projectile.position = Owner.RotatedRelativePoint(Owner.MountedCenter, true) - Projectile.Size * 0.5f + Vector2.UnitY * Owner.gfxOffY;
 
             float swingSpeedInterpolant = 0.27f;
             float swingCompletion = 1f - Owner.itemAnimation / (float)Owner.itemAnimationMax;
@@ -103,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Opacity = 0f;
 
             // Determine the horizontal stretch offset of the blade. This is used in matrix math below to create 2.5D visuals.
-            BladeHorizontalFactor = MathHelper.Lerp(1f, 1.5f, (aimDirection3D.X * 0.5f + 0.5f) * Utils.GetLerpValue(1f, 0.8f, unchangedSwingCompletion, true));
+            BladeHorizontalFactor = MathHelper.Lerp(1f, 1.25f, (aimDirection3D.X * 0.5f + 0.5f) * Utils.GetLerpValue(1f, 0.8f, unchangedSwingCompletion, true));
 
             float baseRotation = new Vector2(aimDirection3D.X, aimDirection3D.Y).ToRotation();
 
@@ -126,9 +136,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.rotation.AngleTowards(idealRotation, swingSpeedInterpolant * 0.45f).AngleLerp(idealRotation, swingSpeedInterpolant * 0.2f);
 
             // Offset the blade so that the handle is attached to the owner's hand.
-            float horizontalBladeOffset = MathHelper.Lerp(-4f, 10f, Utils.GetLerpValue(1f, 0.72f, unchangedSwingCompletion, true) * Utils.GetLerpValue(0f, 0.28f, unchangedSwingCompletion, true));
-            Vector2 bladeOffset = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.width * 0.5f;
-            bladeOffset += new Vector2(Direction * horizontalBladeOffset, 2f).RotatedBy(Owner.fullRotation) + Vector2.UnitY * Owner.gfxOffY;
+            Vector2 bladeOffset = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.width * 0.65f;
+            bladeOffset += Vector2.UnitY * Owner.gfxOffY;
             Projectile.position += bladeOffset;
 
             // Create demon magic dust along the blade when swinging, as well as demon blood scythes.
@@ -144,12 +153,12 @@ namespace CalamityMod.Projectiles.Melee
                     shadowflame.noGravity = true;
                 }
 
-                if (Main.myPlayer == Projectile.owner && Owner.itemAnimation % 4 == 3 && Owner.itemAnimation < Owner.itemAnimationMax - 3)
+                if (Main.myPlayer == Projectile.owner && Owner.itemAnimation % 5 == 3 && Owner.itemAnimation < Owner.itemAnimationMax - 3)
                 {
                     Vector2 bloodScytheShootVelocity = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2();
                     bloodScytheShootVelocity.Y *= 0.04f;
                     bloodScytheShootVelocity = bloodScytheShootVelocity.SafeNormalize(Vector2.UnitY) * 50f;
-                    Vector2 bloodScytheSpawnPosition = Projectile.Center + bloodScytheShootVelocity.SafeNormalize(Vector2.UnitY) * 50f;
+                    Vector2 bloodScytheSpawnPosition = Projectile.Center + bloodScytheShootVelocity.SafeNormalize(Vector2.UnitY) * 35f;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), bloodScytheSpawnPosition, bloodScytheShootVelocity, ModContent.ProjectileType<BloodScythe>(), Projectile.damage, Projectile.knockBack * 0.4f, Projectile.owner);
                 }
             }
@@ -197,16 +206,22 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:LinearTransformation"].Apply();
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, 2, lightColor);
+
             Main.spriteBatch.ExitShaderRegion();
+
+            CalamityUtils.CalculatePerspectiveMatricies(out var view, out var proj);
+            CalamityShaders.PrimitiveClearShader.Parameters["uWorldViewProjection"].SetValue(view * proj);
+            CalamityShaders.PrimitiveClearShader.CurrentTechnique.Passes[0].Apply();
+            Filters.Scene["CalamityMod:PrimitiveClearShader"].GetShader().Shader.CurrentTechnique.Passes[0].Apply();
 
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, damage, knockback, crit);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), damage, knockback, crit);
-            PlayerLoader.OnHitNPC(Owner, Owner.ActiveItem(), target, damage, knockback, crit);
+            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
         }
     }
 }

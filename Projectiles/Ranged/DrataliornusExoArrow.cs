@@ -5,14 +5,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class DrataliornusExoArrow : ModProjectile
+    public class DrataliornusExoArrow : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Drataliornus Arrow");
-        }
 
         public override void SetDefaults()
         {
@@ -39,19 +35,18 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.alpha = 0;
             }
-            float num55 = 100f;
-            float num56 = 3f;
+            float inc = 3f;
             if (Projectile.ai[1] == 0f)
             {
-                Projectile.localAI[0] += num56;
-                if (Projectile.localAI[0] > num55)
+                Projectile.localAI[0] += inc;
+                if (Projectile.localAI[0] > 100f)
                 {
-                    Projectile.localAI[0] = num55;
+                    Projectile.localAI[0] = 100f;
                 }
             }
             else
             {
-                Projectile.localAI[0] -= num56;
+                Projectile.localAI[0] -= inc;
                 if (Projectile.localAI[0] <= 0f)
                 {
                     Projectile.Kill();
@@ -60,12 +55,12 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.immune[Projectile.owner] = 0;
 

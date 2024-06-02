@@ -6,6 +6,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -23,8 +24,8 @@ namespace CalamityMod.Tiles.Astral
             Main.tileLavaDeath[Type] = true;
             TileID.Sets.CommonSapling[Type] = true;
             TileID.Sets.TreeSapling[Type] = true;
-			TileID.Sets.SwaysInWindBasic[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.SwaysInWindBasic[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             TileObjectData.newTile.Width = 1;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -40,9 +41,7 @@ namespace CalamityMod.Tiles.Astral
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("MapObject.Sapling");
-            AddMapEntry(new Color(200, 200, 200), name);
+            AddMapEntry(new Color(200, 200, 200), Language.GetText("MapObject.Sapling"));
             DustType = ModContent.DustType<AstralBasic>();
             AdjTiles = new int[] { TileID.Saplings };
         }
@@ -54,7 +53,7 @@ namespace CalamityMod.Tiles.Astral
 
         public override void RandomUpdate(int i, int j)
         {
-            if (WorldGen.genRand.Next(20) == 0)
+            if (WorldGen.genRand.NextBool(20))
             {
                 bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                 bool success = WorldGen.GrowTree(i, j);

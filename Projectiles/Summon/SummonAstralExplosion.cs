@@ -1,13 +1,13 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SummonAstralExplosion : ModProjectile
+    public class SummonAstralExplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Explosion");
             ProjectileID.Sets.MinionShot[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 6;
         }
@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 44;
             Projectile.height = 48;
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.penetrate = 2;
             Projectile.timeLeft = Main.projFrames[Projectile.type] * 5;
             Projectile.usesLocalNPCImmunity = true;

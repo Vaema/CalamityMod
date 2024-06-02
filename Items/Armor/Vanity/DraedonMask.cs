@@ -1,16 +1,15 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class DraedonMask : ModItem
+    public class DraedonMask : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Draedon Mask");
 
             if (Main.netMode != NetmodeID.Server)
                 ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;

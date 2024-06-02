@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 
 namespace CalamityMod.Particles
 {

@@ -8,23 +8,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.FathomSwarmer
 {
     [AutoloadEquip(EquipType.Head)]
-    public class FathomSwarmerVisage : ModItem
+    public class FathomSwarmerVisage : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Fathom Swarmer Visage");
-            Tooltip.SetDefault("5% increased minion damage\n" +
-                "Provides breathing and light underwater");
-        }
-
+        public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 10; //47 +10 underwater
+            Item.defense = 8; //41 +10 underwater
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -39,10 +32,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "10% increased minion damage and +2 max minions\n" +
-                "Grants the ability to climb walls\n" +
-                "30% increased minion damage while submerged in liquid\n" +
-                "Provides a moderate amount of light and moderately reduces breath loss in the abyss";
+            player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.fathomSwarmer = true;
             player.spikedBoots = 2;
@@ -50,14 +40,17 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             player.GetDamage<SummonDamageClass>() += 0.1f;
             if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
             {
-                player.GetDamage<SummonDamageClass>() += 0.3f;
+                player.GetDamage<SummonDamageClass>() += 0.2f;
+                player.statDefense += 10;
+                player.lifeRegen += 5;
             }
         }
 
         public override void UpdateEquip(Player player)
         {
             var modPlayer = player.Calamity();
-            player.GetDamage<SummonDamageClass>() += 0.05f;
+            player.GetDamage<SummonDamageClass>() += 0.08f;
+            player.maxMinions += 1;
             if (player.breath <= player.breathMax + 2 && !modPlayer.ZoneAbyss)
             {
                 player.breath = player.breathMax + 3;

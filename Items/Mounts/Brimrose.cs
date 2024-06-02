@@ -6,15 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
 {
-    public class Brimrose : ModItem
+    public class Brimrose : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Brimrose");
-            Tooltip.SetDefault("Summons a brimrose mount");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()
         {
             Item.width = 64;

@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class DreadmineTurret : ModProjectile
+    public class DreadmineTurret : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public float count = 0;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dreadmine Turret");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -49,66 +49,63 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (Main.rand.NextBool(15))
             {
-                int num = 0;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                int mineAmt = 0;
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == ModContent.ProjectileType<Dreadmine>())
+                    if (p.owner == Main.myPlayer && p.type == ModContent.ProjectileType<Dreadmine>())
                     {
-                        num++;
+                        mineAmt++;
                     }
                 }
-                if (Main.rand.Next(15) >= num && num < 10)
+                if (Main.rand.Next(15) >= mineAmt && mineAmt < 10)
                 {
-                    int num2 = 50;
-                    int num3 = 24;
-                    int num4 = 90;
-                    for (int j = 0; j < num2; j++)
+                    int spawnVariance = 24;
+                    int moreSpawnVariance = 90;
+                    for (int j = 0; j < 50; j++)
                     {
-                        int num5 = Main.rand.Next(200 - j * 2, 400 + j * 2);
+                        int randSpawn = Main.rand.Next(200 - j * 2, 400 + j * 2);
                         Vector2 center = Projectile.Center;
-                        center.X += (float)Main.rand.Next(-num5, num5 + 1);
-                        center.Y += (float)Main.rand.Next(-num5, num5 + 1);
-                        if (!Collision.SolidCollision(center, num3, num3))
+                        center.X += (float)Main.rand.Next(-randSpawn, randSpawn + 1);
+                        center.Y += (float)Main.rand.Next(-randSpawn, randSpawn + 1);
+                        if (!Collision.SolidCollision(center, spawnVariance, spawnVariance))
                         {
-                            center.X += (float)(num3 / 2);
-                            center.Y += (float)(num3 / 2);
+                            center.X += (float)(spawnVariance / 2);
+                            center.Y += (float)(spawnVariance / 2);
                             if (Collision.CanHit(new Vector2(Projectile.Center.X, Projectile.position.Y), 1, 1, center, 1, 1) ||
                                 Collision.CanHit(new Vector2(Projectile.Center.X, Projectile.position.Y - 50f), 1, 1, center, 1, 1))
                             {
-                                int num6 = (int)center.X / 16;
-                                int num7 = (int)center.Y / 16;
-                                bool flag = false;
-                                if (Main.rand.NextBool(3) && Main.tile[num6, num7] != null && Main.tile[num6, num7].WallType > 0)
+                                int tileX = (int)center.X / 16;
+                                int tileY = (int)center.Y / 16;
+                                bool canSpawnMine = false;
+                                if (Main.rand.NextBool(3) && Main.tile[tileX, tileY] != null && Main.tile[tileX, tileY].WallType > 0)
                                 {
-                                    flag = true;
+                                    canSpawnMine = true;
                                 }
                                 else
                                 {
-                                    center.X -= (float)(num4 / 2);
-                                    center.Y -= (float)(num4 / 2);
-                                    if (Collision.SolidCollision(center, num4, num4))
+                                    center.X -= (float)(moreSpawnVariance / 2);
+                                    center.Y -= (float)(moreSpawnVariance / 2);
+                                    if (Collision.SolidCollision(center, moreSpawnVariance, moreSpawnVariance))
                                     {
-                                        center.X += (float)(num4 / 2);
-                                        center.Y += (float)(num4 / 2);
-                                        flag = true;
+                                        center.X += (float)(moreSpawnVariance / 2);
+                                        center.Y += (float)(moreSpawnVariance / 2);
+                                        canSpawnMine = true;
                                     }
                                 }
-                                if (flag)
+                                if (canSpawnMine)
                                 {
                                     for (int k = 0; k < Main.maxProjectiles; k++)
                                     {
                                         if (Main.projectile[k].active && Main.projectile[k].owner == Main.myPlayer &&
                                             Main.projectile[k].type == ModContent.ProjectileType<Dreadmine>() && (center - Main.projectile[k].Center).Length() < 48f)
                                         {
-                                            flag = false;
+                                            canSpawnMine = false;
                                             break;
                                         }
                                     }
-                                    if (flag && Main.myPlayer == Projectile.owner)
+                                    if (canSpawnMine && Main.myPlayer == Projectile.owner)
                                     {
-                                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Vector2.Zero, ModContent.ProjectileType<Dreadmine>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                                        if (Main.projectile.IndexInRange(p))
-                                            Main.projectile[p].originalDamage = Projectile.originalDamage;
+                                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Vector2.Zero, ModContent.ProjectileType<Dreadmine>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                                     }
                                 }
                             }

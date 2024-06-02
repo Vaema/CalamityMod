@@ -7,23 +7,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class PrimordialAncient : ModItem
+    public class PrimordialAncient : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Primordial Ancient");
-            Tooltip.SetDefault("An ancient relic from an ancient land\n" +
-                "Casts a gigantic blast of dust");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 170;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
             Item.width = 40;
             Item.height = 56;
+            Item.damage = 145;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 16;
             Item.useTime = 18;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -40,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<PrimordialEarth>()).
+                AddIngredient<PrimordialEarth>().
                 AddIngredient(ItemID.AncientBattleArmorMaterial, 5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).

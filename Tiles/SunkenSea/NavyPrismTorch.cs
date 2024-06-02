@@ -3,28 +3,18 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
     public class NavyPrismTorch : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            this.SetUpTorch(true, true);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Torch");
-            AddMapEntry(new Color(253, 221, 3), name);
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            ItemDrop = ModContent.ItemType<Items.Placeables.Furniture.NavyPrismTorch>();
-            AdjTiles = new int[] { TileID.Torches };
-            TileID.Sets.Torch[Type] = true;
-            TileID.Sets.FramesOnKillWall[Type] = true;
-        }
+        public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.NavyPrismTorch>(), true, true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(170, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(170, 255, 255), 1f);
             return false;
         }
 
@@ -59,9 +49,7 @@ namespace CalamityMod.Tiles.SunkenSea
             {
                 offsetY = 2;
                 if (WorldGen.SolidTile(i - 1, j + 1) || WorldGen.SolidTile(i + 1, j + 1))
-                {
                     offsetY = 4;
-                }
             }
         }
 
@@ -82,10 +70,10 @@ namespace CalamityMod.Tiles.SunkenSea
             return true;
         }
 
-		public override float GetTorchLuck(Player player)
-		{
-			// Note: Total Torch luck never goes below zero
-			return player.Calamity().ZoneSunkenSea ? 1f : -1f;
-		}
+        public override float GetTorchLuck(Player player)
+        {
+            // Note: Total Torch luck never goes below zero
+            return player.Calamity().ZoneSunkenSea ? 1f : -1f;
+        }
     }
 }

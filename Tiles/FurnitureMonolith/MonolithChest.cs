@@ -2,11 +2,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.Audio;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
@@ -14,14 +14,8 @@ namespace CalamityMod.Tiles.FurnitureMonolith
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpChest();
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Monolith Chest");
-            AddMapEntry(new Color(191, 142, 111), name, MapChestName);
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Containers };
-            ContainerName.SetDefault("Monolith Chest");
-            ChestDrop = ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithChest>();
+            this.SetUpChest(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithChest>());
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>(), CalamityUtils.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -29,10 +23,42 @@ namespace CalamityMod.Tiles.FurnitureMonolith
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<AstralBasic>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
+        public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>();
+        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
+        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
+        public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
+        public override bool RightClick(int i, int j)
         {
-            num = fail ? 1 : 3;
+            // Glowmask animation & custom sound
+            Player player = Main.LocalPlayer;
+            Tile tile = Main.tile[i, j];
+            Main.mouseRightRelease = false;
+            int left = i;
+            int top = j;
+            if (tile.TileFrameX % 36 != 0)
+            {
+                left--;
+            }
+            if (tile.TileFrameY != 0)
+            {
+                top--;
+            }
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                int chest = Chest.FindChest(left, top);
+                if (chest >= 0)
+                {
+                    if (player.chest < 0)
+                    {
+                        SoundEngine.PlaySound(SoundID.NPCDeath22 with { Volume = SoundID.NPCDeath22.Volume * 0.5f });
+                    }
+                }
+            }
+
+            return CalamityUtils.ChestRightClick(i, j);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -57,57 +83,6 @@ namespace CalamityMod.Tiles.FurnitureMonolith
                 colour.B = (byte)(paintCol.B / 255f * colour.B);
             }
             return colour;
-        }
-
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
-
-        public string MapChestName(string name, int i, int j) => CalamityUtils.GetMapChestName(name, i, j);
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ChestDrop);
-            Chest.DestroyChest(i, j);
-        }
-
-        public override bool RightClick(int i, int j)
-        {
-            // Glowmask animation & custom sound
-            Player player = Main.LocalPlayer;
-            Tile tile = Main.tile[i, j];
-            Main.mouseRightRelease = false;
-            int left = i;
-            int top = j;
-            if (tile.TileFrameX % 36 != 0)
-            {
-                left--;
-            }
-            if (tile.TileFrameY != 0)
-            {
-                top--;
-            }
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                int chest = Chest.FindChest(left, top);
-                if (chest >= 0)
-                {
-                    if (player.chest < 0)
-                    {
-                        SoundEngine.PlaySound(SoundID.NPCDeath22 with { Volume = SoundID.NPCDeath22.Volume * 0.5f});
-                    }
-                }
-            }
-
-            return CalamityUtils.ChestRightClick(i, j);
-        }
-
-        public override void MouseOver(int i, int j)
-        {
-            CalamityUtils.ChestMouseOver<Items.Placeables.FurnitureMonolith.MonolithChest>("Monolith Chest", i, j);
-        }
-
-        public override void MouseOverFar(int i, int j)
-        {
-            CalamityUtils.ChestMouseFar<Items.Placeables.FurnitureMonolith.MonolithChest>("Monolith Chest", i, j);
         }
     }
 }

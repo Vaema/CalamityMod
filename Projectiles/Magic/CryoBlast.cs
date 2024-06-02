@@ -2,18 +2,18 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class CryoBlast : ModProjectile
+    public class CryoBlast : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private const float Spread = 0.15f;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blast");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -27,8 +27,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.coldDamage = true;
             Projectile.ignoreWater = true;
             Projectile.alpha = 255;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -72,10 +72,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f || Projectile.ai[0] > 0f)
             {
-                int ice = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 66, 0f, 0f, 100, default, Projectile.scale * 0.5f);
+                int ice = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, default, Projectile.scale * 0.5f);
                 Main.dust[ice].noGravity = true;
                 Main.dust[ice].velocity *= 0f;
-                int snow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 185, 0f, 0f, 100, default, Projectile.scale * 0.5f);
+                int snow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FrostHydra, 0f, 0f, 100, default, Projectile.scale * 0.5f);
                 Main.dust[snow].noGravity = true;
                 Main.dust[snow].velocity *= 0f;
             }
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Magic
             if ((Projectile.timeLeft > 596 && Projectile.ai[0] == 0f) || (Projectile.timeLeft > 599 && Projectile.ai[0] > 0f))
                 return false;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
@@ -100,12 +100,12 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             for (int index1 = 0; index1 < 15; ++index1)
             {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 88, 0f, 0f, 0, new Color(), 0.9f);
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire, 0f, 0f, 0, new Color(), 0.9f);
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].velocity *= 1.5f;
             }
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
             target.AddBuff(BuffID.Frostburn2, 180);

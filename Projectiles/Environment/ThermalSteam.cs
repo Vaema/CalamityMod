@@ -8,16 +8,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Environment
 {
-    public class ThermalSteam : ModProjectile, IAdditiveDrawer
+    public class ThermalSteam : ModProjectile, IAdditiveDrawer, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
         public const int Lifetime = 90;
 
         public override string Texture => "CalamityMod/Projectiles/Summon/SmallAresArms/MinionPlasmaGas";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Steam");
-
             // This prevents the water from creating a universal distortion wherever it lands, thus making the geysers look weird.
             ProjectileID.Sets.NoLiquidDistortion[Type] = true;
         }
@@ -37,14 +36,14 @@ namespace CalamityMod.Projectiles.Environment
         public override void AI()
         {
             Projectile.localAI[0] = 0f;
-            Projectile.scale = Utils.Remap((Projectile.timeLeft+Lifetime), 180, 0.4f, 0.02f, 1.4f);
-            Projectile.Opacity = Utils.Remap((Projectile.timeLeft+Lifetime), 160f, 50f, 1.15f, 0.01f);
+            Projectile.scale = Utils.Remap((Projectile.timeLeft + Lifetime), 180, 0.4f, 0.02f, 1.4f);
+            Projectile.Opacity = Utils.Remap((Projectile.timeLeft + Lifetime), 160f, 50f, 1.15f, 0.01f);
             Projectile.velocity.Y *= 0.97f;
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0)
+            if (info.Damage <= 0)
                 return;
 
             target.AddBuff(BuffID.Burning, 180);
@@ -62,7 +61,7 @@ namespace CalamityMod.Projectiles.Environment
             if (Projectile.localAI[0] == 1f)
                 return;
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Projectile.Opacity * 0.45f;

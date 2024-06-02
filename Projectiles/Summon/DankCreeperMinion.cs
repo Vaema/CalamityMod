@@ -1,19 +1,20 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class DankCreeperMinion : ModProjectile
+    public class DankCreeperMinion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dank Creeper");
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 24;
+            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 30;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -42,22 +43,22 @@ namespace CalamityMod.Projectiles.Summon
             CalamityPlayer modPlayer = player.Calamity();
             if (Projectile.localAI[0] == 0f)
             {
-                int num226 = 36;
-                for (int num227 = 0; num227 < num226; num227++)
+                int constant = 36;
+                for (int i = 0; i < constant; i++)
                 {
-                    Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                    vector6 = vector6.RotatedBy((double)((float)(num227 - (num226 / 2 - 1)) * 6.28318548f / (float)num226), default) + Projectile.Center;
-                    Vector2 vector7 = vector6 - Projectile.Center;
-                    int num228 = Dust.NewDust(vector6 + vector7, 0, 0, 14, vector7.X * 1.5f, vector7.Y * 1.5f, 100, default, 1.4f);
-                    Main.dust[num228].noGravity = true;
-                    Main.dust[num228].noLight = true;
-                    Main.dust[num228].velocity = vector7;
+                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
+                    rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
+                    Vector2 faceDirection = rotate - Projectile.Center;
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Demonite, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 1.4f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].noLight = true;
+                    Main.dust[dust].velocity = faceDirection;
                 }
                 Projectile.localAI[0] += 1f;
             }
-            bool flag64 = Projectile.type == ModContent.ProjectileType<DankCreeperMinion>();
+            bool isMinion = Projectile.type == ModContent.ProjectileType<DankCreeperMinion>();
             player.AddBuff(ModContent.BuffType<DankCreeperBuff>(), 3600);
-            if (flag64)
+            if (isMinion)
             {
                 if (player.dead)
                 {
@@ -69,16 +70,16 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
             Projectile.MinionAntiClump();
-            float num535 = Projectile.position.X;
-            float num536 = Projectile.position.Y;
-            float num537 = 1300f;
-            bool flag19 = false;
-            int num538 = 1100;
+            float projX = Projectile.position.X;
+            float projY = Projectile.position.Y;
+            float attackRange = 1300f;
+            bool canAttack = false;
+            int separationAnxietyDist = 1100;
             if (Projectile.ai[1] != 0f)
             {
-                num538 = 1800;
+                separationAnxietyDist = 1800;
             }
-            if (Math.Abs(Projectile.Center.X - Main.player[Projectile.owner].Center.X) + Math.Abs(Projectile.Center.Y - Main.player[Projectile.owner].Center.Y) > (float)num538)
+            if (Math.Abs(Projectile.Center.X - Main.player[Projectile.owner].Center.X) + Math.Abs(Projectile.Center.Y - Main.player[Projectile.owner].Center.Y) > (float)separationAnxietyDist)
             {
                 Projectile.ai[0] = 1f;
             }
@@ -89,64 +90,64 @@ namespace CalamityMod.Projectiles.Summon
                     NPC npc = Main.npc[player.MinionAttackTargetNPC];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
-                        float num539 = npc.position.X + (float)(npc.width / 2);
-                        float num540 = npc.position.Y + (float)(npc.height / 2);
-                        float num541 = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - num539) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - num540);
-                        if (num541 < num537 && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
+                        float npcX = npc.position.X + (float)(npc.width / 2);
+                        float npcY = npc.position.Y + (float)(npc.height / 2);
+                        float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
+                        if (npcDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
                         {
-                            num535 = num539;
-                            num536 = num540;
-                            flag19 = true;
+                            projX = npcX;
+                            projY = npcY;
+                            canAttack = true;
                         }
                     }
                 }
-                if (!flag19)
+                if (!canAttack)
                 {
-                    for (int num542 = 0; num542 < Main.maxNPCs; num542++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[num542].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            float num543 = Main.npc[num542].position.X + (float)(Main.npc[num542].width / 2);
-                            float num544 = Main.npc[num542].position.Y + (float)(Main.npc[num542].height / 2);
-                            float num545 = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - num543) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - num544);
-                            if (num545 < num537 && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[num542].position, Main.npc[num542].width, Main.npc[num542].height))
+                            float otherNPCX = n.position.X + (float)(n.width / 2);
+                            float otherNPCY = n.position.Y + (float)(n.height / 2);
+                            float otherNPCDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - otherNPCX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - otherNPCY);
+                            if (otherNPCDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                             {
-                                num537 = num545;
-                                num535 = num543;
-                                num536 = num544;
-                                flag19 = true;
+                                attackRange = otherNPCDist;
+                                projX = otherNPCX;
+                                projY = otherNPCY;
+                                canAttack = true;
                             }
                         }
                     }
                 }
             }
-            if (!flag19)
+            if (!canAttack)
             {
-                float num546 = 8f;
+                float returnSpeed = 8f;
                 if (Projectile.ai[0] == 1f)
                 {
-                    num546 = 12f;
+                    returnSpeed = 12f;
                 }
-                Vector2 vector42 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-                float num547 = player.Center.X - vector42.X;
-                float num548 = player.Center.Y - vector42.Y - 60f;
-                float num549 = (float)Math.Sqrt((double)(num547 * num547 + num548 * num548));
-                if (num549 < 100f && Projectile.ai[0] == 1f && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
+                Vector2 playerDirection = Projectile.Center;
+                float playerXDist = player.Center.X - playerDirection.X;
+                float playerYDist = player.Center.Y - playerDirection.Y - 60f;
+                float playerDist = (float)Math.Sqrt((double)(playerXDist * playerXDist + playerYDist * playerYDist));
+                if (playerDist < 100f && Projectile.ai[0] == 1f && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
                 {
                     Projectile.ai[0] = 0f;
                 }
-                if (num549 > 2000f)
+                if (playerDist > 2000f)
                 {
                     Projectile.position.X = player.Center.X - (float)(Projectile.width / 2);
                     Projectile.position.Y = player.Center.Y - (float)(Projectile.width / 2);
                 }
-                if (num549 > 70f)
+                if (playerDist > 70f)
                 {
-                    num549 = num546 / num549;
-                    num547 *= num549;
-                    num548 *= num549;
-                    Projectile.velocity.X = (Projectile.velocity.X * 20f + num547) / 21f;
-                    Projectile.velocity.Y = (Projectile.velocity.Y * 20f + num548) / 21f;
+                    playerDist = returnSpeed / playerDist;
+                    playerXDist *= playerDist;
+                    playerYDist *= playerDist;
+                    Projectile.velocity.X = (Projectile.velocity.X * 20f + playerXDist) / 21f;
+                    Projectile.velocity.Y = (Projectile.velocity.Y * 20f + playerYDist) / 21f;
                 }
                 else
                 {
@@ -176,20 +177,20 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (Projectile.ai[1] == 0f)
                 {
-                    float num550 = 8f; //12
-                    Vector2 vector43 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-                    float num551 = num535 - vector43.X;
-                    float num552 = num536 - vector43.Y;
-                    float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-                    if (num553 < 100f)
+                    float hoverSpeed = 8f; //12
+                    Vector2 playerDirectionAgain = Projectile.Center;
+                    float playerXDistAgain = projX - playerDirectionAgain.X;
+                    float playerYDistAgain = projY - playerDirectionAgain.Y;
+                    float playerDistAgain = (float)Math.Sqrt((double)(playerXDistAgain * playerXDistAgain + playerYDistAgain * playerYDistAgain));
+                    if (playerDistAgain < 100f)
                     {
-                        num550 = 10f; //14
+                        hoverSpeed = 10f; //14
                     }
-                    num553 = num550 / num553;
-                    num551 *= num553;
-                    num552 *= num553;
-                    Projectile.velocity.X = (Projectile.velocity.X * 40f + num551) / 41f;
-                    Projectile.velocity.Y = (Projectile.velocity.Y * 40f + num552) / 41f;
+                    playerDistAgain = hoverSpeed / playerDistAgain;
+                    playerXDistAgain *= playerDistAgain;
+                    playerYDistAgain *= playerDistAgain;
+                    Projectile.velocity.X = (Projectile.velocity.X * 40f + playerXDistAgain) / 41f;
+                    Projectile.velocity.Y = (Projectile.velocity.Y * 40f + playerYDistAgain) / 41f;
                 }
                 else
                 {
@@ -207,18 +208,20 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.ai[1] = -1f;
                 Projectile.netUpdate = true;
             }
+
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 90);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

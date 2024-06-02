@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
@@ -6,15 +7,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class FabsolsVodka : ModItem
+    public class FabsolsVodka : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Potions";
+
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 5;
-            DisplayName.SetDefault("Fabsol's Vodka");
-            Tooltip.SetDefault("Boosts all damage stats by 8% but lowers defense by 10%\n" +
-                               "Increases immune time after being struck\n" +
-                               "This magical liquor is highly sought by those with a refined palate");
+            Item.ResearchUnlockCount = 5;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CrystalHeartVodka>();
         }
 
         public override void SetDefaults()
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.width = 28;
             Item.height = 18;
             Item.useTurn = true;
-            Item.maxStack = 30;
+            Item.maxStack = 9999;
             Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 17;
             Item.useTime = 17;
@@ -49,7 +49,8 @@ namespace CalamityMod.Items.Potions.Alcohol
                 AddIngredient<BloodOrb>(40).
                 AddIngredient(ItemID.CrystalShard).
                 AddTile(TileID.AlchemyTable).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

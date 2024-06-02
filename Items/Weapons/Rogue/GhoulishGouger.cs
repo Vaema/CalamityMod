@@ -11,14 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class GhoulishGouger : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Ghoulish Gouger");
-            Tooltip.SetDefault("Throws sets of four ghoulish scythes at ultra high velocity\n" +
-                "Stealth strikes summon a flurry of tormented souls on hit");
-            SacrificeTotal = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 74;
@@ -30,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 6;
             Item.useAnimation = 24;
             Item.reuseDelay = 11;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
@@ -38,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

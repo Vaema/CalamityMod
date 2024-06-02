@@ -1,19 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class BouncingShotgunPellet : ModProjectile
+    public class BouncingShotgunPellet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/RealmRavagerBullet";
         private int bounce = 2;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shotgun Pellet");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -45,11 +41,11 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) => SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
 
-        public override void OnHitPvp(Player target, int damage, bool crit) => SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(32);
             for (int d = 0; d < 2; d++)
@@ -58,10 +54,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int d = 0; d < 20; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 0, default, 2.5f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 0, default, 2.5f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1.5f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1.5f);
                 Main.dust[idx].velocity *= 2f;
                 Main.dust[idx].noGravity = true;
             }

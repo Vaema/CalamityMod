@@ -9,22 +9,16 @@ namespace CalamityMod.Items.Armor.Tarragon
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("TarragonHornedHelm")]
-    public class TarragonHeadSummon : ModItem
+    public class TarragonHeadSummon : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Tarragon Horned Helm");
-            Tooltip.SetDefault("Temporary immunity to lava\n" +
-                "Can move freely through liquids\n" +
-                "5% increased damage reduction and minion damage");
-        }
+        public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+        internal static string LifeAuraEntitySourceContext => "SetBonus_Calamity_Tarragon";
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.defense = 3; //98
             Item.rare = ModContent.RarityType<Turquoise>();
         }
@@ -46,21 +40,15 @@ namespace CalamityMod.Items.Armor.Tarragon
             modPlayer.tarraSet = true;
             modPlayer.tarraSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.setBonus = "50% increased minion damage and +3 max minions\n" +
-                "Reduces enemy spawn rates\n" +
-                "Increased heart pickup range\n" +
-                "Enemies have a chance to drop extra hearts on death\n" +
-                "Summons a life aura around you that damages nearby enemies";
+            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
             player.GetDamage<SummonDamageClass>() += 0.5f;
             player.maxMinions += 3;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.endurance += 0.05f;
+            player.endurance += 0.1f;
             player.GetDamage<SummonDamageClass>() += 0.05f;
-            player.lavaMax += 240;
-            player.ignoreWater = true;
         }
 
         public override void AddRecipes()

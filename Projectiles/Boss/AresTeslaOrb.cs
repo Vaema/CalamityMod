@@ -1,27 +1,26 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class AresTeslaOrb : ModProjectile
+    public class AresTeslaOrb : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Boss";
         public ref float Identity => ref Projectile.ai[0];
-        public PrimitiveTrail LightningDrawer;
-        public PrimitiveTrail LightningBackgroundDrawer;
         private const int timeLeft = 480;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tesla Sphere");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -89,7 +88,7 @@ namespace CalamityMod.Projectiles.Boss
                 float speed2 = 2.8f;
                 float angleRandom = 0.35f;
 
-                for (int num53 = 0; num53 < 40; num53++)
+                for (int i = 0; i < 40; i++)
                 {
                     float dustSpeed = Main.rand.NextFloat(speed1, speed2);
                     Vector2 dustVel = new Vector2(dustSpeed, 0.0f).RotatedBy(Projectile.velocity.ToRotation());
@@ -98,24 +97,24 @@ namespace CalamityMod.Projectiles.Boss
                     int randomDustType = Main.rand.Next(2) == 0 ? 206 : 229;
                     float scale = randomDustType == 206 ? 1.5f : 1f;
 
-                    int num54 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 2.5f * scale);
-                    Main.dust[num54].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
-                    Main.dust[num54].noGravity = true;
+                    int teslaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 2.5f * scale);
+                    Main.dust[teslaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
+                    Main.dust[teslaDust].noGravity = true;
 
-                    Dust dust = Main.dust[num54];
+                    Dust dust = Main.dust[teslaDust];
                     dust.velocity *= 3f;
 
-                    num54 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 1.5f * scale);
-                    Main.dust[num54].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
+                    teslaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 1.5f * scale);
+                    Main.dust[teslaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
-                    dust = Main.dust[num54];
+                    dust = Main.dust[teslaDust];
                     dust.velocity *= 2f;
 
-                    Main.dust[num54].noGravity = true;
-                    Main.dust[num54].fadeIn = 1f;
-                    Main.dust[num54].color = Color.Cyan * 0.5f;
+                    Main.dust[teslaDust].noGravity = true;
+                    Main.dust[teslaDust].fadeIn = 1f;
+                    Main.dust[teslaDust].color = Color.Cyan * 0.5f;
                 }
-                for (int num55 = 0; num55 < 20; num55++)
+                for (int j = 0; j < 20; j++)
                 {
                     float dustSpeed = Main.rand.NextFloat(speed1, speed2);
                     Vector2 dustVel = new Vector2(dustSpeed, 0f).RotatedBy(Projectile.velocity.ToRotation());
@@ -124,11 +123,11 @@ namespace CalamityMod.Projectiles.Boss
                     int randomDustType = Main.rand.Next(2) == 0 ? 206 : 229;
                     float scale = randomDustType == 206 ? 1.5f : 1f;
 
-                    int num56 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 3f * scale);
-                    Main.dust[num56].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
-                    Main.dust[num56].noGravity = true;
+                    int teslaDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 3f * scale);
+                    Main.dust[teslaDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
+                    Main.dust[teslaDust2].noGravity = true;
 
-                    Dust dust = Main.dust[num56];
+                    Dust dust = Main.dust[teslaDust2];
                     dust.velocity *= 0.5f;
                 }
             }
@@ -136,9 +135,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (damage <= 0 || Projectile.Opacity != 1f)
+            if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
             target.AddBuff(BuffID.Electrified, 240);
@@ -156,15 +155,15 @@ namespace CalamityMod.Projectiles.Boss
             bool expertMode = Main.expertMode || bossRush;
 
             float detachDistance = bossRush ? 1600f : death ? 1360f : revenge ? 1280f : expertMode ? 1200f : 960f;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type != Projectile.type || Main.projectile[i].ai[0] != Identity + 1f || !Main.projectile[i].active || Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Calamity().newAI[0] == (float)AresBody.Phase.Deathrays)
+                if (p.type != Projectile.type || p.ai[0] != Identity + 1f || Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Calamity().newAI[0] == (float)AresBody.Phase.Deathrays)
                     continue;
 
-                if (Vector2.Distance(Projectile.Center, Main.projectile[i].Center) > detachDistance)
+                if (Vector2.Distance(Projectile.Center, p.Center) > detachDistance)
                     continue;
 
-                return Main.projectile[i];
+                return p;
             }
 
             return null;
@@ -226,17 +225,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-            if (LightningBackgroundDrawer is null)
-                LightningBackgroundDrawer = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-
             Projectile orbToAttachTo = GetOrbToAttachTo();
             if (orbToAttachTo != null)
             {
                 List<Vector2> arcPoints = DetermineElectricArcPoints(Projectile.Center, orbToAttachTo.Center, 117);
-                LightningBackgroundDrawer.Draw(arcPoints, -Main.screenPosition, 90);
-                LightningDrawer.Draw(arcPoints, -Main.screenPosition, 90);
+                PrimitiveRenderer.RenderTrail(arcPoints, new(BackgroundWidthFunction, BackgroundColorFunction, smoothen: false), 90);
+                PrimitiveRenderer.RenderTrail(arcPoints, new(WidthFunction, ColorFunction, smoothen: false), 90);
             }
 
             lightColor.R = (byte)(255 * Projectile.Opacity);

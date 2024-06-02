@@ -1,4 +1,4 @@
-using CalamityMod.Items.Mounts;
+﻿using CalamityMod.Items.Mounts;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,8 +8,6 @@ namespace CalamityMod.Buffs.Mounts
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Squishy Bean");
-            Description.SetDefault("BEAN MAN. BEAN DO T H E  B EA N IS HER E");
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
         }

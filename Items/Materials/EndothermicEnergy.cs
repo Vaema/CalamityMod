@@ -9,26 +9,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
-    public class EndothermicEnergy : ModItem
+    public class EndothermicEnergy : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetStaticDefaults()
         {
-            SacrificeTotal = 100;
-            DisplayName.SetDefault("Endothermic Energy");
-            Tooltip.SetDefault("Its deathly chill sucks the life from its surroundings");
+            Item.ResearchUnlockCount = 100;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 116;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 116;
         }
 
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 38;
-            Item.maxStack = 999;
+            Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 2);
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

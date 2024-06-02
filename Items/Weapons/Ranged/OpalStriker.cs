@@ -1,63 +1,67 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class OpalStriker : ModItem
+    public class OpalStriker : ModItem, ILocalizedModType
     {
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/OpalStrike");
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Opal Striker");
-            Tooltip.SetDefault("50% chance to not consume ammo\n" + 
-                "Fires a string of opal strikes");
-            SacrificeTotal = 1;
-        }
+        public static readonly SoundStyle Charge = new("CalamityMod/Sounds/Item/OpalCharge") { Volume = 0.5f };
+        public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/OpalChargeLoop") { Volume = 0.5f };
+        internal static readonly int ChargeLoopSoundFrames = 120;
+        public static readonly SoundStyle Fire = new("CalamityMod/Sounds/Item/OpalFire") { PitchVariance = 0.4f, Volume = 0.3f };
+        public static readonly SoundStyle ChargedFire = new("CalamityMod/Sounds/Item/OpalChargedFire") { PitchVariance = 0.3f, Volume = 0.6f };
+
+        public static int AftershotCooldownFrames = 17;
+        public static int FullChargeFrames = 88;
+
+        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
 
         public override void SetDefaults()
         {
-            Item.damage = 9;
+            Item.width = 48;
+            Item.height = 24;
+            Item.damage = 33;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 46;
-            Item.height = 30;
-            Item.useTime = 5;
-            Item.reuseDelay = 25;
-            Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = AftershotCooldownFrames;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.noUseGraphic = true;
+            Item.knockBack = 4f;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.UseSound = FireSound;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<OpalStrike>();
-            Item.shootSpeed = 6f;
-            Item.useAmmo = AmmoID.Bullet;
+            Item.UseSound = null;
+            Item.autoReuse = false;
+            Item.channel = true;
+            Item.shoot = ModContent.ProjectileType<OpalStrikerHoldout>();
+            Item.shootSpeed = 12f;
             Item.Calamity().canFirePointBlankShots = true;
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<OpalStrike>(), damage, knockback, player.whoAmI);
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<OpalStrikerHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool();
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Marble, 20).
-                AddIngredient(ItemID.Amber, 5).
+                AddIngredient(ItemID.Marble, 25).
+                AddIngredient(ItemID.MeteoriteBar, 10).
                 AddIngredient(ItemID.Diamond, 3).
+                AddIngredient(ItemID.Amber, 3).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -7,28 +7,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
 {
-    public class Gelpick : ModItem
+    public class Gelpick : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Gelpick");
-        }
-
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
-            Item.damage = 12;
+            Item.width = 46;
+            Item.height = 48;
+            Item.damage = 19;
             Item.knockBack = 2.5f;
-            Item.useTime = 10;
+            Item.useTime = 9;
             Item.useAnimation = 20;
-            Item.pick = 100;
+            Item.pick = 105;
             Item.tileBoost += 1;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 46;
-            Item.height = 46;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -48,11 +43,11 @@ namespace CalamityMod.Items.Tools
         {
             if (Main.rand.NextBool(4))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 20);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurificationPowder);
             }
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Slimed, 180);
         }

@@ -1,49 +1,50 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class MineralMortar : ModItem
+    public class MineralMortar : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mineral Mortar");
-            Tooltip.SetDefault("Shoots an onyx bomb that explodes into sand sharks on death");
-            SacrificeTotal = 1;
-        }
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         public override void SetDefaults()
         {
-            Item.damage = 30;
+            Item.width = 68;
+            Item.height = 32;
+            Item.damage = 85;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 58;
-            Item.height = 26;
-            Item.useTime = 33;
-            Item.useAnimation = 33;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shoot = ModContent.ProjectileType<MineralMortarHoldout>();
+            Item.useTime = Item.useAnimation = 60;
+            Item.shootSpeed = 25f;
+            Item.knockBack = 20f;
+
             Item.noMelee = true;
-            Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.UseSound = SoundID.Item11;
-            Item.autoReuse = true;
-            Item.shootSpeed = 14f;
-            Item.shoot = ModContent.ProjectileType<OnyxSharkBomb>();
+            Item.noUseGraphic = true;
+            Item.channel = true;
             Item.useAmmo = AmmoID.Rocket;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-10, 0);
-        }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
+        // Spawning the holdout won't consume ammo.
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
+
+        // Makes the rotation of the mouse around the player sync in multiplayer.
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<OnyxSharkBomb>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<MineralMortarHoldout>(), 0, 0f, player.whoAmI);
             return false;
         }
 

@@ -1,7 +1,7 @@
-using CalamityMod.Items.Fishing.SulphurCatches;
+﻿using CalamityMod.Items.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -16,20 +16,15 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileWaterDeath[Type] = false;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Abyss Shell Fossil");
-            AddMapEntry(new Color(29, 37, 58), name);
+            AddMapEntry(new Color(29, 37, 58), CalamityUtils.GetItemName<AbyssShellFossil>());
             DustType = 33;
+            RegisterItemDrop(ModContent.ItemType<AbyssShellFossil>());
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<AbyssShellFossil>(), Type, 0);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<Items.Pets.AbyssShellFossil>());
         }
     }
 }

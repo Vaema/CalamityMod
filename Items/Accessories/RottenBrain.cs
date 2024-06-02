@@ -1,26 +1,19 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Magic;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class RottenBrain : ModItem
+    public class RottenBrain : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Rotten Brain");
-            Tooltip.SetDefault("10% increased damage when below 75% life\n5% decreased movement speed when below 50% life\nShade rains down when you are hit");
-        }
-
+        public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -35,6 +28,8 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(18);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         Projectile rain = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<AuraRain>(), damage, 2f, player.whoAmI);
                         if (rain.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
@@ -54,7 +49,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<BloodyWormTooth>().
                 AddTile(TileID.TinkerersWorkbench).
-                AddCondition(Recipe.Condition.InGraveyardBiome).
+                AddCondition(Condition.InGraveyard).
                 Register();
         }
     }

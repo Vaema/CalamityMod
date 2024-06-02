@@ -4,15 +4,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
 {
-    public class TundraLeash : ModItem
+    public class TundraLeash : ModItem, ILocalizedModType
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Tundra Leash");
-            Tooltip.SetDefault("Summons a Rimehound mount");
-            SacrificeTotal = 1;
-        }
-
+        public new string LocalizationCategory => "Items.Mounts";
         public override void SetDefaults()
         {
             Item.width = 16;

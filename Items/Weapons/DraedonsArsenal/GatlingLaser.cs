@@ -1,20 +1,20 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class GatlingLaser : ModItem
+    public class GatlingLaser : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/GatlingLaserFireStart");
         public static readonly SoundStyle FireLoopSound = new("CalamityMod/Sounds/Item/GatlingLaserFireLoop");
         public static readonly SoundStyle FireEndSound = new("CalamityMod/Sounds/Item/GatlingLaserFireEnd");
@@ -23,13 +23,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         // This is the amount of charge consumed every time the holdout projectile fires a laser.
         public const float HoldoutChargeUse = 0.0075f;
 
-        public override void SetStaticDefaults()
-        {
-            SacrificeTotal = 1;
-            DisplayName.SetDefault("Gatling Laser");
-            Tooltip.SetDefault("Large laser cannon used primarily by Yharim's fleet and base defense force");
-        }
-
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -37,21 +30,21 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 43;
             Item.height = 24;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 50;
+            Item.damage = 43;
             Item.knockBack = 1f;
             Item.useTime = 2;
             Item.useAnimation = 2;
             Item.noUseGraphic = true;
             Item.autoReuse = false;
             Item.channel = true;
-            Item.mana = 6;
+            Item.mana = 4;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
 
             Item.shoot = ModContent.ProjectileType<GatlingLaserProj>();
             Item.shootSpeed = 24f;
@@ -80,7 +73,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Predicate<Recipe> condition), condition).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

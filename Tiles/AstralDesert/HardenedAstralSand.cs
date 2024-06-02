@@ -1,5 +1,7 @@
 ﻿
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +10,7 @@ namespace CalamityMod.Tiles.AstralDesert
 {
     public class HardenedAstralSand : ModTile
     {
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -19,24 +22,28 @@ namespace CalamityMod.Tiles.AstralDesert
 
 
             DustType = 108;
-            ItemDrop = ModContent.ItemType<Items.Placeables.HardenedAstralSand>();
 
             AddMapEntry(new Color(128, 128, 158));
 
             TileID.Sets.Conversion.HardenedSand[Type] = true;
             TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
-        }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            // CustomTileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AstralSand>(), false, false, false, false, resetFrame);
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<AstralSand>(), false, false, false);
-            return false;
+            this.RegisterUniversalMerge(ModContent.TileType<AstralSand>(), "CalamityMod/Tiles/Merges/AstralSandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AstralSandstone>(), "CalamityMod/Tiles/Merges/AstralSandstoneMerge");
+            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
+            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
+            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
+        }
+
+        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+        {
+            sightColor = Color.Cyan;
+            return true;
         }
     }
 }

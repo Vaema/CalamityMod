@@ -1,23 +1,19 @@
+﻿using System;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class BloodRay : ModProjectile
+    public class BloodRay : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public const int Lifetime = 150;
         public const float MaxExponentialDamageBoost = 3f;
         public static readonly float ExponentialDamageBoost = (float)Math.Pow(MaxExponentialDamageBoost, 1f / Lifetime);
         public ref float Time => ref Projectile.ai[0];
         public ref float InitialDamage => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Blood Ray");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 4;
