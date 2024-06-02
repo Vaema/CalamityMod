@@ -99,8 +99,8 @@ namespace CalamityMod.Projectiles.Typeless
             GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
             foreach (List<Vector2> points in lightningTrails)
             {
-                PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction, (_) => Vector2.Zero, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
-                PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction, (_) => Vector2.Zero, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
+                PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction, smoothen: false, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
+                PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction, smoothen: false, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
             }
 
             Main.spriteBatch.ExitShaderRegion();
