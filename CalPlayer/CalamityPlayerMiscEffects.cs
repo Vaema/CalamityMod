@@ -709,7 +709,11 @@ namespace CalamityMod.CalPlayer
 
                 if (tile.TileType == auricLandMineID)
                 {
-                    GeneralScreenShakePower = 200;
+                    SoundStyle explode = new("CalamityMod/Sounds/Item/DudFire");
+                    SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
+                    GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
+                    GeneralParticleHandler.SpawnParticle(sparker);
+                    //GeneralScreenShakePower = 200;
                     Player.RemoveAllIFrames();
                     Projectile.NewProjectile(new EntitySource_TileInteraction(Player, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ModContent.ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
                     //for (int i = 0; i < 3; i++)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.ExoMechs.Ares;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -15,6 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        private Player Owner => Main.player[Projectile.owner];
 
         public List<List<Vector2>> lightningTrails = new List<List<Vector2>>();
         public static int lightningCount = 15;
@@ -25,7 +27,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.width = 500;
             Projectile.height = 500;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 20;
+            Projectile.timeLeft = 40;
             Projectile.tileCollide = false;
             Projectile.hostile = true;
             Projectile.friendly = true;
@@ -33,50 +35,64 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            if (Projectile.ai[0] % 4 == 0)
+            if (Projectile.timeLeft == 20)
+                Owner.Calamity().GeneralScreenShakePower = 200;
+            if (Projectile.timeLeft <= 20)
             {
-                SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound);
-                lightningTrails.Clear();
-                for (int i = 0; i < lightningCount; i++)
+                if (Projectile.ai[0] % 4 == 0)
                 {
-                    List<Vector2> points = new List<Vector2>();
-                    for (int j = 0; j < totalPoints; j++)
+                    SoundStyle explode = new("CalamityMod/Sounds/Item/AuricBulletHit");
+                    SoundEngine.PlaySound(explode with { Pitch = 0.4f }, Projectile.Center);
+                    SoundStyle explode2 = new("CalamityMod/Sounds/Item/TheHiveNuke");
+                    SoundEngine.PlaySound(explode2 with { Pitch = -0.4f }, Projectile.Center);
+                    lightningTrails.Clear();
+                    for (int i = 0; i < lightningCount; i++)
                     {
-                        float radians = MathHelper.TwoPi / lightningCount;
-                        if (j == 0)
+                        List<Vector2> points = new List<Vector2>();
+                        for (int j = 0; j < totalPoints; j++)
                         {
-                            points.Add(Projectile.Center + Main.rand.NextVector2Circular(20, 20));
+                            float radians = MathHelper.TwoPi / lightningCount;
+                            if (j == 0)
+                            {
+                                points.Add(Projectile.Center + Main.rand.NextVector2Circular(20, 20));
+                            }
+                            else
+                            {
+                                Vector2 newPoint = new Vector2();
+                                Vector2 jtolookfor = j > 1 ? points[j - 2] : Projectile.Center;
+                                float baseDist = j == totalPoints - 1 ? 20 : Main.rand.Next(60, 120) * (1 + (20 - Projectile.timeLeft) / 15);
+                                newPoint = points[j - 1] + (jtolookfor.DirectionTo(points[j - 1]) * baseDist).RotatedByRandom(MathHelper.PiOver2);
+                                points.Add(newPoint);
+                            }
                         }
-                        else
-                        {
-                            Vector2 newPoint = new Vector2();
-                            Vector2 jtolookfor = j > 1 ? points[j - 2] : Projectile.Center;
-                            float baseDist = j == totalPoints - 1 ? 20 : Main.rand.Next(60, 120) * (1 + (20 - Projectile.timeLeft) / 15);
-                            newPoint = points[j - 1] + (jtolookfor.DirectionTo(points[j - 1]) * baseDist).RotatedByRandom(MathHelper.PiOver2);
-                            points.Add(newPoint);
-                        }
+                        lightningTrails.Add(points);
                     }
-                    lightningTrails.Add(points);
+                }
+                Projectile.ai[0]++;
+                Projectile.damage = 40000; // fixed damage 
+                Projectile.CritChance = 0;
+
+                for (int l = 0; l < 5; l++)
+                {
+                    Vector2 rand = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi);
+                    Dust extraDust = Dust.NewDustPerfect(Projectile.Center, DustID.Electric);
+                    extraDust.velocity = rand * Main.rand.NextFloat(-40, 40f);
+
+                    Particle spark = new GlowSparkParticle(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(15.5f, 35.5f), true, 15, Main.rand.NextFloat(0.02f, 0.06f), Color.Cyan, new Vector2(2.5f, 0.7f), true);
+                    GeneralParticleHandler.SpawnParticle(spark);
                 }
             }
-            Projectile.ai[0]++;
-            Projectile.damage = 40000; // fixed damage 
-            Projectile.CritChance = 0;
-
-            // D O Y O U L I K E D U S T B O Y O 
-            for (int l = 0; l < 20; l++)
-            {
-                Vector2 rand = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi);
-                int extraDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.Electric, 0, 0, 150, default, 1.2f);
-                Main.dust[extraDust].velocity = rand * Main.rand.NextFloat(-40, 40f);
-            }
         }
-
         public override bool CanHitPlayer(Player target)
         {
-            var yeetVec = Vector2.Normalize(target.Center - Projectile.Center);
-            target.velocity += yeetVec * (target.noKnockback ? 20f : 40f);
-            return true;
+            if (Projectile.timeLeft <= 20)
+            {
+                var yeetVec = Vector2.Normalize(target.Center - Projectile.Center);
+                target.velocity += yeetVec * (target.noKnockback ? 20f : 40f);
+                return true;
+            }
+            else
+                return false;
         }
 
         internal float WidthFunction(float completionRatio) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
@@ -87,8 +103,10 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (lightningTrails.Count <= 0)
-                return false;
+            if (Projectile.timeLeft <= 20)
+            {
+                if (lightningTrails.Count <= 0)
+                    return false;
 
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
             GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
@@ -98,8 +116,10 @@ namespace CalamityMod.Projectiles.Typeless
                 PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction, smoothen: false, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
             }
 
-            Main.spriteBatch.ExitShaderRegion();
+                Main.spriteBatch.ExitShaderRegion();
+            }
             return false;
         }
+        public override bool? CanDamage() => (Projectile.timeLeft <= 20 ? null : false);
     }
 }
