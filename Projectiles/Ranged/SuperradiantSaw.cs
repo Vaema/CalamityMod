@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             // While empowered, the saws will slightly home in on the cursor
             if (Empowered && !Returning && Time > 30)
             {
-                float homingTurnSpeed = 0.18f;
+                float homingTurnSpeed = 0.2f;
                 Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * SuperradiantSlaughterer.ShootSpeed;
             }
 

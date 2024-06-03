@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
                     SoundEngine.PlaySound(ShootSound, GunTipPosition);
 
-                    float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
+                    float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 1.5f; // The damage must be divided by 1.5 to offset the holdout having 1.5x base damage.
                     int sawPierce = (int)MathHelper.Lerp(2f, 6f, SawPower);
                     int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
 

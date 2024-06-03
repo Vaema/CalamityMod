@@ -81,9 +81,9 @@ namespace CalamityMod.Projectiles.Ranged
                 Owner.Calamity().sBlasterDashActivated = true;
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), GunTipPosition);
 
-                // Throws a lingering saw at the cursor
+                // Throws a lingering saw at the cursor that deals 3x damage (since the holdout already deals 2x)
                 float mouseDist = Vector2.Distance(GunTipPosition, Owner.Calamity().mouseWorld) / 21f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
 
                 // Special case: right-clicking while not holding left-click
                 // This is to keep it friendly to use both fires at the same time, but end the animation early if not
