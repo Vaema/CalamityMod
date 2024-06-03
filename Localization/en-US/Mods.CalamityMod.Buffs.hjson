@@ -178,6 +178,11 @@ HolyInferno: {
 	Description: You've gone too far from the Profaned Goddess!
 }
 
+Laceration: {
+	DisplayName: Laceration
+	Description: You're a bloody mess
+}
+
 ManaBurn: {
 	DisplayName: Mana Burn
 	Description: The excess of mana sears your body and mind
