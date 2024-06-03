@@ -5,18 +5,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.BrimstoneElemental;
-using CalamityMod.NPCs.Bumblebirb;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.OldDuke;
-using CalamityMod.NPCs.SulphurousSea;
-using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
@@ -229,7 +218,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.localAI[3] > 0f)
                         npc.localAI[3] -= 1f;
                     else if (phase == 4)
+                    {
                         npc.localAI[3] = 3f;
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HideInShellSound, player.Center);
+                    }
 
                     npc.netUpdate = true;
 
@@ -319,7 +311,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         for (int i = 0; i < enemyCount; i++)
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, spawnType);
                     }
-                    SoundEngine.PlaySound(SoundID.Item8, npc.Center);
+                    SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.TeleportSound, npc.Center);
                     npc.alpha = 255;
                     npc.position = position;
                     for (int n = 0; n < 15; n++)
@@ -423,6 +415,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         type = ModContent.ProjectileType<FrostMist>();
                         SoundEngine.PlaySound(SoundID.Item30, player.Center);
                     }
+                    else
+                    {
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, player.Center);
+                    }
                     Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -442,6 +438,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         {
                             type = ModContent.ProjectileType<WaterSpear>();
                             SoundEngine.PlaySound(SoundID.Item21, player.Center);
+                        }
+                        else
+                        {
+                            SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.DartSound, player.Center);
                         }
                         projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         int numProj = death ? 8 : 4;
@@ -539,6 +539,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     {
                         type = ModContent.ProjectileType<SirenSong>();
                         SoundEngine.PlaySound(SoundID.Item26, player.Center);
+                    }
+                    else
+                    {
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.ShellFireSound, player.Center);
                     }
                     double angleA = radians2 * 0.5;
                     double angleB = MathHelper.ToRadians(90f) - angleA;
