@@ -21,6 +21,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = Lifetime;
+            Projectile.tileCollide = false;
 
             // Auric orbs never hit the same enemy more than once.
             Projectile.usesLocalNPCImmunity = true;
