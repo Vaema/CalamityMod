@@ -298,14 +298,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                         GeneralParticleHandler.SpawnParticle(spark);
                     }
                 }
-
-
-                // Make extra sound when these arcs happen
-                if (!cloneYoyo)
-                {
-                    //SoundStyle arc = new("CalamityMod/Sounds/Item/AuricBulletHit");
-                    //SoundEngine.PlaySound(arc with { Volume = 0.3f, Pitch = 0.5f, MaxInstances = -1 }, Projectile.Center);
-                }
             }
         }
 
@@ -370,6 +362,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 hum?.Stop();
             }
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(/*(cloneYoyo ? Main.MouseWorld : Projectile.Center)*/ Projectile.Center, 60, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 60, targetHitbox);
     }
 }
