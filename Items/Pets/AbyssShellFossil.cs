@@ -20,11 +20,9 @@ namespace CalamityMod.Items.Pets
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
-
             Item.value = Item.sellPrice(platinum: 1);
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().devItem = true;
-
             Item.shoot = ModContent.ProjectileType<EidolonSnail>();
             Item.buffType = ModContent.BuffType<EidolonSnailBuff>();
             Item.UseSound = SoundID.Item2;

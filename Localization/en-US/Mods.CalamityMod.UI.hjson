@@ -119,6 +119,7 @@ Cooldowns: {
 	SpeedBlasterBoost: Speed Blaster Boost
 	SpongeDurability: Sponge Barrier Durability
 	SpongeRecharge: Sponge Barrier Recharge
+	SuperradiantSawBoost: Superradiant Saw Boost
 	TarragonCloak: Tarragon Cloak Cooldown
 	TarragonImmunity: Tarragon Immunity Cooldown
 	UniverseSplitter: Universe Splitter Cooldown
@@ -260,7 +261,7 @@ Communication: {
 
 			The final to begin construction was Artemis. Rather than being founded on raw power, it was made to be the apex of speed and accuracy. There is elegance in simplicity, for all of Artemis' combat efficacy comes from an onboard predictive AI and a battery of hard-light bolt emitters.\n
 
-			It was the perfect partner to its twin and required no revisions. Organic beings are naturally inclined to fixate their senses on fire, presenting Artemis with the perfect opportunity to strike with unparalleled precision.
+			It was the perfect partner to its twin and required only a single revision. Organic beings are naturally inclined to fixate their senses on fire, presenting Artemis with the perfect opportunity to strike with unparalleled precision.
 			'''
 	}
 
@@ -614,3 +615,5 @@ DraedonFacility: Other minor research projects
 Abyss: Disposing of Silva's remains
 SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
+// Hold Shift tooltip default
+HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more

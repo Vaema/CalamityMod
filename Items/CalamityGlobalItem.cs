@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
@@ -437,8 +438,8 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRogueProjectile = false;
                     int flareID = ModContent.ProjectileType<HydrothermicFlareRogue>();
 
-                    // Ataxia Rogue Flares: 6 x 50%, soft cap starts at 90 base damage
-                    int flareDamage = CalamityUtils.DamageSoftCap(damage * 0.5, 90);
+                    // Hydrothermic Rogue Flares: 6 x (50 + 15%), soft cap starts at 90 base damage
+                    int flareDamage = CalamityUtils.DamageSoftCap(50 + damage * 0.15, 90);
                     flareDamage = player.ApplyArmorAccDamageBonusesTo(flareDamage);
 
                     if (player.whoAmI == Main.myPlayer)
@@ -1236,6 +1237,35 @@ namespace CalamityMod.Items
             {
                 player.GetDamage<MeleeDamageClass>() += 0.02f;
             }
+
+            // The Frog Leg line is prevented from stacking.
+            // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
+            //
+            // 21MAY2024: Ozzatron: Disabled this code. Frog Leg is allowed to stack. Amphibian Boots specific nerf is applied below.
+            /*
+            switch (item.type)
+            {
+                default:
+                    break;
+                case ItemID.AmphibianBoots:
+                    if (modPlayer.alreadyHasFrogLeg)
+                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
+                    else
+                        player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
+                    modPlayer.alreadyHasFrogLeg = true;
+                    break;
+                case ItemID.FrogLeg:
+                case ItemID.FrogFlipper:
+                case ItemID.FrogGear:
+                case ItemID.FrogWebbing:
+                    if (modPlayer.alreadyHasFrogLeg)
+                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
+                    modPlayer.alreadyHasFrogLeg = true;
+                    break;
+            }
+            */
+            if (item.type == ItemID.AmphibianBoots)
+                player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
 
             // Feral Claws line melee speed adjustments and nonstacking
             // First removes all their melee speed so it can be given based on which you wear without stacking

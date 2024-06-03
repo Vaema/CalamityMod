@@ -34,23 +34,21 @@ namespace CalamityMod.Projectiles.Magic
         public override void KillHoldoutLogic()
         {
             if (HeldItem.type != Owner.ActiveItem().type || Owner.CantUseHoldout())
-            {
                 Projectile.Kill();
-                Projectile.netUpdate = true;
-            }
         }
 
         public override void HoldoutAI()
         {
             if (ShootingTimer >= FireRate)
             {
-                if (Owner.CheckMana(Owner.ActiveItem(), -1, true, false))
+                if (Owner.CheckMana(HeldItem, -1, true, false))
                 {
+                    MaxFirerateShots++;
+
                     if (MaxFirerateShots == 6f)
                     {
                         FireYBeam = true;
                         Windup = 60f;
-                        Projectile.netUpdate = true;
                     }
 
                     if (FireYBeam)
@@ -61,6 +59,8 @@ namespace CalamityMod.Projectiles.Magic
                     else
                         Shoot(false);
 
+                    ShootingTimer = 0f;
+
                     if (Windup > 10f)
                     {
                         if (!FireYBeam)
@@ -69,22 +69,19 @@ namespace CalamityMod.Projectiles.Magic
                     else
                         Windup = 10f;
 
-                    MaxFirerateShots++;
-                    ShootingTimer = 0f;
                     FireYBeam = false;
                 }
                 else
                 {
                     SoundEngine.PlaySound(SoundID.MaxMana with { Pitch = -0.5f }, Projectile.Center);
                     Projectile.Kill();
-                    Projectile.netUpdate = true;
                 }
             }
 
             ShootingTimer++;
         }
 
-        private void Shoot(bool yBeam)
+        public void Shoot(bool yBeam)
         {
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
 
@@ -99,7 +96,8 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle fire = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = 1f, PitchVariance = 0.15f }, Projectile.Center);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3, ModContent.ProjectileType<GenesisBeam>(), Projectile.damage * 9, Projectile.knockBack, Projectile.owner, 0, 0);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3, ModContent.ProjectileType<GenesisBeam>(), Projectile.damage * 9, Projectile.knockBack, Projectile.owner, 0, 0);
 
                 Particle pulse3 = new GlowSparkParticle(GunTipPosition, shootDirection * 18, false, 6, 0.057f, EffectsColor, new Vector2(1.7f, 0.8f), true);
                 GeneralParticleHandler.SpawnParticle(pulse3);
@@ -117,19 +115,21 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < 4; i++)
                 {
                     firingVelocity3 = (shootDirection * 10).RotatedBy((0.05f * (i + 1)) * Utils.GetLerpValue(0, 55, Windup, true));
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3 * (1 - i * 0.1f), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1);
+
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3 * (1 - i * 0.1f), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1);
                 }
                 for (int i = 0; i < 4; i++)
                 {
                     firingVelocity3 = (shootDirection * 10).RotatedBy((-0.05f * (i + 1)) * Utils.GetLerpValue(0, 55, Windup, true));
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3 * (1 - i * 0.1f), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1);
+
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3 * (1 - i * 0.1f), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1);
                 }
 
                 Particle pulse3 = new GlowSparkParticle(GunTipPosition, shootDirection * 18, false, 6, 0.057f, EffectsColor, new Vector2(1.7f, 0.8f), true);
                 GeneralParticleHandler.SpawnParticle(pulse3);
             }
-
-            Projectile.netUpdate = true;
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
             // Like visuals and sounds.

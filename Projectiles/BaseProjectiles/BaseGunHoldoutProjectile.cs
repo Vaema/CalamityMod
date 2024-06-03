@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -126,6 +127,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         private Type AssociatedItemType => ItemLoader.GetItem(AssociatedItemID).GetType();
 
+        private Asset<Texture2D> ItemTexture => TextureAssets.Item[AssociatedItemID];
+
         #endregion
 
         #region Overridden Members
@@ -138,18 +141,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = TextureAssets.Item[AssociatedItemID].Width();
+            Projectile.width = Projectile.height = ItemTexture is null ? 1 : ItemTexture.Width();
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            Owner = Main.player[Projectile.owner];
-            OffsetLengthFromArm = MaxOffsetLengthFromArm;
-            HeldItem = Owner.ActiveItem();
-            Projectile.velocity = Owner.Calamity().mouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter);
-        }
+        public override void OnSpawn(IEntitySource source) => OffsetLengthFromArm = MaxOffsetLengthFromArm;
 
         public override bool ShouldUpdatePosition() => false;
 
@@ -161,6 +158,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+            // Multiplayer null-checking.
+            Owner ??= Main.player[Projectile.owner];
+            HeldItem ??= Owner.ActiveItem();
+
             KillHoldoutLogic();
             ManageHoldout();
             HoldoutAI();
@@ -168,15 +169,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         /// <summary>
         /// Here goes the code for when the holdout needs to despawn.<br/>
-        /// Defaults to despawning when the owner isn't holding or isn't using the correspondent weapon.
+        /// Defaults to despawning when the owner isn't using the correspondent weapon.
         /// </summary>
         public virtual void KillHoldoutLogic()
         {
             if (Owner.CantUseHoldout())
-            {
-                Projectile.netUpdate = true;
                 Projectile.Kill();
-            }
         }
 
         /// <summary>
@@ -222,6 +220,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
             if (OffsetLengthFromArm != MaxOffsetLengthFromArm)
                 OffsetLengthFromArm = MathHelper.Lerp(OffsetLengthFromArm, MaxOffsetLengthFromArm, RecoilResolveSpeed);
+
+            Projectile.netUpdate = true;
+            Projectile.netSpam = 0;
         }
 
         /// <summary>
@@ -255,6 +256,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             writer.Write(Projectile.rotation);
             writer.Write(KeepRefreshingLifetime);
             writer.Write(OffsetLengthFromArm);
+            writer.Write7BitEncodedInt(Projectile.spriteDirection);
             SendExtraAIHoldout(writer);
         }
 
@@ -263,6 +265,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.rotation = reader.ReadSingle();
             KeepRefreshingLifetime = reader.ReadBoolean();
             OffsetLengthFromArm = reader.ReadSingle();
+            Projectile.spriteDirection = reader.Read7BitEncodedInt();
             ReceiveExtraAIHoldout(reader);
         }
 

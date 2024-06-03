@@ -268,8 +268,8 @@ TaintedBladeSlasher.DisplayName: Tainted Blade
 TenebreusTidesWaterProjectile.DisplayName: Water Spear
 TenebreusTidesWaterSpear.DisplayName: Tenebreus Tides Water Spear
 TenebreusTidesWaterSword.DisplayName: Tenebreus Tides Water Sword
-TerratomereBeam.DisplayName: Terra Slash Beam
-TerratomereBigSlash.DisplayName: Terratomere Slash
+TerratomereMeleeSlash.DisplayName: Terratomere Slash
+TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerratomereExplosion.DisplayName: Terratomere Explosion
 TerratomereHoldoutProj.DisplayName: Terratomere
 TerratomereSlash.DisplayName: Terratomere Slash
@@ -316,3 +316,5 @@ WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+RespiteblockHoldout.DisplayName: Respiteblock
+RespiteblockBlood.DisplayName: Respiteblock Blood

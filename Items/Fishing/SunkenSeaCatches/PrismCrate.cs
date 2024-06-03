@@ -54,6 +54,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             // Materials
             itemLoot.Add(ModContent.ItemType<Navystone>(), 1, 10, 30);
             itemLoot.Add(ModContent.ItemType<EutrophicSand>(), 1, 10, 30);
+            itemLoot.Add(ModContent.ItemType<Driftwood>(), 1, 30, 60);
             postDesertScourge.Add(ModContent.ItemType<PrismShard>(), 1, 5, 10);
             postDesertScourge.Add(ModContent.ItemType<SeaPrism>(), 5, 2, 5);
             postHardmodeClam.Add(ModContent.ItemType<MolluskHusk>(), new Fraction(12, 100), 2, 5);

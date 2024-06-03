@@ -235,7 +235,6 @@ namespace CalamityMod
             ItemRedirect(ItemType<Elderberry>(), "Elderberry (calamity)");
             ItemRedirect(ItemType<PineapplePet>(), "Pineapple (calamity)");
             ItemRedirect(ItemType<TrashmanTrashcan>(), "Trash Can (pet)");
-            ItemRedirect(ItemType<Butcher>(), "Butcher (weapon)");
             ItemRedirect(ItemType<SandstormGun>(), "Sandstorm (weapon)");
             ItemRedirect(ItemType<Thunderstorm>(), "Thunderstorm (weapon)");
             // Lore items
@@ -296,9 +295,9 @@ namespace CalamityMod
 
             // Enemies
             EnemyRedirect(NPCType<HiveEnemy>(), "Hive (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel>(), "Ruby Jewel (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel2>(), "Sapphire Jewel (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel3>(), "Emerald Jewel (enemy)");
+            EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
             EnemyRedirect(NPCType<OldDukeToothBall>(), "Tooth Ball (Old Duke)");
             EnemyRedirect(NPCType<CalamitasEnchantDemon>(), "Enchantment");
             EnemyRedirect(NPCType<LeviathanStart>(), "%3F%3F%3F");

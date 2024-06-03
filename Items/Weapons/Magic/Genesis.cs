@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public static float StarterWindup = 60f;
 
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
         public override void SetDefaults()
         {
             Item.width = 108;
@@ -44,7 +45,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<GenesisHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<GenesisHoldout>(), damage, knockback, player.whoAmI, 0, 0);
+            holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
             return false;
         }
 

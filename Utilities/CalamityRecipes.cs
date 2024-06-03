@@ -45,6 +45,7 @@ namespace CalamityMod
             // Acidwood is Wood
             RecipeGroup wood = RecipeGroup.recipeGroups[RecipeGroupID.Wood];
             wood.ValidItems.Add(ModContent.ItemType<Acidwood>());
+            wood.ValidItems.Add(ModContent.ItemType<Driftwood>());
             // Astral Monolith is decidedly not wood-like enough to be used as generic wood.
         }
 
@@ -356,7 +357,8 @@ namespace CalamityMod
                 ItemID.PalmWoodSword,
                 ItemID.EbonwoodSword,
                 ItemID.ShadewoodSword,
-                ItemID.PearlwoodSword
+                ItemID.PearlwoodSword,
+                ItemID.AshWoodSword
             });
             AnyWoodenSword = RecipeGroup.RegisterGroup("AnyWoodenSword", group);
 

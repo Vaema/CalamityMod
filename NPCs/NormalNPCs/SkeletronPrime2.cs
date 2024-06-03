@@ -268,28 +268,32 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 // Start other phases; if arms are dead, start with spin phase
                 bool otherHeadChargingOrSpinning = Main.npc[(int)NPC.ai[0]].ai[1] == 5f || Main.npc[(int)NPC.ai[0]].ai[1] == 1f;
-                if (phase2 || CalamityWorld.LegendaryMode || allArmsDead)
+
+                // Start spin phase after 1.875 seconds
+                NPC.ai[2] += phase3 ? 1.2f : 0.8f;
+                if (NPC.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
                 {
-                    // Start spin phase after 1.875 seconds
-                    NPC.ai[2] += phase3 ? 1.2f : 0.8f;
-                    if (NPC.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
+                    bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 400f &&
+                        Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) > 400f;
+
+                    bool shouldCharge = !phase2 && !allArmsDead && !CalamityWorld.LegendaryMode;
+                    if (shouldCharge)
                     {
-                        bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 400f &&
-                            Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) > 400f;
-
-                        if (shouldSpinAround || NPC.ai[1] != 4f)
+                        NPC.ai[2] = 0f;
+                        NPC.ai[1] = 1f;
+                        NPC.netUpdate = true;
+                    }
+                    else if (shouldSpinAround || NPC.ai[1] != 4f)
+                    {
+                        if (shouldSpinAround)
                         {
-                            if (shouldSpinAround)
-                            {
-                                NPC.localAI[3] = 300f;
-                                NPC.SyncVanillaLocalAI();
-                            }
-
-                            NPC.ai[2] = 0f;
-                            NPC.ai[1] = shouldSpinAround ? 5f : 1f;
-                            NPC.TargetClosest();
-                            NPC.netUpdate = true;
+                            NPC.localAI[3] = 300f;
+                            NPC.SyncVanillaLocalAI();
                         }
+
+                        NPC.ai[2] = 0f;
+                        NPC.ai[1] = shouldSpinAround ? 5f : 1f;
+                        NPC.netUpdate = true;
                     }
                 }
 
@@ -432,7 +436,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.ai[2] >= (phaseTimer - (death ? 60f * (1f - lifeRatio) : 0f)))
                     {
-                        NPC.TargetClosest();
                         NPC.ai[2] = 0f;
                         NPC.ai[1] = 4f;
                         NPC.localAI[0] = 0f;
@@ -691,7 +694,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 calamityGlobalNPC.newAI[0] = 0f;
                                 NPC.SyncVanillaLocalAI();
                                 NPC.SyncExtraAI();
-                                NPC.TargetClosest();
                                 NPC.netUpdate = true;
                             }
                         }
@@ -769,7 +771,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 NPC.localAI[0] = 0f;
                                 NPC.SyncVanillaLocalAI();
                                 NPC.SyncExtraAI();
-                                NPC.TargetClosest();
                                 NPC.netUpdate = true;
                             }
                         }

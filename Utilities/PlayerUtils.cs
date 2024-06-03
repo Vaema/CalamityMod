@@ -343,6 +343,8 @@ namespace CalamityMod
 
         public static bool InSulphur(this Player player) => player.Calamity().ZoneSulphur;
 
+        public static bool InFloralParadise(this Player player) => player.Calamity().ZoneFloralParadise;
+
         public static bool InAstral(this Player player, int biome = 0) //1 is above ground, 2 is underground, 3 is desert
         {
             switch (biome)
@@ -887,7 +889,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="player">The player using the holdout.</param>
         /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
-        public static bool CantUseHoldout(this Player player) => player == null || !player.active || player.dead || !player.channel || player.CCed || player.noItems;
+        public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
 
         /// <summary>
         /// Makes the given player send the given packet to all appropriate receivers.<br />
