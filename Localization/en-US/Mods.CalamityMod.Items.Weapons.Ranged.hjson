@@ -1348,16 +1348,6 @@ Toxibow: {
 	Tooltip: Converts wooden arrows into slow arrows that inflict irradiated
 }
 
-Triploon: {
-	DisplayName: Triploon
-	Tooltip:
-		'''
-		Launches three harpoons that impale struck enemies and lacerate them
-		Releasing will rip the harpoons out of the struck enemy
-		The faster you are moving, the higher the rip-out damage
-		'''
-}
-
 TyrannysEnd: {
 	DisplayName: Tyranny's End
 	Tooltip:
