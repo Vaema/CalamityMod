@@ -1,6 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureMarnite;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureMarnite
@@ -21,9 +19,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
             Item.consumable = true;
             Item.value = 0;
             Item.createTile = ModContent.TileType<Tiles.FurnitureMarnite.MarniteTable>();
-
-            // This is Ozz's item of choice for placing hostile Lab Turrets for testing. It should not do this normally.
-            // item.createTile = ModContent.TileType<Tiles.DraedonStructures.DraedonLabTurret>();
         }
 
         public override void AddRecipes()
