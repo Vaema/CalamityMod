@@ -1485,9 +1485,9 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.SkeletronHand)
             {
                 if (CalamityWorld.death)
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                 else
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.9);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
             }
             else if (npc.type == NPCID.QueenBee)
             {
@@ -3224,7 +3224,7 @@ namespace CalamityMod.NPCs
 
             // Damage reduction on spawn for certain worm bosses.
             if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
-                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.8f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
+                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.DestroyerIDs.Contains(npc.type))
                 modifiers.FinalDamage *= 1f - MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.AstrumDeusIDs.Contains(npc.type))
@@ -3247,14 +3247,6 @@ namespace CalamityMod.NPCs
             // DR floor is 0%. Nothing can have negative DR.
             if (effectiveDR <= 0f)
                 effectiveDR = 0f;
-
-            // Add Yellow Candle damage if the NPC isn't supposed to be "near invincible"
-            // Armor penetration has already been applied as bonus damage.
-            // Yellow Candle provides +5% damage which ignores both DR and defense.
-            // This means Yellow Candle is buffing armor penetration and technically not ignoring defense,
-            // but it's small enough to let it slide.
-            if (npc.HasBuff<CirrusYellowCandleBuff>() && DR < 0.99f && npc.takenDamageMultiplier > 0.05f)
-                finalMultiplier += 0.05f;
 
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
             // Cirrus being active makes the extra DR cease to function
@@ -3334,6 +3326,7 @@ namespace CalamityMod.NPCs
             // Apply flat reductions first. All vanilla debuffs check their internal booleans.
             FlatEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
             FlatEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
+            FlatEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
             FlatEditDR(ref calcDR, npc.venom, BuffID.Venom);
             FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
@@ -3352,6 +3345,7 @@ namespace CalamityMod.NPCs
             // Apply multiplicative reductions second. All vanilla debuffs check their internal booleans.
             MultEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
             MultEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
+            MultEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
             MultEditDR(ref calcDR, npc.venom, BuffID.Venom);
             MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
@@ -3378,7 +3372,9 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
-                    if (npc.life / (float)npc.lifeMax < 0.4f)
+                    float lifeRatio = npc.life / (float)npc.lifeMax;
+                    float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && Main.masterMode))
                         index = -1;
                 }
             }
@@ -3512,6 +3508,73 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
+            }
+
+            // Expert+ Hive Mind Vile Spits
+            if (npc.type == NPCID.VileSpitEaterOfWorlds)
+            {
+                if (Main.expertMode || BossRushEvent.BossRushActive)
+                {
+                    if (npc.ai[1] >= 69f)
+                    {
+                        if (npc.target == Main.maxPlayers)
+                        {
+                            npc.TargetClosest();
+
+                            float velocity = Main.getGoodWorld ? 10f : (Main.masterMode || BossRushEvent.BossRushActive) ? 8f : 6f;
+                            if (npc.ai[1] == 70f)
+                                velocity *= 0.6f;
+
+                            npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
+                        }
+
+                        if (Main.getGoodWorld && !npc.dontTakeDamage)
+                        {
+                            if ((double)(npc.Center.Y / 16f) < Main.worldSurface)
+                                npc.dontTakeDamage = true;
+                        }
+
+                        npc.damage = npc.GetAttackDamage_ScaledByStrength(32f);
+
+                        npc.ai[0] += 1f;
+                        if (npc.ai[0] > 3f)
+                            npc.ai[0] = 3f;
+
+                        if (npc.ai[0] == 2f)
+                        {
+                            npc.position += npc.velocity;
+                            SoundEngine.PlaySound(SoundID.NPCDeath9, npc.Center);
+                            for (int i = 0; i < 20; i++)
+                            {
+                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, 18, 0f, 0f, 100, default, 1.8f);
+                                Main.dust[dust].velocity *= 1.3f;
+                                Main.dust[dust].velocity += npc.velocity;
+                                Main.dust[dust].noGravity = true;
+                            }
+                        }
+
+                        if (Collision.SolidCollision(npc.position, npc.width, npc.height))
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                                npc.StrikeInstantKill();
+                        }
+
+                        npc.EncourageDespawn(100);
+
+                        npc.position += npc.netOffset;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
+                            Main.dust[dust].velocity *= 0.3f;
+                            Main.dust[dust].noGravity = true;
+                        }
+
+                        npc.rotation += 0.4f * npc.direction;
+                        npc.position -= npc.netOffset;
+
+                        return false;
+                    }
+                }
             }
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
@@ -5284,7 +5347,7 @@ namespace CalamityMod.NPCs
                 return;
 
             if (target.Calamity().sulphurSet)
-                npc.AddBuff(BuffID.Poisoned, 120);
+                npc.AddBuff(BuffID.Poisoned, 60);
 
             if (target.Calamity().snowman)
             {
@@ -5847,24 +5910,37 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Plague debuff on kill effect
             if (pFlames > 0 && npc.life <= 0)
             {
-                Rectangle hitbox = npc.Hitbox;
-                for (int i = 0; i < 20; i++)
-                {
-                    int idx = Dust.NewDust(hitbox.TopLeft(), npc.width, npc.height, DustID.GemEmerald, 0f, -2.5f);
-                    Dust dust = Main.dust[idx];
-                    dust.alpha = 200;
-                    dust.velocity *= 1.4f;
-                    dust.scale += Main.rand.NextFloat();
-                }
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    foreach (NPC nPC in Main.ActiveNPCs)
+                    for (int i = 0; i < 10; i++)
                     {
-                        if (!nPC.buffImmune[BuffType<Plague>()] && npc.Distance(nPC.Center) < 100f && !nPC.dontTakeDamage && nPC.lifeMax > 5 && !nPC.friendly && !nPC.townNPC)
-                            nPC.AddBuff(BuffType<Plague>(), 300);
+                        int DustID = 220;
+                        Dust dust2 = Dust.NewDustDirect(npc.Center, npc.width, npc.height, DustID);
+                        dust2.scale = Main.rand.NextFloat(0.6f, 0.75f);
+                        dust2.velocity = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f);
+                        dust2.noGravity = true;
+                    }
+
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        NPC target = Main.npc[i];
+
+                        if (target != null && target.IsAnEnemy(true, true) && !target.buffImmune[BuffType<Plague>()] && Vector2.Distance(target.Center, npc.Center) < 400)
+                        {
+                            if (target.HasBuff<Plague>() || target.life <= 0)
+                            {
+                                target.AddBuff(BuffType<Plague>(), 300);
+                            }
+                            else
+                            {
+                                target.AddBuff(BuffType<Plague>(), 300);
+                                DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) * 3, 0f, 15);
+                                GeneralParticleHandler.SpawnParticle(pulse);
+                            }
+                        }
                     }
                 }
             }
@@ -6524,7 +6600,7 @@ namespace CalamityMod.NPCs
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (npc.type == NPCID.KingSlime && Main.masterMode && CalamityWorld.revenge)
-                return NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel2>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
+                return NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
             {

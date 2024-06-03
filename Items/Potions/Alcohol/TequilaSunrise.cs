@@ -28,7 +28,8 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.consumable = true;
             Item.buffType = ModContent.BuffType<TequilaSunriseBuff>();
             Item.buffTime = CalamityUtils.SecondsToFrames(480f);
-            Item.value = Item.buyPrice(0, 6, 60, 0);
+            // Cirrus overcharges: 10% sell value instead of 20%
+            Item.value = Item.sellPrice(gold: 1);
         }
     }
 }

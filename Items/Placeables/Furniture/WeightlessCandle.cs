@@ -19,8 +19,9 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.value = Item.buyPrice(0, 25, 0, 0);
-            Item.rare = ItemRarityID.LightRed;
+            // Cirrus overcharges: 10% sell value instead of 20%
+            Item.value = Item.sellPrice(gold: 20);
+            Item.rare = ItemRarityID.Pink;
             Item.createTile = ModContent.TileType<Tiles.Furniture.BlueCandle>();
         }
     }

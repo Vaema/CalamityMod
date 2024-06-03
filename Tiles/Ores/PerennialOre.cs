@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using CalamityMod.Tiles.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -11,11 +12,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
-    public class PerennialOre : ModTile, IMergeableTile
+    public class PerennialOre : ModTile
     {
         internal static Texture2D GlowTexture;
-
-        List<TileFraming.MergeFrameData> IMergeableTile.TileAdjacencies { get; } = [];
 
         public override void SetStaticDefaults()
         {
@@ -30,6 +29,7 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
+            CalamityUtils.MergeWithFloralParadise(Type);
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
