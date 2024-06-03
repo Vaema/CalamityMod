@@ -2770,6 +2770,7 @@ namespace CalamityMod.CalPlayer
                         {
                             Player.Teleport(teleportLocation, 4, 0);
                             NetMessage.SendData(MessageID.TeleportEntity, -1, -1, null, 0, (float)Player.whoAmI, teleportLocation.X, teleportLocation.Y, 1, 0, 0);
+                            SoundEngine.PlaySound(NormalityRelocator.TeleportSound, Player.Center);
 
                             int duration = areThereAnyDamnBosses ? chaosStateDuration_NR : 360;
                             Player.AddBuff(BuffID.ChaosState, duration, true);
