@@ -35,6 +35,7 @@ BouncingShotgunPellet.DisplayName: Shotgun Pellet
 BrimstoneBolt.DisplayName: Brimstone Bolt
 BrimstoneFireFriendly.DisplayName: Brimstone Fire
 BubonicRoundProj.DisplayName: Bubonic Round
+BuzzkillSaw.DisplayName: Buzzsaw
 CardClub.DisplayName: Club
 CardClubSplit.DisplayName: Club
 CardDiamond.DisplayName: Diamond
@@ -169,7 +170,6 @@ PristineFire.DisplayName: Pristine Fire
 PristineSecondary.DisplayName: Pristine Lingering Fire
 PumplerGrenade.DisplayName: Squash Shell
 P90Round.DisplayName: Armor-piercing Round
-RainbowBlast.DisplayName: Blast
 RainbowFront.DisplayName: Rainbow
 RainbowTrail.DisplayName: Rainbow
 RealmRavagerBullet.DisplayName: Explosive Bullet
@@ -220,6 +220,9 @@ StarmageddonStar2.DisplayName: Starmageddon Star
 StormSurgeTornado.DisplayName: Surge
 SulphuricBlast.DisplayName: Sulphuric Blast
 SuperballBulletProj.DisplayName: Superball Bullet
+SuperradiantBolt.DisplayName: Superradiant Bolt
+SuperradiantSawLingering.DisplayName: Ultraradiant Saw
+SuperradiantSaw.DisplayName: Superradiant Saw
 TelluricGlareArrow.DisplayName: Radiant Arrow
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark

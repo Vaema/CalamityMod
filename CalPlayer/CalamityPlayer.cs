@@ -31,6 +31,7 @@ using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
@@ -882,6 +883,7 @@ namespace CalamityMod.CalPlayer
         public bool gState = false;
         public bool bBlood = false;
         public bool brainRot = false;
+        public bool laceration = false;
         public bool elementalMix = false;
         public bool icarusFolly = false;
         public bool weakPetrification = false;
@@ -1952,6 +1954,7 @@ namespace CalamityMod.CalPlayer
             gState = false;
             bBlood = false;
             brainRot = false;
+            laceration = false;
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
@@ -2375,6 +2378,7 @@ namespace CalamityMod.CalPlayer
             gState = false;
             bBlood = false;
             brainRot = false;
+            laceration = false;
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
@@ -2761,6 +2765,7 @@ namespace CalamityMod.CalPlayer
                         {
                             Player.Teleport(teleportLocation, 4, 0);
                             NetMessage.SendData(MessageID.TeleportEntity, -1, -1, null, 0, (float)Player.whoAmI, teleportLocation.X, teleportLocation.Y, 1, 0, 0);
+                            SoundEngine.PlaySound(NormalityRelocator.TeleportSound, Player.Center);
 
                             int duration = areThereAnyDamnBosses ? chaosStateDuration_NR : 360;
                             Player.AddBuff(BuffID.ChaosState, duration, true);
@@ -3098,16 +3103,16 @@ namespace CalamityMod.CalPlayer
             //Right click dash on Speed Blaster
             if (sBlasterDashActivated == true)
             {
-                if ((Player.controlUp || Player.controlDown || Player.controlLeft || Player.controlRight) && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && Player.HasCooldown(Cooldowns.SpeedBlasterBoost.ID) && Player.dashDelay == 0)
+                if ((Player.controlUp || Player.controlDown || Player.controlLeft || Player.controlRight) && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && (Player.HasCooldown(SpeedBlasterBoost.ID) || Player.HasCooldown(SuperradiantSawBoost.ID)) && Player.dashDelay == 0)
                 {
                     SpeedBlasterDashStarted = true;
                 }
                 sBlasterDashActivated = false;
             }
 
-            if (Player.Calamity().SpeedBlasterDashStarted || (Player.dashDelay != 0 && Player.Calamity().LastUsedDashID == SpeedBlasterDash.ID))
+            if (Player.Calamity().SpeedBlasterDashStarted || (Player.dashDelay != 0 && (Player.Calamity().LastUsedDashID == SuperradiantSawDash.ID || Player.Calamity().LastUsedDashID == SpeedBlasterDash.ID)))
             {
-                Player.Calamity().DeferredDashID = SpeedBlasterDash.ID;
+                Player.Calamity().DeferredDashID = Player.ActiveItem().type == ModContent.ItemType<SuperradiantSlaughterer>() ? SuperradiantSawDash.ID : SpeedBlasterDash.ID;
                 Player.dash = 0;
             }
 
@@ -4303,20 +4308,8 @@ namespace CalamityMod.CalPlayer
             if (weakPetrification)
                 WeakPetrification();
 
-            // Disable vanilla dashes during god slayer dash
-            if (godSlayerDashHotKeyPressed)
-            {
-                // Set the player to have no registered vanilla dashes.
-                Player.dashType = 0;
-
-                // Prevent the possibility of Shield of Cthulhu invulnerability exploits.
-                Player.eocHit = -1;
-                if (Player.eocDash != 0)
-                    Player.eocDash = 0;
-            }
-
-            // Disable vanilla dashes during god slayer dash
-            if (SpeedBlasterDashStarted)
+            // Disable vanilla dashes during God Slayer or Speed Blaster dashes
+            if (godSlayerDashHotKeyPressed || SpeedBlasterDashStarted)
             {
                 // Set the player to have no registered vanilla dashes.
                 Player.dashType = 0;

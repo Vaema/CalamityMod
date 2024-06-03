@@ -211,12 +211,14 @@ BulletFilledShotgun: {
 		'''
 }
 
-Butcher: {
-	DisplayName: Butcher
+Buzzkill: {
+	DisplayName: Buzzkill
 	Tooltip:
 		'''
-		Fires bullets faster and more accurately the longer you hold the trigger
-		25% chance to save ammo
+		Hold <left> to rev up a buzzsaw that deals close-range damage
+		Release to fire the buzzsaw, which bounces off tiles and lacerates foes
+		Revving up the saws increases their damage and allows them to pierce more enemies
+		'Not to be confused with the Sawed-On Shotgun'
 		'''
 }
 
@@ -433,15 +435,6 @@ Drataliornus: {
 		'''
 }
 
-ElementalBlaster: {
-	DisplayName: Elemental Blaster
-	Tooltip:
-		'''
-		Fires a storm of rainbow blasts
-		Does not consume ammo
-		'''
-}
-
 ElementalEruption: {
 	DisplayName: Elemental Eruption
 	Tooltip:
@@ -466,8 +459,10 @@ FetidEmesis: {
 	DisplayName: Fetid Emesis
 	Tooltip:
 		'''
-		Has a chance to release rotten chunks instead of bullets
-		40% chance to save ammo
+		Fires an accelerating stream of bullets until the barrel overheats
+		When the barrel overheats, a spread of fetid chunks is vomited out
+		After firing, the gun must cool back down before it can be used again
+		75% chance to save ammo
 		'''
 }
 
@@ -1160,9 +1155,10 @@ SpeedBlaster: {
 	Tooltip:
 		'''
 		Rapidly fires phosphorescent paintball shots
-		Press <right> to eject a powerful glob which propels you while moving
-		This ability has a cooldown of {0} seconds
-		While under cooldown, you fire more rapidly with greater accuracy
+		Press <right> to eject a powerful paint stream of a different color
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, you fire more rapidly with greater accuracy
 		'''
 }
 
@@ -1227,6 +1223,31 @@ StormSurge: {
 SulphuricAcidCannon: {
 	DisplayName: Sulphuric Acid Cannon
 	Tooltip: Fires an acidic shot that sticks to enemies and dissolves them
+}
+
+SuperradiantSlaughterer: {
+	DisplayName: Superradiant Slaughterer
+	Tooltip:
+		'''
+		[MAIN]
+		[ALT]
+		[c/ad1717:'No one knows how it turns blood into rainbows...']
+		'''
+	MainInfo:
+		'''
+		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
+		Release <left> to fire the buzzsaw to pierce through and lacerate foes
+		Fired buzzsaws bounce off tiles and return to the player after winding down
+		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
+		Revving up the saws increases their damage and allows them to pierce more enemies
+		'''
+	AltInfo:
+		'''
+		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		'''
 }
 
 SurgeDriver: {

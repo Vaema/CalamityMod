@@ -3712,3 +3712,113 @@ ScintillatingBloom: {
 	DisplayName: Scintillating Bloom
 	Tooltip: ""
 }
+
+MarniteChest: {
+	DisplayName: Marnite Chest
+	Tooltip: ""
+}
+
+MarniteDresser: {
+	DisplayName: Marnite Dresser
+	Tooltip: ""
+}
+
+MarniteBathtub: {
+	DisplayName: Marnite Bathtub
+	Tooltip: ""
+}
+
+MarniteBed: {
+	DisplayName: Marnite Bed
+	Tooltip: ""
+}
+
+MarniteBookcase: {
+	DisplayName: Marnite Bookcase
+	Tooltip: ""
+}
+
+MarniteCandelabra: {
+	DisplayName: Marnite Candelabra
+	Tooltip: ""
+}
+
+MarniteCandle: {
+	DisplayName: Marnite Candle
+	Tooltip: ""
+}
+
+MarniteChair: {
+	DisplayName: Marnite Chair
+	Tooltip: ""
+}
+
+MarniteChandelier: {
+	DisplayName: Marnite Chandelier
+	Tooltip: ""
+}
+
+MarniteClock: {
+	DisplayName: Marnite Clock
+	Tooltip: ""
+}
+
+MarniteDoor: {
+	DisplayName: Marnite Door
+	Tooltip: ""
+}
+
+MarniteLamp: {
+	DisplayName: Marnite Lamp
+	Tooltip: ""
+}
+
+MarniteLantern: {
+	DisplayName: Marnite Lantern
+	Tooltip: ""
+}
+
+MarniteLight: {
+	DisplayName: Marnite Light
+	Tooltip: ""
+}
+
+MarniteOrgan: {
+	DisplayName: Marnite Organ
+	Tooltip: ""
+}
+
+MarniteSink: {
+	DisplayName: Marnite Sink
+	Tooltip: ""
+}
+
+MarniteSofa: {
+	DisplayName: Marnite Sofa
+	Tooltip: ""
+}
+
+MarniteTable: {
+	DisplayName: Marnite Table
+	Tooltip: ""
+}
+
+MarniteWorkBench: {
+	DisplayName: Marnite Work Bench
+	Tooltip: ""
+}
+
+PolishedMarniteBlock: {
+	DisplayName: Polished Marnite Block
+	Tooltip: ""
+}
+
+PolishedMarnitePlatform: {
+	DisplayName: Polished Marnite Platform
+	Tooltip: ""
+}
+
+PolishedMarniteWall: {
+	DisplayName: Polished Marnite Wall
+	Tooltip: ""
+}

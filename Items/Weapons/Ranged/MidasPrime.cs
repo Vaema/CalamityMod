@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,9 +9,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class MidasPrime : ModItem, ILocalizedModType
+    public class MidasPrime : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        // The Hold SHIFT tooltip is an easter egg and is not indicated to the player in any way.
+        public bool ShowExtensionIndicator => false;
+        
+        // Easter egg has a special tooltip key and color.
+        public string TooltipExtensionKey => "UltrakillEasterEgg";
+        public Color? TooltipExtensionColor => Color.Red;
+
         internal static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/CrackshotColtShot") { Volume = 0.5f, PitchVariance = 0.1f };
 
         // Internal storage used to keep track between UseItem and Shoot hooks whether a gold coin was queued up
@@ -137,14 +144,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Otherwise use default behavior (which is just to return true).
             return base.Shoot(player, source, position, velocity, type, damage, knockback);
         }
-
-        #region Hidden ULTRAKILL Reference Tooltip
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            TooltipLine ultrakillIntro = new TooltipLine(Mod, "CalamityMod:UltrakillIntroReference", this.GetLocalizedValue("UltrakillEasterEgg")) { OverrideColor = Color.Red };
-            CalamityUtils.HoldShiftTooltip(tooltips, new TooltipLine[] { ultrakillIntro });
-        }
-        #endregion
 
         // Make the gun have visible recoil when fired for extra cool factor.
         #region Firing Animation

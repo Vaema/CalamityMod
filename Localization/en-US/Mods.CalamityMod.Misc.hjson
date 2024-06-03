@@ -56,3 +56,5 @@ EtherealCoreText: You have already used an Ethereal Core. Your brain would escap
 PhantomHeartText: You have already used a Phantom Heart. The voices are telling you it's a bad idea to use it again.
 SulphurSwitchLeft: The Sulphurous Sea is now on the left side of the world.
 SulphurSwitchRight: The Sulphurous Sea is now on the right side of the world.
+// Point Blank
+PointBlank: Does extra damage to enemies shot at point-blank range
