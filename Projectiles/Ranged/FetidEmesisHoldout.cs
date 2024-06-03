@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                 
-                SoundStyle fire = new("CalamityMod/Sounds/Item/StrongGunShot");
+                SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmallAlt");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
