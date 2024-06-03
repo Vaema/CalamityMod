@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles.FurnitureMarnite;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Items.Placeables.FurnitureMarnite
 {
     public class PolishedMarniteBlock : ModItem, ILocalizedModType
@@ -29,9 +29,9 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddRecipeGroup("AnyGoldBar", 1).
-                AddIngredient(ItemID.Granite, 5).
-                AddIngredient(ItemID.Marble, 5).
+                AddIngredient(ItemID.Marble, 2).
+                AddIngredient(ItemID.Granite, 2).
+                AddRecipeGroup(CalamityRecipes.AnyGoldOre, 1).
                 AddTile(TileID.WorkBenches).
                 Register();
             CreateRecipe().
