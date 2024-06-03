@@ -3580,12 +3580,12 @@ WaterTurret: {
 }
 
 MarniteChest: {
-	DisplayName: Mods.CalamityMod.Items.Placeables.MarniteChest.DisplayName
+	DisplayName: Marnite Chest
 	Tooltip: ""
 }
 
 MarniteDresser: {
-	DisplayName: Mods.CalamityMod.Items.Placeables.MarniteDresser.DisplayName
+	DisplayName: Marnite Dresser
 	Tooltip: ""
 }
 
