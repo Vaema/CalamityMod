@@ -61,16 +61,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (spawnGreenCrystal)
             {
                 if (masterMode)
-                    greenCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel3>());
+                    greenCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelEmerald>());
             }
 
             if (phase3)
-                crystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel>());
+                crystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
 
             if (spawnBlueCrystal)
             {
                 if (masterMode)
-                    blueCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel2>());
+                    blueCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelSapphire>());
             }
 
             // Sapphire Crystal buffs
@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel3>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelEmerald>());
                 }
 
                 if (phase3 && npc.Calamity().newAI[0] == 1f)
@@ -133,7 +133,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
                 }
 
                 if (spawnBlueCrystal && npc.Calamity().newAI[0] == 2f)
@@ -157,7 +157,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel2>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelSapphire>());
                 }
             }
             else
@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
                 }
             }
 
@@ -340,7 +340,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC blueCrystal = Main.npc[i];
-                            if (blueCrystal.active && blueCrystal.type == ModContent.NPCType<KingSlimeJewel2>())
+                            if (blueCrystal.active && blueCrystal.type == ModContent.NPCType<KingSlimeJewelSapphire>())
                             {
                                 blueCrystal.position.X = npc.position.X;
                                 blueCrystal.position.Y = npc.position.Y - 200f;
@@ -414,6 +414,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.damage = setDamage;
 
                         npc.netUpdate = true;
+                        npc.TargetClosest();
 
                         float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
                         float speedMult = 1f;
@@ -686,6 +687,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1] = 5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
+                    npc.TargetClosest(false);
                     Point point3 = npc.Center.ToTileCoordinates();
                     Point point4 = Main.player[npc.target].Center.ToTileCoordinates();
                     Vector2 vector30 = Main.player[npc.target].Center - npc.Center;
@@ -872,6 +874,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.damage = npc.defDamage;
 
                         npc.netUpdate = true;
+                        npc.TargetClosest();
+
                         if (npc.ai[1] == 3f)
                         {
                             npc.velocity.Y = -13f;
@@ -971,10 +975,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static void GetPlaceToTeleportTo(NPC npc)
         {
+            npc.TargetClosest(false);
             float distanceAhead = 800f;
             Vector2 randomDefault = Main.rand.NextBool() ? Vector2.UnitX : -Vector2.UnitX;
             Vector2 vectorAimedAheadOfTarget = Main.player[npc.target].Center + new Vector2((float)Math.Round(Main.player[npc.target].velocity.X), 0f).SafeNormalize(randomDefault) * distanceAhead;
             Point predictiveTeleportPoint = vectorAimedAheadOfTarget.ToTileCoordinates();
+            if (predictiveTeleportPoint.X < 10)
+                predictiveTeleportPoint.X = 10;
+            if (predictiveTeleportPoint.X > Main.maxTilesX - 10)
+                predictiveTeleportPoint.X = Main.maxTilesX - 10;
+            if (predictiveTeleportPoint.Y < 10)
+                predictiveTeleportPoint.Y = 10;
+            if (predictiveTeleportPoint.Y > Main.maxTilesY - 10)
+                predictiveTeleportPoint.Y = Main.maxTilesY - 10;
+
             int randomPredictiveTeleportOffset = 5;
             int teleportTries = 0;
             while (teleportTries < 100)
@@ -998,10 +1012,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
                     }
                     else
+                    {
                         predictiveTeleportPoint.X += predictiveTeleportPoint.X < 0f ? 1 : -1;
+                        if (predictiveTeleportPoint.X < 10)
+                            predictiveTeleportPoint.X = 10;
+                        if (predictiveTeleportPoint.X > Main.maxTilesX - 10)
+                            predictiveTeleportPoint.X = Main.maxTilesX - 10;
+                    }
                 }
                 else
+                {
                     predictiveTeleportPoint.X += predictiveTeleportPoint.X < 0f ? 1 : -1;
+                    if (predictiveTeleportPoint.X < 10)
+                        predictiveTeleportPoint.X = 10;
+                    if (predictiveTeleportPoint.X > Main.maxTilesX - 10)
+                        predictiveTeleportPoint.X = Main.maxTilesX - 10;
+                }
             }
 
             // Default teleport if the above conditions aren't met in 100 iterations

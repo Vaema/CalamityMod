@@ -210,3 +210,48 @@ WulfrumTreasurePinger: {
 		This contraption seems incredibly shoddy. [c/FC4903:It'll break sooner than later for sure]
 		'''
 }
+
+AcidwoodPickaxe: {
+	DisplayName: Acidwood Pickaxe
+	Tooltip: ""
+}
+
+DriftwoodPickaxe: {
+	DisplayName: Driftwood Pickaxe
+	Tooltip: Improved efficiency while you are wet
+}
+
+MonolithPickaxe: {
+	DisplayName: Monolith Pickaxe
+	Tooltip: ""
+}
+
+AcidwoodAxe: {
+	DisplayName: Acidwood Axe
+	Tooltip: ""
+}
+
+DriftwoodAxe: {
+	DisplayName: Driftwood Axe
+	Tooltip: Improved efficiency while you are wet
+}
+
+MonolithAxe: {
+	DisplayName: Monolith Axe
+	Tooltip: ""
+}
+
+AcidwoodHammer: {
+	DisplayName: Acidwood Hammer
+	Tooltip: ""
+}
+
+DriftwoodHammer: {
+	DisplayName: Driftwood Hammer
+	Tooltip: Improved efficiency while you are wet
+}
+
+MonolithHammer: {
+	DisplayName: Monolith Hammer
+	Tooltip: ""
+}

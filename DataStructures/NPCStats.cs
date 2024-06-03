@@ -295,7 +295,7 @@ namespace CalamityMod
             EnemyStats.ContactDamageValues = new SortedDictionary<int, int[]>
             {
                 { NPCID.KingSlime, new int[] { 40, 64, 80, 96, 144 } },
-                { ModContent.NPCType<KingSlimeJewel3>(), new int[] { 30, 44, 60, 76, 114 } },
+                { ModContent.NPCType<KingSlimeJewelEmerald>(), new int[] { 30, 44, 60, 76, 114 } },
 
                 { ModContent.NPCType<DesertScourgeHead>(), new int[] { 45, 66, 88, 110, 165 } },
                 { ModContent.NPCType<DesertScourgeBody>(), new int[] { 24, 32, 40, 48, 72 } },
@@ -561,7 +561,7 @@ namespace CalamityMod
 
             EnemyStats.ProjectileDamageValues = new SortedDictionary<Tuple<int, int>, int[]>
             {
-                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewel>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 26, 36, 44, 52, 84 } },
+                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewelRuby>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 26, 36, 44, 52, 84 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 26, 36, 44, 52, 84 } },
                 { new Tuple<int, int>(ModContent.NPCType<DesertNuisanceHeadYoung>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 26, 36, 44, 52, 84 } },

@@ -45,6 +45,7 @@ namespace CalamityMod.NPCs.DesertScourge
             value.Position.Y += 30;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
 
         public override void SetDefaults()

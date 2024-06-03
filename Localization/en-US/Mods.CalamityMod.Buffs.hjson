@@ -178,6 +178,11 @@ HolyInferno: {
 	Description: You've gone too far from the Profaned Goddess!
 }
 
+Laceration: {
+	DisplayName: Laceration
+	Description: You're a bloody mess
+}
+
 ManaBurn: {
 	DisplayName: Mana Burn
 	Description: The excess of mana sears your body and mind
@@ -359,8 +364,8 @@ Dreamfog: {
 }
 
 EidolonSnailBuff: {
-	DisplayName: Escargidolon Snail
-	Description: What a silly little prehistoric snail
+	DisplayName: Eidolon Snail
+	Description: What a silly little snail
 }
 
 ElectricTroublemaker: {
@@ -465,17 +470,17 @@ CirrusBlueCandleBuff: {
 
 CirrusPinkCandleBuff: {
 	DisplayName: Vigor
-	Description: Its brilliant light suffuses those nearby with hope
+	Description: The brilliant light suffuses you with hope
 }
 
 CirrusPurpleCandleBuff: {
 	DisplayName: Resilience
-	Description: Neither rain nor wind can snuff its undying flame
+	Description: Neither rain nor wind can snuff your undying flame
 }
 
 CirrusYellowCandleBuff: {
 	DisplayName: Spite
-	Description: Its hateful glow flickers with ire
+	Description: The hateful, flickering glow fuels your ire
 }
 
 CorruptionEffigyBuff: {

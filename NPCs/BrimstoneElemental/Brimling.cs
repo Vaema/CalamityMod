@@ -232,7 +232,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 NPC.ai[2] = 0f;
                 NPC.ai[3] = 0f;
 
-                SoundEngine.PlaySound(SoundID.Item8, NPC.Center);
+                SoundEngine.PlaySound(BrimstoneElemental.TeleportSound, NPC.Center);
 
                 for (int j = 0; j < 20; j++)
                 {
@@ -251,6 +251,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 float projectileVelocity = 5f;
                 int type = ModContent.ProjectileType<BrimstoneHellfireball>();
                 int damage = NPC.GetProjectileDamage(type);
+                SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, NPC.Center);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.X, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.Y);
             }
 

@@ -12,8 +12,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     // Deny me no longer!
     [LegacyName("NanoblackReaperMelee", "NanoblackReaperRogue")]
-    public class NanoblackReaper : RogueWeapon
+    public class NanoblackReaper : RogueWeapon, IHoldShiftTooltipItem
     {
+        public bool ShowExtensionIndicator => false;
+        public Color? TooltipExtensionColor => new Color(31, 223, 128); // #1FDF80
+
         public static float Knockback = 9f;
         public static float Speed = 16f;
 

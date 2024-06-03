@@ -211,12 +211,14 @@ BulletFilledShotgun: {
 		'''
 }
 
-Butcher: {
-	DisplayName: Butcher
+Buzzkill: {
+	DisplayName: Buzzkill
 	Tooltip:
 		'''
-		Fires bullets faster and more accurately the longer you hold the trigger
-		25% chance to save ammo
+		Hold <left> to rev up a buzzsaw that deals close-range damage
+		Release to fire the buzzsaw, which bounces off tiles and lacerates foes
+		Revving up the saws increases their damage and allows them to pierce more enemies
+		'Not to be confused with the Sawed-On Shotgun'
 		'''
 }
 
@@ -433,15 +435,6 @@ Drataliornus: {
 		'''
 }
 
-ElementalBlaster: {
-	DisplayName: Elemental Blaster
-	Tooltip:
-		'''
-		Fires a storm of rainbow blasts
-		Does not consume ammo
-		'''
-}
-
 ElementalEruption: {
 	DisplayName: Elemental Eruption
 	Tooltip:
@@ -466,8 +459,10 @@ FetidEmesis: {
 	DisplayName: Fetid Emesis
 	Tooltip:
 		'''
-		Has a chance to release rotten chunks instead of bullets
-		40% chance to save ammo
+		Fires an accelerating stream of bullets until the barrel overheats
+		When the barrel overheats, a spread of fetid chunks is vomited out
+		After firing, the gun must cool back down before it can be used again
+		75% chance to save ammo
 		'''
 }
 
@@ -653,7 +648,7 @@ Infinity: {
 	DisplayName: Infinity
 	Tooltip:
 		'''
-		Fires a barrage of energy bolts that split and bounce
+		Fires a twin stream of energy bolts that split
 		Press <right> to fire a barrage of normal bullets
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
@@ -994,7 +989,7 @@ RealmRavager: {
 	DisplayName: Realm Ravager
 	Tooltip:
 		'''
-		Shoots a burst of 3 to 4 bullets
+		Shoots a burst of 4 bullets
 		Converts musket balls into explosive bullets
 		'''
 }
@@ -1160,9 +1155,10 @@ SpeedBlaster: {
 	Tooltip:
 		'''
 		Rapidly fires phosphorescent paintball shots
-		Press <right> to eject a powerful glob which propels you while moving
-		This ability has a cooldown of {0} seconds
-		While under cooldown, you fire more rapidly with greater accuracy
+		Press <right> to eject a powerful paint stream of a different color
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, you fire more rapidly with greater accuracy
 		'''
 }
 
@@ -1229,6 +1225,31 @@ SulphuricAcidCannon: {
 	Tooltip: Fires an acidic shot that sticks to enemies and dissolves them
 }
 
+SuperradiantSlaughterer: {
+	DisplayName: Superradiant Slaughterer
+	Tooltip:
+		'''
+		[MAIN]
+		[ALT]
+		[c/ad1717:'No one knows how it turns blood into rainbows...']
+		'''
+	MainInfo:
+		'''
+		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
+		Release <left> to fire the buzzsaw to pierce through and lacerate foes
+		Fired buzzsaws bounce off tiles and return to the player after winding down
+		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
+		Revving up the saws increases their damage and allows them to pierce more enemies
+		'''
+	AltInfo:
+		'''
+		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		'''
+}
+
 SurgeDriver: {
 	DisplayName: Surge Driver
 	Tooltip:
@@ -1242,8 +1263,9 @@ Svantechnical: {
 	DisplayName: Svantechnical
 	Tooltip:
 		'''
-		Fires several barrages of bullets
-		Press <right> to zoom out
+		Fires a trinity of energy bolts that split into beams that track your cursor
+		Press <right> to fire a barrage of normal bullets
+		'The age old balance of trading damage for frames'
 		'''
 }
 
@@ -1405,4 +1427,19 @@ WulfrumBlunderbuss: {
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
+}
+
+AcidwoodBow: {
+	DisplayName: Acidwood Bow
+	Tooltip: ""
+}
+
+DriftwoodBow: {
+	DisplayName: Driftwood Bow
+	Tooltip: This bow is stronger while you are wet
+}
+
+MonolithBow: {
+	DisplayName: Monolith Bow
+	Tooltip: ""
 }

@@ -29,7 +29,8 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.healMana = 300;
             Item.buffType = ModContent.BuffType<WhiteWineBuff>();
             Item.buffTime = CalamityUtils.SecondsToFrames(300f);
-            Item.value = Item.buyPrice(0, 4, 0, 0);
+            // Cirrus overcharges: 10% sell value instead of 20%
+            Item.value = Item.sellPrice(silver: 40);
         }
 
         public override bool? UseItem(Player player)

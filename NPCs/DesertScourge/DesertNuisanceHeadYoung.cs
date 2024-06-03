@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.DesertScourge
             Main.npcFrameCount[NPC.type] = 7;
             this.HideFromBestiary();
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
 
         public override void SetDefaults()

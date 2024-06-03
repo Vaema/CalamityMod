@@ -205,6 +205,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (death)
                 headSpinVelocityMult *= 1.2f;
 
+            // Velocity used to move Skeletron away from the target before charging
+            float moveAwayVelocity = headSpinVelocityMult;
+            if (!phase3)
+                moveAwayVelocity *= (bossRush ? 1.5f : 2f);
+
             // Hand DR, scale DR up if the hands are still alive as Skeletron's HP lowers
             npc.chaseable = handsDead;
             float minDR = 0.05f;
@@ -484,23 +489,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (!canCharge || !hasMovedForcedDistance)
                     {
-                        float maxAcceleration = headXAcceleration + headYAcceleration + (npc.ai[2] - moveAwayGateValue) * (phase5 ? 0.006f : 0.004f);
-                        float maxAccelerationCap = (headXAcceleration + headYAcceleration) * 5f;
-                        if (maxAcceleration > maxAccelerationCap)
-                            maxAcceleration = maxAccelerationCap;
+                        float phase5Multiplier = 1.5f;
+                        float maxVelocity = (npc.ai[2] - moveAwayGateValue) * (moveAwayVelocity * 0.008f);
+                        if (phase5)
+                            maxVelocity *= phase5Multiplier;
 
-                        npc.velocity += (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * -maxAcceleration;
-
-                        float maxVelocity = headSpinVelocityMult + (npc.ai[2] - moveAwayGateValue) * (phase5 ? 0.12f : 0.08f);
-                        float maxVelocityCap = headSpinVelocityMult * 2.5f;
+                        float maxVelocityCap = moveAwayVelocity;
+                        if (phase5)
+                            maxVelocityCap *= phase5Multiplier;
                         if (maxVelocity > maxVelocityCap)
                             maxVelocity = maxVelocityCap;
 
-                        if (npc.velocity.Length() > maxVelocity)
-                        {
-                            npc.velocity = npc.velocity.SafeNormalize(Vector2.UnitY);
-                            npc.velocity *= maxVelocity;
-                        }
+                        npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * -maxVelocity;
                     }
 
                     // New charge attack

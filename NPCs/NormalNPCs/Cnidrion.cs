@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.AnyNPCs(NPC.type))
                 return 0f;
 
-            return 0.1f;
+            return 0.05f;
         }
 
         public override void FindFrame(int frameHeight)
