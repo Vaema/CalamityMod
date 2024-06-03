@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public List<List<Vector2>> lightningTrails = new List<List<Vector2>>();
         public static int lightningCount = 15;
-        public static int totalPoints = 50;
+        public static int totalPoints = 10;
 
         public override void SetDefaults()
         {
@@ -33,35 +33,30 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            lightningCount = 15;
-            totalPoints = 10;
-            if (Projectile.ai[0] % 2 == 0)
+            if (Projectile.ai[0] % 4 == 0)
             {
                 SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound);
                 lightningTrails.Clear();
-                //if (lightningTrails.Count <= 0)
+                for (int i = 0; i < lightningCount; i++)
                 {
-                    for (int i = 0; i < lightningCount; i++)
+                    List<Vector2> points = new List<Vector2>();
+                    for (int j = 0; j < totalPoints; j++)
                     {
-                        List<Vector2> points = new List<Vector2>();
-                        for (int j = 0; j < totalPoints; j++)
+                        float radians = MathHelper.TwoPi / lightningCount;
+                        if (j == 0)
                         {
-                            float radians = MathHelper.TwoPi / lightningCount;
-                            if (j == 0)
-                            {
-                                points.Add(Projectile.Center + Main.rand.NextVector2Circular(20, 20));
-                            }
-                            else
-                            {
-                                Vector2 newPoint = new Vector2();
-                                Vector2 jtolookfor = j > 1 ? points[j - 2] : Projectile.Center;
-                                float baseDist = j == totalPoints - 1 ? 20 : Main.rand.Next(60, 120) * (1 + (20 - Projectile.timeLeft) / 15);
-                                newPoint = points[j - 1] + (jtolookfor.DirectionTo(points[j - 1]) * baseDist).RotatedByRandom(MathHelper.PiOver2);
-                                points.Add(newPoint);
-                            }
+                            points.Add(Projectile.Center + Main.rand.NextVector2Circular(20, 20));
                         }
-                        lightningTrails.Add(points);
+                        else
+                        {
+                            Vector2 newPoint = new Vector2();
+                            Vector2 jtolookfor = j > 1 ? points[j - 2] : Projectile.Center;
+                            float baseDist = j == totalPoints - 1 ? 20 : Main.rand.Next(60, 120) * (1 + (20 - Projectile.timeLeft) / 15);
+                            newPoint = points[j - 1] + (jtolookfor.DirectionTo(points[j - 1]) * baseDist).RotatedByRandom(MathHelper.PiOver2);
+                            points.Add(newPoint);
+                        }
                     }
+                    lightningTrails.Add(points);
                 }
             }
             Projectile.ai[0]++;
@@ -84,18 +79,18 @@ namespace CalamityMod.Projectiles.Typeless
             return true;
         }
 
-        internal float WidthFunction(float completionRatio) => MathHelper.Clamp(completionRatio * 2, 0.4f, 1f);
-        internal Color ColorFunction(float completionRatio) => new Color(174, 227, 244); 
+        internal float WidthFunction(float completionRatio) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
+        internal Color ColorFunction(float completionRatio) => new Color(123, 205, 237); // Auric blue
 
         internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 2f;
-        internal Color BackgroundColorFunction(float completionRatio) => new Color(92, 144, 245) * 0.6f;
+        internal Color BackgroundColorFunction(float completionRatio) => ColorFunction(completionRatio) * 0.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {
             if (lightningTrails.Count <= 0)
                 return false;
 
-            Main.spriteBatch.EnterShaderRegion();
+            Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
             GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
             foreach (List<Vector2> points in lightningTrails)
             {
