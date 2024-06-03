@@ -466,9 +466,9 @@ FetidEmesis: {
 	DisplayName: Fetid Emesis
 	Tooltip:
 		'''
-		Fires bullets at an accelerating rate
-		After firing for a while it will vomit a spread of fetid chunks
-		Once it has finished firing it will go on cooldown for a bit
+		Fires an accelerating stream of bullets until the barrel overheats
+		When the barrel overheats, a spread of fetid chunks is vomited out
+		After firing, the gun must cool back down before it can be used again
 		75% chance to save ammo
 		'''
 }
