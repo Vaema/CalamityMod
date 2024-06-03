@@ -100,7 +100,7 @@ namespace CalamityMod
         // Astral Snow Sky/BG
         public static Texture2D AstralSnowSurfaceMiddle;
 
-        // Sulpher Sea Sky/BG
+        // Sulphur Sea Sky/BG
         public static Texture2D SulphurSeaSky;
         public static Texture2D SulphurSeaSkyFront;
         public static Texture2D SulphurSeaSurface;
@@ -132,8 +132,10 @@ namespace CalamityMod
         internal static CalamityMod Instance;
 
         // TODO -- Mod references should be contained in a ModSystem (example name "ModLoadedChecker")
-        internal Mod musicMod = null; // This is Calamity's official music mod, CalamityModMusic
-        internal bool MusicAvailable => !(musicMod is null);
+
+        // This is Calamity's official music mod, CalamityModMusic. It is now a hard dependency.
+        internal Mod musicMod = null;
+        internal bool MusicAvailable => musicMod is not null;
 
         // Please keep this in alphabetical order so it's easy to read
         internal Mod ancientsAwakened = null;
@@ -246,29 +248,6 @@ namespace CalamityMod
             BalancingChangesManager.Load();
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
-
-            /*
-            //keep this disabled for now, hell bg system isnt used and there is a better way to load it
-            //hell background loading
-            HellBGManager.Load();
-
-            //load stuff for hell background
-            loadCache = new List<HellBGLoad>();
-
-            foreach (Type type in Code.GetTypes())
-            {
-                if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(HellBGLoad)))
-                {
-                    var instance = Activator.CreateInstance(type);
-                    loadCache.Add(instance as HellBGLoad);
-                }
-            }
-
-            for (int k = 0; k < loadCache.Count; k++)
-            {
-                loadCache[k].Load();
-            }
-            */
         }
 
         private void LoadClient()
@@ -482,21 +461,6 @@ namespace CalamityMod
             SceneMetrics.GraveyardTileThreshold = 28;
 
             carpetOriginal = null;
-
-            /*
-            //unload hell background stuff
-            HellBGManager.Unload();
-
-            if (loadCache != null)
-            {
-                foreach (var loadable in loadCache)
-                {
-                    loadable.Unload();
-                }
-            }
-
-            loadCache = null;
-            */
 
             Instance = null;
             base.Unload();

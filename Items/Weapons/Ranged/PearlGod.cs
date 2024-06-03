@@ -8,7 +8,9 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Rarities;
+using Terraria.Audio;
 using CalamityMod.Items.Materials;
+using Steamworks;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -32,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 3f;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.UseSound = SoundID.Item41;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/GunShotSmall") with { Volume = 0.65f };
             Item.autoReuse = true;
             Item.shootSpeed = 14f;
             Item.shoot = ProjectileID.PurificationPowder;

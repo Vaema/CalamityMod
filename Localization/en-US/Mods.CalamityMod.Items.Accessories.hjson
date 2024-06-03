@@ -104,6 +104,7 @@ AlchemicalFlask: {
 		'''
 		All attacks inflict the Plague and reduces damage taken from the Plague
 		Projectiles spawn plague seekers on enemy hits
+		Releases plague bees when damaged and douses you in honey 
 		'''
 }
 
@@ -1260,16 +1261,6 @@ PlaguedFuelPack: {
 		'''
 }
 
-PlagueHive: {
-	DisplayName: Plague Hive
-	Tooltip:
-		'''
-		All attacks inflict the Plague and grants immunity to the Plague
-		Releases bees when damaged that inflict the Plague
-		Projectiles spawn plague seekers on enemy hits
-		'''
-}
-
 ProfanedSoulArtifact: {
 	DisplayName: Profaned Soul Artifact
 	Tooltip:
@@ -1616,9 +1607,8 @@ StatisBlessing: {
 	DisplayName: Statis' Blessing
 	Tooltip:
 		'''
-		Increased max minions by 2 and 10% increased summon damage
+		Increased max minions by 2 and 12% increased summon damage
 		Increased minion knockback
-		Minions inflict holy flames on hit
 		'''
 }
 
@@ -1627,9 +1617,9 @@ StatisCurse: {
 	Tooltip:
 		'''
 		Increases max minions by 3, does not stack with downgrades
-		10% increased summon damage
+		12% increased summon damage
 		Increased minion knockback
-		Minions inflict holy flames and shadowflames on hit
+		Minions inflict shadowflames on hit
 		Grants immunity to Shadowflame
 		'''
 }
@@ -1721,7 +1711,7 @@ StatMeter: {
 	// Other stats
 	GenericStats:
 		'''
-		Defense: {0} | DR: {1}% | Life Regen: {2}
+		Defense: {0} | DR: {1}% | Life Regen: {2} HP/s
 		Move Speed: {3}% | Jump Boost: {4}%
 		'''
 	FlightTime: " | Wing Flight Time: {0} seconds"
@@ -1883,8 +1873,9 @@ ToxicHeart: {
 	DisplayName: Toxic Heart
 	Tooltip:
 		'''
-		Summons a plague aura around you that damages nearby enemies
-		Makes you immune to the Plague debuff
+		Causes your heart to beat with powerful plague pulses, inflicting all nearby enemies with the Plague
+		The rate of these pulses scales with how low your life regen is
+		Pulses that kill targets create additional pulses and heal you
 		Multiplies all sickness-based debuff damage by 1.5
 		'''
 }

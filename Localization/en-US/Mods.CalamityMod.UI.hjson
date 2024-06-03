@@ -615,3 +615,5 @@ DraedonFacility: Other minor research projects
 Abyss: Disposing of Silva's remains
 SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
+// Hold Shift tooltip default
+HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more

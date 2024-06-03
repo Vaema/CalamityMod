@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CalamityMod.Balancing;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -13,14 +12,20 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
-using Terraria.Map;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        public static WindGrid Windgrid
+        {
+            get;
+            internal set;
+        }
+
         #region Decrease Sandstorm Wind Speed Requirement
         private static void DecreaseSandstormWindSpeedRequirement(ILContext il)
         {
@@ -957,5 +962,17 @@ namespace CalamityMod.ILEditing
             c.Emit(OpCodes.Stloc, relativeMapTypeIndex);
         }
         #endregion
+
+        // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
+        #region Store The Stupid Fucking Private Wind Map In Public Property
+        private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
+        {
+            orig(self);
+
+            // FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK
+            if (Windgrid is null)
+                Windgrid = typeof(TileDrawing).GetField("_windGrid", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(self) as WindGrid;
+        }
+        #endregion Store The Stupid Fucking Private Wind Map In Public Property
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
+using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -54,6 +55,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -533,6 +535,8 @@ namespace CalamityMod.CalPlayer
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
         public int jewelBonusDefense = 0;
+        public float pulseCounter = 0; // Toxic Heart
+        public float pulseRate = 1; // Toxic Heart
         public bool aAmpoule = false;
         public bool rOoze = false;
         public bool JustWasDebuffed = false;
@@ -794,6 +798,7 @@ namespace CalamityMod.CalPlayer
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
         public int AbaddonCooldown = 0;
+        public int AlchFlaskCooldown = 0;
         public bool plagueReaper = false;
         public bool plaguebringerPatronSet = false;
         public bool plaguebringerCarapace = false;
@@ -900,6 +905,9 @@ namespace CalamityMod.CalPlayer
         public bool banishingFire = false;
         public bool wither = false;
         public bool ManaBurn = false;
+
+        public int ImmobilityDebuffImmunityTimer = 0;
+        public const int ImmobilityDebuffImmunityTimerMax = 300;
 
         public const int SulphSeaWaterSafetyTime = 720;
         public const int SulphSeaWaterRecoveryTime = 150;
@@ -1096,13 +1104,21 @@ namespace CalamityMod.CalPlayer
         #region Biome
         public bool ZoneCalamity => Player.InModBiome(ModContent.GetInstance<BrimstoneCragsBiome>());
         public bool ZoneAstral => Player.InModBiome(ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>()) && !ZoneAbyss;
-        public bool ZoneSunkenSea => Player.InModBiome(ModContent.GetInstance<SunkenSeaBiome>());
+        public bool ZoneSunkenSea => ZoneSunkenBurrows || ZoneSunkenSeaReefs || ZoneSunkenSeaPolyp || ZoneSunkenSeaShores;
+        public bool ZoneSunkenBurrows => Player.InModBiome(ModContent.GetInstance<SunkenSeaBurrowsBiome>());
+        public bool ZoneSunkenSeaReefs => Player.InModBiome(ModContent.GetInstance<SunkenSeaReefsBiome>());
+        public bool ZoneSunkenSeaPolyp => Player.InModBiome(ModContent.GetInstance<SunkenSeaPolypBiome>());
+        public bool ZoneSunkenSeaShores => Player.InModBiome(ModContent.GetInstance<SunkenSeaShoresBiome>());
         public bool ZoneSulphur => Player.InModBiome(ModContent.GetInstance<SulphurousSeaBiome>());
         public bool ZoneAbyss => ZoneAbyssLayer1 || ZoneAbyssLayer2 || ZoneAbyssLayer3 || ZoneAbyssLayer4;
         public bool ZoneAbyssLayer1 => Player.InModBiome(ModContent.GetInstance<AbyssLayer1Biome>());
         public bool ZoneAbyssLayer2 => Player.InModBiome(ModContent.GetInstance<AbyssLayer2Biome>());
         public bool ZoneAbyssLayer3 => Player.InModBiome(ModContent.GetInstance<AbyssLayer3Biome>());
         public bool ZoneAbyssLayer4 => Player.InModBiome(ModContent.GetInstance<AbyssLayer4Biome>());
+        public bool ZoneFloralParadise => Player.InModBiome(ModContent.GetInstance<FloralParadiseBiome>());
+
+        public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneFloralParadise || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
+
         public bool abyssDeath = false;
         public int abyssBreathCD;
         public float caveDarkness = 0f;
@@ -1785,7 +1801,6 @@ namespace CalamityMod.CalPlayer
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
             MiniSwarmers = false;
-            noStupidNaturalARSpawns = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             BloomStoneRegen = false;
@@ -2156,7 +2171,8 @@ namespace CalamityMod.CalPlayer
             StellarTorus = false;
             LiliesOfFinalityBool = false;
 
-            /*
+            /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
+            noStupidNaturalARSpawns = false
             disableVoodooSpawns = false;
             disablePerfCystSpawns = false;
             disableHiveCystSpawns = false;
@@ -2316,6 +2332,7 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
+            AlchFlaskCooldown = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
@@ -2383,6 +2400,7 @@ namespace CalamityMod.CalPlayer
             banishingFire = false;
             wither = false;
             PurityHealSlowdownFrames = 0;
+            ImmobilityDebuffImmunityTimer = 0;
             #endregion
 
             #region Rogue
@@ -2702,6 +2720,15 @@ namespace CalamityMod.CalPlayer
             // Why does this otherwise work when you're dead lmao
             if (Player.dead)
                 return;
+
+            if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
+            {
+                var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<AscendantInsignia>()));
+                Projectile.NewProjectileDirect(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ModContent.ProjectileType<AscendantAura>(), 0, 0f);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
+                ascendantInsigniaCooldown = 2400;
+                ascendantInsigniaBuffTime = 240; //4 seconds
+            }
 
             //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero
             if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != Player.oldVelocity.Y) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
@@ -3701,7 +3728,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
-                    (blueCandle ? 0.05f : 0f) +
+                    (blueCandle ? CirrusBlueCandleBuff.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
 
@@ -4852,15 +4879,8 @@ namespace CalamityMod.CalPlayer
             if (CalamityConfig.Instance.SpeedrunTimer)
                 CalamityMod.SpeedrunTimer.Restart();
 
-            //
-            // 04JAN2024: Ozzatron: Added a temporary message for the Gimme Swag plushie campaign.
-            // This message should not exist indefinitely. It is being pushed as a silent public update just for itself.
-            // As this message always displays and is not configurable, the previous rules about startup messages have been replaced with always-true.
-            //
-
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display
-            bool plushieMessage = true;
-            if (plushieMessage || CalamityConfig.Instance.WikiStatusMessage)
+            if (CalamityConfig.Instance.WikiStatusMessage)
             {
                 startMessageDisplayDelay = Main.rand.Next(CalamityUtils.SecondsToFrames(12), CalamityUtils.SecondsToFrames(20) + 1);
             }

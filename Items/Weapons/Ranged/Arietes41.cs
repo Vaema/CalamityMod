@@ -5,6 +5,7 @@ using CalamityMod.Projectiles;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 2.5f;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.UseSound = SoundID.Item41;
+            Item.UseSound = Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/GunShotSmall") with { Volume = 0.65f };
             Item.autoReuse = true;
             Item.shootSpeed = 13f;
             Item.shoot = ProjectileID.PurificationPowder;

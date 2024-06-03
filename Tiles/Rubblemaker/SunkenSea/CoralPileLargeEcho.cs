@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class CoralPileLargeEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/CoralPileLarge";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/CoralPileLarge";
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;

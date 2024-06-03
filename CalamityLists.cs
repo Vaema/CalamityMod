@@ -1943,6 +1943,7 @@ namespace CalamityMod
                 ProjectileType<PrismaticBeam>(),
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
+                ProjectileType<RespiteblockHoldout>(),
                 ProjectileType<SacrificeProjectile>(),
                 ProjectileType<SnapClamProj>(),
                 ProjectileType<SnapClamStealth>(),

@@ -15,6 +15,7 @@ using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -54,6 +55,8 @@ namespace CalamityMod.Tiles
         {
             ModContent.TileType<SeaPrism>(),
             ModContent.TileType<Navystone>(),
+            ModContent.TileType<Shellstone>(),
+            ModContent.TileType<Limestone>(),
             ModContent.TileType<Voidstone>()
         };
 

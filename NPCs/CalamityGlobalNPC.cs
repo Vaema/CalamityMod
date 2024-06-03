@@ -3201,7 +3201,7 @@ namespace CalamityMod.NPCs
 
             // Damage reduction on spawn for certain worm bosses.
             if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
-                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.8f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
+                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.DestroyerIDs.Contains(npc.type))
                 modifiers.FinalDamage *= 1f - MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.AstrumDeusIDs.Contains(npc.type))
@@ -3224,14 +3224,6 @@ namespace CalamityMod.NPCs
             // DR floor is 0%. Nothing can have negative DR.
             if (effectiveDR <= 0f)
                 effectiveDR = 0f;
-
-            // Add Yellow Candle damage if the NPC isn't supposed to be "near invincible"
-            // Armor penetration has already been applied as bonus damage.
-            // Yellow Candle provides +5% damage which ignores both DR and defense.
-            // This means Yellow Candle is buffing armor penetration and technically not ignoring defense,
-            // but it's small enough to let it slide.
-            if (npc.HasBuff<CirrusYellowCandleBuff>() && DR < 0.99f && npc.takenDamageMultiplier > 0.05f)
-                finalMultiplier += 0.05f;
 
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
             // Cirrus being active makes the extra DR cease to function
@@ -3493,6 +3485,73 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
+            }
+
+            // Expert+ Hive Mind Vile Spits
+            if (npc.type == NPCID.VileSpitEaterOfWorlds)
+            {
+                if (Main.expertMode || BossRushEvent.BossRushActive)
+                {
+                    if (npc.ai[1] >= 69f)
+                    {
+                        if (npc.target == Main.maxPlayers)
+                        {
+                            npc.TargetClosest();
+
+                            float velocity = Main.getGoodWorld ? 10f : (Main.masterMode || BossRushEvent.BossRushActive) ? 8f : 6f;
+                            if (npc.ai[1] == 70f)
+                                velocity *= 0.6f;
+
+                            npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
+                        }
+
+                        if (Main.getGoodWorld && !npc.dontTakeDamage)
+                        {
+                            if ((double)(npc.Center.Y / 16f) < Main.worldSurface)
+                                npc.dontTakeDamage = true;
+                        }
+
+                        npc.damage = npc.GetAttackDamage_ScaledByStrength(32f);
+
+                        npc.ai[0] += 1f;
+                        if (npc.ai[0] > 3f)
+                            npc.ai[0] = 3f;
+
+                        if (npc.ai[0] == 2f)
+                        {
+                            npc.position += npc.velocity;
+                            SoundEngine.PlaySound(SoundID.NPCDeath9, npc.Center);
+                            for (int i = 0; i < 20; i++)
+                            {
+                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, 18, 0f, 0f, 100, default, 1.8f);
+                                Main.dust[dust].velocity *= 1.3f;
+                                Main.dust[dust].velocity += npc.velocity;
+                                Main.dust[dust].noGravity = true;
+                            }
+                        }
+
+                        if (Collision.SolidCollision(npc.position, npc.width, npc.height))
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                                npc.StrikeInstantKill();
+                        }
+
+                        npc.EncourageDespawn(100);
+
+                        npc.position += npc.netOffset;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
+                            Main.dust[dust].velocity *= 0.3f;
+                            Main.dust[dust].noGravity = true;
+                        }
+
+                        npc.rotation += 0.4f * npc.direction;
+                        npc.position -= npc.netOffset;
+
+                        return false;
+                    }
+                }
             }
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
