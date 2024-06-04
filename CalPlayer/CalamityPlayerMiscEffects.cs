@@ -697,7 +697,7 @@ namespace CalamityMod.CalPlayer
                     if (tile.TileType == auricOreID)
                     {
                         Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
-                        Player.AddBuff(BuffID.Electrified, 300);
+                        Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
                 }
@@ -974,9 +974,6 @@ namespace CalamityMod.CalPlayer
             {
                 holyInfernoFadeIntensity = MathHelper.Clamp(holyInfernoFadeIntensity - 0.01f, 0f, 1f);
             }
-            // Transformer immunity to Electrified
-            if (transformer)
-                Player.buffImmune[BuffID.Electrified] = true;
 
             // Reduce breath meter while in icy water instead of chilling
             bool canBreath = (aquaticHeart && NPC.downedBoss3) || Player.gills || Player.merman;
@@ -3439,34 +3436,9 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    // Reduce the buffTime of Electrified.
-                    bool reduceElectrifiedDuration = false;
-                    for (int l = 0; l < Player.MaxBuffs; l++)
-                    {
-                        if (Player.buffType[l] == ModContent.BuffType<TeslaBuff>())
-                        {
-                            if (Player.buffTime[l] >= 5)
-                                reduceElectrifiedDuration = true;
-                        }
-                    }
-
-                    if (reduceElectrifiedDuration)
-                    {
-                        for (int l = 0; l < Player.MaxBuffs; l++)
-                        {
-                            if (Player.buffType[l] == BuffID.Electrified)
-                            {
-                                if (Player.buffTime[l] > 2)
-                                {
-                                    Player.buffTime[l]--;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
+                    bool check = true;
                     // Summon the aura (this check is here to prevent out of bounds errors).
-                    if (reduceElectrifiedDuration)
+                    if (check)
                     {
                         // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                         var source = Player.GetSource_Buff(Player.FindBuffIndex(ModContent.BuffType<TeslaBuff>()));

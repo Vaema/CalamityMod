@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,7 +25,10 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.alpha = 255;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = 4;
+            Projectile.extraUpdates = 1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 600;
         }
 
@@ -58,7 +63,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             return new Color(255, 255, 255, 100);
         }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Electrified, 90);
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);

@@ -271,6 +271,9 @@ namespace CalamityMod.NPCs
         public int rTide = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
+        public int vermillionFlux = 0;
+        public int auricRebuke = 0;
+        public int staticDischarge = 0;
         public int miracleBlight = 0;
         public int astralInfection = 0;
         public int wDeath = 0;
@@ -488,6 +491,9 @@ namespace CalamityMod.NPCs
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
+            myClone.vermillionFlux = vermillionFlux;
+            myClone.auricRebuke = auricRebuke;
+            myClone.staticDischarge = staticDischarge;
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
@@ -965,6 +971,27 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
+            // Vermillion Flux
+            if (vermillionFlux > 0)
+            {
+                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+            }
+
+            // Auric Rebuke
+            if (auricRebuke > 0)
+            {
+                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
+                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+            }
+
+            // Static Discharge
+            if (staticDischarge > 0)
+            {
+                int baseStaticDischargeDoTValue = (int)(8 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 32 on moving targets
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
             // Banishing Fire
             if (banishingFire > 0)
             {
@@ -1089,8 +1116,8 @@ namespace CalamityMod.NPCs
             // Electrified
             if (electrified > 0)
             {
-                int baseElectrifiedDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult);
-                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 5, ref npc.lifeRegen, ref damage);
+                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
+                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
             }
 
             // Crush Depth
@@ -5118,6 +5145,12 @@ namespace CalamityMod.NPCs
                 gsInferno--;
             if (dragonFire > 0)
                 dragonFire--;
+            if (vermillionFlux > 0)
+                vermillionFlux--;
+            if (auricRebuke > 0)
+                auricRebuke--;
+            if (staticDischarge > 0)
+                staticDischarge--;
             if (miracleBlight > 0)
                 miracleBlight--;
             if (astralInfection > 0)
@@ -5304,7 +5337,7 @@ namespace CalamityMod.NPCs
                     if (tile.TileType == auricOreID)
                     {
                         npc.SimpleStrikeNPC((int)(npc.lifeMax * 0.2f), 0);
-                        npc.AddBuff(BuffID.Electrified, 300);
+                        npc.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), npc.Center);
                     break;
@@ -6379,6 +6412,15 @@ namespace CalamityMod.NPCs
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
 
+            if (vermillionFlux > 0)
+                VermillionFlux.DrawEffects(npc, ref drawColor);
+
+            if (auricRebuke > 0)
+                AuricRebuke.DrawEffects(npc, ref drawColor);
+
+            if (staticDischarge > 0)
+                StaticDischarge.DrawEffects(npc, ref drawColor);
+
             if (elementalMix > 0)
                 ElementalMix.DrawEffects(npc, ref drawColor);
 
@@ -6530,6 +6572,18 @@ namespace CalamityMod.NPCs
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
+
+            else if (vermillionFlux > 0)
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkRed, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
+
+            else if (auricRebuke > 0)
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkBlue, Color.White, Utils.Remap(npc.width, 30, 400, 0.4f, 0.7f, true)) : Color.White;
             }
 
             else if (absorberAffliction > 0)

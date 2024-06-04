@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
@@ -464,7 +465,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Electrified, 180, true);
+                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 180, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

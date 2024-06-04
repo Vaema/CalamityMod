@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -91,7 +92,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
 
             if (target.knockBackResist <= 0f)
@@ -109,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
         }
 

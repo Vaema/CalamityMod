@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -88,12 +89,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
         }
 
         public override bool PreDraw(ref Color lightColor)
