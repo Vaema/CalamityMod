@@ -35,12 +35,14 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 180);
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 150);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 150);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 180);
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 150);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 150);
         }
     }
 }
