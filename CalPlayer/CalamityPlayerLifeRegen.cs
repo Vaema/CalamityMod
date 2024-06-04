@@ -99,6 +99,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
             ApplyDoTDebuff(bBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
+            ApplyDoTDebuff(laceration, 12, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
