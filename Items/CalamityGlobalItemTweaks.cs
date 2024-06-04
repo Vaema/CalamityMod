@@ -43,7 +43,7 @@ namespace CalamityMod.Items
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) },
                 { ItemID.AntlionClaw, Do(UseExact(14)) }, // Mandible Blade
                 { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
-                { ItemID.BatScepter, Do(DamageExact(56)) },
+                { ItemID.BatScepter, Do(DamageExact(50)) },
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(142), UseAnimationExact(45), ShootSpeedExact(23f), KnockbackExact(8)) },
                 { ItemID.BeeGun, Do(DamageExact(13), ManaExact(4)) },
                 { ItemID.BeeKeeper, Do((UseTurn),DamageExact(32)) },
@@ -83,7 +83,7 @@ namespace CalamityMod.Items
                 { ItemID.CursedDart, Do(DamageExact(25)) },
                 { ItemID.Cutlass, Do(UseRatio(0.9f), DamageExact(90)) },
                 { ItemID.DaedalusStormbow, Do(DamageExact(30)) },
-                { ItemID.DaoofPow, Do(DamageExact(160)) },
+                { ItemID.DaoofPow, Do(DamageExact(85), ShootSpeedExact(10)) },
                 { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(45)) },
                 { ItemID.DartRifle, Do(PointBlank, DamageExact(58)) },
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(20)) },
