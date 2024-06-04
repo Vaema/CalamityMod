@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -121,5 +121,9 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
         public override bool? CanDamage() => (Projectile.timeLeft <= 20 ? null : false);
+
+        // If anything somehow survives the blast, it is inflicted with Auric Rebuke for 2 seconds.
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
     }
 }
