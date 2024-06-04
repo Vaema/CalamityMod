@@ -40,11 +40,13 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Rogue;
@@ -53,9 +55,11 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
+using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
 using CalamityMod.World;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -639,6 +643,7 @@ namespace CalamityMod.CalPlayer
             int astralOreID = ModContent.TileType<AstralOre>();
             int auricOreID = ModContent.TileType<AuricOre>();
             int auricRepulserID = ModContent.TileType<AuricRepulserPanelTile>();
+            int auricLandMineID = ModContent.TileType<AuricLandMineTile>();
             int scoriaOreID = ModContent.TileType<ScoriaOre>();
             int abyssKelpID = ModContent.TileType<AbyssKelp>();
 
@@ -700,6 +705,27 @@ namespace CalamityMod.CalPlayer
                         Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+                }
+
+                if (tile.TileType == auricLandMineID)
+                {
+                    SoundStyle explode = new("CalamityMod/Sounds/Item/DudFire");
+                    SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
+                    GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
+                    GeneralParticleHandler.SpawnParticle(sparker);
+                    //GeneralScreenShakePower = 200;
+                    Player.RemoveAllIFrames();
+                    Projectile.NewProjectile(new EntitySource_TileInteraction(Player, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ModContent.ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
+                    //for (int i = 0; i < 3; i++)
+                    {
+                       /* int p = Projectile.NewProjectile(new EntitySource_TileInteraction(Player, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ModContent.ProjectileType<AresGaussNukeProjectileBoom>(), 0, 0f);
+                        Projectile explosion = Main.projectile[p];
+                        explosion.ai[1] = 560f +  90f;
+                        explosion.localAI[1] = 0.25f;
+                        explosion.Opacity = MathHelper.Lerp(0.18f, 0.6f, 0.2f) + Main.rand.NextFloat(-0.08f, 0.08f);
+                        explosion.netUpdate = true;*/
+                    }
+                    WorldGen.KillTile(touchedTile.X, touchedTile.Y, noItem: true);
                 }
             }
         }
