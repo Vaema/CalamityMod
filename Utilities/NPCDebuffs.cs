@@ -9,6 +9,7 @@ using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.BrimstoneElemental;
+using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crags;
@@ -233,6 +234,9 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianDefender>(), holy },
                 { ModContent.NPCType<ProfanedGuardianHealer>(), holy },
                 { ModContent.NPCType<ProfanedRocks>(), holy },
+
+                { ModContent.NPCType<Bumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<Bumblefuck2>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
 
                 { ModContent.NPCType<Providence>(), holy },
                 { ModContent.NPCType<ProvSpawnOffense>(), holy },
