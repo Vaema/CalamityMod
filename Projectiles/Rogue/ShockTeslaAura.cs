@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
+            target.AddBuff(BuffID.Electrified, 60);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
 
             if (target.knockBackResist <= 0f)
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
+            target.AddBuff(BuffID.Electrified, 60);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
         }
 
