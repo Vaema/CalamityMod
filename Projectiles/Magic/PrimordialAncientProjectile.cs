@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.rotation = Main.rand.NextFloat(-20, 20);
                 Projectile.scale = 0.5f;
             }
-            Lighting.AddLight(Projectile.Center, Color.Gold.ToVector3() * 0.5f);
+            Lighting.AddLight(Projectile.Center, Color.Purple.ToVector3() * 0.3f);
 
             if (!goToCursor)
             {
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<PrimordialPowerBuff>(), 540);
+                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 540);
 
                             int Dusts = 8;
                             float radians = MathHelper.TwoPi / Dusts;
@@ -164,6 +164,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 if (goToCursor)
                 {
+                    mousePos = Main.MouseWorld;
                     if (time == 355)
                     {
                         CenterX = Projectile.Center.X;

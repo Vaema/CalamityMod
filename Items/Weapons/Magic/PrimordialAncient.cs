@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 56;
-            Item.damage = 2500;
+            Item.damage = 2800;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 85;
             Item.useTime = 78;
@@ -47,9 +47,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<PrimordialEarth>().
-                AddIngredient(ItemID.AncientBattleArmorMaterial, 5).
                 AddIngredient<CosmiliteBar>(8).
-                AddIngredient<EndothermicEnergy>(20).
                 AddTile(TileID.Bookcases).
                 Register();
         }

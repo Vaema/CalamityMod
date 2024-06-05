@@ -3093,12 +3093,12 @@ namespace CalamityMod.CalPlayer
                 bonusStealthDamage += nanotech ? 0.05f : 0.08f;
             }
 
-            if (forbiddenBuff)
+            if (sandsWindBuff)
             {
                 Player.GetDamage<GenericDamageClass>() += 0.12f;
                 Player.statDefense += 12;
             }
-            if (primordialBuff)
+            if (aeolianEarthBuff)
             {
                 Player.GetDamage<GenericDamageClass>() += 0.18f;
                 Player.endurance += 0.08f;

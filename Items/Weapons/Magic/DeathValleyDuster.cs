@@ -43,7 +43,6 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.SpellTome).
                 AddIngredient(ItemID.AncientCloth, 2).
-                AddIngredient(ItemID.AncientBattleArmorMaterial).
                 AddIngredient(ItemID.FossilOre, 25).
                 AddTile(TileID.Bookcases).
                 Register();

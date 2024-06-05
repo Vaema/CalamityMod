@@ -1540,3 +1540,21 @@ AuricRebuke: {
 	DisplayName: Auric Rebuke
 	Description: Your cells are violently bouncing off each other
 }
+
+SandsWindBuff: {
+	DisplayName: Sand's Wind
+	Description:
+		'''
+		You are strengthened by the powers of sand
+		Defense increased by 10, damage increased by 12%
+		'''
+}
+
+AeolianEarthBuff: {
+	DisplayName: Aeolian Earth
+	Description:
+		'''
+		You are strengthened by primordial powers
+		Damage reduction increased by 8%, damage increased by 18%
+		'''
+}

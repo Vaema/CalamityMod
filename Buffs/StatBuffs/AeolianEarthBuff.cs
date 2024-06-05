@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
-    public class ForbiddenBuff : ModBuff
+    public class AeolianEarthBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -15,7 +15,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().forbiddenBuff = true;
+            player.Calamity().aeolianEarthBuff = true;
         }
     }
 }

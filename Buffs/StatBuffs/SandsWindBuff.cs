@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
-    public class PrimordialPowerBuff : ModBuff
+    public class SandsWindBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -15,7 +15,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().primordialBuff = true;
+            player.Calamity().sandsWindBuff = true;
         }
     }
 }
