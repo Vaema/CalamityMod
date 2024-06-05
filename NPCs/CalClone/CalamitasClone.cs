@@ -21,6 +21,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -35,6 +36,11 @@ namespace CalamityMod.NPCs.CalClone
     public class CalamitasClone : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
+
+        public static readonly SoundStyle BulletHellWarning = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnding");
+        public static readonly SoundStyle BulletHellEnd = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnd");
+        public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
+        public SlotId BulletHellWarnSlot;
 
         public override void SetStaticDefaults()
         {
@@ -127,7 +133,7 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void AI()
         {
-            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod);
+            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod, BulletHellWarnSlot);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

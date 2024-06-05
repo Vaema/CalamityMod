@@ -5,23 +5,13 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.NPCs.BrimstoneElemental;
-using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.OldDuke;
-using CalamityMod.NPCs.SulphurousSea;
-using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -31,7 +21,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 {
     public static class CalamitasCloneAI
     {
-        public static void VanillaCalamitasCloneAI(NPC npc, Mod mod)
+        public static void VanillaCalamitasCloneAI(NPC npc, Mod mod, SlotId warn)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
@@ -248,6 +238,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 player = Main.player[npc.target];
                 if (!player.active || player.dead)
                 {
+                    if (SoundEngine.TryGetActiveSound(warn, out var warningSound) && warningSound.IsPlaying)
+                        warningSound.Stop();
+
                     if (npc.velocity.Y > 3f)
                         npc.velocity.Y = 3f;
                     npc.velocity.Y -= 0.1f;
@@ -414,6 +407,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             }
                         }
                     }
+
+                    if (calamityGlobalNPC.newAI[3] == 900f - 360f)
+                        warn = SoundEngine.PlaySound(CalamitasClone.BulletHellWarning, player.Center);
+                    if (calamityGlobalNPC.newAI[3] > 900f - 360f)
+                    {
+                        if (SoundEngine.TryGetActiveSound(warn, out var warningSound) && warningSound.IsPlaying)
+                            warningSound.Position = player.Center;
+                    }
                 }
                 else
                 {
@@ -422,6 +423,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.localAI[1] = 0f;
                     calamityGlobalNPC.newAI[2] = 0f;
                     calamityGlobalNPC.newAI[3] = 0f;
+                    SoundEngine.PlaySound(CalamitasClone.BulletHellEnd, player.Center);
 
                     // Prevent bullshit charge hits when second bullet hell ends.
                     if (phase4)
@@ -533,7 +535,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             npc.alpha = npc.dontTakeDamage ? 255 : 0;
 
-            // Float above target and fire lasers or fireballs
+            // Float above target and fire hellfireballs
             if (npc.ai[1] == 0f)
             {
                 // Avoid cheap bullshit
@@ -569,6 +571,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.localAI[1] >= (brotherAlive ? 180f : 120f))
                     {
                         npc.localAI[1] = 0f;
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, npc.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         projectileVelocity += 3f * enrageScale;
@@ -647,7 +650,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             {
                 // Set damage
                 npc.damage = npc.defDamage;
-
+                SoundEngine.PlaySound(CalamitasClone.ChargeSound, npc.Center);
                 npc.rotation = rotation;
 
                 float chargeVelocity = phase4 ? 30f : death ? 28f : 25f;
@@ -911,11 +914,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 bool fireDelay = npc.ai[2] > 120f || npc.life < npc.lifeMax * 0.9;
                 if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height) && fireDelay)
                 {
+                    if (npc.localAI[2] == 0f)
+                        SoundEngine.PlaySound(Cataclysm.FlamethrowerStart, npc.Center);
+
                     npc.localAI[2] += 1f;
-                    if (npc.localAI[2] > 22f)
+                    if (npc.localAI[2] > 30f)
                     {
-                        npc.localAI[2] = 0f;
-                        SoundEngine.PlaySound(SoundID.Item34, npc.Center);
+                        npc.localAI[2] = 1f;
+                        SoundEngine.PlaySound(Cataclysm.FlamethrowerLoop, npc.Center);
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)

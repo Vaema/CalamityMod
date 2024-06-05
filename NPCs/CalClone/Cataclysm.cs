@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -21,6 +22,11 @@ namespace CalamityMod.NPCs.CalClone
     public class Cataclysm : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
+
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CataclysmHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CataclysmDeath");
+        public static readonly SoundStyle FlamethrowerStart = new("CalamityMod/Sounds/Custom/CalamitasClone/BrimstoneFlamethrowerCast");
+        public static readonly SoundStyle FlamethrowerLoop = new("CalamityMod/Sounds/Custom/CalamitasClone/BrimstoneFlamethrowerLoop");
 
         public override void SetStaticDefaults()
         {
@@ -62,8 +68,8 @@ namespace CalamityMod.NPCs.CalClone
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit4;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
