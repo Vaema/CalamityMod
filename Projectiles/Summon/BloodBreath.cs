@@ -75,6 +75,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += 0.3f * Projectile.direction;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 120);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+        }
     }
 }

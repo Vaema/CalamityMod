@@ -505,7 +505,7 @@ namespace CalamityMod
                                 projectile.ai[1] = (float)npcIndex;
 
                                 //follow the NPC
-                                projectile.velocity = (npc.Center - projectile.Center) * 0.75f;
+                                projectile.velocity = (npc.Center - projectile.Center);
 
                                 projectile.netUpdate = true;
 

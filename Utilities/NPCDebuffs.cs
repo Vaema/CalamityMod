@@ -9,6 +9,7 @@ using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.BrimstoneElemental;
+using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crags;
@@ -234,6 +235,9 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianHealer>(), holy },
                 { ModContent.NPCType<ProfanedRocks>(), holy },
 
+                { ModContent.NPCType<Bumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<Bumblefuck2>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+
                 { ModContent.NPCType<Providence>(), holy },
                 { ModContent.NPCType<ProvSpawnOffense>(), holy },
                 { ModContent.NPCType<ProvSpawnDefense>(), holy },
@@ -242,9 +246,9 @@ namespace CalamityMod
                 { ModContent.NPCType<CeaselessVoid>(), immuneToEverything },
                 { ModContent.NPCType<DarkEnergy>(), immuneToEverything },
 
-                { ModContent.NPCType<StormWeaverHead>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
-                { ModContent.NPCType<StormWeaverBody>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
-                { ModContent.NPCType<StormWeaverTail>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
+                { ModContent.NPCType<StormWeaverHead>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
+                { ModContent.NPCType<StormWeaverBody>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
+                { ModContent.NPCType<StormWeaverTail>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
 
                 { ModContent.NPCType<Signus>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<WhisperingDeath>() }) },
                 { ModContent.NPCType<CosmicLantern>(), immuneToEverything },
@@ -402,7 +406,7 @@ namespace CalamityMod
                 { ModContent.NPCType<SeaUrchin>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
 
-                { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
+                { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
 
                 { ModContent.NPCType<CrimulanBlightSlime>(), slime },
                 { ModContent.NPCType<EbonianBlightSlime>(), slime },

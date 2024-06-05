@@ -602,7 +602,7 @@ DynamoStemCells: {
 		'''
 		10% increased ranged damage and movement speed
 		Ranged weapons fire a powerful mini swarmer every 3 seconds
-		Reduces the damage of the Dragonfire and Electrified debuff
+		Reduces the damage you take from the Dragonfire debuff
 		'''
 }
 
@@ -986,7 +986,7 @@ JellyChargedBattery: {
 	Tooltip:
 		'''
 		+1 max minions and 7% summon damage
-		Minion attacks spawn orbs of energy and inflict Electrified
+		Minion attacks spawn orbs of energy and inflict Static Discharge
 		'''
 }
 
@@ -1864,7 +1864,7 @@ TheTransformer: {
 		'''
 		Multiplies all electricity-based debuff damage by 1.5
 		Taking damage releases a blast of sparks
-		Immunity to Electrified and you resist all electrical projectile and enemy damage
+		Reduces the damage you take from all electric debuffs
 		Enemy bullets do half damage to you and are reflected back at the enemy for 800% their original damage
 		'''
 }
@@ -1947,7 +1947,7 @@ VoltaicJelly: {
 	Tooltip:
 		'''
 		+1 max minions
-		Minion attacks inflict Electrified
+		Minion attacks inflict Static Discharge
 		'''
 }
 

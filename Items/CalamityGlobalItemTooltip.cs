@@ -16,6 +16,7 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -26,10 +27,81 @@ namespace CalamityMod.Items
 {
     public partial class CalamityGlobalItem : GlobalItem
     {
+        #region Backup Tooltip Insertion Positions
+        /// <summary>
+        /// This array contains (almost) every single vanilla tooltip in reverse order starting at "Tooltip0".<br />
+        /// Because "Tooltip0" is the first typical tooltip line, this is where Calamity tends to insert its tooltips.<br />
+        /// When this line is not present, Calamity needs to insert tooltips in an <i>equivalent</i> position.<br />
+        /// The best way to do this is to iterate backwards through all possible vanilla tooltip lines and pick the first one that is present.
+        /// </summary>
+        private static string[] BackupTooltipInsertionLineNames =
+        {
+            "Material",
+            "Consumable",
+            "Ammo",
+            "Placeable",
+            "UseMana",
+            "HealMana",
+            "HealLife",
+            "TileBoost",
+            "HammerPower",
+            "AxePower",
+            "PickPower",
+            "Defense",
+            "Vanity",
+            "Quest",
+            "WandConsumes",
+            "Equipable",
+            "BaitPower",
+            "NeedsBait",
+            "FishingPower",
+            "Knockback",
+            "NoTransfer",
+            "FavoriteDesc",
+            "ItemName"
+        };
+        #endregion
+
         #region Main ModifyTooltips Function
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            // Apply rarity coloration to the item's name.
+            // Get the first index, last index and total count of standard vanilla tooltip lines.
+            // The first index and count are used to delete all vanilla tooltips when holding SHIFT, if requested.
+            // The last index is used to insert various extra tooltip lines in the right position.
+            //
+            // This code used to be in the HoldShiftTooltip utility, but is needed to correctly place other tooltips.
+            int firstTooltipIndex = -1;
+            int lastTooltipIndex = -1;
+            int standardTooltipCount = 0;
+            for (int i = 0; i < tooltips.Count; i++)
+            {
+                if (tooltips[i].Name.StartsWith("Tooltip"))
+                {
+                    if (firstTooltipIndex == -1)
+                        firstTooltipIndex = i;
+                    lastTooltipIndex = i;
+                    standardTooltipCount++;
+                }
+            }
+
+            // If there are no standard vanilla tooltip lines (e.g. Flintlock Pistol, which has no tooltip)
+            // then a different position needs to be selected for typical insertion.
+            bool noStandardTooltips = false;
+            if (firstTooltipIndex == -1)
+            {
+                noStandardTooltips = true;
+                foreach (string lineName in BackupTooltipInsertionLineNames)
+                {
+                    int idx = tooltips.FindIndex((line) => line.Name == lineName);
+                    if (idx != -1)
+                    {
+                        firstTooltipIndex = lastTooltipIndex = idx;
+                        break;
+                    }
+                }
+            }
+
+            // Apply custom rarity coloration to the item's name if applicable.
             TooltipLine nameLine = tooltips.FirstOrDefault(x => x.Name == "ItemName" && x.Mod == "Terraria");
             if (nameLine != null)
                 ApplyRarityColor(item, nameLine);
@@ -40,20 +112,21 @@ namespace CalamityMod.Items
             // Adds "Does extra damage to enemies shot at point-blank range" to weapons capable of it.
             if (canFirePointBlankShots)
             {
-                TooltipLine line = new TooltipLine(Mod, "PointBlankShot", "Does extra damage to enemies shot at point-blank range");
-                tooltips.Add(line);
+                var lineText = CalamityUtils.GetText("Misc.PointBlank");
+                TooltipLine line = new TooltipLine(Mod, "CalamityMod:PointBlankTooltip", lineText.Value);
+                tooltips.Insert(++lastTooltipIndex, line);
             }
 
-            // If an item has an enchantment, show its prefix in the first tooltip line and append its description to the
-            // tooltip list.
+            // If an item has an enchantment, show its prefix in the first tooltip line and append its description to the tooltip list.
             EnchantmentTooltips(item, tooltips);
 
-            // Replace rogue with rouge in gfb
+            // In GFB, replace all instances of "rogue" with "rouge".
             if (Main.zenithWorld)
             {
                 tooltips.FindAndReplace("Rogue", "Rouge");
                 tooltips.FindAndReplace("rogue", "rouge");
             }
+
             // Everything below this line can only apply to modded items. If the item is vanilla, stop here for efficiency.
             if (item.type < ItemID.Count)
                 return;
@@ -65,27 +138,69 @@ namespace CalamityMod.Items
                 // Convert current charge ratio into a percentage.
                 float displayedPercent = ChargeRatio * 100f;
                 TooltipLine line = new TooltipLine(Mod, "CalamityCharge", $"Current Charge: {displayedPercent:N1}%");
-                tooltips.Add(line);
+                tooltips.Insert(++lastTooltipIndex, line);
+            }
+
+            // Generic support for any and all Hold SHIFT tooltips.
+            // For more information, see IHoldShiftTooltipItem.
+            if (item.ModItem is IHoldShiftTooltipItem holdShiftItem)
+            {
+                string dynamicKey = $"{Mod.Name}:{item.ModItem.Name}_HoldShift";
+                string lineText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
+                var line = new TooltipLine(Mod, dynamicKey, lineText);
+                if (holdShiftItem.TooltipExtensionColor is not null)
+                    line.OverrideColor = holdShiftItem.TooltipExtensionColor;
+                TooltipLine[] lines = { line };
+
+                //
+                // Original code lifted from Iban's extended armor tooltips.
+                //
+                bool holdingShift = Main.keyState.IsKeyDown(Keys.LeftShift);
+
+                // If holding SHIFT, actually display the extended tooltip.
+                if (holdingShift && firstTooltipIndex != -1)
+                {
+                    // If asked to, remove all standard tooltip lines. This moves the last tooltip index.
+                    // This only occurs if the standard tooltip lines are ACTUALLY standard tooltips. Otherwise, don't remove anything!
+                    if (holdShiftItem.HidesNormalTooltip && !noStandardTooltips)
+                    {
+                        tooltips.RemoveRange(firstTooltipIndex, standardTooltipCount);
+                        lastTooltipIndex -= standardTooltipCount;
+                    }
+
+                    // Append every "Hold SHIFT" tooltip at the end of standard tooltips.
+                    tooltips.InsertRange(++lastTooltipIndex, lines);
+                }
+
+                // If not holding SHIFT, display the extension indicator if appropriate.
+                if (!holdingShift && holdShiftItem.ShowExtensionIndicator)
+                {
+                    LocalizedText indicatorText = CalamityUtils.GetText(holdShiftItem.ExtensionIndicatorKey);
+                    var indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
+                    if (holdShiftItem.ExtensionIndicatorColor is not null)
+                        indicator.OverrideColor = holdShiftItem.ExtensionIndicatorColor;
+                    tooltips.Insert(++lastTooltipIndex, indicator);
+                }
             }
 
             // Adds "Donor Item" and "Developer Item" to donor items and developer items respectively.
-            if (donorItem)
-            {
-                TooltipLine line = new TooltipLine(Mod, "CalamityDonor", CalamityUtils.ColorMessage("- Donor Item -", CalamityUtils.DonatorItemColor));
-                tooltips.Add(line);
-            }
+            // This is intentionally at the bottom, below everything else.
             if (devItem)
             {
                 TooltipLine line = new TooltipLine(Mod, "CalamityDev", CalamityUtils.ColorMessage("- Developer Item -", CalamityUtils.DevItemColor));
+                tooltips.Add(line);
+            }
+            else if (donorItem)
+            {
+                TooltipLine line = new TooltipLine(Mod, "CalamityDonor", CalamityUtils.ColorMessage("- Donor Item -", CalamityUtils.DonatorItemColor));
                 tooltips.Add(line);
             }
         }
         #endregion
 
         #region Rarity Coloration
-        private void ApplyRarityColor(Item item, TooltipLine nameLine)
+        private static void ApplyRarityColor(Item item, TooltipLine nameLine)
         {
-            #region Uniquely Colored Items
             if (item.type == ModContent.ItemType<LiliesOfFinality>())
                 nameLine.OverrideColor = Color.Lerp(Color.Red, Color.White, (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f);
             if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>() || item.type == ModContent.ItemType<IridescentExcalibur>())
@@ -192,7 +307,6 @@ namespace CalamityMod.Items
                     nameLine.OverrideColor = Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
                 }
             }
-            #endregion
         }
         #endregion
 

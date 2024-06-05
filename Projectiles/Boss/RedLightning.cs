@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -174,7 +175,7 @@ IL_25092:
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(BuffID.Electrified, 120);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
         }
 
         public override bool PreDraw(ref Color lightColor)

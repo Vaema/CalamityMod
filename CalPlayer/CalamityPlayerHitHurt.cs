@@ -414,6 +414,18 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Dragonfire" + Main.rand.Next(1, 4 + 1)).Format(Player.name));
                 }
+                if (vermillionFlux)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.VermillionFlux" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (auricRebuke)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRebuke" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (staticDischarge)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.StaticDischarge" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
                 if (miracleBlight)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.MiracleBlight" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
@@ -437,6 +449,10 @@ namespace CalamityMod.CalPlayer
                 if (brainRot)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainRot" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (laceration)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Laceration" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
                 if (elementalMix)
                 {
@@ -790,13 +806,6 @@ namespace CalamityMod.CalPlayer
             // The amount of damage that will be dealt is yet to be determined.
             //
 
-            if (transformer)
-            {
-                if (npc.type == NPCID.BlueJellyfish || npc.type == NPCID.PinkJellyfish || npc.type == NPCID.GreenJellyfish || npc.type == NPCID.FungoFish ||
-                    npc.type == NPCID.BloodJelly || npc.type == ModContent.NPCType<Stormlion>() || npc.type == ModContent.NPCType<GhostBell>() || npc.type == ModContent.NPCType<BoxJellyfish>())
-                    contactDamageReduction += 0.5;
-            }
-
             // Can't have any cooldowns here because dodges grrrrr....
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
                 contactDamageReduction += 0.5;
@@ -1050,8 +1059,7 @@ namespace CalamityMod.CalPlayer
 
             if (transformer)
             {
-                if (proj.type == ProjectileID.MartianTurretBolt || proj.type == ProjectileID.GigaZapperSpear || proj.type == ProjectileID.CultistBossLightningOrbArc || proj.type == ProjectileID.VortexLightning || proj.type == ModContent.ProjectileType<DestroyerElectricLaser>() ||
-                    proj.type == ProjectileID.BulletSnowman || proj.type == ProjectileID.BulletDeadeye || proj.type == ProjectileID.SniperBullet || proj.type == ProjectileID.VortexLaser)
+                if (proj.type == ProjectileID.BulletSnowman || proj.type == ProjectileID.BulletDeadeye || proj.type == ProjectileID.SniperBullet)
                     projectileDamageReduction += 0.5;
             }
 
@@ -1190,8 +1198,11 @@ namespace CalamityMod.CalPlayer
             if (crawCarapace)
             {
                 npc.AddBuff(ModContent.BuffType<Crumbling>(), 900);
-                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(40);
-                Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                if (!npc.dontTakeDamage)
+                {
+                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(40);
+                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                }
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
             }
 
@@ -1199,8 +1210,11 @@ namespace CalamityMod.CalPlayer
             {
                 npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
                 npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
-                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(250);
-                Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                if (!npc.dontTakeDamage)
+                {
+                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(250);
+                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                }
                 SoundEngine.PlaySound(BaroclawHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1220,8 +1234,11 @@ namespace CalamityMod.CalPlayer
             if (absorber)
             {
                 npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
-                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(350);
-                Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                if (!npc.dontTakeDamage)
+                {
+                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(350);
+                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                }
                 SoundEngine.PlaySound(AbsorberHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -2509,7 +2526,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < 4; i++)
+                            for (int i = 0; i < (transformer ? 5 : 4); i++)
                             {
                                 offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
                                 int spark1 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<Spark>(), sDamage, 1.25f, Player.whoAmI, 0f, 0f);
@@ -2518,11 +2535,23 @@ namespace CalamityMod.CalPlayer
                                 {
                                     Main.projectile[spark1].timeLeft = 120;
                                     Main.projectile[spark1].DamageType = DamageClass.Generic;
+                                    if (transformer)
+                                    {
+                                        Main.projectile[spark1].timeLeft = 240;
+                                        Main.projectile[spark1].extraUpdates = 1;
+                                        Main.projectile[spark1].penetrate = 10;
+                                    }
                                 }
                                 if (spark2.WithinBounds(Main.maxProjectiles))
                                 {
                                     Main.projectile[spark2].timeLeft = 120;
                                     Main.projectile[spark2].DamageType = DamageClass.Generic;
+                                    if (transformer)
+                                    {
+                                        Main.projectile[spark2].timeLeft = 240;
+                                        Main.projectile[spark2].extraUpdates = 1;
+                                        Main.projectile[spark2].penetrate = 10;
+                                    }
                                 }
                             }
                         }

@@ -87,12 +87,14 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
             if (target.lifeMax > 5)
                 OnHitEffects(hit.Damage);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
             OnHitEffects(info.Damage);
         }
 

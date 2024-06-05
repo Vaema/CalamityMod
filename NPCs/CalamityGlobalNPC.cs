@@ -244,6 +244,7 @@ namespace CalamityMod.NPCs
         public int pearlAura = 0;
         public int bBlood = 0;
         public int brainRot = 0;
+        public int laceration = 0;
         public int elementalMix = 0;
         public int marked = 0;
         public int absorberAffliction = 0;
@@ -270,6 +271,9 @@ namespace CalamityMod.NPCs
         public int rTide = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
+        public int vermillionFlux = 0;
+        public int auricRebuke = 0;
+        public int staticDischarge = 0;
         public int miracleBlight = 0;
         public int astralInfection = 0;
         public int wDeath = 0;
@@ -463,6 +467,7 @@ namespace CalamityMod.NPCs
             myClone.pearlAura = pearlAura;
             myClone.bBlood = bBlood;
             myClone.brainRot = brainRot;
+            myClone.laceration = laceration;
             myClone.elementalMix = elementalMix;
             myClone.marked = marked;
             myClone.absorberAffliction = absorberAffliction;
@@ -486,6 +491,9 @@ namespace CalamityMod.NPCs
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
+            myClone.vermillionFlux = vermillionFlux;
+            myClone.auricRebuke = auricRebuke;
+            myClone.staticDischarge = staticDischarge;
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
@@ -963,6 +971,27 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
+            // Vermillion Flux
+            if (vermillionFlux > 0)
+            {
+                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+            }
+
+            // Auric Rebuke
+            if (auricRebuke > 0)
+            {
+                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
+                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+            }
+
+            // Static Discharge
+            if (staticDischarge > 0)
+            {
+                int baseStaticDischargeDoTValue = (int)(8 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 32 on moving targets
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
             // Banishing Fire
             if (banishingFire > 0)
             {
@@ -1087,8 +1116,8 @@ namespace CalamityMod.NPCs
             // Electrified
             if (electrified > 0)
             {
-                int baseElectrifiedDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult);
-                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 5, ref npc.lifeRegen, ref damage);
+                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
+                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
             }
 
             // Crush Depth
@@ -1114,6 +1143,8 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(40, 10, ref npc.lifeRegen, ref damage);
             if (brainRot > 0)
                 ApplyDPSDebuff(40, 10, ref npc.lifeRegen, ref damage);
+            if (laceration > 0)
+                ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
             if (elementalMix > 0)
                 ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
@@ -5087,6 +5118,8 @@ namespace CalamityMod.NPCs
                 bBlood--;
             if (brainRot > 0)
                 brainRot--;
+            if (laceration > 0)
+                laceration--;
             if (elementalMix > 0)
                 elementalMix--;
             if (vulnerabilityHex > 0)
@@ -5116,6 +5149,12 @@ namespace CalamityMod.NPCs
                 gsInferno--;
             if (dragonFire > 0)
                 dragonFire--;
+            if (vermillionFlux > 0)
+                vermillionFlux--;
+            if (auricRebuke > 0)
+                auricRebuke--;
+            if (staticDischarge > 0)
+                staticDischarge--;
             if (miracleBlight > 0)
                 miracleBlight--;
             if (astralInfection > 0)
@@ -5302,7 +5341,7 @@ namespace CalamityMod.NPCs
                     if (tile.TileType == auricOreID)
                     {
                         npc.SimpleStrikeNPC((int)(npc.lifeMax * 0.2f), 0);
-                        npc.AddBuff(BuffID.Electrified, 300);
+                        npc.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), npc.Center);
                     break;
@@ -6377,6 +6416,15 @@ namespace CalamityMod.NPCs
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
 
+            if (vermillionFlux > 0)
+                VermillionFlux.DrawEffects(npc, ref drawColor);
+
+            if (auricRebuke > 0)
+                AuricRebuke.DrawEffects(npc, ref drawColor);
+
+            if (staticDischarge > 0)
+                StaticDischarge.DrawEffects(npc, ref drawColor);
+
             if (elementalMix > 0)
                 ElementalMix.DrawEffects(npc, ref drawColor);
 
@@ -6390,6 +6438,9 @@ namespace CalamityMod.NPCs
             // Holy Flames and Banishing Fire share the same visual effects
             if (hFlames > 0 || banishingFire > 0)
                 HolyFlames.DrawEffects(npc, ref drawColor);
+
+            if (laceration > 0)
+                Laceration.DrawEffects(npc, ref drawColor);
 
             // These draw effects do not include Miracle Blight's shader
             if (miracleBlight > 0)
@@ -6527,6 +6578,18 @@ namespace CalamityMod.NPCs
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
 
+            else if (vermillionFlux > 0)
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkRed, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
+
+            else if (auricRebuke > 0)
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkBlue, Color.White, Utils.Remap(npc.width, 30, 400, 0.4f, 0.7f, true)) : Color.White;
+            }
+
             else if (absorberAffliction > 0)
                 drawColor = Color.DarkSeaGreen;
 
@@ -6579,6 +6642,7 @@ namespace CalamityMod.NPCs
         {
             // All Calamity DoTs in alphabetical order
             ("CalamityMod/Buffs/DamageOverTime/AstralInfectionDebuff", NPC => NPC.Calamity().astralInfection > 0),
+            ("CalamityMod/Buffs/DamageOverTime/AuricRebuke", NPC => NPC.Calamity().auricRebuke > 0),
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
@@ -6588,6 +6652,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/ElementalMix", NPC => NPC.Calamity().elementalMix > 0),
             ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
             ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
+            ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),
@@ -6597,8 +6662,10 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishVore > 0),
             ("CalamityMod/Buffs/DamageOverTime/Shred", NPC => NPC.Calamity().somaShredStacks > 0),
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().clamDebuff > 0),
+            ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge > 0),
             ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
             ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
+            ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
             ("CalamityMod/Buffs/DamageOverTime/VulnerabilityHex", NPC => NPC.Calamity().vulnerabilityHex > 0),
 
             // All other important Calamity debuffs, in alphabetical order

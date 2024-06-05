@@ -777,6 +777,7 @@ NanoblackReaper: {
 		Stealth strikes cause the scythe to create a large amount of homing afterimages instead of energy blades
 		'She smothered them in Her hatred'
 		'''
+	HoldShiftTooltip: "'He who picks up the pen writes the script. She plans to never let go.'"
 }
 
 NastyCholla: {

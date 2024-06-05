@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -128,7 +129,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
-            target.AddBuff(BuffID.Electrified, 60);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 40);
         }
     }
 }

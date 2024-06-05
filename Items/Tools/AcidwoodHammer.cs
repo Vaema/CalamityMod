@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Tools
         {
             Item.damage = 10;
             Item.knockBack = 3.5f;
-            Item.useTime = 10;
+            Item.useTime = 9;
             Item.useAnimation = 20;
             Item.hammer = 25;
 

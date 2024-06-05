@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -42,12 +43,16 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+
             if (Main.player[Projectile.owner].moonLeech)
                 return;
 
             Player player = Main.player[Projectile.owner];
             player.lifeRegenTime += 2;
         }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Laceration>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
