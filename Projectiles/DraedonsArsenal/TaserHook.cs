@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -110,7 +111,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Utils.DrawLine(Main.spriteBatch, player.MountedCenter, Projectile.Center, Color.Cyan, Color.White, 4f);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
             return false;
@@ -118,7 +119,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 120);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 180);
 
             if (AIState == TaserAIState.Firing)
             {

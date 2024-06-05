@@ -39,7 +39,11 @@ namespace CalamityMod.Particles
             Rotation += MathHelper.ToRadians(8f) * (1f - pulseProgress) * RotationDirection;
 
             if (NPCToFollow != null && NPCToFollow.active && !Main.tile[NPCToFollow.Center.ToSafeTileCoordinates()].IsTileSolid())
+            {
                 Position = NPCToFollow.Center;
+                if (NPCToFollow.ai[2] == 1f)
+                    Kill();
+            }
             else
                 Kill();
         }

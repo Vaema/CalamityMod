@@ -224,14 +224,14 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             Owner = Main.player[Projectile.owner];
             ModdedOwner = Owner.Calamity();
-            Target = Owner.Center.MinionHoming(AdaptiveEnemyDistanceDetection, Owner, !PreHardmodeMinionTileVision || CalamityPlayer.areThereAnyDamnBosses);
+            Target = Owner.Center.MinionHoming(AdaptiveEnemyDistanceDetection, Owner, !PreHardmodeMinionTileVision || (CalamityPlayer.areThereAnyDamnBosses && !Grounded));
 
             // When minions are grounded, they are affected by tiles, meaning they have a much limited movement.
             // Pre-Hardmode minions are affected the most since they can't see through walls.
             // In consequence, some targets that may seem valid, aren't detected due to this.
             // If the minion hasn't detected any targets with the center being the player, we give them a second chance with the center being the minion itself.
             // If there are bosses on the world, we don't do this check because if there wasn't any targets with tile X-Ray, this won't do anything.
-            if (Grounded && Target is null && PreHardmodeMinionTileVision && !CalamityPlayer.areThereAnyDamnBosses)
+            if (Grounded && Target is null && PreHardmodeMinionTileVision)
                 Target = Projectile.Center.MinionHoming(AdaptiveEnemyDistanceDetection, Owner, false);
         }
 
@@ -300,74 +300,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public bool IsTileBetweenTargetAndMinionVertically(bool platformCheckDownwards = false) => IsTileBetweenTwoVectorsVertically(Target.Center, Projectile.Center, platformCheckDownwards);
 
-        /// <summary>
-        /// Checks if the minion has a tile in front of him, at their left or right.
-        /// </summary>
-        /// <param name="leftFluff">The extra distance it'll check at the left, not all minions are perfectly sized 1 tile, so you'll need to tweak this. Defaults to 0.</param>
-        /// <param name="rightFluff">The extra distance it'll check at the right, not all minions are perfectly sized 1 tile, so you'll need to tweak this. Defaults to 0.</param>
-        /// <returns><see langword="true"/> if there's a tile at the left or right, otherwise <see langword="false"/></returns>
-        public bool IsMinionFacingTile(int leftFluff = 0, int rightFluff = 0)
+        public bool IsMinionFacingTile()
         {
-            Point topLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.TopLeft);
-            Point bottomLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomLeft);
-            for (int coordY = topLeft.Y; coordY < bottomLeft.Y; coordY++)
-            {
-                if (Main.tile[topLeft.X - leftFluff, coordY].IsTileSolid())
-                    return true;
-            }
-
-            Point topRight = CalamityUtils.ToSafeTileCoordinates(Projectile.TopRight);
-            Point bottomRight = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomRight);
-            for (int coordY = topRight.Y; coordY <= bottomRight.Y; coordY++)
-            {
-                if (Main.tile[topRight.X + rightFluff, coordY].IsTileSolid())
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Checks whether the minion is standing on a tile or not.
-        /// </summary>
-        /// <returns><see langword="true"/> if the minion's standing on a tile, otherwise <see langword="false"/></returns>
-        public bool IsMinionStandingOnTile()
-        {
-            Point minionPointLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomLeft);
-            Point minionPointRight = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomRight);
-            for (int coordX = minionPointLeft.X; coordX <= minionPointRight.X; coordX++)
-            {
-                if (Main.tile[coordX, minionPointLeft.Y].IsTileSolidGround())
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Checks whether the minion is inside a tile or not.<br/>
-        /// It checks if there's tiles in the diagonals of the minion's hitbox.
-        /// </summary>
-        /// <returns><see langword="true"/> if there's a tile inside the minion, otherwise <see langword="false"/></returns>
-        public bool IsMinionInsideTile()
-        {
-            Point topLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.TopLeft);
-            Point bottomRight = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomRight);
-            for (int coordX = topLeft.X; coordX <= bottomRight.X; coordX++)
-            {
-                if (Main.tile[coordX, (int)Utils.Remap(coordX, topLeft.X, bottomRight.X, topLeft.Y, bottomRight.Y)].IsTileSolid())
-                    return true;
-            }
-
-            Point topRight = CalamityUtils.ToSafeTileCoordinates(Projectile.TopRight);
-            Point bottomLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomLeft);
-            for (int coordX = bottomLeft.X; coordX >= topRight.X; coordX--)
-            {
-                if (Main.tile[coordX, (int)Utils.Remap(coordX, bottomLeft.X, topRight.X, bottomLeft.Y, bottomRight.Y)].IsTileSolid())
-                    return true;
-            }
-
-            return false;
+            Rectangle inflatedMinionHitbox = Projectile.getRect();
+            inflatedMinionHitbox.Inflate(1, 0);
+            bool stuckOnLeftTile = Main.tile[new Vector2(inflatedMinionHitbox.X, inflatedMinionHitbox.Y + inflatedMinionHitbox.Height - 17).ToSafeTileCoordinates()].IsTileSolid();
+            bool stuckOnRightTile = Main.tile[new Vector2(inflatedMinionHitbox.X + inflatedMinionHitbox.Width, inflatedMinionHitbox.Y + inflatedMinionHitbox.Height - 17).ToSafeTileCoordinates()].IsTileSolid();
+            return stuckOnLeftTile || stuckOnRightTile;
         }
 
         #endregion

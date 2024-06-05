@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.frame = 0;
             }
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             Lighting.AddLight(Projectile.Center, 0.7f, 0.3f, 0f);
         }

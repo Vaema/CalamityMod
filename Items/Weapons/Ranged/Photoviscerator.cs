@@ -4,6 +4,7 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -24,14 +25,14 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         // Right-click stats
         public static float RightClickVelocityMult = 2.5f;
-        public static int RightClickCooldown = 20;
+        public static int RightClickCooldown = 30;
 
         public override void SetDefaults()
         {
             Item.width = 208;
             Item.height = 66;
 
-            Item.damage = 445;
+            Item.damage = 495;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = LightBombCooldown;
             Item.shootSpeed = 6f;
@@ -82,6 +83,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
             return false;
+        }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/PhotovisceratorGlow").Value);
         }
 
         public override void AddRecipes()

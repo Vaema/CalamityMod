@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;

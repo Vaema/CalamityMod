@@ -19,11 +19,11 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 500;
+            Item.damage = 350;
             Item.DamageType = DamageClass.Melee;
-            Item.useTime = 5;
-            Item.useAnimation = 30;
-            Item.reuseDelay = 20;
+            Item.useTime = 10;
+            Item.useAnimation = 40;
+            Item.reuseDelay = 0;
             Item.useLimitPerAnimation = 6;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<RSSolarFlare>();
             Item.shootSpeed = 15f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 18f;
 
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
         public override void AddRecipes()

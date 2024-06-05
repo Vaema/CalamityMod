@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.Calamity().lineColor == 1)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor2").Value;
             if (Projectile.Calamity().lineColor == 2)
@@ -56,15 +56,15 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ExpandHitboxBy((int)(128f * Projectile.scale));
 
             for (int i = 0; i < 8; ++i)
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
 
             for (int j = 0; j < 32; ++j)
             {
-                int fieryDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
+                int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
                 Dust dust1 = Main.dust[fieryDust];
                 dust1.noGravity = true;
                 dust1.velocity *= 3f;
-                int fieryDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                int fieryDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 1.5f);
                 Dust dust2 = Main.dust[fieryDust2];
                 dust2.velocity *= 2f;
                 dust2.noGravity = true;

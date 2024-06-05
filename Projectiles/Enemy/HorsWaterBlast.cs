@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    int waterDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
+                    int waterDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                     Main.dust[waterDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Enemy
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.35f / 255f);
             for (int j = 0; j < 10; j++)
             {
-                int watery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
+                int watery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
                 Main.dust[watery].noGravity = true;
                 Main.dust[watery].velocity *= 0.5f;
                 Main.dust[watery].velocity += Projectile.velocity * 0.1f;
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Enemy
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int killWaterDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
+                int killWaterDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
                 Main.dust[killWaterDust].noGravity = true;
                 Main.dust[killWaterDust].position.X = Projectile.Center.X;
                 Main.dust[killWaterDust].position.Y = Projectile.Center.Y;

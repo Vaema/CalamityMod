@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ID.ContentSamples.CreativeHelper;
@@ -36,5 +37,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public virtual void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
         }
+
+        public override bool ConsumeItem(Player player) => Main.rand.NextFloat() < player.Calamity().rogueAmmoCost;
     }
 }

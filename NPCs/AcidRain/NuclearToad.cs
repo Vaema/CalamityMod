@@ -183,7 +183,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 8; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
@@ -195,7 +195,7 @@ namespace CalamityMod.NPCs.AcidRain
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("NuclearToadGore4").Type, NPC.scale);
                 }
                 for (int i = 0; i < 25; i++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, Main.rand.NextFloat(-2f, 2f), -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, Main.rand.NextFloat(-2f, 2f), -1f, 0, default, 1f);
             }
         }
 

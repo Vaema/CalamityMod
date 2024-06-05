@@ -12,6 +12,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -319,9 +320,8 @@ namespace CalamityMod.NPCs.Other
                 NPC.ai[3] = 0f;
                 NPC.aiStyle = (urAMemeNow ? -1 : aiChoice);
                 NPC.netUpdate = true;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
                     if (proj.type == ModContent.ProjectileType<AresDeathBeamStart>() || proj.type == ModContent.ProjectileType<AresDeathBeamTelegraph>())
                     {
                         proj.Kill();
@@ -419,7 +419,7 @@ namespace CalamityMod.NPCs.Other
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1); // the idle frame by default
             Rectangle squintFrame = texture.Frame(2, 7, 0, 0);
 

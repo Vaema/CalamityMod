@@ -20,9 +20,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 38;
             Item.height = 44;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 12; // we buff Ankh Shield to 12
+            Item.defense = 8; // we buff Ankh Shield to 8
             Item.accessory = true;
         }
 

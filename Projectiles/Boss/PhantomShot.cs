@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 9f)
             {

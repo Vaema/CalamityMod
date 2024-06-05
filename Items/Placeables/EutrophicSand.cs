@@ -13,6 +13,9 @@ namespace CalamityMod.Items.Placeables
         {
             Item.ResearchUnlockCount = 100;
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Navystone>();
+
+            // +5 flat damage, equal to other sand variants
+            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<EutrophicSandBallGun>(), 5);
         }
 
         public override void SetDefaults()

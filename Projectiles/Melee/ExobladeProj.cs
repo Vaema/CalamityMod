@@ -363,6 +363,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.velocity = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld);
                 Projectile.oldPos = new Vector2[Projectile.oldPos.Length];
+
+                // Prevent zeroed out garbage from messing up the trail rendering.
+                for (int i = 0; i < Projectile.oldPos.Length; ++i)
+                    Projectile.oldPos[i] = Projectile.position;
             }
 
             // Do the dash.
@@ -417,8 +421,6 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4 * Direction;
         }
-
-
 
         public float SlashWidthFunction(float completionRatio) => SquishAtProgress(RealProgressionAtTrailCompletion(completionRatio)) * Projectile.scale * 60.5f;
 
@@ -487,7 +489,6 @@ namespace CalamityMod.Projectiles.Melee
 
             Main.spriteBatch.EnterShaderRegion();
 
-
             Color mainColor = MulticolorLerp((Main.GlobalTimeWrappedHourly * 2f) % 1, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
             Color secondaryColor = MulticolorLerp((Main.GlobalTimeWrappedHourly * 2f + 0.2f) % 1, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
 
@@ -500,14 +501,20 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(mainColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(secondaryColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(51).ToArray(), new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 53);
+
+            // Exoblade tracks 120 positions in oldPos.
+            // Provide 60 points for smoothing, but only render 30
+            int numPointsRendered = 30;
+            int numPointsProvided = 60;
+            var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
 
             Main.spriteBatch.ExitShaderRegion();
         }
 
         public void DrawBlade()
         {
-            var texture = ModContent.Request<Texture2D>(Texture).Value;
+            var texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             SpriteEffects direction = Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             if (State == SwingState.Swinging)
@@ -622,6 +629,12 @@ namespace CalamityMod.Projectiles.Melee
                     return;
 
                 int healAmt = (int)Math.Round(hit.Damage * 0.04);
+                if (healAmt > BalancingConstants.LifeStealCap)
+                    healAmt = BalancingConstants.LifeStealCap;
+
+                if (healAmt <= 0)
+                    return;
+
                 CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Owner, healAmt, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);
             }
         }

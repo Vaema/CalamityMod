@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.frameCounter < 5)
                 return;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() / new Vector2(TotalXFrames, TotalYFrames) * 0.5f;
             Rectangle frame = texture.Frame(TotalXFrames, TotalYFrames, frameX, frameY);

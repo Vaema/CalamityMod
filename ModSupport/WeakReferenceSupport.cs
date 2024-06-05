@@ -21,6 +21,7 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
@@ -61,11 +62,13 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Summon.Umbrella;
+using CalamityMod.Systems;
 using CalamityMod.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.Downed;
@@ -193,6 +196,7 @@ namespace CalamityMod
             DialogueTweakSupport();
             SummonersAssociationSupport();
             ColoredDamageTypesSupport();
+            LuminanceSupport();
             // done here to assure that all other mods have already loaded so that Calamity can automatically grab any of these types they may have
             if (!Main.dedServ)
             {
@@ -231,8 +235,6 @@ namespace CalamityMod
             ItemRedirect(ItemType<Elderberry>(), "Elderberry (calamity)");
             ItemRedirect(ItemType<PineapplePet>(), "Pineapple (calamity)");
             ItemRedirect(ItemType<TrashmanTrashcan>(), "Trash Can (pet)");
-            ItemRedirect(ItemType<Butcher>(), "Butcher (weapon)");
-            ItemRedirect(ItemType<Purity>(), "Purity (accessory)");
             ItemRedirect(ItemType<SandstormGun>(), "Sandstorm (weapon)");
             ItemRedirect(ItemType<Thunderstorm>(), "Thunderstorm (weapon)");
             // Lore items
@@ -293,7 +295,9 @@ namespace CalamityMod
 
             // Enemies
             EnemyRedirect(NPCType<HiveEnemy>(), "Hive (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel>(), "Crown Jewel (enemy)");
+            EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
             EnemyRedirect(NPCType<OldDukeToothBall>(), "Tooth Ball (Old Duke)");
             EnemyRedirect(NPCType<CalamitasEnchantDemon>(), "Enchantment");
             EnemyRedirect(NPCType<LeviathanStart>(), "%3F%3F%3F");
@@ -1259,6 +1263,37 @@ namespace CalamityMod
             // They would be hued towards magenta, but that would make them collide with Nebula-colored Magic in Colored Damage Types config.
             coloredDamageTypes.Call("AddDamageType", RogueDamageClass.Instance, RogueTooltipColor, RogueDamageColor, RogueCritColor);
             coloredDamageTypes.Call("AddDamageType", StealthDamageClass.Instance, StealthTooltipColor, StealthDamageColor, StealthCritColor);
+        }
+        #endregion
+
+        #region Luminance
+        private static void RegisterWorldInfoIcon(Mod luminance, string texturePath, string hoverTextKey, Func<WorldFileData, bool> shouldAppear, byte priority)
+            => luminance.Call("RegisterWorldInfoIcon", texturePath, hoverTextKey, shouldAppear, priority);
+        
+        public static void LuminanceSupport()
+        {
+            Mod luminance = GetInstance<CalamityMod>().luminance;
+            if (luminance is null)
+                return;
+
+            Func<WorldFileData, bool> deathEnabled = data =>
+            {
+                if (!data.TryGetHeaderData<WorldSelectionDifficultySystem>(out var tagData))
+                    return false;
+
+                return tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode");
+            };
+            
+            Func<WorldFileData, bool> revengeanceEnabled = data =>
+            {
+                if (!data.TryGetHeaderData<WorldSelectionDifficultySystem>(out var tagData))
+                    return false;
+
+                return tagData.ContainsKey("RevengeanceMode") && tagData.GetBool("RevengeanceMode") && !(tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode"));
+            };
+            
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.DeathEnabled", deathEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.RevengeanceEnabled", revengeanceEnabled, 50);
         }
         #endregion
     }

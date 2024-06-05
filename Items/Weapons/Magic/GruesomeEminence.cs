@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.mana = 8;
+            Item.mana = 400;
             Item.useTime = 27;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<GruesomeEminenceHoldout>();
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
 

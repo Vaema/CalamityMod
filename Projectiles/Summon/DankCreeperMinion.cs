@@ -103,14 +103,14 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!canAttack)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[j].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            float otherNPCX = Main.npc[j].position.X + (float)(Main.npc[j].width / 2);
-                            float otherNPCY = Main.npc[j].position.Y + (float)(Main.npc[j].height / 2);
+                            float otherNPCX = n.position.X + (float)(n.width / 2);
+                            float otherNPCY = n.position.Y + (float)(n.height / 2);
                             float otherNPCDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - otherNPCX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - otherNPCY);
-                            if (otherNPCDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[j].position, Main.npc[j].width, Main.npc[j].height))
+                            if (otherNPCDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                             {
                                 attackRange = otherNPCDist;
                                 projX = otherNPCX;
@@ -128,7 +128,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     returnSpeed = 12f;
                 }
-                Vector2 playerDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 playerDirection = Projectile.Center;
                 float playerXDist = player.Center.X - playerDirection.X;
                 float playerYDist = player.Center.Y - playerDirection.Y - 60f;
                 float playerDist = (float)Math.Sqrt((double)(playerXDist * playerXDist + playerYDist * playerYDist));
@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.ai[1] == 0f)
                 {
                     float hoverSpeed = 8f; //12
-                    Vector2 playerDirectionAgain = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 playerDirectionAgain = Projectile.Center;
                     float playerXDistAgain = projX - playerDirectionAgain.X;
                     float playerYDistAgain = projY - playerDirectionAgain.Y;
                     float playerDistAgain = (float)Math.Sqrt((double)(playerXDistAgain * playerXDistAgain + playerYDistAgain * playerYDistAgain));
@@ -221,7 +221,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

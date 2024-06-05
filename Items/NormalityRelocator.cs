@@ -3,6 +3,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,6 +13,7 @@ namespace CalamityMod.Items
     public class NormalityRelocator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+        public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Item/NormalityRelocator", 3);
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 7));
@@ -22,7 +24,7 @@ namespace CalamityMod.Items
         {
             Item.width = 38;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.Calamity().donorItem = true;
         }

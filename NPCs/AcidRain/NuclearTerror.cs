@@ -400,7 +400,7 @@ Continue:
                     int totalDust = (int)(30 * NPC.alpha / 255f);
                     for (int i = 0; i < totalDust; i++)
                     {
-                        Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid);
+                        Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid);
                         dust.noGravity = true;
                         dust.velocity = NPC.DirectionFrom(dust.position) * 2f;
                         dust.scale = 1.6f;
@@ -423,7 +423,7 @@ Continue:
                 {
                     for (int i = 0; i < 48; i++)
                     {
-                        Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid);
+                        Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid);
                         dust.noGravity = true;
                         dust.velocity = NPC.DirectionFrom(dust.position) * Main.rand.NextFloat(2f, 3.6f);
                         dust.scale = 1.8f;
@@ -524,7 +524,7 @@ Continue:
             NPC.alpha = 0;
             if (DeathrayTime < 240f)
             {
-                int bigFuckOffDeathrayDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 200, default, 1.5f);
+                int bigFuckOffDeathrayDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 200, default, 1.5f);
                 Main.dust[bigFuckOffDeathrayDust].noGravity = true;
                 Main.dust[bigFuckOffDeathrayDust].velocity *= 0.75f;
                 Main.dust[bigFuckOffDeathrayDust].fadeIn = 1.3f;
@@ -597,7 +597,7 @@ Continue:
 
                     for (int i = 0; i < 60; i++)
                     {
-                        Dust dust = Dust.NewDustDirect(NPC.Center, 45, 45, (int)CalamityDusts.SulfurousSeaAcid);
+                        Dust dust = Dust.NewDustDirect(NPC.Center, 45, 45, (int)CalamityDusts.SulphurousSeaAcid);
                         dust.velocity = Utils.NextVector2Unit(Main.rand) * Main.rand.NextFloat(4f, 15f);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(2f, 3f);
@@ -659,7 +659,7 @@ Continue:
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

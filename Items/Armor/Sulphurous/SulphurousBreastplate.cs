@@ -15,15 +15,15 @@ namespace CalamityMod.Items.Armor.Sulphurous
         {
             Item.width = 24;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.defense = 6;
             Item.rare = ItemRarityID.Green;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.08f;
-            player.GetCritChance<ThrowingDamageClass>() += 5;
+            player.GetDamage<ThrowingDamageClass>() += 0.06f;
+            player.GetCritChance<ThrowingDamageClass>() += 4;
         }
 
         public override void AddRecipes()

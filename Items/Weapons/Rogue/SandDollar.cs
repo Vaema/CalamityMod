@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3.5f;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SandDollarProj>();
             Item.shootSpeed = 14f;

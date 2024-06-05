@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
@@ -228,12 +228,12 @@ namespace CalamityMod.NPCs.Astral
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if (Main.player[i].getRect().Intersects(myRect))
+                    if (player.getRect().Intersects(myRect))
                     {
-                        int direction = NPC.Center.X - Main.player[i].Center.X < 0 ? -1 : 1;
-                        Main.player[i].Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, direction);
+                        int direction = NPC.Center.X - player.Center.X < 0 ? -1 : 1;
+                        player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, direction);
                     }
                 }
             }
@@ -297,7 +297,7 @@ namespace CalamityMod.NPCs.Astral
             var exploded = npcLoot.DefineConditionalDropSet((info) => info.npc.ai[3] <= -10000f);
 
             // 2-3 Stardust (3-4 Expert+)
-            exploded.OnFailedConditions(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 1, 2, 3, 3, 4));
+            exploded.OnFailedConditions(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 2, 3, 3, 4));
             exploded.OnFailedConditions(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedAstrumAureus), ModContent.ItemType<StellarCannon>(), 7));
 
             // If exploded, then have a chance to drop Glorious End and nothing else

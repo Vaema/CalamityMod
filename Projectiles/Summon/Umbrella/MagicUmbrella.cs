@@ -255,19 +255,18 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
                     return selectedTarget.whoAmI;
             }
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc.CanBeChasedBy(this) && (npc.boss || !blackListedTargets.Contains(i)))
-                {
-                    float npcDist = npc.Distance(center);
-                    if (npcDist <= MagicHat.Range && (npcDist <= closestDist || closestDist == -1f))
-                    {
-                        closestDist = npcDist;
-                        target = i;
-                    }
-                }
-            }
+				if (npc.CanBeChasedBy(this) && (npc.boss || !blackListedTargets.Contains(npc.whoAmI)))
+				{
+					float npcDist = npc.Distance(center);
+					if (npcDist <= MagicHat.Range && (npcDist <= closestDist || closestDist == -1f))
+					{
+						closestDist = npcDist;
+						target = npc.whoAmI;
+					}
+				}
+			}
 
             return target;
         }
@@ -334,7 +333,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);

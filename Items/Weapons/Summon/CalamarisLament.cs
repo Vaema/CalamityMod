@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.Item85;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
 
             // This does nothing, it's just here so it's able to act like a staff.
             Item.shootSpeed = 1f;

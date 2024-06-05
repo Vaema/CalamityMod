@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D telegraphTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D telegraphTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color telegraphColor = Color.White * Projectile.Opacity * 0.2f;
             telegraphColor.A = 0;
 

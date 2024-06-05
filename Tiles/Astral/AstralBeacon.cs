@@ -69,7 +69,7 @@ namespace CalamityMod.Tiles.Astral
 
             bool usingStarcore = Main.LocalPlayer.HasItem(ModContent.ItemType<Starcore>());
 
-            if (Main.dayTime)
+            if (Main.IsItDay())
             {
                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DeusAltarRejectNightText", FailColor);
                 return false;

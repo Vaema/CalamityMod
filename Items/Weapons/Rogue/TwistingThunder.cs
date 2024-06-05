@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             Item.useTime = 21;
             Item.useAnimation = 21;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.DamageType = RogueDamageClass.Instance;
 

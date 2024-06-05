@@ -198,7 +198,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
                 NPC.Opacity = MathHelper.Clamp(NPC.Opacity + 0.165f, 0f, 1f);
 
-            Vector2 segmentLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+            Vector2 segmentLocation = NPC.Center;
             float targetX = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.X + (Main.player[NPC.target].width / 2);
             float targetY = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.Y + (Main.player[NPC.target].height / 2);
             float sepMaxSpeed = BossRushEvent.BossRushActive ? 22.5f : 20f;
@@ -339,14 +339,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     int damage = (int)(NPC.GetProjectileDamage(type) * 0.5f);
                     int totalProjectiles = 30;
                     float radians = MathHelper.TwoPi / totalProjectiles;
-                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                    float velocity = 1f;
+                    float projectileVelocityToPass = 15f;
+                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-velocity, -velocity));
                     for (int k = 0; k < totalProjectiles; k++)
                     {
-                        Vector2 velocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer, 0, 0, 2);
+                        Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
                     }
                     NPC.netUpdate = true;
                 }
+
                 Particle bloom = new BloomParticle(NPC.Center, Vector2.Zero, Color.Red, 0.1f, 0.9f, 30, false);
                 GeneralParticleHandler.SpawnParticle(bloom);
                 Particle bloom2 = new BloomParticle(NPC.Center, Vector2.Zero, Color.White, 0.1f, 0.8f, 30, false);

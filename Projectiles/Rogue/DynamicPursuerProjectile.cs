@@ -241,18 +241,18 @@ namespace CalamityMod.Projectiles.Rogue
                 float targettingDistance = MaxTargetSearchDistance * 2f;
 
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (var n in Main.ActiveNPCs)
                 {
-                    if (i == target.whoAmI)
+                    if (n.whoAmI == target.whoAmI)
                         continue;
 
-                    if (Main.npc[i].CanBeChasedBy(Projectile))
+                    if (n.CanBeChasedBy(Projectile))
                     {
-                        float potentialNewDistance = (Projectile.Center - Main.npc[i].Center).Length();
+                        float potentialNewDistance = (Projectile.Center - n.Center).Length();
                         if (potentialNewDistance < targettingDistance && potentialNewDistance < closestNPCDistance)
                         {
                             closestNPCDistance = potentialNewDistance;
-                            newTarget = Main.npc[i];
+                            newTarget = n;
                             nextTarget = newTarget;
                             if (Projectile.timeLeft < 300)
                                 Projectile.timeLeft = 300;
@@ -290,7 +290,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool PreDraw(ref Color lightColor)
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, ProjectileID.Sets.TrailCacheLength[Projectile.type]);
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmaskTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/DynamicPursuerProjectileGlowmask").Value;
             Rectangle glowmaskRectangle = glowmaskTexture.Frame(1, 9, 0, glowmaskFrame);
             Vector2 origin = glowmaskRectangle.Size() / 2f;

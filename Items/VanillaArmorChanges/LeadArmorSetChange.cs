@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 
 namespace CalamityMod.Items.VanillaArmorChanges
@@ -14,8 +13,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Lead";
 
-        public const float ArmorPieceDR = 0.03f;
-        public const float SetBonusDR = 0.03f;
+        public const float ArmorPieceDR = 0.02f;
+        public const float SetBonusDR = 0.04f;
         public const int SetBonusLifeRegen = 1;
 
         public override void ApplyHeadPieceEffect(Player player) => player.endurance += ArmorPieceDR;

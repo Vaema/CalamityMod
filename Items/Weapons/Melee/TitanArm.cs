@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.rare = ItemRarityID.Lime;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
         }
 
         // Boosting crit in SetDefaults along with knockback seemed to severely inflate the reforging price. Guaranteed crits for more knockback.

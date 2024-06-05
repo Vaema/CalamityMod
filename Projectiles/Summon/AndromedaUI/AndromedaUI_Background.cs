@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, Main.Rasterizer, null, perspective);
 
                 // Draw the background UI
-                Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value,
+                Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
                                  Projectile.Center - Main.screenPosition,
                                  null,
                                  Color.White * Projectile.Opacity,

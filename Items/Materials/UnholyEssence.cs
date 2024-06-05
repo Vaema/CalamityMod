@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 5));
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 7));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
             ItemID.Sets.SortingPriorityMaterials[Type] = 103;
@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Materials
 
         public override void SetDefaults()
         {
-            Item.width = 15;
-            Item.height = 12;
+            Item.width = 28;
+            Item.height = 36;
             Item.maxStack = 9999;
             Item.rare = ItemRarityID.Purple;
             Item.value = Item.buyPrice(0, 6, 50, 0);

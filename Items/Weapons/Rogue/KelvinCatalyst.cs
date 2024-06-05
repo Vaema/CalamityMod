@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<KelvinCatalystBoomerang>();

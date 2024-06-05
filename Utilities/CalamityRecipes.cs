@@ -11,7 +11,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Tools;
-using CalamityMod.Items.Weapons.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -24,6 +23,7 @@ namespace CalamityMod
     {
         #region Recipe Group Definitions
         public static int HardmodeAnvil, HardmodeForge, AnyLargeGem, AnyFood;
+        public static int AnyCopperOre, AnySilverOre, AnyGoldOre, AnyEvilOre, AnyCobaltOre, AnyMythrilOre, AnyAdamantiteOre;
         public static int AnyCopperBar, AnySilverBar, AnyGoldBar, AnyEvilBar, AnyCobaltBar, AnyMythrilBar, AnyAdamantiteBar;
         public static int AnyEvilPowder, Boss2Material, CursedFlameIchor, AnyEvilWater, AnyEvilFlask;
         public static int AnyStoneBlock, AnySnowBlock, AnyIceBlock, AnySiltBlock, AnyEvilBlock, AnyGoodBlock;
@@ -45,6 +45,7 @@ namespace CalamityMod
             // Acidwood is Wood
             RecipeGroup wood = RecipeGroup.recipeGroups[RecipeGroupID.Wood];
             wood.ValidItems.Add(ModContent.ItemType<Acidwood>());
+            wood.ValidItems.Add(ModContent.ItemType<Driftwood>());
             // Astral Monolith is decidedly not wood-like enough to be used as generic wood.
         }
 
@@ -87,97 +88,20 @@ namespace CalamityMod
             AnyLargeGem = RecipeGroup.RegisterGroup("AnyLargeGem", group);
 
             // Food
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyFood"), new int[]
-            {
-                ItemID.Apple,
-                ItemID.AppleJuice,
-                ItemID.ApplePie,
-                ItemID.Apricot,
-                ItemID.Bacon,
-                ItemID.Banana,
-                ItemID.BananaDaiquiri,
-                ItemID.BananaSplit,
-                ModContent.ItemType<Baguette>(),
-                ItemID.BBQRibs,
-                ItemID.BlackCurrant,
-                ModContent.ItemType<BlasphemousDonut>(),
-                ItemID.BloodOrange,
-                ItemID.BloodyMoscato,
-                ItemID.BowlofSoup,
-                ItemID.BunnyStew,
-                ItemID.Burger, // mmmmhmm borgor :borgorpat:
-                ItemID.MilkCarton, // Carton of Milk
-                ItemID.Cherry,
-                ItemID.ChickenNugget,
-                ItemID.ChocolateChipCookie,
-                ItemID.ChristmasPudding,
-                ItemID.Coconut,
-                ItemID.CoffeeCup,
-                ItemID.CookedFish,
-                ItemID.CookedMarshmallow,
-                ItemID.CookedShrimp,
-                ItemID.CreamSoda,
-                ModContent.ItemType<DeliciousMeat>(),
-                ItemID.Dragonfruit,
-                ItemID.Elderberry,
-                ItemID.Escargot,
-                ItemID.FriedEgg,
-                ItemID.Fries,
-                ItemID.FroggleBunwich,
-                ItemID.BananaDaiquiri, // Frozen Banana Daiquiri
-                ItemID.FruitJuice,
-                ItemID.FruitSalad,
-                ItemID.GingerbreadCookie,
-                ItemID.GoldenDelight,
-                ItemID.Grapes,
-                ItemID.Grapefruit,
-                ItemID.GrapeJuice,
-                ItemID.GrilledSquirrel,
-                ItemID.GrubSoup,
-                ModContent.ItemType<HadalStew>(),
-                ItemID.Hotdog,
-                ItemID.IceCream,
-                ItemID.Lemon,
-                ItemID.Lemonade,
-                ItemID.LobsterTail,
-                ItemID.Mango,
-                ItemID.Milkshake,
-                ItemID.MonsterLasagna,
-                ItemID.Nachos,
-                ItemID.PadThai,
-                ItemID.Peach,
-                ItemID.PeachSangria,
-                ItemID.Pho,
-                ItemID.PinaColada,
-                ItemID.Pineapple,
-                ItemID.Pizza,
-                ItemID.Plum,
-                ItemID.PotatoChips,
-                ItemID.PrismaticPunch,
-                ItemID.PumpkinPie,
-                ItemID.Rambutan,
-                ItemID.RoastedBird,
-                ItemID.RoastedDuck,
-                ItemID.SauteedFrogLegs,
-                ItemID.SeafoodDinner,
-                ItemID.ShrimpPoBoy,
-                ItemID.ShuckedOyster,
-                ItemID.SmoothieofDarkness,
-                ItemID.Spaghetti,
-                ItemID.Starfruit,
-                ItemID.Steak,
-                ItemID.SugarCookie,
-                ItemID.Sashimi,
-                ItemID.Teacup,
-                ItemID.TropicalSmoothie
-            });
-            AnyFood = RecipeGroup.RegisterGroup("AnyFood", group);
+            AnyFood = RecipeGroup.RegisterGroup("AnyFood", GetFoodItems());
         }
 
         private static void AddOreAndBarRecipeGroups()
         {
             // Copper and Tin
-            RecipeGroup group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CopperBar)}", new int[]
+            RecipeGroup group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CopperOre)}", new int[]
+            {
+                ItemID.CopperOre,
+                ItemID.TinOre
+            });
+            AnyCopperOre = RecipeGroup.RegisterGroup("AnyCopperOre", group);
+
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CopperBar)}", new int[]
             {
                 ItemID.CopperBar,
                 ItemID.TinBar
@@ -185,6 +109,13 @@ namespace CalamityMod
             AnyCopperBar = RecipeGroup.RegisterGroup("AnyCopperBar", group);
 
             // Silver and Tungsten
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.SilverOre)}", new int[]
+            {
+                ItemID.SilverOre,
+                ItemID.TungstenOre
+            });
+            AnySilverOre = RecipeGroup.RegisterGroup("AnySilverOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.SilverBar)}", new int[]
             {
                 ItemID.SilverBar,
@@ -193,6 +124,13 @@ namespace CalamityMod
             AnySilverBar = RecipeGroup.RegisterGroup("AnySilverBar", group);
 
             // Gold and Platinum
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.GoldOre)}", new int[]
+            {
+                ItemID.GoldOre,
+                ItemID.PlatinumOre
+            });
+            AnyGoldOre = RecipeGroup.RegisterGroup("AnyGoldOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.GoldBar)}", new int[]
             {
                 ItemID.GoldBar,
@@ -201,6 +139,13 @@ namespace CalamityMod
             AnyGoldBar = RecipeGroup.RegisterGroup("AnyGoldBar", group);
 
             // Demonite and Crimtane
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.DemoniteOre)}", new int[]
+            {
+                ItemID.DemoniteOre,
+                ItemID.CrimtaneOre
+            });
+            AnyEvilOre = RecipeGroup.RegisterGroup("AnyEvilOre", group);
+
             group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyEvilBar"), new int[]
             {
                 ItemID.DemoniteBar,
@@ -209,6 +154,13 @@ namespace CalamityMod
             AnyEvilBar = RecipeGroup.RegisterGroup("AnyEvilBar", group);
 
             // Cobalt and Palladium
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CobaltOre)}", new int[]
+            {
+                ItemID.CobaltOre,
+                ItemID.PalladiumOre
+            });
+            AnyCobaltOre = RecipeGroup.RegisterGroup("AnyCobaltOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CobaltBar)}", new int[]
             {
                 ItemID.CobaltBar,
@@ -217,6 +169,13 @@ namespace CalamityMod
             AnyCobaltBar = RecipeGroup.RegisterGroup("AnyCobaltBar", group);
 
             // Mythril and Orichalcum
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.MythrilOre)}", new int[]
+            {
+                ItemID.MythrilOre,
+                ItemID.OrichalcumOre
+            });
+            AnyMythrilOre = RecipeGroup.RegisterGroup("AnyMythrilOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.MythrilBar)}", new int[]
             {
                 ItemID.MythrilBar,
@@ -225,6 +184,13 @@ namespace CalamityMod
             AnyMythrilBar = RecipeGroup.RegisterGroup("AnyMythrilBar", group);
 
             // Adamantite and Titanium
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.AdamantiteOre)}", new int[]
+            {
+                ItemID.AdamantiteOre,
+                ItemID.TitaniumOre
+            });
+            AnyAdamantiteOre = RecipeGroup.RegisterGroup("AnyAdamantiteOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.AdamantiteBar)}", new int[]
             {
                 ItemID.AdamantiteBar,
@@ -356,7 +322,8 @@ namespace CalamityMod
                 ItemID.PalmWoodSword,
                 ItemID.EbonwoodSword,
                 ItemID.ShadewoodSword,
-                ItemID.PearlwoodSword
+                ItemID.PearlwoodSword,
+                ItemID.AshWoodSword
             });
             AnyWoodenSword = RecipeGroup.RegisterGroup("AnyWoodenSword", group);
 
@@ -456,63 +423,7 @@ namespace CalamityMod
             AnyTombstone = RecipeGroup.RegisterGroup("AnyTombstone", group);
 
             // Wings for Celestial Tracers
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyWings"), new int[]
-            {
-                ItemID.DemonWings,
-                ItemID.AngelWings,
-                ItemID.RedsWings,
-                ItemID.ButterflyWings,
-                ItemID.FairyWings,
-                ItemID.HarpyWings,
-                ItemID.BoneWings,
-                ItemID.FlameWings,
-                ItemID.FrozenWings,
-                ItemID.GhostWings,
-                ItemID.SteampunkWings,
-                ItemID.LeafWings,
-                ItemID.BatWings,
-                ItemID.BeeWings,
-                ItemID.DTownsWings,
-                ItemID.WillsWings,
-                ItemID.CrownosWings,
-                ItemID.CenxsWings,
-                ItemID.TatteredFairyWings,
-                ItemID.SpookyWings,
-                ItemID.Hoverboard,
-                ItemID.FestiveWings,
-                ItemID.BeetleWings,
-                ItemID.FinWings,
-                ItemID.FishronWings,
-                ItemID.MothronWings,
-                ItemID.WingsSolar,
-                ItemID.WingsVortex,
-                ItemID.WingsNebula,
-                ItemID.WingsStardust,
-                ItemID.Yoraiz0rWings,
-                ItemID.JimsWings,
-                ItemID.SkiphsWings,
-                ItemID.LokisWings,
-                ItemID.BetsyWings,
-                ItemID.ArkhalisWings,
-                ItemID.LeinforsWings,
-                ItemID.BejeweledValkyrieWing,
-                ItemID.GhostarsWings,
-                ItemID.GroxTheGreatWings,
-                ItemID.FoodBarbarianWings,
-                ItemID.SafemanWings,
-                ItemID.CreativeWings,
-                ItemID.RainbowWings,
-                ItemID.LongRainbowTrailWings,
-                ModContent.ItemType<SkylineWings>(),
-                ModContent.ItemType<StarlightWings>(),
-                ModContent.ItemType<AureateBooster>(),
-                ModContent.ItemType<HadalMantle>(),
-                ModContent.ItemType<TarragonWings>(),
-                ModContent.ItemType<ExodusWings>(),
-                ModContent.ItemType<HadarianWings>(),
-                ModContent.ItemType<SilvaWings>()
-            });
-            AnyWings = RecipeGroup.RegisterGroup("AnyWings", group);
+            AnyWings = RecipeGroup.RegisterGroup("AnyWings", GetValidWingsForTracers());
         }
         #endregion
 
@@ -528,7 +439,7 @@ namespace CalamityMod
 
             // Fallen Stars from Stardust
             Recipe.Create(ItemID.FallenStar).
-                AddIngredient<Stardust>(5).
+                AddIngredient<StarblightSoot>(5).
                 AddTile(TileID.Anvils).
                 Register()
                 .DisableDecraft();
@@ -545,14 +456,14 @@ namespace CalamityMod
                 AddRecipeGroup("IronBar").
                 AddIngredient(ItemID.EmptyBullet, 100).
                 AddIngredient(ItemID.ExplosivePowder, 4).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
             // and Rocket IIs (requires slightly more explosive powder)
             Recipe.Create(ItemID.RocketII, 100).
                 AddRecipeGroup("IronBar").
                 AddIngredient(ItemID.EmptyBullet, 100).
                 AddIngredient(ItemID.ExplosivePowder, 5).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
 
             // Life Crystal
@@ -839,6 +750,7 @@ namespace CalamityMod
                 { r => r.HasResult(ItemID.HorseshoeBundle) && !r.HasIngredient(ItemID.BundleofBalloons), AddIngredient(ModContent.ItemType<AerialiteBar>(), 3) },
                 { Vanilla(ItemID.NightsEdge), AddIngredient(ModContent.ItemType<PurifiedGel>(), 5) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
+                { Vanilla(ItemID.HellfireTreads), AddIngredient(ModContent.ItemType<EssenceofHavoc>(), 4) },
                 { Vanilla(ItemID.SpiritFlame), AddGroup(AnyAdamantiteBar, 2) },
                 { Vanilla(ItemID.TerraBlade), AddIngredient(ModContent.ItemType<LivingShard>(), 12) },
                 { Vanilla(ItemID.FireGauntlet), AddIngredient(ModContent.ItemType<ScoriaBar>(), 5) },
@@ -998,6 +910,49 @@ namespace CalamityMod
         {
             r.ChangeIngredientStack(ItemID.ViciousPowder, 20);
             r.ChangeIngredientStack(ItemID.Vertebrae, 10);
+        }
+        #endregion
+
+        #region Automatic Recipe Groups
+        private static RecipeGroup GetValidWingsForTracers()
+        {
+            List<int> wingIds = new List<int>();
+            // List of wings that can't be used to craft Celestial Tracers, includes tracers themselves, specific wing ingredients, and non-traditional wings
+            List<int> excludedWings = new List<int> 
+            { 
+                ModContent.ItemType<TracersSeraph>(),
+                ModContent.ItemType<TracersElysian>(),
+                ModContent.ItemType<TracersCelestial>(),
+                ModContent.ItemType<SoulofCryogen>(),
+                ModContent.ItemType<ElysianWings>(),
+                ModContent.ItemType<DrewsWings>(),
+                ModContent.ItemType<MOAB>(),
+                ItemID.Jetpack
+            };
+            foreach (var i in ContentSamples.ItemsByType)
+            {
+                Item item = i.Value;
+                if (item.wingSlot > -1 && !excludedWings.Contains(item.type))
+                {
+                    wingIds.Add(item.type);
+                }
+            }
+            return new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyWings"), [.. wingIds]);
+        }
+
+        private static RecipeGroup GetFoodItems()
+        {
+            List<int> foodIds = new List<int>();
+            foreach (var i in ContentSamples.ItemsByType)
+            {
+                Item item = i.Value;
+                // 05JUN2024: Ozzatron: support non-vanilla "food-y" buffs (this set by default contains WellFed, WellFed2 and WellFed3)
+                if (BuffID.Sets.IsWellFed[item.buffType])
+                {
+                    foodIds.Add(item.type);
+                }
+            }
+            return new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyFood"), [.. foodIds]);
         }
         #endregion
 
@@ -1593,8 +1548,9 @@ namespace CalamityMod
             // Flame Waker Boots
             r = Recipe.Create(ItemID.FlameWakerBoots);
             r.AddIngredient(ItemID.Silk, 8);
-            r.AddIngredient(ItemID.Obsidian, 2);
-            r.AddTile(TileID.Loom);
+            r.AddIngredient(ItemID.HellstoneBar, 5);
+            r.AddIngredient(ItemID.Obsidian, 4);
+            r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
 

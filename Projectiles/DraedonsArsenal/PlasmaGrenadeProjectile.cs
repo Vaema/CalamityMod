@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     for (int i = 0; i < 120; i++)
                     {
-                        int type = Main.rand.NextBool(3) ? 261 : (int)CalamityDusts.SulfurousSeaAcid;
+                        int type = Main.rand.NextBool(3) ? 261 : (int)CalamityDusts.SulphurousSeaAcid;
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), type);
                         dust.scale = Main.rand.NextFloat(1.3f, 1.5f);
                         dust.velocity = Main.rand.NextVector2CircularEdge(15f, 15f);

@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int poisonDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Poisoned, 0f, 0f, 100, default, 0.75f);
+                    int poisonDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Poisoned, 0f, 0f, 100, default, 0.75f);
                     Main.dust[poisonDust].noGravity = true;
                     Main.dust[poisonDust].velocity *= 0f;
                 }

@@ -32,8 +32,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             Main.projFrames[Projectile.type] = 14;
+            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
 
         public override void SetDefaults()
@@ -43,11 +44,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 90000;
-            Projectile.penetrate = -1;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
             Projectile.tileCollide = true;
-            Projectile.hide = true;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.sentry = true;
         }
 
         public override void AI()
@@ -89,6 +89,7 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             Projectile cannon = Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), Projectile.Center + Vector2.UnitY * 10f, Vector2.Zero, ModContent.ProjectileType<AtlasMunitionsAutocannon>(), Projectile.damage, 0f, Projectile.owner);
                             cannon.originalDamage = Projectile.originalDamage;
+                            cannon.ai[2] = Projectile.whoAmI;
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Top + Vector2.UnitY * 72f, Vector2.Zero, ModContent.ProjectileType<AtlasMunitionsDropPodUpper>(), 0, 0f, Projectile.owner);
                         }
                     }
@@ -147,7 +148,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/AtlasMunitionsDropPodGlow").Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

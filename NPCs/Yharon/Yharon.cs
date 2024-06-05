@@ -202,6 +202,7 @@ namespace CalamityMod.NPCs.Yharon
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -215,7 +216,7 @@ namespace CalamityMod.NPCs.Yharon
             // Start phase 2 or not
             if (startSecondAI)
             {
-                Yharon_AI2(expertMode, revenge, death, bossRush, pie, lifeRatio, calamityGlobalNPC, setDamage);
+                Yharon_AI2(expertMode, masterMode, revenge, death, bossRush, pie, lifeRatio, calamityGlobalNPC, setDamage);
                 return;
             }
 
@@ -304,13 +305,15 @@ namespace CalamityMod.NPCs.Yharon
             float spinPhaseVelocity = 25f;
             float spinPhaseRotation = MathHelper.TwoPi * 3 / spinTime;
 
-            float increasedIdleTimeAfterBulletHell = 120f;
+            float increasedIdleTimeAfterBulletHell = (masterMode ? 120f : 180f) + phaseSwitchTimer;
             bool moveSlowerAfterBulletHell = NPC.ai[2] < 0f;
+            bool slowChargeAfterBulletHell = NPC.ai[2] == -1f;
             if (moveSlowerAfterBulletHell)
             {
-                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, 1f, (NPC.ai[2] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
+                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, masterMode ? 1f : 0.75f, (NPC.ai[2] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
                 acceleration *= reducedMovementMultiplier;
                 velocity *= reducedMovementMultiplier;
+                chargeSpeed *= reducedMovementMultiplier;
             }
 
             float teleportPhaseTimer = 30f;
@@ -596,9 +599,6 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (aiState == 1)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
-
                         NPC.ai[0] = 1f;
                         NPC.ai[1] = 0f;
                         NPC.ai[2] = 0f;
@@ -640,9 +640,6 @@ namespace CalamityMod.NPCs.Yharon
                     }
                     else if (aiState == 5)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
-
                         if (playFastChargeRoarSound)
                             RoarSoundSlot = SoundEngine.PlaySound(RoarSound, NPC.Center);
 
@@ -855,7 +852,7 @@ namespace CalamityMod.NPCs.Yharon
                 }
 
                 NPC.ai[2] += 1f;
-                if (NPC.ai[2] >= phaseSwitchTimer)
+                if (NPC.ai[2] >= phaseSwitchTimer || slowChargeAfterBulletHell)
                 {
                     int aiState = 0;
                     switch ((int)NPC.ai[3])
@@ -886,9 +883,6 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (aiState == 1)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
-
                         NPC.ai[0] = 7f;
                         NPC.ai[1] = 0f;
                         NPC.ai[2] = 0f;
@@ -923,7 +917,10 @@ namespace CalamityMod.NPCs.Yharon
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 center = player.Center + new Vector2(0f, -540f);
+                                float bulletHellTeleportLocationDistance = 540f;
+                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
+                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
+                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -974,9 +971,6 @@ namespace CalamityMod.NPCs.Yharon
                     }
                     else if (aiState == 5)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
-
                         if (playFastChargeRoarSound)
                             RoarSoundSlot = SoundEngine.PlaySound(RoarSound, NPC.Center);
 
@@ -1226,7 +1220,7 @@ namespace CalamityMod.NPCs.Yharon
                 }
 
                 NPC.ai[2] += 1f;
-                if (NPC.ai[2] >= phaseSwitchTimer)
+                if (NPC.ai[2] >= phaseSwitchTimer || slowChargeAfterBulletHell)
                 {
                     int aiState = 0;
                     switch ((int)NPC.ai[3])
@@ -1260,9 +1254,6 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (aiState == 1)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
-
                         NPC.ai[0] = 14f;
                         NPC.ai[1] = 0f;
                         NPC.ai[2] = 0f;
@@ -1297,7 +1288,10 @@ namespace CalamityMod.NPCs.Yharon
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 center = player.Center + new Vector2(0f, -540f);
+                                float bulletHellTeleportLocationDistance = 540f;
+                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
+                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
+                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -1348,9 +1342,6 @@ namespace CalamityMod.NPCs.Yharon
                     }
                     else if (aiState == 5)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
-
                         if (playFastChargeRoarSound)
                             RoarSoundSlot = SoundEngine.PlaySound(RoarSound, NPC.Center);
 
@@ -1630,7 +1621,7 @@ namespace CalamityMod.NPCs.Yharon
         }
 
         #region AI2
-        public void Yharon_AI2(bool expertMode, bool revenge, bool death, bool bossRush, float pie, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
+        public void Yharon_AI2(bool expertMode, bool masterMode, bool revenge, bool death, bool bossRush, float pie, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
         {
             CalamityGlobalNPC.yharonP2 = NPC.whoAmI;
 
@@ -1691,7 +1682,10 @@ namespace CalamityMod.NPCs.Yharon
 
             // Despawn safety, make sure to target another player if the current player target is too far away
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
+            {
                 NPC.TargetClosest();
+                NPC.netUpdate = true;
+            }
 
             Player targetData = Main.player[NPC.target];
 
@@ -1700,6 +1694,7 @@ namespace CalamityMod.NPCs.Yharon
             if (targetData.dead || !targetData.active)
             {
                 NPC.TargetClosest();
+                NPC.netUpdate = true;
                 targetData = Main.player[NPC.target];
                 if (targetData.dead || !targetData.active)
                 {
@@ -1795,13 +1790,15 @@ namespace CalamityMod.NPCs.Yharon
             int flareDustSpawnDivisor = spinPhaseTimer / 10;
             int flareDustSpawnDivisor2 = spinPhaseTimer / 20 + (secondPhasePhase == 4 ? spinPhaseTimer / 60 : 0);
 
-            float increasedIdleTimeAfterBulletHell = 120f;
+            float increasedIdleTimeAfterBulletHell = (masterMode ? 120f : 180f) + phaseSwitchTimer;
             bool moveSlowerAfterBulletHell = NPC.ai[1] < 0f;
+            bool slowChargeAfterBulletHell = NPC.ai[1] == -1f;
             if (moveSlowerAfterBulletHell)
             {
-                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, 1f, (NPC.ai[1] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
+                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, masterMode ? 1f : 0.75f, (NPC.ai[1] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
                 acceleration *= reducedMovementMultiplier;
                 velocity *= reducedMovementMultiplier;
+                chargeSpeed *= reducedMovementMultiplier;
             }
 
             float flareSpawnDecelerationTimer = bossRush ? 60f : death ? 75f : 90f;
@@ -1860,7 +1857,7 @@ namespace CalamityMod.NPCs.Yharon
                 NPC.direction = NPC.spriteDirection = spriteDirection;
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= phaseSwitchTimer)
+                if (NPC.ai[1] >= phaseSwitchTimer || slowChargeAfterBulletHell)
                 {
                     int phase2AttackType = 1;
                     if (phase4)
@@ -2005,9 +2002,6 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (phase2AttackType == 5 && NPC.ai[1] < phaseSwitchTimer + teleportPhaseTimer)
                     {
-                        // Avoid cheap bullshit
-                        NPC.damage = 0;
-
                         float newRotation = NPC.AngleTo(targetData.Center);
                         float amount = 0.04f;
 
@@ -2038,7 +2032,10 @@ namespace CalamityMod.NPCs.Yharon
                                         NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<Bumblefuck>());
                                 }
 
-                                Vector2 center = targetData.Center + new Vector2(0f, -540f);
+                                float bulletHellTeleportLocationDistance = 540f;
+                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
+                                Vector2 teleportLocation = targetData.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
+                                Vector2 center = targetData.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -2069,9 +2066,6 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (phase2AttackType == 7 && doFastChargeTelegraph)
                     {
-                        // Avoid cheap bullshit
-                        NPC.damage = 0;
-
                         float newRotation = NPC.AngleTo(targetData.Center);
                         float amount = 0.04f;
 
@@ -2148,9 +2142,6 @@ namespace CalamityMod.NPCs.Yharon
                     {
                         case 2: // Charge
                             {
-                                // Set damage
-                                NPC.damage = setDamage;
-
                                 Vector2 vector = NPC.SafeDirectionTo(targetData.Center, Vector2.UnitX * NPC.spriteDirection);
                                 NPC.spriteDirection = (vector.X > 0f) ? 1 : -1;
                                 NPC.rotation = vector.ToRotation();
@@ -2183,9 +2174,6 @@ namespace CalamityMod.NPCs.Yharon
 
                         case 7: // Fast charge
                             {
-                                // Set damage
-                                NPC.damage = setDamage;
-
                                 Vector2 vector = NPC.SafeDirectionTo(targetData.Center, Vector2.UnitX * NPC.spriteDirection);
                                 NPC.spriteDirection = (vector.X > 0f) ? 1 : -1;
                                 NPC.rotation = vector.ToRotation();
@@ -2808,10 +2796,10 @@ namespace CalamityMod.NPCs.Yharon
 
             if (tornadoPhase)
             {
-                if (NPC.ai[2] > 60)
+                if (NPC.ai[2] > 60f)
                 {
                     additionalAfterimageAmt = 6;
-                    additionalAfterimageOpacity = 1f - (float)Math.Cos((NPC.ai[2] - 60) / 30 * MathHelper.TwoPi);
+                    additionalAfterimageOpacity = 1f - (float)Math.Cos((NPC.ai[2] - 60f) / 30 * MathHelper.TwoPi);
                     additionalAfterimageOpacity /= 3f;
                     afterimageScale = 40f;
                 }
@@ -3256,7 +3244,7 @@ namespace CalamityMod.NPCs.Yharon
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int fieryDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
+                    int fieryDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                     Main.dust[fieryDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -3266,10 +3254,10 @@ namespace CalamityMod.NPCs.Yharon
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int fieryDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
+                    int fieryDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                     Main.dust[fieryDust2].noGravity = true;
                     Main.dust[fieryDust2].velocity *= 5f;
-                    fieryDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
+                    fieryDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                     Main.dust[fieryDust2].velocity *= 2f;
                 }
 

@@ -122,14 +122,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TeleportationPotion, 0f, 0f, 50, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TeleportationPotion, 0f, 0f, 50, default, 1.5f);
             }
             for (int j = 0; j < 20; j++)
             {
-                int galaxyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 0, default, 2.5f);
+                int galaxyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 0, default, 2.5f);
                 Main.dust[galaxyDust].noGravity = true;
                 Main.dust[galaxyDust].velocity *= 3f;
-                galaxyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 50, default, 1.5f);
+                galaxyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 50, default, 1.5f);
                 Main.dust[galaxyDust].velocity *= 2f;
                 Main.dust[galaxyDust].noGravity = true;
             }

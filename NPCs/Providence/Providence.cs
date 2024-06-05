@@ -366,7 +366,7 @@ namespace CalamityMod.NPCs.Providence
                     colorShiftTimer = 0;
                 }
             }
-            else if (!Main.dayTime || bossRush) //Normal Night time activity
+            else if ((!Main.dayTime && !Main.remixWorld) || bossRush) //Normal Night time activity
                 NPC.localAI[1] = (float)BossMode.Night;
             else
                 NPC.localAI[1] = (float)BossMode.Day;
@@ -1353,10 +1353,10 @@ namespace CalamityMod.NPCs.Providence
                     if (NPC.ai[3] % 60f == 0f && expertMode)
                     {
                         List<int> targets = new List<int>();
-                        for (int p = 0; p < Main.maxPlayers; p++)
+                        foreach (Player plr in Main.ActivePlayers)
                         {
-                            if (Main.player[p].active && !Main.player[p].dead)
-                                targets.Add(p);
+                            if (!plr.dead)
+                                targets.Add(plr.whoAmI);
 
                             if (targets.Count > 4)
                                 break;
@@ -1834,11 +1834,11 @@ namespace CalamityMod.NPCs.Providence
                 DespawnSpecificProjectiles();
 
                 int laserType = ModContent.ProjectileType<ProvidenceHolyRay>();
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active || Main.projectile[i].type != laserType)
+                    if (p.type != laserType)
                         continue;
-                    Main.projectile[i].Kill();
+                    p.Kill();
                 }
             }
 
@@ -2071,7 +2071,7 @@ namespace CalamityMod.NPCs.Providence
                 int[] weapons = new int[]
                 {
                     ModContent.ItemType<HolyCollider>(),
-                    ModContent.ItemType<SolarFlare>(),
+                    ModContent.ItemType<BurningRevelation>(),
                     ModContent.ItemType<TelluricGlare>(),
                     ModContent.ItemType<BlissfulBombardier>(),
                     ModContent.ItemType<PurgeGuzzler>(),
@@ -2525,7 +2525,6 @@ namespace CalamityMod.NPCs.Providence
             {
                 List<int> exceptionList = new List<int>()
                 {
-                    ModContent.ProjectileType<GoldenGunProj>(),
                     ModContent.ProjectileType<MiniGuardianDefense>(),
                     ModContent.ProjectileType<MiniGuardianAttack>(),
                     ModContent.ProjectileType<MiniGuardianRock>(),

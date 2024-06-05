@@ -43,7 +43,7 @@ namespace CalamityMod.World
             //clear literally everything in the area the biome will generate in
             for (int x = biomeStart; x <= biomeEdge; x++)
             {
-                for (int y = Main.maxTilesY - 200; y < Main.maxTilesY - 2; y++)
+                for (int y = Main.UnderworldLayer; y < Main.maxTilesY - 2; y++)
                 {
                     Tile tile = Main.tile[x, y];
                     tile.ClearEverything();
@@ -96,7 +96,7 @@ namespace CalamityMod.World
             //place ceiling of slag across the top of the biome
             for (int x = biomeStart; x <= biomeEdge; x++)
             {
-                for (int y = Main.maxTilesY - 200; y <= Main.maxTilesY - 192; y++)
+                for (int y = Main.UnderworldLayer; y <= Main.maxTilesY - 192; y++)
                 {
                     if (WorldGen.genRand.NextBool(25))
                     {
@@ -271,7 +271,7 @@ namespace CalamityMod.World
             //lava clean up again
             for (int x = biomeStart; x <= biomeEdge; x++)
             {
-                for (int y = Main.maxTilesY - 200; y <= Main.maxTilesY - 5; y++)
+                for (int y = Main.UnderworldLayer; y <= Main.maxTilesY - 5; y++)
                 {
                     Tile tile = Main.tile[x, y];
                     Tile tileAbove = Main.tile[x, y - 1];
@@ -317,7 +317,7 @@ namespace CalamityMod.World
             //spread grass on all scorched remains with no lava above them
             for (int x = biomeStart; x <= biomeEdge; x++)
             {
-                for (int y = Main.maxTilesY - 200; y <= Main.maxTilesY - 110; y++)
+                for (int y = Main.UnderworldLayer; y <= Main.maxTilesY - 110; y++)
                 {
                     Tile tile = Main.tile[x, y];
                     Tile tileUp = Main.tile[x, y - 1];
@@ -331,7 +331,7 @@ namespace CalamityMod.World
 
             for (int x = biomeStart; x <= biomeEdge; x++)
             {
-                for (int y = Main.maxTilesY - 200; y <= Main.maxTilesY - 5; y++)
+                for (int y = Main.UnderworldLayer; y <= Main.maxTilesY - 5; y++)
                 {
                     Tile tile = Main.tile[x, y];
                     Tile tileUp = Main.tile[x, y - 1];
@@ -364,7 +364,7 @@ namespace CalamityMod.World
 
             for (int x = biomeStart; x <= biomeEdge; x++)
             {
-                for (int y = Main.maxTilesY - 200; y <= Main.maxTilesY - 5; y++)
+                for (int y = Main.UnderworldLayer; y <= Main.maxTilesY - 5; y++)
                 {
                     Tile tile = Main.tile[x, y];
 

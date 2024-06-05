@@ -15,14 +15,14 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 58;
             Item.height = 22;
-            Item.damage = 65;
+            Item.damage = 70;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 60;
             Item.useAnimation = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item40;
             Item.autoReuse = true;

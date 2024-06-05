@@ -82,9 +82,8 @@ namespace CalamityMod.Projectiles.Melee
             }
             float projX = Projectile.Center.X;
             float projY = Projectile.Center.Y;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
                 {
                     float npcCenterX = npc.position.X + (float)(npc.width / 2);
@@ -173,7 +172,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 sizeModdingPos = new Vector2(0f, sizeModdingVector2.Y - sizeModdingVector.Y);
             sizeModdingPos.X = sizeModdingPos.Y * vectorMult;
             new Vector2(sizeModdingVector.X - sizeModdingPos.X / 2f, sizeModdingVector.Y);
-            Texture2D texture2D23 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D23 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle drawRectangle = texture2D23.Frame(1, 1, 0, 0);
             Vector2 smallRect = drawRectangle.Size() / 2f;
             float aiTrackMult = -0.06283186f * aiTracker;

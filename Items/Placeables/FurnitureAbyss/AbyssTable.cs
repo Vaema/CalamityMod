@@ -20,9 +20,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
             Item.consumable = true;
             Item.value = 0;
             Item.createTile = ModContent.TileType<Tiles.FurnitureAbyss.AbyssTable>();
-
-            // This is Ozz's item of choice for placing hostile Lab Turrets for testing. It should not do this normally.
-            // item.createTile = ModContent.TileType<Tiles.DraedonStructures.DraedonLabTurret>();
         }
 
         public override void AddRecipes()

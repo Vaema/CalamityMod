@@ -14,7 +14,6 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
 
-        private float Spin;
         private float opacity;
         private bool Big;
         private bool EmitsLight;

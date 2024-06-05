@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
                     dustloop += Main.rand.Next(1, 3);
                 for (int i = 0; i < dustloop; ++i)
                 {
-                    int dustType = (int)CalamityDusts.SulfurousSeaAcid;
+                    int dustType = (int)CalamityDusts.SulphurousSeaAcid;
                     float scale = Main.rand.NextFloat(0.5f, 1.5f);
                     float randX = Main.rand.NextFloat(-30f, 30f);
                     float randY = Main.rand.NextFloat(-30f, 30f);

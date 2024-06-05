@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 24;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Pink;
         }

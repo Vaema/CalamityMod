@@ -450,7 +450,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] += 1f;
-                    extraPhaseTime = (dayTimeEnrage ? (masterMode ? 27f : 36f) : (masterMode ? 54f : 72f)) + 30f * lessTimeSpentPerPhaseMultiplier;
+                    extraPhaseTime = (dayTimeEnrage ? (masterMode ? 30f : 36f) : (masterMode ? 60f : 72f)) + 30f * lessTimeSpentPerPhaseMultiplier;
                     if (npc.ai[1] >= 60f + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
@@ -610,7 +610,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     NPCAimedTarget targetData7 = npc.GetTargetData();
                     targetCenter = targetData7.Invalid ? npc.Center : targetData7.Center;
                     if (npc.Distance(targetCenter + everlastingRainbowDistance) > movementDistanceGateValue)
-                        npc.SimpleFlyMovement(npc.DirectionTo(targetCenter + everlastingRainbowDistance).SafeNormalize(Vector2.Zero) * velocity, acceleration);
+                        npc.SimpleFlyMovement(npc.DirectionTo(targetCenter + everlastingRainbowDistance).SafeNormalize(Vector2.Zero) * velocity * 0.5f, acceleration * 0.75f);
 
                     if (npc.ai[1] % 42f == 0f && npc.ai[1] < 42f)
                     {
@@ -651,7 +651,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (phase3)
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), everlastingRainbowSpawn + spinningpoint.RotatedBy(-MathHelper.PiOver2) * 30f, spinningpoint * (masterMode ? 6f : 5f) * initialVelocity, projectileType2, projectileDamage2, 0f, Main.myPlayer, npc.target, projRotationMultiplier);
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), everlastingRainbowSpawn + spinningpoint.RotatedBy(-MathHelper.PiOver2) * 30f, spinningpoint * (masterMode ? 3f : 2f) * initialVelocity, projectileType2, projectileDamage2, 0f, Main.myPlayer, npc.target, projRotationMultiplier);
                                 }
                             }
 
@@ -866,8 +866,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float chargeGateValue = 40f;
                     float playChargeSoundTime = 20f;
                     float chargeDuration = phase3 ? 40f : 50f;
-                    float slowDownTime = 30f;
-                    float totalPhaseTime = chargeGateValue + chargeDuration + slowDownTime;
+                    float totalPhaseTime = chargeGateValue + chargeDuration;
                     float chargeStartDistance = phase3 ? 1000f : 800f;
                     float chargeVelocity = phase3 ? 100f : 70f;
                     float chargeAcceleration = phase3 ? 0.1f : 0.07f;
@@ -949,7 +948,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] += 1f;
-                    extraPhaseTime = (dayTimeEnrage ? 24f : 48f) * lessTimeSpentPerPhaseMultiplier;
+                    extraPhaseTime = (dayTimeEnrage ? 60f : 120f) * (lessTimeSpentPerPhaseMultiplier < 1 ? lessTimeSpentPerPhaseMultiplier * 1.5f : lessTimeSpentPerPhaseMultiplier);
+                    if (npc.ai[1] >= totalPhaseTime && npc.ai[1] <= totalPhaseTime + 10f)
+                    {
+                        Vector2 center = npc.GetTargetData().Center;
+                        center += new Vector2(0f, -200f);
+                        if (npc.Distance(center) > 200f)
+                            center -= npc.DirectionTo(center) * 100f;
+
+                        Vector2 targetDirection = center - npc.Center;
+                        float lerpValue = Utils.GetLerpValue(100f, 600f, targetDirection.Length());
+                        float targetDistance = targetDirection.Length();
+
+                        float maxVelocity = death ? 24f : 21f;
+                        if (targetDistance > maxVelocity)
+                            targetDistance = maxVelocity;
+
+                        npc.velocity = Vector2.Lerp(targetDirection.SafeNormalize(Vector2.Zero) * targetDistance, targetDirection / 6f, lerpValue);
+                        npc.netUpdate = true;
+                    }
                     if (npc.ai[1] >= totalPhaseTime + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
@@ -1128,7 +1145,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
                         int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
 
-                        Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((masterMode ? 12f : 6f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
+                        Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((masterMode ? 6f : 4f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, streakHomeTime);
@@ -1163,7 +1180,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.ai[1] += 1f;
                     extraPhaseTime = (dayTimeEnrage ? 36f : 72f) + 30f * lessTimeSpentPerPhaseMultiplier;
-                    if (npc.ai[1] >= (masterMode ? 90f : 120f) + extraPhaseTime)
+                    if (npc.ai[1] >= (masterMode ? 105f : 120f) + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
                         npc.ai[1] = 0f;

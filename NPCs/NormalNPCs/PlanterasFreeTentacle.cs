@@ -72,7 +72,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.TargetClosest();
 
             // Emit light
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.2f, 0.4f, 0.1f);
+            Lighting.AddLight(NPC.Center, 0.2f, 0.4f, 0.1f);
 
             // Spore dust
             if (Main.rand.NextBool(10))
@@ -101,9 +101,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             // Velocity and acceleration
-            Vector2 idealVelocity = new Vector2(death ? 12f : 9f, death ? 5f : 3.5f);
-            float accelerationX = death ? 0.2f : 0.15f;
-            float accelerationY = death ? 0.15f : 0.12f;
+            Vector2 idealVelocity = new Vector2(death ? 8f : 6f, death ? 6f : 4.5f);
+            float accelerationX = death ? 0.16f : 0.12f;
+            float accelerationY = death ? 0.12f : 0.09f;
 
             if (Main.getGoodWorld)
             {
@@ -171,24 +171,21 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (var n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < 40f * NPC.scale)
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 40f * NPC.scale)
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X -= pushVelocity;
-                            else
-                                NPC.velocity.X += pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X -= pushVelocity;
+                        else
+                            NPC.velocity.X += pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y -= pushVelocity;
-                            else
-                                NPC.velocity.Y += pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y -= pushVelocity;
+                        else
+                            NPC.velocity.Y += pushVelocity;
                     }
                 }
             }
@@ -207,6 +204,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 

@@ -61,6 +61,16 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.npc[CalamityGlobalNPC.holyBoss].active)
                     Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
             }
+            else if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
+            }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
@@ -135,7 +145,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D drawTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             bool aimedSpear = Projectile.ai[0] > 0f;
 
             int red = 255;

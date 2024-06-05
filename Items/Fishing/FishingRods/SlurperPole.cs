@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +12,6 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public override void SetStaticDefaults()
         {
             ItemID.Sets.CanFishInLava[Item.type] = true;
-
         }
 
         public override void SetDefaults()
@@ -25,8 +25,14 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 25;
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<SlurperBobber>();
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(45f, -43f);
+            lineColor = new Color(227, 79, 79, 100);
         }
     }
 }

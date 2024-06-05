@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int j = 0; j <= 10; j++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
             }
         }
 

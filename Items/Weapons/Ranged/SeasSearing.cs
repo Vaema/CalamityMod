@@ -10,7 +10,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class SeasSearing : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static int BaseDamage = 40;
 
         public override void SetStaticDefaults()
         {
@@ -22,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 88;
             Item.height = 44;
-            Item.damage = BaseDamage;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 10;
@@ -36,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<SeasSearingBubble>();
             Item.shootSpeed = 13f;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
 

@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Ammo
             Item.consumable = true;
             Item.knockBack = 1.5f;
             Item.value = Item.sellPrice(copper: 12);
-            Item.rare = ItemRarityID.LightRed;
+            Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<CinderArrowProj>();
             Item.shootSpeed = 13f;
             Item.ammo = AmmoID.Arrow;

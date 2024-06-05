@@ -119,6 +119,16 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsSakuraFeather, ModContent.ItemType<CocosFeather>());
+
+            // Fabsol dev item
+            // Name specific: "Fabsol" or "Cirrus"
+            static bool getsCrystalHeartVodka(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName is "Fabsol" or "Cirrus";
+            }
+
+            itemLoot.AddIf(getsCrystalHeartVodka, ModContent.ItemType<CrystalHeartVodka>());
         }
     }
 }

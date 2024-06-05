@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-            int ichorDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 100, default, 0.5f);
+            int ichorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 100, default, 0.5f);
             Main.dust[ichorDust].noGravity = true;
             Main.dust[ichorDust].velocity *= 0f;
 

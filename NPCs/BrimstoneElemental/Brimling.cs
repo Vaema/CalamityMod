@@ -158,7 +158,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     float projectileVelocity = 5f;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
                     int damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocity * 3f);
                 }
             }
             else
@@ -195,24 +195,21 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
             // Push away from other Brimlings
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < 40f * NPC.scale)
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 40f * NPC.scale)
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X -= pushVelocity;
-                            else
-                                NPC.velocity.X += pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X -= pushVelocity;
+                        else
+                            NPC.velocity.X += pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y -= pushVelocity;
-                            else
-                                NPC.velocity.Y += pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y -= pushVelocity;
+                        else
+                            NPC.velocity.Y += pushVelocity;
                     }
                 }
             }
@@ -235,7 +232,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 NPC.ai[2] = 0f;
                 NPC.ai[3] = 0f;
 
-                SoundEngine.PlaySound(SoundID.Item8, NPC.Center);
+                SoundEngine.PlaySound(BrimstoneElemental.TeleportSound, NPC.Center);
 
                 for (int j = 0; j < 20; j++)
                 {
@@ -254,6 +251,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 float projectileVelocity = 5f;
                 int type = ModContent.ProjectileType<BrimstoneHellfireball>();
                 int damage = NPC.GetProjectileDamage(type);
+                SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, NPC.Center);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.X, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.Y);
             }
 

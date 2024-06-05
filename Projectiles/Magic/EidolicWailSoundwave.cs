@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.width = 36;
                 Projectile.height = 36;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

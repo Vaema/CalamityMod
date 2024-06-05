@@ -25,8 +25,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<EntropicFlechetteSmall>();
             Item.shootSpeed = 12f;
         }

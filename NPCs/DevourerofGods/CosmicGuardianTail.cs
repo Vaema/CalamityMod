@@ -90,15 +90,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.realLife = (int)NPC.ai[2];
 
             // Check if other segments are still alive, if not, die
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<CosmicGuardianHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<CosmicGuardianHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -116,7 +108,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             NPC.Opacity = Main.npc[(int)NPC.ai[2]].Opacity;
 
-            Vector2 segmentPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+            Vector2 segmentPosition = NPC.Center;
             float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2);
             float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2);
             targetX = (int)(targetX / 16f) * 16;
@@ -130,7 +122,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 try
                 {
-                    segmentPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                    segmentPosition = NPC.Center;
                     targetX = Main.npc[(int)NPC.ai[1]].position.X + (Main.npc[(int)NPC.ai[1]].width / 2) - segmentPosition.X;
                     targetY = Main.npc[(int)NPC.ai[1]].position.Y + (Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
                 }
@@ -212,7 +204,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int cosmiliteDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int cosmiliteDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -222,10 +214,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[cosmiliteDust2].noGravity = true;
                     Main.dust[cosmiliteDust2].velocity *= 5f;
-                    cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust2].velocity *= 2f;
                 }
             }

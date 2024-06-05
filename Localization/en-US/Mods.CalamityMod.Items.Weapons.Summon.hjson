@@ -73,11 +73,6 @@ BlackHawkRemote: {
 		'''
 }
 
-BloodClotStaff: {
-	DisplayName: Blood Clot Staff
-	Tooltip: Summons a blood clot to fight for you
-}
-
 BorealisBomber: {
 	DisplayName: Borealis Bomber
 	Tooltip:
@@ -186,7 +181,6 @@ CosmicImmaterializer: {
 		Summons a cosmic energy spiral to fight for you
 		The orb will fire swarms of homing energy bolts when enemies are detected by it
 		Requires 10 minion slots to use and there can only be one energy spiral
-		Without a summoner armor set bonus this minion will deal less damage
 		'''
 }
 
@@ -795,7 +789,7 @@ WulfrumController: {
 		Summons a wulfrum droid to fight for you
 		Hold right click while holding the remote to switch all of your drones into supercharge mode
 		Supercharged droids will stop attacking and focus wulfrum energy onto you
-		The beam provides extra regeneration and defense
+		Supercharged droids provide +0.5 HP/s life regen and 3 defense per droid
 		Can also be used to heal other players by keeping your mouse cursor close enough to them
 		'''
 }
@@ -828,5 +822,15 @@ HarvestStaff: {
 		Pumpkins will hop out when approached by nearby creatures or players
 		Once out, they will aggressively tackle enemies, exploding on hit
 		'No thoughts behind those eyes'
+		'''
+}
+
+LiliesOfFinality: {
+	DisplayName: Lilies of Finality
+	Tooltip:
+		'''
+		Requires 2 minion slots to use
+		Can only be summoned once
+		'Wake up'
 		'''
 }

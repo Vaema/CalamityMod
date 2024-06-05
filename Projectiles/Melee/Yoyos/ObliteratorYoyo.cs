@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
-            Projectile.MaxUpdates = 8;
+            Projectile.MaxUpdates = UpdatesPerFrame;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6 * UpdatesPerFrame;
         }
@@ -95,19 +95,15 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             {
                 List<int> targets = new List<int>();
                 float laserRange = 300f;
-                for (int i = 0; i < Main.npc.Length; ++i)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    ref NPC n = ref Main.npc[i];
-                    if (n is null || !n.active)
-                        continue;
-
                     if (n.CanBeChasedBy(Projectile, false) && (n.Center - Projectile.Center).Length() <= laserRange && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                     {
-                        targets.Add(i);
+                        targets.Add(n.whoAmI);
                         // Bosses are added 5 times instead of 1 so that they are preferentially but not exclusively targeted.
                         if (n.boss)
                             for (int j = 0; j < 4; ++j)
-                                targets.Add(i);
+                                targets.Add(n.whoAmI);
                     }
                 }
                 if (targets.Count == 0)

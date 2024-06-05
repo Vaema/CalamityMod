@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             for (float i = -5; i <= 0; i++)
             {
                 if (Main.rand.NextFloat(1f) < 0.4f)

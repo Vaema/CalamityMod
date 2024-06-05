@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    int plagued = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 0.75f);
+                    int plagued = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 0.75f);
                     Main.dust[plagued].noGravity = true;
                     Main.dust[plagued].velocity *= 0f;
                 }

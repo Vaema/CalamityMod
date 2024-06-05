@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.height = 50;
             Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 32;
-            Item.rare = ItemRarityID.Cyan;
+            Item.rare = ItemRarityID.Red;
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = CommonCalamitySounds.LaserCannonSound;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.shoot = ModContent.ProjectileType<MagnusBeam>();
             Item.shootSpeed = 12f;
         }

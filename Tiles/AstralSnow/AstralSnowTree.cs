@@ -117,7 +117,7 @@ namespace CalamityMod.Tiles.AstralSnow
             else if (Main.rand.NextBool(15))
             {
                 createLeaves = true;
-                int type = ModContent.ItemType<Stardust>();
+                int type = ModContent.ItemType<StarblightSoot>();
                 if (!Main.dayTime && Main.rand.NextBool())
                     type = ItemID.FallenStar;
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, type, randAmt);

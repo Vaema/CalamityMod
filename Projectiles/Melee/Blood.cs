@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int blood = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1f);
+                    int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1f);
                     Main.dust[blood].noGravity = true;
                     Main.dust[blood].velocity *= 0f;
                 }
@@ -44,6 +44,9 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             int heal = (int)Math.Round(hit.Damage * 0.075);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 

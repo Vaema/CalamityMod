@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.active = false;
                     for (int j = 0; j < 8; j++)
                     {
-                        int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
+                        int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
                         Main.dust[dusty].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -77,10 +77,10 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     for (int k = 0; k < 16; k++)
                     {
-                        int dusty2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 3f);
+                        int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 3f);
                         Main.dust[dusty2].noGravity = true;
                         Main.dust[dusty2].velocity *= 5f;
-                        dusty2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
+                        dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
                         Main.dust[dusty2].velocity *= 2f;
                     }
                 }
@@ -90,30 +90,30 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float projX = Projectile.Center.X;
                 float projY = Projectile.Center.Y;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                    if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
                     {
-                        float npcCenterX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                        float npcCenterY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                        float npcCenterX = n.position.X + (float)(n.width / 2);
+                        float npcCenterY = n.position.Y + (float)(n.height / 2);
                         float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
                         if (targetDist < 600f)
                         {
-                            if (Main.npc[i].position.X < projX)
+                            if (n.position.X < projX)
                             {
-                                Main.npc[i].velocity.X += 0.25f;
+                                n.velocity.X += 0.25f;
                             }
                             else
                             {
-                                Main.npc[i].velocity.X -= 0.25f;
+                                n.velocity.X -= 0.25f;
                             }
-                            if (Main.npc[i].position.Y < projY)
+                            if (n.position.Y < projY)
                             {
-                                Main.npc[i].velocity.Y += 0.25f;
+                                n.velocity.Y += 0.25f;
                             }
                             else
                             {
-                                Main.npc[i].velocity.Y -= 0.25f;
+                                n.velocity.Y -= 0.25f;
                             }
                         }
                     }

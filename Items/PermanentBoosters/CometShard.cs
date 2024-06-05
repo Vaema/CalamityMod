@@ -71,7 +71,7 @@ namespace CalamityMod.Items.PermanentBoosters
             CreateRecipe().
                 AddIngredient(ItemID.MeteoriteBar, 10).
                 AddIngredient(ItemID.FallenStar, 10).
-                AddIngredient<Stardust>(50).
+                AddIngredient<StarblightSoot>(50).
                 AddTile(TileID.Anvils).
                 Register();
         }

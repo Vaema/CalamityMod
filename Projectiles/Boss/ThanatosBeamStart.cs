@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
         public override float Lifetime => 180;
         public override Color LaserOverlayColor => new(250, 250, 250, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 

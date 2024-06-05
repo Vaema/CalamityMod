@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                     Main.dust[dust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
             {
                 Projectile.tileCollide = false;
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
             for (int i = 0; i < 10; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -107,10 +107,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int i = 0; i < 20; i++)
             {
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 3f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 3f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 5f;
-                dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
+                dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[dusty].velocity *= 2f;
             }
         }

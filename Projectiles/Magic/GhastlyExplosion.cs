@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Magic
             int dustType = (int)Projectile.ai[0];
             for (int i = 0; i < 3; i = inc + 1)
             {
-                int ghostlyRed = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, dustType, default, 1.2f);
+                int ghostlyRed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, dustType, default, 1.2f);
                 Main.dust[ghostlyRed].position = (Main.dust[ghostlyRed].position + Projectile.Center) / 2f;
                 Main.dust[ghostlyRed].noGravity = true;
                 Dust dust = Main.dust[ghostlyRed];
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 2; j = inc + 1)
             {
-                int ghostlyRed = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, dustType, default, 0.4f);
+                int ghostlyRed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, dustType, default, 0.4f);
                 if (j == 0)
                 {
                     Main.dust[ghostlyRed].position = (Main.dust[ghostlyRed].position + Projectile.Center * 5f) / 6f;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
             int inc;
             for (int i = 0; i < 20; i = inc + 1)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 0.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 0.5f);
                 Dust dust;
                 Main.dust[killDust].scale = 1.2f + (float)Main.rand.Next(-10, 11) * 0.01f;
                 Main.dust[killDust].noGravity = true;

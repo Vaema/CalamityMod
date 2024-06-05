@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(226, 205, 101), Language.GetText("MapObject.Pot"));
 
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
             HitSound = SoundID.Shatter;
         }
 

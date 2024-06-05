@@ -139,10 +139,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     // so it looks like the minion deflected his own projectile.
                     if (HasShot)
                     {
-                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        foreach (Projectile proj in Main.ActiveProjectiles)
                         {
-                            Projectile proj = Main.projectile[i];
-                            if (proj is not null && proj.active && proj.type == ModContent.ProjectileType<SnakeEyesProjectile>() && proj.owner == Owner.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().MinionID == Projectile.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().HasRedirected)
+                            if (proj.type == ModContent.ProjectileType<SnakeEyesProjectile>() && proj.owner == Owner.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().MinionID == Projectile.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().HasRedirected)
                             {
                                 Projectile.Center = proj.Center;
                                 SwitchAIState(AIState.Redirecting);
@@ -241,7 +240,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

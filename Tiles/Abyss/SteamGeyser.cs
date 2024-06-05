@@ -22,7 +22,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(103, 65, 64), CalamityUtils.GetText($"{LocalizationCategory}.SteamGeyser.MapEntry"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             base.SetStaticDefaults();
         }

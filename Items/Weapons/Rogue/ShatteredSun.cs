@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<ShatteredSunKnife>();
             Item.shootSpeed = 25f;

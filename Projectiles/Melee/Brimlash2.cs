@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft < 90)
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 600f, 12f, 15f);
 
-            int redderDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.LifeDrain, 0f, 0f, 100, default, 1f);
+            int redderDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.LifeDrain, 0f, 0f, 100, default, 1f);
             Main.dust[redderDust].noGravity = true;
             Main.dust[redderDust].velocity *= 0.5f;
             Main.dust[redderDust].velocity += Projectile.velocity * 0.1f;

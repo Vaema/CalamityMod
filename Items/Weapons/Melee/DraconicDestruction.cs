@@ -16,11 +16,11 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 90;
             Item.height = 90;
-            Item.damage = 250;
+            Item.damage = 200;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 24;
+            Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 24;
+            Item.useTime = 34;
             Item.useTurn = true;
             Item.knockBack = 7.25f;
             Item.UseSound = SoundID.Item1;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<DracoBeam>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

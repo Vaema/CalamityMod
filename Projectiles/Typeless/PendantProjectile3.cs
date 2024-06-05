@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.rotation += Projectile.velocity.X * 1.25f;
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 0.6f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.5f;
                 Main.dust[dust].velocity += Projectile.velocity * 0.1f;

@@ -106,10 +106,10 @@ namespace CalamityMod.Projectiles.Boss
                         spawnDust.noGravity = true;
                         spawnDust.scale = Main.rand.NextFloat(1.7f, 2.8f) - Projectile.scale * 1.5f;
                     }
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         Vector2 sparkVel = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.1f);
-                        GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center + sparkVel * 2 * (Projectile.scale * 5), sparkVel, false, 120, Main.rand.NextFloat(1.55f, 2.75f) - Projectile.scale * 1.5f, Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
+                        GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center + sparkVel * 2 * (Projectile.scale * 5), sparkVel, false, 60, Main.rand.NextFloat(1.55f, 2.75f) - Projectile.scale * 1.5f, Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
                         GeneralParticleHandler.SpawnParticle(orb);
                     }
                 }
@@ -196,14 +196,14 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 3f * Projectile.Opacity, 0f, 0f);
 
-            float inertia = (revenge ? 4.5f : 5f) + speedAdd;
-            float speed = (revenge ? 1.5f : 1.35f) + (speedAdd * 0.25f);
+            float inertia = (revenge ? 5f : 5.5f) + speedAdd;
+            float speed = (revenge ? 2.9f : 2.2f) + (speedAdd * 0.25f);
             float minDist = 160f;
 
-            if (NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()))
+            if (NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()) || NPC.AnyNPCs(ModContent.NPCType<BrimstoneHeart>()))
             {
                 inertia *= 1.5f;
-                speed *= 0.5f;
+                speed *= 0.8f;
             }
 
             int target = (int)Projectile.ai[0];
@@ -293,6 +293,20 @@ namespace CalamityMod.Projectiles.Boss
 
             player.statLife -= healthToDrain;
 
+            // Play a sound and visual to make the fact youre taking damage more obvious
+            if (time % 6 == 0)
+            {
+                SoundStyle burn = new("CalamityMod/Sounds/Item/WeldingBurn");
+                SoundEngine.PlaySound(burn with { Volume = 0.25f, Pitch = 0.4f }, player.Center);
+            }
+            GlowOrbParticle orb = new GlowOrbParticle(player.Center, new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.1f), false, 60, Main.rand.NextFloat(1.55f, 3.75f), Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
+            GeneralParticleHandler.SpawnParticle(orb);
+            if (Main.rand.NextBool())
+            {
+                GlowOrbParticle orb2 = new GlowOrbParticle(player.Center, new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.1f), false, 60, Main.rand.NextFloat(1.55f, 3.75f), Color.Black, false, true, false);
+                GeneralParticleHandler.SpawnParticle(orb2);
+            }
+
             // Drain Adrenaline extremely rapidly. 4% of current Adrenaline is lost per frame.
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.AdrenalineEnabled)
@@ -351,7 +365,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             lightColor.R = (byte)(255 * Projectile.Opacity);
             Main.spriteBatch.End();
             Effect shieldEffect = Filters.Scene["CalamityMod:HellBall"].GetShader().Shader;

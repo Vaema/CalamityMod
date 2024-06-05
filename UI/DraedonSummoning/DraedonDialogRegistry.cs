@@ -52,21 +52,21 @@ namespace CalamityMod.UI.DraedonSummoning
             Origins,
             Crusade,
             Goals,
-            MiracleMatter,
 
             ExoMechs,
             Exotech,
+            MiracleMatter,
             Forge,
+            Yharim,
+            Aerie,
+            Calamitas,
+            Dog,
+            Distortion,
+
             Mechs,
             Plague,
-
-            Calamitas,
-            Yharim,
-            Dog,
-            Sulphur,
-            Distortion,
             Astral,
-            Aerie
+            Sulphur
         };
 
         internal static DraedonDialogEntry CreateFromKey(string key, Func<bool> condition = null) =>

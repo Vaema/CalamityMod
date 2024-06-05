@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int venusDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 2.5f);
+                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 2.5f);
                 Dust dust = Main.dust[venusDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

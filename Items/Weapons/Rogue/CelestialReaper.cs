@@ -9,23 +9,22 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CelestialReaper : RogueWeapon
     {
-        public const int BaseDamage = 140;
 
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 76;
-            Item.damage = BaseDamage;
+            Item.damage = 140;
             Item.useAnimation = 31;
             Item.useTime = 31;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
-            Item.rare = ItemRarityID.Red;
+            Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.shoot = ModContent.ProjectileType<CelestialReaperProjectile>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;

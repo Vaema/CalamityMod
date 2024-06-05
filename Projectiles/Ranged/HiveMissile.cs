@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 1)
-                Projectile.damage = (int)(Projectile.damage * 0.8f);
+                Projectile.damage = (int)(Projectile.damage * 0.6f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
@@ -160,7 +160,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int k = 0; k < (isClusterRocket ? 3f : 2f); k++)
                 {
-                    int BEES = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(4, 10).RotatedByRandom(4) * Main.rand.NextFloat(0.2f, 0.8f), ModContent.ProjectileType<BasicPlagueBee>(), (int)(Projectile.damage * (isClusterRocket ? 0.2f : 0.4f)), 0f, Projectile.owner, 0f, 0f, isClusterRocket ? 2f : 1f);
+                    int BEES = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(4, 10).RotatedByRandom(4) * Main.rand.NextFloat(0.2f, 0.8f), ModContent.ProjectileType<BasicPlagueBee>(), (int)(Projectile.damage * (isClusterRocket ? 0.2f : 0.3f)), 0f, Projectile.owner, 0f, 0f, isClusterRocket ? 2f : 1f);
                     if (BEES.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[BEES].penetrate = 1;

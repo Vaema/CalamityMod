@@ -14,6 +14,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<FleshyGeode>();
         }
 
         public override void SetDefaults()

@@ -36,14 +36,15 @@ namespace CalamityMod.Projectiles.Boss
         {
             if (Projectile.velocity.Length() < MaxVelocity)
             {
-                Projectile.velocity *= 1.05f;
+                Projectile.velocity *= 1.045f;
                 if (Projectile.velocity.Length() > MaxVelocity)
                 {
                     Projectile.velocity.Normalize();
                     Projectile.velocity *= MaxVelocity;
                 }
             }
-            else
+            
+            if (Projectile.timeLeft < TimeLeft - 30)
                 Projectile.tileCollide = true;
 
             int dustType = DustID.Venom;
@@ -56,6 +57,8 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 90);
+
+        public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
         {

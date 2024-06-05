@@ -51,6 +51,9 @@ namespace CalamityMod.NPCs.StormWeaver
         private const float BoltAngleSpread = 280;
         private bool tail = false;
 
+        public static readonly SoundStyle ArmorShedSound = new("CalamityMod/Sounds/Custom/WeaverArmorShed");
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/WeaverDeath");
+
         // Lightning flash variables
         public float lightning = 0f;
         private float lightningDecay = 1f;
@@ -98,7 +101,7 @@ namespace CalamityMod.NPCs.StormWeaver
             global.unbreakableDR = true;
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit4;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.DeathSound = DeathSound;
 
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
@@ -202,7 +205,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (Main.netMode != NetmodeID.Server)
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWArmorHead1").Type, NPC.scale);
 
-                    SoundEngine.PlaySound(SoundID.NPCDeath14, NPC.Center);
+                    SoundEngine.PlaySound(ArmorShedSound, NPC.Center);
 
                     CalamityGlobalNPC global = NPC.Calamity();
                     NPC.defense = 20;
@@ -210,7 +213,6 @@ namespace CalamityMod.NPCs.StormWeaver
                     global.unbreakableDR = false;
                     NPC.chaseable = true;
                     NPC.HitSound = SoundID.NPCHit13;
-                    NPC.DeathSound = SoundID.NPCDeath13;
                     NPC.frame = new Rectangle(0, 0, 62, 86);
                 }
             }
@@ -230,7 +232,7 @@ namespace CalamityMod.NPCs.StormWeaver
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int redDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.TheDestroyer, 0f, 0f, 100, default, 2f);
+                    int redDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TheDestroyer, 0f, 0f, 100, default, 2f);
                     Main.dust[redDust].noGravity = true;
                     Main.dust[redDust].noLight = true;
                 }
@@ -298,13 +300,13 @@ namespace CalamityMod.NPCs.StormWeaver
 
                 if ((double)NPC.position.Y < Main.topWorld + 16f)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[j].active && (Main.npc[j].type == ModContent.NPCType<StormWeaverBody>()
-                            || Main.npc[j].type == ModContent.NPCType<StormWeaverHead>()
-                            || Main.npc[j].type == ModContent.NPCType<StormWeaverTail>()))
+                        if ((n.type == ModContent.NPCType<StormWeaverBody>()
+                            || n.type == ModContent.NPCType<StormWeaverHead>()
+                            || n.type == ModContent.NPCType<StormWeaverTail>()))
                         {
-                            Main.npc[j].active = false;
+                            n.active = false;
                         }
                     }
                 }
@@ -312,13 +314,13 @@ namespace CalamityMod.NPCs.StormWeaver
 
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 10000f && NPC.life > 0)
             {
-                for (int j = 0; j < Main.maxNPCs; j++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[j].type == ModContent.NPCType<StormWeaverBody>()
-                       || Main.npc[j].type == ModContent.NPCType<StormWeaverHead>()
-                       || Main.npc[j].type == ModContent.NPCType<StormWeaverTail>())
+                    if (n.type == ModContent.NPCType<StormWeaverBody>()
+                       || n.type == ModContent.NPCType<StormWeaverHead>()
+                       || n.type == ModContent.NPCType<StormWeaverTail>())
                     {
-                        Main.npc[j].active = false;
+                        n.active = false;
                     }
                 }
             }
@@ -913,7 +915,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
                 for (int i = 0; i < 20; i++)
                 {
-                    int cosmiliteDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int cosmiliteDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -924,10 +926,10 @@ namespace CalamityMod.NPCs.StormWeaver
 
                 for (int j = 0; j < 40; j++)
                 {
-                    int cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[cosmiliteDust2].noGravity = true;
                     Main.dust[cosmiliteDust2].velocity *= 5f;
-                    cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust2].velocity *= 2f;
                 }
             }

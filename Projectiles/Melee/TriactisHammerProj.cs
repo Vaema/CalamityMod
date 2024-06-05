@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 40; i++)
             {
-                int triactisDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
+                int triactisDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
                 Main.dust[triactisDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -121,10 +121,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int j = 0; j < 70; j++)
             {
-                int triactisDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 3f);
+                int triactisDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 3f);
                 Main.dust[triactisDust2].noGravity = true;
                 Main.dust[triactisDust2].velocity *= 5f;
-                triactisDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
+                triactisDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
                 Main.dust[triactisDust2].velocity *= 2f;
             }
         }
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 40; i++)
             {
-                int triactisDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
+                int triactisDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
                 Main.dust[triactisDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -146,10 +146,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int j = 0; j < 70; j++)
             {
-                int triactisDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 3f);
+                int triactisDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 3f);
                 Main.dust[triactisDust2].noGravity = true;
                 Main.dust[triactisDust2].velocity *= 5f;
-                triactisDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
+                triactisDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 89 : 229, 0f, 0f, 100, default, 2f);
                 Main.dust[triactisDust2].velocity *= 2f;
             }
         }

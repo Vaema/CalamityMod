@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
             greenDust.fadeIn = 0.5f;
             greenDust.noGravity = true;
 
-            int moreGreen = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 1f);
+            int moreGreen = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 1f);
             Main.dust[moreGreen].velocity *= 0.5f;
             Main.dust[moreGreen].scale *= 1.3f;
             Main.dust[moreGreen].fadeIn = 1f;
@@ -69,14 +69,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
             }
             for (int j = 0; j < 16; j++)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 2.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 2.5f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].velocity *= 3f;
-                killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 1.5f);
+                killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 1.5f);
                 Main.dust[killDust].velocity *= 2f;
                 Main.dust[killDust].noGravity = true;
             }

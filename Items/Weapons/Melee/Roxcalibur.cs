@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Roxcalibur : ModItem, ILocalizedModType
     {
 
-        public string LocalizationCategory => "Items.Weapons.Melee";
+        public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public static int BaseUseTime = 40;
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.reuseDelay = 10;
             Item.shoot = ModContent.ProjectileType<RoxcaliburProj>();
             Item.shootSpeed = 4f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
 

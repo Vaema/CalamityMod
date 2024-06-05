@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = Flare.FlareSound;
             Item.useAnimation = Item.useTime = 25;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 

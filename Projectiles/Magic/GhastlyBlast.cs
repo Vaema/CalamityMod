@@ -206,7 +206,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     float HomingVelocity = 24f;
                     int HomingN = 8;
-                    Vector2 projDistance = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 projDistance = Projectile.Center;
                     float dx = projCenter.X - projDistance.X;
                     float dy = projCenter.Y - projDistance.Y;
                     float dist = (float)Math.Sqrt((double)(dx * dx + dy * dy));
@@ -253,17 +253,17 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 4; i++)
             {
-                int killRed = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
+                int killRed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
                 Main.dust[killRed].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
             }
             for (int j = 0; j < 30; j++)
             {
-                int killRed2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 200, default, 3.7f);
+                int killRed2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 200, default, 3.7f);
                 Dust dust = Main.dust[killRed2];
                 dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 dust.noGravity = true;
                 dust.velocity *= 3f;
-                killRed2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
+                killRed2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
                 dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 dust.velocity *= 2f;
                 dust.noGravity = true;
@@ -272,7 +272,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int k = 0; k < 10; k++)
             {
-                int killRed3 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 2.7f);
+                int killRed3 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 2.7f);
                 Dust dust = Main.dust[killRed3];
                 dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 2f;
                 dust.noGravity = true;
@@ -280,7 +280,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int l = 0; l < 10; l++)
             {
-                int killRed4 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 1.5f);
+                int killRed4 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 1.5f);
                 Dust dust = Main.dust[killRed4];
                 dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 2f;
                 dust.noGravity = true;

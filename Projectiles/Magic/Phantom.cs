@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 2; i++)
             {
-                int spectre = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
+                int spectre = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[spectre].noGravity = true;
             }
 

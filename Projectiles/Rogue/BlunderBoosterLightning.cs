@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame = 0;
             }
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             if (Projectile.timeLeft < 55 && Projectile.ai[1] != 1f)
             {
@@ -57,16 +58,15 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float minDist = 999f;
                 int index = -1;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }
@@ -89,12 +89,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
         }
 
         public override bool PreDraw(ref Color lightColor)

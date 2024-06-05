@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -37,52 +38,62 @@ namespace CalamityMod.CalPlayer.DrawLayers
             // This is ugly and I don't give a fuck.
             // If you want it to look better, do it yourself.
             Texture2D glowMask = default;
-            if (itemType == ModContent.ItemType<IridescentExcalibur>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/IridescentExcaliburGlow").Value;
-            else if (itemType == ModContent.ItemType<AbyssShocker>())
+            if (itemType == ModContent.ItemType<AbyssShocker>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/AbyssShocker_mask").Value;
             else if (itemType == ModContent.ItemType<Apotheosis>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/ApotheosisGlow").Value;
-            else if (itemType == ModContent.ItemType<DeathhailStaff>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/DeathhailStaffGlow").Value;
-            else if (itemType == ModContent.ItemType<FatesReveal>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/FatesRevealGlow").Value;
-            else if (itemType == ModContent.ItemType<SoulPiercer>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SoulPiercerGlow").Value;
-            else if (itemType == ModContent.ItemType<SubsumingVortex>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortexGlow").Value;
-            else if (itemType == ModContent.ItemType<EssenceFlayer>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/EssenceFlayerGlow").Value;
-            else if (itemType == ModContent.ItemType<Excelsus>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExcelsusGlow").Value;
-            else if (itemType == ModContent.ItemType<PrismaticBreaker>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/PrismaticBreakerGlow").Value;
-            else if (itemType == ModContent.ItemType<TerrorBlade>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TerrorBladeGlow").Value;
-            else if (itemType == ModContent.ItemType<TheEnforcer>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TheEnforcerGlow").Value;
             else if (itemType == ModContent.ItemType<Auralis>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/AuralisGlow").Value;
             else if (itemType == ModContent.ItemType<AuroraBlazer>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/AuroraBlazerGlow").Value;
             else if (itemType == ModContent.ItemType<CleansingBlaze>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/CleansingBlazeGlow").Value;
-            else if (itemType == ModContent.ItemType<CosmicBolter>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/CosmicBolterGlow").Value;
+            else if (itemType == ModContent.ItemType<CosmicImmaterializer>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/CosmicImmaterializerGlow").Value;
+            else if (itemType == ModContent.ItemType<DeathhailStaff>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/DeathhailStaffGlow").Value;
             else if (itemType == ModContent.ItemType<Deathwind>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/DeathwindGlow").Value;
+            else if (itemType == ModContent.ItemType<EssenceFlayer>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/EssenceFlayerGlow").Value;
             else if (itemType == ModContent.ItemType<EtherealSubjugator>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/EtherealSubjugatorGlow").Value;
-            else if (itemType == ModContent.ItemType<GreatswordofJudgement>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GreatswordofJudgementGlow").Value;
-            else if (itemType == ModContent.ItemType<Orderbringer>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OrderbringerGlow").Value;
-            else if (itemType == ModContent.ItemType<MajesticGuard>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/MajesticGuardGlow").Value;
+            else if (itemType == ModContent.ItemType<Excelsus>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExcelsusGlow").Value;
+            else if (itemType == ModContent.ItemType<IridescentExcalibur>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/IridescentExcaliburGlow").Value;
+            else if (itemType == ModContent.ItemType<FatesReveal>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/FatesRevealGlow").Value;
             else if (itemType == ModContent.ItemType<GrandGuardian>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GrandGuardianGlow").Value;
+            else if (itemType == ModContent.ItemType<GreatswordofJudgement>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GreatswordofJudgementGlow").Value;
+            else if (itemType == ModContent.ItemType<MajesticGuard>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/MajesticGuardGlow").Value;
             else if (itemType == ModContent.ItemType<NecroplasmicBeacon>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/NecroplasmicBeaconGlow").Value;
+            else if (itemType == ModContent.ItemType<Orderbringer>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OrderbringerGlow").Value;
+            else if (itemType == ModContent.ItemType<Photosynthesis>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/PhotosynthesisGlow").Value;
+            else if (itemType == ModContent.ItemType<PlantationStaff>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/PlantationStaffGlow").Value;
+            else if (itemType == ModContent.ItemType<PrismaticBreaker>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/PrismaticBreakerGlow").Value;
+            else if (itemType == ModContent.ItemType<PulseRifle>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value;
+            else if (itemType == ModContent.ItemType<SoulPiercer>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SoulPiercerGlow").Value;
+            else if (itemType == ModContent.ItemType<SubsumingVortex>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortexGlow").Value;
+            else if (itemType == ModContent.ItemType<TerrorBlade>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TerrorBladeGlow").Value;
+            else if (itemType == ModContent.ItemType<TheEnforcer>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TheEnforcerGlow").Value;
+            else if (itemType == ModContent.ItemType<VernalBolter>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/VernalBolterGlow").Value;
+            else if (itemType == ModContent.ItemType<VividClarity>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value;
 
             if (glowMask == default)
                 return;
@@ -242,7 +253,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 if (drawPlayer.direction == -1)
                     drawOrigin = new Vector2(itemDrawFrame.Width + xOffset, itemDrawFrame.Height / 2);
 
-                item = new DrawData(glowMask, new Vector2((int)(drawInfo.ItemLocation.X - Main.screenPosition.X + offset.X), (int)(drawInfo.ItemLocation.Y - Main.screenPosition.Y + offset.Y)), itemDrawFrame, new Color(250, 250, 250, heldItem.alpha), drawPlayer.itemRotation, drawOrigin, adjustedItemScale, drawInfo.itemEffect);
+                item = new DrawData(glowMask, new Vector2((int)(drawInfo.ItemLocation.X - Main.screenPosition.X + offset.X), (int)(drawInfo.ItemLocation.Y - Main.screenPosition.Y + offset.Y)) - new Vector2(glowMask.Width * 0.5f, 0), itemDrawFrame, new Color(250, 250, 250, heldItem.alpha), drawPlayer.itemRotation, drawOrigin, adjustedItemScale, drawInfo.itemEffect);
                 existingDrawData.Add(item);
 
                 return;

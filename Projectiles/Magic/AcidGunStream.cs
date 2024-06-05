@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Vector2 positionDelta = Projectile.velocity / 3f * i;
                 int spawnDelta = 14;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 1f);
+                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[dustIdx];
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.rand.NextBool(8))
             {
                 int spawnDelta = 16;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 0.5f);
+                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 0.5f);
                 Main.dust[dustIdx].velocity *= 0.25f;
                 Main.dust[dustIdx].velocity += Projectile.velocity * 0.5f;
             }

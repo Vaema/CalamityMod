@@ -31,11 +31,11 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.ai[0] % 4 == 0)
                 {
-                    coolDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
+                    coolDust = Dust.NewDust(Projectile.position, Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
                 }
                 else
                 {
-                    coolDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
+                    coolDust = Dust.NewDust(Projectile.position, Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
                 }
                 Main.dust[coolDust].noGravity = true;
                 Main.dust[coolDust].velocity *= 0.1f;
@@ -54,15 +54,15 @@ namespace CalamityMod.Projectiles.Rogue
                 float maxDistance = 500f;
                 bool homeIn = false;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        float extraDistance = (float)(Main.npc[i].width / 2) + (float)(Main.npc[i].height / 2);
+                        float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
 
-                        if (Vector2.Distance(Main.npc[i].Center, Projectile.Center) < (maxDistance + extraDistance) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                        if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                         {
-                            center = Main.npc[i].Center;
+                            center = n.Center;
                             homeIn = true;
                             break;
                         }

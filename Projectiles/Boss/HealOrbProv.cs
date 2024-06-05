@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             int playerTracker = (int)Projectile.ai[0];
-            Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 projDirection = Projectile.Center;
             float playerDistX = Main.player[playerTracker].Center.X - projDirection.X;
             float playerDistY = Main.player[playerTracker].Center.Y - projDirection.Y;
             float playerDistance = (float)Math.Sqrt((double)(playerDistX * playerDistX + playerDistY * playerDistY));

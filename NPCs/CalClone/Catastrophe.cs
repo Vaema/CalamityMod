@@ -159,6 +159,11 @@ namespace CalamityMod.NPCs.CalClone
             return false;
         }
 
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+        {
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
+        }
+
         public override bool CheckActive() => false;
 
         public override void OnKill()
@@ -198,7 +203,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -208,10 +213,10 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
             }

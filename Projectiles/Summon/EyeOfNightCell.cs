@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             if (!Main.dedServ && Projectile.velocity.Length() > 5f)
-                Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid).noGravity = true;
+                Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid).noGravity = true;
 
             Projectile.StickyProjAI(3);
         }
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Summon
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 10; i++)
-                    Dust.NewDustDirect(Projectile.position, 36, 36, (int)CalamityDusts.SulfurousSeaAcid).noGravity = true;
+                    Dust.NewDustDirect(Projectile.position, 36, 36, (int)CalamityDusts.SulphurousSeaAcid).noGravity = true;
             }
         }
 

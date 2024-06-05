@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.alpha = 0;
             }
-            int seaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.25f);
+            int seaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.25f);
             Dust dust = Main.dust[seaDust];
             dust.velocity *= 0.3f;
             Main.dust[seaDust].position.X = Projectile.position.X + (float)(Projectile.width / 2) + 4f + (float)Main.rand.Next(-4, 5);
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.player[Projectile.owner].channel)
                 {
                     float chaseMouseDist = 18f;
-                    Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 projDirection = Projectile.Center;
                     float mouseX = (float)Main.mouseX + Main.screenPosition.X - projDirection.X;
                     float mouseY = (float)Main.mouseY + Main.screenPosition.Y - projDirection.Y;
                     if (Main.player[Projectile.owner].gravDir == -1f)
@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Magic
                 else if (Projectile.ai[0] <= 0f)
                 {
                     Projectile.netUpdate = true;
-                    Vector2 faceDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 faceDirection = Projectile.Center;
                     float miceX = (float)Main.mouseX + Main.screenPosition.X - faceDirection.X;
                     float miceY = (float)Main.mouseY + Main.screenPosition.Y - faceDirection.Y;
                     if (Main.player[Projectile.owner].gravDir == -1f)
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.velocity.X != 0f || Projectile.velocity.Y != 0f)
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
             if (Projectile.velocity.Y > 16f)
             {
@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.Magic
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             for (int k = 0; k < 8; k++)
             {
-                int seaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.25f);
+                int seaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.25f);
                 Dust dust = Main.dust[seaDust];
                 dust.velocity *= 0.3f;
                 Main.dust[seaDust].position.X = Projectile.position.X + (float)(Projectile.width / 2) + 4f + (float)Main.rand.Next(-4, 5);

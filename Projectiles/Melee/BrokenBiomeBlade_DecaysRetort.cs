@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float collisionPoint = 0f;
             float bladeLength = 120f * Projectile.scale;
-            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * 3.14f) * 60);
+            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * MathHelper.Pi) * 60);
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + displace, Owner.Center + displace + (direction * bladeLength), 24, ref collisionPoint);
         }
@@ -113,7 +113,10 @@ namespace CalamityMod.Projectiles.Melee
             bounceStrength *= Owner.velocity.Y == 0 ? 0.2f : 1f; //Reduce the bounce if the player is on the ground
             Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * MathHelper.Clamp(bounceStrength, 0f, 22f);
             CanBounce = 0f;
-            Owner.GiveIFrames(BrokenBiomeBlade.EvilAttunement_BounceIFrames); // i frames for free!
+
+            // 17APR2024: Ozzatron: Broken Biome Blade's lunge gives iframes when striking enemies in a similar manner to a bonk dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(BrokenBiomeBlade.EvilAttunement_BounceIFrames);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -124,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
             float drawAngle = direction.ToRotation();
             float drawRotation = drawAngle + MathHelper.PiOver4;
 
-            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * 3.14f) * 60);
+            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * MathHelper.Pi) * 60);
             Vector2 drawOrigin = new Vector2(0f, handle.Height);
             Vector2 drawOffset = Owner.Center + direction * 10f - Main.screenPosition;
 

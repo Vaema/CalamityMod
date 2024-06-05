@@ -66,7 +66,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                 for (int i = 0; i < 10; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[dust].noGravity = true;
                 }
 
@@ -189,7 +189,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 2; i++)
                 {
-                    int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                    int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -199,10 +199,10 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 for (int j = 0; j < 10; j++)
                 {
-                    int ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 3f);
+                    int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 3f);
                     Main.dust[ghostDust2].noGravity = true;
                     Main.dust[ghostDust2].velocity *= 5f;
-                    ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 2f);
+                    ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust2].velocity *= 2f;
                 }
             }

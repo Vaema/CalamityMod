@@ -357,7 +357,7 @@ namespace CalamityMod.World
                     for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y; y++)
                     {
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                        if (ShouldAvoidLocation(new Point(x, y)))
+                        if (ShouldAvoidLocation(new Point(x, y), false))
                             canGenerateInLocation = false;
 
                         //The granite geode is supposed to fully float in free air. No tile replacements

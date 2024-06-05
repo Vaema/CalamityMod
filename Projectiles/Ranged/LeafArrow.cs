@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.localAI[0] = 0f;
                 }
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 3.14f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi;
             if (Projectile.localAI[1] <= 30f)
             {
                 Projectile.localAI[1] += 1f;
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localAI[1] += 1f;
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 0, new Color(Main.DiscoR, 203, 103), 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 0, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 3f;
                 Main.dust[dust].scale = 1.5f;

@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 float scale = LaserShootCountdown < 530f ? 2.25f : 1.65f;
                 Vector2 destination = NPC.Top + new Vector2(0f, 6f);
-                Dust dust = Dust.NewDustPerfect(destination + Main.rand.NextVector2CircularEdge(12f, 12f), (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(destination + Main.rand.NextVector2CircularEdge(12f, 12f), (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = Vector2.Normalize(destination - dust.position) * 3f;
                 dust.scale = scale;
                 dust.noGravity = true;
@@ -141,7 +141,7 @@ namespace CalamityMod.NPCs.AcidRain
                     {
                         float angle = i / 24f;
                         Vector2 spawnPosition = new Vector2(NPC.Center.X, i);
-                        dust = Dust.NewDustPerfect(spawnPosition, (int)CalamityDusts.SulfurousSeaAcid);
+                        dust = Dust.NewDustPerfect(spawnPosition, (int)CalamityDusts.SulphurousSeaAcid);
                         dust.scale = 1.5f;
                         dust.velocity = Vector2.UnitX * (float)Math.Cos(angle) * (1f - LaserTelegraphPower) * 4f;
                         dust.noGravity = true;
@@ -169,12 +169,12 @@ namespace CalamityMod.NPCs.AcidRain
                 float horizontalSpeed = (float)Math.Sin(angle * DustAngleMultiplier1) * (float)Math.Cos(angle) * 4.5f;
                 float verticalSpeed = (float)Math.Cos(angle * DustAngleMultiplier1) * (float)Math.Sin(angle) * 2f;
                 Vector2 velocity = new Vector2(horizontalSpeed, verticalSpeed);
-                Dust dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = velocity;
                 dust.scale = (float)Math.Cos(angle) + 2f;
                 dust.noGravity = true;
 
-                dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulfurousSeaAcid);
+                dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = -velocity;
                 dust.scale = (float)Math.Cos(angle) + 2f;
                 dust.noGravity = true;
@@ -192,11 +192,11 @@ namespace CalamityMod.NPCs.AcidRain
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 if (Main.netMode != NetmodeID.Server)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GammaSlimeGore").Type, NPC.scale);

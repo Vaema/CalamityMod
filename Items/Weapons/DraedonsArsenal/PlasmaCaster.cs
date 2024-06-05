@@ -18,8 +18,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PlasmaCasterFire");
-
-        public const int BaseDamage = 705;
         public override void SetStaticDefaults()
         {
 
@@ -33,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 30;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = BaseDamage;
+            Item.damage = 705;
             Item.knockBack = 7f;
             Item.useTime = 45;
             Item.useAnimation = 45;

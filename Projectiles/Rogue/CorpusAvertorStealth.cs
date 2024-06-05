@@ -83,6 +83,9 @@ namespace CalamityMod.Projectiles.Rogue
                 player.AddBuff(ModContent.BuffType<AvertorBonus>(), CalamityUtils.SecondsToFrames(20f), true);
 
                 int heal = (int)Math.Round(damage * 0.025);
+                if (heal > BalancingConstants.LifeStealCap)
+                    heal = BalancingConstants.LifeStealCap;
+
                 if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                     return;
 

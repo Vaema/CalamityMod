@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<AstrageldonSummon>();
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().donorItem = true;
         }
@@ -38,10 +38,9 @@ namespace CalamityMod.Items.Weapons.Summon
             player.jumpSpeedBoost += 0.5f;
 
             double minionCount = 0;
-            for (int j = 0; j < Main.projectile.Length; j++)
+            foreach (Projectile projectile in Main.ActiveProjectiles)
             {
-                Projectile projectile = Main.projectile[j];
-                if (projectile.active && projectile.owner == player.whoAmI && projectile.minion && projectile.type != ModContent.ProjectileType<AstrageldonSummon>())
+                if (projectile.owner == player.whoAmI && projectile.minion && projectile.type != ModContent.ProjectileType<AstrageldonSummon>())
                 {
                     minionCount += projectile.minionSlots;
                 }

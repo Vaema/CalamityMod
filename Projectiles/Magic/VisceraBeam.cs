@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 using Terraria.Audio;
 using CalamityMod.Balancing;
 using System;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -60,6 +61,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 60);
+
             if (Projectile.ai[1] > 0)
             {
                 SoundStyle hitSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
@@ -92,6 +95,9 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             int heal = (int)Math.Round(hit.Damage * 0.05);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 

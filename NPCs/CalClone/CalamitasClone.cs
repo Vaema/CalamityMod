@@ -21,6 +21,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -35,6 +36,11 @@ namespace CalamityMod.NPCs.CalClone
     public class CalamitasClone : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
+
+        public static readonly SoundStyle BulletHellWarning = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnding");
+        public static readonly SoundStyle BulletHellEnd = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnd");
+        public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
+        public SlotId BulletHellWarnSlot;
 
         public override void SetStaticDefaults()
         {
@@ -127,7 +133,7 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void AI()
         {
-            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod);
+            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod, BulletHellWarnSlot);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -272,7 +278,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -282,10 +288,10 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
             }

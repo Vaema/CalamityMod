@@ -94,13 +94,6 @@ namespace CalamityMod
         public static List<int> frostMoonBuffList;
         public static List<int> eclipseBuffList;
         public static List<int> eventProjectileBuffList;
-        public static List<int> revengeanceEnemyBuffList25Percent;
-        public static List<int> revengeanceEnemyBuffList20Percent;
-        public static List<int> revengeanceEnemyBuffList15Percent;
-        public static List<int> revengeanceEnemyBuffList10Percent;
-        public static List<int> revengeanceProjectileBuffList25Percent;
-        public static List<int> revengeanceProjectileBuffList20Percent;
-        public static List<int> revengeanceProjectileBuffList15Percent;
         public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
         public static List<int> scopedWeaponList;
@@ -849,8 +842,9 @@ namespace CalamityMod
                 ProjectileType<DaemonsFlameBow>(),
                 ProjectileType<DrataliornusBow>(),
                 ProjectileType<FlakKrakenHoldout>(),
-                ProjectileType<ButcherGun>(),
+                ProjectileType<BuzzkillHoldout>(),
                 ProjectileType<StarfleetMK2Gun>(),
+                ProjectileType<SuperradiantSlaughtererHoldout>(),
                 ProjectileType<NorfleetCannon>(),
                 ProjectileType<FlurrystormCannonShooting>(),
                 ProjectileType<ChickenCannonHeld>(),
@@ -908,12 +902,16 @@ namespace CalamityMod
             enemyImmunityList = new List<int>()
             {
                 NPCID.KingSlime,
+                NPCType<KingSlimeJewelRuby>(),
+                NPCType<KingSlimeJewelSapphire>(),
+                NPCType<KingSlimeJewelEmerald>(),
                 NPCID.EaterofWorldsHead,
                 NPCID.EaterofWorldsBody,
                 NPCID.EaterofWorldsTail,
                 NPCID.BrainofCthulhu,
                 NPCID.Creeper,
                 NPCID.EyeofCthulhu,
+                NPCType<BloodlettingServant>(),
                 NPCID.QueenBee,
                 NPCID.SkeletronHead,
                 NPCID.SkeletronHand,
@@ -985,6 +983,9 @@ namespace CalamityMod
                 NPCType<DesertNuisanceHead>(),
                 NPCType<DesertNuisanceBody>(),
                 NPCType<DesertNuisanceTail>(),
+                NPCType<DesertNuisanceHeadYoung>(),
+                NPCType<DesertNuisanceBodyYoung>(),
+                NPCType<DesertNuisanceTailYoung>(),
                 NPCType<GiantClam>(),
                 NPCType<PerforatorHeadLarge>(),
                 NPCType<PerforatorHeadMedium>(),
@@ -1197,6 +1198,9 @@ namespace CalamityMod
                 BuffType<Vaporfied>(),
                 BuffType<Eutrophication>(),
                 BuffType<Dragonfire>(),
+                BuffType<VermillionFlux>(),
+                BuffType<AuricRebuke>(),
+                BuffType<StaticDischarge>(),
                 BuffType<Nightwither>(),
                 BuffType<VulnerabilityHex>(),
                 BuffType<MiracleBlight>(),
@@ -1370,143 +1374,6 @@ namespace CalamityMod
                 ProjectileID.EyeLaser,
                 ProjectileID.Nail,
                 ProjectileID.DrManFlyFlask
-            };
-
-            // Enemies that inflict an average of 1 to 50 damage in Expert Mode
-            revengeanceEnemyBuffList25Percent = new List<int>()
-            {
-                NPCID.GiantWormHead,
-                NPCID.BlazingWheel,
-                NPCType<Cnidrion>(),
-                NPCType<PrismBack>(),
-                NPCType<GhostBell>()
-            };
-
-            // Enemies that inflict an average of 51 to 100 damage in Expert Mode
-            revengeanceEnemyBuffList20Percent = new List<int>()
-            {
-                NPCID.DevourerHead,
-                NPCID.MeteorHead,
-                NPCID.BoneSerpentHead,
-                NPCID.ManEater,
-                NPCID.Snatcher,
-                NPCID.Piranha,
-                NPCID.Shark,
-                NPCID.SpikeBall,
-                NPCID.DiggerHead,
-                NPCID.WallCreeper,
-                NPCID.WallCreeperWall,
-                NPCID.Lihzahrd,
-                NPCID.Pumpking,
-                NPCID.SlimeSpiked,
-                NPCType<EutrophicRay>(),
-                NPCType<Clam>(),
-                NPCType<SeaSerpent1>(),
-                NPCType<GiantClam>(),
-                NPCType<FearlessGoldfishWarrior>()
-            };
-
-            // Enemies that inflict an average of 101 to 200 damage in Expert Mode
-            revengeanceEnemyBuffList15Percent = new List<int>()
-            {
-                NPCID.DD2Betsy,
-                NPCID.Mimic,
-                NPCID.WyvernHead,
-                NPCID.SeekerHead,
-                NPCID.AnglerFish,
-                NPCID.Werewolf,
-                NPCID.Wraith,
-                NPCID.Arapaima,
-                NPCID.BlackRecluse,
-                NPCID.BlackRecluseWall,
-                NPCID.AngryTrapper,
-                NPCID.LihzahrdCrawler,
-                NPCID.PirateCaptain,
-                NPCID.FlyingSnake,
-                NPCID.Reaper,
-                NPCID.Paladin,
-                NPCID.BoneLee,
-                NPCID.MourningWood,
-                NPCID.PumpkingBlade,
-                NPCID.PresentMimic,
-                NPCID.Everscream,
-                NPCID.IceQueen,
-                NPCID.SantaNK1,
-                NPCID.StardustWormHead,
-                NPCID.Butcher,
-                NPCID.Psycho,
-                NPCID.DeadlySphere,
-                NPCID.BigMimicCorruption,
-                NPCID.BigMimicCrimson,
-                NPCID.BigMimicHallow,
-                NPCID.Mothron,
-                NPCID.DuneSplicerHead,
-                NPCID.SandShark,
-                NPCID.SandsharkCorrupt,
-                NPCID.SandsharkCrimson,
-                NPCID.SandsharkHallow,
-                NPCType<Atlas>(),
-                NPCType<ArmoredDiggerHead>(),
-                NPCType<GreatSandShark>(),
-                NPCType<Horse>(),
-                NPCType<ScornEater>(),
-                NPCType<BlindedAngler>()
-            };
-
-            // Enemies that inflict an average of 201 to 400 damage in Expert Mode
-            revengeanceEnemyBuffList10Percent = new List<int>()
-            {
-                NPCID.SolarCrawltipedeHead,
-                NPCType<BobbitWormHead>(),
-                NPCType<ColossalSquid>(),
-                NPCType<EidolonWyrmHead>(),
-                NPCType<GulperEelHead>(),
-                NPCType<Mauler>(),
-                NPCType<ReaperShark>()
-            };
-
-            revengeanceProjectileBuffList25Percent = new List<int>()
-            {
-                ProjectileID.SandBallFalling,
-                ProjectileID.AshBallFalling,
-                ProjectileID.EbonsandBallFalling,
-                ProjectileID.PearlSandBallFalling,
-                ProjectileID.CrimsandBallFalling,
-                ProjectileID.GeyserTrap
-            };
-
-            revengeanceProjectileBuffList20Percent = new List<int>()
-            {
-                ProjectileID.PoisonDartTrap,
-                ProjectileID.DemonSickle,
-                ProjectileID.SandnadoHostile,
-                ProjectileID.DD2BetsyFireball,
-                ProjectileID.DD2BetsyFlameBreath
-            };
-
-            revengeanceProjectileBuffList15Percent = new List<int>()
-            {
-                ProjectileID.SpikyBallTrap,
-                ProjectileID.SpearTrap,
-                ProjectileID.FlamethrowerTrap,
-                ProjectileID.FlamesTrap,
-                ProjectileID.PaladinsHammerHostile,
-                ProjectileID.FlamingWood,
-                ProjectileID.FlamingScythe,
-                ProjectileID.FrostWave,
-                ProjectileID.Present,
-                ProjectileID.Spike,
-                ProjectileID.SaucerDeathray,
-                ProjectileID.NebulaBolt,
-                ProjectileID.NebulaSphere,
-                ProjectileID.NebulaLaser,
-                ProjectileID.StardustSoldierLaser,
-                ProjectileID.VortexLaser,
-                ProjectileID.VortexVortexLightning,
-                ProjectileID.VortexLightning,
-                ProjectileID.VortexAcid,
-                ProjectileType<PearlBurst>(),
-                ProjectileType<PearlRain>()
             };
 
             noRageWormSegmentList = new List<int>()
@@ -1750,14 +1617,14 @@ namespace CalamityMod
                 ItemType<AcidGun>(),
                 ItemType<AethersWhisper>(),
                 ItemType<AetherfluxCannon>(),
-                ItemType<AlphaRay>(),
+                ItemType<Omicron>(),
                 ItemType<ApoctosisArray>(),
                 ItemType<Cryophobia>(),
                 ItemType<Effervescence>(),
                 ItemType<EidolicWail>(),
                 ItemType<GatlingLaser>(),
                 ItemType<GaussPistol>(),
-                ItemType<Genisis>(),
+                ItemType<Genesis>(),
                 ItemType<IonBlaster>(),
                 ItemType<Lazhar>(),
                 ItemType<NanoPurge>(),
@@ -2029,6 +1896,7 @@ namespace CalamityMod
                 ProjectileID.NettleBurstEnd,
                 ProjectileID.NettleBurstLeft,
                 ProjectileID.NettleBurstRight,
+                ProjectileType<AtlantisSpear>(),
                 ProjectileType<AuroraFire>(),
                 ProjectileType<BallisticPoisonCloud>(),
                 ProjectileType<DuststormCloudHitbox>()
@@ -2065,6 +1933,7 @@ namespace CalamityMod
                 ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
                 ProjectileType<LeviathanTooth>(),
+                ProjectileType<LiliesOfFinalityAoE>(),
                 ProjectileType<LionfishProj>(),
                 ProjectileType<MechanicalBarracuda>(),
                 ProjectileType<MetalShard>(),
@@ -2078,6 +1947,7 @@ namespace CalamityMod
                 ProjectileType<PrismaticBeam>(),
                 ProjectileType<RancorLaserbeam>(),
                 ProjectileType<ReaperProjectile>(),
+                ProjectileType<RespiteblockHoldout>(),
                 ProjectileType<SacrificeProjectile>(),
                 ProjectileType<SnapClamProj>(),
                 ProjectileType<SnapClamStealth>(),
@@ -2563,9 +2433,13 @@ namespace CalamityMod
                 { NPCID.UmbrellaSlime, 5400 },
                 { NPCID.RainbowSlime, 30000 },
                 { NPCID.Pinky, 15000 },
+                { NPCType<KingSlimeJewelRuby>(), 21000 },
+                { NPCType<KingSlimeJewelSapphire>(), 18000 },
+                { NPCType<KingSlimeJewelEmerald>(), 24000 },
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },
+                { NPCType<BloodlettingServant>(), 12000 },
 
                 { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
                 { NPCID.EaterofWorldsBody, 10000 },
@@ -2575,6 +2449,11 @@ namespace CalamityMod
                 { NPCID.Creeper, 10000 },
 
                 { NPCID.QueenBee, 315000 }, // 30 seconds
+                { NPCID.Bee, 3000 },
+                { NPCID.BeeSmall, 2000 },
+                { NPCID.BigHornetHoney, 10000 },
+                { NPCID.HornetHoney, 7500 },
+                { NPCID.LittleHornetHoney, 5000 },
 
                 { NPCID.Deerclops, 315000 }, // 30 seconds
 
@@ -2583,6 +2462,11 @@ namespace CalamityMod
 
                 { NPCID.WallofFlesh, 450000 }, // 30 seconds
                 { NPCID.WallofFleshEye, 450000 },
+                { NPCID.TheHungry, 10000 },
+                { NPCID.TheHungryII, 5000 },
+                { NPCID.LeechHead, 5000 },
+                { NPCID.LeechBody, 5000 },
+                { NPCID.LeechTail, 5000 },
 
                 // Tier 2
                 { NPCID.QueenSlimeBoss, 150000 }, // 30 seconds
@@ -2596,7 +2480,7 @@ namespace CalamityMod
                 { NPCID.TheDestroyer, 250000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 250000 },
                 { NPCID.TheDestroyerTail, 250000 },
-                { NPCID.Probe, 10000 },
+                { NPCID.Probe, 5000 },
 
                 { NPCID.SkeletronPrime, 160000 }, // 30 seconds
                 { NPCType<SkeletronPrime2>(), 160000 },
@@ -2606,7 +2490,8 @@ namespace CalamityMod
                 { NPCID.PrimeLaser, 38000 },
 
                 { NPCID.Plantera, 160000 }, // 30 seconds
-                { NPCID.PlanterasTentacle, 40000 },
+                { NPCID.PlanterasTentacle, 5000 },
+                { NPCType<PlanterasFreeTentacle>(), 5000 },
 
                 // Tier 3
                 { NPCID.Golem, 50000 }, // 30 seconds
@@ -2774,13 +2659,6 @@ namespace CalamityMod
             frostMoonBuffList = null;
             eclipseBuffList = null;
             eventProjectileBuffList = null;
-            revengeanceEnemyBuffList25Percent = null;
-            revengeanceEnemyBuffList20Percent = null;
-            revengeanceEnemyBuffList15Percent = null;
-            revengeanceEnemyBuffList10Percent = null;
-            revengeanceProjectileBuffList25Percent = null;
-            revengeanceProjectileBuffList20Percent = null;
-            revengeanceProjectileBuffList15Percent = null;
             noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
             scopedWeaponList = null;

@@ -43,7 +43,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(113, 90, 71), Language.GetText("MapObject.Sapling"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
             AdjTiles = new int[] { TileID.Saplings };
         }
 

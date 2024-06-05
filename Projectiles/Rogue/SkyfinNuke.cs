@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < 30; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f));
-                Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulfurousSeaAcid, dspeed.X, dspeed.Y, 0, default, 1.1f);
+                Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulphurousSeaAcid, dspeed.X, dspeed.Y, 0, default, 1.1f);
             }
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;

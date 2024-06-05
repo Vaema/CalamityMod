@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Armor.Silva
         {
             Item.width = 28;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 13; //110
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Armor.Silva
 
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = 600;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 0.65f;

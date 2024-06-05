@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 dustType = 46;
             }
-            int toxicDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
+            int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
             Main.dust[toxicDust].noGravity = true;
             float scaleAlpha = 1f - (float)Projectile.alpha / 255f;
             scaleAlpha *= Projectile.scale;

@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
             else
                 Projectile.frame = 0;
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, lunarEnhance ? 300f : 150f, lunarEnhance ? 12f : 8f, 20f);
             if (Main.rand.NextBool(6)&& lunarEnhance)
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
@@ -65,10 +65,10 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.localNPCHitCooldown = 10;
                 for (int i = 0; i < 10; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 0, default, 1.5f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 0, default, 1.5f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 3f;
-                    dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 100, default, 1f);
+                    dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 100, default, 1f);
                     Main.dust[dust].velocity *= 2f;
                     Main.dust[dust].noGravity = true;
                 }
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.LunarOre, 0f, 0f, 100, default, 1f);
+                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.LunarOre, 0f, 0f, 100, default, 1f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].velocity *= 1.2f;
                     Main.dust[dusty].velocity -= Projectile.oldVelocity * 0.3f;

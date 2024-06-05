@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1; //6
         }
@@ -218,7 +218,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 3;
         }
@@ -248,7 +248,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2;
         }

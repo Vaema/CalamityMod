@@ -355,12 +355,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (CalamityConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
-            // Get a target
+            // Get a target (time is checked in the second check to ensure a new target isn't being set constantly)
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
+            else if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles && Main.time % 60D == 0D)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
@@ -780,7 +778,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     // Fireballs
                     // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || (CalamityWorld.LegendaryMode && CalamityWorld.revenge)) && NPC.SafeDirectionTo(player.Center).AngleBetween((NPC.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(18f))
+                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || (CalamityWorld.LegendaryMode && CalamityWorld.revenge)) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                     {
                         calamityGlobalNPC.newAI[0] += 1f;
                         if (calamityGlobalNPC.newAI[0] >= ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30f : 150f) && calamityGlobalNPC.newAI[0] % ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30f : phase7 ? 30f : 60f) == 0f)
@@ -802,7 +800,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             {
                                 for (int l = 0; l < 8; l++)
                                 {
-                                    int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
                                     float dustVelocityYAdd = Math.Abs(Main.dust[dust].velocity.Y) * 0.5f;
                                     if (Main.dust[dust].velocity.Y < 0f)
                                         Main.dust[dust].velocity.Y = 2f + dustVelocityYAdd;
@@ -1149,7 +1147,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (CalamityWorld.LegendaryMode && revenge)
                         {
-                            if (NPC.SafeDirectionTo(player.Center).AngleBetween((NPC.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(10f))
+                            if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 speedCopy *= 2f;
                         }
 
@@ -1312,7 +1310,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (CalamityWorld.LegendaryMode && revenge)
                         {
-                            if (NPC.SafeDirectionTo(player.Center).AngleBetween((NPC.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(10f))
+                            if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 segmentVelocity *= 2f;
                         }
 
@@ -1891,7 +1889,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     float speedCopy = speed;
                     float turnSpeedCopy = turnSpeed;
-                    Vector2 npcCenter = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                    Vector2 npcCenter = NPC.Center;
                     float targetX = player.position.X + (player.width / 2);
                     float targetY = player.position.Y + (player.height / 2);
                     int flyYLevel = -1;
@@ -1942,7 +1940,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     if (CalamityWorld.LegendaryMode && revenge)
                     {
-                        if (NPC.SafeDirectionTo(player.Center).AngleBetween((NPC.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(10f))
+                        if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             speedCopy *= 2f;
                     }
 
@@ -2091,7 +2089,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     if (CalamityWorld.LegendaryMode && revenge)
                     {
-                        if (NPC.SafeDirectionTo(player.Center).AngleBetween((NPC.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(10f))
+                        if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             segmentVelocity *= 2f;
                     }
 
@@ -2354,6 +2352,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
             }
 
+            // There is no escape...
+            if (NPC.Distance(player.Center) > 2400f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
+
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = segmentVelocity * 0.25f;
             float minimalDamageVelocity = segmentVelocity * 0.5f;
@@ -2454,20 +2456,20 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.netSpam >= 10)
                 NPC.netSpam = 9;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active && (Main.npc[i].type == ModContent.NPCType<DevourerofGodsBody>() || Main.npc[i].type == ModContent.NPCType<DevourerofGodsTail>()))
+                if (n.type == ModContent.NPCType<DevourerofGodsBody>() || n.type == ModContent.NPCType<DevourerofGodsTail>())
                 {
-                    Main.npc[i].position = newPosition;
+                    n.position = newPosition;
 
-                    if (Main.npc[i].type == ModContent.NPCType<DevourerofGodsTail>())
-                        ((DevourerofGodsTail)Main.npc[i].ModNPC).setInvulTime(720);
+                    if (n.type == ModContent.NPCType<DevourerofGodsTail>())
+                        ((DevourerofGodsTail)n.ModNPC).setInvulTime(720);
 
-                    Main.npc[i].netUpdate = true;
+                    n.netUpdate = true;
 
                     // Prevent netUpdate from being blocked by the spam counter.
-                    if (Main.npc[i].netSpam >= 10)
-                        Main.npc[i].netSpam = 9;
+                    if (n.netSpam >= 10)
+                        n.netSpam = 9;
                 }
             }
 
@@ -2498,28 +2500,28 @@ namespace CalamityMod.NPCs.DevourerofGods
                     ModContent.NPCType<DevourerofGodsBody>(),
                     ModContent.NPCType<DevourerofGodsTail>()
                 };
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (segments.Contains(Main.npc[i].type) && Main.npc[i].active &&
-                        (Main.npc[i].type == segments[1] || Main.npc[i].ModNPC<DevourerofGodsBody>().SegmentIndex == index))
+                    if (segments.Contains(n.type) && n.active &&
+                        (n.type == segments[1] || n.ModNPC<DevourerofGodsBody>().SegmentIndex == index))
                     {
                         for (int j = 0; j < 20; j++)
                         {
-                            Dust cosmicBurst = Dust.NewDustPerfect(Main.npc[i].Center + Main.rand.NextVector2Circular(25f, 25f), 234);
+                            Dust cosmicBurst = Dust.NewDustPerfect(n.Center + Main.rand.NextVector2Circular(25f, 25f), 234);
                             cosmicBurst.scale = 1.7f;
                             cosmicBurst.velocity = Main.rand.NextVector2Circular(9f, 9f);
                             cosmicBurst.noGravity = true;
                         }
 
-                        Main.npc[i].life = 0;
-                        Main.npc[i].HitEffect();
-                        Main.npc[i].active = false;
+                        n.life = 0;
+                        n.HitEffect();
+                        n.active = false;
 
-                        Main.npc[i].netUpdate = true;
+                        n.netUpdate = true;
 
                         // Prevent netUpdate from being blocked by the spam counter.
-                        if (Main.npc[i].netSpam >= 10)
-                            Main.npc[i].netSpam = 9;
+                        if (n.netSpam >= 10)
+                            n.netSpam = 9;
 
                         destroyedSegments++;
                         break;
@@ -2588,9 +2590,8 @@ namespace CalamityMod.NPCs.DevourerofGods
         private Vector2 GetRiftLocation(bool spawnDust)
         {
             Vector2 realSpot = default;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
                 if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
                 {
                     if (!spawnDust)
@@ -2874,7 +2875,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 15; i++)
                 {
-                    int cosmiliteDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int cosmiliteDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -2884,10 +2885,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[cosmiliteDust2].noGravity = true;
                     Main.dust[cosmiliteDust2].velocity *= 5f;
-                    cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust2].velocity *= 2f;
                 }
             }

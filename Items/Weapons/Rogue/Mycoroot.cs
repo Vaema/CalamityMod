@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.shoot = ModContent.ProjectileType<MycorootProj>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -43,12 +43,11 @@ namespace CalamityMod.Items.Weapons.Rogue
                     if (spore.WithinBounds(Main.maxProjectiles))
                         Main.projectile[spore].ai[1] = 1f;
                 }
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player other in Main.ActivePlayers)
                 {
-                    Player other = Main.player[i];
-                    if (other is null || !other.active || other.dead)
+                    if (other.dead)
                         continue;
-                    if ((other.team == player.team && player.team != 0) || player.whoAmI == i)
+                    if ((other.team == player.team && player.team != 0) || player.whoAmI == other.whoAmI)
                     {
                         if (player.Distance(other.Center) <= 800f)
                             other.AddBuff(ModContent.BuffType<Mushy>(), 900);

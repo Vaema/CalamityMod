@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 30;
             Item.height = 34;
-            Item.damage = 16;
+            Item.damage = 19;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = 40;
             Item.useAnimation = 40;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.useTurn = false;
             Item.knockBack = 3f;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.noUseGraphic = true;

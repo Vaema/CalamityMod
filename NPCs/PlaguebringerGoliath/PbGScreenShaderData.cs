@@ -22,23 +22,15 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 return;
             }
-            PbGIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == PbGType)
-                {
-                    PbGIndex = i;
-                    break;
-                }
-            }
+            PbGIndex = NPC.FindFirstNPC(PbGType);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (PbGIndex == -1)
+            if (PbGIndex == -1 && Main.LocalPlayer.Calamity().monolithPlagueShader <= 0)
             {
                 UpdatePbGIndex();
-                if (PbGIndex == -1)
+                if (PbGIndex == -1 && Main.LocalPlayer.Calamity().monolithPlagueShader <= 0)
                     Filters.Scene["CalamityMod:PlaguebringerGoliath"].Deactivate();
             }
         }
@@ -49,6 +41,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (PbGIndex != -1)
             {
                 UseTargetPosition(Main.npc[PbGIndex].Center);
+            }
+            if (Main.LocalPlayer.Calamity().monolithPlagueShader > 0)
+            {
+                UseTargetPosition(Main.LocalPlayer.Center);
             }
             base.Apply();
         }

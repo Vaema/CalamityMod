@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.Opacity > 1f)
                 Projectile.Opacity = 1f;
 
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 0.8f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 0.8f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0f;
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Boss
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int sandyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.2f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.2f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].position.X = Projectile.Center.X;
                 Main.dust[sandyDust].position.Y = Projectile.Center.Y;

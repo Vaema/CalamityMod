@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Ammo;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,6 +16,11 @@ namespace CalamityMod.Projectiles.Ranged
         private int rotDirection = 1;
         private float rotIntensity;
         private bool rotPhase2 = false;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -35,12 +41,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Player Owner = Main.player[Projectile.owner];
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-
             Projectile.localAI[0]++;
             if (currentColor == Color.Black)
             {
+                Projectile.scale = 0.025f;
                 Projectile.alpha = 255;
                 rotDirection = Main.rand.NextBool() ? 1 : -1;
                 rotIntensity = Main.rand.NextFloat(0.5f, 1.5f);
@@ -64,11 +68,6 @@ namespace CalamityMod.Projectiles.Ranged
                         break;
                 }
             }
-            if (targetDist < 1200f)
-            {
-                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center - Projectile.velocity, -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.9f), false, 3, 0.55f, currentColor, true, true);
-                GeneralParticleHandler.SpawnParticle(orb);
-            }
 
             if (Projectile.timeLeft == 180)
                 rotPhase2 = true;
@@ -88,12 +87,27 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int b = 0; b < 2; b++)
             {
+                /*
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, 66, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.5f, 1.1f);
                 dust.color = currentColor;
                 dust.fadeIn = 0;
+                */
+                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f), false, 5, Main.rand.NextFloat(0.35f, 0.45f), currentColor, true, true);
+                GeneralParticleHandler.SpawnParticle(orb);
             }
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 12, targetHitbox);
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeBloom").Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(currentColor, Color.White, 0.15f), 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.White with { A = 0 }, 1, texture2);
+            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, 0, texture.Size() * 0.5f, Projectile.scale * 1.5f, 0, 0f);
+            return false;
         }
         public override bool? CanDamage() => Projectile.localAI[0] < 20 ? false : null;
 

@@ -16,10 +16,10 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void Update(GameTime gameTime)
         {
-            if (LevIndex == -1 || BossRushEvent.BossRushActive)
+            if ((LevIndex == -1 && Main.LocalPlayer.Calamity().monolithLeviathanShader <= 0) || BossRushEvent.BossRushActive)
             {
                 UpdateLIndex();
-                if (LevIndex == -1 || BossRushEvent.BossRushActive)
+                if ((LevIndex == -1 && Main.LocalPlayer.Calamity().monolithLeviathanShader <= 0) || BossRushEvent.BossRushActive)
                     isActive = false;
             }
 
@@ -67,11 +67,11 @@ namespace CalamityMod.NPCs.Leviathan
                 return true;
             }
             LevIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active && Main.npc[i].type == LevType)
+                if (n.type == LevType)
                 {
-                    LevIndex = i;
+                    LevIndex = n.whoAmI;
                     break;
                 }
             }

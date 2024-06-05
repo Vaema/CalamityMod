@@ -235,6 +235,9 @@ namespace CalamityMod.Projectiles.Typeless
                 return;
 
             int heal = (int)Math.Round(damageDone * 0.25);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 

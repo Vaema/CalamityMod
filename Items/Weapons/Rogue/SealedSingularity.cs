@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item106;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }

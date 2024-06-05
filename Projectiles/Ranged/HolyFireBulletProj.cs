@@ -46,9 +46,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             Projectile.spriteDirection = Projectile.direction;
-            if (Projectile.localAI[0] >= 10 && Projectile.localAI[0] <= 30 && SizeBonus > 1)
+            if (Projectile.localAI[0] >= 30 && SizeBonus > 1)
             {
-                SizeBonus -= 0.1f;
+                SizeBonus -= 0.02f;
             }
             // Flaking dust
             Projectile.localAI[0] += 1f;
@@ -81,12 +81,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            // Spawn an on-hit explosion which deals 75% of the projectile's damage.
+            // Spawn an on-hit explosion which deals 30% of the projectile's damage.
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.damage = (int)(Projectile.damage * HolyFireBullet.ExplosionMultiplier);
                 Projectile.penetrate = -1;
                 Projectile.ExpandHitboxBy((25 * SizeVariance) * SizeBonus);
+                Projectile.usesLocalNPCImmunity = true;
+                Projectile.localNPCHitCooldown = 10;
                 Projectile.Damage();
             }
             SoundEngine.PlaySound(HolyFireBullet.Explosion with { Pitch = -0.15f, Volume = 0.3f }, Projectile.Center);

@@ -32,15 +32,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
             Vector2 targetCenter = Projectile.Center;
             float minTargetDistance = 2500f;
             bool homeIn = false;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                 {
-                    float distanceFromTarget = Projectile.Center.ManhattanDistance(Main.npc[i].Center);
+                    float distanceFromTarget = Projectile.Center.ManhattanDistance(n.Center);
                     if (distanceFromTarget < 200f)
                     {
                         if (Projectile.owner == Main.myPlayer)
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
                     else if (distanceFromTarget < minTargetDistance)
                     {
                         minTargetDistance = distanceFromTarget;
-                        targetCenter = Main.npc[i].Center;
+                        targetCenter = n.Center;
                         homeIn = true;
                     }
                 }
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 40; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 1.5f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 1.5f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -101,10 +101,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int j = 0; j < 60; j++)
             {
-                int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 2f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 2f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 1.5f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 1.5f);
                 Main.dust[dust2].velocity *= 2f;
             }
             Projectile.Damage();

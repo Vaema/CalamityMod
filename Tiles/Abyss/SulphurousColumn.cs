@@ -35,7 +35,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(150, 100, 50), CalamityUtils.GetText("Tiles.Column"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             base.SetStaticDefaults();
         }

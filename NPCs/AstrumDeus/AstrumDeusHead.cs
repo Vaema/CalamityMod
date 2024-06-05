@@ -37,11 +37,11 @@ namespace CalamityMod.NPCs.AstrumDeus
     public class AstrumDeusHead : ModNPC
     {
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusSpawn");
-        public static readonly SoundStyle LaserSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusLaser");
-        public static readonly SoundStyle GodRaySound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusGodRay");
-        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusMine");
+        public static readonly SoundStyle LaserSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusLaser") { Volume = 0.35f };
+        public static readonly SoundStyle GodRaySound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusGodRay") { Volume = 0.4f };
+        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusMine") { Volume = 0.4f };
         public static readonly SoundStyle SplitSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusSplit");
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AstrumDeusHit", 2) { Volume = 1.25f };
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AstrumDeusHit", 2) { Volume = 0.7f };
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/AstrumDeusDeath");
 
         public static Asset<Texture2D> TextureGlow1;
@@ -108,7 +108,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.netAlways = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
             if (Main.zenithWorld)
             {
@@ -209,7 +209,7 @@ namespace CalamityMod.NPCs.AstrumDeus
                     NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                     for (int i = 0; i < 5; i++)
                     {
-                        int purpleDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                        int purpleDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                         Main.dust[purpleDust].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -219,17 +219,17 @@ namespace CalamityMod.NPCs.AstrumDeus
                     }
                     for (int j = 0; j < 10; j++)
                     {
-                        int astralDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 3f);
+                        int astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 3f);
                         Main.dust[astralDust].noGravity = true;
                         Main.dust[astralDust].velocity *= 5f;
-                        astralDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
+                        astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                         Main.dust[astralDust].velocity *= 2f;
                     }
                 }
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ModContent.ItemType<Stardust>();
+        public override void BossLoot(ref string name, ref int potionType) => potionType = ModContent.ItemType<StarblightSoot>();
 
         public static bool ShouldNotDropThings(NPC npc) => npc.Calamity().newAI[0] == 0f || ((CalamityWorld.death || BossRushEvent.BossRushActive) && npc.Calamity().newAI[0] != 3f);
 
@@ -253,10 +253,9 @@ namespace CalamityMod.NPCs.AstrumDeus
                 return;
 
             // Killing ANY split Deus makes all other Deus heads die immediately.
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC otherWormHead in Main.ActiveNPCs)
             {
-                NPC otherWormHead = Main.npc[i];
-                if (otherWormHead.active && otherWormHead.type == NPC.type)
+                if (otherWormHead.type == NPC.type)
                 {
                     // Kill the other worm head after setting it to not drop loot.
                     otherWormHead.Calamity().newAI[0] = 0f;
@@ -311,7 +310,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
                 // Materials
                 normalOnly.Add(ItemID.FallenStar, 1, 25, 40);
-                normalOnly.Add(ModContent.ItemType<Stardust>(), 1, 50, 80);
+                normalOnly.Add(ModContent.ItemType<StarblightSoot>(), 1, 50, 80);
             }
 
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.SuperHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary

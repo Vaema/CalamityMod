@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 74;
             Item.height = 86;
-            Item.damage = 135;
+            Item.damage = 105;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -23,21 +23,21 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             int type = Main.rand.NextBool() ? ModContent.ProjectileType<BalefulHarvesterProjectile>() : ProjectileID.FlamingJack;
-            CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, (int)(Item.damage * 0.8f), Item.knockBack * 0.5f, 0, type);
+            CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, (int)(Item.damage * 1.5f), Item.knockBack * 0.5f, 0, type);
             target.AddBuff(BuffID.OnFire3, 300);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             int type = Main.rand.NextBool() ? ModContent.ProjectileType<BalefulHarvesterProjectile>() : ProjectileID.FlamingJack;
-            CalamityPlayer.HorsemansBladeOnHit(player, -1, (int)(Item.damage * 0.8f), Item.knockBack * 0.5f, 0, type);
+            CalamityPlayer.HorsemansBladeOnHit(player, -1, (int)(Item.damage * 1.5f), Item.knockBack * 0.5f, 0, type);
             target.AddBuff(BuffID.OnFire3, 300);
         }
 

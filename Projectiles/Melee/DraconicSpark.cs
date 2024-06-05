@@ -46,12 +46,12 @@ namespace CalamityMod.Projectiles.Melee
             float targetY = Projectile.Center.Y;
             bool foundTarget = false;
             float maxRange = MaxHomingRange;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                 {
-                    float iterCenterX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                    float iterCenterY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                    float iterCenterX = n.position.X + (float)(n.width / 2);
+                    float iterCenterY = n.position.Y + (float)(n.height / 2);
                     float dist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - iterCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - iterCenterY);
                     if (dist < maxRange)
                     {
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
             if (foundTarget)
             {
                 float speed = HomingVelocity;
-                Vector2 projCenter = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 projCenter = Projectile.Center;
                 float xDist = targetX - projCenter.X;
                 float yDist = targetY - projCenter.Y;
                 float dist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));

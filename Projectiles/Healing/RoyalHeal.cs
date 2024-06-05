@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Healing
         public override void AI()
         {
             Projectile.HealingProjectile((int)Projectile.ai[1], (int)Projectile.ai[0], 18f, 10f);
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0f;
             Main.dust[dust].position.X -= Projectile.velocity.X * 0.2f;

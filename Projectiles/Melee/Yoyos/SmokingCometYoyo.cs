@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Dust.NewDust(Projectile.Center + new Vector2(-25f, -25f), 50, 50, DustID.Enchanted_Pink, 0f, 0f, 150, default(Color), 1.2f);
 
             if (Main.rand.NextBool(10))
-                Gore.NewGore(Projectile.GetSource_FromAI(), new Vector2(Projectile.position.X, Projectile.position.Y), default(Vector2), Main.rand.Next(16, 18));
+                Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, default(Vector2), Main.rand.Next(16, 18));
         }
 
         // Hitbox is larger than normal while trying to hit NPCs

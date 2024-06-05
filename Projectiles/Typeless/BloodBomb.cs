@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int j = 0; j < 3; j++)
             {
-                int bloody = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.2f);
+                int bloody = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.2f);
                 Main.dust[bloody].noGravity = true;
                 Main.dust[bloody].velocity *= 0.5f;
                 Main.dust[bloody].velocity += Projectile.velocity * 0.1f;

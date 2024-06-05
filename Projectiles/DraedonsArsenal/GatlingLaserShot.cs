@@ -33,12 +33,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             Time++;
             Lighting.AddLight(Projectile.Center, 0.2f, 0f, 0f);
-            if (Projectile.timeLeft % 11 == 0 && Time > 12 && Time < 460)
+            if (Projectile.timeLeft % 11 == 0 && Time > 15 && Time < 460)
             {
                 SparkParticle spark = new SparkParticle(Projectile.Center, Projectile.velocity * 0.01f, false, 6, 1.7f, Color.Red);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
-            if (Projectile.timeLeft % 4 == 0 && Time > 12 && Time < 460)
+            if (Projectile.timeLeft % 4 == 0 && Time > 15 && Time < 460)
             {
                 SparkParticle spark2 = new SparkParticle(Projectile.Center, Projectile.velocity * 0.01f, false, 6, 0.4f, Color.White);
                 GeneralParticleHandler.SpawnParticle(spark2);
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 dustVel = dustVel.RotatedBy(-angleRandom);
                 dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
 
-                int burstDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dust, dustVel.X, dustVel.Y, 200, default, 0.9f);
+                int burstDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, dustVel.X, dustVel.Y, 200, default, 0.9f);
                 Main.dust[burstDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 Main.dust[burstDust].noGravity = true;
 
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 dust2.velocity *= 3f;
                 dust2 = Main.dust[burstDust];
 
-                burstDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dust, dustVel.X, dustVel.Y, 100, default, 0.66f);
+                burstDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, dustVel.X, dustVel.Y, 100, default, 0.66f);
                 Main.dust[burstDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
                 dust2 = Main.dust[burstDust];
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 dustVel = dustVel.RotatedBy(-angleRandom);
                 dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
 
-                int moreBurstDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dust, dustVel.X, dustVel.Y, 0, default, 1.2f);
+                int moreBurstDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dust, dustVel.X, dustVel.Y, 0, default, 1.2f);
                 Main.dust[moreBurstDust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                 Main.dust[moreBurstDust].noGravity = true;
 

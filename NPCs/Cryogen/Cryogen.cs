@@ -180,10 +180,6 @@ namespace CalamityMod.NPCs.Cryogen
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                NPC.TargetClosest();
-
             Player player = Main.player[NPC.target];
 
             bool bossRush = BossRushEvent.BossRushActive;
@@ -381,7 +377,6 @@ namespace CalamityMod.NPCs.Cryogen
                 if (NPC.localAI[0] >= 120f)
                 {
                     NPC.localAI[0] = 0f;
-                    NPC.TargetClosest();
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                     {
                         SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -393,11 +388,15 @@ namespace CalamityMod.NPCs.Cryogen
                             int type = iceBlast;
                             int damage = NPC.GetProjectileDamage(type);
                             float velocity = 9f + enrageScale;
+                            float projectileVelocityToPass = 0f;
+                            if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                projectileVelocityToPass = velocity * 2f;
+
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -445,7 +444,6 @@ namespace CalamityMod.NPCs.Cryogen
                     if (NPC.localAI[0] >= 120f)
                     {
                         NPC.localAI[0] = 0f;
-                        NPC.TargetClosest();
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
                             SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -457,11 +455,15 @@ namespace CalamityMod.NPCs.Cryogen
                                 int type = iceBlast;
                                 int damage = NPC.GetProjectileDamage(type);
                                 float velocity2 = 9f + enrageScale;
+                                float projectileVelocityToPass = 0f;
+                                if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                    projectileVelocityToPass = velocity2 * 2f;
+
                                 Vector2 spinningPoint = new Vector2(0f, -velocity2);
                                 for (int k = 0; k < totalProjectiles; k++)
                                 {
                                     Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                                 }
                             }
                         }
@@ -538,6 +540,10 @@ namespace CalamityMod.NPCs.Cryogen
                                 {
                                     float radians = MathHelper.TwoPi / totalProjectilesShot;
                                     float newVelocity = velocity - (velocity * 0.5f * i);
+                                    float projectileVelocityToPass = 0f;
+                                    if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                        projectileVelocityToPass = velocity * 2f;
+
                                     double angleA = radians * 0.5;
                                     double angleB = MathHelper.ToRadians(90f) - angleA;
                                     float velocityX = (float)(newVelocity * Math.Sin(angleA) / Math.Sin(angleB));
@@ -545,7 +551,7 @@ namespace CalamityMod.NPCs.Cryogen
                                     for (int k = 0; k < totalProjectilesShot; k++)
                                     {
                                         Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, velocity);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, type == ModContent.ProjectileType<BrimstoneBarrage>() ? 0f : velocity, projectileVelocityToPass);
                                     }
                                 }
                             }
@@ -627,7 +633,6 @@ namespace CalamityMod.NPCs.Cryogen
                     if (NPC.localAI[0] >= 120f)
                     {
                         NPC.localAI[0] = 0f;
-                        NPC.TargetClosest();
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
                             SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -639,11 +644,15 @@ namespace CalamityMod.NPCs.Cryogen
                                 int type = iceBlast;
                                 int damage = NPC.GetProjectileDamage(type);
                                 float velocity = 9f + enrageScale;
+                                float projectileVelocityToPass = 0f;
+                                if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                    projectileVelocityToPass = velocity * 2f;
+
                                 Vector2 spinningPoint = new Vector2(0f, -velocity);
                                 for (int k = 0; k < totalProjectiles; k++)
                                 {
                                     Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                                 }
                             }
                         }
@@ -692,6 +701,10 @@ namespace CalamityMod.NPCs.Cryogen
                                 {
                                     float radians = MathHelper.TwoPi / totalProjectilesShot;
                                     float newVelocity = velocity - (velocity * 0.33f * i);
+                                    float projectileVelocityToPass = 0f;
+                                    if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                        projectileVelocityToPass = velocity * 2f;
+
                                     double angleA = radians * 0.5;
                                     double angleB = MathHelper.ToRadians(90f) - angleA;
                                     float velocityX = (float)(newVelocity * Math.Sin(angleA) / Math.Sin(angleB));
@@ -699,7 +712,7 @@ namespace CalamityMod.NPCs.Cryogen
                                     for (int k = 0; k < totalProjectilesShot; k++)
                                     {
                                         Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, velocity);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, type == ModContent.ProjectileType<BrimstoneBarrage>() ? 0f : velocity, projectileVelocityToPass);
                                     }
                                 }
                             }
@@ -739,11 +752,10 @@ namespace CalamityMod.NPCs.Cryogen
                     NPC.ai[1] -= 1f;
                     if (NPC.ai[1] == chargeGateValue)
                     {
-                        NPC.TargetClosest();
-
                         calamityGlobalNPC.newAI[1] += 1f;
                         if (calamityGlobalNPC.newAI[1] > 1f)
                         {
+                            NPC.TargetClosest();
                             NPC.ai[1] = 0f;
                             NPC.localAI[0] = 0f;
                             calamityGlobalNPC.newAI[1] = 0f;
@@ -795,11 +807,15 @@ namespace CalamityMod.NPCs.Cryogen
                             int type = iceBlast;
                             int damage = NPC.GetProjectileDamage(type);
                             float velocity = 10f + enrageScale;
+                            float projectileVelocityToPass = 0f;
+                            if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                projectileVelocityToPass = velocity * 2f;
+
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -831,16 +847,13 @@ namespace CalamityMod.NPCs.Cryogen
                         NPC.localAI[2] += 1f;
                         if (NPC.localAI[2] >= 180f)
                         {
-                            NPC.TargetClosest();
                             NPC.localAI[2] = 0f;
                             int attackTimer = 0;
-                            int playerTileX;
-                            int playerTileY;
-                            while (true)
+                            int playerTileX = (int)player.Center.X / 16;
+                            int playerTileY = (int)player.Center.Y / 16;
+                            while (attackTimer <= 100)
                             {
                                 attackTimer++;
-                                playerTileX = (int)player.Center.X / 16;
-                                playerTileY = (int)player.Center.Y / 16;
 
                                 int min = 16;
                                 int max = 20;
@@ -858,15 +871,13 @@ namespace CalamityMod.NPCs.Cryogen
                                 if (!WorldGen.SolidTile(playerTileX, playerTileY) && Collision.CanHit(new Vector2(playerTileX * 16, playerTileY * 16), 1, 1, player.position, player.width, player.height))
                                     break;
 
-                                if (attackTimer > 100)
-                                    goto Block;
+                                playerTileX = (int)player.Center.X / 16;
+                                playerTileY = (int)player.Center.Y / 16;
                             }
                             NPC.ai[1] = 1f;
                             teleportLocationX = playerTileX;
                             calamityGlobalNPC.newAI[2] = playerTileY;
                             NPC.netUpdate = true;
-Block:
-                            ;
                         }
                     }
                 }
@@ -906,6 +917,10 @@ Block:
                                     int totalProjectiles = bossRush ? 9 : 6;
                                     float radians = MathHelper.TwoPi / totalProjectiles;
                                     float newVelocity = velocity - (velocity * 0.33f * i);
+                                    float projectileVelocityToPass = 0f;
+                                    if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                        projectileVelocityToPass = velocity * 2f;
+
                                     float velocityX = 0f;
                                     if (i > 0)
                                     {
@@ -917,12 +932,13 @@ Block:
                                     for (int k = 0; k < totalProjectiles; k++)
                                     {
                                         Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, velocity);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, type == ModContent.ProjectileType<BrimstoneBarrage>() ? 0f : velocity, projectileVelocityToPass);
                                     }
                                 }
                             }
                         }
 
+                        NPC.TargetClosest();
                         NPC.ai[1] = 2f;
                         NPC.netUpdate = true;
                     }
@@ -991,6 +1007,10 @@ Block:
                                     int totalProjectiles = bossRush ? 3 : 2;
                                     float radians = MathHelper.TwoPi / totalProjectiles;
                                     float newVelocity = velocity - (velocity * (phase7 ? 0.25f : 0.5f) * i);
+                                    float projectileVelocityToPass = 0f;
+                                    if (type == ModContent.ProjectileType<BrimstoneBarrage>())
+                                        projectileVelocityToPass = velocity * 12f;
+
                                     float velocityX = 0f;
                                     float ai = Main.zenithWorld ? 2f : NPC.target;
                                     if (i > 0)
@@ -1003,7 +1023,7 @@ Block:
                                     for (int k = 0; k < totalProjectiles; k++)
                                     {
                                         Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, ai, 1f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, ai, type == ModContent.ProjectileType<BrimstoneBarrage>() ? 0f : 1f, projectileVelocityToPass);
                                     }
                                 }
                             }
@@ -1014,7 +1034,6 @@ Block:
                     if (NPC.ai[1] <= 0f) // Set the next charge, or switch back to floating above the player
                     {
                         NPC.ai[3] += 1f;
-                        NPC.TargetClosest();
                         if (NPC.ai[3] > 2f)
                         {
                             NPC.ai[0] = 5f;
@@ -1315,7 +1334,7 @@ Block:
             {
                 for (int i = 0; i < 40; i++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
+                    int icyDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -1325,10 +1344,10 @@ Block:
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int icyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 3f);
+                    int icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 3f);
                     Main.dust[icyDust2].noGravity = true;
                     Main.dust[icyDust2].velocity *= 5f;
-                    icyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
+                    icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust2].velocity *= 2f;
                 }
                 if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)

@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Summon
             velocity *= 2f;
             velocity.SafeNormalize(Vector2.Zero);
             float projSpeed = 5f * Projectile.scale;
-            Vector2 fireDirection = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + (float)npc.height * 0.5f);
+            Vector2 fireDirection = npc.Center;
             float fireXVel = Projectile.Center.X - fireDirection.X;
             float fireYVel = Projectile.Center.Y - fireDirection.Y;
             float fireVelocity = (float)Math.Sqrt((double)(fireXVel * fireXVel + fireYVel * fireYVel));
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
@@ -166,12 +166,12 @@ namespace CalamityMod.Projectiles.Summon
             }
             Projectile.frameCounter++;
 
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active && !Main.npc[i].friendly && CalamityGlobalNPC.ShouldAffectNPC(Main.npc[i]))
+                if (!n.friendly && CalamityGlobalNPC.ShouldAffectNPC(n))
                 {
-                    if (Vector2.Distance(Projectile.Center, Main.npc[i].Center) <= radius)
-                        ApplySucc(Main.npc[i]);
+                    if (Vector2.Distance(Projectile.Center, n.Center) <= radius)
+                        ApplySucc(n);
                 }
             }
 

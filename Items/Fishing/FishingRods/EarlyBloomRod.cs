@@ -23,19 +23,23 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 60;
             Item.shootSpeed = 18f;
             Item.shoot = ModContent.ProjectileType<EarlyBloomBobber>();
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int index = 0; index < 6; ++index)
+            for (int i = 0; i < 6; i++)
             {
-                float SpeedX = velocity.X + Main.rand.NextFloat(-3.75f, 3.75f);
-                float SpeedY = velocity.Y + Main.rand.NextFloat(-3.75f, 3.75f);
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(18f)), type, 0, 0f, player.whoAmI);
             }
             return false;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(50f, -33f);
+            lineColor = new Color(190, 140, 69, 100);
         }
 
         public override void AddRecipes()

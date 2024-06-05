@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Projectile.alpha = 0;
                 }
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0f;
             }

@@ -338,10 +338,9 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.Center = TeleportStartingPoint;
 
                 // Reset the alpha and position across the entire worm for the next charge.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile otherProj in Main.ActiveProjectiles)
                 {
-                    Projectile otherProj = Main.projectile[i];
-                    if (!otherProj.active || otherProj.owner != Projectile.owner || i == Projectile.whoAmI)
+                    if (otherProj.owner != Projectile.owner || otherProj.whoAmI == Projectile.whoAmI)
                         continue;
 
                     if (otherProj.type == ModContent.ProjectileType<MechwormBody>() || otherProj.type == ModContent.ProjectileType<MechwormTail>())
@@ -377,10 +376,9 @@ namespace CalamityMod.Projectiles.Summon
         private void CleanUpMechwormPortals()
         {
             int portalType = ModContent.ProjectileType<MechwormTeleportRift>();
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj.type != portalType || !proj.active || proj.owner != Projectile.owner)
+                if (proj.type != portalType || proj.owner != Projectile.owner)
                     continue;
 
                 proj.Kill();
@@ -398,7 +396,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

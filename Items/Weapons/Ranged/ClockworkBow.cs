@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.channel = true;
             Item.knockBack = 4.25f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;

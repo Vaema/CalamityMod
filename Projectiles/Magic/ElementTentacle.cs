@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
                 int scaleLoopCheck = 0;
                 while ((float)scaleLoopCheck < Projectile.scale * 10f)
                 {
-                    int rainbow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.1f);
+                    int rainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.1f);
                     Main.dust[rainbow].position = (Main.dust[rainbow].position + Projectile.Center) / 2f;
                     Main.dust[rainbow].noGravity = true;
                     Main.dust[rainbow].velocity *= 0.1f;

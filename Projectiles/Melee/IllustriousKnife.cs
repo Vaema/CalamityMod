@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int i = 0; i < 3; i++)
             {
-                int illustrious = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 0.8f);
+                int illustrious = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 0.8f);
                 Main.dust[illustrious].noGravity = true;
                 Main.dust[illustrious].velocity *= 1.2f;
                 Main.dust[illustrious].velocity -= Projectile.oldVelocity * 0.3f;
@@ -77,6 +77,9 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
             int heal = (int)Math.Round(hit.Damage * 0.015);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
@@ -88,6 +91,9 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
             int heal = (int)Math.Round(info.Damage * 0.015);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 

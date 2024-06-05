@@ -71,7 +71,7 @@ namespace CalamityMod.BiomeManagers
             }
 
             if (Main.remixWorld)
-                return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y > SulphurousSea.YStart && point.Y < Main.maxTilesY - 200 && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
+                return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y > SulphurousSea.YStart && point.Y < Main.UnderworldLayer && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
 
             return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y < (Main.rockLayer - Main.maxTilesY / 13) && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
         }

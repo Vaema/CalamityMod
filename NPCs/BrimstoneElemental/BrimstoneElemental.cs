@@ -7,11 +7,9 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Items.Placeables.Pylons;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -22,6 +20,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -43,6 +42,12 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             Water = 4
         }
         public int currentMode = (int)Elemental.Brimstone;
+
+        public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/Teleport");
+        public static readonly SoundStyle HellfireballSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/Hellfireball", 3);
+        public static readonly SoundStyle DartSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/BrimstoneDartRing", 3);
+        public static readonly SoundStyle HideInShellSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/ShellTransform");
+        public static readonly SoundStyle ShellFireSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/ShellProjectiles", 3);
 
         public override void SetStaticDefaults()
         {
@@ -266,7 +271,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -276,10 +281,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 }
                 for (int j = 0; j < 60; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
                 if (Main.netMode != NetmodeID.Server)

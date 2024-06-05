@@ -23,7 +23,7 @@ namespace CalamityMod.Skies
 
         public static bool DetermineDrawEligibility()
         {
-            bool useEffect = ((BossRushEvent.BossRushActive && BossRushEvent.StartTimer > 100) || ShouldDrawRegularly) && !Main.gameMenu;
+            bool useEffect = ((BossRushEvent.BossRushActive && BossRushEvent.StartTimer > 100) || ShouldDrawRegularly || Main.LocalPlayer?.Calamity()?.monolithBossRushShader > 0) && !Main.gameMenu;
 
             if (SkyManager.Instance["CalamityMod:BossRush"] != null && useEffect != SkyManager.Instance["CalamityMod:BossRush"].IsActive())
             {
@@ -66,7 +66,7 @@ namespace CalamityMod.Skies
 
         private float GetIntensity()
         {
-            if (ShouldDrawRegularly)
+            if (ShouldDrawRegularly || Main.LocalPlayer?.Calamity().monolithBossRushShader > 0)
                 return 1f;
 
             float fadeRatio = BossRushEvent.StartTimer / (float)BossRushEvent.StartEffectTotalTime;
@@ -77,7 +77,7 @@ namespace CalamityMod.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (GetIntensity() == 0f)
+            if (GetIntensity() == 0f && Main.LocalPlayer?.Calamity()?.monolithBossRushShader <= 0)
                 return;
 
             if (maxDepth >= 0 && minDepth < 0 && GetIntensity() > 0f)
@@ -103,7 +103,7 @@ namespace CalamityMod.Skies
             Main.spriteBatch.Begin();
 
             // Draw the Xeroc eye at the back of the sky.
-            if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && (BossRushEvent.EndTimer < BossRushEvent.EndVisualEffectTime - 40f || ShouldDrawRegularly))
+            if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && (BossRushEvent.EndTimer < BossRushEvent.EndVisualEffectTime - 40f || ShouldDrawRegularly || Main.LocalPlayer?.Calamity()?.monolithBossRushShader > 0))
             {
                 Vector2 screenCenter = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
                 screenCenter += new Vector2(Main.screenWidth, Main.screenHeight) * (Main.GameViewMatrix.Zoom - Vector2.One) * 0.5f;

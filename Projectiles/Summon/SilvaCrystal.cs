@@ -114,20 +114,17 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (targetID < 0)
                 {
-                    int targetIDCopy;
-                    for (int i = 0; i < Main.maxNPCs; i = targetIDCopy + 1)
+                    foreach (NPC target in Main.ActiveNPCs)
                     {
-                        NPC target = Main.npc[i];
                         if (target.CanBeChasedBy(Projectile, false))
                         {
                             float targetDistance = Projectile.Distance(target.Center);
                             if (targetDistance < attackRange && Collision.CanHitLine(Projectile.Center, 0, 0, target.Center, 0, 0))
                             {
                                 attackRange = targetDistance;
-                                targetID = i;
+                                targetID = target.whoAmI;
                             }
                         }
-                        targetIDCopy = i;
                     }
                 }
                 if (targetID != -1)
@@ -185,7 +182,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 projPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color colorAlpha = Projectile.GetAlpha(colorArea);
             Vector2 halfRectangle = rectangular.Size() / 2f;

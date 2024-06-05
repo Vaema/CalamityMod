@@ -51,6 +51,9 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             int heal = (int)Math.Round(hit.Damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 

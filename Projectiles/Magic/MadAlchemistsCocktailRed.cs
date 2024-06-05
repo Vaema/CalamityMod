@@ -66,14 +66,14 @@ namespace CalamityMod.Projectiles.Magic
             int inc;
             for (int i = 0; i < 60; i = inc + 1)
             {
-                int fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 200, default, 3f);
+                int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 200, default, 3f);
                 Main.dust[fiery].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 Main.dust[fiery].noGravity = true;
                 Dust dust = Main.dust[fiery];
                 dust.velocity *= 8f;
                 dust = Main.dust[fiery];
                 dust.velocity += dustVelocity * Main.rand.NextFloat();
-                fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, dustAI);
+                fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, dustAI);
                 Main.dust[fiery].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust = Main.dust[fiery];
                 dust.velocity *= 6f;
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[fiery].color = Color.Crimson * 0.5f;
                 dust = Main.dust[fiery];
                 dust.velocity += dustVelocity * Main.rand.NextFloat();
-                fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, dustAI);
+                fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, dustAI);
                 Main.dust[fiery].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust = Main.dust[fiery];
                 dust.velocity *= 4f;
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[fiery].color = Color.Crimson * 0.5f;
                 dust = Main.dust[fiery];
                 dust.velocity += dustVelocity * Main.rand.NextFloat();
-                fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, dustAI);
+                fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, dustAI);
                 Main.dust[fiery].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust = Main.dust[fiery];
                 dust.velocity *= 2f;
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 30; j = inc + 1)
             {
-                int fiery2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 0, default, 3.8f);
+                int fiery2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 0, default, 3.8f);
                 Main.dust[fiery2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 3f;
                 Main.dust[fiery2].noGravity = true;
                 Dust dust = Main.dust[fiery2];

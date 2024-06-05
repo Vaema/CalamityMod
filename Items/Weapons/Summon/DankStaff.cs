@@ -15,13 +15,13 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 58;
             Item.height = 58;
-            Item.damage = 9;
+            Item.damage = 14;
             Item.mana = 10;
             Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;

@@ -79,11 +79,10 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             }
 
-            Vector2 maxVelocity = new Vector2(death ? 15f : 12f, death ? 15f : 12f);
-            float maxAcceleration = death ? 0.5f : 0.4f;
+            Vector2 maxVelocity = new Vector2(death ? 13.2f : 12f, death ? 13.2f : 12f);
+            float maxAcceleration = death ? 0.44f : 0.4f;
             float timeBeforeHoming = death ? 30f : 45f;
-            float distanceAboveTargetBeforeHomingDownward = death ? 320f : 480f;
-            float explodeDistance = 16f;
+            float distanceAboveTargetBeforeHomingDownward = death ? 400f : 480f;
             if (Projectile.ai[0] == 0f)
             {
                 Projectile.localAI[0] += 1f;
@@ -127,7 +126,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.tileCollide = true;
 
                 Vector2 playerDistance = Main.player[(int)Projectile.ai[1]].Center - Projectile.Center;
-                if (playerDistance.Length() < explodeDistance)
+                if (Projectile.Hitbox.Intersects(Main.player[(int)Projectile.ai[1]].Hitbox))
                 {
                     Projectile.Kill();
                     return;
@@ -167,7 +166,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 // Fly away from other lasers
                 float pushForce = death ? 0.12f : 0.08f;
-                float pushDistance = death ? 80f : 40f;
+                float pushDistance = death ? 60f : 40f;
                 for (int k = 0; k < Main.maxProjectiles; k++)
                 {
                     Projectile otherProj = Main.projectile[k];

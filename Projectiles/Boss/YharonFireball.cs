@@ -11,8 +11,8 @@ namespace CalamityMod.Projectiles.Boss
     public class YharonFireball : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-        private float speedX = -3f;
-        private float speedX2 = -5f;
+        private float speedX = -1f;
+        private float speedX2 = -2f;
 
         public override void SetStaticDefaults()
         {
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int frameY = frameHeight * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
@@ -95,13 +95,13 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int x = 0; x < 3; x++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX, -50f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer, 0f, 0f);
-                    speedX += 3f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX, -6f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer);
+                    speedX += 1f;
                 }
                 for (int x = 0; x < 2; x++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX2, -75f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer, 0f, 0f);
-                    speedX2 += 10f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX2, -6f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer);
+                    speedX2 += 4f;
                 }
             }
             Projectile.ExpandHitboxBy(144);

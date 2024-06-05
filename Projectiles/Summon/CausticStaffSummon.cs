@@ -228,7 +228,7 @@ namespace CalamityMod.Projectiles.Summon
             //Occasionally spawn fiery dust
             if (Main.rand.NextBool(6))
             {
-                int fire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, new Color(), 2f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, new Color(), 2f);
                 Main.dust[fire].velocity *= 0.3f;
                 Main.dust[fire].noGravity = true;
                 Main.dust[fire].noLight = true;

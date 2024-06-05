@@ -76,7 +76,10 @@ namespace CalamityMod.NPCs.Crabulon
             float xVelocityLimit = BossRushEvent.BossRushActive ? 12f : death ? 8f : revenge ? 6f : 5f;
             float yVelocityLimit = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.25f : death ? 0.75f : revenge ? 0.9f : 1f;
 
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
+
             Player player = Main.player[NPC.target];
 
             NPC.velocity.Y += 0.02f;
@@ -106,24 +109,21 @@ namespace CalamityMod.NPCs.Crabulon
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
             {
                 float pushVelocity = 0.5f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active)
+                    if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                     {
-                        if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                        if (Vector2.Distance(NPC.Center, n.Center) < 30f * NPC.scale)
                         {
-                            if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 30f * NPC.scale)
-                            {
-                                if (NPC.position.X < Main.npc[i].position.X)
-                                    NPC.velocity.X -= pushVelocity;
-                                else
-                                    NPC.velocity.X += pushVelocity;
+                            if (NPC.position.X < n.position.X)
+                                NPC.velocity.X -= pushVelocity;
+                            else
+                                NPC.velocity.X += pushVelocity;
 
-                                if (NPC.position.Y < Main.npc[i].position.Y)
-                                    NPC.velocity.Y -= pushVelocity;
-                                else
-                                    NPC.velocity.Y += pushVelocity;
-                            }
+                            if (NPC.position.Y < n.position.Y)
+                                NPC.velocity.Y -= pushVelocity;
+                            else
+                                NPC.velocity.Y += pushVelocity;
                         }
                     }
                 }

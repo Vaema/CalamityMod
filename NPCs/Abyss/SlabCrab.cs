@@ -309,7 +309,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer1 && spawnInfo.Water)
             {
-                return SpawnCondition.OceanMonster.Chance;
+                return SpawnCondition.CaveJellyfish.Chance;
             }
             return 0f;
         }
@@ -452,6 +452,13 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1f);
                 }
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    for (int i = 1; i < 5; i++)
+                    {
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SlabCrab" + i).Type, 1f);
+                    }
+                }                
             }
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

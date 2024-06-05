@@ -169,16 +169,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                 bool outsideNoFlyZone = true;
                 if (NPC.position.Y > Main.player[NPC.target].position.Y)
                 {
-                    for (int m = 0; m < 255; m++)
+                    foreach (Player player in Main.ActivePlayers)
                     {
-                        if (Main.player[m].active)
+                        Rectangle noFlyArea = new Rectangle((int)player.position.X - noFlyZone, (int)player.position.Y - noFlyZone, noFlyZone * 2, noFlyZone * 2);
+                        if (rectangle.Intersects(noFlyArea))
                         {
-                            Rectangle noFlyArea = new Rectangle((int)Main.player[m].position.X - noFlyZone, (int)Main.player[m].position.Y - noFlyZone, noFlyZone * 2, noFlyZone * 2);
-                            if (rectangle.Intersects(noFlyArea))
-                            {
-                                outsideNoFlyZone = false;
-                                break;
-                            }
+                            outsideNoFlyZone = false;
+                            break;
                         }
                     }
                     if (outsideNoFlyZone)
@@ -201,7 +198,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.velocity.Y = NPC.velocity.Y + 1f;
                     maxChaseSpeed *= 2f;
                 }
-                if ((double)NPC.position.Y > (double)((Main.maxTilesY - 200) * 16))
+                if ((double)NPC.position.Y > (double)(Main.UnderworldLayer * 16))
                 {
                     for (int a = 0; a < Main.maxNPCs; a++)
                     {

@@ -11,14 +11,13 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SkyStabber : RogueWeapon
     {
-        private static int damage = 50;
         private static int knockBack = 2;
 
         public override void SetDefaults()
         {
             Item.width = 16;
             Item.height = 16;
-            Item.damage = damage;
+            Item.damage = 50;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -26,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = knockBack;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item1;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
@@ -6,6 +7,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -36,10 +38,9 @@ namespace CalamityMod.Items.Accessories
             get
             {
                 bool result = false;
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[i];
-                    if (player is null || !player.active || player.outOfRange || player.dead)
+                    if (player.outOfRange || player.dead)
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
@@ -68,7 +69,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 32;
             Item.height = 40;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
@@ -88,6 +89,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             player.Calamity().pSoulShieldVisible = true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string adrenTooltip = CalamityWorld.revenge ? this.GetLocalizedValue("ShieldAdren") : "";
+            tooltips.FindAndReplace("[ADREN]", adrenTooltip);
         }
 
         public override void AddRecipes()
@@ -110,10 +117,9 @@ namespace CalamityMod.Items.Accessories
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -127,6 +133,7 @@ namespace CalamityMod.Items.Accessories
 
                 // Scale the shield is drawn at.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
+                int i = player.whoAmI;
                 float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + i * 0.2f));
 
                 if (!alreadyDrawnShieldForPlayer)

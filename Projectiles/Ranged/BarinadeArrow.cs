@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector3 DustLight = new Vector3(0.171f, 0.124f, 0.086f);
             Lighting.AddLight(Projectile.Center, DustLight * 3);
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             if (Projectile.timeLeft == 300)
             {

@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             GearTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/WulfrumDiggingTurtle_Gear").Value;
 

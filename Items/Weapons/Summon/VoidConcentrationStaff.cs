@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useTime = Item.useAnimation = 15; // 14 because of useStyle 1
             Item.shoot = ModContent.ProjectileType<VoidConcentrationAura>();
             Item.shootSpeed = 10f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

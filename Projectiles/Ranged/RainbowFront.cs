@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Ranged
             float yVel = y * velocityMult;
             Projectile.velocity.X = xVel;
             Projectile.velocity.Y = yVel;
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.Transparent;

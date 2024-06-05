@@ -56,7 +56,7 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
             Tile tile = Main.tile[i, j];
             if (tile.TileFrameY == 0 && tile.TileFrameX < 18)
             {
-                CalamityUtils.DrawFlameSparks((int)CalamityDusts.SulfurousSeaAcid, 18, i, j);
+                CalamityUtils.DrawFlameSparks((int)CalamityDusts.SulphurousSeaAcid, 18, i, j);
             }
         }
     }

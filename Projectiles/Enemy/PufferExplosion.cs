@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Enemy
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int explodeBrimStyle = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
+                int explodeBrimStyle = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
                 Main.dust[explodeBrimStyle].noGravity = true;
                 Main.dust[explodeBrimStyle].position.X = Projectile.Center.X;
                 Main.dust[explodeBrimStyle].position.Y = Projectile.Center.Y;

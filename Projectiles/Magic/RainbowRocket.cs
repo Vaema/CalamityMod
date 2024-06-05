@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.oldPos[0] = Projectile.position + Projectile.velocity.SafeNormalize(Vector2.Zero) * 50f;
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
 
-            Texture2D rocketTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D rocketTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(rocketTexture,
                              Projectile.Center - Main.screenPosition,
                              rocketTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),

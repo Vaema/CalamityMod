@@ -39,16 +39,16 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 int targetIdx = -1;
                 float npcRange = 150f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && Main.npc[i].CanBeChasedBy(Projectile, false))
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        Vector2 npcPos = Main.npc[i].Center;
+                        Vector2 npcPos = n.Center;
                         float npcDist = Vector2.Distance(npcPos, Projectile.Center);
                         if (npcDist < npcRange && targetIdx == -1 && Collision.CanHitLine(Projectile.Center, 1, 1, npcPos, 1, 1))
                         {
                             npcRange = npcDist;
-                            targetIdx = i;
+                            targetIdx = n.whoAmI;
                         }
                     }
                 }
@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -207,6 +207,9 @@ namespace CalamityMod.Projectiles.Typeless
             player.ManaEffect(25);
 
             int heal = (int)Math.Round(hit.Damage * 0.1);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 

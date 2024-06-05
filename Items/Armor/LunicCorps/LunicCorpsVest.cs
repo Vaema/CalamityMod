@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.defense = 20;
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().donorItem = true;

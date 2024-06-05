@@ -284,7 +284,7 @@ namespace CalamityMod.Projectiles.Summon
                 float num543 = playerDestination.X;
                 float num544 = playerDestination.Y;
                 float num550 = 40f;
-                Vector2 vector43 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 vector43 = Projectile.Center;
                 float num551 = num543 - vector43.X;
                 float num552 = num544 - vector43.Y;
                 float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));

@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 5; i++)
             {
-                int essenceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                int essenceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[essenceDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -68,10 +68,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int j = 0; j < 8; j++)
             {
-                int essenceDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
+                int essenceDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
                 Main.dust[essenceDust2].noGravity = true;
                 Main.dust[essenceDust2].velocity *= 5f;
-                essenceDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                essenceDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[essenceDust2].velocity *= 2f;
             }
         }

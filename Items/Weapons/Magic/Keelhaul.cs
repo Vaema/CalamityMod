@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
 

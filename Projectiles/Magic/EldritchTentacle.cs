@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Magic
                 int scaleLoopCheck = 0;
                 while ((float)scaleLoopCheck < Projectile.scale * 10f)
                 {
-                    int eldritchRed = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
+                    int eldritchRed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
                     Main.dust[eldritchRed].position = (Main.dust[eldritchRed].position + Projectile.Center) / 2f;
                     Main.dust[eldritchRed].noGravity = true;
                     Main.dust[eldritchRed].velocity *= 0.1f;

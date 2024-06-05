@@ -82,11 +82,11 @@ namespace CalamityMod.UI.DraedonSummoning
 
         // This variable is currently permanently set to false due to being deemed unfinished and not fit for release.
         // It used to be a local variable but has been moved to a property so that addon mods can easily enable it.
-        public static bool DraedonTalkFeatureEnabled
+        /*public static bool DraedonTalkFeatureEnabled
         {
             get;
             set;
-        }
+        }*/
 
         public static Vector2 BackgroundCenter => new(500f, Main.screenHeight * 0.5f + 115f);
 
@@ -102,7 +102,7 @@ namespace CalamityMod.UI.DraedonSummoning
         {
             // If not viewing the specific tile entity's interface anymore, if the ID is for some reason invalid, or if the player is not equipped to continue viewing the UI
             // don't do anything other than resetting necessary data.
-            if (!TileEntity.ByID.ContainsKey(ViewedTileEntityID) || TileEntity.ByID[ViewedTileEntityID] is not TECodebreaker codebreakerTileEntity || !Main.LocalPlayer.WithinRange(codebreakerTileEntity.Center, 270f) || !Main.playerInventory)
+            if (!TileEntity.ByID.ContainsKey(ViewedTileEntityID) || TileEntity.ByID[ViewedTileEntityID] is not TECodebreaker codebreakerTileEntity || !Main.LocalPlayer.WithinRange(codebreakerTileEntity.Center, 270f) || !Main.playerInventory || Main.LocalPlayer.channel)
             {
                 VerificationButtonScale = 1f;
                 CancelButtonScale = 0.75f;
@@ -117,6 +117,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 DialogScroller.Reset();
                 TopicOptionsScroller.Reset();
                 DialogVerticalOffset = 0f;
+                DialogOffYCache = 0;
                 OptionsTextVerticalOffset = 0f;
                 DialogHeight = 0f;
                 LatestDialogHeightIncrease = 0f;
@@ -160,7 +161,7 @@ namespace CalamityMod.UI.DraedonSummoning
             DialogHistory.Clear();
 
             bool canSummonDraedon = codebreakerTileEntity.ReadyToSummonDraedon && CalamityWorld.AbleToSummonDraedon;
-            bool canTalkToDraedon = codebreakerTileEntity.ReadyToSummonDraedon && DownedBossSystem.downedExoMechs && DraedonTalkFeatureEnabled;
+            bool canTalkToDraedon = codebreakerTileEntity.ReadyToSummonDraedon && DownedBossSystem.downedExoMechs;
             Vector2 backgroundTopLeft = BackgroundCenter - backgroundTexture.Size() * GeneralScale * 0.5f;
 
             // Draw the cell payment slot icon.

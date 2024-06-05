@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int mistDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 2f);
+                    int mistDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 2f);
                     Main.dust[mistDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {

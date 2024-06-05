@@ -88,6 +88,9 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
             int heal = (int)Math.Round(hit.Damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
@@ -99,6 +102,9 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
             int heal = (int)Math.Round(info.Damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 
@@ -125,14 +131,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
             }
             for (int j = 0; j < 20; j++)
             {
-                int exoDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                int exoDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                 Main.dust[exoDust].noGravity = true;
                 Main.dust[exoDust].velocity *= 3f;
-                exoDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                exoDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 Main.dust[exoDust].velocity *= 2f;
                 Main.dust[exoDust].noGravity = true;
             }

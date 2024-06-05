@@ -14,13 +14,12 @@ namespace CalamityMod.Items.Weapons.Melee
     public class AnarchyBlade : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        private static int BaseDamage = 150;
 
         public override void SetDefaults()
         {
             Item.width = 114;
             Item.height = 122;
-            Item.damage = BaseDamage;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 19;
             Item.useTime = 19;
@@ -29,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 

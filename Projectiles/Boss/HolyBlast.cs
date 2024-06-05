@@ -58,6 +58,16 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.npc[CalamityGlobalNPC.holyBoss].active)
                     Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
             }
+            else if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
+            }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
@@ -75,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
                 int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
                 for (int i = 0; i < 10; i++)
                 {
-                    int holyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
+                    int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
                     Main.dust[holyDust].velocity *= 3f;
                     Main.dust[holyDust].noGravity = true;
                     if (Main.rand.NextBool())
@@ -104,7 +114,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = (Projectile.maxPenetrate != (int)Providence.BossMode.Day) ? ModContent.Request<Texture2D>(Texture).Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
+            Texture2D texture = (Projectile.maxPenetrate != (int)Providence.BossMode.Day) ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
             int framing = texture.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha, true), 4f, texture);
@@ -136,15 +146,15 @@ namespace CalamityMod.Projectiles.Boss
             int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
             for (int j = 0; j < 4; j++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 2f);
                 Main.dust[dust].noGravity = true;
             }
             for (int k = 0; k < 40; k++)
             {
-                int profaned = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 4f);
+                int profaned = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 4f);
                 Main.dust[profaned].noGravity = true;
                 Main.dust[profaned].velocity *= 3f;
-                profaned = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 2f);
+                profaned = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 2f);
                 Main.dust[profaned].velocity *= 2f;
                 Main.dust[profaned].noGravity = true;
             }

@@ -11,12 +11,13 @@ namespace CalamityMod.Items.Accessories
 
         public static readonly int PassthroughDamage = 150;
         public static readonly int SlamDamage = 300;
+        public static readonly int PassthroughIFrames = 5;
 
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Lime;
         }

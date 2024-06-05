@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<CrystallineProj>();
             Item.shootSpeed = 10f;

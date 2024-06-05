@@ -94,13 +94,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     NPC.timeLeft = 750;
             }
 
-            int playerAmt = 0;
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                if (Main.player[i].active && !Main.player[i].dead && (NPC.Center - Main.player[i].Center).Length() < 1000f)
-                    playerAmt++;
-            }
-
+            int playerAmt = Main.CurrentFrameFlags.ActivePlayersCount;
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
@@ -392,7 +386,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
                 for (int i = 0; i < 40; i++)
                 {
-                    int plagueDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 2f);
+                    int plagueDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 2f);
                     Main.dust[plagueDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -403,10 +397,10 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
                 for (int j = 0; j < 70; j++)
                 {
-                    int plagueDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 3f);
+                    int plagueDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 3f);
                     Main.dust[plagueDust2].noGravity = true;
                     Main.dust[plagueDust2].velocity *= 5f;
-                    plagueDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 2f);
+                    plagueDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 2f);
                     Main.dust[plagueDust2].velocity *= 2f;
                 }
             }

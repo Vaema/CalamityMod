@@ -146,6 +146,12 @@ namespace CalamityMod.NPCs.CeaselessVoid
             return minDist <= 50f;
         }
 
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.VortexDebuff, 60, true);
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -291,7 +297,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int purpleDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int purpleDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[purpleDust].velocity *= 3f;
                     Main.dust[purpleDust].noGravity = true;
                     if (Main.rand.NextBool())
@@ -302,10 +308,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int purpleDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int purpleDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[purpleDust2].noGravity = true;
                     Main.dust[purpleDust2].velocity *= 5f;
-                    purpleDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    purpleDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[purpleDust2].noGravity = true;
                     Main.dust[purpleDust2].velocity *= 2f;
                 }

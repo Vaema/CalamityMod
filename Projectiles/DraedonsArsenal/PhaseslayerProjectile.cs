@@ -296,7 +296,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D bladeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PhaseslayerBlade").Value;
-            Texture2D hiltTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D hiltTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (IsSmall)
                 bladeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PhaseslayerBladeSmall").Value;
 

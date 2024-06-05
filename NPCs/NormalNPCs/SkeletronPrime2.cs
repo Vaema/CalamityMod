@@ -18,10 +18,11 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class SkeletronPrime2 : ModNPC
     {
-        public override string Texture => $"Terraria/Images/NPC_{NPCID.SkeletronPrime}";
         public override string BossHeadTexture => $"Terraria/Images/NPC_Head_Boss_18";
 
         public static Asset<Texture2D> EyeTexture;
+
+        public const int BombTimeLeft = 600;
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +31,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
             if (!Main.dedServ)
             {
-                EyeTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/SkeletronPrimeHeadGlow");
+                EyeTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SkeletronPrime2HeadGlow");
             }
         }
 
@@ -99,14 +100,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
 
-            // Get a target
-            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-                NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                NPC.TargetClosest();
-
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -144,17 +137,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
             else
             {
-                // Set target to the lead head's target
-                Main.player[NPC.target] = Main.player[Main.npc[(int)NPC.ai[0]].target];
-
                 // Link the HP of both heads
                 if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                     NPC.life = Main.npc[(int)NPC.ai[0]].life;
 
-                // Push away from the lead head if Mechdusa isn't real
+                // Push away from the lead head if too close, pull closer if too far, if Mechdusa isn't real
                 if (!NPC.IsMechQueenUp)
                 {
-                    float pushVelocity = 0.5f;
+                    float pushVelocity = 0.25f;
                     if (Vector2.Distance(NPC.Center, Main.npc[(int)NPC.ai[0]].Center) < 80f * NPC.scale)
                     {
                         if (NPC.position.X < Main.npc[(int)NPC.ai[0]].position.X)
@@ -166,6 +156,18 @@ namespace CalamityMod.NPCs.NormalNPCs
                             NPC.velocity.Y -= pushVelocity;
                         else
                             NPC.velocity.Y += pushVelocity;
+                    }
+                    else if (Vector2.Distance(NPC.Center, Main.npc[(int)NPC.ai[0]].Center) > 240f * NPC.scale)
+                    {
+                        if (NPC.position.X < Main.npc[(int)NPC.ai[0]].position.X)
+                            NPC.velocity.X += pushVelocity;
+                        else
+                            NPC.velocity.X -= pushVelocity;
+
+                        if (NPC.position.Y < Main.npc[(int)NPC.ai[0]].position.Y)
+                            NPC.velocity.Y += pushVelocity;
+                        else
+                            NPC.velocity.Y -= pushVelocity;
                     }
                 }
             }
@@ -203,7 +205,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Phases
             bool phase2 = lifeRatio < 0.66f;
             bool phase3 = lifeRatio < 0.33f;
-            bool spawnSpazmatism = phase3 && !bossRush && NPC.localAI[2] == 0f;
+            bool spawnSpazmatism = lifeRatio < 0.5f && !bossRush && NPC.localAI[2] == 0f;
 
             // Spawn Spazmatism in Master Mode (just like Oblivion from Avalon)
             if (spawnSpazmatism)
@@ -218,15 +220,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             // Despawn
-            if (Main.player[NPC.target].dead || Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) > 6000f || Math.Abs(NPC.Center.Y - Main.player[NPC.target].Center.Y) > 6000f)
-            {
-                NPC.TargetClosest();
-                if (Main.player[NPC.target].dead || Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) > 6000f || Math.Abs(NPC.Center.Y - Main.player[NPC.target].Center.Y) > 6000f)
-                    NPC.ai[1] = 3f;
-            }
+            if (Main.npc[(int)NPC.ai[0]].ai[1] == 3f)
+                NPC.ai[1] = 3f;
 
             // Activate daytime enrage
-            if (Main.dayTime && !bossRush && NPC.ai[1] != 3f && NPC.ai[1] != 2f)
+            if (Main.IsItDay() && !bossRush && NPC.ai[1] != 3f && NPC.ai[1] != 2f)
             {
                 // Heal
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -259,6 +257,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             bool normalLaserRotation = NPC.localAI[1] % 2f == 0f;
 
+            // Prevents cheap hits
+            bool canUseAttackInMaster = NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 350f;
+
             // Float near player
             if (NPC.ai[1] == 0f || NPC.ai[1] == 4f)
             {
@@ -266,30 +267,33 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.damage = 0;
 
                 // Start other phases; if arms are dead, start with spin phase
-                bool otherHeadIsPreparingToSpin = Main.npc[(int)NPC.ai[0]].ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f));
-                bool otherHeadChargingOrSpinning = Main.npc[(int)NPC.ai[0]].ai[1] == 5f || Main.npc[(int)NPC.ai[0]].ai[1] == 1f || otherHeadIsPreparingToSpin;
-                if (phase2 || CalamityWorld.LegendaryMode || allArmsDead)
+                bool otherHeadChargingOrSpinning = Main.npc[(int)NPC.ai[0]].ai[1] == 5f || Main.npc[(int)NPC.ai[0]].ai[1] == 1f;
+
+                // Start spin phase after 1.875 seconds
+                NPC.ai[2] += phase3 ? 1.2f : 0.8f;
+                if (NPC.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
                 {
-                    // Start spin phase after 1.875 seconds
-                    NPC.ai[2] += phase3 ? 1.2f : 0.8f;
-                    if (NPC.ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3))
+                    bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 400f &&
+                        Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) > 400f;
+
+                    bool shouldCharge = !phase2 && !allArmsDead && !CalamityWorld.LegendaryMode;
+                    if (shouldCharge)
                     {
-                        bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[NPC.target].position.Y - 400f &&
-                            Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 400f;
-
-                        if (shouldSpinAround || NPC.ai[1] != 4f)
+                        NPC.ai[2] = 0f;
+                        NPC.ai[1] = 1f;
+                        NPC.netUpdate = true;
+                    }
+                    else if (shouldSpinAround || NPC.ai[1] != 4f)
+                    {
+                        if (shouldSpinAround)
                         {
-                            if (shouldSpinAround)
-                            {
-                                NPC.localAI[3] = 300f;
-                                NPC.SyncVanillaLocalAI();
-                            }
-
-                            NPC.ai[2] = 0f;
-                            NPC.ai[1] = shouldSpinAround ? 5f : 1f;
-                            NPC.TargetClosest();
-                            NPC.netUpdate = true;
+                            NPC.localAI[3] = 300f;
+                            NPC.SyncVanillaLocalAI();
                         }
+
+                        NPC.ai[2] = 0f;
+                        NPC.ai[1] = shouldSpinAround ? 5f : 1f;
+                        NPC.netUpdate = true;
                     }
                 }
 
@@ -299,22 +303,30 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.rotation = NPC.velocity.X / 15f;
 
                 float acceleration = (bossRush ? 0.2f : 0.125f) + (death ? 0.05f * (1f - lifeRatio) : 0f);
+                float accelerationMult = 1f;
                 if (!cannonAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!laserAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!viceAlive)
                     acceleration += 0.025f;
                 if (!sawAlive)
                     acceleration += 0.025f;
+                acceleration *= accelerationMult;
 
                 float topVelocity = acceleration * 100f;
-                float deceleration = 0.8f;
+                float deceleration = 0.7f;
 
                 float headDecelerationUpDist = 0f;
                 float headDecelerationDownDist = 0f;
                 float headDecelerationHorizontalDist = 0f;
-                int headHorizontalDirection = ((!(Main.player[NPC.target].Center.X < NPC.Center.X)) ? 1 : (-1));
+                int headHorizontalDirection = ((!(Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X < NPC.Center.X)) ? 1 : (-1));
                 if (NPC.IsMechQueenUp)
                 {
                     headDecelerationHorizontalDist = -150f * (float)headHorizontalDirection;
@@ -322,7 +334,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     headDecelerationDownDist = 50f;
                 }
 
-                if (NPC.position.Y > Main.player[NPC.target].position.Y - (400f + headDecelerationUpDist))
+                if (NPC.position.Y > Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (400f + headDecelerationUpDist))
                 {
                     if (NPC.velocity.Y > 0f)
                         NPC.velocity.Y *= deceleration;
@@ -332,7 +344,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.velocity.Y > topVelocity)
                         NPC.velocity.Y = topVelocity;
                 }
-                else if (NPC.position.Y < Main.player[NPC.target].position.Y - (450f + headDecelerationDownDist))
+                else if (NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (450f + headDecelerationDownDist))
                 {
                     if (NPC.velocity.Y < 0f)
                         NPC.velocity.Y *= deceleration;
@@ -343,7 +355,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         NPC.velocity.Y = -topVelocity;
                 }
 
-                if (NPC.Center.X > Main.player[NPC.target].Center.X + (400f + headDecelerationHorizontalDist))
+                if (NPC.Center.X > Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X + (400f + headDecelerationHorizontalDist))
                 {
                     if (NPC.velocity.X > 0f)
                         NPC.velocity.X *= deceleration;
@@ -353,7 +365,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.velocity.X > topVelocity)
                         NPC.velocity.X = topVelocity;
                 }
-                if (NPC.Center.X < Main.player[NPC.target].Center.X - (400f + headDecelerationHorizontalDist))
+                if (NPC.Center.X < Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X - (400f + headDecelerationHorizontalDist))
                 {
                     if (NPC.velocity.X < 0f)
                         NPC.velocity.X *= deceleration;
@@ -382,7 +394,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         {
                             NPC.localAI[0] = 0f;
 
-                            int totalProjectiles = bossRush ? 20 : death ? 15 : 10;
+                            int totalProjectiles = bossRush ? 20 : death ? 12 : 10;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = ProjectileID.FrostBeam;
                             int damage = NPC.GetProjectileDamage(type);
@@ -424,7 +436,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.ai[2] >= (phaseTimer - (death ? 60f * (1f - lifeRatio) : 0f)))
                     {
-                        NPC.TargetClosest();
                         NPC.ai[2] = 0f;
                         NPC.ai[1] = 4f;
                         NPC.localAI[0] = 0f;
@@ -436,8 +447,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         NPC.rotation += NPC.direction * 0.3f;
 
                     Vector2 headPosition = NPC.Center;
-                    float headTargetX = Main.player[NPC.target].Center.X - headPosition.X;
-                    float headTargetY = Main.player[NPC.target].Center.Y - headPosition.Y;
+                    float headTargetX = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X - headPosition.X;
+                    float headTargetY = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - headPosition.Y;
                     float headTargetDistance = (float)Math.Sqrt(headTargetX * headTargetX + headTargetY * headTargetY);
 
                     float speed = bossRush ? 12f : 8f;
@@ -464,7 +475,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.IsMechQueenUp)
                     {
-                        float mechdusaAccelMult = Vector2.Distance(NPC.Center, Main.player[NPC.target].Center);
+                        float mechdusaAccelMult = Vector2.Distance(NPC.Center, Main.player[Main.npc[(int)NPC.ai[0]].target].Center);
                         if (mechdusaAccelMult < 0.1f)
                             mechdusaAccelMult = 0f;
 
@@ -489,8 +500,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         NPC.rotation += NPC.direction * 0.3f;
 
                     Vector2 enragedHeadPosition = NPC.Center;
-                    float enragedHeadTargetX = Main.player[NPC.target].Center.X - enragedHeadPosition.X;
-                    float enragedHeadTargetY = Main.player[NPC.target].Center.Y - enragedHeadPosition.Y;
+                    float enragedHeadTargetX = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X - enragedHeadPosition.X;
+                    float enragedHeadTargetY = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - enragedHeadPosition.Y;
                     float enragedHeadTargetDist = (float)Math.Sqrt(enragedHeadTargetX * enragedHeadTargetX + enragedHeadTargetY * enragedHeadTargetY);
 
                     float enragedHeadSpeed = 10f;
@@ -511,11 +522,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                         {
                             NPC.localAI[0] = 0f;
                             Vector2 headCenter = NPC.Center;
-                            if (Collision.CanHit(headCenter, 1, 1, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                            if (Collision.CanHit(headCenter, 1, 1, Main.player[Main.npc[(int)NPC.ai[0]].target].position, Main.player[Main.npc[(int)NPC.ai[0]].target].width, Main.player[Main.npc[(int)NPC.ai[0]].target].height))
                             {
                                 enragedHeadSpeed = 7f;
-                                float enragedHeadSkullTargetX = Main.player[NPC.target].Center.X - headCenter.X + Main.rand.Next(-20, 21);
-                                float enragedHeadSkullTargetY = Main.player[NPC.target].Center.Y - headCenter.Y + Main.rand.Next(-20, 21);
+                                float enragedHeadSkullTargetX = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X - headCenter.X + Main.rand.Next(-20, 21);
+                                float enragedHeadSkullTargetY = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - headCenter.Y + Main.rand.Next(-20, 21);
                                 float enragedHeadSkullTargetDist = (float)Math.Sqrt(enragedHeadSkullTargetX * enragedHeadSkullTargetX + enragedHeadSkullTargetY * enragedHeadSkullTargetY);
                                 enragedHeadSkullTargetDist = enragedHeadSpeed / enragedHeadSkullTargetDist;
                                 enragedHeadSkullTargetX *= enragedHeadSkullTargetDist;
@@ -592,9 +603,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.rotation = NPC.velocity.X / 50f;
 
-                    float bombSpawnDivisor = bossRush ? 14f : death ? 22f - (float)Math.Round(8f * (1f - lifeRatio)) : 22f;
+                    float bombSpawnDivisor = bossRush ? 14f : death ? 22f - (float)Math.Round(5f * (1f - lifeRatio)) : 22f;
                     float totalBombs = 6f;
-                    int bombSpread = bossRush ? 250 : death ? 150 : 100;
+                    int bombSpread = bossRush ? 250 : death ? 125 : 100;
 
                     // Spin for about 3 seconds
                     float spinVelocity = 24f;
@@ -604,12 +615,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                         SoundEngine.PlaySound(SoundID.ForceRoar, NPC.Center);
 
                         // Set spin direction
-                        if (Main.player[NPC.target].velocity.X > 0f)
+                        if (Main.player[Main.npc[(int)NPC.ai[0]].target].velocity.X > 0f)
                             calamityGlobalNPC.newAI[0] = 1f;
-                        else if (Main.player[NPC.target].velocity.X < 0f)
+                        else if (Main.player[Main.npc[(int)NPC.ai[0]].target].velocity.X < 0f)
                             calamityGlobalNPC.newAI[0] = -1f;
                         else
-                            calamityGlobalNPC.newAI[0] = Main.player[NPC.target].direction;
+                            calamityGlobalNPC.newAI[0] = Main.player[Main.npc[(int)NPC.ai[0]].target].direction;
 
                         // Set spin velocity
                         NPC.velocity.X = MathHelper.Pi * NPC.localAI[3] / spinVelocity;
@@ -629,7 +640,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         {
                             NPC.localAI[0] += 1f;
 
-                            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 64f)
+                            if (Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) > 64f)
                             {
                                 SoundEngine.PlaySound(SoundID.Item61, NPC.Center);
                                 CreateParticles(NPC, new Vector2(NPC.Center.X + Main.rand.Next(NPC.width / 2), NPC.Center.Y + 4f));
@@ -637,9 +648,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     Vector2 headCenter = NPC.Center;
-                                    float enragedHeadSpeed = 6f + (death ? 3f * (1f - lifeRatio) : 0f);
-                                    float enragedHeadBombTargetX = Main.player[NPC.target].Center.X - headCenter.X + Main.rand.Next(-20, 21);
-                                    float enragedHeadBombTargetY = Main.player[NPC.target].Center.Y - headCenter.Y + Main.rand.Next(-20, 21);
+                                    float enragedHeadSpeed = 6f + (death ? 2f * (1f - lifeRatio) : 0f);
+                                    float enragedHeadBombTargetX = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X - headCenter.X + Main.rand.Next(-20, 21);
+                                    float enragedHeadBombTargetY = Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - headCenter.Y + Main.rand.Next(-20, 21);
                                     float enragedHeadBombTargetDist = (float)Math.Sqrt(enragedHeadBombTargetX * enragedHeadBombTargetX + enragedHeadBombTargetY * enragedHeadBombTargetY);
                                     enragedHeadBombTargetDist = enragedHeadSpeed / enragedHeadBombTargetDist;
                                     enragedHeadBombTargetX *= enragedHeadBombTargetDist;
@@ -665,7 +676,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     }
 
                                     int enragedBombs = Projectile.NewProjectile(NPC.GetSource_FromAI(), headCenter.X, headCenter.Y + 30f, enragedHeadBombTargetX, enragedHeadBombTargetY, type, damage, 0f, Main.myPlayer, -1f);
-                                    Main.projectile[enragedBombs].timeLeft = 600;
+                                    Main.projectile[enragedBombs].timeLeft = BombTimeLeft;
                                     Main.projectile[enragedBombs].tileCollide = false;
                                 }
                             }
@@ -683,7 +694,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 calamityGlobalNPC.newAI[0] = 0f;
                                 NPC.SyncVanillaLocalAI();
                                 NPC.SyncExtraAI();
-                                NPC.TargetClosest();
                                 NPC.netUpdate = true;
                             }
                         }
@@ -701,14 +711,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                     float flightVelocity = bossRush ? 32f : death ? 28f : 24f;
                     float flightAcceleration = bossRush ? 1.28f : death ? 1.12f : 0.96f;
 
-                    Vector2 destination = new Vector2(Main.player[NPC.target].Center.X, Main.player[NPC.target].Center.Y - 500f);
+                    Vector2 destination = new Vector2(Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X, Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - 500f);
                     NPC.SimpleFlyMovement((destination - NPC.Center).SafeNormalize(Vector2.UnitY) * flightVelocity, flightAcceleration);
 
                     // Spit bombs and then go to floating phase
                     NPC.localAI[3] += 1f;
                     if (Vector2.Distance(NPC.Center, destination) < 160f || NPC.ai[2] > 0f || NPC.localAI[3] > 120f)
                     {
-                        float bombSpawnDivisor = death ? 40f : 60f;
+                        float bombSpawnDivisor = death ? 50f : 60f;
                         float totalBombSpreads = 2f;
                         NPC.ai[2] += 1f;
                         if (NPC.ai[2] % bombSpawnDivisor == 0f)
@@ -743,7 +753,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 {
                                     Vector2 bombVelocity = spinningPoint.RotatedBy(radians * k);
                                     int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 30f + bombVelocity.SafeNormalize(Vector2.UnitY) * 15f, bombVelocity - upwardVelocity, type, damage, 0f, Main.myPlayer, -2f);
-                                    Main.projectile[proj].timeLeft = 900;
+                                    Main.projectile[proj].timeLeft = BombTimeLeft;
                                     Main.projectile[proj].tileCollide = false;
                                 }
                                 NPC.localAI[1] += 1f;
@@ -761,7 +771,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 NPC.localAI[0] = 0f;
                                 NPC.SyncVanillaLocalAI();
                                 NPC.SyncExtraAI();
-                                NPC.TargetClosest();
                                 NPC.netUpdate = true;
                             }
                         }

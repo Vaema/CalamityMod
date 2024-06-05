@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 42;
             Item.height = 38;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
             Item.Calamity().devItem = true;

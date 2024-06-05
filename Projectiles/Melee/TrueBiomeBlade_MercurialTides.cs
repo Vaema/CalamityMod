@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
 
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
@@ -234,7 +234,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Owner.GiveIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
+            // 17APR2024: Ozzatron: True Biome Blade's shockwave slam gives iframes when striking enemies in a similar manner to a ram dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

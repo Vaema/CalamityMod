@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.velocity *= 0.95f;
 
             Projectile.HealingProjectile(3, (int)Projectile.ai[0], 6f, 15f, false);
-            int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 1f);
+            int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 1f);
             Dust dust = Main.dust[dusty];
             dust.noGravity = true;
             dust.position.X -= Projectile.velocity.X * 0.2f;

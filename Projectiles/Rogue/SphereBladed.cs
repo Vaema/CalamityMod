@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
             else
             {
                 float acceleration = 3.2f;
-                Vector2 vector2 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 vector2 = Projectile.Center;
                 float xdistance = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - vector2.X;
                 float ydistance = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - vector2.Y;
                 float totalDist = (float)Math.Sqrt((double)(xdistance * xdistance + ydistance * ydistance));

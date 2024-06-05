@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 30; i++)
                 {
-                    int soulDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                    int soulDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                     Main.dust[soulDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -41,10 +41,10 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 for (int j = 0; j < 50; j++)
                 {
-                    int soulDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
+                    int soulDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
                     Main.dust[soulDust2].noGravity = true;
                     Main.dust[soulDust2].velocity *= 5f;
-                    soulDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                    soulDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                     Main.dust[soulDust2].velocity *= 2f;
                 }
             }

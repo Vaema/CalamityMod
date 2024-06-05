@@ -14,11 +14,12 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
+        public static float MaxCharge = 90f;
         public static int OriginalUseTime = 34;
 
         public override void SetDefaults()
         {
-            Item.damage = 323;
+            Item.damage = 92;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = OriginalUseTime;
             Item.shoot = ProjectileType<TheHiveHoldout>();
@@ -32,11 +33,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.useAmmo = AmmoID.Rocket;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
         }
+
+        // Terraria seems to really dislike high crit values in SetDefaults
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 

@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<EndoCooperBody>();
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -49,7 +49,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                player.itemTime = Item.useTime;
                 CalamityUtils.KillShootProjectileMany(player, new int[]
                 {
                     type,

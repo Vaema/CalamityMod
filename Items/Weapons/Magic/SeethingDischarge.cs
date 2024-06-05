@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.knockBack = 6.75f;
             Item.UseSound = CommonCalamitySounds.FlareSound;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SeethingDischargeBrimstoneBarrage>();

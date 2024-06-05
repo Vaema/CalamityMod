@@ -26,7 +26,7 @@ namespace CalamityMod.Items.SummonItems
         public int spawnYAdd = 0;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 10; // Pirate Map
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Pirate Map (1 above Mechanical Skull)
         }
 
         public override void SetDefaults()
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.dayTime && !NPC.AnyNPCs(ModContent.NPCType<CalamitasClone>()) && !BossRushEvent.BossRushActive;
+            return !Main.IsItDay() && !NPC.AnyNPCs(ModContent.NPCType<CalamitasClone>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)

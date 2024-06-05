@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.height = 36;
             Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 9;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 15;
             Item.useTime = 15;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             CreateRecipe().
                 AddRecipeGroup("AnyCobaltBar", 10).
-                AddIngredient<Stardust>(20).
+                AddIngredient<StarblightSoot>(20).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             if (Main.rand.NextBool(4))
             {
-                int fieryDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
+                int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
                 if (Main.rand.NextBool(4))
                 {
                     Main.dust[fieryDust].scale *= 0.35f;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Main.dust[fieryDust].velocity *= 0f;
             }
 
-            Vector2 goreVec = new Vector2(Projectile.position.X, Projectile.position.Y);
+            Vector2 goreVec = Projectile.position;
             if (Main.rand.NextBool(8) && Main.netMode != NetmodeID.Server)
             {
                 int smoke = Gore.NewGore(Projectile.GetSource_FromAI(), goreVec, default, Main.rand.Next(375, 378), 0.75f);

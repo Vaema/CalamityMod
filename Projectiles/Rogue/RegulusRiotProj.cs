@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     float homeSpeed = 24f;
                     float turnMult = 10f;
-                    Vector2 projCenter = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 projCenter = Projectile.Center;
                     float xDist = targetCenter.X - projCenter.X;
                     float yDist = targetCenter.Y - projCenter.Y;
                     float totalDist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));

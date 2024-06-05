@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,8 +29,8 @@ namespace CalamityMod.Items.Accessories
             Item.height = 26;
             Item.accessory = true;
 
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
         }
 

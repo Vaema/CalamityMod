@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 10; i++)
             {
-                int godSlay = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -64,10 +64,10 @@ namespace CalamityMod.Projectiles.Healing
             }
             for (int j = 0; j < 15; j++)
             {
-                int godSlay2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
+                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
                 Main.dust[godSlay2].noGravity = true;
                 Main.dust[godSlay2].velocity *= 5f;
-                godSlay2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay2].velocity *= 2f;
             }
         }

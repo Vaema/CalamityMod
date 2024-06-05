@@ -482,7 +482,7 @@ namespace CalamityMod.NPCs.OldDuke
                 int onHitDust = 0;
                 while (onHitDust < hit.Damage / NPC.lifeMax * 100.0)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                     onHitDust++;
                 }
             }
@@ -490,7 +490,7 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 for (int r = 0; r < 150; r++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, 2 * hit.HitDirection, -2f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, 2 * hit.HitDirection, -2f, 0, default, 1f);
                 }
 
                 if (Main.netMode != NetmodeID.Server)

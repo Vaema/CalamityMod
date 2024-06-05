@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
             Item.width = 18;
             Item.height = 18;
             Item.defense = 17;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }

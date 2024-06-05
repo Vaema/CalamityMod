@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.SniperRifle).
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<AureusCell>(5).
-                AddIngredient<Stardust>(50).
+                AddIngredient<StarblightSoot>(50).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -105,8 +105,8 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] == 1f)
             {
                 Projectile.penetrate = -1;
+                Projectile.velocity *= 1.05f;
                 Projectile.alpha += 1;
-                Projectile.damage = (int)Math.Ceiling(Projectile.damage * 0.992); //Exponentially decays to a factor of 0.12896 of the original damage
                 if (Projectile.alpha >= 255)
                 {
                     Projectile.Kill();
@@ -141,15 +141,15 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCDeath52, Projectile.Center);
             for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
             }
             for (int i = 0; i < 30; i++)
             {
                 float angle = MathHelper.TwoPi * i / 30f;
-                int dustIndex = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 0, default, 2.5f);
+                int dustIndex = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 0, default, 2.5f);
                 Main.dust[dustIndex].noGravity = true;
                 Main.dust[dustIndex].velocity *= 3f;
-                dustIndex = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
+                dustIndex = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
                 Main.dust[dustIndex].velocity *= 2f;
                 Main.dust[dustIndex].noGravity = true;
                 Dust.NewDust(Projectile.Center + angle.ToRotationVector2() * 160f, 0, 0, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);

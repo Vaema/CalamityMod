@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Projectile.frame = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.alpha -= 6;
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] <= 20f)

@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
 
             for (int i = 0; i < 2; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.3f;
             }
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Boss
             //SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             for (int i = 0; i < 5; i++)
             {
-                int iceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Frost, 0f, 0f, 0, default, 1f);
+                int iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Frost, 0f, 0f, 0, default, 1f);
                 if (!Main.rand.NextBool(3))
                 {
                     Dust dust = Main.dust[iceDust];

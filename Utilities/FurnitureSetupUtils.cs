@@ -1179,7 +1179,8 @@ namespace CalamityMod
         /// <param name="mt">The ModTile which is being initialized.</param>
         /// <param name="itemDropID">The ID of the item this tile drops when broken.</param>
         /// <param name="mapColor">The map color of the tile.</param>
-        internal static void SetUpFountain(this ModTile mt, int itemDropID, Color mapColor)
+        /// <param name="lava">Whether or not the type of fountain is lava.</param>
+        internal static void SetUpFountain(this ModTile mt, int itemDropID, Color mapColor, bool lava = false)
         {
             mt.RegisterItemDrop(itemDropID);
 
@@ -1203,7 +1204,7 @@ namespace CalamityMod
             TileObjectData.newTile.StyleLineSkip = 2;
             TileObjectData.addTile(mt.Type);
 
-            mt.AddMapEntry(mapColor, Language.GetText("MapObject.WaterFountain"));
+            mt.AddMapEntry(mapColor, lava ? CalamityUtils.GetText("Tiles.LavaFountain") : Language.GetText("MapObject.WaterFountain"));
             mt.AnimationFrameHeight = 72;
         }
 
@@ -1395,8 +1396,8 @@ namespace CalamityMod
             Main.tileLavaDeath[mt.Type] = !lavaImmune;
             Main.tileWaterDeath[mt.Type] = false;
             TileID.Sets.CountsAsWaterSource[mt.Type] = water;
-            TileID.Sets.CountsAsHoneySource[mt.Type] = lava;
-            TileID.Sets.CountsAsLavaSource[mt.Type] = honey;
+            TileID.Sets.CountsAsLavaSource[mt.Type] = lava;
+            TileID.Sets.CountsAsHoneySource[mt.Type] = honey;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.LavaDeath = !lavaImmune;
             TileObjectData.newTile.LavaPlacement = lavaImmune ? LiquidPlacement.Allowed : LiquidPlacement.NotAllowed;

@@ -27,6 +27,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = false;
+            Item.UseSound = SoundID.Zombie67;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

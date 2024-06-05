@@ -50,6 +50,11 @@ CinderArrow: {
 	Tooltip: Explosive arrows that burst into weak flaming shards that inflict Brimstone Flames
 }
 
+DryadsTear: {
+	DisplayName: Dryad's Tear
+	Tooltip: Splits into homing nature shards on impact which ignore enemy defense
+}
+
 ElysianArrow: {
 	DisplayName: Elysian Arrow
 	Tooltip:
@@ -98,7 +103,7 @@ HailstormBullet: {
 		'''
 		Bullets imbued with potent ice magic
 		These bullets rapidly decelerate after being fired
-		Critical hits cause a flash freeze, dealing additional damage
+		Critical hits cause a flash freeze, dealing additional damage and freezing normal enemies
 		'''
 }
 
@@ -150,18 +155,13 @@ RubberMortarRound: {
 		'''
 }
 
-TerraArrow: {
-	DisplayName: Terra Arrow
+SproutingArrow: {
+	DisplayName: Sprouting Arrow
 	Tooltip:
 		'''
 		Fires an energy arrow that quickly splits into two arrows
 		These arrows ignore 8 points of defense
 		'''
-}
-
-TerraBullet: {
-	DisplayName: Terra Bullet
-	Tooltip: Explodes and splits into homing terra shards on impact
 }
 
 VanquisherArrow: {
@@ -173,11 +173,12 @@ VanquisherArrow: {
 		'''
 }
 
-VeriumBullet: {
-	DisplayName: Verium Bullet
+VeriumBolt: {
+	DisplayName: Verium Bolt
 	Tooltip:
 		'''
-		There is no escape!
-		Homes in after striking an enemy
+		Marks enemies on hit, dealing extra damage after a short time
+		This damage stacks based on how many bolts hit the enemy
+		'There is no escape...'
 		'''
 }

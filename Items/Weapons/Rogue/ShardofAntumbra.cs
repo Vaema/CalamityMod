@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.autoReuse = true;
             Item.maxStack = 9999;
             Item.value = 10000;
-            Item.rare = ItemRarityID.Cyan;
+            Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<AntumbraShardProjectile>();
             Item.shootSpeed = 24f;
             Item.DamageType = RogueDamageClass.Instance;

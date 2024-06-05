@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D ring = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D ring = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D symbol = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnReticleSymbol").Value;
             Main.EntitySpriteDraw(symbol,
                              Projectile.Center - Main.screenPosition,

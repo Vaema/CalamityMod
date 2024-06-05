@@ -11,10 +11,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.Audio;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.NPCs;
 using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Boss
@@ -57,10 +53,10 @@ namespace CalamityMod.Projectiles.Boss
 
             if (!withinRange)
             {
-                if (Projectile.ai[1] == 1f)
+                if (Projectile.ai[2] == 1f)
                     Projectile.Opacity = MathHelper.Clamp(Projectile.timeLeft / 60f, 0f, 1f);
                 else
-                    Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - 60) / 60f), 0f, 1f);
+                    Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - 130) / 20f), 0f, 1f);
             }
 
             Lighting.AddLight(Projectile.Center, 0.9f * Projectile.Opacity, 0f, 0f);
@@ -92,9 +88,9 @@ namespace CalamityMod.Projectiles.Boss
             else
                 targetDist = 1000;
 
-            if (!withinRange)
+            if (Projectile.ai[1] == 2f && !withinRange && Main.rand.NextBool())
             {
-                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(30, 30), -Projectile.velocity * Main.rand.NextFloat(0.3f, 1.9f), false, 14, Main.rand.NextFloat(0.5f, 0.75f), (Main.rand.NextBool(4) ? new Color(121, 21, 77) :Color.Red) * Projectile.Opacity, true, true);
+                SparkParticle orb = new SparkParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(30, 30), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), false, 14, Main.rand.NextFloat(0.5f, 0.75f), (Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.5f) : Color.Red) * Projectile.Opacity);
                 GeneralParticleHandler.SpawnParticle(orb);
             }
             if ((Projectile.timeLeft == 1 && !withinRange) || (targetDist < 224 && Projectile.Opacity == 1f)) // When within 14 blocks of player or when it runs out of time
@@ -106,9 +102,9 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 withinRange = true;
             }
-            if (withinRange && Projectile.ai[1] == 0)
+            if (withinRange && Projectile.ai[2] == 0f)
             {
-                Projectile.velocity *= 0.95f;
+                Projectile.velocity *= 0.9f;
                 for (int i = 0; i < 2; i++)
                 {
                     Dust failShotDust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 60 : 114);
@@ -129,7 +125,7 @@ namespace CalamityMod.Projectiles.Boss
                     {
                         Particle bloom = new BloomParticle(Projectile.Center, Vector2.Zero, new Color(121, 21, 77), 0.1f, 0.85f, 30, false);
                         GeneralParticleHandler.SpawnParticle(bloom);
-                        if (Projectile.ai[1] == 1)
+                        if (Projectile.ai[2] == 1f)
                             bloom.Lifetime = 0;
                     }
                 }
@@ -148,12 +144,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = frameHeight * Projectile.frame;
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            if (CalamityGlobalNPC.SCal != -1)
+            if (CalamityGlobalNPC.SCal != -1 && NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) == true)
             {
                 if (Main.npc[CalamityGlobalNPC.SCal].active)
                 {
@@ -186,7 +182,7 @@ namespace CalamityMod.Projectiles.Boss
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
 
-            if (Projectile.ai[1] == 0f)
+            if (Projectile.ai[2] == 0f)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
@@ -198,32 +194,26 @@ namespace CalamityMod.Projectiles.Boss
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, 1f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, Projectile.ai[1], velocity * 1.5f);
                     }
                 }
-            }
 
-            int dustType = (int)CalamityDusts.Brimstone;
-            if (CalamityGlobalNPC.SCal != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.SCal].active)
+                if (Projectile.ai[1] == 2f)
                 {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().cirrus)
-                        dustType = (int)CalamityDusts.PurpleCosmilite;
+                    for (int i = 0; i < 25; i++)
+                    {
+                        Vector2 velocity = new Vector2(15, 15).RotatedByRandom(100);
+                        PointParticle spark2 = new PointParticle(Projectile.Center + velocity, velocity * Main.rand.NextFloat(0.3f, 1f), false, 15, 1.25f, (Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.5f) : Color.Red) * 0.6f);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                    }
+                    for (int i = 0; i < 25; i++)
+                    {
+                        Dust failShotDust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 60 : 114);
+                        failShotDust.noGravity = true;
+                        failShotDust.velocity = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.3f);
+                        failShotDust.scale = Main.rand.NextFloat(0.9f, 1.8f);
+                    }
                 }
-            }
-
-            for (int j = 0; j < 2; j++)
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1f);
-
-            for (int k = 0; k < 20; k++)
-            {
-                int redFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1.5f);
-                Main.dust[redFire].noGravity = true;
-                Main.dust[redFire].velocity *= 3f;
-                redFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1f);
-                Main.dust[redFire].velocity *= 2f;
-                Main.dust[redFire].noGravity = true;
             }
         }
     }

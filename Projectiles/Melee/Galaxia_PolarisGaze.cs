@@ -82,7 +82,11 @@ namespace CalamityMod.Projectiles.Melee
                         Dashing = true;
                         DashStart = Owner.Center;
                         Wheel.timeLeft = 60;
-                        Owner.GiveIFrames(FourSeasonsGalaxia.PolarisAttunement_SlashIFrames);
+
+                        // 17APR2024: Ozzatron: Galaxia's spiral gives iframes when striking enemies in a similar manner to a ram dash.
+                        // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                        Owner.GiveUniversalIFrames(FourSeasonsGalaxia.PolarisAttunement_SlashIFrames);
+
                         break;
                     }
                 }
@@ -204,7 +208,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
@@ -269,7 +273,11 @@ namespace CalamityMod.Projectiles.Melee
                 Shred += 80; //Augment the shredspeed
                 if (Owner.velocity.Y > 0)
                     Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
-                Owner.GiveIFrames(FourSeasonsGalaxia.PolarisAttunement_ShredIFrames); // i framez.
+
+                // 17APR2024: Ozzatron: Galaxia's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                Owner.GiveUniversalIFrames(FourSeasonsGalaxia.PolarisAttunement_ShredIFrames);
+
                 HitChargeCooldown = 20;
             }
         }

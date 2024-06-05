@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             }
 
             Projectile.velocity.Y += 0.01f;

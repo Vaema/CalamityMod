@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,8 +21,14 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 25;
             Item.shootSpeed = 14.5f;
             Item.shoot = ModContent.ProjectileType<HeronBobber>();
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(47f, -33f);
+            lineColor = new Color(101, 149, 154, 100);
         }
 
         public override void AddRecipes()

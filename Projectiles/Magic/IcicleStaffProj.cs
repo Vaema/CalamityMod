@@ -23,13 +23,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 0.75f);
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 0.75f);
                     Main.dust[icyDust].noGravity = true;
                     Main.dust[icyDust].velocity *= 0f;
                 }

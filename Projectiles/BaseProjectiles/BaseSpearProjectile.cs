@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             if (SpearAiType == SpearType.TypicalSpear)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 Vector2 drawPosition = Projectile.Center - Main.screenPosition;
                 Vector2 origin = Vector2.Zero;
                 Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, 0, 0);

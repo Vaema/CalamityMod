@@ -32,6 +32,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 5;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.extraUpdates = 1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()

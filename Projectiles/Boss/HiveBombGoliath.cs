@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[smoke].noGravity = true;
                 Main.dust[smoke].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -165,7 +165,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
             {
-                Vector2 valueBoom = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 valueBoom = Projectile.Center;
                 float spreadBoom = 15f * 0.0174f;
                 double startAngleBoom = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spreadBoom / 2;
                 double deltaAngleBoom = spreadBoom / 8f;

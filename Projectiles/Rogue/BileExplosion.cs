@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             for (int i = 0; i < 15; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = Projectile.width / 33.333f * Vector2.One.RotatedByRandom(MathHelper.TwoPi);
                 dust.scale = Projectile.width == 120 ? 3.1f : 2.2f;
                 dust.noGravity = true;

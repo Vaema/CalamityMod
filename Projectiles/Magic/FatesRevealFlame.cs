@@ -143,13 +143,13 @@ namespace CalamityMod.Projectiles.Magic
             int inc;
             for (int i = 0; i < 3; i = inc + 1)
             {
-                int redFate = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
+                int redFate = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
                 Main.dust[redFate].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 inc = i;
             }
             for (int j = 0; j < 10; j = inc + 1)
             {
-                int redFate2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 2.5f);
+                int redFate2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 2.5f);
                 Main.dust[redFate2].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 Main.dust[redFate2].noGravity = true;
                 Dust dust = Main.dust[redFate2];
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int k = 0; k < 5; k = inc + 1)
             {
-                int redFate3 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 1.5f);
+                int redFate3 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 1.5f);
                 Main.dust[redFate3].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                 Main.dust[redFate3].noGravity = true;
                 Dust dust = Main.dust[redFate3];

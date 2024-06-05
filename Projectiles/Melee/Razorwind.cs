@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    int blueDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, new Color(53, Main.DiscoG, 255), 2f);
+                    int blueDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, new Color(53, Main.DiscoG, 255), 2f);
                     Main.dust[blueDust].noGravity = true;
                     Main.dust[blueDust].velocity *= 0f;
                 }

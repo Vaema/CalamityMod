@@ -9,99 +9,108 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class AstralSandBallFalling : ModProjectile, ILocalizedModType
+    public class AstralSandBallFalling : SandBall
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallAstral";
-        public override void SetDefaults() => Projectile.FallingSandSetup(false);
-        public override void AI() => Projectile.FallingSandAI(108, false);
-        public override void OnKill(int timeLeft) => Projectile.SpawnSand(ModContent.TileType<AstralSand>(), ModContent.ItemType<Items.Placeables.AstralSand>());
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<AstralSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.AstralSand>();
+        public override int DustType => 108;
     }
 
-    public class AstralSandBallGun : ModProjectile, ILocalizedModType
+    public class AstralSandBallGun : SandBall
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallAstral";
-        public override void SetDefaults() => Projectile.FallingSandSetup();
-        public override void AI() => Projectile.FallingSandAI(108);
-        public override void OnKill(int timeLeft) => Projectile.SpawnSand(ModContent.TileType<AstralSand>(), ModContent.ItemType<Items.Placeables.AstralSand>());
+        public override int TileType => ModContent.TileType<AstralSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.AstralSand>();
+        public override int DustType => 108;
     }
 
-    public class EutrophicSandBallGun : ModProjectile, ILocalizedModType
+    public class EutrophicSandBallGun : SandBall
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallEutrophic";
-        public override void SetDefaults() => Projectile.FallingSandSetup();
-        public override void AI() => Projectile.FallingSandAI(108); // Weirdly same dusts as Astral
-        public override void OnKill(int timeLeft) => Projectile.SpawnSand(ModContent.TileType<EutrophicSand>(), ModContent.ItemType<Items.Placeables.EutrophicSand>());
+        public override int TileType => ModContent.TileType<EutrophicSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.EutrophicSand>();
+        public override int DustType => 108; // Weirdly same dusts as Astral
     }
 
-    public class SulphurousSandBallGun : ModProjectile, ILocalizedModType
+    public class SulphurousSandBallGun : SandBall
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallSulphurous";
-        public override void SetDefaults() => Projectile.FallingSandSetup();
-        public override void AI() => Projectile.FallingSandAI(32);
-        public override void OnKill(int timeLeft) => Projectile.SpawnSand(ModContent.TileType<SulphurousSand>(), ModContent.ItemType<Items.Placeables.SulphurousSand>());
+        public override int TileType => ModContent.TileType<SulphurousSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SulphurousSand>();
+        // Uses normal sand dust
     }
 
     // All the setups go here to prevent mass blocks of copypasting
-    public static partial class FallingSandUtils
+    public abstract class SandBall : ModProjectile, ILocalizedModType
     {
-        internal static void FallingSandSetup(this Projectile proj, bool fired = true)
-        {
-            proj.knockBack = 6f;
-            proj.width = proj.height = 10;
-            proj.friendly = true;
-            proj.penetrate = -1;
+        public new string LocalizationCategory => "Projectiles.Typeless";
 
-            if (fired)
+        // Whether or not it is a fired projectile
+        public virtual bool Fired => true;
+        // Associated tile type
+        public virtual int TileType => TileID.Sand;
+        // Associated item type
+        public virtual int ItemType => ItemID.SandBlock;
+        // Associated dust type
+        public virtual int DustType => DustID.Sand;
+
+        public override void SetDefaults()
+        {
+            Projectile.knockBack = 6f;
+            Projectile.width = Projectile.height = 10;
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+
+            if (Fired)
             {
-                proj.MaxUpdates = 2;
-                proj.DamageType = DamageClass.Ranged;
+                Projectile.MaxUpdates = 2;
+                Projectile.DamageType = DamageClass.Ranged;
             }
             else
-                proj.hostile = true;
+                Projectile.hostile = true;
         }
 
-        public static void FallingSandAI(this Projectile proj, int DustID, bool fired = true)
+        // Using clones will not allow for custom dust types sadly
+        public override void AI()
         {
             if (Main.rand.NextBool())
             {
-                int i = Dust.NewDust(proj.position, proj.width, proj.height, DustID);
+                int i = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustType);
                 Main.dust[i].velocity.X *= 0.4f;
-                Main.dust[i].velocity.Y += fired ? 0f : proj.velocity.Y * 0.5f;
+                Main.dust[i].velocity.Y += Fired ? 0f : Projectile.velocity.Y * 0.5f;
             }
 
-            proj.ai[1]++;
-            proj.rotation += 0.1f;
-            if (proj.ai[1] >= 60f || !fired)
+            Projectile.ai[1]++;
+            Projectile.rotation += 0.1f;
+            if (Projectile.ai[1] >= 60f || !Fired)
             {
-                proj.ai[1] = 60f;
-                proj.velocity.Y += 0.2f;
+                Projectile.ai[1] = 60f;
+                Projectile.velocity.Y += 0.2f;
             }
-            if (proj.velocity.Y > 10f)
-                proj.velocity.Y = 10f;
+            if (Projectile.velocity.Y > 10f)
+                Projectile.velocity.Y = 10f;
 
-            Point p = proj.Center.ToTileCoordinates();
+            Point p = Projectile.Center.ToTileCoordinates();
             // Don't check out of bounds
             if (p.X < 0 || p.X >= Main.maxTilesX || p.Y < 0 || p.Y >= Main.maxTilesY)
                 return;
             Tile placer = Main.tile[p.X, p.Y + 1];
-            if (placer.HasTile && TileID.Sets.Platforms[placer.TileType] && proj.ai[1] >= 60f)
-                proj.Kill();
+            if (placer.HasTile && TileID.Sets.Platforms[placer.TileType] && Projectile.ai[1] >= 60f)
+                Projectile.Kill();
         }
 
-        public static void SpawnSand(this Projectile proj, int SandBlockID, int SandItemID)
+        public override void OnKill(int timeLeft)
         {
-            Point p = proj.Center.ToTileCoordinates();
+            Point p = Projectile.Center.ToTileCoordinates();
             // If the sand is dying outside the world border, cancel placing sand.
             if (p.X < 0 || p.X >= Main.maxTilesX || p.Y < 0 || p.Y >= Main.maxTilesY)
                 return;
             Tile placer = Main.tile[p.X, p.Y];
 
             // If the sand hit a half brick, but was mostly going downwards (at a lower than 45 degree angle), then stack atop the half brick.
-            if (placer.IsHalfBlock && proj.velocity.Y > 0f && Math.Abs(proj.velocity.Y) > Math.Abs(proj.velocity.X))
+            if (placer.IsHalfBlock && Projectile.velocity.Y > 0f && Math.Abs(Projectile.velocity.Y) > Math.Abs(Projectile.velocity.X))
                 placer = Main.tile[p.X, --p.Y];
 
             bool ValidTileBelow = true;
@@ -125,7 +134,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 if (ValidTileBelow)
                 {
-                    bool PlacedBlock = WorldGen.PlaceTile(p.X, p.Y, SandBlockID, false, true);
+                    bool PlacedBlock = WorldGen.PlaceTile(p.X, p.Y, TileType, false, true);
                     WorldGen.SquareTileFrame(p.X, p.Y);
 
                     if (PlacedBlock && SlopeTileBelow)
@@ -135,12 +144,12 @@ namespace CalamityMod.Projectiles.Typeless
                             NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 14, p.X, p.Y + 1);
                     }
                     if (PlacedBlock && Main.netMode != NetmodeID.SinglePlayer)
-                        NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 1, p.X, p.Y, SandBlockID);
+                        NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 1, p.X, p.Y, TileType);
                 }
             }
             // Give the block back if you literally can't place it
             else
-                Item.NewItem(proj.GetSource_DropAsItem(), proj.position, proj.width, proj.height, SandItemID);
+                Item.NewItem(Projectile.GetSource_DropAsItem(), Projectile.position, Projectile.width, Projectile.height, ItemType);
         }
     }
 }

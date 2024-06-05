@@ -191,13 +191,12 @@ namespace CalamityMod.Projectiles.Melee
             Rectangle myRect = Projectile.Hitbox;
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     bool voodooDolls = Projectile.owner < Main.maxPlayers && (npc.type == NPCID.Guide && player.killGuide || npc.type == NPCID.Clothier && player.killClothier);
                     bool friendlyProjs = Projectile.friendly && (!npc.friendly || voodooDolls);
                     bool hostileProjs = Projectile.hostile && npc.friendly && !npc.dontTakeDamageFromHostiles;
-                    if (npc.active && !npc.dontTakeDamage && (friendlyProjs || hostileProjs) && (Projectile.owner < 0 || npc.immune[Projectile.owner] == 0 || Projectile.maxPenetrate == 1))
+                    if (!npc.dontTakeDamage && (friendlyProjs || hostileProjs) && (Projectile.owner < 0 || npc.immune[Projectile.owner] == 0 || Projectile.maxPenetrate == 1))
                     {
                         if (npc.noTileCollide || !Projectile.ownerHitCheck || (ProjectileLoader.CanHitNPC(Projectile, npc) ?? false))
                         {
@@ -252,7 +251,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Rectangle rectangle = new Rectangle(0, 0, tex.Width, tex.Height);
             Vector2 origin = tex.Size() / 2f;

@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.noMelee = true;
             Item.knockBack = 1f;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
 
@@ -38,7 +38,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             int i = Main.myPlayer;
             float projSpeed = Item.shootSpeed;
-            player.itemTime = Item.useTime;
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
             float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;

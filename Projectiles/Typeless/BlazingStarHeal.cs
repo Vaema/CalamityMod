@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D starTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color healGreen = new Color(54, 209, 54, 0);
             Vector2 projPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color healGreenDraw = healGreen;
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
             for (int i = 0; i < 5; i++)
             {
-                int duster = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
+                int duster = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[duster].velocity *= 3f;
                 Main.dust[duster].noGravity = true;
                 if (Main.rand.NextBool())
@@ -112,10 +112,10 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int j = 0; j < 8; j++)
             {
-                int duster2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.PlatinumCoin, 0f, 0f, 100, default, 3f);
+                int duster2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PlatinumCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[duster2].noGravity = true;
                 Main.dust[duster2].velocity *= 5f;
-                duster2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
+                duster2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[duster2].velocity *= 2f;
                 Main.dust[duster2].noGravity = true;
             }

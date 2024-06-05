@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity *= 1.02f;
             }
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             Lighting.AddLight(Projectile.Center, 0f, 0.35f, 0.35f);
         }

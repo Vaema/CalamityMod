@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Pets
 
         private void Pickup()
         {
-            int defaultItemGrabRange = 38;
             Player player = Main.player[Projectile.owner];
 
             for (int itemIndex = 0; itemIndex < Main.maxItems; itemIndex++)
@@ -170,7 +169,7 @@ namespace CalamityMod.Projectiles.Pets
             }
             float flySpeed = 0.5f;
             Projectile.tileCollide = false;
-            Vector2 flyDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 flyDirection = Projectile.Center;
             float xDist = player.position.X + (float)(player.width / 2) - flyDirection.X;
             float yDist = player.position.Y + (float)(player.height / 2) - flyDirection.Y;
             yDist += (float)Main.rand.Next(-10, 21);
@@ -462,7 +461,7 @@ namespace CalamityMod.Projectiles.Pets
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (color == 1)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/SparksBlue").Value;
             if (color == 2)

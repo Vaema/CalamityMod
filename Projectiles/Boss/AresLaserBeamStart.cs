@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D beamStart = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D beamStart = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D beamMiddle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
             Texture2D beamEnd = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 

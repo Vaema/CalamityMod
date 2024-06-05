@@ -59,7 +59,6 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.ai[0] == 0f) //regular expected behaviour of floaty rocks
             {
                 // Rotation velocity
-                float minRotationVelocity = 0.5f;
                 float rotationVelocityIncrease = 0.2f;
                 rotationVelocityIncrease += rotationVelocityIncrease * (Projectile.ai[1] * 0.5f);
 

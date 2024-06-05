@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Projectile.tileCollide = Projectile.timeLeft < 540;
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Projectile.alpha = 0;
                 }
-                int sandyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].velocity *= 0f;
             }

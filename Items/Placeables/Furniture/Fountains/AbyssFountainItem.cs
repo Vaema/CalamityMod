@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Fountains
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = Item.buyPrice(0, 4, 0, 0);
-            Item.rare = ItemRarityID.White;
+            Item.rare = ItemRarityID.Blue;
             Item.createTile = ModContent.TileType<AbyssFountainTile>();
         }
     }

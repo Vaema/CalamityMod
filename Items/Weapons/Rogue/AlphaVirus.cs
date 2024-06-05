@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 333;
+            Item.damage = 248;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 31;
@@ -25,12 +25,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.shoot = ModContent.ProjectileType<AlphaVirusProjectile>();
             Item.shootSpeed = 4f;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.rare = ItemRarityID.Purple;
             Item.DamageType = RogueDamageClass.Instance;
         }
+
+        public override float StealthDamageMultiplier => 0.70f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -49,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<EpidemicShredder>().
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient(ItemID.LunarBar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

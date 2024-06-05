@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<AsteroidMolten>();
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 

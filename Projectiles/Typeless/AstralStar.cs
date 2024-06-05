@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 5; i++)
             {
-                int starryDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.2f);
+                int starryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.2f);
                 Main.dust[starryDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -123,10 +123,10 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int j = 0; j < 5; j++)
             {
-                int starryDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.7f);
+                int starryDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.7f);
                 Main.dust[starryDust2].noGravity = true;
                 Main.dust[starryDust2].velocity *= 5f;
-                starryDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                starryDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                 Main.dust[starryDust2].velocity *= 2f;
             }
             if (Main.netMode != NetmodeID.Server)

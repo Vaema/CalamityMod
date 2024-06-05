@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.velocity *= 0.96f;
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
             if (Projectile.velocity.Length() < 2f)
                 Projectile.Kill();

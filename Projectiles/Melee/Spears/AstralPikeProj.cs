@@ -40,21 +40,18 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
-            if (hit.Crit)
+            var source = Projectile.GetSource_FromThis();
+            for (int i = 0; i < 3; i++)
             {
-                var source = Projectile.GetSource_FromThis();
-                for (int i = 0; i < 3; i++)
-                {
-                    if (Projectile.owner == Main.myPlayer)
+                 if (Projectile.owner == Main.myPlayer)
+                 {
+                    Projectile star = CalamityUtils.ProjectileBarrage(source, Projectile.Center, target.Center, Main.rand.NextBool(), 800f, 800f, 800f, 800f, 10f, ModContent.ProjectileType<AstralStar>(), (int)(Projectile.damage * 0.33), 1f, Projectile.owner, true);
+                    if (star.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
-                        Projectile star = CalamityUtils.ProjectileBarrage(source, Projectile.Center, target.Center, Main.rand.NextBool(), 800f, 800f, 800f, 800f, 10f, ModContent.ProjectileType<AstralStar>(), (int)(Projectile.damage * 0.4), 1f, Projectile.owner, true);
-                        if (star.whoAmI.WithinBounds(Main.maxProjectiles))
-                        {
-                            star.DamageType = DamageClass.Melee;
-                            star.ai[0] = 3f;
-                        }
+                        star.DamageType = DamageClass.Melee;
+                         star.ai[0] = 3f;
                     }
-                }
+                 }
             }
         }
     }

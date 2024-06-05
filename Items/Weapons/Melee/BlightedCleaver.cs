@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 88;
             Item.height = 88;
-            Item.damage = 86;
+            Item.damage = 92;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 28;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.shootsEveryUse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<BlazingPhantomBlade>();
             Item.shootSpeed = 16f;

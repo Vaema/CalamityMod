@@ -64,16 +64,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.sentry = true;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()] >= 1)
-                return false;
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsDropPod>()] >= 1)
-                return false;
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsAutocannon>()] >= 1)
-                return false;
-            return true;
-        }
+        // Keeps the sentry from being re-summoned if the player took out the usable Autocannon
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()] < 1;
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
@@ -84,9 +76,16 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
+                CalamityUtils.KillShootProjectileMany(player, new int[]
+                {
+                    type,
+                    ModContent.ProjectileType<AtlasMunitionsAutocannon>(),
+                    ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()
+                });
                 position = Main.MouseWorld - Vector2.UnitY * 1020f;
                 velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(9f, 10f);
                 Projectile.NewProjectile(source, position, velocity, type, Item.damage, knockback, player.whoAmI, Main.MouseWorld.Y - 40f);
+                player.UpdateMaxTurrets();
             }
             return false;
         }

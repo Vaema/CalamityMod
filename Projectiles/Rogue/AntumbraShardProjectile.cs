@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
             if (Projectile.spriteDirection == -1)
             {
-                Projectile.rotation -= 1.57f;
+                Projectile.rotation -= MathHelper.PiOver2;
             }
             if (Main.rand.NextBool(3))
             {

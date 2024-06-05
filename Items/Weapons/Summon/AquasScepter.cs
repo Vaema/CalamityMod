@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().devItem = true;
             Item.UseSound = SoundID.Item66;

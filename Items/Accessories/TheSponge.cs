@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -45,10 +47,9 @@ namespace CalamityMod.Items.Accessories
             get
             {
                 bool result = false;
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[i];
-                    if (player is null || !player.active || player.outOfRange || player.dead)
+                    if (player.outOfRange || player.dead)
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
@@ -73,7 +74,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -93,6 +94,12 @@ namespace CalamityMod.Items.Accessories
 
         // In vanity, provides a visual shield but no actual functionality
         public override void UpdateVanity(Player player) => player.Calamity().spongeShieldVisible = true;
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string adrenTooltip = CalamityWorld.revenge ? this.GetLocalizedValue("ShieldAdren") : "";
+            tooltips.FindAndReplace("[ADREN]", adrenTooltip);
+        }
 
         // Renders the bubble shield over the item in the world.
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
@@ -170,10 +177,9 @@ namespace CalamityMod.Items.Accessories
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -186,6 +192,7 @@ namespace CalamityMod.Items.Accessories
 
                 // Scale the shield is drawn at. The Sponge shield gently grows and shrinks; it should be largely imperceptible.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
+                int i = player.whoAmI;
                 float baseScale = 0.155f;
                 float maxExtraScale = 0.025f;
                 float extraScalePulseInterpolant = MathF.Pow(4f, MathF.Sin(Main.GlobalTimeWrappedHourly * 0.791f + i) - 1);

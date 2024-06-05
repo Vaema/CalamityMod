@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localNPCHitCooldown = 10;
             for (int i = 0; i < 15; i++)
             {
-                int greenDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GreenTorch, 0f, 0f, 100, default, 1.2f);
+                int greenDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GreenTorch, 0f, 0f, 100, default, 1.2f);
                 Main.dust[greenDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -58,10 +58,10 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 30; j++)
             {
-                int greenDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GreenTorch, 0f, 0f, 100, default, 1.7f);
+                int greenDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GreenTorch, 0f, 0f, 100, default, 1.7f);
                 Main.dust[greenDust2].noGravity = true;
                 Main.dust[greenDust2].velocity *= 5f;
-                greenDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GreenTorch, 0f, 0f, 100, default, 1f);
+                greenDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GreenTorch, 0f, 0f, 100, default, 1f);
                 Main.dust[greenDust2].velocity *= 2f;
             }
         }

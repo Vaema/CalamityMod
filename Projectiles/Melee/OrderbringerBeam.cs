@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
 
             if (Projectile.ai[1] == 0f)
             {
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Melee
                 whiteLightTimer = 5;
             }
 
-            int rainbow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 0.6f);
+            int rainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 0.6f);
             Main.dust[rainbow].noGravity = true;
             Main.dust[rainbow].velocity *= 0.5f;
             Main.dust[rainbow].velocity += Projectile.velocity * 0.1f;
@@ -115,10 +115,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int j = 0; j < 20; j++)
             {
-                int deathRainbow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2.5f);
+                int deathRainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2.5f);
                 Main.dust[deathRainbow].noGravity = true;
                 Main.dust[deathRainbow].velocity *= 3f;
-                deathRainbow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.5f);
+                deathRainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.5f);
                 Main.dust[deathRainbow].velocity *= 2f;
                 Main.dust[deathRainbow].noGravity = true;
             }

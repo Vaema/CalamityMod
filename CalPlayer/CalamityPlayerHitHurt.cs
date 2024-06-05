@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -37,6 +38,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.UI;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
@@ -54,7 +56,9 @@ namespace CalamityMod.CalPlayer
         #region Dodges
         private void SpectralVeilDodge()
         {
-            Player.GiveIFrames(spectralVeilImmunity, true); //Set immunity before setting this variable to 0
+            // 17APR2024: Ozzatron: Spectral Veil counts as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+            int spectralVeilIFrames = spectralVeilImmunity + (Player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+            Player.GiveUniversalIFrames(spectralVeilIFrames, true);
             rogueStealth = rogueStealthMax;
             spectralVeilImmunity = 0;
 
@@ -79,7 +83,10 @@ namespace CalamityMod.CalPlayer
 
         private void GodSlayerDodge()
         {
-            Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
+            // 17APR2024: Ozzatron: God Slayer Dodge is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+            int godSlayerDodgeIFrames = Player.ComputeDodgeIFrames();
+            Player.GiveUniversalIFrames(godSlayerDodgeIFrames, true);
+
             SoundEngine.PlaySound(SoundID.Item67, Player.Center);
 
             for (int j = 0; j < 30; j++)
@@ -114,7 +121,9 @@ namespace CalamityMod.CalPlayer
                 Player.AddCooldown(Cooldowns.CounterScarf.ID, duration);
             }
 
-            Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
+            // 17APR2024: Ozzatron: Counter Scarf is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+            int counterScarfIFrames = Player.ComputeDodgeIFrames();
+            Player.GiveUniversalIFrames(counterScarfIFrames, true);
 
             for (int j = 0; j < 100; j++)
             {
@@ -151,10 +160,10 @@ namespace CalamityMod.CalPlayer
                 int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.MirrorDodgeCooldownMin, BalancingConstants.MirrorDodgeCooldownMax, cooldownDurationScalar);
                 Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, "abyssmirror");
 
-                // TODO -- why is this here?
-                Player.noKnockback = true;
+                // 17APR2024: Ozzatron: Abyssal Mirror is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                int abyssalMirrorDodgeIFrames = Player.ComputeDodgeIFrames();
+                Player.GiveUniversalIFrames(abyssalMirrorDodgeIFrames, true);
 
-                Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
                 rogueStealth += 0.5f;
                 SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
 
@@ -195,11 +204,11 @@ namespace CalamityMod.CalPlayer
                 int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.MirrorDodgeCooldownMin, BalancingConstants.MirrorDodgeCooldownMax, cooldownDurationScalar);
                 Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, "eclipsemirror");
 
-                // TODO -- why is this here?
-                Player.noKnockback = true;
+                // 17APR2024: Ozzatron: Eclipse Mirror is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                int eclipseMirrorDodgeIFrames = Player.ComputeDodgeIFrames();
+                Player.GiveUniversalIFrames(eclipseMirrorDodgeIFrames, true);
 
-                Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
-                rogueStealth = rogueStealthMax;
+                rogueStealth += 0.5f;
                 SoundEngine.PlaySound(SoundID.Item68, Player.Center);
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<EclipseMirror>()));
@@ -243,10 +252,10 @@ namespace CalamityMod.CalPlayer
 
             if (hInferno)
             {
-                for (int x = 0; x < Main.maxNPCs; x++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[x].active && Main.npc[x].type == ModContent.NPCType<Providence>())
-                        Main.npc[x].active = false;
+                    if (n.type == ModContent.NPCType<Providence>())
+                        n.active = false;
                 }
             }
 
@@ -405,6 +414,18 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Dragonfire" + Main.rand.Next(1, 4 + 1)).Format(Player.name));
                 }
+                if (vermillionFlux)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.VermillionFlux" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (auricRebuke)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRebuke" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (staticDischarge)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.StaticDischarge" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
                 if (miracleBlight)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.MiracleBlight" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
@@ -428,6 +449,10 @@ namespace CalamityMod.CalPlayer
                 if (brainRot)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainRot" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (laceration)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Laceration" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
                 }
                 if (elementalMix)
                 {
@@ -483,6 +508,10 @@ namespace CalamityMod.CalPlayer
             if (Main.zenithWorld)
                 SoundEngine.PlaySound(LeonDeathNoiseRE4_ForGFB, Player.Center);
 
+            if (NorfleetCounter >= 3 && NorfleetCounter < 1000)
+                damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Norfleet").Format(Player.name));
+            NorfleetCounter = 0;
+
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()))
             {
                 if (sCalDeathCount < 51)
@@ -511,6 +540,14 @@ namespace CalamityMod.CalPlayer
 
             // Apply all Calamity multipliers as a sum total to TML New Damage in a single step
             modifiers.SourceDamage *= totalDamageMult;
+
+            // 01JUN2024: Ozzatron: apply Yellow Candle "chip damage" as a dirty modifier
+            // The registration of the dirty modifier is conditional to ensure it doesn't apply to "near invincible" targets
+            //
+            // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
+            CalamityGlobalNPC cgn = target.Calamity();
+            if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
+                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
 
             // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
             if (item.type == ItemID.Excalibur || item.type == ItemID.TrueExcalibur)
@@ -577,6 +614,14 @@ namespace CalamityMod.CalPlayer
 
             // Apply all Calamity multipliers as a sum total to TML New Damage in a single step
             modifiers.SourceDamage *= totalDamageMult;
+
+            // 01JUN2024: Ozzatron: apply Yellow Candle "chip damage" as a dirty modifier
+            // The registration of the dirty modifier is conditional to ensure it doesn't apply to "near invincible" targets
+            //
+            // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
+            CalamityGlobalNPC cgn = target.Calamity();
+            if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
+                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
 
             // Stealth strike damage multipliers are applied here.
             // TODO -- stealth should be its own damage class and this should be applied as player StealthDamage *= XYZ
@@ -761,13 +806,6 @@ namespace CalamityMod.CalPlayer
             // The amount of damage that will be dealt is yet to be determined.
             //
 
-            if (transformer)
-            {
-                if (npc.type == NPCID.BlueJellyfish || npc.type == NPCID.PinkJellyfish || npc.type == NPCID.GreenJellyfish || npc.type == NPCID.FungoFish ||
-                    npc.type == NPCID.BloodJelly || npc.type == ModContent.NPCType<Stormlion>() || npc.type == ModContent.NPCType<GhostBell>() || npc.type == ModContent.NPCType<BoxJellyfish>())
-                    contactDamageReduction += 0.5;
-            }
-
             // Can't have any cooldowns here because dodges grrrrr....
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
                 contactDamageReduction += 0.5;
@@ -915,7 +953,10 @@ namespace CalamityMod.CalPlayer
                         proj.velocity *= -2f;
                         proj.extraUpdates += 1;
                         proj.penetrate = 1;
-                        Player.GiveIFrames(20, false);
+
+                        // 17APR2024: Ozzatron: The Evolution is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int evolutionIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(evolutionIFrames, true);
 
                         modifiers.SetMaxDamage(1);
                         evolutionLifeRegenCounter = 300;
@@ -978,35 +1019,6 @@ namespace CalamityMod.CalPlayer
                     modifiers.SourceDamage *= 0.6f;
             }
 
-            if (CalamityWorld.revenge)
-            {
-                double damageMultiplier = 1D;
-                bool containsProjectile = false;
-                if (CalamityLists.revengeanceProjectileBuffList25Percent.Contains(proj.type))
-                {
-                    damageMultiplier += 0.25;
-                    containsProjectile = true;
-                }
-                else if (CalamityLists.revengeanceProjectileBuffList20Percent.Contains(proj.type))
-                {
-                    damageMultiplier += 0.2;
-                    containsProjectile = true;
-                }
-                else if (CalamityLists.revengeanceProjectileBuffList15Percent.Contains(proj.type))
-                {
-                    damageMultiplier += 0.15;
-                    containsProjectile = true;
-                }
-
-                if (containsProjectile)
-                {
-                    if (CalamityWorld.death)
-                        damageMultiplier += (damageMultiplier - 1D) * 0.6;
-
-                    modifiers.SourceDamage *= (float)damageMultiplier;
-                }
-            }
-
             // Reduce damage dealt by rainbow trails depending on how faded they are.
             if (proj.type == ProjectileID.HallowBossLastingRainbow)
             {
@@ -1047,8 +1059,7 @@ namespace CalamityMod.CalPlayer
 
             if (transformer)
             {
-                if (proj.type == ProjectileID.MartianTurretBolt || proj.type == ProjectileID.GigaZapperSpear || proj.type == ProjectileID.CultistBossLightningOrbArc || proj.type == ProjectileID.VortexLightning || proj.type == ModContent.ProjectileType<DestroyerElectricLaser>() ||
-                    proj.type == ProjectileID.BulletSnowman || proj.type == ProjectileID.BulletDeadeye || proj.type == ProjectileID.SniperBullet || proj.type == ProjectileID.VortexLaser)
+                if (proj.type == ProjectileID.BulletSnowman || proj.type == ProjectileID.BulletDeadeye || proj.type == ProjectileID.SniperBullet)
                     projectileDamageReduction += 0.5;
             }
 
@@ -1187,6 +1198,11 @@ namespace CalamityMod.CalPlayer
             if (crawCarapace)
             {
                 npc.AddBuff(ModContent.BuffType<Crumbling>(), 900);
+                if (!npc.dontTakeDamage)
+                {
+                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(40);
+                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                }
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
             }
 
@@ -1194,6 +1210,11 @@ namespace CalamityMod.CalPlayer
             {
                 npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
                 npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
+                if (!npc.dontTakeDamage)
+                {
+                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(250);
+                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                }
                 SoundEngine.PlaySound(BaroclawHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1213,6 +1234,11 @@ namespace CalamityMod.CalPlayer
             if (absorber)
             {
                 npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
+                if (!npc.dontTakeDamage)
+                {
+                    int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(350);
+                    Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
+                }
                 SoundEngine.PlaySound(AbsorberHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1227,6 +1253,22 @@ namespace CalamityMod.CalPlayer
                     SparkParticle spark = new SparkParticle(Player.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
+            }
+
+            if (alchFlask)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
+                    seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
+
+                    Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
+                    bee.ArmorPenetration = 35;
+                    bee.penetrate = 6;
+                    bee.extraUpdates = 2;
+                    bee.timeLeft = 600;
+                }
+                Player.AddBuff(BuffID.Honey, 900);
             }
         }
 
@@ -1243,18 +1285,18 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= proj.Calamity().DealsDefenseDamage;
 
-            if (sulfurSet && !proj.friendly && hurtInfo.Damage > 0)
+            if (sulphurSet && !proj.friendly && hurtInfo.Damage > 0)
             {
                 if (Main.player[proj.owner] is null)
                 {
                     if (!Main.npc[proj.owner].friendly)
-                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 120);
+                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
                 }
                 else
                 {
                     Player p = Main.player[proj.owner];
                     if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
-                        p.AddBuff(BuffID.Poisoned, 120);
+                        p.AddBuff(BuffID.Poisoned, 60);
                 }
             }
 
@@ -1315,10 +1357,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.BrokenArmor, 600);
                 }
-                else if (proj.type == ProjectileID.FrostBeam && !Player.frozen && !gState)
-                {
-                    Player.AddBuff(ModContent.BuffType<GlacialState>(), 60);
-                }
                 else if (proj.type == ProjectileID.DeathLaser || proj.type == ProjectileID.RocketSkeleton || proj.type == ProjectileID.BombSkeletronPrime)
                 {
                     Player.AddBuff(BuffID.OnFire, 180);
@@ -1354,7 +1392,9 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.CultistBossIceMist)
                 {
-                    Player.AddBuff(BuffID.Frozen, 60);
+                    if (!Player.frozen)
+                        Player.AddBuff(BuffID.Frozen, 60);
+
                     Player.AddBuff(BuffID.Chilled, 180);
                 }
                 else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
@@ -1383,15 +1423,15 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore)
                 {
-                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 60);
+                    Player.AddBuff(NPC.ShouldEmpressBeEnraged() ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 60);
                 }
                 else if (proj.type == ProjectileID.HallowBossLastingRainbow)
                 {
-                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 120);
+                    Player.AddBuff(NPC.ShouldEmpressBeEnraged() ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 120);
                 }
                 else if (proj.type == ProjectileID.FairyQueenSunDance)
                 {
-                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 180);
+                    Player.AddBuff(NPC.ShouldEmpressBeEnraged() ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 180);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
@@ -1420,7 +1460,10 @@ namespace CalamityMod.CalPlayer
                         proj.velocity *= -1f;
                         proj.damage = (int)Player.GetBestClassDamage().ApplyTo(proj.damage * 8);
                         proj.penetrate = 1;
-                        Player.GiveIFrames(20, false);
+
+                        // 17APR2024: Ozzatron: The Transformer is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int transformerIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(transformerIFrames, true);
                     }
                 }
 
@@ -1445,7 +1488,10 @@ namespace CalamityMod.CalPlayer
                         proj.friendly = true;
                         proj.velocity *= -1f;
                         proj.penetrate = 1;
-                        Player.GiveIFrames(20, false);
+
+                        // 17APR2024: Ozzatron: The Daedalus Reflect set bonus also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int daedalusReflectIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
 
                         int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.DaedalusReflectCooldownMin, BalancingConstants.DaedalusReflectCooldownMax, cooldownDurationScalar);
                         Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
@@ -1482,15 +1528,13 @@ namespace CalamityMod.CalPlayer
             // This also strikes the NPCs as a side effect
             if (gSabatonFalling)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    NPC n = Main.npc[i];
-
                     // Ignore critters with the Guide to Critter Companionship
                     if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                         continue;
 
-                    if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                    if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                     {
                         Rectangle npcHitbox = n.getRect();
                         if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
@@ -1499,8 +1543,11 @@ namespace CalamityMod.CalPlayer
 
                             Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
+                            // 17APR2024: Ozzatron: Gravistar Sabaton gives iframes when passing through enemies for projectile safety.
+                            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
                             n.Calamity().dashImmunityTime[Player.whoAmI] = 4;
-                            Player.GiveIFrames(5, false);
+                            Player.GiveUniversalIFrames(GravistarSabaton.PassthroughIFrames, false);
+
                             return true;
                         }
                     }
@@ -1517,7 +1564,12 @@ namespace CalamityMod.CalPlayer
             // The dodges will only trigger if the player has taken greater than or equal to 5% of their max HP in damage
             double dodgeDamageGateValuePercent = 0.05;
             int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
-            if (!Player.HasCooldown(GlobalDodge.ID) && info.Damage >= dodgeDamageGateValue)
+
+            // 14MAY2024: Ozzatron: Chalice of the Blood God now works with dodges
+            int actualDamageTaken = chaliceOfTheBloodGod ? chaliceHitOriginalDamage : info.Damage;
+            bool sufficientDamageForDodging = actualDamageTaken >= dodgeDamageGateValue;
+
+            if (!Player.HasCooldown(GlobalDodge.ID) && sufficientDamageForDodging)
             {
                 double maxCooldownDurationDamagePercent = 0.5;
                 int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
@@ -1526,7 +1578,7 @@ namespace CalamityMod.CalPlayer
                 if (maxCooldownDurationDamageValue <= 0)
                     maxCooldownDurationDamageValue = 1;
 
-                float cooldownDurationScalar = MathHelper.Clamp((info.Damage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
+                float cooldownDurationScalar = MathHelper.Clamp((actualDamageTaken - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
 
                 // Re-implementation of vanilla item Black Belt as a consumable dodge
                 if (Player.whoAmI == Main.myPlayer && Player.blackBelt)
@@ -1631,7 +1683,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center); //metal hit noise
                     hurtSoundTimer = 10;
                 }
-                else if ((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide)
+                else if (((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide) || Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(SoundID.FemaleHit, Player.Center); //female hit noise
@@ -1675,12 +1727,16 @@ namespace CalamityMod.CalPlayer
 
             if (blazingCoreParry > 0) //check for active parry
             {
-                if (blazingCoreParry >= 18) //only the first 12 frames (0.2 seconds) counts for a valid parry
+                if (blazingCoreParry >= 12) //only the first 18 frames (0.3 seconds) counts for a valid parry
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {
-                        Player.GiveIFrames(60, true);
+                        // 17APR2024: Ozzatron: Blazing Core is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                        int blazingCoreParryIFrames = Player.ComputeParryIFrames();
+                        Player.GiveUniversalIFrames(blazingCoreParryIFrames, true);
+
                         blazingCoreEmpoweredParry = true;
+
                         modifiers.SetMaxDamage(1); //ONLY REDUCE DAMAGE IF NOT ON COOLDOWN
                         modifiers.DisableSound(); //prevents hurt sound from playing, had no idea this was a thing
                     }
@@ -1695,12 +1751,16 @@ namespace CalamityMod.CalPlayer
             }
             else if (flameLickedShellParry > 0)
             {
-                if (flameLickedShellParry >= 18)
+                if (flameLickedShellParry >= 12)
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {
-                        Player.GiveIFrames(60, true);
+                        // 17APR2024: Ozzatron: Flame-Licked Shell is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                        int flameLickedShellParryIFrames = Player.ComputeParryIFrames();
+                        Player.GiveUniversalIFrames(flameLickedShellParryIFrames, true);
+
                         flameLickedShellEmpoweredParry = true;
+
                         modifiers.FinalDamage *= 0.1f; //90% dr
                         modifiers.DisableSound();
                     }
@@ -1736,9 +1796,9 @@ namespace CalamityMod.CalPlayer
             // If the shield(s) completely absorb the hit, iframes are granted on the spot and the hit is marked to be dodged.
             // Shields are drained in order of progression, so your weaker shields will break first.
             // Damage can and will be blocked by multiple shields if it has to be.
+            bool shieldsFullyAbsorbedHit = false;
             if (HasAnyEnergyShield)
             {
-                bool shieldsFullyAbsorbedHit = false;
                 bool shieldsTookHit = false;
                 bool anyShieldBroke = false;
                 int totalDamageBlocked = 0;
@@ -1883,8 +1943,9 @@ namespace CalamityMod.CalPlayer
                     Rectangle location = new Rectangle((int)Player.position.X, (int)Player.position.Y - 16, Player.width, Player.height);
                     CombatText.NewText(location, Color.LightBlue, Language.GetTextValue(shieldDamageText));
 
-                    // Give the player iframes for taking the a shield hit, regardless of whether or not the shields broke
-                    Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
+                    // Give the player iframes for taking a shield hit, regardless of whether or not the shields broke.
+                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
+                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
 
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.
@@ -1926,7 +1987,7 @@ namespace CalamityMod.CalPlayer
                         masterChefDurabilityCD.timeLeft = LunicCorpsShieldDurability;
 
                     // Update PSA/PSC durability on the cooldown rack
-                    if ((pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs)) && cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
+                    if (pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs) && cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
                         profanedSoulDurabilityCD.timeLeft = pSoulShieldDurability;
 
                     // Update Sponge durability on the cooldown rack.
@@ -1954,7 +2015,7 @@ namespace CalamityMod.CalPlayer
                         Player.AddCooldown(SpongeRecharge.ID, TheSponge.ShieldRechargeDelay, true);
                 }
 
-                // If the shields completely absorbed the hit, mark the player as dodging this damage instance later down the chain with a "Free Dodge".
+                // If the shields completely absorbed the hit, then delete the hit using reflection.
                 if (shieldsFullyAbsorbedHit)
                 {
                     freeDodgeFromShieldAbsorption = true;
@@ -1968,22 +2029,14 @@ namespace CalamityMod.CalPlayer
             //
             // Chalice of the Blood God does nothing to a hit that was just fully blocked by shields.
             // Otherwise, it reduces the damage of any hit to 5, which allows for full iframes.
-            // It then applies the full hit (minus that 5 damage) to its own bleedout buffer.
+            // It then applies the full hit (minus that 5 damage) to its own bleedout buffer in OnHurt (see below).
             // Hits for less than 5 damage are ignored entirely and allowed to strike the player as normal.
-            if (chaliceOfTheBloodGod && !freeDodgeFromShieldAbsorption && info.Damage > ChaliceOfTheBloodGod.MinAllowedDamage)
+            if (chaliceOfTheBloodGod && !shieldsFullyAbsorbedHit && info.Damage > ChaliceOfTheBloodGod.MinAllowedDamage)
             {
-                int bleedoutToApply = info.Damage - ChaliceOfTheBloodGod.MinAllowedDamage;
-                chaliceBleedoutBuffer += bleedoutToApply;
+                chaliceBleedoutToApplyOnHurt = info.Damage - ChaliceOfTheBloodGod.MinAllowedDamage;
+
                 chaliceHitOriginalDamage = info.Damage;
                 info.Damage = ChaliceOfTheBloodGod.MinAllowedDamage;
-
-                // Defense damage is applied here.
-                DealDefenseDamage(info, bleedoutToApply);
-
-                // Display text indicating that damage was transferred to bleedout.
-                string text = $"({-bleedoutToApply})";
-                Rectangle location = new Rectangle((int)Player.position.X + 4, (int)Player.position.Y - 3, Player.width - 4, Player.height - 4);
-                CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
             }
         }
         #endregion
@@ -2005,7 +2058,7 @@ namespace CalamityMod.CalPlayer
             // This function will be ignored if the player is wearing Chalice, as it handles its defense damage elsewhere.
             bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
 
-            if (hitCanApplyDefenseDamage && !chaliceOfTheBloodGod && !hasIFrames && !Player.creativeGodMode)
+            if (hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode)
             {
                 double halfDefense = Player.statDefense / 2.0;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
@@ -2036,11 +2089,35 @@ namespace CalamityMod.CalPlayer
                         Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
                     }
                 }
+
+                // Chalice of the Blood God has to compensate for the "mitigation" provided by its bleedout buffer
+                else if (chaliceOfTheBloodGod)
+                    DealDefenseDamage(hurtInfo, chaliceBleedoutToApplyOnHurt);
+
+                // Otherwise, just deal regular defense damage.
                 else
                     DealDefenseDamage(hurtInfo);
             }
 
             nextHitDealsDefenseDamage = false;
+            #endregion
+
+            #region Chalice of the Blood God Bleed Application
+            // This is handled in OnHurt so that Chalice hits can still be dodged based on their appropriate normal damage
+            // Defense damage based on the "total lethality of the hit" is applied immediately prior to this
+            // 
+            // 1 - Actually apply bleedout to the player based on the damage they would have taken
+            // 2 - Display an indicator of how much damage was dealt as bleedout instead of regular damage
+            if (chaliceOfTheBloodGod)
+            {
+                int bleedoutToApply = chaliceBleedoutToApplyOnHurt;
+                chaliceBleedoutBuffer += bleedoutToApply;
+
+                // Display text indicating that damage was transferred to bleedout.
+                string text = $"({-bleedoutToApply})";
+                Rectangle location = new Rectangle((int)Player.position.X + 4, (int)Player.position.Y - 3, Player.width - 4, Player.height - 4);
+                CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
+            }
             #endregion
 
             #region Shattered Community Rage Gain
@@ -2263,27 +2340,22 @@ namespace CalamityMod.CalPlayer
                     Player.AddBuff(ModContent.BuffType<ReaverRage>(), 180);
                 }
 
-                if ((fBarrier || (aquaticHeart && NPC.downedBoss3)) && !areThereAnyDamnBosses)
+                if (fBarrier || (aquaticHeart && NPC.downedBoss3))
                 {
                     SoundEngine.PlaySound(SoundID.Item27, Player.Center);
-                    for (int m = 0; m < Main.maxNPCs; m++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[m];
-                        if (!npc.active || npc.friendly || npc.dontTakeDamage)
+                        if (npc.friendly || npc.dontTakeDamage)
                             continue;
 
                         float npcDist = (npc.Center - Player.Center).Length();
-                        float freezeDist = Main.rand.Next(200 + (int)hurtInfo.Damage / 2, 301 + (int)hurtInfo.Damage * 2);
+                        float freezeDist = 300 + (int)hurtInfo.Damage * 2;
                         if (freezeDist > 500f)
-                            freezeDist = 500f + (freezeDist - 500f) * 0.75f;
-                        if (freezeDist > 700f)
-                            freezeDist = 700f + (freezeDist - 700f) * 0.5f;
-                        if (freezeDist > 900f)
-                            freezeDist = 900f + (freezeDist - 900f) * 0.25f;
+                            freezeDist = 500f + (freezeDist - 500f) * 0.5f;
 
                         if (npcDist < freezeDist)
                         {
-                            float duration = Main.rand.Next(10 + (int)hurtInfo.Damage / 4, 20 + (int)hurtInfo.Damage / 3);
+                            float duration = Main.rand.Next(10 + (int)hurtInfo.Damage / 2, 20 + (int)hurtInfo.Damage);
                             if (duration > 120)
                                 duration = 120;
 
@@ -2297,10 +2369,9 @@ namespace CalamityMod.CalPlayer
                 // and also doesn't have random chance (why does Brain of Confusion not guarantee confusion on hit)
                 if (aBrain || amalgam)
                 {
-                    for (int m = 0; m < Main.maxNPCs; m++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[m];
-                        if (!npc.active || npc.friendly || npc.dontTakeDamage)
+                        if (npc.friendly || npc.dontTakeDamage)
                             continue;
 
                         float npcDist = (npc.Center - Player.Center).Length();
@@ -2335,11 +2406,11 @@ namespace CalamityMod.CalPlayer
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<DrataliornusBow>()] != 0)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach(Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].type == ModContent.ProjectileType<DrataliornusBow>() && Main.projectile[i].owner == Player.whoAmI)
+                    if (p.type == ModContent.ProjectileType<DrataliornusBow>() && p.owner == Player.whoAmI)
                     {
-                        Main.projectile[i].Kill();
+                        p.Kill();
                         break;
                     }
                 }
@@ -2379,40 +2450,8 @@ namespace CalamityMod.CalPlayer
 
             if (Player.whoAmI == Main.myPlayer)
             {
-                int iFramesToAdd = 0;
-                if (godSlayerThrowing && hurtInfo.Damage > 80)
-                    iFramesToAdd += 30;
-                if (statigelSet && hurtInfo.Damage > 100)
-                    iFramesToAdd += 30;
-
-                // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
-                // If you only take 1 damage, you get 5 iframes.
-                // This effect is inherited by Rampart of Deities.
-                if (dAmulet)
-                {
-                    if (hurtInfo.Damage > 1)
-                    {
-                        float lifeRatio = (float)Player.statLife / Player.statLifeMax2;
-                        float iframeEffectivenessRatio = Utils.GetLerpValue(1.0f, 0.25f, lifeRatio, true);
-
-                        iFramesToAdd += (int)(iframeEffectivenessRatio * DeificAmulet.MaxBonusIFrames);
-                    }
-                    else
-                        iFramesToAdd += 5;
-                }
-
-                // Ozzatron 20FEB2024: Moved extra iframes from Seraph Tracers to Rampart of Deities to counteract its loss of Charm of Myths
-                // This stacks with the above Deific Amulet effect
-                if (rampartOfDeities && hurtInfo.Damage > 200)
-                    iFramesToAdd += 30;
-
-                if (fabsolVodka)
-                {
-                    if (hurtInfo.Damage == 1)
-                        iFramesToAdd += 5;
-                    else
-                        iFramesToAdd += 10;
-                }
+                // Add extra iframes on hit based on various Calamity effects.
+                int iFramesToAdd = Player.GetExtraHitIFrames(hurtInfo);
 
                 // Give bonus immunity frames based on the type of damage dealt
                 if (hurtInfo.CooldownCounter != -1)
@@ -2487,7 +2526,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < 4; i++)
+                            for (int i = 0; i < (transformer ? 5 : 4); i++)
                             {
                                 offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
                                 int spark1 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<Spark>(), sDamage, 1.25f, Player.whoAmI, 0f, 0f);
@@ -2496,11 +2535,23 @@ namespace CalamityMod.CalPlayer
                                 {
                                     Main.projectile[spark1].timeLeft = 120;
                                     Main.projectile[spark1].DamageType = DamageClass.Generic;
+                                    if (transformer)
+                                    {
+                                        Main.projectile[spark1].timeLeft = 240;
+                                        Main.projectile[spark1].extraUpdates = 1;
+                                        Main.projectile[spark1].penetrate = 10;
+                                    }
                                 }
                                 if (spark2.WithinBounds(Main.maxProjectiles))
                                 {
                                     Main.projectile[spark2].timeLeft = 120;
                                     Main.projectile[spark2].DamageType = DamageClass.Generic;
+                                    if (transformer)
+                                    {
+                                        Main.projectile[spark2].timeLeft = 240;
+                                        Main.projectile[spark2].extraUpdates = 1;
+                                        Main.projectile[spark2].penetrate = 10;
+                                    }
                                 }
                             }
                         }
@@ -2797,9 +2848,8 @@ namespace CalamityMod.CalPlayer
 
             // Under typical circumstances, defense damage scales with "net mitigation", aka how much damage the player DIDN'T take.
             // Thematically, this means it scales with how much damage the player's defense took instead of them.
-
-            CalamityPlayer modPlayer = Player.Calamity();
-
+            // Chalice of the Blood God makes you take much less direct damage than you should, which would catastrophically inflate defense damage.
+            //
             // Subtract the bleedout applied on this hit from the net mitigation.
             // This prevents Chalice from making the player take much more defense damage than intended.
             int netMitigation = hurtInfo.SourceDamage - (hurtInfo.Damage + bleedoutApplied);
@@ -2845,6 +2895,10 @@ namespace CalamityMod.CalPlayer
         // Actually applies defense damage. Cannot be called externally.
         private void ApplyDefenseDamageInternal(int defenseDamage, bool showVisuals = true)
         {
+            // If zero defense damage is being dealt, don't waste your time or display a grey 0.
+            if (defenseDamage <= 0)
+                return;
+            
             // Can be dynamically reduced by Adamantite set bonus and maybe other future effects.
             int defenseDamageTaken = defenseDamage;
 

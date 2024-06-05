@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.JungleSpore, 0f, 0f, 100, default, 0.15f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.JungleSpore, 0f, 0f, 100, default, 0.15f);
             Main.dust[dust].velocity *= 1.2f;
             if (Main.rand.NextBool())
             {

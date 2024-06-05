@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.Polterghast
                 Movement(phase2, expertMode, revenge, death, speedBoost, despawnBoost, lifeRatio, tileEnrageMult, player);
 
                 // Fire projectiles
-                Vector2 hookPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                Vector2 hookPosition = NPC.Center;
                 float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2) - hookPosition.X;
                 float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2) - hookPosition.Y;
                 float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
@@ -229,9 +229,9 @@ namespace CalamityMod.NPCs.Polterghast
 
                 if (!despawnBoost && NPC.localAI[0] <= 0f && NPC.ai[0] != 0f)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (var n in Main.ActiveNPCs)
                     {
-                        if (i != NPC.whoAmI && Main.npc[i].active && Main.npc[i].type == NPC.type && (Main.npc[i].velocity.X != 0f || Main.npc[i].velocity.Y != 0f))
+                        if (n.whoAmI != NPC.whoAmI && n.type == NPC.type && (n.velocity.X != 0f || n.velocity.Y != 0f))
                             NPC.localAI[0] = 180f;
                     }
                 }

@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 10; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.noGravity = true;
             }
         }

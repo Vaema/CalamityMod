@@ -133,7 +133,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int earthDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
+                    int earthDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                     Main.dust[earthDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -143,10 +143,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int earthDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 3f);
+                    int earthDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                     Main.dust[earthDust2].noGravity = true;
                     Main.dust[earthDust2].velocity *= 5f;
-                    earthDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 2f);
+                    earthDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                     Main.dust[earthDust2].velocity *= 2f;
                 }
 
@@ -244,7 +244,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     int damage = Main.masterMode ? 18 : Main.expertMode ? 22 : 30;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Vector2 projPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                        Vector2 projPosition = NPC.Center;
                         float targetXDist = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - projPosition.X;
                         float absoluteTargetX = Math.Abs(targetXDist) * 0.1f;
                         float targetYDist = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - projPosition.Y - absoluteTargetX;

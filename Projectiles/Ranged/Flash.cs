@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int flashDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.PortalBoltTrail, 0f, 0f, 100, dustColor, 2f);
+                int flashDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PortalBoltTrail, 0f, 0f, 100, dustColor, 2f);
                 Dust dust = Main.dust[flashDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

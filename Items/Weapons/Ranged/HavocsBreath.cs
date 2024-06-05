@@ -20,11 +20,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTime = 5;
             Item.useAnimation = 35;
             Item.reuseDelay = 20;
+            Item.useLimitPerAnimation = 7;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item34;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BrimstoneFireFriendly>();

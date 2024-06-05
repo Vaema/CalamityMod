@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Stardust>(3).
+                AddIngredient<StarblightSoot>(3).
                 AddIngredient<AstralOre>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

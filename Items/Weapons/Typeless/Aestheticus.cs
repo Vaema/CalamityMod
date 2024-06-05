@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
 

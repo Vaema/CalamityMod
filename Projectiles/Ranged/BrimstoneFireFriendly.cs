@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/FireProj";
 
         public static int Lifetime => 60;
-        public static int Fadetime => 80;
+        public static int Fadetime => 50;
         public ref float Time => ref Projectile.ai[0];
         public int MistType = -1;
 
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D fire = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
             // The conga line of colors to sift through

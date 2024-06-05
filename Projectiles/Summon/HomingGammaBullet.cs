@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 3; i++)
             {
-                Dust sulphuricAcid = Dust.NewDustDirect(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                Dust sulphuricAcid = Dust.NewDustDirect(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 sulphuricAcid.noGravity = true;
                 sulphuricAcid.velocity *= 1.8f;
 

@@ -176,7 +176,7 @@ namespace CalamityMod.NPCs.Crags
                     int dmg = Main.masterMode ? 19 : Main.expertMode ? 22 : 30;
                     int projType = ModContent.ProjectileType<BrimstoneBarrage>();
                     Vector2 projectileVelocity = new Vector2(targetX, targetY);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 16f, projectileVelocity, projType, dmg + (provy ? 30 : 0), 0f, Main.myPlayer, 1f, 0f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 16f, projectileVelocity, projType, dmg + (provy ? 30 : 0), 0f, Main.myPlayer, 1f, 0f, projectileVelocity.Length() * 3f);
                 }
             }
             int npcTileX = (int)NPC.Center.X;
@@ -336,7 +336,7 @@ namespace CalamityMod.NPCs.Crags
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -346,10 +346,10 @@ namespace CalamityMod.NPCs.Crags
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
             }

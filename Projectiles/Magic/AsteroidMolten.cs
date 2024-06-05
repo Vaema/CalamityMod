@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Magic
             flaming.fadeIn = 0.5f;
             flaming.noGravity = true;
 
-            int fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f);
+            int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f);
             Main.dust[fiery].velocity *= 0.5f;
             Main.dust[fiery].scale *= 1.3f;
             Main.dust[fiery].fadeIn = 1f;
@@ -70,14 +70,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 8; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
             }
             for (int j = 0; j < 32; j++)
             {
-                int killFire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 2.5f);
+                int killFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 2.5f);
                 Main.dust[killFire].noGravity = true;
                 Main.dust[killFire].velocity *= 3f;
-                killFire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
+                killFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
                 Main.dust[killFire].velocity *= 2f;
                 Main.dust[killFire].noGravity = true;
             }
@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             //Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             switch ((int)Projectile.ai[0])
             {
                 case 0:

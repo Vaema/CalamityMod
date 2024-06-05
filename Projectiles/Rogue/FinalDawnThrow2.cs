@@ -77,11 +77,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Kill any hooks from the projectile owner.
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-
-                if (!proj.active || proj.owner != player.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
+                if (proj.owner != player.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
                     continue;
 
                 if (proj.aiStyle == ProjAIStyleID.Hook)
@@ -117,9 +115,9 @@ namespace CalamityMod.Projectiles.Rogue
             Player player = Main.player[Projectile.owner];
             float scytheRotation = player.fullRotation;
 
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowScytheTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnThrow2_Glow").Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int num214 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
 
             Vector2 origin = new Vector2(scytheTexture.Width / 2f + 40f * player.direction, num214 * 1.1f);

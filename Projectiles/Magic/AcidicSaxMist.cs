@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= 90f)

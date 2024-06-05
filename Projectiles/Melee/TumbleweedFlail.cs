@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 origin = new Vector2((float)texture2D2.Width * 0.5f, (float)texture2D2.Height * 0.5f);
             float projHeight = (float)texture2D2.Height;
             Vector2 actualCenter = mountedCenter - projCenter;
-            float projRotation = (float)Math.Atan2((double)actualCenter.Y, (double)actualCenter.X) - 1.57f;
+            float projRotation = (float)Math.Atan2((double)actualCenter.Y, (double)actualCenter.X) - MathHelper.PiOver2;
             bool isActive = true;
             if (float.IsNaN(projCenter.X) && float.IsNaN(projCenter.Y))
             {
@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCDeath15, Projectile.position);
             for (int i = 0; i < 20; i++)
             {
-                int tumbleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Sand, 0f, 0f, 100, default, 1.2f);
+                int tumbleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, 0f, 0f, 100, default, 1.2f);
                 Main.dust[tumbleDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -142,10 +142,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int j = 0; j < 30; j++)
             {
-                int tumbleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.7f);
+                int tumbleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.7f);
                 Main.dust[tumbleDust2].noGravity = true;
                 Main.dust[tumbleDust2].velocity *= 5f;
-                tumbleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
+                tumbleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[tumbleDust2].velocity *= 2f;
             }
             if (Projectile.owner == Main.myPlayer)

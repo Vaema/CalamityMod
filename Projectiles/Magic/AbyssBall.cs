@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 30; i++)
             {
-                int abyssal = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.2f);
+                int abyssal = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.2f);
                 Main.dust[abyssal].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -54,10 +54,10 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 60; j++)
             {
-                int abyssal2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.7f);
+                int abyssal2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.7f);
                 Main.dust[abyssal2].noGravity = true;
                 Main.dust[abyssal2].velocity *= 5f;
-                abyssal2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
+                abyssal2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[abyssal2].velocity *= 2f;
             }
         }

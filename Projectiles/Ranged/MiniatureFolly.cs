@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -19,7 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.width = 24;
             Projectile.height = 8;
             Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = DamageClass.Generic;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.light = 0.25f;
@@ -35,6 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
             SoundEngine.PlaySound(SoundID.NPCHit51, Projectile.Center);
         }
 

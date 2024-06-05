@@ -55,6 +55,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient<RottenMatter>(7).
                 AddIngredient(ItemID.RottenChunk, 13).
                 AddTile(TileID.DemonAltar).
+                AddDecraftCondition(CalamityConditions.DownedHiveMind).
                 Register();
         }
     }

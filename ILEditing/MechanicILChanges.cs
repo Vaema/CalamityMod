@@ -9,7 +9,9 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.ForegroundDrawing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
@@ -20,6 +22,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
+using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,16 +32,20 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.Graphics;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
 
 namespace CalamityMod.ILEditing
@@ -78,7 +85,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Emit a delegate which calls the Calamity utility to consistently provide iframes.
-            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveIFrames(p, frames, false));
+            // 17APR2024: Ozzatron: Consistent shield slam iframes are not boosted by Cross Necklace at all and are fixed.
+            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveUniversalIFrames(p, frames, false));
         }
 
         private static readonly Func<Player, int> CalamityDashEquipped = (Player p) => p.Calamity().HasCustomDash ? 1 : 0;
@@ -284,7 +292,7 @@ namespace CalamityMod.ILEditing
         #region Allow Empress to Enrage in Boss Rush
         private static bool AllowEmpressToEnrageInBossRush(Terraria.On_NPC.orig_ShouldEmpressBeEnraged orig)
         {
-            if (Main.dayTime || BossRushEvent.BossRushActive)
+            if (BossRushEvent.BossRushActive)
                 return true;
 
             return orig();
@@ -717,6 +725,42 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Fog Effect in Floral Paradise
+        private static void DrawFloralParadiseFog(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+
+            cursor.GotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings"));
+            cursor.EmitDelegate<Action>(() =>
+            {
+                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                    DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
+            });
+        }
+
+        private static void DrawFog(float intensity)
+        {
+            Main.spriteBatch.EnterShaderRegion();
+            WaterfallRenderer.DrawWaterfalls();
+
+            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
+            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.74f);
+            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
+            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.67f);
+            GameShaders.Misc["CalamityMod:Fog"].Shader.Parameters["fogMovementSpeed"].SetValue(1.75f);
+            GameShaders.Misc["CalamityMod:Fog"].Apply();
+
+            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin();
+        }
+        #endregion Fog Effect in Floral Paradise
+
         #region Custom Draw Layers
         private static void AdditiveDrawing(ILContext il)
         {
@@ -729,22 +773,16 @@ namespace CalamityMod.ILEditing
                 Main.spriteBatch.SetBlendState(BlendState.Additive);
 
                 // Draw Projectiles.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active)
-                        continue;
-
-                    if (Main.projectile[i].ModProjectile is IAdditiveDrawer d)
+                    if (p.ModProjectile is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
                 // Draw NPCs.
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (!Main.npc[i].active)
-                        continue;
-
-                    if (Main.npc[i].ModNPC is IAdditiveDrawer d)
+                    if (n.ModNPC is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
@@ -863,7 +901,11 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 4);
 
             // Caching these values can save a LOT of overhead at runtime.
-            ModWaterStyle sunkenSeaWater = ModContent.GetInstance<SunkenSeaWater>();
+            ModWaterStyle basaltWater = ModContent.GetInstance<BasaltGullyWater>();
+            ModWaterStyle burrowsWater = ModContent.GetInstance<SunkenSeaBurrowsWater>();
+            ModWaterStyle polypWater = ModContent.GetInstance<SunkenSeaPolypWater>();
+            ModWaterStyle reefsWater = ModContent.GetInstance<SunkenSeaReefsWater>();
+            ModWaterStyle shoresWater = ModContent.GetInstance<SunkenSeaShoresWater>();
             ModWaterStyle sulphuricWater = ModContent.GetInstance<SulphuricWater>();
             ModWaterStyle sulphuricDepthsWater = ModContent.GetInstance<SulphuricDepthsWater>();
             ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
@@ -877,8 +919,11 @@ namespace CalamityMod.ILEditing
                 {
                     initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
                 }
-
-                if (liquidType == sunkenSeaWater.Slot ||
+                if (liquidType == burrowsWater.Slot ||
+                liquidType == basaltWater.Slot ||
+                liquidType == polypWater.Slot ||
+                liquidType == shoresWater.Slot ||
+                liquidType == reefsWater.Slot ||
                 liquidType == sulphuricWater.Slot ||
                 liquidType == sulphuricDepthsWater.Slot ||
                 liquidType == upperAbyssWater.Slot ||
@@ -999,13 +1044,13 @@ namespace CalamityMod.ILEditing
                 return;
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-            if (tile.LiquidAmount <= 0 || tile.HasTile || (Main.waterStyle != SulphuricWater.Type &&
-            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaWater.Type))
+            if (tile.LiquidAmount <= 0 || tile.HasTile || tile.Get<LiquidData>().LiquidType != LiquidID.Water || (Main.waterStyle != SulphuricWater.Type &&
+            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaBurrowsWater.Type && Main.waterStyle != SunkenSeaPolypWater.Type && 
+            Main.waterStyle != SunkenSeaReefsWater.Type && Main.waterStyle != SunkenSeaShoresWater.Type && Main.waterStyle != BasaltGullyWater.Type))
                 return;
 
             Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) &&
-            Main.waterStyle == SulphuricWater.Type)
+            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) && Main.waterStyle == SulphuricWater.Type)
             {
                 MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
                 GeneralParticleHandler.SpawnParticle(acidFoam);
@@ -1072,8 +1117,34 @@ namespace CalamityMod.ILEditing
                 if (Main.waterStyle == SulphuricDepthsWater.Type)
                     outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
 
-                if (Main.waterStyle == SunkenSeaWater.Type)
+                if (Main.waterStyle == SunkenSeaBurrowsWater.Type || Main.waterStyle == SunkenSeaPolypWater.Type || Main.waterStyle == SunkenSeaReefsWater.Type || 
+                Main.waterStyle == SunkenSeaShoresWater.Type || Main.waterStyle == BasaltGullyWater.Type)
                 {
+                    //default to white
+                    Color waterGlowColor = Color.White;
+
+                    //set the glow colors for each sunken sea biome water style
+                    if (Main.waterStyle == SunkenSeaShoresWater.Type)
+                    {
+                        waterGlowColor = new Color(233, 170, 184);
+                    }
+                    if (Main.waterStyle == SunkenSeaPolypWater.Type)
+                    {
+                        waterGlowColor = new Color(213, 185, 178);
+                    }
+                    if (Main.waterStyle == SunkenSeaReefsWater.Type)
+                    {
+                        waterGlowColor = new Color(140, 222, 239);
+                    }
+                    if (Main.waterStyle == SunkenSeaBurrowsWater.Type)
+                    {
+                        waterGlowColor = new Color(76, 211, 231);
+                    }
+                    if (Main.waterStyle == BasaltGullyWater.Type)
+                    {
+                        waterGlowColor = new Color(144, 174, 200);
+                    }
+
                     float brightness = MathHelper.Clamp(0.07f, 0f, 0.07f);
                     float waveScale1 = Main.GameUpdateCount * 0.028f;
                     float waveScale2 = Main.GameUpdateCount * 0.1f;
@@ -1093,7 +1164,7 @@ namespace CalamityMod.ILEditing
                     float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
-                    outputColor = Vector3.Lerp(outputColor, Color.DeepSkyBlue.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
+                    outputColor = Vector3.Lerp(outputColor, Color.DarkSlateGray.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
                     outputColor *= brightness;
                 }
             }
@@ -1358,6 +1429,70 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate<Func<bool, bool>>((x) => !x);
 
             // The next (untouched) instruction stores this value into Player.scope.
+        }
+        #endregion
+
+        #region Custom world selection difficulties
+        internal static void GetDifficultyOverride(Terraria.GameContent.UI.Elements.On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
+        {
+            // Run the original code and pull out the original text and text color
+            orig(self, out expertText, out gameModeColor);
+
+            string difficultyText = expertText;
+            Color difficultyColor = gameModeColor;
+
+            // Journey Mode takes ultimate priority
+            if (difficultyColor == Main.creativeModeColor)
+            {
+                return;
+            }
+            
+            // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
+            for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
+            {
+                WorldSelectionDifficultySystem.WorldDifficulty d = WorldSelectionDifficultySystem.WorldDifficulties[i];
+                {
+                    if (d.function(self))
+                    {
+                        difficultyText = d.name;
+                        difficultyColor = d.color;
+                        break;
+                    }
+                }
+            }
+
+            // Set the text and text color
+            expertText = difficultyText;
+            gameModeColor = difficultyColor;
+        }
+        #endregion
+
+        #region Shimmer effect edits
+        public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
+        {
+            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            {
+                self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
+                self.shimmered = true;
+                self.shimmerWet = true;
+                self.wet = true;
+                self.velocity *= 0.1f;
+                if (Main.netMode == 0)
+                {
+                    Item.ShimmerEffect(self.Center);
+                }
+                else
+                {
+                    NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                    NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                }
+                AchievementsHelper.NotifyProgressionEvent(27);
+            }
+            else
+            {
+                orig(self);
+            }
         }
         #endregion
     }

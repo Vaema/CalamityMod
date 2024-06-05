@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 14;
             Item.height = 14;
-            Item.damage = 18;
+            Item.damage = 28;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 18;
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<TurbulanceProjectile>();
             Item.shootSpeed = 12f;

@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
                 int Damage = Projectile.damage;
                 int type;
                 Projectile.netUpdate = true;
-                Vector2 projAimDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 projAimDirection = Projectile.Center;
                 float ampXDirection = (float)Main.mouseX + Main.screenPosition.X - projAimDirection.X;
                 float ampYDirection = (float)Main.mouseY + Main.screenPosition.Y - projAimDirection.Y;
                 if (player.gravDir == -1f)

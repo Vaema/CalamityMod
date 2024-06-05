@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dustType = 57;
                     break;
             }
-            int addedDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2.2f);
+            int addedDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2.2f);
             Main.dust[addedDust].noGravity = true;
             Main.dust[addedDust].velocity *= 0f;
 
@@ -81,14 +81,14 @@ namespace CalamityMod.Projectiles.Ranged
             int inc;
             for (int i = 0; i < 20; i = inc + 1)
             {
-                int dustID = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 200, default, 2.1f);
+                int dustID = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 200, default, 2.1f);
                 Main.dust[dustID].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 Main.dust[dustID].noGravity = true;
                 Dust dust = Main.dust[dustID];
                 dust.velocity *= 3f;
                 dust = Main.dust[dustID];
                 dust.velocity += dustVel * Main.rand.NextFloat();
-                dustID = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1.1f);
+                dustID = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1.1f);
                 Main.dust[dustID].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust = Main.dust[dustID];
                 dust.velocity *= 2f;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int j = 0; j < 10; j = inc + 1)
             {
-                int dustID = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 2.5f);
+                int dustID = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 2.5f);
                 Main.dust[dustID].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 3f;
                 Main.dust[dustID].noGravity = true;
                 Dust dust = Main.dust[dustID];

@@ -89,14 +89,14 @@ namespace CalamityMod.Projectiles.Boss
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int plasmaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
+                    int plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
                     Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                     Main.dust[plasmaDust].noGravity = true;
 
                     Dust dust = Main.dust[plasmaDust];
                     dust.velocity *= 3f;
 
-                    plasmaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
+                    plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
                     Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
                     dust = Main.dust[plasmaDust];
@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Boss
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int plasmaDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
+                    int plasmaDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
                     Main.dust[plasmaDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                     Main.dust[plasmaDust2].noGravity = true;
 

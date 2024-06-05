@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee
             float attackCompletionRatio = Utils.GetLerpValue(Lifetime, FlyBackTime, Projectile.timeLeft, true);
 
             // Normally swing from a "cone" to a collision area that causes both whips to collide.
-            float baseSwingAngle = MathHelper.Lerp(-1.1f, 1.57f, 1f - attackCompletionRatio);
+            float baseSwingAngle = MathHelper.Lerp(-1.1f, MathHelper.PiOver2, 1f - attackCompletionRatio);
 
             Vector2 swingDirection = (SwingDirection * baseSwingAngle + MathHelper.PiOver2).ToRotationVector2();
             swingDirection = swingDirection.RotatedBy(InitialDirectionRotation);

@@ -8,6 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -783,7 +784,7 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int bloody = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    int bloody = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloody].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -793,10 +794,10 @@ namespace CalamityMod.NPCs.Leviathan
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int bloody2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
+                    int bloody2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
                     Main.dust[bloody2].noGravity = true;
                     Main.dust[bloody2].velocity *= 5f;
-                    bloody2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    bloody2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloody2].velocity *= 2f;
                 }
                 if (Main.netMode != NetmodeID.Server)
@@ -872,6 +873,7 @@ namespace CalamityMod.NPCs.Leviathan
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<LeviathanMask>(), 7);
                 normalOnly.Add(ModContent.ItemType<AnahitaMask>(), 7);
+                normalOnly.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment

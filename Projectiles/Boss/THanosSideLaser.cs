@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Boss
                 else
                 {
                     Projectile.spriteDirection = 1;
-                    Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                    Projectile.rotation = Projectile.velocity.ToRotation();
                 }
             }
             else if (Velocity == Vector2.Zero)

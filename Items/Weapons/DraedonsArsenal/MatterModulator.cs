@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
             Item.shoot = ModContent.ProjectileType<UnstableMatter>();

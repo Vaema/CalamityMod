@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             Player player = Main.player[Projectile.owner];
 
             // Use a different texture if the player is invisible or has at least 50% stealth
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float stealthPercent = player.Calamity().rogueStealthMax != 0 ? (player.Calamity().rogueStealth / player.Calamity().rogueStealthMax) : 0f; //0 to 1
             bool hasStealth = player.Calamity().rogueStealth > 0f && stealthPercent > 0.5f && player.townNPCs < 3f && CalamityConfig.Instance.StealthInvisibility;
             if (player.ShouldNotDraw || hasStealth)

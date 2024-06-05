@@ -182,7 +182,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 30; i++)
                 {
-                    int iceFlame = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.IceTorch, 0f, 0f, 100, default, 2f);
+                    int iceFlame = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                     Main.dust[iceFlame].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -192,10 +192,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust].noGravity = true;
                     Main.dust[rockDust].velocity *= 5f;
-                    rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 2f;
                 }
             }
@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.Ravager
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int iceFlame = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    int iceFlame = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[iceFlame].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -213,10 +213,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 2; j++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust].noGravity = true;
                     Main.dust[rockDust].velocity *= 5f;
-                    rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 2f;
                 }
             }

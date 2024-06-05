@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 44;
             Item.height = 58;
-            Item.damage = 131;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.autoReuse = true;
             Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;

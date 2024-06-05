@@ -124,7 +124,9 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 fireFrom = new Vector2(Main.npc[(int)Projectile.ai[1]].Center.X + (Main.npc[(int)Projectile.ai[1]].spriteDirection > 0 ? 34f : -34f), Main.npc[(int)Projectile.ai[1]].Center.Y - 74f) + velocity * distanceBetweenProjectiles;
                 int projectileAmt = (int)(Projectile.localAI[1] / distanceBetweenProjectiles);
                 int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                int damage = Projectile.GetProjectileDamage(ModContent.NPCType<BrimstoneElemental>());
+                int damage = (int)Math.Round(Projectile.damage * 0.6);
+                float projectileVelocityToPass = 12f;
+
                 for (int i = 0; i < projectileAmt; i++)
                 {
                     int totalProjectiles = 2;
@@ -132,7 +134,7 @@ namespace CalamityMod.Projectiles.Boss
                     for (int j = 0; j < totalProjectiles; j++)
                     {
                         Vector2 projVelocity = Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2);
-                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer, death ? 2f : 1f, 0f);
+                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer, death ? 2f : 1f, 0f, projectileVelocityToPass);
                         Main.projectile[proj].tileCollide = true;
                         if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                             Main.projectile[proj].extraUpdates += 1;
@@ -170,7 +172,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 return false;
             }
-            Texture2D texture2D19 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D19 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D texture2D20 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BrimstoneRayMid", AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture2D21 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BrimstoneRayEnd", AssetRequestMode.ImmediateLoad).Value;
             float rayDrawLength = Projectile.localAI[1]; //length of laser

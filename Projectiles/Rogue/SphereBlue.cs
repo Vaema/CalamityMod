@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
                     226,
                     229
                 });
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 0f;
             }

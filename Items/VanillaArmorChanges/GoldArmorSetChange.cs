@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,10 +20,10 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public const float HeadDamage = 0.06f;
         public const float ChestDR = 0.05f;
         public const float LegsMoveSpeed = 0.1f;
-        public const float GoldDropChanceFromEnemies = 0.04f;
+        public const float GoldDropChanceFromEnemies = 0.02f;
         public const int GoldFromBosses = 3;
-        public const float SetBonusCritPerGoldCoin = 0.2f; // 5 gold coins = +1% crit chance
-        public const float MaximumCritBonus = 10f;
+        public const float SetBonusCritPerGoldCoin = 0.1f; // 10 gold coins = +1% crit chance
+        public const float MaximumCritBonus = 9f;
 
         public override void ApplyHeadPieceEffect(Player player) => player.GetDamage<GenericDamageClass>() += HeadDamage;
 
@@ -50,8 +49,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
             {
                 // 13FEB2024: Ozzatron: this function doesn't cap at its second argument, it just stops counting if it exceeds that number
                 // so this can give up to 100 gold coins
-                int goldCoins = player.CountItem(ItemID.GoldCoin, 50);
-                critFromGold = Math.Max(goldCoins * SetBonusCritPerGoldCoin, MaximumCritBonus);
+                int goldCoins = player.CountItem(ItemID.GoldCoin, 90);
+                critFromGold = Math.Min(goldCoins * SetBonusCritPerGoldCoin, MaximumCritBonus);
             }
 
             player.GetCritChance<GenericDamageClass>() += critFromGold;

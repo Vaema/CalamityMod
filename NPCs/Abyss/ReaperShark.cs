@@ -726,7 +726,7 @@ namespace CalamityMod.NPCs.Abyss
             npcLoot.Add(ModContent.ItemType<AnechoicCoating>(), 1, 2, 3);
 
             var postPolter = npcLoot.DefineConditionalDropSet(DropHelper.PostPolter());
-            postPolter.Add(ModContent.ItemType<ReaperTooth>(), 1, 3, 4);
+            postPolter.Add(ModContent.ItemType<ReaperTooth>(), 1, 6, 8);
             postPolter.Add(ModContent.ItemType<DeepSeaDumbbell>(), 3);
             postPolter.Add(ModContent.ItemType<Valediction>(), 3);
 

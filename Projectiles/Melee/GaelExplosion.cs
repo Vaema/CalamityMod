@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int gaelDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                int gaelDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 Main.dust[gaelDust].noGravity = true;
                 Main.dust[gaelDust].position.X = Projectile.Center.X;
                 Main.dust[gaelDust].position.Y = Projectile.Center.Y;

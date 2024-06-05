@@ -126,6 +126,12 @@ namespace CalamityMod.Effects
         // Used by Devourer of Gods. Renders the portal that he escapes through at the end of phase 1.
         internal static Effect DoGPortalShader;
 
+        // Used to render all-encompassing fog in the Floral Paradise biome.
+        internal static Effect FogShader;
+
+        // Used to render background water features in the Floral Paradise biome.
+        internal static Effect WaterfallShader;
+
         // Metaballs. See the MetaballManager class for comments on how this system works.
         // These shaders are leveraged to render the results of the metaball simulation to the screen.
         // The "Base" shader draws the particles themselves.
@@ -350,6 +356,12 @@ namespace CalamityMod.Effects
 
             DoGPortalShader = LoadShader("ScreenShaders/DoGPortalShader");
             RegisterMiscShader(DoGPortalShader, "ScreenPass", "DoGPortal");
+
+            FogShader = LoadShader("ScreenShaders/Fog");
+            RegisterMiscShader(FogShader, "DyePass", "Fog");
+
+            WaterfallShader = LoadShader("WaterfallShader");
+            RegisterMiscShader(WaterfallShader, "TrailPass", "Waterfall");
 
             // These two shaders are often (but not always) used together.
             MetaballEdgeShader = LoadShader("Metaballs/MetaballEdgeShader");

@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;

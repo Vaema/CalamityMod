@@ -18,8 +18,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
-            Item.width = 54;
-            Item.height = 52;
+            Item.width = 70;
+            Item.height = 60;
             Item.damage = 22;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 18;
@@ -28,11 +28,11 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item43;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<HellwingPillar>();
+            Item.shoot = ModContent.ProjectileType<HellwingBat>();
             Item.shootSpeed = 9f;
         }
 

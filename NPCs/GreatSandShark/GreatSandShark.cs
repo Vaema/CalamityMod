@@ -428,7 +428,7 @@ namespace CalamityMod.NPCs.GreatSandShark
                                 NPC.localAI[0] = -1f;
                                 for (int i = 0; i < 25; i++)
                                 {
-                                    int burrowDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Sand, 0f, 0f, 100, default, 2f);
+                                    int burrowDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Sand, 0f, 0f, 100, default, 2f);
                                     Main.dust[burrowDust].velocity.Y *= 6f;
                                     Main.dust[burrowDust].velocity.X *= 3f;
                                     if (Main.rand.NextBool())
@@ -439,10 +439,10 @@ namespace CalamityMod.NPCs.GreatSandShark
                                 }
                                 for (int j = 0; j < 50; j++)
                                 {
-                                    int burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.UnusedBrown, 0f, 0f, 100, default, 3f);
+                                    int burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.UnusedBrown, 0f, 0f, 100, default, 3f);
                                     Main.dust[burrowDust2].noGravity = true;
                                     Main.dust[burrowDust2].velocity.Y *= 10f;
-                                    burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Sandstorm, 0f, 0f, 100, default, 2f);
+                                    burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Sandstorm, 0f, 0f, 100, default, 2f);
                                     Main.dust[burrowDust2].velocity.X *= 2f;
                                 }
 
@@ -653,7 +653,7 @@ IL_6899:
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    int burrowDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    int burrowDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[burrowDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -663,10 +663,10 @@ IL_6899:
                 }
                 for (int j = 0; j < 100; j++)
                 {
-                    int burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
+                    int burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
                     Main.dust[burrowDust2].noGravity = true;
                     Main.dust[burrowDust2].velocity *= 5f;
-                    burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[burrowDust2].velocity *= 2f;
                 }
             }

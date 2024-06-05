@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, 1f, spriteEffects, 0);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, 1f, spriteEffects, 0);
         }
 
         public override Color? GetAlpha(Color lightColor)

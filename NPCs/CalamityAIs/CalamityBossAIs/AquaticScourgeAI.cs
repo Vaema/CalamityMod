@@ -87,10 +87,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                npc.TargetClosest();
-
             Player player = Main.player[npc.target];
 
             bool notOcean = player.position.Y < 300f ||
@@ -100,7 +96,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Check for the flipped Abyss
             if (Main.remixWorld)
             {
-                notOcean = player.position.Y < (Main.maxTilesY - 200) * 0.8f || player.position.Y > Main.maxTilesY - 200 ||
+                notOcean = player.position.Y < Main.UnderworldLayer * 0.8f || player.position.Y > Main.UnderworldLayer ||
                     (player.position.X > 7680f && player.position.X < (Main.maxTilesX * 16 - 7680));
             }
 

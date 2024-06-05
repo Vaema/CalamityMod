@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D lightTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D lightTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 float hue = 0.5f + 0.5f * i / (float)Projectile.oldPos.Length * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f);

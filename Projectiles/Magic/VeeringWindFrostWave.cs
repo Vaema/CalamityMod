@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor) // Photoviscerator ball drawcode, slightly edited.
         {
-            Texture2D lightTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D lightTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 float colorInterpolation = (float)Math.Cos(Projectile.timeLeft / 4.8f + Main.GlobalTimeWrappedHourly / 20f + i / (float)Projectile.oldPos.Length * MathHelper.Pi) * 0.5f + 0.5f;

@@ -45,6 +45,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<PearlShard>().
                 AddIngredient<StormlionMandible>().
                 AddTile(TileID.Bottles).
+                AddDecraftCondition(CalamityConditions.DownedHiveMindOrPerforator).
                 Register();
 
             CreateRecipe().

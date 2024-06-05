@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 42;
             Item.height = 56;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.transformer = true;
             modPlayer.aSpark = true;
+            player.Calamity().eleResist = true;
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

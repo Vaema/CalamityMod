@@ -9,12 +9,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class BlastBarrel : RogueWeapon
     {
-        public const int BaseDamage = 32;
         public override void SetDefaults()
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = BaseDamage;
+            Item.damage = 32;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -23,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice; //2 gold 40 silver sellprice
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<BlastBarrelProjectile>();
             Item.shootSpeed = 12f;

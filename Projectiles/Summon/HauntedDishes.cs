@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Summon
                 conflict1 += 40 * Projectile.minionPos;
                 if (Projectile.localAI[0] > 0f)
                     conflict1 += 500;
-                Vector2 idleMinionPos = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 idleMinionPos = Projectile.Center;
                 float playerX = player.position.X + (float)(player.width / 2) - idleMinionPos.X;
                 float playerY = player.position.Y + (float)(player.height / 2) - idleMinionPos.Y;
                 float playerDist = (float)Math.Sqrt(playerX * playerX + playerY * playerY);
@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (npcFound && targetIndex >= 0)
                     Projectile.ai[0] = 0f;
 
-                Vector2 returningMinionPos = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 returningMinionPos = Projectile.Center;
                 float xDist = player.position.X + (float)(player.width / 2) - returningMinionPos.X;
                 xDist -= (float)(40 * player.direction);
                 if (!npcFound)
@@ -234,7 +234,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.spriteDirection = 1;
                 else if (Projectile.velocity.X < -0.5f)
                     Projectile.spriteDirection = -1;
-                Projectile.rotation = Projectile.spriteDirection != 1 ? (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 3.14f : (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.spriteDirection != 1 ? Projectile.velocity.ToRotation() + MathHelper.Pi : Projectile.velocity.ToRotation();
             }
             else
             {

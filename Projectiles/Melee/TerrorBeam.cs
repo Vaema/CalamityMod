@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.alpha = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
         }
 
         public override bool PreDraw(ref Color lightColor)

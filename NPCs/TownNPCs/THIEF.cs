@@ -91,11 +91,10 @@ namespace CalamityMod.NPCs.TownNPCs
             if (CalamityWorld.spawnedBandit)
                 return true;
 
-            for (int k = 0; k < Main.maxPlayers; k++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[k];
                 bool rich = player.InventoryHas(ItemID.PlatinumCoin) || player.PortableStorageHas(ItemID.PlatinumCoin);
-                if (player.active && rich)
+                if (rich)
                     return NPC.downedBoss3;
             }
             return false;
@@ -104,13 +103,14 @@ namespace CalamityMod.NPCs.TownNPCs
         public override List<string> SetNPCNameList() => new List<string>()
         {
             // Patron names
-            "Xplizzy", // <@!98826096237109248> (Whitegiraffe#6342)
-            "Freakish", // <@!750363283520749598> (Freakish#0001)
+            "Xplizzy", // <@!98826096237109248> (whitegiraffe)
+            "Freakish", // <@!750363283520749598> (freak5650)
             "Calder", // <@!601897959176798228> (hardlightcaster)
-            "Hunter Jinx", // <@!757401399783850134> (Jinx_enthusiast#1580)
-            "Goose", // <@!591421917706321962> (DullElili#8016)
-            "Jackson", // <@!525827730646892549> (ChowChow, Sin of Sleep Schedules#1235)
+            "Hunter Jinx", // <@!757401399783850134> (dragonslayerornstein.)
+            "Goose", // <@!591421917706321962> (dullelili)
+            "Jackson", // <@!525827730646892549> (chowchow360)
             "Altarca", // <@!1140673052108128337> (altarca_27226_49175)
+            "Jackie", // <@!353241811717718016> (jackalchan)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),
@@ -244,6 +244,9 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (Main.LocalPlayer.Calamity().trippy)
+                return false;
+
             var something = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             spriteBatch.Draw(BirthdayParty.PartyIsUp ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - new Vector2(0f, 6f), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, something, 0);
             return false;
@@ -268,10 +271,10 @@ namespace CalamityMod.NPCs.TownNPCs
         }
         public override void AddShops()
         {
-            Condition potionSells = new(CalamityUtils.GetText("Condition.PotionConfig"), () => CalamityConfig.Instance.PotionSelling);
-            Condition downedCalclone = new(CalamityUtils.GetText("Condition.PostCal"), () => DownedBossSystem.downedCalamitasClone);
-            Condition downedDoG = new(CalamityUtils.GetText("Condition.PostDoG"), () => DownedBossSystem.downedDoG);
-            Condition downedYharon = new(CalamityUtils.GetText("Condition.PostYharon"), () => DownedBossSystem.downedYharon);
+            Condition potionSells = CalamityConditions.PotionSellingConfig;
+            Condition downedCalclone = CalamityConditions.DownedCalamitasClone;
+            Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
+            Condition downedYharon = CalamityConditions.DownedYharon;
 
             NPCShop shop = new(Type);
             shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
@@ -281,7 +284,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ItemID.TigerClimbingGear)
                 .AddWithCustomValue(ItemID.InvisibilityPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
                 .AddWithCustomValue(ItemID.NightOwlPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
-                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25), Condition.Hardmode)
+                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
                 .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
                 .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
                 .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)

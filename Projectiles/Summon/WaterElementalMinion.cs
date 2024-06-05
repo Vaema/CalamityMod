@@ -125,14 +125,14 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!canAttack)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            float targetX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                            float targetY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                            float targetX = n.position.X + (float)(n.width / 2);
+                            float targetY = n.position.Y + (float)(n.height / 2);
                             float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - targetX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - targetY);
-                            if (targetDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[i].position, Main.npc[i].width, Main.npc[i].height))
+                            if (targetDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                             {
                                 attackRange = targetDist;
                                 projX = targetX;
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Summon
                         projectileType = ModContent.ProjectileType<WaterElementalSong>();
                     }
                     float projVel = Main.rand.Next(12, 20);
-                    Vector2 fireDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 fireDirection = Projectile.Center;
                     float fireXVel = projXStore - fireDirection.X;
                     float fireYVel = projYStore - fireDirection.Y;
                     float fireVelocity = (float)Math.Sqrt((double)(fireXVel * fireXVel + fireYVel * fireYVel));

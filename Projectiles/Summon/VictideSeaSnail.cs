@@ -154,9 +154,8 @@ namespace CalamityMod.Projectiles.Summon
 
                 bool foundTarget = false;
                 float maxDist = 300f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         if (Vector2.Distance(Projectile.Center, npc.Center) < maxDist && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
@@ -217,7 +216,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = new Rectangle(0, 36 * Projectile.frame, 38, 34);
             Vector2 origin = !CanComePeekOut ? new Vector2(15, 23) : frame.Size() / 2f;
 

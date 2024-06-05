@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -11,6 +12,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         private static int NumAnimationFrames = 5;
         private static int AnimationFrameTime = 9;
+        public int time = 0;
 
         public override void SetStaticDefaults()
         {
@@ -25,27 +27,38 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 3;
-            Projectile.timeLeft = 180;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 5;
+            Projectile.timeLeft = 300;
         }
 
         public override void AI()
         {
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+
             DrawOffsetX = -28;
             DrawOriginOffsetY = -2;
             DrawOriginOffsetX = 12;
-            Projectile.rotation = Projectile.velocity.ToRotation();
+            if (Projectile.ai[1] == 2)
+            {
+                Projectile.rotation = (Projectile.velocity.RotatedBy(0.2f)).ToRotation();
+            }
+            else
+            {
+                Projectile.rotation = (Projectile.velocity.RotatedBy(-0.2f)).ToRotation();
+            }
 
             // Light
             Lighting.AddLight(Projectile.Center, 0.3f, 0.1f, 0.45f);
 
-            // Spawn dust with a 3/4 chance
-            if (!Main.rand.NextBool(4))
+            if (time > 8 && Main.rand.NextBool())
             {
-                int idx = Dust.NewDust(Projectile.Center, 1, 1, DustID.PurpleCrystalShard);
-                Main.dust[idx].position = Projectile.Center;
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].velocity *= 0.25f;
+                float colorRando = Main.rand.NextFloat(0, 1);
+                Vector2 dustvel = Projectile.ai[1] == 2 ? Projectile.velocity.RotatedBy(0.2f) : Projectile.velocity.RotatedBy(-0.2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, 261, -dustvel * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                dust.noGravity = true;
+                dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando);
             }
 
             // Update animation
@@ -57,6 +70,8 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.frame >= NumAnimationFrames)
                 Projectile.frame = 0;
+
+            time++;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -69,10 +84,10 @@ namespace CalamityMod.Projectiles.Melee
         {
             SoundEngine.PlaySound(SoundID.Item89, Projectile.Center);
 
-            // Individual split projectiles deal 5% damage per hit.
+            // Individual split projectiles deal 2% damage per hit.
             int numSplits = 6;
             int splitID = ModContent.ProjectileType<AtaraxiaSplit>();
-            int damage = (int)(Projectile.damage * 0.05f);
+            int damage = (int)(Projectile.damage * 0.02f);
             float angleVariance = MathHelper.TwoPi / numSplits;
             Vector2 projVec = new Vector2(4.5f, 0f).RotatedByRandom(MathHelper.TwoPi);
 
@@ -83,5 +98,6 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, projVec, splitID, damage, 1.5f, Main.myPlayer);
             }
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 15, targetHitbox);
     }
 }

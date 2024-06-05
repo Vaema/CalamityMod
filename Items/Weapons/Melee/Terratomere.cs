@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<TerratomereHoldoutProj>();
             Item.shootSpeed = 60f;

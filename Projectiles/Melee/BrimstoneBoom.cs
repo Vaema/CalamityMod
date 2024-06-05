@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Melee
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
+                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
                 Main.dust[brimDust].noGravity = true;
                 Main.dust[brimDust].position.X = Projectile.Center.X;
                 Main.dust[brimDust].position.Y = Projectile.Center.Y;

@@ -10,6 +10,8 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
@@ -80,6 +82,30 @@ namespace CalamityMod.Projectiles
         // Adds Brimstone flames to bullets, currently only used by Animosity
         public bool brimstoneBullets = false;
 
+        // Adds fire to bullets, currently used by Thermocline Blaster
+        public bool fireBullet = false;
+
+        // Adds ice to bullets, currently used by Thermocline Blaster
+        public bool iceBullet = false;
+
+        // Adds shock to bullets, currently used by Arietes 41
+        public bool shockBullet = false;
+
+        // Adds... pearl? to bullets (visual 1, blue), currently used by Pearl God
+        public bool pearlBullet1 = false;
+        // Adds... pearl? to bullets (visual 2, pink), currently used by Pearl God
+        public bool pearlBullet2 = false;
+        // Adds... pearl? to bullets (visual 3, yellow), currently used by Pearl God
+        public bool pearlBullet3 = false;
+
+        // Adds lifesteal to bullets, currently used by Arietes 41
+        public bool lifeBullet = false;
+
+        // Adds lifesteal to bullets (visual 1), currently used by Pearl God
+        public bool betterLifeBullet1 = false;
+        // Adds lifesteal to bullets (visual 2), currently used by Pearl God
+        public bool betterLifeBullet2 = false;
+
         // If true, this projectile creates impact sparks upon hitting enemies
         public bool deepcoreBullet = false;
 
@@ -101,10 +127,12 @@ namespace CalamityMod.Projectiles
         // Empress of Light variables
         private const float EmpressRainbowStreakSpreadOutCutoff = 140f;
         private const int EmpressLastingRainbowTotalDuration = 660;
+        private const int EmpressLastingRainbowTimeBeforeDealingDamage = 60;
 
         // Duke Fishron variables
         private const int FishronSharknadoTotalDuration = 540;
         private const int FishronCthulhunadoTotalDuration = 840;
+        private const int FishronTornadoTimeBeforeDealingDamage = 60;
 
         // Temporary flat damage reduction effects. This is typically used for parry effects such as Ark of the Ancients
         public int flatDRTimer = 0;
@@ -127,6 +155,7 @@ namespace CalamityMod.Projectiles
         public bool extorterBoost = false;
         public bool LocketClone = false;
         public bool CannotProc = false;
+        public bool JewelSpikeSpawned = false;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
         // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
@@ -348,12 +377,12 @@ namespace CalamityMod.Projectiles
                     num133 = Player.FindClosest(projectile.Center, 1, 1);
                     projectile.ai[1] += 1f;
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
-                    float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 150f : CalamityWorld.death ? 105f : 90f;
+                    float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
-                        homingEndTime += 60f;
+                        homingEndTime += 90f;
 
                     // Stop homing when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < 80f && projectile.ai[1] < homingEndTime)
+                    if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
                         projectile.ai[1] = homingEndTime;
 
                     if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
@@ -574,7 +603,8 @@ namespace CalamityMod.Projectiles
                 blood2.scale = 1.2f;
                 blood2.position = projectile.Center + Main.rand.NextFloat() * projectile.velocity * 2f;
 
-                for (int j = 1; j < projectile.oldPos.Length && !(projectile.oldPos[j] == Vector2.Zero); j++)
+                int trailLength = projectile.oldPos.Length / 2;
+                for (int j = 1; j < trailLength && !(projectile.oldPos[j] == Vector2.Zero); j++)
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -916,6 +946,102 @@ namespace CalamityMod.Projectiles
             else if (projectile.type == ProjectileID.Sharknado)
             {
                 projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
+
+                int num535 = 10;
+                int num536 = 15;
+                float num537 = 1f;
+                int num538 = 150;
+                int num539 = 42;
+
+                if (projectile.velocity.X != 0f)
+                    projectile.direction = (projectile.spriteDirection = -Math.Sign(projectile.velocity.X));
+
+                projectile.frameCounter++;
+                if (projectile.frameCounter > 2)
+                {
+                    projectile.frame++;
+                    projectile.frameCounter = 0;
+                }
+
+                if (projectile.frame >= 6)
+                    projectile.frame = 0;
+
+                if (projectile.localAI[0] == 0f && Main.myPlayer == projectile.owner)
+                {
+                    projectile.localAI[0] = 1f;
+                    projectile.position.X += projectile.width / 2;
+                    projectile.position.Y += projectile.height / 2;
+                    projectile.scale = ((float)(num535 + num536) - projectile.ai[1]) * num537 / (float)(num536 + num535);
+                    projectile.width = (int)((float)num538 * projectile.scale);
+                    projectile.height = (int)((float)num539 * projectile.scale);
+                    projectile.position.X -= projectile.width / 2;
+                    projectile.position.Y -= projectile.height / 2;
+                    projectile.netUpdate = true;
+                }
+
+                if (projectile.ai[1] != -1f)
+                {
+                    projectile.scale = ((float)(num535 + num536) - projectile.ai[1]) * num537 / (float)(num536 + num535);
+                    projectile.width = (int)((float)num538 * projectile.scale);
+                    projectile.height = (int)((float)num539 * projectile.scale);
+                }
+
+                int maxAlpha = 150;
+                int minAlpha = 60;
+                if (projectile.timeLeft > FishronSharknadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
+                {
+                    maxAlpha = 220;
+                    minAlpha = 180;
+                }
+
+                if (!Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
+                {
+                    projectile.alpha -= 30;
+                    if (projectile.alpha < minAlpha)
+                        projectile.alpha = minAlpha;
+                }
+                else
+                {
+                    projectile.alpha += 30;
+                    if (projectile.alpha > maxAlpha)
+                        projectile.alpha = maxAlpha;
+                }
+
+                if (projectile.ai[0] > 0f)
+                    projectile.ai[0]--;
+
+                if (projectile.ai[0] == 1f && projectile.ai[1] > 0f && projectile.owner == Main.myPlayer)
+                {
+                    projectile.netUpdate = true;
+                    Vector2 center4 = projectile.Center;
+                    center4.Y -= (float)num539 * projectile.scale / 2f;
+                    float num540 = ((float)(num535 + num536) - projectile.ai[1] + 1f) * num537 / (float)(num536 + num535);
+                    center4.Y -= (float)num539 * num540 / 2f;
+                    center4.Y += 2f;
+                    Projectile.NewProjectile(projectile.GetSource_FromAI(), center4, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 10f, projectile.ai[1] - 1f);
+                    int num541 = 4;
+
+                    if ((int)projectile.ai[1] % num541 == 0 && projectile.ai[1] != 0f)
+                    {
+                        int num542 = NPCID.Sharkron;
+                        int num543 = NPC.NewNPC(projectile.GetSource_FromAI(), (int)center4.X, (int)center4.Y, num542);
+                        Main.npc[num543].velocity = projectile.velocity;
+                        Main.npc[num543].netUpdate = true;
+                    }
+                }
+
+                if (projectile.ai[0] <= 0f)
+                {
+                    float num544 = MathHelper.Pi / 30f;
+                    float num545 = (float)projectile.width / 5f;
+                    float num546 = (float)(Math.Cos(num544 * (0f - projectile.ai[0])) - 0.5) * num545;
+                    projectile.position.X -= num546 * (float)(-projectile.direction);
+                    projectile.ai[0]--;
+                    num546 = (float)(Math.Cos(num544 * (0f - projectile.ai[0])) - 0.5) * num545;
+                    projectile.position.X += num546 * (float)(-projectile.direction);
+                }
+
+                return false;
             }
 
             // Larger cthulhunadoes
@@ -967,19 +1093,25 @@ namespace CalamityMod.Projectiles
                         projectile.height = (int)(segmentHeight * projectile.scale);
                     }
 
+                    int maxAlpha = 150;
+                    int minAlpha = 100;
+                    if (projectile.timeLeft > FishronCthulhunadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
+                    {
+                        maxAlpha = 220;
+                        minAlpha = 200;
+                    }
+
                     if (!Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
                     {
                         projectile.alpha -= 30;
-                        if (projectile.alpha < 60)
-                            projectile.alpha = 60;
-                        if (projectile.alpha < 100)
-                            projectile.alpha = 100;
+                        if (projectile.alpha < minAlpha)
+                            projectile.alpha = minAlpha;
                     }
                     else
                     {
                         projectile.alpha += 30;
-                        if (projectile.alpha > 150)
-                            projectile.alpha = 150;
+                        if (projectile.alpha > maxAlpha)
+                            projectile.alpha = maxAlpha;
                     }
 
                     if (projectile.ai[0] > 0f)
@@ -1027,6 +1159,20 @@ namespace CalamityMod.Projectiles
 
                     return false;
                 }
+                else
+                {
+                    int minAlpha = 100;
+                    if (projectile.timeLeft > FishronCthulhunadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
+                        minAlpha = 200;
+
+                    int alphaChange = 30;
+                    if (!Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
+                    {
+                        projectile.alpha -= alphaChange;
+                        if (projectile.alpha < minAlpha + alphaChange)
+                            projectile.alpha = minAlpha + alphaChange;
+                    }
+                }
             }
 
             else if (projectile.type == ProjectileID.HallowBossRainbowStreak && projectile.hostile)
@@ -1036,7 +1182,7 @@ namespace CalamityMod.Projectiles
                 bool spreadOut = false;
                 bool homeIn = false;
                 float spreadOutCutoffTime = EmpressRainbowStreakSpreadOutCutoff;
-                float homeInCutoffTime = Main.dayTime ? (revMasterMode ? 55f : 65f) : (revMasterMode ? 70f : 80f);
+                float homeInCutoffTime = NPC.ShouldEmpressBeEnraged() ? (revMasterMode ? 55f : 65f) : (revMasterMode ? 70f : 80f);
                 float spreadDeceleration = 0.97f;
                 float minAcceleration = revMasterMode ? 0.075f : 0.05f;
                 float maxAcceleration = revMasterMode ? 0.15f : 0.1f;
@@ -1082,7 +1228,7 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
-                projectile.Opacity = Utils.GetLerpValue(240f, 220f, projectile.timeLeft, clamped: true);
+                projectile.Opacity = spreadOut ? 0.4f : Utils.GetLerpValue(240f, 220f, projectile.timeLeft, clamped: true);
                 projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
                 return false;
@@ -1151,7 +1297,7 @@ namespace CalamityMod.Projectiles
                             Vector2 vector52 = array7[num735] - projectile.Center;
                             float ai = Main.rand.Next(100);
                             Vector2 vector53 = Vector2.Normalize(vector52.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                            Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector53, 466, projectile.damage, 0f, Main.myPlayer, vector52.ToRotation(), ai);
+                            Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector53, ProjectileID.CultistBossLightningOrbArc, projectile.damage, 0f, Main.myPlayer, vector52.ToRotation(), ai);
                         }
                     }
 
@@ -2008,8 +2154,8 @@ namespace CalamityMod.Projectiles
                     int numDust = 5;
                     int numDust2 = 5;
                     int fadeInTime = 10;
-                    int fadeOutGateValue = masterMode ? 80 : death ? 50 : 10;
-                    float killGateValue = masterMode ? 90f : death ? 60f : 20f;
+                    int fadeOutGateValue = masterMode ? 80 : death ? 50 : 25;
+                    float killGateValue = masterMode ? 90f : death ? 60f : 35f;
                     int maxFrames = 5;
 
                     bool fadeIn = projectile.ai[0] < (float)fadeInTime;
@@ -2087,12 +2233,14 @@ namespace CalamityMod.Projectiles
                     }
 
                     if (projectile.ai[0] >= 5f + projectile.ai[2])
-                        projectile.velocity.Y += 0.15f;
+                        projectile.velocity.Y += 0.3f;
 
                     // Create a wave of rubble
                     // Make sure the projectile doesn't despawn before it starts going up
                     if (projectile.ai[0] <= projectile.ai[2])
                     {
+                        projectile.Opacity = 0.4f;
+
                         projectile.timeLeft += 1;
 
                         // Use the expected velocity when the time is right
@@ -2102,13 +2250,15 @@ namespace CalamityMod.Projectiles
                             projectile.velocity *= (masterMode ? 20f : death ? 16f : 12f) + Main.rand.NextFloat() * 2f;
                         }
                     }
+                    else
+                        projectile.Opacity = 1f;
 
                     return false;
                 }
 
                 else if (projectile.type == ProjectileID.DemonSickle)
                 {
-                    if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0)
+                    if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide)
                         return true;
 
                     if (projectile.ai[0] == 0f)
@@ -2176,7 +2326,7 @@ namespace CalamityMod.Projectiles
                         if (projectile.velocity.Y > 16f)
                             projectile.velocity.Y = 16f;
 
-                        if (CalamityWorld.LegendaryMode && projectile.velocity.Length() > 2f)
+                        if (CalamityWorld.LegendaryMode && projectile.velocity.Length() > 4f)
                             projectile.velocity *= 0.985f;
 
                         return false;
@@ -2244,12 +2394,14 @@ namespace CalamityMod.Projectiles
                     int target = 0;
                     target = Player.FindClosest(projectile.Center, 1, 1);
 
-                    // Blow up when within a certain distance of the target
-                    if (Vector2.Distance(projectile.Center, Main.player[target].Center) < 16f)
+                    if (projectile.Hitbox.Intersects(Main.player[target].Hitbox))
                     {
                         projectile.Kill();
                         return false;
                     }
+
+                    if (projectile.timeLeft < SkeletronPrime2.BombTimeLeft / 2 && projectile.timeLeft > 3)
+                        projectile.tileCollide = true;
 
                     if (masterModeSkeletronPrimeHomingBomb)
                     {
@@ -2257,13 +2409,8 @@ namespace CalamityMod.Projectiles
                         float homingStartTime = 20f;
                         float homingEndTime = death ? 140f : 110f;
 
-                        if (projectile.ai[1] < homingEndTime)
-                        {
+                        if (Vector2.Distance(projectile.Center, Main.player[target].Center) < 192f && projectile.ai[1] < homingEndTime)
                             projectile.ai[1] = homingEndTime;
-
-                            if (projectile.timeLeft > 3)
-                                projectile.tileCollide = true;
-                        }
 
                         if (projectile.ai[1] < homingEndTime && projectile.ai[1] > homingStartTime)
                         {
@@ -2285,12 +2432,7 @@ namespace CalamityMod.Projectiles
                     else
                     {
                         if (projectile.velocity.Y > 10f)
-                        {
                             projectile.velocity.Y = 10f;
-
-                            if (!projectile.tileCollide && projectile.timeLeft > 3)
-                                projectile.tileCollide = true;
-                        }
                     }
 
                     if (projectile.localAI[0] == 0f)
@@ -2329,24 +2471,11 @@ namespace CalamityMod.Projectiles
                         dust8.position = projectile.Center + new Vector2(0f, -projectile.height / 2 - 6).RotatedBy(projectile.rotation) * 1.1f;
                     }
 
-                    if (!masterModeSkeletronPrimeHomingBomb)
+                    if (masterModeSkeletronPrimeFallingBomb)
                     {
                         projectile.ai[2] += 1f;
-                        if (projectile.ai[2] > 5f)
-                        {
-                            projectile.ai[2] = 10f;
-                            if (projectile.velocity.Y == 0f && projectile.velocity.X != 0f)
-                            {
-                                projectile.velocity.X *= 0.97f;
-                                if ((double)projectile.velocity.X > -0.01 && (double)projectile.velocity.X < 0.01)
-                                {
-                                    projectile.velocity.X = 0f;
-                                    projectile.netUpdate = true;
-                                }
-                            }
-
+                        if (projectile.ai[2] > 60f)
                             projectile.velocity.Y += 0.2f;
-                        }
                     }
 
                     projectile.rotation += projectile.velocity.X * 0.1f;
@@ -2381,13 +2510,13 @@ namespace CalamityMod.Projectiles
                 {
                     bool primeCannonProjectile = projectile.ai[1] == 2f;
                     bool homeIn = false;
-                    float homingTime = masterMode ? 240f : 180f;
+                    float homingTime = masterMode ? 90f : 180f;
                     float spreadOutCutoffTime = 555f;
                     float homeInCutoffTime = spreadOutCutoffTime - homingTime;
-                    float minAcceleration = masterMode ? 0.096f : 0.08f;
-                    float maxAcceleration = masterMode ? 0.144f : 0.12f;
-                    float homingVelocity = masterMode ? 30f : 25f;
-                    float maxVelocity = masterMode ? 18f : 15f;
+                    float minAcceleration = masterMode ? 0.072f : 0.08f;
+                    float maxAcceleration = masterMode ? 0.108f : 0.12f;
+                    float homingVelocity = masterMode ? 22.5f : 25f;
+                    float maxVelocity = masterMode ? 13.5f : 15f;
 
                     if (!primeCannonProjectile)
                     {
@@ -2414,6 +2543,10 @@ namespace CalamityMod.Projectiles
 
                         float amount = MathHelper.Lerp(minAcceleration, maxAcceleration, Utils.GetLerpValue(spreadOutCutoffTime, 30f, projectile.timeLeft, clamped: true));
                         projectile.velocity = Vector2.SmoothStep(projectile.velocity, velocity, amount);
+
+                        // Stop homing when within a certain distance of the target
+                        if (Vector2.Distance(projectile.Center, Main.player[playerIndex].Center) < (masterMode ? 192f : 96f) && projectile.timeLeft > homeInCutoffTime)
+                            projectile.timeLeft = (int)homeInCutoffTime;
                     }
 
                     if (projectile.timeLeft <= 3)
@@ -2698,8 +2831,8 @@ namespace CalamityMod.Projectiles
 
                 else if (projectile.type == ProjectileID.AncientDoomProjectile)
                 {
-                    if (projectile.velocity.Length() < 8f)
-                        projectile.velocity *= 1.01f;
+                    if (projectile.velocity.Length() < 6f)
+                        projectile.velocity *= 1.005f;
                 }
 
                 else if (projectile.type == ProjectileID.CultistBossIceMist)
@@ -2741,7 +2874,37 @@ namespace CalamityMod.Projectiles
                         projectile.velocity.Normalize();
                         projectile.velocity *= scaleFactor2;
 
-                        if (projectile.ai[0] % 60f == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                        // Fly away from other Ice Mists in Master
+                        if (masterMode)
+                        {
+                            float pushForce = 0.06f;
+                            float pushDistance = 120f;
+                            for (int k = 0; k < Main.maxProjectiles; k++)
+                            {
+                                Projectile otherProj = Main.projectile[k];
+                                // Short circuits to make the loop as fast as possible
+                                if (!otherProj.active || k == projectile.whoAmI)
+                                    continue;
+
+                                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away
+                                bool sameProjType = otherProj.type == projectile.type;
+                                float taxicabDist = Vector2.Distance(projectile.Center, otherProj.Center);
+                                if (sameProjType && taxicabDist < pushDistance)
+                                {
+                                    if (projectile.position.X < otherProj.position.X)
+                                        projectile.velocity.X -= pushForce;
+                                    else
+                                        projectile.velocity.X += pushForce;
+
+                                    if (projectile.position.Y < otherProj.position.Y)
+                                        projectile.velocity.Y -= pushForce;
+                                    else
+                                        projectile.velocity.Y += pushForce;
+                                }
+                            }
+                        }
+
+                        if (projectile.ai[0] % (masterMode ? 30f : 60f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 vector50 = projectile.rotation.ToRotationVector2();
                             Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector50, projectile.type, projectile.damage, projectile.knockBack, projectile.owner);
@@ -2755,9 +2918,12 @@ namespace CalamityMod.Projectiles
                     }
 
                     // Split projectiles
+                    // MOST WACK ASS JANK FUCKING SHIT EVER
+                    // WHAT THE FUCK
                     projectile.position -= projectile.velocity;
 
-                    if (projectile.ai[0] >= duration - 260f)
+                    float splitProjectileDuration = duration - 255f;
+                    if (projectile.ai[0] >= splitProjectileDuration - 5f)
                         projectile.alpha += 3;
                     else
                         projectile.alpha -= 40;
@@ -2767,14 +2933,14 @@ namespace CalamityMod.Projectiles
                     if (projectile.alpha > 255)
                         projectile.alpha = 255;
 
-                    if (projectile.ai[0] >= duration - 255f)
+                    if (projectile.ai[0] >= splitProjectileDuration)
                     {
                         projectile.Kill();
                         return false;
                     }
 
                     Vector2 value39 = new Vector2(0f, -720f).RotatedBy(projectile.velocity.ToRotation());
-                    float scaleFactor3 = projectile.ai[0] % (duration - 255f) / (duration - 255f);
+                    float scaleFactor3 = projectile.ai[0] % splitProjectileDuration / splitProjectileDuration;
                     Vector2 spinningpoint13 = value39 * scaleFactor3;
 
                     for (int num724 = 0; num724 < 6; num724++)
@@ -3332,6 +3498,23 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
+            if (projectile.type == ProjectileID.TheDaoofPow)
+            {
+                // Guide to ai[0]:
+                // 0: Spinning. 1: Being thrown. 2: Return after throw. 6: Dropped on ground. 4: Return after being dropped.
+                if (projectile.ai[0] == 1f)
+                {
+                    projectile.ai[2]++;
+                    if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
+                        projectile.ai[1]--;
+                }
+                if (projectile.ai[0] == 1f || projectile.ai[0] == 2f || projectile.ai[0] == 4f)
+                    projectile.extraUpdates = 1;
+                else
+                    projectile.extraUpdates = 0;
+            }
+
             // Random velocities for Bouncy Boulders in GFB
             if (projectile.type == ProjectileID.BouncyBoulder && Main.zenithWorld)
             {
@@ -3422,17 +3605,17 @@ namespace CalamityMod.Projectiles
                 float maxDistance = 460f;
                 bool homeIn = false;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(projectile, false))
+                    if (n.CanBeChasedBy(projectile, false))
                     {
-                        float extraDistance = (float)(Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                        float extraDistance = (float)(n.width / 2) + (n.height / 2);
 
-                        bool canHit = Collision.CanHit(projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                        bool canHit = Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1);
 
-                        if (Vector2.Distance(Main.npc[i].Center, projectile.Center) < (maxDistance + extraDistance) && canHit)
+                        if (Vector2.Distance(n.Center, projectile.Center) < (maxDistance + extraDistance) && canHit)
                         {
-                            center = Main.npc[i].Center;
+                            center = n.Center;
                             homeIn = true;
                             break;
                         }
@@ -3640,12 +3823,12 @@ namespace CalamityMod.Projectiles
                     if ((player.Calamity().flaskBrimstone || player.Calamity().flaskCrumbling || player.Calamity().flaskHoly) && !projectile.noEnchantments && !projectile.noEnchantmentVisuals)
                     {
                         int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
-                        if (Main.rand.NextBool(4))
+                        if (Main.rand.NextBool(player.Calamity().flaskCrumbling ? 5 : 4))
                         {
                             Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
                             dust.noGravity = dust.type == 121 ? false : true;
-                            if (!player.Calamity().flaskHoly)
-                                dust.fadeIn = 1f;
+                            if (player.Calamity().flaskBrimstone)
+                                dust.fadeIn = 0.8f;
                             dust.velocity = player.Calamity().flaskHoly && Main.rand.NextBool(3) ? new Vector2(Main.rand.NextFloat(-0.9f, 0.9f), Main.rand.NextFloat(-6.6f, -9.8f)) : dust.type == 121 ? new Vector2(Main.rand.NextFloat(-0.7f, 0.7f), Main.rand.NextFloat(0.6f, 1.8f)) : -projectile.velocity * 0.2f;
                         }
                     }
@@ -3700,7 +3883,144 @@ namespace CalamityMod.Projectiles
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.5f, 1f);
                 }
+                if (fireBullet)
+                {
+                    if (projectile.timeLeft > 200)
+                    {
+                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
 
+                        for (int i = 0; i < 2; ++i)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, Main.rand.NextBool() ? 174 : 6, projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                        }
+                    }
+                }
+                if (iceBullet)
+                {
+                    if (projectile.timeLeft > 200)
+                    {
+                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+
+                        for (int i = 0; i < 2; ++i)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, Main.rand.NextBool() ? 135 : 137, projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                        }
+                    }
+                }
+                if (shockBullet)
+                {
+                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    {
+                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 1.1f, Color.Turquoise * 0.75f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                        if (Main.rand.NextBool(3))
+                        {
+                            SparkParticle spark2 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.4f), false, 20, 0.4f, Color.Turquoise * 0.75f);
+                            GeneralParticleHandler.SpawnParticle(spark2);
+                        }
+                    }
+                }
+                if ((pearlBullet1 || pearlBullet2 || pearlBullet3))
+                {
+                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    {
+                        Color color = pearlBullet1 ? Color.LightBlue : pearlBullet2 ? Color.LightPink : Color.Khaki;
+                        Particle spark = new GlowSparkParticle(projectile.Center + projectile.velocity * 1.5f, -projectile.velocity * 0.05f, false, 3, 0.0093f, color, new Vector2(0.6f, 1.8f), false, false);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                        if (Main.rand.NextBool(5))
+                        {
+                            PearlParticle pearl1 = new PearlParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, Main.rand.Next(15, 20 + 1), Main.rand.NextFloat(0.4f, 0.55f), color, 0.9f, Main.rand.NextFloat(1, -1), true);
+                            GeneralParticleHandler.SpawnParticle(pearl1);
+                        }
+                    }
+                }
+                if (lifeBullet)
+                {
+                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    {
+                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 0.85f, Color.White * 0.75f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+
+                        for (int i = 0; i < 2; ++i)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, 261, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.65f, 0.9f);
+                            dust.alpha = 100;
+                        }
+
+                    }
+                }
+
+                #region betterLifeBullet
+                if (betterLifeBullet1)
+                {
+                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    {
+                        int randomColor = Main.rand.Next(1, 3 + 1);
+                        Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
+
+                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
+                            dust.color = color;
+                        }
+
+                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f, color);
+                        GeneralParticleHandler.SpawnParticle(spark);
+
+                        if (Main.rand.NextBool(3))
+                        {
+                            SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f, color * 0.5f);
+                            GeneralParticleHandler.SpawnParticle(spark3);
+                        }
+                    }
+                }
+                if (betterLifeBullet2)
+                {
+                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    {
+                        int randomColor = Main.rand.Next(1, 3 + 1);
+                        Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
+
+                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
+                            dust.color = color;
+                        }
+
+                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f, color);
+                        GeneralParticleHandler.SpawnParticle(spark);
+
+                        if (Main.rand.NextBool(3))
+                        {
+                            SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f, color * 0.5f);
+                            GeneralParticleHandler.SpawnParticle(spark3);
+                        }
+                    }
+                }
+                #endregion
             }
         }
         #endregion
@@ -3938,6 +4258,20 @@ namespace CalamityMod.Projectiles
                     }
                 }
             }
+
+            // Scuttler's Jewel projectiles can spawn either on-hit or on-kill, but only spawn once per projectile.
+            if (projectile.owner == Main.myPlayer && !projectile.npcProj && !projectile.trap && projectile.CountsAsClass<RogueDamageClass>() && modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
+            {
+                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
+                damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
+                int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
+                Main.projectile[spike].frame = 4;
+                if (spike.WithinBounds(Main.maxProjectiles))
+                    Main.projectile[spike].DamageType = DamageClass.Generic;
+                modPlayer.scuttlerCooldown = 30;
+                JewelSpikeSpawned = true;
+            }
         }
         #endregion
 
@@ -3957,7 +4291,6 @@ namespace CalamityMod.Projectiles
             bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            int dealNoDamageTime = 60;
             switch (projectile.type)
             {
                 // Rev+ Deerclops ice spikes can only deal damage while they're not fading out
@@ -3965,7 +4298,7 @@ namespace CalamityMod.Projectiles
                     if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                     {
                         float fadeInTime = 10f;
-                        float fadeOutGateValue = masterMode ? 80f : death ? 50f : 10f;
+                        float fadeOutGateValue = masterMode ? 80f : death ? 50f : 25f;
                         return (projectile.ai[0] >= fadeInTime && projectile.ai[0] < fadeOutGateValue);
                     }
                     break;
@@ -3990,12 +4323,12 @@ namespace CalamityMod.Projectiles
 
                 // Duke Fishron tornadoes deal no damage for 1 second after spawning
                 case ProjectileID.Sharknado:
-                    if (projectile.timeLeft > FishronSharknadoTotalDuration - dealNoDamageTime)
+                    if (projectile.timeLeft > FishronSharknadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
                         return false;
                     break;
 
                 case ProjectileID.Cthulunado:
-                    if (projectile.timeLeft > FishronCthulhunadoTotalDuration - dealNoDamageTime)
+                    if (projectile.timeLeft > FishronCthulhunadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
                         return false;
                     break;
 
@@ -4007,7 +4340,7 @@ namespace CalamityMod.Projectiles
 
                 // Empress Lasting Rainbows deal no damage for 1 second after spawning
                 case ProjectileID.HallowBossLastingRainbow:
-                    if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - dealNoDamageTime)
+                    if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - EmpressLastingRainbowTimeBeforeDealingDamage)
                         return false;
                     break;
 
@@ -4075,15 +4408,15 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.ThornBall)
             {
-                float startTurningBrownGateValue = 420f;
-                float timeToReachFullBrown = 180f;
-                float timeToReachThornExplosion = startTurningBrownGateValue + timeToReachFullBrown;
+                float startWarningColorGateValue = 420f;
+                float timeToReachFullIntensity = 180f;
+                float timeToReachThornExplosion = startWarningColorGateValue + timeToReachFullIntensity;
                 Color initialColor = lightColor;
-                Color finalColor = new Color(125, 75, 75);
+                Color finalColor = Color.Lerp(new Color(125, 75, 75), Color.Red, (float)Math.Abs(Math.Sin((projectile.ai[1] - startWarningColorGateValue) * (MathHelper.Pi / 45))));
                 finalColor.A = (byte)(255 - projectile.alpha);
-                if (projectile.ai[1] > startTurningBrownGateValue)
+                if (projectile.ai[1] > startWarningColorGateValue)
                 {
-                    float colorTransitionRatio = (projectile.ai[1] - startTurningBrownGateValue) / timeToReachFullBrown;
+                    float colorTransitionRatio = (projectile.ai[1] - startWarningColorGateValue) / timeToReachFullIntensity;
                     Color dehydratedColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
                     return dehydratedColor;
                 }
@@ -4118,6 +4451,60 @@ namespace CalamityMod.Projectiles
                 return RavenMinionAI.DoRavenMinionDrawing(projectile, ref lightColor);
 
             #endregion
+
+            if (projectile.type == ProjectileID.DeerclopsIceSpike && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
+            {
+                bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
+                bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+                Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+                Rectangle value26 = texture.Frame(1, 5, 0, projectile.frame);
+                Vector2 origin12 = new Vector2(16f, value26.Height / 2);
+                Color alpha5 = projectile.GetAlpha(lightColor);
+                Vector2 vector39 = new Vector2(projectile.scale);
+                float fadeOutGateValue = masterMode ? 80f : death ? 50f : 25f;
+                float killGateValue = masterMode ? 90f : death ? 60f : 35f;
+                float lerpValue5 = Utils.GetLerpValue(killGateValue, killGateValue - 10f, projectile.ai[0], clamped: true);
+                vector39.Y *= lerpValue5;
+                Vector4 vector40 = lightColor.ToVector4();
+                Vector4 vector41 = new Color(67, 17, 17).ToVector4();
+                vector41 *= vector40;
+
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (projectile.spriteDirection == -1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Main.EntitySpriteDraw(TextureAssets.Extra[98].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[98].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
+                Color color49 = projectile.GetAlpha(Color.White) * Utils.Remap(projectile.ai[0], 0f, killGateValue, 0.5f, 0f);
+                color49.A = 0;
+
+                for (int i = 0; i < 4; i++)
+                    Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) + projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2 * (float)i) * 2f * vector39, value26, color49, projectile.rotation, origin12, vector39, spriteEffects);
+
+                Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), value26, alpha5, projectile.rotation, origin12, vector39, spriteEffects);
+
+                return false;
+            }
+
+            if (projectile.type == ProjectileID.DemonSickle)
+            {
+                if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0 || projectile.tileCollide)
+                    return true;
+
+                Texture2D texture = CalamityMod.WallOfFleshDemonSickleTexture.Value;
+                int frameHeight = texture.Height / Main.projFrames[projectile.type];
+                int frameY = frameHeight * projectile.frame;
+                Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+                Vector2 origin = rectangle.Size() / 2f;
+
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (projectile.spriteDirection == -1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
+
+                return false;
+            }
 
             // Chlorophyte Crystal AI rework.
             if (projectile.type == ProjectileID.CrystalLeaf)
@@ -4389,10 +4776,45 @@ namespace CalamityMod.Projectiles
                         for (int i = 0; i < availableAmountOfNPCsToSpawnUpToSlot; i++)
                         {
                             int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
+                            if (Main.zenithWorld)
+                            {
+                                beeType = Main.rand.NextBool(3) ? ModContent.NPCType<PlagueChargerLarge>() : ModContent.NPCType<PlagueCharger>();
+                            }
+                            else if (Main.masterMode || BossRushEvent.BossRushActive)
+                            {
+                                switch (Main.rand.Next(12))
+                                {
+                                    default:
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                    case 4:
+                                    case 5:
+                                        break;
+
+                                    case 6:
+                                    case 7:
+                                    case 8:
+                                        beeType = NPCID.LittleHornetHoney;
+                                        break;
+
+                                    case 9:
+                                    case 10:
+                                        beeType = NPCID.HornetHoney;
+                                        break;
+
+                                    case 11:
+                                        beeType = NPCID.BigHornetHoney;
+                                        break;
+                                }
+                            }
+
                             int beeSpawn = NPC.NewNPC(projectile.GetSource_FromThis(), (int)projectile.Center.X, (int)projectile.Center.Y, beeType, 1);
                             Main.npc[beeSpawn].velocity.X = (float)Main.rand.Next(-200, 201) * 0.002f;
                             Main.npc[beeSpawn].velocity.Y = (float)Main.rand.Next(-200, 201) * 0.002f;
                             Main.npc[beeSpawn].ai[3] = 1f;
+                            Main.npc[beeSpawn].timeLeft = 600;
                             Main.npc[beeSpawn].netUpdate = true;
                         }
                     }
@@ -4447,9 +4869,10 @@ namespace CalamityMod.Projectiles
                             }
                         }
 
-                        if (modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0)
+                        // Make sure the spike doesn't spawn again if it's already been spawned by on-hit.
+                        if (modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
                         {
-                            int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(18);
+                            int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
                             damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                             int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
@@ -4485,16 +4908,15 @@ namespace CalamityMod.Projectiles
 
             float lowestHealthCheck = 0f;
             int healTarget = projectile.owner;
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player otherPlayer in Main.ActivePlayers)
             {
-                Player otherPlayer = Main.player[i];
-                if (otherPlayer.active && !otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
+                if (!otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
                 {
                     float playerDist = Vector2.Distance(projectile.Center, otherPlayer.Center);
                     if (playerDist < distanceRequired && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
                     {
                         lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
-                        healTarget = i;
+                        healTarget = otherPlayer.whoAmI;
                     }
                 }
             }

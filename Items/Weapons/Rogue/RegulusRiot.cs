@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.useTime = 26;
             Item.useAnimation = 26;
             Item.UseSound = SoundID.Item1;

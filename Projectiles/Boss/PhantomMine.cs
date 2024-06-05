@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
             for (int i = 0; i < 15; i++)
             {
-                int phantomDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1.2f);
+                int phantomDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1.2f);
                 Main.dust[phantomDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -91,10 +91,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 30; j++)
             {
-                int phantomDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1.7f);
+                int phantomDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1.7f);
                 Main.dust[phantomDust2].noGravity = true;
                 Main.dust[phantomDust2].velocity *= 5f;
-                phantomDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1f);
+                phantomDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1f);
                 Main.dust[phantomDust2].velocity *= 2f;
             }
         }

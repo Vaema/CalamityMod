@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                int brimstone = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                int brimstone = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                 Main.dust[brimstone].noGravity = true;
                 Main.dust[brimstone].velocity *= 0f;
             }

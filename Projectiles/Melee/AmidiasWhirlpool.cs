@@ -76,21 +76,20 @@ namespace CalamityMod.Projectiles.Melee
                 int npcTracker = 0;
                 if (Projectile.ai[1] == 0f)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j = inc + 1)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[j].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            Vector2 npcCenter = Main.npc[j].Center;
-                            if (Projectile.Distance(npcCenter) < homingRange && Collision.CanHit(new Vector2(Projectile.position.X + (float)(Projectile.width / 2), Projectile.position.Y + (float)(Projectile.height / 2)), 1, 1, Main.npc[j].position, Main.npc[j].width, Main.npc[j].height))
+                            Vector2 npcCenter = n.Center;
+                            if (Projectile.Distance(npcCenter) < homingRange && Collision.CanHit(new Vector2(Projectile.position.X + (float)(Projectile.width / 2), Projectile.position.Y + (float)(Projectile.height / 2)), 1, 1, n.position, n.width, n.height))
                             {
                                 homingRange = Projectile.Distance(npcCenter);
                                 projCenter = npcCenter;
                                 isHoming = true;
-                                npcTracker = j;
+                                npcTracker = n.whoAmI;
                                 break;
                             }
                         }
-                        inc = j;
                     }
                     if (isHoming)
                     {
@@ -118,7 +117,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (isHoming)
                 {
                     int waterDust0 = 10;
-                    Vector2 dustDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 dustDirection = Projectile.Center;
                     float waterDust1 = projCenter.X - dustDirection.X;
                     float waterDust2 = projCenter.Y - dustDirection.Y;
                     float waterDust3 = (float)Math.Sqrt((double)(waterDust1 * waterDust1 + waterDust2 * waterDust2));

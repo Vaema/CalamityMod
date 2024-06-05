@@ -13,8 +13,7 @@ namespace CalamityMod.CalPlayer
 {
     public partial class CalamityPlayer : ModPlayer
     {
-        public int VerticalGodslayerDashTimer;
-        public int VerticalSpeedBlasterDashTimer;
+        public int VerticalOmnidashTimer;
 
         private string dashID; //private backing variable
 
@@ -72,15 +71,13 @@ namespace CalamityMod.CalPlayer
             if (HasCustomDash && Player.dashDelay < 0)
             {
                 Rectangle hitArea = new Rectangle((int)(Player.position.X + Player.velocity.X * 0.5 - 4f), (int)(Player.position.Y + Player.velocity.Y * 0.5 - 4), Player.width + 8, Player.height + 8);
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    NPC n = Main.npc[i];
-
                     // Ignore critters with the Guide to Critter Companionship
                     if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                         continue;
 
-                    if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                    if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                     {
                         if (hitArea.Intersects(n.getRect()) && (n.noTileCollide || Player.CanHit(n)))
                         {
@@ -106,16 +103,9 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (Player.dashDelay > 0) //Speed Blaster
-            {
-                VerticalSpeedBlasterDashTimer = 0;
-                LastUsedDashID = string.Empty;
-                return;
-            }
-
             if (Player.dashDelay > 0)
             {
-                VerticalGodslayerDashTimer = 0;
+                VerticalOmnidashTimer = 0;
                 LastUsedDashID = string.Empty;
                 return;
             }
@@ -139,21 +129,10 @@ namespace CalamityMod.CalPlayer
 
                 // Handle mid-dash effects.
                 UsedDash.MidDashEffects(Player, ref dashSpeed, ref dashSpeedDecelerationFactor, ref runSpeedDecelerationFactor);
-                if (UsedDash.IsOmnidirectional && VerticalGodslayerDashTimer < 25)
+                if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < 25)
                 {
-                    VerticalGodslayerDashTimer++;
-                    if (VerticalGodslayerDashTimer >= 25)
-                    {
-                        Player.dashDelay = dashDelayToApply;
-                        // Stop the player from going flying
-                        Player.velocity *= 0.2f;
-                    }
-                }
-
-                if (UsedDash.IsOmnidirectional && VerticalSpeedBlasterDashTimer < 25)
-                {
-                    VerticalSpeedBlasterDashTimer++;
-                    if (VerticalSpeedBlasterDashTimer >= 25)
+                    VerticalOmnidashTimer++;
+                    if (VerticalOmnidashTimer >= 25)
                     {
                         Player.dashDelay = dashDelayToApply;
                         // Stop the player from going flying
@@ -543,15 +522,13 @@ namespace CalamityMod.CalPlayer
         public int DoMountDashDamage(Rectangle myRect, float Damage, float Knockback, int NPCImmuneTime, int PlayerImmuneTime)
         {
             int totalHurtNPCs = 0;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                NPC n = Main.npc[i];
-
                 // Ignore critters with the Guide to Critter Companionship
                 if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                     continue;
 
-                if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                 {
                     Rectangle npcHitbox = n.getRect();
                     if (myRect.Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
@@ -566,8 +543,10 @@ namespace CalamityMod.CalPlayer
                         if (Player.whoAmI == Main.myPlayer)
                             Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
 
+                        // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
                         n.Calamity().dashImmunityTime[Player.whoAmI] = NPCImmuneTime;
-                        Player.GiveIFrames(PlayerImmuneTime, false);
+                        Player.GiveUniversalIFrames(PlayerImmuneTime, false);
+
                         totalHurtNPCs++;
                         break;
                     }

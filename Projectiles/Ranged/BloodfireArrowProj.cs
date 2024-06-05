@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.localAI[0] == 0)
             {
-                player.statLife -= Main.player[Main.myPlayer].lifeSteal <= 0f ? 0 : 1;
+                player.statLife -= 1;
                 if (player.statLife <= 0)
                 {
                     PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).Format(player.name));
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (player.moonLeech)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || target.lifeMax <= 5)
+            if (target.lifeMax <= 5)
                 return;
 
             float lifeRatio = (float)player.statLife / player.statLifeMax2;
@@ -110,6 +110,9 @@ namespace CalamityMod.Projectiles.Ranged
             float chanceOfOneMoreHP = averageHealAmount - guaranteedHeal;
             bool bonusHeal = Main.rand.NextFloat() < chanceOfOneMoreHP;
             int finalHeal = guaranteedHeal + (bonusHeal ? 1 : 0);
+            if (finalHeal > BalancingConstants.LifeStealCap)
+                finalHeal = BalancingConstants.LifeStealCap;
+
             if (finalHeal > 0)
                 CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], finalHeal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }

@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7f;
             Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/TerratomereSwing") with { Volume = 0.3f, Pitch = 0.5f };
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<JudgementProj>();
             Item.shootSpeed = 5f;
         }

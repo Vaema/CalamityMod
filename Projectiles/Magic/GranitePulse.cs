@@ -67,15 +67,14 @@ namespace CalamityMod.Projectiles.Magic
                 int index = 0;
                 float findOldest = 0f;
                 int projType = Projectile.type;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (proj.active && proj.owner == Projectile.owner && proj.type == projType && proj.ai[1] < 3600f)
+                    if (proj.owner == Projectile.owner && proj.type == projType && proj.ai[1] < 3600f)
                     {
                         projCount++;
                         if (proj.ai[1] > findOldest)
                         {
-                            index = i;
+                            index = proj.whoAmI;
                             findOldest = proj.ai[1];
                         }
                     }
@@ -146,7 +145,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, frameHeight, texture.Width, height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, height / 2f), Projectile.scale, SpriteEffects.None, 0);

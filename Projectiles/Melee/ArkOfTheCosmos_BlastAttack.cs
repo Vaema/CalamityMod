@@ -121,9 +121,9 @@ namespace CalamityMod.Projectiles.Melee
                 //Check for the up arrow once more so if the player has good reflexes they can avoid the dash. Gives them more control
                 if (Owner.controlUp && Charge >= 5)
                 {
-                    Owner.GiveIFrames(ArkoftheCosmos.DashIframes);
+                    // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
+                    Owner.GiveUniversalIFrames(ArkoftheCosmos.DashIframes);
                     Dashing = true;
-
                 }
 
                 for (int i = 0; i < 20; i++)

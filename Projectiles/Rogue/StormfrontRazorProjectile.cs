@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -62,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 45);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
             if (Main.rand.NextBool(10))
             {
                 int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
@@ -94,7 +95,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 45);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
             if (Main.rand.NextBool(10))
             {
                 int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);

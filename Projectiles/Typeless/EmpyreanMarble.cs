@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            int ourpleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 2f);
+            int ourpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 2f);
             Main.dust[ourpleDust].noGravity = true;
             Main.dust[ourpleDust].velocity *= 0f;
             CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 7f, 20f);

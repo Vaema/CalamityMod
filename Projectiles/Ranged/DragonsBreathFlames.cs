@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
             Time++;
             if (Projectile.ai[0] == 0) //Fireball Mode
             {
-                if (Time == 16)
+                if (Time == 20)
                 {
                     for (int i = 0; i <= 7; i++)
                     {

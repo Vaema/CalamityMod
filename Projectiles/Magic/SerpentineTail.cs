@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int k = 0; k < 8; k++)
                 {
-                    int seaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.25f);
+                    int seaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.25f);
                     Dust dust = Main.dust[seaDust];
                     dust.velocity *= 0.3f;
                     Main.dust[seaDust].position.X = Projectile.position.X + (float)(Projectile.width / 2) + 4f + (float)Main.rand.Next(-4, 5);

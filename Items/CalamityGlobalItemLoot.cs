@@ -264,8 +264,8 @@ namespace CalamityMod.Items
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
-                    // The Celestial Onion only drops if the player hasn't used one.
-                    loot.AddIf((info) => !info.player.Calamity().extraAccessoryML, ModContent.ItemType<CelestialOnion>());
+                    // The Celestial Onion only drops if the player hasn't used one, or if the world is not in Master Mode.
+                    loot.AddIf((info) => !info.player.Calamity().extraAccessoryML && !Main.masterMode, ModContent.ItemType<CelestialOnion>());
                     break;
                 #endregion
 

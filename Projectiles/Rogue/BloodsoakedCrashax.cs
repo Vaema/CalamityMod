@@ -87,12 +87,14 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
             if (target.lifeMax > 5)
                 OnHitEffects(hit.Damage);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
             OnHitEffects(info.Damage);
         }
 
@@ -116,6 +118,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             int heal = (int)Math.Round(damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
             if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 

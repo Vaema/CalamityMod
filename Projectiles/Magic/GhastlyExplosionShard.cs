@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
             int inc;
             for (int i = 0; i < 2; i = inc + 1)
             {
-                int explodeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 1.1f);
+                int explodeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 1.1f);
                 Main.dust[explodeDust].position = (Main.dust[explodeDust].position + Projectile.Center) / 2f;
                 Main.dust[explodeDust].noGravity = true;
                 Dust dust = Main.dust[explodeDust];
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int j = 0; j < 1; j = inc + 1)
             {
-                int explodeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                int explodeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
                 Main.dust[explodeDust].position = (Main.dust[explodeDust].position + Projectile.Center * 5f) / 6f;
                 Dust dust = Main.dust[explodeDust];
                 dust.velocity *= 0.1f;
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Magic
             int inc;
             for (int i = 0; i < 10; i = inc + 1)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 0.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 0.5f);
                 Dust dust;
                 Main.dust[killDust].scale = 1f + Main.rand.Next(-10, 11) * 0.01f;
                 Main.dust[killDust].noGravity = true;

@@ -46,16 +46,16 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 int targetID = -1;
                 float hitDistance = 150f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && Main.npc[i].CanBeChasedBy(Projectile, false))
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        Vector2 targetCenter = Main.npc[i].Center;
+                        Vector2 targetCenter = n.Center;
                         float targetDist = Vector2.Distance(targetCenter, Projectile.Center);
                         if (targetDist < hitDistance && targetID == -1 && Collision.CanHitLine(Projectile.Center, 1, 1, targetCenter, 1, 1))
                         {
                             hitDistance = targetDist;
-                            targetID = i;
+                            targetID = n.whoAmI;
                         }
                     }
                 }
@@ -177,14 +177,14 @@ namespace CalamityMod.Projectiles.Typeless
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.25f / 255f);
             for (int r = 0; r < 3; r++)
             {
-                int moreSolarDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - 28, Projectile.height - 28, DustID.SolarFlare, 0f, 0f, 100, default, 1.35f);
+                int moreSolarDust = Dust.NewDust(Projectile.position, Projectile.width - 28, Projectile.height - 28, DustID.SolarFlare, 0f, 0f, 100, default, 1.35f);
                 Main.dust[moreSolarDust].noGravity = true;
                 Main.dust[moreSolarDust].velocity *= 0.1f;
                 Main.dust[moreSolarDust].velocity += Projectile.velocity * 0.5f;
             }
             if (Main.rand.NextBool(8))
             {
-                int mostSolarDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - 32, Projectile.height - 32, DustID.SolarFlare, 0f, 0f, 100, default, 1f);
+                int mostSolarDust = Dust.NewDust(Projectile.position, Projectile.width - 32, Projectile.height - 32, DustID.SolarFlare, 0f, 0f, 100, default, 1f);
                 Main.dust[mostSolarDust].velocity *= 0.25f;
                 Main.dust[mostSolarDust].noGravity = true;
                 Main.dust[mostSolarDust].velocity += Projectile.velocity * 0.5f;
@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -237,13 +237,13 @@ namespace CalamityMod.Projectiles.Typeless
                     262,
                     247
                 });
-                int orangeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, m, 0f, 0f, 200, default, solarDust2);
+                int orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, m, 0f, 0f, 200, default, solarDust2);
                 Dust dust = Main.dust[orangeDust];
                 dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust.noGravity = true;
                 dust.velocity *= 3f;
                 dust.velocity += dustVel * Main.rand.NextFloat();
-                orangeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 0.8f);
+                orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 0.8f);
                 dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust.velocity *= 2f;
                 dust.noGravity = true;
@@ -254,7 +254,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int k = 0; k < 20; k = inc + 1)
             {
-                int deathSolar = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.SolarFlare, 0f, 0f, 0, default, 2f);
+                int deathSolar = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SolarFlare, 0f, 0f, 0, default, 2f);
                 Dust dust = Main.dust[deathSolar];
                 dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 3f;
                 dust.noGravity = true;

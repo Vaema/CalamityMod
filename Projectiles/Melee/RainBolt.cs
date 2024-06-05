@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.localAI[0] += 1f;
             }
 
-            int rainbow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2f);
+            int rainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2f);
             Main.dust[rainbow].noGravity = true;
             Main.dust[rainbow].velocity *= 0f;
 

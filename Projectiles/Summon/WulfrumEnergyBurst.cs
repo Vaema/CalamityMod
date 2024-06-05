@@ -65,10 +65,8 @@ namespace CalamityMod.Projectiles.Summon
             float bestScore = 0;
             NPC bestTarget = null;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC potentialTarget in Main.ActiveNPCs)
             {
-                NPC potentialTarget = Main.npc[i];
-
                 if (!potentialTarget.CanBeChasedBy(null, false))
                     continue;
 
@@ -191,7 +189,7 @@ namespace CalamityMod.Projectiles.Summon
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float stretchy = MathHelper.Clamp((Projectile.velocity.Length() - 6f) / 16f, 0f, 1f);
             Vector2 scale = new Vector2(1f + stretchy * -0.2f, stretchy * 0.5f + 1f);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation + MathHelper.PiOver2, tex.Size() / 2f, Projectile.scale * scale, SpriteEffects.None, 0);

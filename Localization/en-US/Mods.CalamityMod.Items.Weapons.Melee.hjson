@@ -105,7 +105,7 @@ ArkoftheElements: {
 	ComboInfo:
 		'''
 		<left> to perform a 5-swing combo that ends by throwing the blade
-		Releasing while the blade is out will deal extra damage and give 2 charges
+		Releasing while the blade is out will deal extra damage
 		'''
 	ParryInfo:
 		'''
@@ -124,7 +124,7 @@ AstralBlade: {
 
 AstralPike: {
 	DisplayName: Astral Pike
-	Tooltip: Summons astral star swarms on critical hits
+	Tooltip: Summons astral star swarms on hit
 }
 
 AstralScythe: {
@@ -177,9 +177,24 @@ BladecrestOathsword: {
 	Tooltip: Fires bursts of demonic blades that exponentially decelerate and explode
 }
 
+BlightedCleaver: {
+	DisplayName: Blighted Cleaver
+	Tooltip:
+		'''
+		Fires homing blazing blades
+		Gives the player the Brutal Carnage buff on enemy hits
+		This buff increases melee damage by 20%
+		'''
+}
+
 Bonebreaker: {
 	DisplayName: Bonebreaker
 	Tooltip: Fires javelins that stick to enemies before bursting into shrapnel
+}
+
+BotanicPiercer: {
+	DisplayName: Botanic Piercer
+	Tooltip: Fires a botanic energy beam
 }
 
 Brimlance: {
@@ -224,6 +239,15 @@ BrokenBiomeBlade: {
 	DefaultFunction: Does nothing... yet
 }
 
+BurningRevelation: {
+	DisplayName: Burning Revelation
+	Tooltip:
+		'''
+		Emits large holy explosions on hit
+		An exceptionally agile yoyo
+		'''
+}
+
 BurntSienna: {
 	DisplayName: Burnt Sienna
 	Tooltip: Causes enemies to erupt into healing projectiles on death
@@ -239,26 +263,9 @@ CatastropheClaymore: {
 	Tooltip: Fires sparkles which inflict Frostbite, Hellfire, or Ichor
 }
 
-TaintedBlade: {
-	DisplayName: Tainted Blade
-	Tooltip: Inflicts poison on enemy hits
-}
-
 CelestialClaymore: {
 	DisplayName: Celestial Claymore
 	Tooltip: Spawns cosmic energy stars near the cursor that inflict several debuffs
-}
-
-ChronomancersScythe: {
-	DisplayName: Chronomancer's Scythe
-	Tooltip:
-		'''
-		Rapidly fires icicles
-		Press <right> to swing the scythe around you, creating a clock pattern of homing icicles
-		Direct hits with the scythe have a chance to spawn clocks
-		Collecting the clocks increases movement speed and acceleration by 5% for each clock collected
-		This stacks up to 3 times and each level wears off after 5 seconds
-		'''
 }
 
 ClamCrusher: {
@@ -280,7 +287,7 @@ CosmicDischarge: {
 	Tooltip:
 		'''
 		Striking an enemy with the whip causes glacial explosions and grants the player the cosmic freeze buff
-		This buff gives the player increased life regen while standing still and freezes enemies near the player
+		This buff gives the player +2 HP/s life regen while standing still and freezes enemies near the player
 		'''
 }
 
@@ -314,6 +321,16 @@ DeathsAscension: {
 		'''
 		Press <right> to launch a barrage of homing scythes
 		You can feel the hands of Death himself onto yours
+		'''
+}
+
+DefiledGreatsword: {
+	DisplayName: Defiled Greatsword
+	Tooltip:
+		'''
+		Fires blazing, hyper, and sunlight blades
+		Gives the player the Brutal Carnage buff on enemy hits
+		This buff increases melee damage by 20%
 		'''
 }
 
@@ -673,7 +690,7 @@ IllustriousKnives: {
 
 InsidiousImpaler: {
 	DisplayName: Insidious Impaler
-	Tooltip: Fires a harpoon that sticks to enemies and explodes
+	Tooltip: Fires infected harpoons that stick to enemies and explode
 }
 
 IridescentExcalibur: {
@@ -690,7 +707,7 @@ Lacerator: {
 	DisplayName: Lacerator
 	Tooltip:
 		'''
-		Enemies that are hit by the yoyo will have their life drained
+		Accelerates natural life regeneration on hits with the yoyo
 		An exceptionally agile yoyo
 		[GFB]
 		'''
@@ -953,6 +970,16 @@ RemsRevenge: {
 		'''
 }
 
+Respiteblock: {
+	DisplayName: Respiteblock
+	Tooltip:
+		'''
+		A glistening white chainsaw that spews green and purple blood all over
+		Hitting enemies with the blade will heal you and deal immense damage
+		[c/0e8401:'It's Ok To Be Dangerous']
+		'''
+}
+
 Riptide: {
 	DisplayName: Riptide
 	Tooltip: Sprays a spiral of aqua streams
@@ -1018,15 +1045,6 @@ Shimmerspark: {
 SmokingComet: {
 	DisplayName: Smoking Comet
 	Tooltip: Rains stars from the sky
-}
-
-SolarFlare: {
-	DisplayName: Solar Flare
-	Tooltip:
-		'''
-		Emits large holy explosions on hit
-		An exceptionally agile yoyo
-		'''
 }
 
 SolsticeClaymore: {
@@ -1141,6 +1159,11 @@ Swordsplosion: {
 		'''
 }
 
+TaintedBlade: {
+	DisplayName: Tainted Blade
+	Tooltip: Inflicts poison on enemy hits
+}
+
 TeardropCleaver: {
 	DisplayName: Teardrop Cleaver
 	Tooltip: Makes your enemies cry
@@ -1154,11 +1177,6 @@ TenebreusTides: {
 		Striking enemies summon liquid blades and spears to assault the struck foe
 		'Inundatio ex Laminis'
 		'''
-}
-
-TerraLance: {
-	DisplayName: Terra Lance
-	Tooltip: Fires a terra energy beam
 }
 
 Terratomere: {
@@ -1257,7 +1275,7 @@ TheOracle: {
 	DisplayName: The Oracle
 	Tooltip:
 		'''
-		Emits an aura of red lightning which charges up when hitting enemies
+		Emits an aura of lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
 		An exceptionally agile yoyo
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'
@@ -1322,16 +1340,6 @@ TrueCausticEdge: {
 		'''
 }
 
-DefiledGreatsword: {
-	DisplayName: Defiled Greatsword
-	Tooltip:
-		'''
-		Fires blazing, hyper, and sunlight blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 25% and melee crit chance by 10%
-		'''
-}
-
 Tumbleweed: {
 	DisplayName: Tumbleweed
 	Tooltip: Releases a rolling tumbleweed on hit
@@ -1343,16 +1351,6 @@ TyphonsGreed: {
 		'''
 		Summons water spirits while in use
 		These water spirits will home in on enemies after traveling towards the player
-		'''
-}
-
-BlightedCleaver: {
-	DisplayName: Blighted Cleaver
-	Tooltip:
-		'''
-		Fires homing blazing blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 25% and melee crit chance by 10%
 		'''
 }
 
@@ -1436,4 +1434,19 @@ YinYo: {
 		Shards fly back and forth
 		A very agile yoyo
 		'''
+}
+
+AcidwoodSword: {
+	DisplayName: Acidwood Sword
+	Tooltip: ""
+}
+
+DriftwoodSword: {
+	DisplayName: Driftwood Sword
+	Tooltip: This sword is stronger while you are wet
+}
+
+MonolithSword: {
+	DisplayName: Monolith Sword
+	Tooltip: ""
 }

@@ -450,12 +450,12 @@ namespace CalamityMod.NPCs.Polterghast
                 float movementLimitX = 0f;
                 float movementLimitY = 0f;
                 int numHooks = 4;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (var n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<PolterghastHook>())
+                    if (n.type == ModContent.NPCType<PolterghastHook>())
                     {
-                        movementLimitX += Main.npc[i].Center.X;
-                        movementLimitY += Main.npc[i].Center.Y;
+                        movementLimitX += n.Center.X;
+                        movementLimitY += n.Center.Y;
                     }
                 }
                 movementLimitX /= numHooks;
@@ -621,7 +621,7 @@ namespace CalamityMod.NPCs.Polterghast
                             SoundEngine.PlaySound(SoundID.Item125, NPC.Center);
                             for (int i = 0; i < 30; i++)
                             {
-                                int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                                int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
                                 Main.dust[dust].noGravity = true;
                                 Main.dust[dust].velocity *= 5f;
                             }
@@ -788,7 +788,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                     for (int i = 0; i < 10; i++)
                     {
-                        int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                        int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                         Main.dust[ghostDust].velocity *= 3f;
                         Main.dust[ghostDust].noGravity = true;
                         if (Main.rand.NextBool())
@@ -799,10 +799,10 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                     for (int j = 0; j < 30; j++)
                     {
-                        int ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                        int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
                         Main.dust[ghostDust2].noGravity = true;
                         Main.dust[ghostDust2].velocity *= 5f;
-                        ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                        ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
                         Main.dust[ghostDust2].velocity *= 2f;
                     }
                 }
@@ -941,7 +941,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                     for (int i = 0; i < 10; i++)
                     {
-                        int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                        int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                         Main.dust[ghostDust].velocity *= 3f;
                         Main.dust[ghostDust].noGravity = true;
                         if (Main.rand.NextBool())
@@ -952,10 +952,10 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                     for (int j = 0; j < 30; j++)
                     {
-                        int ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                        int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
                         Main.dust[ghostDust2].noGravity = true;
                         Main.dust[ghostDust2].velocity *= 5f;
-                        ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                        ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
                         Main.dust[ghostDust2].velocity *= 2f;
                     }
                 }
@@ -1319,7 +1319,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                    int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -1329,10 +1329,10 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 for (int j = 0; j < 60; j++)
                 {
-                    int ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                    int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
                     Main.dust[ghostDust2].noGravity = true;
                     Main.dust[ghostDust2].velocity *= 5f;
-                    ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                    ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust2].velocity *= 2f;
                 }
             }

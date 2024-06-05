@@ -12,9 +12,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     // Deny me no longer!
     [LegacyName("NanoblackReaperMelee", "NanoblackReaperRogue")]
-    public class NanoblackReaper : RogueWeapon
+    public class NanoblackReaper : RogueWeapon, IHoldShiftTooltipItem
     {
-        public static int BaseDamage = 130;
+        public bool ShowExtensionIndicator => false;
+        public Color? TooltipExtensionColor => new Color(31, 223, 128); // #1FDF80
+
         public static float Knockback = 9f;
         public static float Speed = 16f;
 
@@ -22,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 78;
             Item.height = 64;
-            Item.damage = BaseDamage;
+            Item.damage = 130;
             Item.knockBack = Knockback;
             Item.useTime = 6;
             Item.useAnimation = 6;
@@ -33,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item18;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 

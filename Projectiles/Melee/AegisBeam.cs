@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee
                 randoAdjuster = speed / randoAdjuster;
                 rando *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int deathDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.2f);
+                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.2f);
                 Dust dust = Main.dust[deathDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

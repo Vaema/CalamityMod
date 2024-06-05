@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = UseSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 

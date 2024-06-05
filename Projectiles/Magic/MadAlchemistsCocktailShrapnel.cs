@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
-            int extraDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
+            int extraDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
             Main.dust[extraDust].noGravity = true;
 
             if (Projectile.timeLeft < 150)

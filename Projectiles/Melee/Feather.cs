@@ -23,11 +23,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = 1;
             Projectile.timeLeft = TimeLeft;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
+            Projectile.extraUpdates = 1;
         }
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         public override bool PreDraw(ref Color lightColor)

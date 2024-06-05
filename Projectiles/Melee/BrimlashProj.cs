@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Kill();
             }
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.05f / 255f, (255 - Projectile.alpha) * 0.05f / 255f);
-            int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
+            int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
             Main.dust[brimDust].noGravity = true;
             Main.dust[brimDust].velocity *= 0.5f;
             Main.dust[brimDust].velocity += Projectile.velocity * 0.1f;

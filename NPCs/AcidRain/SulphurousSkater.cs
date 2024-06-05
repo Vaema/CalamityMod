@@ -189,20 +189,20 @@ namespace CalamityMod.NPCs.AcidRain
             float minimumDistance = 2400f;
             Projectile closestBubble = null;
 
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type != bubbleType || !Main.projectile[i].active)
+                if (p.type != bubbleType)
                     continue;
 
-                if (Math.Abs(NPC.Center.X - Main.projectile[i].Center.X) >= minimumDistance ||
-                    Main.projectile[i].Center.Y <= NPC.Bottom.Y ||
-                    !Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.projectile[i].position, Main.projectile[i].width, Main.projectile[i].height))
+                if (Math.Abs(NPC.Center.X - p.Center.X) >= minimumDistance ||
+                    p.Center.Y <= NPC.Bottom.Y ||
+                    !Collision.CanHit(NPC.position, NPC.width, NPC.height, p.position, p.width, p.height))
                 {
                     continue;
                 }
 
-                minimumDistance = NPC.Distance(Main.projectile[i].Center);
-                closestBubble = Main.projectile[i];
+                minimumDistance = NPC.Distance(p.Center);
+                closestBubble = p;
             }
 
             distanceToBubble = minimumDistance;
@@ -244,15 +244,15 @@ namespace CalamityMod.NPCs.AcidRain
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulfurousSkaterGore").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulfurousSkaterGore2").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulfurousSkaterGore3").Type, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulphurousSkaterGore").Type, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulphurousSkaterGore2").Type, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SulphurousSkaterGore3").Type, NPC.scale);
                 }
             }
         }

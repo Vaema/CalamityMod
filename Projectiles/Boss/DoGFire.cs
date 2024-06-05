@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - Projectile.height / 2;
             for (int i = 0; i < 5; i++)
             {
-                int godSlay = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -95,10 +95,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 10; j++)
             {
-                int godSlay2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
+                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
                 Main.dust[godSlay2].noGravity = true;
                 Main.dust[godSlay2].velocity *= 5f;
-                godSlay2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay2].velocity *= 2f;
             }
             for (int k = 0; k < 200; k++)

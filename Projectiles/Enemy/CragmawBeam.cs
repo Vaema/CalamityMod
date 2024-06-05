@@ -117,21 +117,21 @@ namespace CalamityMod.Projectiles.Enemy
                     float theta = Projectile.velocity.ToRotation() + Main.rand.NextBool().ToDirectionInt() * MathHelper.PiOver2;
                     float speed = (float)Main.rand.NextDouble() * 2f + 2f;
                     Vector2 velocity = theta.ToRotationVector2() * speed;
-                    Dust dust = Dust.NewDustDirect(beamEndPosiiton, 0, 0, (int)CalamityDusts.SulfurousSeaAcid, velocity.X, velocity.Y, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(beamEndPosiiton, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, velocity.X, velocity.Y, 0, default, 1f);
                     dust.noGravity = true;
                     dust.scale = 2.1f;
                 }
 
                 for (int i = 0; i < 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(55f)).RotatedBy(Projectile.rotation);
                     dust.noGravity = true;
                     dust.scale = 1.8f;
                 }
                 for (int i = 0; i < 16; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.velocity = (i / 16f * MathHelper.TwoPi).ToRotationVector2() * 3f;
                     dust.noGravity = true;
                     dust.scale = 2.4f;

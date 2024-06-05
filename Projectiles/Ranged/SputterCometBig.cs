@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), 1, 1, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 0.5f);
+                int dust = Dust.NewDust(Projectile.position, 1, 1, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 0.5f);
                 Main.dust[dust].alpha = Projectile.alpha;
                 Main.dust[dust].velocity *= 0f;
                 Main.dust[dust].noGravity = true;

@@ -998,7 +998,7 @@ namespace CalamityMod.NPCs.Signus
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int teleportDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int teleportDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[teleportDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -1008,10 +1008,10 @@ namespace CalamityMod.NPCs.Signus
                 }
                 for (int j = 0; j < 60; j++)
                 {
-                    int teleportDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int teleportDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[teleportDust2].noGravity = true;
                     Main.dust[teleportDust2].velocity *= 5f;
-                    teleportDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    teleportDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[teleportDust2].velocity *= 2f;
                 }
                 if (Main.netMode != NetmodeID.Server)

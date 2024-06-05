@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -21,6 +22,11 @@ namespace CalamityMod.NPCs.CalClone
     public class Cataclysm : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
+
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CataclysmHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CataclysmDeath");
+        public static readonly SoundStyle FlamethrowerStart = new("CalamityMod/Sounds/Custom/CalamitasClone/BrimstoneFlamethrowerCast");
+        public static readonly SoundStyle FlamethrowerLoop = new("CalamityMod/Sounds/Custom/CalamitasClone/BrimstoneFlamethrowerLoop");
 
         public override void SetStaticDefaults()
         {
@@ -62,8 +68,8 @@ namespace CalamityMod.NPCs.CalClone
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit4;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
@@ -159,6 +165,11 @@ namespace CalamityMod.NPCs.CalClone
             return false;
         }
 
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+        {
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
+        }
+
         public override bool CheckActive() => false;
 
         public override void OnKill()
@@ -198,7 +209,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -208,10 +219,10 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
             }

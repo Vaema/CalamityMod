@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (!Projectile.active)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
             Vector2 shake = Main.rand.NextVector2Circular(1f, 1f) * ((float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.25f + 0.75f);
             SpriteEffects effect = SpriteEffects.None;

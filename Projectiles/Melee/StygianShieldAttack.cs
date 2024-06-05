@@ -31,9 +31,6 @@ namespace CalamityMod.Projectiles.Melee
         public ref float DashTime => ref Projectile.ai[1];
         public Vector2 DashDestination = Vector2.Zero;
 
-        // Rawest placeholder sound
-        public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/ExoMechs/ApolloMissileLaunch") { Volume = 0.6f };
-
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
@@ -59,7 +56,8 @@ namespace CalamityMod.Projectiles.Melee
             
             Owner.heldProj = Projectile.whoAmI;
 
-            // TODO -- Windup sound (definitely requires a custom looping sound)
+            if (Charge == 0f)
+                SoundEngine.PlaySound(StygianShield.DashChargeSound, Owner.Center);
             
             // Dashing behavior
             Projectile.Opacity = Utils.GetLerpValue(0f, DashDuration * 0.7f, DashTime, true);
@@ -68,10 +66,9 @@ namespace CalamityMod.Projectiles.Melee
                 // Detach the owner from any mounts/hooks
                 if (Owner.mount != null)
                     Owner.mount.Dismount(Owner);
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (!proj.active || proj.owner != Owner.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
+                    if (proj.owner != Owner.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
                         continue;
                     if (proj.aiStyle == ProjAIStyleID.Hook)
                         proj.Kill();
@@ -119,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
                 // Has to be within world bounds
                 if (intendedDestination.X >= 660f && intendedDestination.Y >= 660f && intendedDestination.X <= Main.maxTilesX * 16f - 680f && intendedDestination.Y <= Main.maxTilesY * 16f - 680f)
                 {
-                    SoundEngine.PlaySound(DashSound, Owner.Center);
+                    SoundEngine.PlaySound(StygianShield.DashSound, Owner.Center);
 
                     // Give immunity frames
                     Owner.immune = true;
@@ -173,6 +170,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.damage = (int)(Projectile.damage * PiercingDamageMult);
+            SoundEngine.PlaySound(StygianShield.DashHitSound, Owner.Center);
 
             // Spawn a violent slash through the target that is hit
             float rotation = Projectile.velocity.ToRotation() - MathHelper.Pi;
@@ -191,7 +189,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             // Textures and general use stuff
-            Texture2D mainTex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D mainTex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Texture2D flatTex = ModContent.Request<Texture2D>("CalamityMod/Particles/FlatShape").Value;
             Texture2D shieldTex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/StygianShieldBloom").Value;

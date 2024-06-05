@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Owner.ChangeDir(Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X));
 
-            Texture2D maceTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D maceTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D whirlpoolTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/RedtideWhirlpool").Value;
 
             float whirlpoolScale = MathHelper.Clamp(WindupProgress * 3f - 0.4f, 0f, 1f) * 2f;

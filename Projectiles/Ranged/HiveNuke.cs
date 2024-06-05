@@ -154,7 +154,7 @@ namespace CalamityMod.Projectiles.Ranged
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
             if (Time > 6)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], EffectsColor * 0.4f, 1, texture);
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 1)
-                Projectile.damage = (int)(Projectile.damage * 0.90f);
+                Projectile.damage = (int)(Projectile.damage * 0.7f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
@@ -195,7 +195,14 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Owner.Calamity().GeneralScreenShakePower = 9.5f;
 
-                var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID);
+                var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID)
+                {
+                    // Since we use our own spawning method for the cluster rockets, we don't need them to shoot anything,
+                    // we'll do it ourselves.
+                    clusterProjectileID = ProjectileID.None,
+                    destructiveClusterProjectileID = ProjectileID.None,
+                };
+
                 int blastRadius = (int)(Projectile.RocketBehavior(info) * 5f);
                 Projectile.ExpandHitboxBy((float)blastRadius);
                 if (RocketID == ItemID.RocketII || RocketID == ItemID.RocketIV || RocketID == ItemID.MiniNukeII || RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket)
@@ -236,7 +243,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 for (int k = 0; k < (int)((Main.zenithWorld ? 100 : 20) * (isClusterRocket ? 1.5f : 1)); k++)
                 {
-                    int BEES = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.8f), ModContent.ProjectileType<BasicPlagueBee>(), (int)(Projectile.damage * (isClusterRocket ? 0.1f : 0.15f)), 0f, Projectile.owner, 0f, 0f, isClusterRocket ? 2f : 1f);
+                    int BEES = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.8f), ModContent.ProjectileType<BasicPlagueBee>(), (int)(Projectile.damage * (isClusterRocket ? 0.03f : 0.04f)), 0f, Projectile.owner, 0f, 0f, isClusterRocket ? 2f : 1f);
                     if (BEES.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[BEES].penetrate = 1;

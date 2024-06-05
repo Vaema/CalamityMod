@@ -1747,6 +1747,10 @@ DukeEditFailed:
             if (CalamityWorld.death && !SplittingWormLootBlockWrapper(npc, Mod))
                 DropHelper.BlockEverything();
 
+            // Correctly increment bestiary entries for splitting worms
+            if (npc.AnyInteractions())
+                SplittingWormBestiaryUpdate(npc);
+
             // Check whether bosses should be spawned naturally as a result of this NPC's death.
             CheckBossSpawn(npc);
 
@@ -1815,16 +1819,6 @@ DukeEditFailed:
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
                         Color messageColor2 = Color.Aquamarine;
                         CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-
-                        // TODO -- this should probably be moved to a thread like Aureus meteor
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
-                        {
-                            string key3 = "Mods.CalamityMod.Status.Progression.HardmodeOreTier1Text";
-                            Color messageColor3 = new Color(50, 255, 130);
-                            CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
-                            CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
-                            CalamityUtils.DisplayLocalizedText(key3, messageColor3);
-                        }
                     }
                     break;
 
@@ -1946,12 +1940,10 @@ DukeEditFailed:
 
                     string key5 = "Mods.CalamityMod.Status.Progression.MoonBossText";
                     Color messageColor5 = Color.Orange;
-                    string key6 = "Mods.CalamityMod.Status.Progression.MoonBossText2";
-                    Color messageColor6 = Color.Violet;
-                    string key7 = "Mods.CalamityMod.Status.Progression.ProfanedBossText2";
-                    Color messageColor7 = Color.Cyan;
-                    string key8 = "Mods.CalamityMod.Status.Progression.FutureOreText";
-                    Color messageColor8 = Color.LightGray;
+                    string key6 = "Mods.CalamityMod.Status.Progression.ProfanedBossText2";
+                    Color messageColor6 = Color.Cyan;
+                    string key7 = "Mods.CalamityMod.Status.Progression.FutureOreText";
+                    Color messageColor7 = Color.LightGray;
 
                     if (!CalamityWorld.HasGeneratedLuminitePlanetoids)
                     {
@@ -1969,13 +1961,12 @@ DukeEditFailed:
                             CalamityNetcode.SyncWorld();
                     }
 
-                    // Spawn Exodium planetoids and send messages about Providence, Bloodstone, Necroplasm, etc. if ML has not been killed yet
+                    // Spawn Exodium planetoids and send messages about Providence, Exodium, and Necroplasm if ML has not been killed yet
                     if (!NPC.downedMoonlord)
                     {
                         CalamityUtils.DisplayLocalizedText(key5, messageColor5);
                         CalamityUtils.DisplayLocalizedText(key6, messageColor6);
                         CalamityUtils.DisplayLocalizedText(key7, messageColor7);
-                        CalamityUtils.DisplayLocalizedText(key8, messageColor8);
                     }
                     break;
             }
@@ -2013,6 +2004,70 @@ DukeEditFailed:
         #endregion
 
         #region Splitting Worm Loot
+        internal static void SplittingWormBroadcastInteractionWrapper(NPC npc, int player)
+        {
+            if (!CalamityWorld.death)
+                return;
+
+            switch (npc.type)
+            {
+                case NPCID.DiggerHead:
+                case NPCID.DiggerBody:
+                case NPCID.DiggerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail);
+                    return;
+                case NPCID.SeekerHead:
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
+                    return;
+                case NPCID.DuneSplicerHead:
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail);
+                    return;
+            }
+        }
+
+        internal static void SplittingWormBroadcastInteraction(NPC npc, int player, int head, int body, int tail)
+        {
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.whoAmI != npc.whoAmI && (n.type == head || n.type == body || n.type == tail))
+                {
+                    n.ApplyInteraction(player);
+                }
+            }
+        }
+
+        internal static void SplittingWormBestiaryUpdate(NPC npc)
+        {
+            if (!CalamityWorld.death)
+                return;
+
+            switch (npc.type)
+            {
+                case NPCID.DiggerBody:
+                case NPCID.DiggerTail:
+                    NPC diggerHead = new();
+                    diggerHead.SetDefaults(NPCID.DiggerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(diggerHead);
+                    return;
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                    NPC seekerHead = new();
+                    seekerHead.SetDefaults(NPCID.SeekerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(seekerHead);
+                    return;
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerTail:
+                    NPC duneSplicerHead = new();
+                    duneSplicerHead.SetDefaults(NPCID.DuneSplicerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(duneSplicerHead);
+                    return;
+            }
+        }
+
         internal static bool SplittingWormLootBlockWrapper(NPC npc, Mod mod)
         {
             if (!CalamityWorld.death)
@@ -2050,9 +2105,9 @@ DukeEditFailed:
 
             bool CheckSegments(int head, int body, int tail)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == head || Main.npc[i].type == body || Main.npc[i].type == tail))
+                    if (n.whoAmI != npc.whoAmI && (n.type == head || n.type == body || n.type == tail))
                     {
                         return false;
                     }

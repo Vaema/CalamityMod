@@ -14,9 +14,8 @@ namespace CalamityMod.Items.Weapons.Melee
     public class TheOracle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public const int YoyoBaseDamage = 170;
-        public const int AuraBaseDamage = 100;
-        public const int AuraMaxDamage = 220;
+        public const int AuraBaseDamage = 68;
+        public const int AuraMaxDamage = 150;
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 58;
             Item.height = 50;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = YoyoBaseDamage;
+            Item.damage = 205;
             Item.knockBack = 4f;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -45,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<OracleYoyo>();
             Item.shootSpeed = 16f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }
@@ -53,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SolarFlare>().
+                AddIngredient<BurningRevelation>().
                 AddIngredient<TheObliterator>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().

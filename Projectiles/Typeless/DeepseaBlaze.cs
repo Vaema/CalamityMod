@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Typeless
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1.5f);
+                int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1.5f);
                 Dust dust = Main.dust[fiery];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 102;
             Item.height = 44;
-            Item.damage = 1850;
+            Item.damage = 1675;
             Item.knockBack = 4.5f;
             Item.useTime = Item.useAnimation = AnomalysNanogunHoldout.PlasmaFireTimer;
             Item.shootSpeed = 5f;
@@ -44,8 +44,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.8f;
-            modItem.ChargePerAltUse = 0.375f;
+            modItem.ChargePerUse = 0.3f;
+            modItem.ChargePerAltUse = 0.15f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 4);
@@ -73,8 +73,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             // Right click is the MPBF Devastator
             if (player.altFunctionUse == 2)
             {
-                damage = (int)(damage * 0.5f);
-                knockback *= 0.8f;
+                damage = (int)(damage * 0.77f);
+                knockback *= 5f;
                 velocity = rotationVector * 13f;
             }
         }

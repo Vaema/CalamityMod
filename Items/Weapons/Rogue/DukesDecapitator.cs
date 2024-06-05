@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 30;
             Item.knockBack = 2f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<DukesDecapitatorProj>();
             Item.shootSpeed = 15f;

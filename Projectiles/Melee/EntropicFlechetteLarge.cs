@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            int darkestDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, default, 0.8f);
+            int darkestDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, default, 0.8f);
             Main.dust[darkestDust].noGravity = true;
             Main.dust[darkestDust].velocity *= 0f;
 

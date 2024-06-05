@@ -55,8 +55,8 @@ SetBonus: {
 		'''
 	Gold:
 		'''
-		All enemies have a 4% chance to drop 1 gold. All bosses killed drop 3 gold
-		You gain 1% critical strike chance for every 5 gold in your inventory, capped at 10%
+		All enemies have a 2% chance to drop 1 gold. All bosses killed drop 3 gold
+		You gain 1% critical strike chance for every 10 gold in your inventory, capped at 9%
 		'''
 	Iron:
 		'''
@@ -66,7 +66,7 @@ SetBonus: {
 	Jungle: 10% reduced mana costs
 	Lead:
 		'''
-		Increases damage reduction by 3%
+		Increases damage reduction by 4%
 		+0.5 HP/s life regen
 		Grants immunity to knockback
 		'''
@@ -74,7 +74,8 @@ SetBonus: {
 	Mining: Mining ore will sometimes have additional yield
 	Molten:
 		'''
-		20% extra true melee damage
+		7% extra melee damage, cannot be set on fire
+		10% extra true melee damage
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
 	MonkTier2:
@@ -87,6 +88,12 @@ SetBonus: {
 		Enemy hits release mythril flares, which home in on enemies after a short delay
 		Once a flare is created, there is a {0} frame delay before another one can appear
 		'''
+	Nebula:
+		'''
+		Pink damage boosters grant 7.5% damage per stack
+		Orange life boosters grant +2 HP/s life regen per stack
+		Blue mana boosters grant +5 MP/s mana regen per stack
+		'''
 	Necro:
 		'''
 		Allows you to temporarily survive fatal damage
@@ -98,10 +105,17 @@ SetBonus: {
 		Increases minion damage by 15%
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
+	Palladium:
+		'''
+		Grants +2 HP/s life regeneration after striking an enemy
+		This life regeneration bypasses negative life regeneration
+		'''
+	PlatinumChainmail: 3% increased critical strike chance
 	Platinum:
 		'''
-		Every 10 defense gives you +0.5 HP/s life regen, 1% increased damage and 1% increased critical strike chance
-		These effects cap at 40 defense
+		Every 10 extra defense gives you 1% increased damage and 1% increased critical strike chance
+		The 20 defense from the Platinum Armor itself does not contribute to this effect
+		Bonus damage and critical strike chance cap at 40 extra defense
 		'''
 	Silver:
 		'''
@@ -128,7 +142,6 @@ SetBonus: {
 		'''
 		Increases your life regeneration
 		15% increased minion damage and 10% increased melee critical strike chance
-		Negates the summon damage penalty while wielding non-summon weapons
 		'''
 	HuntressTier2: 10% increased minion and ranged damage
 	ApprenticeTier2: 5% increased minion damage and 15% increased magic critical strike chance

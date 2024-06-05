@@ -77,7 +77,7 @@ namespace CalamityMod.World
             // Astral Chest has completely different loot in it
             if (type == ModContent.TileType<AstralChestLocked>())
             {
-                PutItemInChest(ref chest, ModContent.ItemType<Stardust>(), 30, 80);
+                PutItemInChest(ref chest, ModContent.ItemType<StarblightSoot>(), 30, 80);
                 PutItemInChest(ref chest, ModContent.ItemType<AureusCell>(), 10, 14);
                 PutItemInChest(ref chest, ModContent.ItemType<ZergPotion>(), 8);
                 PutItemInChest(ref chest, ModContent.ItemType<ZenPotion>(), 3, 5);
@@ -427,7 +427,7 @@ namespace CalamityMod.World
         #region Smart Gem Gen
         public static void SmartGemGen()
         {
-            double oneThirdOfUnderground = (Main.maxTilesY - 200 - Main.worldSurface) / 3D;
+            double oneThirdOfUnderground = (Main.UnderworldLayer - Main.worldSurface) / 3D;
             double verticalStartFactor_Layer1 = Main.worldSurface;
             double verticalStartFactor_Layer2 = verticalStartFactor_Layer1 + oneThirdOfUnderground;
             double verticalStartFactor_Layer3 = verticalStartFactor_Layer1 + oneThirdOfUnderground * 2D;

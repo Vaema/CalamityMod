@@ -10,14 +10,13 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class DefectiveSphere : RogueWeapon
     {
-        public static int BaseDamage = 116;
         public static float Speed = 15f;
 
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 44;
-            Item.damage = BaseDamage;
+            Item.damage = 116;
             Item.knockBack = 5f;
             Item.useAnimation = 13;
             Item.useTime = 13;

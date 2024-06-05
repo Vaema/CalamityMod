@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Rogue
                 randomAdjust = random3 / randomAdjust;
                 random1 *= randomAdjust;
                 random2 *= randomAdjust;
-                int redDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Firework_Red, 0f, 0f, 100, default, 1.25f);
+                int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Firework_Red, 0f, 0f, 100, default, 1.25f);
                 Dust dust = Main.dust[redDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

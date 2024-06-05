@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
 

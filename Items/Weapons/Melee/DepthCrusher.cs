@@ -16,12 +16,12 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 56;
             Item.height = 50;
-            Item.damage = 35;
+            Item.damage = 48;
             Item.knockBack = 7.25f;
             Item.useTime = 65;
             Item.useAnimation = 65;
             Item.shoot = ModContent.ProjectileType<DepthCrusherProjectile>();
-            Item.shootSpeed = 3f;
+            Item.shootSpeed = 6f;
 
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = null;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
         }
     }

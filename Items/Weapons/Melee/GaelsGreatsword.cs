@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         // Weapon attribute constants
-        public static readonly int BaseDamage = 670;
-        public static readonly float GiantSkullDamageMultiplier = 1.5f;
+        public static readonly int BaseDamage = 690;
+        public static readonly float GiantSkullDamageMultiplier = 1.7f;
 
         // Weapon projectile attribute constants
         public static readonly int SearchDistance = 1450;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().devItem = true;
 
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 player.Calamity().gaelSwipes++;
                 if (player.statLife <= player.statLifeMax2 * 0.5f)
                 {
-                    for (int i = 0; i < 170; i++)
+                    for (int i = 0; i < 120; i++)
                     {
                         float r = (float)Math.Sqrt(Main.rand.NextDouble());
                         float t = Main.rand.NextFloat() * MathHelper.TwoPi;
@@ -127,7 +127,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 case 1:
                     int largeSkullDmg = (int)(damage * GiantSkullDamageMultiplier);
                     int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.6f, type, largeSkullDmg, knockback, player.whoAmI, ai1: 1f);
-                    Main.projectile[projectileIndex].scale = 1.75f;
+                    Main.projectile[projectileIndex].scale = 2f;
                     break;
             }
             return false;

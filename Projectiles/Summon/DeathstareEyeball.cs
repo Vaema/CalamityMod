@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D eyeTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D eyeTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = eyeTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             SpriteEffects spriteEffects = Owner.gravDir == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
             Main.EntitySpriteDraw(eyeTexture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);

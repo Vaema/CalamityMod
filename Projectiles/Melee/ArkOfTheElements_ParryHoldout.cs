@@ -82,9 +82,13 @@ namespace CalamityMod.Projectiles.Melee
 
             GeneralParryEffects();
 
-            //only get iframes if the enemy has contact damage :)
+            // 17APR2024: Ozzatron: Ark of the Elements is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+            // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
             if (target.damage > 0)
-                Owner.GiveIFrames(35);
+            {
+                int arkParryIFrames = Owner.ComputeParryIFrames();
+                Owner.GiveUniversalIFrames(arkParryIFrames, false);
+            }
 
             Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
             Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);

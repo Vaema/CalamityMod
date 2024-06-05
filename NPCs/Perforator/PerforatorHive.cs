@@ -280,7 +280,7 @@ namespace CalamityMod.NPCs.Perforator
 
                         for (int i = 0; i < 16; i++)
                         {
-                            int ichorDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                            int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
                             Main.dust[ichorDust].velocity *= 2f;
                             if (Main.rand.NextBool())
                             {
@@ -291,10 +291,10 @@ namespace CalamityMod.NPCs.Perforator
 
                         for (int j = 0; j < 32; j++)
                         {
-                            int bloodDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                            int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                             Main.dust[bloodDust].noGravity = true;
                             Main.dust[bloodDust].velocity *= 3f;
-                            bloodDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
+                            bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
                             Main.dust[bloodDust].velocity *= 2f;
                         }
                     }
@@ -333,7 +333,7 @@ namespace CalamityMod.NPCs.Perforator
 
                             for (int i = 0; i < 32; i++)
                             {
-                                int ichorDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                                int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
                                 float dustVelocityYAdd = Math.Abs(Main.dust[ichorDust].velocity.Y) * 0.5f;
                                 if (Main.dust[ichorDust].velocity.Y < 0f)
                                     Main.dust[ichorDust].velocity.Y = 2f + dustVelocityYAdd;
@@ -400,7 +400,7 @@ namespace CalamityMod.NPCs.Perforator
 
                     for (int i = 0; i < 8; i++)
                     {
-                        int ichorDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                        int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
                         Main.dust[ichorDust].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -411,10 +411,10 @@ namespace CalamityMod.NPCs.Perforator
 
                     for (int j = 0; j < 16; j++)
                     {
-                        int bloodDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                        int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                         Main.dust[bloodDust].noGravity = true;
                         Main.dust[bloodDust].velocity *= 5f;
-                        bloodDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
+                        bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
                         Main.dust[bloodDust].velocity *= 2f;
                     }
 
@@ -641,7 +641,7 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int ichorDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[ichorDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -651,10 +651,10 @@ namespace CalamityMod.NPCs.Perforator
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int bloodDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
+                    int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
                     Main.dust[bloodDust].noGravity = true;
                     Main.dust[bloodDust].velocity *= 5f;
-                    bloodDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloodDust].velocity *= 2f;
                 }
             }

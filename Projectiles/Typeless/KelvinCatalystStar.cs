@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Main.rand.NextBool(6))
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 0.4f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 0.4f);
                 Main.dust[dust].velocity *= 0.3f;
                 Main.dust[dust].noGravity = true;
             }

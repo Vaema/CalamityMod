@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Player player = Main.player[Projectile.owner];
             Vector2 projDirection = player.Center - Projectile.Center;
-            Projectile.rotation = projDirection.ToRotation() - 1.57f;
+            Projectile.rotation = projDirection.ToRotation() - MathHelper.PiOver2;
             if (player.dead)
             {
                 Projectile.Kill();
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 origin = new Vector2((float)texture2D2.Width * 0.5f, (float)texture2D2.Height * 0.5f);
             float projHeight = (float)texture2D2.Height;
             Vector2 actualCenter = mountedCenter - projCenter;
-            float projRotation = (float)Math.Atan2((double)actualCenter.Y, (double)actualCenter.X) - 1.57f;
+            float projRotation = (float)Math.Atan2((double)actualCenter.Y, (double)actualCenter.X) - MathHelper.PiOver2;
             bool isActive = true;
             if (float.IsNaN(projCenter.X) && float.IsNaN(projCenter.Y))
             {

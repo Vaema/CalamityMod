@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
             Item.value = Item.sellPrice(copper: 24);
-            Item.rare = ItemRarityID.Red;
+            Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<LunarKunaiProj>();
             Item.shootSpeed = 22f;
             Item.DamageType = RogueDamageClass.Instance;

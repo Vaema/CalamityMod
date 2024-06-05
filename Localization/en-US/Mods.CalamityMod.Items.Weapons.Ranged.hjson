@@ -80,6 +80,15 @@ Archerfish: {
 	Tooltip: Converts musket balls into streams of water
 }
 
+Arietes41: {
+	DisplayName: Arietes 41
+	Tooltip:
+		'''
+		Alternates between firing bullets imbued with lifesteal and electricity
+		Electric imbued bullets create a small shockblast on impact, dealing additional damage to the enemy they hit
+		'''
+}
+
 ArterialAssault: {
 	DisplayName: Arterial Assault
 	Tooltip:
@@ -144,7 +153,9 @@ BarracudaGun: {
 
 BladedgeRailbow: {
 	DisplayName: Bladedge Railbow
-	Tooltip: Fires a spread of 4 arrows and 2 leaves at once
+	Tooltip: "[GFB]"
+	TooltipNormal: Fires a spread of 4 arrows and 2 leaves at once
+	TooltipGFB: Fires a spread of 4 arrows... along with other various things
 }
 
 BlightSpewer: {
@@ -200,12 +211,14 @@ BulletFilledShotgun: {
 		'''
 }
 
-Butcher: {
-	DisplayName: Butcher
+Buzzkill: {
+	DisplayName: Buzzkill
 	Tooltip:
 		'''
-		Fires bullets faster and more accurately the longer you hold the trigger
-		25% chance to save ammo
+		Hold <left> to rev up a buzzsaw that deals close-range damage
+		Release to fire the buzzsaw, which bounces off tiles and lacerates foes
+		Revving up the saws increases their damage and allows them to pierce more enemies
+		'Not to be confused with the Sawed-On Shotgun'
 		'''
 }
 
@@ -320,15 +333,6 @@ CorrodedCaustibow: {
 	Tooltip: Converts wooden arrows into slow, powerful shells that trail an irradiated aura
 }
 
-CosmicBolter: {
-	DisplayName: Cosmic Bolter
-	Tooltip:
-		'''
-		Fires a tight column of three arrows
-		Converts wooden arrows into sliding energy bolts
-		'''
-}
-
 CrackshotColt: {
 	DisplayName: Crackshot Colt
 	Tooltip:
@@ -338,11 +342,6 @@ CrackshotColt: {
 		Up to 4 coins can be tossed simultaneously, and shots will ricochet off multiple coins if possible
 		Coins guarantee a critical strike after a short delay
 		'''
-}
-
-CursedCapper: {
-	DisplayName: Cursed Capper
-	Tooltip: Fires cursed bullets
 }
 
 DaemonsFlame: {
@@ -436,15 +435,6 @@ Drataliornus: {
 		'''
 }
 
-ElementalBlaster: {
-	DisplayName: Elemental Blaster
-	Tooltip:
-		'''
-		Fires a storm of rainbow blasts
-		Does not consume ammo
-		'''
-}
-
 ElementalEruption: {
 	DisplayName: Elemental Eruption
 	Tooltip:
@@ -457,7 +447,7 @@ ElementalEruption: {
 
 EternalBlizzard: {
 	DisplayName: Eternal Blizzard
-	Tooltip: Fires an additional icicle arrow that shatters on impact
+	Tooltip: Fires an additional icicle arrow that freezes into a falling icicle
 }
 
 Eviscerator: {
@@ -469,8 +459,10 @@ FetidEmesis: {
 	DisplayName: Fetid Emesis
 	Tooltip:
 		'''
-		Has a chance to release rotten chunks instead of bullets
-		40% chance to save ammo
+		Fires an accelerating stream of bullets until the barrel overheats
+		When the barrel overheats, a spread of fetid chunks is vomited out
+		After firing, the gun must cool back down before it can be used again
+		75% chance to save ammo
 		'''
 }
 
@@ -501,6 +493,7 @@ FlakToxicannon: {
 		Fires a toxic shell that explodes into a cone of radioactive sludge
 		Toxic shells burst when they reach the cursor's position
 		Direct hits with the toxic shell will reduce the damage dealt by the sludge
+		Uses rockets for ammo
 		'''
 }
 
@@ -635,7 +628,7 @@ HoarfrostBow: {
 	Tooltip:
 		'''
 		Fires two arrows at once
-		Converts wooden arrows into mist arrows
+		Converts wooden arrows into mist arrows that spread frost mist on collision
 		'''
 }
 
@@ -655,7 +648,7 @@ Infinity: {
 	DisplayName: Infinity
 	Tooltip:
 		'''
-		Fires a barrage of energy bolts that split and bounce
+		Fires a twin stream of energy bolts that split
 		Press <right> to fire a barrage of normal bullets
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
@@ -687,6 +680,16 @@ ArcNovaDiffuser: {
 		Charges and fires a rapid burst of nova bolts
 		The first charging stage increases the fire rate of the burst
 		The second charging stage replaces the rapid burst with a devastating nova blast
+		'''
+}
+
+MagnaCannon: {
+	DisplayName: Magna Cannon
+	Tooltip:
+		'''
+		Charges up a rapid fire burst of crystal bolts
+		Charging for longer increases the number of bolts fired
+		Fully charged shots fire an even longer and more rapid burst
 		'''
 }
 
@@ -756,7 +759,11 @@ MidasPrime: {
 
 MineralMortar: {
 	DisplayName: Mineral Mortar
-	Tooltip: Shoots an onyx bomb that explodes into huge area damage
+	Tooltip:
+		'''
+		Shoots an onyx bomb that explodes into huge area damage
+		Uses rockets for ammo
+		'''
 }
 
 Kingsbane: {
@@ -803,9 +810,19 @@ NettlevineGreatbow: {
 		'''
 }
 
+NitroExpressRifle: {
+	DisplayName: Nitro Express Rifle
+	Tooltip: "[c/88354B:'The recoil feels strong enough to break your shoulder...']"
+}
+
 Norfleet: {
 	DisplayName: Norfleet
-	Tooltip: Fire everything!
+	Tooltip:
+		'''
+		Fires a cluster of erratic energy spheres that each contain a different element
+		Every three shots the weapon must recharge its energy to reload
+		[c/FF9900:'Blows up everything!']
+		'''
 }
 
 NullificationPistol: {
@@ -871,9 +888,8 @@ PearlGod: {
 	DisplayName: Pearl God
 	Tooltip:
 		'''
-		Fires shockblast rounds that emit massive explosions and steal enemy life as well as additional bullets
-		Every seventh shot fires a massive shockblast
-		'Your life is mine...'
+		Alternates between firing a bullet imbued with lifesteal and 3 bullets imbued with pearlescence
+		Pearlescent imbued bullets create a radiant flash on impact, dealing additional damage to the enemy they hit
 		'''
 }
 
@@ -973,7 +989,7 @@ RealmRavager: {
 	DisplayName: Realm Ravager
 	Tooltip:
 		'''
-		Shoots a burst of 3 to 4 bullets
+		Shoots a burst of 4 bullets
 		Converts musket balls into explosive bullets
 		'''
 }
@@ -1139,9 +1155,10 @@ SpeedBlaster: {
 	Tooltip:
 		'''
 		Rapidly fires phosphorescent paintball shots
-		Press <right> to eject a powerful glob which propels you while moving
-		This ability has a cooldown of {0} seconds
-		While under cooldown, you fire more rapidly with greater accuracy
+		Press <right> to eject a powerful paint stream of a different color
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, you fire more rapidly with greater accuracy
 		'''
 }
 
@@ -1208,6 +1225,31 @@ SulphuricAcidCannon: {
 	Tooltip: Fires an acidic shot that sticks to enemies and dissolves them
 }
 
+SuperradiantSlaughterer: {
+	DisplayName: Superradiant Slaughterer
+	Tooltip:
+		'''
+		[MAIN]
+		[ALT]
+		[c/ad1717:'No one knows how it turns blood into rainbows...']
+		'''
+	MainInfo:
+		'''
+		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
+		Release <left> to fire the buzzsaw to pierce through and lacerate foes
+		Fired buzzsaws bounce off tiles and return to the player after winding down
+		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
+		Revving up the saws increases their damage and allows them to pierce more enemies
+		'''
+	AltInfo:
+		'''
+		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		'''
+}
+
 SurgeDriver: {
 	DisplayName: Surge Driver
 	Tooltip:
@@ -1221,24 +1263,15 @@ Svantechnical: {
 	DisplayName: Svantechnical
 	Tooltip:
 		'''
-		Fires several barrages of bullets
-		Press <right> to zoom out
+		Fires a trinity of energy bolts that split into beams that track your cursor
+		Press <right> to fire a barrage of normal bullets
+		'The age old balance of trading damage for frames'
 		'''
 }
 
 TelluricGlare: {
 	DisplayName: Telluric Glare
 	Tooltip: Fires volleys of four colossal radiant arrows which can pass through walls
-}
-
-TerraFlameburster: {
-	DisplayName: Terra Flameburster
-	Tooltip:
-		'''
-		Charges up to emit a stream of energized flames and pairs of homing terra flares
-		Uses gel for ammo
-		50% chance to save ammo
-		'''
 }
 
 TheBallista: {
@@ -1269,6 +1302,15 @@ TheMaelstrom: {
 ThePack: {
 	DisplayName: The Pack
 	Tooltip: Fires large homing rockets that explode into more homing mini rockets when in proximity to an enemy
+}
+
+ThermoclineBlaster: {
+	DisplayName: Thermocline Blaster
+	Tooltip:
+		'''
+		Alternates between firing bullets imbued with fire and ice
+		Any bullet type can be imbued when fired from this gun
+		'''
 }
 
 TheSevensStriker: {
@@ -1341,6 +1383,15 @@ UniversalGenesis: {
 		'''
 }
 
+VernalBolter: {
+	DisplayName: Vernal Bolter
+	Tooltip:
+		'''
+		Fires a tight column of three arrows
+		Converts wooden arrows into sliding energy bolts
+		'''
+}
+
 Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
@@ -1356,6 +1407,16 @@ Vortexpopper: {
 	Tooltip: Fires bubbles everywhere that pop into bullets
 }
 
+WildfireBloom: {
+	DisplayName: Wildfire Bloom
+	Tooltip:
+		'''
+		Charges up to emit a stream of energized flames and pairs of homing wildfire flares
+		Uses gel for ammo
+		50% chance to save ammo
+		'''
+}
+
 WulfrumBlunderbuss: {
 	DisplayName: Wulfrum Blunderbuss
 	Tooltip:
@@ -1368,12 +1429,17 @@ WulfrumBlunderbuss: {
 		'''
 }
 
-MagnaCannon: {
-	DisplayName: Magna Cannon
-	Tooltip:
-		'''
-		Charges up a rapid fire burst of crystal bolts
-		Charging for longer increases the number of bolts fired
-		Fully charged shots fire an even longer and more rapid burst
-		'''
+AcidwoodBow: {
+	DisplayName: Acidwood Bow
+	Tooltip: ""
+}
+
+DriftwoodBow: {
+	DisplayName: Driftwood Bow
+	Tooltip: This bow is stronger while you are wet
+}
+
+MonolithBow: {
+	DisplayName: Monolith Bow
+	Tooltip: ""
 }

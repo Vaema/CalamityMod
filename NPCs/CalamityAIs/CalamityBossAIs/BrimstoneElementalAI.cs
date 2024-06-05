@@ -5,18 +5,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.BrimstoneElemental;
-using CalamityMod.NPCs.Bumblebirb;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.OldDuke;
-using CalamityMod.NPCs.SulphurousSea;
-using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
@@ -44,10 +33,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 npc.TargetClosest();
 
             Player player = Main.player[npc.target];
@@ -99,6 +84,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Variables for buffing the AI
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -232,7 +218,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.localAI[3] > 0f)
                         npc.localAI[3] -= 1f;
                     else if (phase == 4)
+                    {
                         npc.localAI[3] = 3f;
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HideInShellSound, player.Center);
+                    }
 
                     npc.netUpdate = true;
 
@@ -253,7 +242,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.localAI[1] += 1f;
-                    if (npc.localAI[1] >= (bossRush ? 5f : death ? 30f : 180f))
+                    if (npc.justHit)
+                        npc.localAI[1] += masterMode ? 7f : expertMode ? 5f : 3f;
+                    if (npc.Distance(player.Center) < 160f)
+                        npc.localAI[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+
+                    if (npc.localAI[1] >= (bossRush ? 60f : death ? 120f : 180f))
                     {
                         npc.TargetClosest();
                         npc.localAI[1] = 0f;
@@ -307,7 +301,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].fadeIn = 1f;
                 }
-                npc.alpha += bossRush ? 4 : death ? 3 : 2;
+                npc.alpha += bossRush ? 15 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
                 if (npc.alpha >= 255)
                 {
                     int spawnType = brimmy.currentMode == 3 ? NPCID.AngryNimbus : ModContent.NPCType<Brimling>();
@@ -317,7 +311,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         for (int i = 0; i < enemyCount; i++)
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, spawnType);
                     }
-                    SoundEngine.PlaySound(SoundID.Item8, npc.Center);
+                    SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.TeleportSound, npc.Center);
                     npc.alpha = 255;
                     npc.position = position;
                     for (int n = 0; n < 15; n++)
@@ -421,6 +415,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         type = ModContent.ProjectileType<FrostMist>();
                         SoundEngine.PlaySound(SoundID.Item30, player.Center);
                     }
+                    else
+                    {
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, player.Center);
+                    }
                     Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -441,6 +439,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             type = ModContent.ProjectileType<WaterSpear>();
                             SoundEngine.PlaySound(SoundID.Item21, player.Center);
                         }
+                        else
+                        {
+                            SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.DartSound, player.Center);
+                        }
                         projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         int numProj = death ? 8 : 4;
                         int spread = death ? 90 : 45;
@@ -453,10 +455,11 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             float rotation = MathHelper.ToRadians(spread);
+                            float projectileVelocityToPass = velocity * 3f;
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                                int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                                     Main.projectile[proj2].extraUpdates += 1;
                             }
@@ -537,6 +540,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         type = ModContent.ProjectileType<SirenSong>();
                         SoundEngine.PlaySound(SoundID.Item26, player.Center);
                     }
+                    else
+                    {
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.ShellFireSound, player.Center);
+                    }
                     double angleA = radians2 * 0.5;
                     double angleB = MathHelper.ToRadians(90f) - angleA;
                     float velocityX = (float)(projectileSpeed * Math.Sin(angleA) / Math.Sin(angleB));
@@ -544,10 +551,11 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        float projectileVelocityToPass = projectileSpeed * 3f;
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                                 Main.projectile[proj].extraUpdates += 1;
                         }
@@ -558,7 +566,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                                     Main.projectile[proj].extraUpdates += 1;
                             }

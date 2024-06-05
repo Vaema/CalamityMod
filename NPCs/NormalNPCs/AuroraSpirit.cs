@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.02f, 0.7f, 0.7f);
+            Lighting.AddLight(NPC.Center, 0.02f, 0.7f, 0.7f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

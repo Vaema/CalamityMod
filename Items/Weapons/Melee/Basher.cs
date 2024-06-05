@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 56;
             Item.height = 60;
-            Item.damage = 41;
+            Item.damage = 50;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 40;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
         }
 

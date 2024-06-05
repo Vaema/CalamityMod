@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Boss
             Main.dust[blood].noGravity = true;
             Main.dust[blood].velocity *= 0f;
 
-            int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 1f);
+            int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
             Main.dust[acid].noGravity = true;
             Main.dust[acid].velocity *= 0f;
         }
@@ -75,10 +75,10 @@ namespace CalamityMod.Projectiles.Boss
 
             for (int d = 0; d < 6; d++)
             {
-                int acid = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default(Color), 3f);
+                int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default(Color), 3f);
                 Main.dust[acid].noGravity = true;
                 Main.dust[acid].velocity *= 5f;
-                acid = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default(Color), 2f);
+                acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default(Color), 2f);
                 Main.dust[acid].velocity *= 2f;
                 Main.dust[acid].noGravity = true;
             }

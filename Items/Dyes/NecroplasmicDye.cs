@@ -9,10 +9,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Dyes
 {
-    [LegacyName("PhantoplasmDye")]
+    [LegacyName("PhantoplasmDye", "PolterplasmDye")]
     public class NecroplasmicDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/NecroplasmicDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/NecroplasmicDyeShader"), "DyePass").
             UseColor(new Color(245, 143, 182)).UseSecondaryColor(new Color(119, 238, 255)).UseImage("Images/Misc/Perlin");
 
         public override void SafeSetStaticDefaults()

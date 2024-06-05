@@ -163,6 +163,16 @@ Dragonfire: {
 	Description: Engulfed by roaring flames
 }
 
+VermillionFlux: {
+	DisplayName: Vermillion Flux
+	Description: Sharp arcs of scarlet course through you
+}
+
+StaticDischarge: {
+	DisplayName: Static Discharge
+	Description: Shocked by static electricity
+}
+
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off
@@ -176,6 +186,11 @@ HolyFlames: {
 HolyInferno: {
 	DisplayName: Holy Inferno
 	Description: You've gone too far from the Profaned Goddess!
+}
+
+Laceration: {
+	DisplayName: Laceration
+	Description: You're a bloody mess
 }
 
 ManaBurn: {
@@ -359,8 +374,8 @@ Dreamfog: {
 }
 
 EidolonSnailBuff: {
-	DisplayName: Escargidolon Snail
-	Description: What a silly little prehistoric snail
+	DisplayName: Eidolon Snail
+	Description: What a silly little snail
 }
 
 ElectricTroublemaker: {
@@ -465,17 +480,17 @@ CirrusBlueCandleBuff: {
 
 CirrusPinkCandleBuff: {
 	DisplayName: Vigor
-	Description: Its brilliant light suffuses those nearby with hope
+	Description: The brilliant light suffuses you with hope
 }
 
 CirrusPurpleCandleBuff: {
 	DisplayName: Resilience
-	Description: Neither rain nor wind can snuff its undying flame
+	Description: Neither rain nor wind can snuff your undying flame
 }
 
 CirrusYellowCandleBuff: {
 	DisplayName: Spite
-	Description: Its hateful glow flickers with ire
+	Description: The hateful, flickering glow fuels your ire
 }
 
 CorruptionEffigyBuff: {
@@ -634,7 +649,7 @@ AbyssalMadness: {
 
 AdrenalineMode: {
 	DisplayName: Adrenaline Mode
-	Description: Total damage multiplied by 3x. Can be boosted by other items up to 3.45x
+	Description: Total damage multiplied by 2.5x. Can be boosted by other items up to 3.1x
 }
 
 Afflicted: {
@@ -690,7 +705,7 @@ BrimflameFrenzyBuff: {
 
 BrutalCarnage: {
 	DisplayName: Brutal Carnage
-	Description: 25% increased melee damage and 10% increased melee crit chance
+	Description: 20% increased melee damage
 }
 
 ChiBuff: {
@@ -1044,11 +1059,6 @@ BelladonnaSpiritBuff: {
 BlackHawkBuff: {
 	DisplayName: Black Hawk
 	Description: The fighter jet will protect you
-}
-
-BloodClot: {
-	DisplayName: Blood Clot
-	Description: The blood clot will protect you
 }
 
 BrimseekerBuff: {
@@ -1517,6 +1527,34 @@ AbsorberAffliction: {
 }
 
 YoungDukeBuff: {
-	DisplayName: Young Duke Buff
-	Description: Mods.CalamityMod.Buffs.YoungDukeBuff.Description
+	DisplayName: Baby Boomer
+	Description: The mutated fishron will intoxicate your foes
+}
+
+LiliesOfFinalityBuff: {
+	DisplayName: Finality
+	Description: Remember our promise
+}
+
+AuricRebuke: {
+	DisplayName: Auric Rebuke
+	Description: Your cells are violently bouncing off each other
+}
+
+SandsWindBuff: {
+	DisplayName: Sand's Wind
+	Description:
+		'''
+		You are strengthened by the powers of sand
+		Defense increased by 10, damage increased by 12%
+		'''
+}
+
+AeolianEarthBuff: {
+	DisplayName: Aeolian Earth
+	Description:
+		'''
+		You are strengthened by primordial powers
+		Damage reduction increased by 8%, damage increased by 18%
+		'''
 }

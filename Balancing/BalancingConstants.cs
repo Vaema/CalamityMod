@@ -16,6 +16,35 @@
         // Altered jump speed boost provided by Shiny Red Balloon via IL edit
         // This is a const because it replaces a hardcoded value in vanilla
         internal const float BalloonJumpSpeedBoost = 0.75f;
+
+        // Default jump speed boost provided by Frog Leg and tinker combinations in vanilla
+        internal const float VanillaFrogLegJumpSpeedBoost = 1.6f;
+
+        // Altered jump speed boost provided by Amphibian Boots via global item UpdateAccessory
+        internal static readonly float AmphibianBootsJumpSpeedBoost = 1f;
+
+        // Altered movement stats provided by Shadow Armor via IL edit
+        // This item is modified to not stack with Magiluminescence if on the ground. If in the air, it still functions.
+        internal static readonly float ShadowArmorRunAccelerationMultiplier = 1.25f; // Vanilla and Magi = 1.75f
+        internal static readonly float ShadowArmorMaxRunSpeedMultiplier = 1.05f; // Vanilla and Magi = 1.15f
+        internal static readonly float ShadowArmorAccRunSpeedMultiplier = 1.05f; // Vanilla and Magi = 1.15f
+        internal static readonly float ShadowArmorRunSlowdownMultiplier = 1.5f; // Vanilla and Magi = 1.75f
+
+        // Altered run acceleration multiplier provided by Soaring Insignia via IL edit
+        // This is a const because it replaces a hardcoded value in vanilla
+        internal const float SoaringInsigniaRunAccelerationMultiplier = 1.1f; // Vanilla = 1.75f
+        #endregion
+
+        #region Immunity Frames
+        // Default immunity frame rules
+        internal const int VanillaDefaultIFrames = 40;
+        internal const int VanillaParryIFrames = 60;
+        internal const int VanillaDodgeIFrames = 80;
+
+        // In vanilla, the Cross Necklace grants +40 iframes to all hits except for in PvP (where it does nothing)
+        // and Brand of the Inferno (where it only gives +30 instead).
+        internal const int CrossNecklaceIFrameBoost = 40;
+        internal const int CrossNecklaceIFrameBoost_Parry = 30;
         #endregion
 
         #region Dashes and Dodges
@@ -86,6 +115,9 @@
         #endregion
 
         #region Life Steal
+        // Life steal cap
+        internal static readonly int LifeStealCap = 100;
+        
         // Life steal accessories require a more strict cooldown due to their ease of use and global application
         internal static readonly float LifeStealAccessoryCooldownMultiplier = 3f;
 
@@ -203,7 +235,7 @@
         internal static readonly float AdrenalineDRPerBooster = 0.05f; // +5% per booster
 
         internal static readonly int AdrenalinePauseAfterDamage = CalamityUtils.SecondsToFrames(1);
-        internal static readonly float MinimumAdrenalineLoss = 0.1f; // No matter how small a hit, you will always lose at least 10% current Adrenaline
+        internal static readonly float MinimumAdrenalineLoss = 0.25f; // No matter how small a hit, you will always lose at least 25% current Adrenaline
         internal static readonly float AdrenalineFalloffTinyHitHealthRatio = 0.05f; // Hits for 5% max HP or less result in less Adrenaline loss
 
         internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.

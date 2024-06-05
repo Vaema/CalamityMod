@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 
@@ -15,6 +16,7 @@ namespace CalamityMod.Particles
     public static class GeneralParticleHandler
     {
         private static List<Particle> particles;
+        private static Queue<Particle> particlesToSpawnNextFrame;
         //List containing the particles to delete
         private static List<Particle> particlesToKill;
         //Static list for details concerning every particle type
@@ -53,6 +55,7 @@ namespace CalamityMod.Particles
         internal static void Load()
         {
             particles = new List<Particle>();
+            particlesToSpawnNextFrame = new Queue<Particle>();
             particlesToKill = new List<Particle>();
             particleTypes = new Dictionary<Type, int>();
             particleTextures = new Dictionary<int, Texture2D>();
@@ -66,6 +69,7 @@ namespace CalamityMod.Particles
         internal static void Unload()
         {
             particles = null;
+            particlesToSpawnNextFrame = null;
             particlesToKill = null;
             particleTypes = null;
             particleTextures = null;
@@ -82,8 +86,8 @@ namespace CalamityMod.Particles
         {
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
-            //Don't spawn particles if on the server side either, or if the particles dict is somehow null
-            if (Main.gamePaused || Main.dedServ || particles == null)
+            // Don't spawn particles if on the server either, or if the particles dictionary is somehow null.
+            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
                 return;
 
             if (particles.Count >= CalamityConfig.Instance.ParticleLimit && !particle.Important)
@@ -93,8 +97,22 @@ namespace CalamityMod.Particles
             particle.Type = particleTypes[particle.GetType()];
         }
 
+        public static void QueueParticleForNextFrame(Particle particle)
+        {
+            // Don't queue particles if the game is paused.
+            // This precedent is established with how Dust instances are created.
+            // Don't spawn particles if on the server side, or if the particles dictionary is somehow null.
+            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
+                return;
+
+            particlesToSpawnNextFrame.Enqueue(particle);
+        }
+
         public static void Update()
         {
+            while (particlesToSpawnNextFrame.Count > 0)
+                SpawnParticle(particlesToSpawnNextFrame.Dequeue());
+
             foreach (Particle particle in particles)
             {
                 if (particle == null)

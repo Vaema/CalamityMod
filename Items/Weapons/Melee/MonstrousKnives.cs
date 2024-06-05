@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.Calamity().donorItem = true;
 

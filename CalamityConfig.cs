@@ -35,6 +35,10 @@ namespace CalamityMod
         [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool NewVanillaTextures { get; set; }
+
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
 
@@ -49,8 +53,10 @@ namespace CalamityMod
         public bool BossesStopWeather { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Screenshake { get; set; }
+        [SliderColor(224, 165, 56, 128)]
+        [Range(0f, 10f)]
+        [DefaultValue(1f)]
+        public float ScreenshakePower { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -59,10 +65,6 @@ namespace CalamityMod
 
         #region UI Changes
         [Header("UI")]
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool MusicModReminderMessage { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -173,6 +175,27 @@ namespace CalamityMod
         public float FlightBarPosY { get; set; }
         #endregion
 
+        #region Music Events
+        [Header("MusicEvents")]
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool Interlude1 { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool Interlude2 { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool Interlude3 { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool DevourerofGodsEulogy { get; set; }
+
+        #endregion
+
         #region General Gameplay Changes
         [Header("Gameplay")]
 
@@ -266,6 +289,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool ChilledWaterRework { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool RemoveLavaDropsFromLavaSlimes { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]

@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.localAI[0] > 4f)
             {
                 Vector2 dspeed = -Projectile.velocity * 0.5f;
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueFairy, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = dspeed;
             }

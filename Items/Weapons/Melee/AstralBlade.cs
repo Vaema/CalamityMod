@@ -16,14 +16,14 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 80;
             Item.height = 80;
-            Item.damage = 125;
-            Item.DamageType = DamageClass.Melee;
+            Item.damage = 142;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -53,7 +53,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 return;
 
             float lifeRatio = MathHelper.Clamp(target.life / (float)target.lifeMax, 0f, 1f);
-            float multiplier = MathHelper.Lerp(1f, 1.25f, lifeRatio);
+            float maxMultiplier = 1.25f;
+            float multiplier = MathHelper.Lerp(1f, maxMultiplier, lifeRatio);
 
             modifiers.SourceDamage *= multiplier;
             modifiers.Knockback *= multiplier;
@@ -65,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             bool blue = Main.rand.NextBool();
             float angleStart = Main.rand.NextFloat(0f, MathHelper.TwoPi);
-            float var = 0.05f + (1.25f - multiplier);
+            float var = 0.05f + (maxMultiplier - multiplier);
             for (float angle = 0f; angle < MathHelper.TwoPi; angle += var)
             {
                 blue = !blue;

@@ -12,8 +12,6 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.IO;
-using Terraria.Audio;
 using CalamityMod.Particles;
 using Steamworks;
 using CalamityMod.Items.Weapons.Summon;
@@ -147,9 +145,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             int shootRate = BossRushEvent.BossRushActive ? 120 : 180;
             if (timer > shootRate)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC seeker in Main.ActiveNPCs)
                 {
-                    NPC seeker = Main.npc[i];
                     if (seeker.type == NPC.type)
                     {
                         if (seeker == NPC)
@@ -166,7 +163,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     int damage = NPC.GetProjectileDamage(type);
 					if (BossRushEvent.BossRushActive)
 						damage /= 2;
-                    Vector2 shootVelocity = (Target.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 5f;
+
+                    float velocity = 5f;
+                    float projectileVelocityToPass = velocity * 3f;
+                    Vector2 shootVelocity = (Target.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                     if (targetDist <= 160 || targetDist >= 1952)
                     {
                         for (int i = 0; i < 10; i++)
@@ -179,7 +179,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                     else
                     {
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity * 0.5f, type, damage, 1f, Main.myPlayer, 0, 0, 2);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity * 0.5f, type, damage, 1f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
                         for (int i = 0; i < 5; i++)
                         {
                             Dust ShotDust = Dust.NewDustPerfect(NPC.Center, Main.rand.NextBool(3) ? 60 : 114);
@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (timer >= shootRate - 35)
             {
                 Vector2 shootVelocity = (Target.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 5f;
-                GlowOrbParticle spark2 = new GlowOrbParticle(NPC.Center + shootVelocity * 7, (shootVelocity * Main.rand.NextFloat(0.6f, 1.1f)) * 1.8f + NPC.velocity * 0.5f, false, 15, Main.rand.NextFloat(0.65f, 0.7f), Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                GlowOrbParticle spark2 = new GlowOrbParticle(NPC.Center + shootVelocity * 7, (shootVelocity * Main.rand.NextFloat(0.6f, 1.1f)) * 1.8f + NPC.velocity * 0.5f, false, 15, Main.rand.NextFloat(0.7f, 0.75f), Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
 
@@ -232,7 +232,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 5; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -242,10 +242,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 for (int j = 0; j < 10; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
 
@@ -261,17 +261,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D lineTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/LineFade").Value;
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            int shootRate = BossRushEvent.BossRushActive ? 120 : 180;
-            float opacity = timer >= shootRate - 35 ? (timer - (BossRushEvent.BossRushActive ? 101 : 181)) *  0.03f : 0;
-            Vector2 lineDir = (NPC.Center - Target.Center).SafeNormalize(Vector2.UnitY);
-            Vector2 linePos = (lineDir * (lineTex.Height * 0.25f)) + NPC.Center - Main.screenPosition;
-            spriteBatch.Draw(lineTex, linePos, null, Color.Red * opacity, lineDir.ToRotation(), lineTex.Size(), NPC.scale * 1.5f, SpriteEffects.None, 0f);
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
-
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;

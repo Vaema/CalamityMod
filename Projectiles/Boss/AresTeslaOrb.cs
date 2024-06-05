@@ -97,14 +97,14 @@ namespace CalamityMod.Projectiles.Boss
                     int randomDustType = Main.rand.Next(2) == 0 ? 206 : 229;
                     float scale = randomDustType == 206 ? 1.5f : 1f;
 
-                    int teslaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 2.5f * scale);
+                    int teslaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 2.5f * scale);
                     Main.dust[teslaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                     Main.dust[teslaDust].noGravity = true;
 
                     Dust dust = Main.dust[teslaDust];
                     dust.velocity *= 3f;
 
-                    teslaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 1.5f * scale);
+                    teslaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 1.5f * scale);
                     Main.dust[teslaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
                     dust = Main.dust[teslaDust];
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Boss
                     int randomDustType = Main.rand.Next(2) == 0 ? 206 : 229;
                     float scale = randomDustType == 206 ? 1.5f : 1f;
 
-                    int teslaDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 3f * scale);
+                    int teslaDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 3f * scale);
                     Main.dust[teslaDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                     Main.dust[teslaDust2].noGravity = true;
 
@@ -155,15 +155,15 @@ namespace CalamityMod.Projectiles.Boss
             bool expertMode = Main.expertMode || bossRush;
 
             float detachDistance = bossRush ? 1600f : death ? 1360f : revenge ? 1280f : expertMode ? 1200f : 960f;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type != Projectile.type || Main.projectile[i].ai[0] != Identity + 1f || !Main.projectile[i].active || Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Calamity().newAI[0] == (float)AresBody.Phase.Deathrays)
+                if (p.type != Projectile.type || p.ai[0] != Identity + 1f || Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Calamity().newAI[0] == (float)AresBody.Phase.Deathrays)
                     continue;
 
-                if (Vector2.Distance(Projectile.Center, Main.projectile[i].Center) > detachDistance)
+                if (Vector2.Distance(Projectile.Center, p.Center) > detachDistance)
                     continue;
 
-                return Main.projectile[i];
+                return p;
             }
 
             return null;

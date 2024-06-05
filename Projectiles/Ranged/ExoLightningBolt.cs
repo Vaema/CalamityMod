@@ -86,6 +86,10 @@ namespace CalamityMod.Projectiles.Ranged
                 HasPlayedSound = true;
             }
 
+            // This projectile is forced to critically strike.
+            // This technically is a nerf, as it makes DSO's crits deal less damage.
+            Projectile.Calamity().forcedCrit = true;
+
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3());
             if (Projectile.frameCounter >= Projectile.extraUpdates * 2)
             {

@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Pets
             }
             float flySpeed = 0.5f;
             Projectile.tileCollide = false;
-            Vector2 flyDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 flyDirection = Projectile.Center;
             float horiPos = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - flyDirection.X;
             float vertPos = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - flyDirection.Y;
             vertPos += (float)Main.rand.Next(-10, 21);

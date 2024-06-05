@@ -20,6 +20,9 @@ namespace CalamityMod.NPCs.Leviathan
     [AutoloadBossHead]
     public class Anahita : ModNPC
     {
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/AnahitaDeath");
+
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool spawnedLevi = false;
         private bool forceChargeFrames = false;
@@ -73,8 +76,8 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.value = Item.buyPrice(0, 60, 0, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
@@ -189,8 +192,6 @@ namespace CalamityMod.NPCs.Leviathan
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 bubbleVelocity *= 2f;
 
-            Vector2 vector = NPC.Center;
-
             // Phases
             bool phase2 = lifeRatio < 0.7f;
             bool phase3 = lifeRatio < 0.4f;
@@ -263,7 +264,7 @@ namespace CalamityMod.NPCs.Leviathan
             {
                 if (NPC.ai[3] == 0f && NPC.localAI[1] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int iceShieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<AnahitasIceShield>(), NPC.whoAmI);
+                    int iceShieldSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<AnahitasIceShield>(), NPC.whoAmI);
                     NPC.ai[3] = iceShieldSpawn + 1;
                     NPC.localAI[1] = -1f;
                     NPC.localAI[2] += 1f;
@@ -313,8 +314,8 @@ namespace CalamityMod.NPCs.Leviathan
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                ChargeRotation(player, vector);
-                ChargeLocation(player, vector, false, true);
+                ChargeRotation(player);
+                ChargeLocation(player, false, true);
 
                 if (NPC.alpha < 255)
                     NPC.alpha += 3;
@@ -323,7 +324,7 @@ namespace CalamityMod.NPCs.Leviathan
                 {
                     NPC.alpha = 255;
                 }
-                else
+                else if (NPC.alpha < 255)
                 {
                     for (int k = 0; k < 3; k++)
                     {
@@ -361,11 +362,11 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.timeLeft = 1800;
 
             // Despawn
-            if (!player.active || player.dead || Vector2.Distance(player.Center, vector) > 5600f)
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, vector) > 5600f)
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
                 {
                     NPC.rotation = NPC.velocity.X * 0.02f;
 
@@ -404,7 +405,7 @@ namespace CalamityMod.NPCs.Leviathan
 
             // Rotation when charging
             if (NPC.ai[0] > 2f)
-                ChargeRotation(player, vector);
+                ChargeRotation(player);
 
             // Phase switch
             if (NPC.ai[0] == -1f)
@@ -419,12 +420,12 @@ namespace CalamityMod.NPCs.Leviathan
                 if (NPC.ai[0] != 3f)
                 {
                     forceChargeFrames = false;
-                    float playerLocation = vector.X - player.Center.X;
+                    float playerLocation = NPC.Center.X - player.Center.X;
                     NPC.direction = playerLocation < 0f ? 1 : -1;
                     NPC.spriteDirection = NPC.direction;
                 }
                 else
-                    ChargeRotation(player, vector);
+                    ChargeRotation(player);
 
                 NPC.TargetClosest();
                 NPC.ai[1] = 0f;
@@ -440,7 +441,7 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.rotation = NPC.velocity.X * 0.02f;
                 NPC.spriteDirection = NPC.direction;
 
-                Vector2 anahitaPos = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                Vector2 anahitaPos = NPC.Center;
                 float playerXDist = player.position.X + (player.width / 2) - anahitaPos.X;
                 float playerYDist = player.position.Y + (player.height / 2) - 200f * NPC.scale - anahitaPos.Y;
                 float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
@@ -504,19 +505,13 @@ namespace CalamityMod.NPCs.Leviathan
 
                 NPC.rotation = NPC.velocity.X * 0.02f;
                 Vector2 bubbleSpawnPos = new Vector2(NPC.position.X + (NPC.width / 2) + (15 * NPC.direction * NPC.scale), NPC.position.Y + 30 * NPC.scale);
-                Vector2 restingPos = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                Vector2 restingPos = NPC.Center;
                 float restingPlayerXDist = player.position.X + (player.width / 2) - restingPos.X;
                 float restingPlayerYDist = player.position.Y + (player.height / 2) - restingPos.Y;
                 float restingPlayerDistance = (float)Math.Sqrt(restingPlayerXDist * restingPlayerXDist + restingPlayerYDist * restingPlayerYDist);
 
                 NPC.ai[1] += 1f;
-                int activePlayerAmt = 0;
-                for (int i = 0; i < 255; i++)
-                {
-                    if (Main.player[i].active && !Main.player[i].dead && (vector - Main.player[i].Center).Length() < 1000f)
-                        activePlayerAmt++;
-                }
-                NPC.ai[1] += activePlayerAmt / 2;
+                NPC.ai[1] += Main.CurrentFrameFlags.ActivePlayersCount / 2;
 
                 bool spawnedBubble = false;
                 float bubbleDelay = 20f;
@@ -618,7 +613,7 @@ namespace CalamityMod.NPCs.Leviathan
                 if (Main.getGoodWorld)
                     velocity *= 1.15f;
 
-                Vector2 chargeSetupLocation = Vector2.Normalize(targetVector - vector - NPC.velocity) * velocity;
+                Vector2 chargeSetupLocation = Vector2.Normalize(targetVector - NPC.Center - NPC.velocity) * velocity;
                 float acceleration = death ? 0.28f : 0.25f;
                 acceleration += 0.2f * enrageScale;
 
@@ -719,7 +714,7 @@ namespace CalamityMod.NPCs.Leviathan
 
                 if (Math.Abs(NPC.Center.X - player.Center.X) > 10f)
                 {
-                    float playerLocation = vector.X - player.Center.X;
+                    float playerLocation = NPC.Center.X - player.Center.X;
                     NPC.direction = playerLocation < 0f ? 1 : -1;
                     NPC.spriteDirection = NPC.direction;
                 }
@@ -743,7 +738,7 @@ namespace CalamityMod.NPCs.Leviathan
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                ChargeLocation(player, vector, leviAlive && !phase4, revenge);
+                ChargeLocation(player, leviAlive && !phase4, revenge);
 
                 NPC.ai[1] += 1f;
 
@@ -765,11 +760,11 @@ namespace CalamityMod.NPCs.Leviathan
                     if (Main.getGoodWorld)
                         chargeVelocity *= 1.15f;
 
-                    NPC.velocity = Vector2.Normalize(player.Center - vector) * chargeVelocity;
+                    NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
 
                     // Direction
-                    int chargeDirection = Math.Sign(player.Center.X - vector.X);
+                    int chargeDirection = Math.Sign(player.Center.X - NPC.Center.X);
                     if (chargeDirection != 0)
                     {
                         NPC.direction = chargeDirection;
@@ -808,7 +803,7 @@ namespace CalamityMod.NPCs.Leviathan
                 int dustAmt = 7;
                 for (int j = 0; j < dustAmt; j++)
                 {
-                    Vector2 arg_E1C_0 = (Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f).RotatedBy((j - (dustAmt / 2 - 1)) * MathHelper.Pi / dustAmt) + vector;
+                    Vector2 arg_E1C_0 = (Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f).RotatedBy((j - (dustAmt / 2 - 1)) * MathHelper.Pi / dustAmt) + NPC.Center;
                     Vector2 vector4 = ((float)(Main.rand.NextDouble() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
                     int waterDust = Dust.NewDust(arg_E1C_0 + vector4, 0, 0, DustID.DungeonWater, vector4.X * 2f, vector4.Y * 2f, 100, default, 1.4f);
                     Main.dust[waterDust].noGravity = true;
@@ -829,9 +824,9 @@ namespace CalamityMod.NPCs.Leviathan
         }
 
         // Rotation when charging
-        private void ChargeRotation(Player player, Vector2 vector)
+        private void ChargeRotation(Player player)
         {
-            float playerDirection = (float)Math.Atan2(player.Center.Y - vector.Y, player.Center.X - vector.X);
+            float playerDirection = (float)Math.Atan2(player.Center.Y - NPC.Center.Y, player.Center.X - NPC.Center.X);
             if (NPC.spriteDirection == 1)
                 playerDirection += MathHelper.Pi;
             if (playerDirection < 0f)
@@ -848,15 +843,15 @@ namespace CalamityMod.NPCs.Leviathan
         }
 
         // Move to charge location
-        private void ChargeLocation(Player player, Vector2 vector, bool leviAlive, bool revenge)
+        private void ChargeLocation(Player player, bool leviAlive, bool revenge)
         {
             float distance = (leviAlive ? 600f : 500f) * NPC.scale;
 
             // Velocity
             if (NPC.localAI[0] == 0f)
-                NPC.localAI[0] = (int)distance * Math.Sign((vector - player.Center).X);
+                NPC.localAI[0] = (int)distance * Math.Sign((NPC.Center - player.Center).X);
 
-            Vector2 chargeSetupLocation = Vector2.Normalize(player.Center + new Vector2(NPC.localAI[0], -distance) - vector - NPC.velocity) * 12f;
+            Vector2 chargeSetupLocation = Vector2.Normalize(player.Center + new Vector2(NPC.localAI[0], -distance) - NPC.Center - NPC.velocity) * 12f;
             float acceleration = revenge ? 0.75f : 0.5f;
             if (Main.getGoodWorld)
                 acceleration *= 1.15f;
@@ -864,7 +859,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.SimpleFlyMovement(chargeSetupLocation, acceleration);
 
             // Rotation
-            int chargeDirection = Math.Sign(player.Center.X - vector.X);
+            int chargeDirection = Math.Sign(player.Center.X - NPC.Center.X);
             if (chargeDirection != 0)
             {
                 if (NPC.ai[1] == 0f && chargeDirection != NPC.direction)

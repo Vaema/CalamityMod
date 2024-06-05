@@ -87,9 +87,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float longestReach = MaxProjReach;
             NPC target = null;
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (!excludedTargets.Contains(npc) && npc.CanBeChasedBy() && !npc.friendly && !npc.townNPC)
                 {
                     float distance = Vector2.Distance(hitFrom, npc.Center);
@@ -169,7 +168,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = Projectile.velocity.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
