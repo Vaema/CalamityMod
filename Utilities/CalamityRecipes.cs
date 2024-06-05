@@ -946,7 +946,8 @@ namespace CalamityMod
             foreach (var i in ContentSamples.ItemsByType)
             {
                 Item item = i.Value;
-                if (item.buffType == BuffID.WellFed || item.buffType == BuffID.WellFed2 || item.buffType == BuffID.WellFed3)
+                // 05JUN2024: Ozzatron: support non-vanilla "food-y" buffs (this set by default contains WellFed, WellFed2 and WellFed3)
+                if (BuffID.Sets.IsWellFed[item.buffType])
                 {
                     foodIds.Add(item.type);
                 }
