@@ -265,8 +265,8 @@ WyvernFeatherPurple.DisplayName: Feather
 WyvernProjectile.DisplayName: Wyvern
 YharimsCrystalBeam.DisplayName: Yharim's Beam
 YharimsCrystalPrism.DisplayName: Yermes Christal
-DeathValleyDusterProjectile.DisplayName: Death Valley Duster Projectile
-PrimordialEarthExplosion.DisplayName: Primordial Earth Explosion
-PrimordialEarthProjectile.DisplayName: Primordial Earth Projectile
-PrimordialAncientProjectile.DisplayName: Primordial Ancient Projectile
-PrimordialAncientExplosion.DisplayName: Primordial Ancient Explosion
+DeathValleyDusterProjectile.DisplayName: Death Valley Duster
+PrimordialEarthExplosion.DisplayName: Primordial Earth
+PrimordialEarthProjectile.DisplayName: Primordial Earth
+PrimordialAncientProjectile.DisplayName: Primordial Ancient
+PrimordialAncientExplosion.DisplayName: Primordial Ancient

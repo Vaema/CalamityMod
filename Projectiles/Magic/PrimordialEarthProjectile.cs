@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 6;
-            Projectile.timeLeft = 132; // spesific timing is needed for the funtion
+            Projectile.timeLeft = 132; // NOTE: Do not change this. Specific timing is needed for the weapon to function properly.
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
