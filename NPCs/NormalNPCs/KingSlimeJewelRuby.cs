@@ -70,8 +70,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
             {
-                CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                CalamityUtils.CalamityTargeting(NPC, options);
+                CalamityUtils.CalamityTargeting(NPC, default);
             }
 
             float velocity = 5f;

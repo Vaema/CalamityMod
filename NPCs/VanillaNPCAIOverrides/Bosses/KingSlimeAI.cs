@@ -196,8 +196,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[0] = -100f;
 
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    CalamityUtils.CalamityTargeting(npc, options);
+                    CalamityUtils.CalamityTargeting(npc, default);
 
                     npc.netUpdate = true;
                 }
@@ -207,8 +206,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int despawnDistance = 500;
             if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance)
             {
-                CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                CalamityUtils.CalamityTargeting(npc, options);
+                CalamityUtils.CalamityTargeting(npc, default);
 
                 if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance)
                 {
@@ -381,8 +379,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[0] = -15f;
                     npc.netUpdate = true;
 
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    CalamityUtils.CalamityTargeting(npc, options);
+                    CalamityUtils.CalamityTargeting(npc, default);
                 }
 
                 if (Main.netMode == NetmodeID.MultiplayerClient && npc.ai[0] >= 60f)
@@ -390,8 +387,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] = 0f;
                     npc.ai[0] = -15f;
 
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    CalamityUtils.CalamityTargeting(npc, options);
+                    CalamityUtils.CalamityTargeting(npc, default);
                 }
 
                 for (int j = 0; j < 10; j++)
@@ -424,8 +420,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         npc.netUpdate = true;
 
-                        CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                        CalamityUtils.CalamityTargeting(npc, options);
+                        CalamityUtils.CalamityTargeting(npc, default);
 
                         float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
                         float speedMult = 1f;
@@ -660,8 +655,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[0] = -100f;
 
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    CalamityUtils.CalamityTargeting(npc, options);
+                    CalamityUtils.CalamityTargeting(npc, default);
                     
                     npc.netUpdate = true;
                 }
@@ -670,8 +664,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int num239 = 3000;
             if (Main.player[npc.target].dead || Vector2.Distance(npc.Center, Main.player[npc.target].Center) > (float)num239)
             {
-                CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                CalamityUtils.CalamityTargeting(npc, options);
+                CalamityUtils.CalamityTargeting(npc, default);
 
                 if (Main.player[npc.target].dead || Vector2.Distance(npc.Center, Main.player[npc.target].Center) > (float)num239)
                 {
@@ -703,8 +696,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1] = 5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    options.faceTarget = false;
+                    CalamityTargetingParameters options = new() { faceTarget = false };
                     CalamityUtils.CalamityTargeting(npc, options);
 
                     Point point3 = npc.Center.ToTileCoordinates();
@@ -857,8 +849,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.netUpdate = true;
 
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    CalamityUtils.CalamityTargeting(npc, options);
+                    CalamityUtils.CalamityTargeting(npc, default);
                 }
 
                 if (Main.netMode == NetmodeID.MultiplayerClient && npc.ai[0] >= 60f)
@@ -866,8 +857,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] = 0f;
                     npc.ai[0] = -15f;
 
-                    CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                    CalamityUtils.CalamityTargeting(npc, options);
+                    CalamityUtils.CalamityTargeting(npc, default);
                 }
 
                 for (int num251 = 0; num251 < 10; num251++)
@@ -899,8 +889,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         npc.netUpdate = true;
 
-                        CalamityTargetingParameters options = default(CalamityTargetingParameters);
-                        CalamityUtils.CalamityTargeting(npc, options);
+                        CalamityUtils.CalamityTargeting(npc, default);
 
                         if (npc.ai[1] == 3f)
                         {
@@ -1001,7 +990,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static void GetPlaceToTeleportTo(NPC npc)
         {
-            CalamityTargetingParameters options = default(CalamityTargetingParameters);
+            CalamityTargetingParameters options = CalamityTargetingParameters.Defaults;
             options.faceTarget = false;
             CalamityUtils.CalamityTargeting(npc, options);
 
