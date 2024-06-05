@@ -88,91 +88,7 @@ namespace CalamityMod
             AnyLargeGem = RecipeGroup.RegisterGroup("AnyLargeGem", group);
 
             // Food
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyFood"), new int[]
-            {
-                ItemID.Apple,
-                ItemID.AppleJuice,
-                ItemID.ApplePie,
-                ItemID.Apricot,
-                ItemID.Bacon,
-                ItemID.Banana,
-                ItemID.BananaDaiquiri,
-                ItemID.BananaSplit,
-                ModContent.ItemType<Baguette>(),
-                ItemID.BBQRibs,
-                ItemID.BlackCurrant,
-                ModContent.ItemType<BlasphemousDonut>(),
-                ItemID.BloodOrange,
-                ItemID.BloodyMoscato,
-                ItemID.BowlofSoup,
-                ItemID.BunnyStew,
-                ItemID.Burger, // mmmmhmm borgor :borgorpat:
-                ItemID.MilkCarton, // Carton of Milk
-                ItemID.Cherry,
-                ItemID.ChickenNugget,
-                ItemID.ChocolateChipCookie,
-                ItemID.ChristmasPudding,
-                ItemID.Coconut,
-                ItemID.CoffeeCup,
-                ItemID.CookedFish,
-                ItemID.CookedMarshmallow,
-                ItemID.CookedShrimp,
-                ItemID.CreamSoda,
-                ModContent.ItemType<DeliciousMeat>(),
-                ItemID.Dragonfruit,
-                ItemID.Elderberry,
-                ItemID.Escargot,
-                ItemID.FriedEgg,
-                ItemID.Fries,
-                ItemID.FroggleBunwich,
-                ItemID.BananaDaiquiri, // Frozen Banana Daiquiri
-                ItemID.FruitJuice,
-                ItemID.FruitSalad,
-                ItemID.GingerbreadCookie,
-                ItemID.GoldenDelight,
-                ItemID.Grapes,
-                ItemID.Grapefruit,
-                ItemID.GrapeJuice,
-                ItemID.GrilledSquirrel,
-                ItemID.GrubSoup,
-                ModContent.ItemType<HadalStew>(),
-                ItemID.Hotdog,
-                ItemID.IceCream,
-                ItemID.Lemon,
-                ItemID.Lemonade,
-                ItemID.LobsterTail,
-                ItemID.Mango,
-                ItemID.Milkshake,
-                ItemID.MonsterLasagna,
-                ItemID.Nachos,
-                ItemID.PadThai,
-                ItemID.Peach,
-                ItemID.PeachSangria,
-                ItemID.Pho,
-                ItemID.PinaColada,
-                ItemID.Pineapple,
-                ItemID.Pizza,
-                ItemID.Plum,
-                ItemID.PotatoChips,
-                ItemID.PrismaticPunch,
-                ItemID.PumpkinPie,
-                ItemID.Rambutan,
-                ItemID.RoastedBird,
-                ItemID.RoastedDuck,
-                ItemID.SauteedFrogLegs,
-                ItemID.SeafoodDinner,
-                ItemID.ShrimpPoBoy,
-                ItemID.ShuckedOyster,
-                ItemID.SmoothieofDarkness,
-                ItemID.Spaghetti,
-                ItemID.Starfruit,
-                ItemID.Steak,
-                ItemID.SugarCookie,
-                ItemID.Sashimi,
-                ItemID.Teacup,
-                ItemID.TropicalSmoothie
-            });
-            AnyFood = RecipeGroup.RegisterGroup("AnyFood", group);
+            AnyFood = RecipeGroup.RegisterGroup("AnyFood", GetFoodItems());
         }
 
         private static void AddOreAndBarRecipeGroups()
@@ -507,63 +423,7 @@ namespace CalamityMod
             AnyTombstone = RecipeGroup.RegisterGroup("AnyTombstone", group);
 
             // Wings for Celestial Tracers
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyWings"), new int[]
-            {
-                ItemID.DemonWings,
-                ItemID.AngelWings,
-                ItemID.RedsWings,
-                ItemID.ButterflyWings,
-                ItemID.FairyWings,
-                ItemID.HarpyWings,
-                ItemID.BoneWings,
-                ItemID.FlameWings,
-                ItemID.FrozenWings,
-                ItemID.GhostWings,
-                ItemID.SteampunkWings,
-                ItemID.LeafWings,
-                ItemID.BatWings,
-                ItemID.BeeWings,
-                ItemID.DTownsWings,
-                ItemID.WillsWings,
-                ItemID.CrownosWings,
-                ItemID.CenxsWings,
-                ItemID.TatteredFairyWings,
-                ItemID.SpookyWings,
-                ItemID.Hoverboard,
-                ItemID.FestiveWings,
-                ItemID.BeetleWings,
-                ItemID.FinWings,
-                ItemID.FishronWings,
-                ItemID.MothronWings,
-                ItemID.WingsSolar,
-                ItemID.WingsVortex,
-                ItemID.WingsNebula,
-                ItemID.WingsStardust,
-                ItemID.Yoraiz0rWings,
-                ItemID.JimsWings,
-                ItemID.SkiphsWings,
-                ItemID.LokisWings,
-                ItemID.BetsyWings,
-                ItemID.ArkhalisWings,
-                ItemID.LeinforsWings,
-                ItemID.BejeweledValkyrieWing,
-                ItemID.GhostarsWings,
-                ItemID.GroxTheGreatWings,
-                ItemID.FoodBarbarianWings,
-                ItemID.SafemanWings,
-                ItemID.CreativeWings,
-                ItemID.RainbowWings,
-                ItemID.LongRainbowTrailWings,
-                ModContent.ItemType<SkylineWings>(),
-                ModContent.ItemType<StarlightWings>(),
-                ModContent.ItemType<AureateBooster>(),
-                ModContent.ItemType<HadalMantle>(),
-                ModContent.ItemType<TarragonWings>(),
-                ModContent.ItemType<ExodusWings>(),
-                ModContent.ItemType<HadarianWings>(),
-                ModContent.ItemType<SilvaWings>()
-            });
-            AnyWings = RecipeGroup.RegisterGroup("AnyWings", group);
+            AnyWings = RecipeGroup.RegisterGroup("AnyWings", GetValidWingsForTracers());
         }
         #endregion
 
@@ -1050,6 +910,48 @@ namespace CalamityMod
         {
             r.ChangeIngredientStack(ItemID.ViciousPowder, 20);
             r.ChangeIngredientStack(ItemID.Vertebrae, 10);
+        }
+        #endregion
+
+        #region Automatic Recipe Groups
+        private static RecipeGroup GetValidWingsForTracers()
+        {
+            List<int> wingIds = new List<int>();
+            // List of wings that can't be used to craft Celestial Tracers, includes tracers themselves, specific wing ingredients, and non-traditional wings
+            List<int> excludedWings = new List<int> 
+            { 
+                ModContent.ItemType<TracersSeraph>(),
+                ModContent.ItemType<TracersElysian>(),
+                ModContent.ItemType<TracersCelestial>(),
+                ModContent.ItemType<SoulofCryogen>(),
+                ModContent.ItemType<ElysianWings>(),
+                ModContent.ItemType<DrewsWings>(),
+                ModContent.ItemType<MOAB>(),
+                ItemID.Jetpack
+            };
+            foreach (var i in ContentSamples.ItemsByType)
+            {
+                Item item = i.Value;
+                if (item.wingSlot > -1 && !excludedWings.Contains(item.type))
+                {
+                    wingIds.Add(item.type);
+                }
+            }
+            return new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyWings"), [.. wingIds]);
+        }
+
+        private static RecipeGroup GetFoodItems()
+        {
+            List<int> foodIds = new List<int>();
+            foreach (var i in ContentSamples.ItemsByType)
+            {
+                Item item = i.Value;
+                if (item.buffType == BuffID.WellFed || item.buffType == BuffID.WellFed2 || item.buffType == BuffID.WellFed3)
+                {
+                    foodIds.Add(item.type);
+                }
+            }
+            return new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyFood"), [.. foodIds]);
         }
         #endregion
 
