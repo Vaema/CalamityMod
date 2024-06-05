@@ -66,10 +66,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent body segments remaining
             float lifeRatio = MathHelper.Clamp(segmentCount / totalSegments, 0f, 1f);
 
-            // 10 seconds of resistance to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime)
-                calamityGlobalNPC.newAI[1] += 1f;
-
             // Phases
 
             // Cursed Flame phase
@@ -666,6 +662,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // 10 seconds of resistance to prevent spawn killing
+            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+                calamityGlobalNPC.newAI[1] += 1f;
+
             // Calculate contact damage based on velocity
             // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
             float minimalContactDamageHeadVelocity = segmentVelocity * 0.25f;
@@ -774,10 +774,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
             }
-
-            // 10 seconds of resistance to prevent spawn killing
-            if (npc.Calamity().newAI[1] < DRIncreaseTime)
-                npc.Calamity().newAI[1] += 1f;
 
             npc.realLife = -1;
 
@@ -1177,6 +1173,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                 }
             }
+
+            // 10 seconds of resistance to prevent spawn killing
+            if (npc.Calamity().newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || npc.Calamity().newAI[1] > 0f))
+                npc.Calamity().newAI[1] += 1f;
 
             // Calculate contact damage based on velocity
             // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.

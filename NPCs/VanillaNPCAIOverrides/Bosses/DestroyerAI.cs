@@ -65,10 +65,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            // 10 seconds of resistance to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime)
-                calamityGlobalNPC.newAI[1] += 1f;
-
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < DRIncreaseTime;
 
             // Percent life remaining
@@ -1066,6 +1062,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation = mechdusaRotation * 0.75f + (float)Math.PI;
             }
 
+            // 10 seconds of resistance to prevent spawn killing
+            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+                calamityGlobalNPC.newAI[1] += 1f;
+
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = segmentVelocity * 0.25f;
             float minimalDamageVelocity = segmentVelocity * 0.5f;
@@ -1127,10 +1127,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     break;
                 }
             }
-
-            // 10 seconds of resistance to prevent spawn killing
-            if (npc.Calamity().newAI[1] < DRIncreaseTime)
-                npc.Calamity().newAI[1] += 1f;
 
             npc.Calamity().CurrentlyIncreasingDefenseOrDR = npc.Calamity().newAI[1] < DRIncreaseTime;
 
@@ -1710,6 +1706,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.velocity.Y = 0f;
                 npc.rotation = num30 * 0.75f + (float)Math.PI;
             }
+
+            // 10 seconds of resistance to prevent spawn killing
+            if (npc.Calamity().newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || npc.Calamity().newAI[1] > 0f))
+                npc.Calamity().newAI[1] += 1f;
 
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = num18 * 0.25f;

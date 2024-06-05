@@ -67,12 +67,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Float around the player
             NPC.rotation = NPC.velocity.X / 15f;
 
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+            {
+                CalamityTargetingParameters options = default(CalamityTargetingParameters);
+                CalamityUtils.CalamityTargeting(NPC, options);
+            }
 
             float velocity = 5f;
             float acceleration = 0.1f;
 
-            if (NPC.position.Y > Main.player[NPC.target].position.Y - 400f)
+            if (NPC.position.Y > Main.player[NPC.target].position.Y - 350f)
             {
                 if (NPC.velocity.Y > 0f)
                     NPC.velocity.Y *= 0.98f;
@@ -82,7 +87,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.velocity.Y > velocity)
                     NPC.velocity.Y = velocity;
             }
-            else if (NPC.position.Y < Main.player[NPC.target].position.Y - 500f)
+            else if (NPC.position.Y < Main.player[NPC.target].position.Y - 450f)
             {
                 if (NPC.velocity.Y < 0f)
                     NPC.velocity.Y *= 0.98f;

@@ -92,8 +92,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
             float resistanceTime = doubleWormPhase ? 300f : 600f;
-            if (calamityGlobalNPC.newAI[1] < resistanceTime)
-                calamityGlobalNPC.newAI[1] += 1f;
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
 
@@ -910,6 +908,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.spriteDirection = 1;
                 }
             }
+
+            // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
+            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+                calamityGlobalNPC.newAI[1] += 1f;
 
             // Calculate contact damage based on velocity
             if (!doNotDealDamage)

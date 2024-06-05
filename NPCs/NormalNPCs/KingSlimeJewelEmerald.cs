@@ -61,8 +61,12 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             Lighting.AddLight(NPC.Center, 0f, 0.8f, 0f);
 
-            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
-                NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+            {
+                CalamityTargetingParameters options = default(CalamityTargetingParameters);
+                CalamityUtils.CalamityTargeting(NPC, options);
+            }
 
             if (NPC.ai[3] == 1f)
             {
