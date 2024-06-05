@@ -210,7 +210,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 600);
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 360);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 360);
             improvedHeal = true;
         }
 

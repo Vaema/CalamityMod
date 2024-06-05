@@ -11,7 +11,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Tools;
-using CalamityMod.Items.Weapons.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -24,6 +23,7 @@ namespace CalamityMod
     {
         #region Recipe Group Definitions
         public static int HardmodeAnvil, HardmodeForge, AnyLargeGem, AnyFood;
+        public static int AnyCopperOre, AnySilverOre, AnyGoldOre, AnyEvilOre, AnyCobaltOre, AnyMythrilOre, AnyAdamantiteOre;
         public static int AnyCopperBar, AnySilverBar, AnyGoldBar, AnyEvilBar, AnyCobaltBar, AnyMythrilBar, AnyAdamantiteBar;
         public static int AnyEvilPowder, Boss2Material, CursedFlameIchor, AnyEvilWater, AnyEvilFlask;
         public static int AnyStoneBlock, AnySnowBlock, AnyIceBlock, AnySiltBlock, AnyEvilBlock, AnyGoodBlock;
@@ -178,7 +178,14 @@ namespace CalamityMod
         private static void AddOreAndBarRecipeGroups()
         {
             // Copper and Tin
-            RecipeGroup group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CopperBar)}", new int[]
+            RecipeGroup group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CopperOre)}", new int[]
+            {
+                ItemID.CopperOre,
+                ItemID.TinOre
+            });
+            AnyCopperOre = RecipeGroup.RegisterGroup("AnyCopperOre", group);
+
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CopperBar)}", new int[]
             {
                 ItemID.CopperBar,
                 ItemID.TinBar
@@ -186,6 +193,13 @@ namespace CalamityMod
             AnyCopperBar = RecipeGroup.RegisterGroup("AnyCopperBar", group);
 
             // Silver and Tungsten
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.SilverOre)}", new int[]
+            {
+                ItemID.SilverOre,
+                ItemID.TungstenOre
+            });
+            AnySilverOre = RecipeGroup.RegisterGroup("AnySilverOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.SilverBar)}", new int[]
             {
                 ItemID.SilverBar,
@@ -194,6 +208,13 @@ namespace CalamityMod
             AnySilverBar = RecipeGroup.RegisterGroup("AnySilverBar", group);
 
             // Gold and Platinum
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.GoldOre)}", new int[]
+            {
+                ItemID.GoldOre,
+                ItemID.PlatinumOre
+            });
+            AnyGoldOre = RecipeGroup.RegisterGroup("AnyGoldOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.GoldBar)}", new int[]
             {
                 ItemID.GoldBar,
@@ -202,6 +223,13 @@ namespace CalamityMod
             AnyGoldBar = RecipeGroup.RegisterGroup("AnyGoldBar", group);
 
             // Demonite and Crimtane
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.DemoniteOre)}", new int[]
+            {
+                ItemID.DemoniteOre,
+                ItemID.CrimtaneOre
+            });
+            AnyEvilOre = RecipeGroup.RegisterGroup("AnyEvilOre", group);
+
             group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyEvilBar"), new int[]
             {
                 ItemID.DemoniteBar,
@@ -210,6 +238,13 @@ namespace CalamityMod
             AnyEvilBar = RecipeGroup.RegisterGroup("AnyEvilBar", group);
 
             // Cobalt and Palladium
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CobaltOre)}", new int[]
+            {
+                ItemID.CobaltOre,
+                ItemID.PalladiumOre
+            });
+            AnyCobaltOre = RecipeGroup.RegisterGroup("AnyCobaltOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.CobaltBar)}", new int[]
             {
                 ItemID.CobaltBar,
@@ -218,6 +253,13 @@ namespace CalamityMod
             AnyCobaltBar = RecipeGroup.RegisterGroup("AnyCobaltBar", group);
 
             // Mythril and Orichalcum
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.MythrilOre)}", new int[]
+            {
+                ItemID.MythrilOre,
+                ItemID.OrichalcumOre
+            });
+            AnyMythrilOre = RecipeGroup.RegisterGroup("AnyMythrilOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.MythrilBar)}", new int[]
             {
                 ItemID.MythrilBar,
@@ -226,6 +268,13 @@ namespace CalamityMod
             AnyMythrilBar = RecipeGroup.RegisterGroup("AnyMythrilBar", group);
 
             // Adamantite and Titanium
+            group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.AdamantiteOre)}", new int[]
+            {
+                ItemID.AdamantiteOre,
+                ItemID.TitaniumOre
+            });
+            AnyAdamantiteOre = RecipeGroup.RegisterGroup("AnyAdamantiteOre", group);
+
             group = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} {Lang.GetItemNameValue(ItemID.AdamantiteBar)}", new int[]
             {
                 ItemID.AdamantiteBar,

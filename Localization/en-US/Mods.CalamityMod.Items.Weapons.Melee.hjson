@@ -1275,7 +1275,7 @@ TheOracle: {
 	DisplayName: The Oracle
 	Tooltip:
 		'''
-		Emits an aura of red lightning which charges up when hitting enemies
+		Emits an aura of lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
 		An exceptionally agile yoyo
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'

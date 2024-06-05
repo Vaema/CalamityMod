@@ -163,6 +163,16 @@ Dragonfire: {
 	Description: Engulfed by roaring flames
 }
 
+VermillionFlux: {
+	DisplayName: Vermillion Flux
+	Description: Sharp arcs of scarlet course through you
+}
+
+StaticDischarge: {
+	DisplayName: Static Discharge
+	Description: Shocked by static electricity
+}
+
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off
@@ -1526,20 +1536,7 @@ LiliesOfFinalityBuff: {
 	Description: Remember our promise
 }
 
-ForbiddenBuff: {
-	DisplayName: Forbidden Buff
-	Description:
-		'''
-		You are strengthened by ancient powers
-		Defense increased by 10, damage increased by 12%
-		'''
-}
-
-PrimordialPowerBuff: {
-	DisplayName: Primordial Power Buff
-	Description:
-		'''
-		You are strengthened by primordial powers
-		Damage reduction increased by 8%, damage increased by 18%
-		'''
+AuricRebuke: {
+	DisplayName: Auric Rebuke
+	Description: Your cells are violently bouncing off each other
 }

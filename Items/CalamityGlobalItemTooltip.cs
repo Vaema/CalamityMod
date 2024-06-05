@@ -27,6 +27,41 @@ namespace CalamityMod.Items
 {
     public partial class CalamityGlobalItem : GlobalItem
     {
+        #region Backup Tooltip Insertion Positions
+        /// <summary>
+        /// This array contains (almost) every single vanilla tooltip in reverse order starting at "Tooltip0".<br />
+        /// Because "Tooltip0" is the first typical tooltip line, this is where Calamity tends to insert its tooltips.<br />
+        /// When this line is not present, Calamity needs to insert tooltips in an <i>equivalent</i> position.<br />
+        /// The best way to do this is to iterate backwards through all possible vanilla tooltip lines and pick the first one that is present.
+        /// </summary>
+        private static string[] BackupTooltipInsertionLineNames =
+        {
+            "Material",
+            "Consumable",
+            "Ammo",
+            "Placeable",
+            "UseMana",
+            "HealMana",
+            "HealLife",
+            "TileBoost",
+            "HammerPower",
+            "AxePower",
+            "PickPower",
+            "Defense",
+            "Vanity",
+            "Quest",
+            "WandConsumes",
+            "Equipable",
+            "BaitPower",
+            "NeedsBait",
+            "FishingPower",
+            "Knockback",
+            "NoTransfer",
+            "FavoriteDesc",
+            "ItemName"
+        };
+        #endregion
+
         #region Main ModifyTooltips Function
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
@@ -46,6 +81,23 @@ namespace CalamityMod.Items
                         firstTooltipIndex = i;
                     lastTooltipIndex = i;
                     standardTooltipCount++;
+                }
+            }
+
+            // If there are no standard vanilla tooltip lines (e.g. Flintlock Pistol, which has no tooltip)
+            // then a different position needs to be selected for typical insertion.
+            bool noStandardTooltips = false;
+            if (firstTooltipIndex == -1)
+            {
+                noStandardTooltips = true;
+                foreach (string lineName in BackupTooltipInsertionLineNames)
+                {
+                    int idx = tooltips.FindIndex((line) => line.Name == lineName);
+                    if (idx != -1)
+                    {
+                        firstTooltipIndex = lastTooltipIndex = idx;
+                        break;
+                    }
                 }
             }
 
@@ -109,7 +161,8 @@ namespace CalamityMod.Items
                 if (holdingShift && firstTooltipIndex != -1)
                 {
                     // If asked to, remove all standard tooltip lines. This moves the last tooltip index.
-                    if (holdShiftItem.HidesNormalTooltip)
+                    // This only occurs if the standard tooltip lines are ACTUALLY standard tooltips. Otherwise, don't remove anything!
+                    if (holdShiftItem.HidesNormalTooltip && !noStandardTooltips)
                     {
                         tooltips.RemoveRange(firstTooltipIndex, standardTooltipCount);
                         lastTooltipIndex -= standardTooltipCount;

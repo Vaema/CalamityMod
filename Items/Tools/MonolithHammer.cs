@@ -14,9 +14,10 @@ namespace CalamityMod.Items.Tools
         {
             Item.damage = 29;
             Item.knockBack = 2.5f;
-            Item.useTime = 6;
+            Item.useTime = 5;
             Item.useAnimation = 9;
-            Item.hammer = 40;
+            Item.hammer = 35;
+            Item.tileBoost = 1;
 
             Item.DamageType = DamageClass.Melee;
             Item.width = 46;
