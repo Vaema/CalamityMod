@@ -75,9 +75,9 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnKill(int timeLeft)
         {
-            for (int k = 0; k < 7; k++)
+            for (int k = 0; k < 5; k++)
             {
-                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center, new Vector2(8, 8).RotatedByRandom(100f) * Main.rand.NextFloat(0.3f, 0.8f), false, 15, Main.rand.NextFloat(0.6f, 0.95f), mainColor);
+                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center, new Vector2(4, 4).RotatedByRandom(100f) * Main.rand.NextFloat(0.3f, 0.8f), false, 15, Main.rand.NextFloat(0.6f, 0.95f), mainColor);
                 GeneralParticleHandler.SpawnParticle(orb);
             }
         }
