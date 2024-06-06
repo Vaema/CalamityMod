@@ -12,7 +12,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class Elderberry : ModItem, ILocalizedModType
+    [LegacyName("Elderberry")]
+    public class TaintedCloudberry : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
 
@@ -46,16 +47,16 @@ namespace CalamityMod.Items.PermanentBoosters
             if (player.itemAnimation > 0 && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
-                if (modPlayer.eBerry)
+                if (modPlayer.tCloudberry)
                 {
-                    string key = "Mods.CalamityMod.Misc.ElderberryText";
+                    string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
                     Color messageColor = Color.Turquoise;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                     return false;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);
-                modPlayer.eBerry = true;
+                modPlayer.tCloudberry = true;
             }
             return true;
         }
@@ -64,7 +65,7 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
 
-            if (line != null && Main.LocalPlayer.Calamity().eBerry)
+            if (line != null && Main.LocalPlayer.Calamity().tCloudberry)
                 line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
         }
 

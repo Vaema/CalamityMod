@@ -998,9 +998,9 @@ namespace CalamityMod
         {
             return powerupName switch
             {
-                "BloodOrange" => player.Calamity().bOrange,
+                "SanguineTangerine" => player.Calamity().sTangerine,
                 "MiracleFruit" => player.Calamity().mFruit,
-                "Elderberry" => player.Calamity().eBerry,
+                "TaintedCloudberry" => player.Calamity().tCloudberry,
                 "Dragonfruit" => player.Calamity().dFruit,
 
                 "CometShard" => player.Calamity().cShard,
@@ -1027,9 +1027,9 @@ namespace CalamityMod
 
             switch (powerupName)
             {
-                case "BloodOrange": player.Calamity().bOrange = value; break;
+                case "SanguineTangerine": player.Calamity().sTangerine = value; break;
                 case "MiracleFruit": player.Calamity().mFruit = value; break;
-                case "Elderberry": player.Calamity().eBerry = value; break;
+                case "TaintedCloudberry": player.Calamity().tCloudberry = value; break;
                 case "Dragonfruit": player.Calamity().dFruit = value; break;
 
                 case "CometShard": player.Calamity().cShard = value; break;

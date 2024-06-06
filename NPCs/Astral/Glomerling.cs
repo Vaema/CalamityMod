@@ -16,14 +16,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Astral
 {
-    public class Hiveling : ModNPC
+    public class Glomerling : ModNPC
     {
         public static Asset<Texture2D> glowmask;
 
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/HivelingGlow", AssetRequestMode.AsyncLoad);
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/GlomerlingGlow", AssetRequestMode.AsyncLoad);
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 8;
@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.Astral
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Hiveling")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Glomerling")
             });
         }
 

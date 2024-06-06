@@ -1009,7 +1009,7 @@ namespace CalamityMod.NPCs.StormWeaver
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
                 GFBOnly.Add(ModContent.ItemType<ElementalGauntlet>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<ElementalQuiver>(), hideLootReport: true);
+                GFBOnly.Add(ModContent.ItemType<PlanebreakersPouch>(), hideLootReport: true);
             }
 
             // Lore
