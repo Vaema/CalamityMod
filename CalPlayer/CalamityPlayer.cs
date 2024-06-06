@@ -465,7 +465,7 @@ namespace CalamityMod.CalPlayer
         public bool mFruit = false;
         public bool sTangerine = false;
         public bool tCloudberry = false;
-        public bool dFruit = false;
+        public bool sStrawberry = false;
         public bool revJamDrop = false;
         public bool rageBoostOne = false;
         public bool rageBoostTwo = false;
@@ -1270,7 +1270,7 @@ namespace CalamityMod.CalPlayer
             mFruit = false;
             sTangerine = false;
             tCloudberry = false;
-            dFruit = false;
+            sStrawberry = false;
             pHeart = false;
             cShard = false;
             revJamDrop = false;
@@ -1322,7 +1322,7 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("miracleFruit", mFruit);
             boost.AddWithCondition("bloodOrange", sTangerine);
             boost.AddWithCondition("elderBerry", tCloudberry);
-            boost.AddWithCondition("dragonFruit", dFruit);
+            boost.AddWithCondition("dragonFruit", sStrawberry);
             boost.AddWithCondition("phantomHeart", pHeart);
             boost.AddWithCondition("cometShard", cShard);
             boost.AddWithCondition("revJam", revJamDrop);
@@ -1412,7 +1412,7 @@ namespace CalamityMod.CalPlayer
             mFruit = boost.Contains("miracleFruit");
             sTangerine = boost.Contains("bloodOrange");
             tCloudberry = boost.Contains("elderBerry");
-            dFruit = boost.Contains("dragonFruit");
+            sStrawberry = boost.Contains("dragonFruit");
             pHeart = boost.Contains("phantomHeart");
             cShard = boost.Contains("cometShard");
             revJamDrop = boost.Contains("revJam");
@@ -2249,7 +2249,7 @@ namespace CalamityMod.CalPlayer
             health.Base = sTangerine.ToInt() * SanguineTangerine.LifeBoost
                         + mFruit.ToInt() * MiracleFruit.LifeBoost
                         + tCloudberry.ToInt() * TaintedCloudberry.LifeBoost
-                        + dFruit.ToInt() * Dragonfruit.LifeBoost;
+                        + sStrawberry.ToInt() * SacredStrawberry.LifeBoost;
 
             mana = StatModifier.Default;
             mana.Base = cShard.ToInt() * CometShard.ManaBoost

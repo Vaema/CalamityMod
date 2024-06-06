@@ -83,16 +83,6 @@ CometShard: {
 		'''
 }
 
-Dragonfruit: {
-	DisplayName: Dragonfruit
-	Tooltip:
-		'''
-		Permanently increases maximum life by {0}
-		Can only be used once and requires the max amount of Life Fruits consumed
-		Though somewhat bland, what taste can be described is unlike any other experienced
-		'''
-}
-
 Ectoheart: {
 	DisplayName: Ectoheart
 	Tooltip:
@@ -163,6 +153,16 @@ RedLightningContainer: {
 		'''
 		Permanently increases the duration of Rage Mode by 1 second
 		Revengeance drop
+		'''
+}
+
+SacredStrawberry: {
+	DisplayName: Sacred Strawberry
+	Tooltip:
+		'''
+		Permanently increases maximum life by {0}
+		Can only be used once and requires the max amount of Life Fruits consumed
+		Though somewhat bland, what taste can be described is unlike any other experienced
 		'''
 }
 

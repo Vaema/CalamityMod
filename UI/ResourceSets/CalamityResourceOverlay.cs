@@ -20,8 +20,8 @@ namespace CalamityMod.UI.ResourceSets
         {
             string folder = $"{baseFolder}HP";
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
-            if (modPlayer.dFruit)
-                return folder + "Dragonfruit";
+            if (modPlayer.sStrawberry)
+                return folder + "SacredStrawberry";
             if (modPlayer.tCloudberry)
                 return folder + "TaintedCloudberry";
             if (modPlayer.mFruit)
