@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Boss
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:Flame"].UseSaturation(0.28f);
             // This is effectively a 2-point trail that is extended as Toasty's new Primitive system appears to no longer support them.
-            Vector2[] drawPositions = new Vector2[6];
+            Vector2[] drawPositions = new Vector2[5];
             for (int i = 0; i < drawPositions.Length; i++)
                 drawPositions[i] = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * TelegraphWidth * i / (drawPositions.Length - 1f);
 
