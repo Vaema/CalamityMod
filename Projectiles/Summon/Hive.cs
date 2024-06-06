@@ -7,7 +7,7 @@ namespace CalamityMod.Projectiles.Summon
     public class Hive : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/NPCs/Astral/HiveEnemy";
+        public override string Texture => "CalamityMod/NPCs/Astral/Astraglomerate";
 
         public override void SetStaticDefaults()
         {

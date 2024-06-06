@@ -2035,8 +2035,8 @@ namespace CalamityMod.NPCs.Providence
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ProvidenceBag>()));
 
-            // Drops Rune of Cos on first kill
-            npcLoot.AddIf(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<RuneofKos>(), desc: DropHelper.FirstKillText);
+            // Drops Mark of Providence on first kill
+            npcLoot.AddIf(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<MarkofProvidence>(), desc: DropHelper.FirstKillText);
 
             npcLoot.AddConditionalPerPlayer(info =>
             {

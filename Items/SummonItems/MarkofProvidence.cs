@@ -12,8 +12,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
-    [LegacyName("RuneofCos")]
-    public class RuneofKos : ModItem, ILocalizedModType
+    [LegacyName("RuneofCos", "RuneofKos")]
+    public class MarkofProvidence : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
         public static readonly SoundStyle CVSound = new("CalamityMod/Sounds/Item/CeaselessVoidSpawn");

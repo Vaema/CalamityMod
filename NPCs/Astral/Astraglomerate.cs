@@ -18,14 +18,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Astral
 {
-    public class HiveEnemy : ModNPC
+    public class Astraglomerate : ModNPC
     {
         public static Asset<Texture2D> glowmask;
 
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/HiveGlow", AssetRequestMode.AsyncLoad);
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstraglomerateGlow", AssetRequestMode.AsyncLoad);
             Main.npcFrameCount[NPC.type] = 6;
         }
 
@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 0, 15, 0);
             Banner = NPC.type;
-            BannerItem = ModContent.ItemType<HiveBanner>();
+            BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 90;
@@ -66,7 +66,7 @@ namespace CalamityMod.NPCs.Astral
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HiveEnemy")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Astraglomerate")
             });
         }
 
@@ -80,12 +80,12 @@ namespace CalamityMod.NPCs.Astral
             {
                 if (Main.rand.NextBool(100))
                 {
-                    if (NPC.CountNPCS(ModContent.NPCType<Hiveling>()) < 10)
+                    if (NPC.CountNPCS(ModContent.NPCType<Glomerling>()) < 10)
                     {
                         NPC.ai[0] = 0;
 
                         // Spawn hiveling, it's ai[0] is the hive npc index.
-                        int n = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Hiveling>(), 0, NPC.whoAmI);
+                        int n = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Glomerling>(), 0, NPC.whoAmI);
                         Main.npc[n].velocity.X = Main.rand.NextFloat(-0.4f, 0.4f);
                         Main.npc[n].velocity.Y = Main.rand.NextFloat(-0.5f, -0.05f);
                     }
@@ -126,7 +126,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                int type = ModContent.NPCType<Hiveling>();
+                int type = ModContent.NPCType<Glomerling>();
 
                 // TODO: Should this use `Main.ActiveNPCs` iterator?
                 for (int i = 0; i < Main.maxNPCs; i++)

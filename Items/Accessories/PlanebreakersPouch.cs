@@ -8,7 +8,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ElementalQuiver : ModItem, ILocalizedModType
+    [LegacyName("ElementalQuiver")]
+    public class PlanebreakersPouch : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()

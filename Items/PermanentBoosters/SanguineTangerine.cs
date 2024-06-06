@@ -11,7 +11,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class BloodOrange : ModItem, ILocalizedModType
+    [LegacyName("BloodOrange")]
+    public class SanguineTangerine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
 
@@ -45,16 +46,16 @@ namespace CalamityMod.Items.PermanentBoosters
             if (player.itemAnimation > 0 && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
-                if (modPlayer.bOrange)
+                if (modPlayer.sTangerine)
                 {
-                    string key = "Mods.CalamityMod.Misc.BloodOrangeText";
+                    string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
                     Color messageColor = Color.Orange;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                     return false;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);
-                modPlayer.bOrange = true;
+                modPlayer.sTangerine = true;
             }
             return true;
         }
@@ -63,7 +64,7 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
 
-            if (line != null && Main.LocalPlayer.Calamity().bOrange)
+            if (line != null && Main.LocalPlayer.Calamity().sTangerine)
                 line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
         }
 

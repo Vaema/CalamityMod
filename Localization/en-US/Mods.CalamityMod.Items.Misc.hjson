@@ -64,16 +64,6 @@ TwinklerItem: {
 }
 
 // Permanent Boosters
-BloodOrange: {
-	DisplayName: Blood Orange
-	Tooltip:
-		'''
-		Permanently increases maximum life by {0}
-		Can only be used once and requires the max amount of Life Fruits consumed
-		It has a distinctly sweet flavor and a strong aroma
-		'''
-}
-
 CelestialOnion: {
 	DisplayName: Celestial Onion
 	Tooltip:
@@ -109,16 +99,6 @@ Ectoheart: {
 		'''
 		Permanently increases Adrenaline Mode damage by 20% and damage reduction by 5%
 		Revengeance drop
-		'''
-}
-
-Elderberry: {
-	DisplayName: Elderberry
-	Tooltip:
-		'''
-		Permanently increases maximum life by {0}
-		Can only be used once and requires the max amount of Life Fruits consumed
-		A tangy, tart flavor with a somewhat earthen touch
 		'''
 }
 
@@ -186,12 +166,32 @@ RedLightningContainer: {
 		'''
 }
 
+SanguineTangerine: {
+	DisplayName: Sanguine Tangerine
+	Tooltip:
+		'''
+		Permanently increases maximum life by {0}
+		Can only be used once and requires the max amount of Life Fruits consumed
+		It has a distinctly sweet flavor and a strong aroma
+		'''
+}
+
 StarlightFuelCell: {
 	DisplayName: Starlight Fuel Cell
 	Tooltip:
 		'''
 		Permanently increases Adrenaline Mode damage by 20% and damage reduction by 5%
 		Revengeance drop
+		'''
+}
+
+TaintedCloudberry: {
+	DisplayName: Tainted Cloudberry
+	Tooltip:
+		'''
+		Permanently increases maximum life by {0}
+		Can only be used once and requires the max amount of Life Fruits consumed
+		A tangy, tart flavor with a somewhat earthen touch
 		'''
 }
 

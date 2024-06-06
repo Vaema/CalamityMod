@@ -463,8 +463,8 @@ namespace CalamityMod.CalPlayer
         public bool pHeart = false;
         public bool cShard = false;
         public bool mFruit = false;
-        public bool bOrange = false;
-        public bool eBerry = false;
+        public bool sTangerine = false;
+        public bool tCloudberry = false;
         public bool dFruit = false;
         public bool revJamDrop = false;
         public bool rageBoostOne = false;
@@ -1268,8 +1268,8 @@ namespace CalamityMod.CalPlayer
             extraAccessoryML = false;
             eCore = false;
             mFruit = false;
-            bOrange = false;
-            eBerry = false;
+            sTangerine = false;
+            tCloudberry = false;
             dFruit = false;
             pHeart = false;
             cShard = false;
@@ -1320,8 +1320,8 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
-            boost.AddWithCondition("bloodOrange", bOrange);
-            boost.AddWithCondition("elderBerry", eBerry);
+            boost.AddWithCondition("sanguineTangerine", sTangerine);
+            boost.AddWithCondition("taintedCloudberry", tCloudberry);
             boost.AddWithCondition("dragonFruit", dFruit);
             boost.AddWithCondition("phantomHeart", pHeart);
             boost.AddWithCondition("cometShard", cShard);
@@ -1410,8 +1410,8 @@ namespace CalamityMod.CalPlayer
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
-            bOrange = boost.Contains("bloodOrange");
-            eBerry = boost.Contains("elderBerry");
+            sTangerine = boost.Contains("sanguineTangerine");
+            tCloudberry = boost.Contains("taintedCloudberry");
             dFruit = boost.Contains("dragonFruit");
             pHeart = boost.Contains("phantomHeart");
             cShard = boost.Contains("cometShard");
@@ -2246,9 +2246,9 @@ namespace CalamityMod.CalPlayer
         public override void ModifyMaxStats(out StatModifier health, out StatModifier mana)
         {
             health = StatModifier.Default;
-            health.Base = bOrange.ToInt() * BloodOrange.LifeBoost
+            health.Base = sTangerine.ToInt() * SanguineTangerine.LifeBoost
                         + mFruit.ToInt() * MiracleFruit.LifeBoost
-                        + eBerry.ToInt() * Elderberry.LifeBoost
+                        + tCloudberry.ToInt() * TaintedCloudberry.LifeBoost
                         + dFruit.ToInt() * Dragonfruit.LifeBoost;
 
             mana = StatModifier.Default;

@@ -231,8 +231,6 @@ namespace CalamityMod
             void EnemyRedirect(int item, string pageName) => wiki.Call(2, item, pageName);
 
             // Items
-            ItemRedirect(ItemType<BloodOrange>(), "Blood Orange (calamity)");
-            ItemRedirect(ItemType<Elderberry>(), "Elderberry (calamity)");
             ItemRedirect(ItemType<PineapplePet>(), "Pineapple (calamity)");
             ItemRedirect(ItemType<TrashmanTrashcan>(), "Trash Can (pet)");
             ItemRedirect(ItemType<SandstormGun>(), "Sandstorm (weapon)");
@@ -294,7 +292,6 @@ namespace CalamityMod
             ItemRedirect(ItemType<LoreYharon>(), loreItemPage);
 
             // Enemies
-            EnemyRedirect(NPCType<HiveEnemy>(), "Hive (enemy)");
             EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
             EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
             EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
@@ -743,7 +740,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection
                 });
             }
@@ -765,7 +762,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection,
                     ["customPortrait"] = portrait,
                     ["overrideHeadTextures"] = "CalamityMod/NPCs/StormWeaver/StormWeaverHead_Head_Boss"
@@ -783,7 +780,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection
                 });
             }

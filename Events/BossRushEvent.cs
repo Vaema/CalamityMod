@@ -326,7 +326,7 @@ namespace CalamityMod.Events
 
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
-                    SoundEngine.PlaySound(RuneofKos.CVSound, player.Center);
+                    SoundEngine.PlaySound(MarkofProvidence.CVSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, usesSpecialSound: true, permittedNPCs: ModContent.NPCType<DarkEnergy>()),
 
@@ -334,7 +334,7 @@ namespace CalamityMod.Events
                 {
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
-                    SoundEngine.PlaySound(RuneofKos.StormSound, player.Center);
+                    SoundEngine.PlaySound(MarkofProvidence.StormSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<StormWeaverBody>(), ModContent.NPCType<StormWeaverTail>(), }),
 
@@ -342,7 +342,7 @@ namespace CalamityMod.Events
                 {
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
-                    SoundEngine.PlaySound(RuneofKos.SignutSound, player.Center);
+                    SoundEngine.PlaySound(MarkofProvidence.SignutSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<CosmicLantern>(), ModContent.NPCType<CosmicMine>() }),
 

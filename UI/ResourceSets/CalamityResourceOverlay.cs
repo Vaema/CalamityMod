@@ -22,12 +22,12 @@ namespace CalamityMod.UI.ResourceSets
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
             if (modPlayer.dFruit)
                 return folder + "Dragonfruit";
-            if (modPlayer.eBerry)
-                return folder + "Elderberry";
+            if (modPlayer.tCloudberry)
+                return folder + "TaintedCloudberry";
             if (modPlayer.mFruit)
                 return folder + "MiracleFruit";
-            if (modPlayer.bOrange)
-                return folder + "BloodOrange";
+            if (modPlayer.sTangerine)
+                return folder + "SanguineTangerine";
             return string.Empty;
         }
 
