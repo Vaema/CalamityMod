@@ -780,7 +780,7 @@ namespace CalamityMod.CalPlayer
                 if (bloodflareMage && bloodflareMageCooldown <= 0 && crit)
                 {
                     bloodflareMageCooldown = 120;
-                    // Bloodflare Mage Fireballs: 3 x 50%, softcap starts at 500 base damage to not overly punish slow weapons
+                    // Bloodflare Mage Explosion: 50%, softcap starts at 500 base damage to not overly punish slow weapons
                     int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
 
                     int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
