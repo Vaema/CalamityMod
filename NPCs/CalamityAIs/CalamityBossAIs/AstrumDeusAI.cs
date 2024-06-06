@@ -410,7 +410,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.life = Main.npc[(int)npc.ai[1]].life;
             }
 
-            // marker
             bool hasJustSpawned = calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR && !doubleWormPhase;
             float segmentVelocity = hasJustSpawned ? 25f : deathModeEnragePhase_Head ? 19f : death ? 17.5f : 16f;
 
