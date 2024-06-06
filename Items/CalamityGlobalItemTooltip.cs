@@ -718,13 +718,13 @@ namespace CalamityMod.Items
 
             // Various mining speed nerfs
             if (item.type == ItemID.MiningPotion)
-                EditTooltipByNum(0, (line) => line.Text.Replace("25", "15"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25", "15"));
 
             if (item.type == ItemID.AncientChisel)
-                EditTooltipByNum(0, (line) => line.Text.Replace("25", "15"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25", "15"));
 
             if (item.type == ItemID.HandOfCreation)
-                EditTooltipByNum(0, (line) => line.Text.Replace("25", "15"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25", "15"));
 
             // Frozen Turtle Shell rebalance.
             if (item.type == ItemID.FrozenTurtleShell)
