@@ -696,7 +696,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1] = 5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    CalamityTargetingParameters options = new() { faceTarget = false };
+                    CalamityTargetingParameters options = CalamityTargetingParameters.Defaults;
+                    options.faceTarget = false;
                     CalamityUtils.CalamityTargeting(npc, options);
 
                     Point point3 = npc.Center.ToTileCoordinates();

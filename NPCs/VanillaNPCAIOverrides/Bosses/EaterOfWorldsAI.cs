@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             bool enrage = true;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
@@ -93,7 +93,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (Main.rand.NextBool(randomChanceLimit))
                     {
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                        
                         if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1) && Vector2.Distance(npc.Center, Main.player[npc.target].Center) > 320f)
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + npc.velocity.X), (int)(npc.Center.Y + npc.velocity.Y), NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
                     }
@@ -239,7 +240,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     CalamityGlobalNPC newCGN = npc.Calamity();
                     newCGN.newAI[1] = newAI1Holdover;
                     newCGN.debuffResistanceTimer = slowingDebuffResistTimer;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.netSpam = 0;
                     npc.alpha = 0;
@@ -260,7 +263,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.whoAmI = whoAmI;
                     npc.ai[1] = ai1Holdover;
                     npc.Calamity().debuffResistanceTimer = slowingDebuffResistTimer;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.netSpam = 0;
                     npc.alpha = 0;
@@ -756,7 +761,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (Main.rand.NextBool(num9))
                         {
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                            
                             if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + npc.velocity.X), (int)(npc.Center.Y + npc.velocity.Y), NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
                         }
@@ -768,7 +774,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     num10 += (int)((float)npc.life / (float)npc.lifeMax * 300f);
                     if (Main.rand.NextBool(num10))
                     {
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                        
                         if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + npc.velocity.X), (int)(npc.Center.Y + npc.velocity.Y), NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
                     }
@@ -778,7 +785,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.realLife = -1;
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if (Main.player[npc.target].dead)
                 npc.EncourageDespawn(300);
@@ -848,7 +855,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SetDefaultsKeepPlayerInteraction(npc.type);
                     npc.life = (int)((float)npc.lifeMax * num39);
                     npc.ai[0] = num40;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.whoAmI = num38;
                     npc.alpha = 0;
@@ -863,7 +872,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SetDefaultsKeepPlayerInteraction(npc.type);
                     npc.life = (int)((float)npc.lifeMax * num42);
                     npc.ai[1] = num43;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.whoAmI = num41;
                     npc.alpha = 0;
