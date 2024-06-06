@@ -1320,8 +1320,8 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
-            boost.AddWithCondition("sanguineTangerine", sTangerine);
-            boost.AddWithCondition("taintedCloudberry", tCloudberry);
+            boost.AddWithCondition("bloodOrange", sTangerine);
+            boost.AddWithCondition("elderBerry", tCloudberry);
             boost.AddWithCondition("dragonFruit", dFruit);
             boost.AddWithCondition("phantomHeart", pHeart);
             boost.AddWithCondition("cometShard", cShard);
@@ -1410,8 +1410,8 @@ namespace CalamityMod.CalPlayer
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
-            sTangerine = boost.Contains("sanguineTangerine");
-            tCloudberry = boost.Contains("taintedCloudberry");
+            sTangerine = boost.Contains("bloodOrange");
+            tCloudberry = boost.Contains("elderBerry");
             dFruit = boost.Contains("dragonFruit");
             pHeart = boost.Contains("phantomHeart");
             cShard = boost.Contains("cometShard");
