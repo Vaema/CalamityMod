@@ -99,7 +99,7 @@ BloodflareHeadMagic: {
 	SetBonus:
 		'''
 		Magic weapons fire ghostly bolts every 1.67 seconds
-		Magic critical strikes cause flame explosions every 2 seconds
+		Magic critical strikes cause blood explosions every 2 seconds
 		'''
 }
 
