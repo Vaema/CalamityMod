@@ -2863,7 +2863,7 @@ namespace CalamityMod.CalPlayer
                             Player.Teleport(teleportLocation, 1);
                             NetMessage.SendData(MessageID.TeleportEntity, -1, -1, null, 0, (float)Player.whoAmI, teleportLocation.X, teleportLocation.Y, 1, 0, 0);
 
-                            int duration = chaosStateDuration;
+                            int duration = areThereAnyDamnBosses ? chaosStateDuration : 360;
                             Player.AddBuff(BuffID.ChaosState, duration, true);
                             Player.AddCooldown(ChaosState.ID, duration, true, "spectralveil");
 
