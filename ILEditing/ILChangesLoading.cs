@@ -3,7 +3,6 @@ using System.Reflection;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
-using CalamityMod.Walls;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -171,14 +170,6 @@ namespace CalamityMod.ILEditing
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
             //Wulfrum armor hooks on Player.KeyDoubleTap and DrawPendingMouseText to activate its set bonus and spoof the mouse text to display the stats of the activated weapon if shift is held
             //HeldOnlyItem detours Player.dropItemCheck, ItemSlot.Draw (Sb, itemarray, int, int, vector2, color) and ItemSlot.LeftClick_ItemArray to make its stuff work
-        }
-
-        /// <summary>
-        /// Loads things which need to be instantiated later in the load order.
-        /// </summary>
-        public override void AddRecipes()
-        {
-            WallVisibleThroughWater.InitializeWaterMapEntryLookups();
         }
 
         /// <summary>
