@@ -8,9 +8,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class DaawnlightSpiritOrigin : ModItem, ILocalizedModType
+    public class DaawnlightSpiritOrigin : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public bool HidesNormalTooltip => true;
+        public bool HasFlavorTooltip => true;
+        public Color? FlavorTooltipColor => new(149, 28, 235); // #951CEB
+
         // "Despite the seemingly insane numbers here, I think this item might actually be underpowered"
         // hindsight: the item was not underpowered. Ozzatron 05NOV2021
         //

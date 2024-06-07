@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     // TODO -- this item includes a dodge accessory, Brain of Cthulhu
-    public class AmalgamatedBrain : ModItem, ILocalizedModType
+    public class AmalgamatedBrain : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()

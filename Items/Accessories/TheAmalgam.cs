@@ -1,5 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
@@ -14,7 +13,7 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Items.Accessories
 {
     // TODO -- this item includes a dodge accessory, Brain of Cthulhu
-    public class TheAmalgam : ModItem, ILocalizedModType
+    public class TheAmalgam : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()

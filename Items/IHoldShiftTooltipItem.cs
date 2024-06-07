@@ -24,9 +24,16 @@ namespace CalamityMod.Items
         internal const string FlavorTooltipID = "CalamityMod:FlavorTooltip";
         
         /// <summary>
-        /// The lang/localization key of the default tooltip extension indicator message.
+        /// The lang/localization key of the default tooltip extension indicator message.<br />
+        /// This key is used for items which don't replace their tooltips when holding SHIFT.
         /// </summary>
         public const string DefaultExtensionIndicatorKey = "UI.HoldShiftTooltipExtensionIndicator";
+
+        /// <summary>
+        /// The lang/localization key of the default tooltip replacement indicator message.<br />
+        /// This key is used for items which replace their tooltips entirely when holding SHIFT.
+        /// </summary>
+        public const string DefaultReplacementIndicatorKey = "UI.HoldShiftTooltipReplacementIndicator";
 
         /// <summary>
         /// The default color of the default tooltip extension indicator message.
@@ -59,7 +66,7 @@ namespace CalamityMod.Items
         /// <summary>
         /// The lang/localization key of this item's tooltip extension indicator message.
         /// </summary>
-        public virtual string ExtensionIndicatorKey => DefaultExtensionIndicatorKey;
+        public virtual string ExtensionIndicatorKey => HidesNormalTooltip ? DefaultReplacementIndicatorKey : DefaultExtensionIndicatorKey;
 
         /// <summary>
         /// The color of this item's tooltip extension indicator message. If set to <b>null</b>, the indicator will not be colored.
