@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -33,7 +34,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.CustomMergeFrame(i, j, Type, ModContent.TileType<RustedPipes>(), false, false, false);
+            TileFramingSystem.CustomMergeFrame(i, j, Type, ModContent.TileType<RustedPipes>(), false, false, false);
             return false;
         }
     }

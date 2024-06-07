@@ -433,8 +433,6 @@ namespace CalamityMod
             CooldownRegistry.Unload();
             PlayerDashManager.Unload();
 
-            TileFraming.Unload();
-
             Main.QueueMainThreadAction(() =>
             {
                 Main.OnPreDraw -= PrepareRenderTargets;

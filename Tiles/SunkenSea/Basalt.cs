@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -55,7 +56,7 @@ namespace CalamityMod.Tiles.SunkenSea
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
             // 02JUN2024: Ozzatron: unclear if this is the correct framing strategy for Basalt
-            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }

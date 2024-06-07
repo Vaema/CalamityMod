@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Walls;
+using CalamityMod.Systems;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -31,7 +32,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
             CreateRecipe().
                 AddIngredient(ItemID.Marble, 2).
                 AddIngredient(ItemID.Granite, 2).
-                AddRecipeGroup(CalamityRecipes.AnyGoldOre, 1).
+                AddRecipeGroup(RecipeSystem.AnyGoldOre, 1).
                 AddTile(TileID.WorkBenches).
                 Register();
             CreateRecipe().

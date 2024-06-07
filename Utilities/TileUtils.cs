@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
@@ -280,6 +281,13 @@ namespace CalamityMod
         public static bool TileActiveAndOfType(int x, int y, int type)
         {
             return ParanoidTileRetrieval(x, y).HasTile && ParanoidTileRetrieval(x, y).TileType == type;
+        }
+
+        // Extension shorthand for the Tile Framing System Universal Merges.
+        // As this must be defined in a static class, it's out here in CalamityUtils.
+        public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
+        {
+            TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
         }
 
         /// <summary>
