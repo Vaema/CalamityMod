@@ -20,8 +20,6 @@ namespace CalamityMod.Tiles.FurnitureMarnite
 
             Main.tileFrameImportant[Type] = true;
             Main.tileWaterDeath[Type] = false;
-            TileObjectData.newTile.Width = 2;
-            TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 18 };
             TileObjectData.newTile.CoordinatePadding = 2;
