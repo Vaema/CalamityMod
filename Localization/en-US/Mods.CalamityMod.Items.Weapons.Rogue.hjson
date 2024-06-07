@@ -775,9 +775,15 @@ NanoblackReaper: {
 		Unleashes a storm of nanoblack energy blades
 		Blades target bosses whenever possible
 		Stealth strikes cause the scythe to create a large amount of homing afterimages instead of energy blades
-		'She smothered them in Her hatred'
 		'''
-	HoldShiftTooltip: "'He who picks up the pen writes the script. She plans to never let go.'"
+	HoldShiftTooltip:
+		'''
+		'He who picks up the pen writes the script.
+		She has no intention of ever putting it down.
+		Her design eclipses your countable stars.
+		The gleam She exudes will put them all to shame.'
+		'''
+	FlavorTooltip: "'She smothered them in Her hatred.'"
 }
 
 NastyCholla: {

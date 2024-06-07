@@ -141,25 +141,22 @@ namespace CalamityMod.Items
                 tooltips.Insert(++lastTooltipIndex, line);
             }
 
-            // Generic support for any and all Hold SHIFT tooltips.
+            // Generic mechanical implementation of any and all Hold SHIFT tooltips.
             // For more information, see IHoldShiftTooltipItem.
+            //
+            // Original code lifted from Iban's extended armor tooltips.
             if (item.ModItem is IHoldShiftTooltipItem holdShiftItem)
             {
-                string dynamicKey = $"{Mod.Name}:{item.ModItem.Name}_HoldShift";
-                string lineText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
-                var line = new TooltipLine(Mod, dynamicKey, lineText);
-                if (holdShiftItem.TooltipExtensionColor is not null)
-                    line.OverrideColor = holdShiftItem.TooltipExtensionColor;
-                TooltipLine[] lines = { line };
-
-                //
-                // Original code lifted from Iban's extended armor tooltips.
-                //
                 bool holdingShift = Main.keyState.IsKeyDown(Keys.LeftShift);
 
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
                 {
+                    string holdShiftText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
+                    var holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
+                    if (holdShiftItem.TooltipExtensionColor is not null)
+                        holdShiftLine.OverrideColor = holdShiftItem.TooltipExtensionColor;
+
                     // If asked to, remove all standard tooltip lines. This moves the last tooltip index.
                     // This only occurs if the standard tooltip lines are ACTUALLY standard tooltips. Otherwise, don't remove anything!
                     if (holdShiftItem.HidesNormalTooltip && !noStandardTooltips)
@@ -168,8 +165,8 @@ namespace CalamityMod.Items
                         lastTooltipIndex -= standardTooltipCount;
                     }
 
-                    // Append every "Hold SHIFT" tooltip at the end of standard tooltips.
-                    tooltips.InsertRange(++lastTooltipIndex, lines);
+                    // Append the "Hold SHIFT" tooltip at the end of standard tooltips.
+                    tooltips.Insert(++lastTooltipIndex, holdShiftLine);
                 }
 
                 // If not holding SHIFT, display the extension indicator if appropriate.
@@ -179,7 +176,25 @@ namespace CalamityMod.Items
                     var indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
                     if (holdShiftItem.ExtensionIndicatorColor is not null)
                         indicator.OverrideColor = holdShiftItem.ExtensionIndicatorColor;
+
+                    // Append the extension indicator tooltip at the end of standard tooltips.
                     tooltips.Insert(++lastTooltipIndex, indicator);
+                }
+
+                // Generic support for flavor tooltips.
+                // This is only necessary on items with Hold SHIFT tooltips.
+                // The extended tooltip and tooltip extension indicator are placed above flavor tooltips for vanilla consistency.
+                //
+                // Flavor tooltips display unconditionally if defined. They are visible both when holding SHIFT and when not.
+                if (holdShiftItem.HasFlavorTooltip && holdShiftItem.FlavorTooltipKey is not null)
+                {
+                    string flavorText = item.ModItem.GetLocalizedValue(holdShiftItem.FlavorTooltipKey);
+                    var flavorLine = new TooltipLine(Mod, IHoldShiftTooltipItem.FlavorTooltipID, flavorText);
+                    if (holdShiftItem.FlavorTooltipColor is not null)
+                        flavorLine.OverrideColor = holdShiftItem.FlavorTooltipColor;
+
+                    // Append the flavor tooltip at the end of standard tooltips, after all Hold SHIFT tooltips and reminders.
+                    tooltips.Insert(++lastTooltipIndex, flavorLine);
                 }
             }
 
