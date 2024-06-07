@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTime = Item.useAnimation = useTime;
             Item.useTurn = true;
             Item.knockBack = 7f;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/TerratomereSwing") with { Volume = 0.3f, Pitch = 0.5f };
+            Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 swingRoatation *= -1;
                 swordDirection = player.direction;
             }
-            Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, mainColor * smearOpacity, Rot, Main.rand.NextFloat(1.75f, 1.8f), new Vector2(1, 1), 2, true, false, true, player.direction);
+            Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, mainColor * smearOpacity, Rot, Main.rand.NextFloat(1.95f, 2.2f), new Vector2(1, 1), 2, true, false, true, player.direction);
             GeneralParticleHandler.SpawnParticle(Smear);
 
             if (Main.rand.NextBool(3))

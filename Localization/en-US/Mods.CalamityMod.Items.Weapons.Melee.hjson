@@ -638,14 +638,7 @@ GrandGuardian: {
 
 GreatswordofJudgement: {
 	DisplayName: Greatsword of Judgement
-	Tooltip:
-		'''
-		Fires a white orb that emits white rain from where it dissipates for a time
-		A pale white sword from a forgotten land
-		You can hear faint yet comforting whispers emanating from the blade
-		'No matter where you may be you are never alone
-		I shall always be at your side, my lord'
-		'''
+	Tooltip: Fires a piercing energy wave that releases homing stars as it flies
 }
 
 Greentide: {
@@ -864,11 +857,9 @@ Orderbringer: {
 	DisplayName: Orderbringer
 	Tooltip:
 		'''
-		Fires a rainbow blade that emits rainbow rain from where it dissipated for a time
-		A pale white sword from a forgotten land
-		You can hear faint yet comforting whispers emanating from the blade
-		'No matter where you may be you are never alone
-		I shall always be at your side, my lord'
+Fires a piercing energy wave along with two blades from the sky and four homing stars that are created near your cursor
+Energy waves deal more damage as they pierce enemies
+		'No matter where you may be you are never alone'
 		'''
 }
 
