@@ -468,14 +468,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         destination.Normalize();
                         destination *= projectileVelocity;
                         int totalFireballsPerSide = 3;
-                        int totalFireballs = (turboEnrage && Main.getGoodWorld) ? 11 : masterMode ? 21 : 25;
+                        int totalIterations = (turboEnrage && Main.getGoodWorld) ? 11 : masterMode ? 21 : 25;
                         float rotation = MathHelper.ToRadians(90);
-                        for (int i = 0; i < totalFireballs; i++)
+                        for (int i = 0; i < totalIterations; i++)
                         {
                             // Spawn projectiles 0, 1, 2, 22, 23, and 24 (in non-master)
-                            if (i < totalFireballsPerSide || i >= totalFireballs - totalFireballsPerSide)
+                            if (i < totalFireballsPerSide || i >= totalIterations - totalFireballsPerSide)
                             {
-                                Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalFireballs - 1)));
+                                Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalIterations - 1)));
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.height / 2 * 0.8f) * npc.scale + Vector2.Normalize(perturbedSpeed) * (npc.width / 3) * npc.scale, perturbedSpeed, type, damage, 0f, Main.myPlayer);
                                 Main.projectile[proj].timeLeft = enrage ? 480 : 240;
                                 if (turboEnrage && Main.getGoodWorld)

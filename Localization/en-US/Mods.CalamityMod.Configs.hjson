@@ -158,6 +158,15 @@ CalamityConfig: {
 			'''
 	}
 
+	FasterRopeClimbSpeed: {
+		Label: "[i:Rope] Increase Rope Climb Speed"
+		Tooltip:
+			'''
+			Increases the player's rope climb speed substantially by increasing acceleration and deceleration while on a rope.
+			Calamity is balanced around this setting being enabled.
+			'''
+	}
+
 	FasterFallHotkey: {
 		Label: "[i:CalamityMod/BallAndChain] Enable Fast Falling"
 		Tooltip:

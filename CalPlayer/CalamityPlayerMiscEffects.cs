@@ -1137,6 +1137,74 @@ namespace CalamityMod.CalPlayer
                     Player.velocity.X *= 0.95f;
             }
 
+            // Increase Rope climb velocities, if enabled
+            if (CalamityConfig.Instance.FasterRopeClimbSpeed)
+            {
+                if (Player.pulley)
+                {
+                    int xPos = (int)(Player.position.X + (float)(Player.width / 2)) / 16;
+                    int yPos = (int)(Player.position.Y - 16f) / 16;
+                    int yPos2 = (int)(Player.position.Y - 8f) / 16;
+                    bool ropeAbove = true;
+                    bool onRope = false;
+                    if (WorldGen.IsRope(xPos, yPos2 - 1) || WorldGen.IsRope(xPos, yPos2 + 1))
+                        onRope = true;
+
+                    if (!WorldGen.IsRope(xPos, yPos))
+                    {
+                        ropeAbove = false;
+                        if (Player.velocity.Y < 0f)
+                            Player.velocity.Y = 0f;
+                    }
+
+                    if (onRope)
+                    {
+                        if (Player.controlUp && ropeAbove)
+                        {
+                            // Base multiplier is 0.7f
+                            // Add an additional multiplier of the same value to make it decelerate much faster
+                            if (Player.velocity.Y > 0f)
+                                Player.velocity.Y *= 0.7f;
+
+                            // Base acceleration values are 0.2f and 0.02f
+                            // New acceleration values are 0.2f + 0.2f (0.4f) before hitting -3f velocity and 0.02f + 0.18f (0.2f) after hitting -6f velocity
+                            if (Player.velocity.Y > -3f)
+                                Player.velocity.Y -= 0.2f;
+                            else
+                                Player.velocity.Y -= 0.18f;
+
+                            if (Player.velocity.Y < -8f)
+                                Player.velocity.Y = -8f;
+                        }
+                        else if (Player.controlDown)
+                        {
+                            // Base multiplier is 0.7f
+                            // Add an additional multiplier of the same value to make it decelerate much faster
+                            if (Player.velocity.Y < 0f)
+                                Player.velocity.Y *= 0.7f;
+
+                            // Base acceleration values are 0.2f and 0.1f
+                            // New acceleration values are 0.2f + 0.4f (0.6f) before hitting 3f velocity and 0.1f + 0.2f (0.3f) after hitting 3f velocity
+                            if (Player.velocity.Y < 3f)
+                                Player.velocity.Y += 0.4f;
+                            else
+                                Player.velocity.Y += 0.2f;
+
+                            if (Player.velocity.Y > Player.maxFallSpeed)
+                                Player.velocity.Y = Player.maxFallSpeed;
+                        }
+                        else if (Math.Abs(Player.velocity.Y) > 0f)
+                        {
+                            // Base multiplier is 0.7f
+                            // Add an additional multiplier of the same value to make it decelerate much faster
+                            Player.velocity.Y *= 0.7f;
+                            if (Math.Abs(Player.velocity.Y) < 0.1f)
+                                Player.velocity.Y = 0f;
+                        }
+                    }
+                }
+            }
+
             // Omega Blue Armor bonus
             if (omegaBlueSet)
             {
