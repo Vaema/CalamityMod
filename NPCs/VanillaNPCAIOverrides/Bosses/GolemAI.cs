@@ -454,31 +454,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        int totalFireballs = masterMode ? 7 : 5;
-                        if (turboEnrage && Main.getGoodWorld)
-                            totalFireballs *= 2;
+                        float projectileVelocity = masterMode ? 9f : 7.5f;
+                        if (death)
+                            projectileVelocity *= 1.25f;
+                        if (enrage)
+                            projectileVelocity *= 1.5f;
+                        if (turboEnrage)
+                            projectileVelocity *= 1.25f;
 
-                        int spawnX = npc.width / 2;
+                        int type = ProjectileID.Fireball;
+                        int damage = npc.GetProjectileDamage(type);
+                        Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
+                        destination.Normalize();
+                        destination *= projectileVelocity;
+                        int totalFireballsPerSide = 3;
+                        int totalFireballs = (turboEnrage && Main.getGoodWorld) ? 11 : masterMode ? 21 : 25;
+                        float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalFireballs; i++)
                         {
-                            Vector2 spawnVector = new Vector2(npc.Center.X + Main.rand.Next(-spawnX, spawnX), npc.Center.Y + npc.height / 2 * 0.8f);
-                            Vector2 velocity = new Vector2(Main.rand.NextBool() ? Main.rand.NextFloat(masterMode ? 7.5f : 6f, masterMode ? 10.5f : 9f) : Main.rand.NextFloat(masterMode ? -9.5f : -8f, masterMode ? -6.5f : -5f), Main.rand.NextFloat(-1.5f, 1.5f));
-
-                            if (death)
-                                velocity *= 1.25f;
-
-                            if (enrage)
-                                velocity *= 1.5f;
-
-                            if (turboEnrage)
-                                velocity *= 1.25f;
-
-                            int type = ProjectileID.Fireball;
-                            int damage = npc.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
-                            Main.projectile[proj].timeLeft = enrage ? 480 : 240;
-                            if (turboEnrage && Main.getGoodWorld)
-                                Main.projectile[proj].extraUpdates += 1;
+                            // Spawn projectiles 0, 1, 2, 22, 23, and 24 (in non-master)
+                            if (i < totalFireballsPerSide || i >= totalFireballs - totalFireballsPerSide)
+                            {
+                                Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalFireballs - 1)));
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.height / 2 * 0.8f) * npc.scale + Vector2.Normalize(perturbedSpeed) * (npc.width / 3) * npc.scale, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                Main.projectile[proj].timeLeft = enrage ? 480 : 240;
+                                if (turboEnrage && Main.getGoodWorld)
+                                    Main.projectile[proj].extraUpdates += 1;
+                            }
                         }
 
                         npc.netUpdate = true;
@@ -1065,7 +1067,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[1] = 0f;
 
-                    float fireballSpeedFistsDed = turboEnrage ? 32f : enrage ? 24f : 12f;
+                    float fireballSpeedFistsDed = turboEnrage ? 28f : enrage ? 21f : 10.5f;
                     float fireballFistsDedTargetX = Main.player[npc.target].Center.X - projectileFirePos.X;
                     float fireballFistsDedTargetY = Main.player[npc.target].Center.Y - projectileFirePos.Y;
                     float fireballFistsDedTargetDist = (float)Math.Sqrt(fireballFistsDedTargetX * fireballFistsDedTargetX + fireballFistsDedTargetY * fireballFistsDedTargetY);
