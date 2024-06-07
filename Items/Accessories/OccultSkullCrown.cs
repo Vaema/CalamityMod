@@ -35,6 +35,7 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
+            Item.SetRevExclusive();
         }
 
         public override void UpdateEquip(Player player)

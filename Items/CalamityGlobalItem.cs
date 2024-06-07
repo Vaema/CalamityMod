@@ -79,6 +79,7 @@ namespace CalamityMod.Items
         #endregion
 
         // Miscellaneous stuff
+        public bool revengeanceItem = false;
         public bool donorItem = false;
         public bool devItem = false;
         public bool canFirePointBlankShots = false;
@@ -118,6 +119,7 @@ namespace CalamityMod.Items
             myClone.DischargeEnchantExhaustion = DischargeEnchantExhaustion;
 
             // Miscellaneous
+            myClone.revengeanceItem = revengeanceItem;
             myClone.donorItem = donorItem;
             myClone.devItem = devItem;
             myClone.canFirePointBlankShots = canFirePointBlankShots;

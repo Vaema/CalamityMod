@@ -618,3 +618,6 @@ Roxcalibur: I wanna rock
 // Hold Shift tooltip default
 HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more
 HoldShiftTooltipReplacementIndicator: Hold "Left Shift" for details
+// Dev and Donor Items
+DevItemTooltip: - Dev Item -
+DonorItemTooltip: - Donor Item -

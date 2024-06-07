@@ -913,11 +913,7 @@ HarpyRing: {
 
 HeartofDarkness: {
 	DisplayName: Heart of Darkness
-	Tooltip:
-		'''
-		You constantly gain rage over time, and rage does not fade away when out of combat
-		Revengeance drop
-		'''
+	Tooltip: You constantly gain rage over time, and rage does not fade away when out of combat
 }
 
 HeartoftheElements: {
@@ -1001,11 +997,7 @@ JellyChargedBattery: {
 
 Laudanum: {
 	DisplayName: Laudanum
-	Tooltip:
-		'''
-		Converts certain debuffs into buffs and extends their durations
-		Revengeance drop
-		'''
+	Tooltip: Converts certain debuffs into buffs and extends their durations
 	HoldShiftTooltip:
 		'''
 		  Debuffs affected: Darkness, Blackout, Confused, Slow, Weak,
@@ -1175,7 +1167,6 @@ OccultSkullCrown: {
 		Converts certain debuffs into buffs and extends their durations
 		Adrenaline charges 20% faster
 		Increases your max movement speed and acceleration by 5%
-		Revengeance item
 		'''
 	HoldShiftTooltip:
 		'''
@@ -1751,7 +1742,6 @@ StressPills: {
 		'''
 		Adrenaline charges 20% faster
 		Increases your max movement speed and acceleration by 5%
-		Revengeance drop
 		'''
 }
 

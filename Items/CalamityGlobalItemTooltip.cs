@@ -34,7 +34,7 @@ namespace CalamityMod.Items
         /// When this line is not present, Calamity needs to insert tooltips in an <i>equivalent</i> position.<br />
         /// The best way to do this is to iterate backwards through all possible vanilla tooltip lines and pick the first one that is present.
         /// </summary>
-        private static string[] BackupTooltipInsertionLineNames =
+        private static string[] MainTooltipBackupInsertionPositions =
         {
             "Material",
             "Consumable",
@@ -58,7 +58,36 @@ namespace CalamityMod.Items
             "Knockback",
             "NoTransfer",
             "FavoriteDesc",
-            "ItemName"
+            "ItemName",
+        };
+
+        /// <summary>
+        /// This array contains (almost) every single vanilla tooltip in reverse order starting at "Expert" and ending at "Tooltip0".<br />
+        /// Because "Tooltip0" is the first typical tooltip line, this is the earliest conceivable place where a "Revengeance" marker can be inserted.<br />
+        /// Since none of these tooltip lines are guaranteed to exist, Calamity needs to iterate through all of them to find a suitable insertion point.<br />
+        /// The best way to do this is to iterate backwards through all possible vanilla tooltip lines and pick the first one that is present.
+        /// </summary>
+        private static string[] RevTooltipInsertionPositions =
+        {
+            "Expert",
+            "SetBonus",
+            "PrefixAccMeleeSpeed",
+            "PrefixAccMoveSpeed",
+            "PrefixAccDamage",
+            "PrefixAccCritChance",
+            "PrefixAccMaxMana",
+            "PrefixAccDefense",
+            "PrefixKnockback",
+            "PrefixShootSpeed",
+            "PrefixSize",
+            "PrefixUseMana",
+            "PrefixCritChance",
+            "PrefixSpeed",
+            "PrefixDamage",
+            "OneDropLogo",
+            "BuffTime",
+            "WellFedExpert",
+            "EtherianManaWarning",
         };
         #endregion
 
@@ -90,7 +119,7 @@ namespace CalamityMod.Items
             if (firstTooltipIndex == -1)
             {
                 noStandardTooltips = true;
-                foreach (string lineName in BackupTooltipInsertionLineNames)
+                foreach (string lineName in MainTooltipBackupInsertionPositions)
                 {
                     int idx = tooltips.FindIndex((line) => line.Name == lineName);
                     if (idx != -1)
@@ -112,7 +141,7 @@ namespace CalamityMod.Items
             // Adds "Does extra damage to enemies shot at point-blank range" to weapons capable of it.
             if (canFirePointBlankShots)
             {
-                var lineText = CalamityUtils.GetText("Misc.PointBlank");
+                LocalizedText lineText = CalamityUtils.GetText("Misc.PointBlank");
                 TooltipLine line = new TooltipLine(Mod, "CalamityMod:PointBlankTooltip", lineText.Value);
                 tooltips.Insert(++lastTooltipIndex, line);
             }
@@ -153,7 +182,7 @@ namespace CalamityMod.Items
                 if (holdingShift && firstTooltipIndex != -1)
                 {
                     string holdShiftText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
-                    var holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
+                    TooltipLine holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
                     if (holdShiftItem.TooltipExtensionColor is not null)
                         holdShiftLine.OverrideColor = holdShiftItem.TooltipExtensionColor;
 
@@ -173,7 +202,7 @@ namespace CalamityMod.Items
                 if (!holdingShift && holdShiftItem.ShowExtensionIndicator)
                 {
                     LocalizedText indicatorText = CalamityUtils.GetText(holdShiftItem.ExtensionIndicatorKey);
-                    var indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
+                    TooltipLine indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
                     if (holdShiftItem.ExtensionIndicatorColor is not null)
                         indicator.OverrideColor = holdShiftItem.ExtensionIndicatorColor;
 
@@ -189,7 +218,7 @@ namespace CalamityMod.Items
                 if (holdShiftItem.HasFlavorTooltip && holdShiftItem.FlavorTooltipKey is not null)
                 {
                     string flavorText = item.ModItem.GetLocalizedValue(holdShiftItem.FlavorTooltipKey);
-                    var flavorLine = new TooltipLine(Mod, IHoldShiftTooltipItem.FlavorTooltipID, flavorText);
+                    TooltipLine flavorLine = new TooltipLine(Mod, IHoldShiftTooltipItem.FlavorTooltipID, flavorText);
                     if (holdShiftItem.FlavorTooltipColor is not null)
                         flavorLine.OverrideColor = holdShiftItem.FlavorTooltipColor;
 
@@ -198,17 +227,49 @@ namespace CalamityMod.Items
                 }
             }
 
+            //
+            // "Late" tooltips are all inserted after vanilla's "Expert" and "Master" markers.
+            //
+
+            // The best possible position is identified using a separate backwards search.
+            int difficultyTooltipIdx = -1;
+            foreach (string lineName in RevTooltipInsertionPositions)
+            {
+                int idx = tooltips.FindIndex((line) => line.Name == lineName);
+                if (idx != -1)
+                {
+                    difficultyTooltipIdx = idx;
+                    break;
+                }
+            }
+
+            // If the backwards search fails, it defaults to the last known tooltip index from the previous search.
+            if (difficultyTooltipIdx == -1)
+                difficultyTooltipIdx = lastTooltipIndex;
+
+            // Adds "Revengeance" to all items which are Revengeance exclusive, like how vanilla does it for Expert and Master items.
+            if (revengeanceItem)
+            {
+                LocalizedText revText = CalamityUtils.GetText("UI.Revengeance");
+                TooltipLine revLine = new TooltipLine(Mod, "CalamityMod:RevengeanceItem", revText.Value);
+                tooltips.Insert(++difficultyTooltipIdx, revLine);
+            }
+
             // Adds "Donor Item" and "Developer Item" to donor items and developer items respectively.
             // This is intentionally at the bottom, below everything else.
             if (devItem)
             {
-                TooltipLine line = new TooltipLine(Mod, "CalamityDev", CalamityUtils.ColorMessage("- Developer Item -", CalamityUtils.DevItemColor));
-                tooltips.Add(line);
+                LocalizedText devText = CalamityUtils.GetText("UI.DevItemTooltip");
+                string coloredText = CalamityUtils.ColorMessage(devText.Value, CalamityUtils.DonatorItemColor);
+                TooltipLine devLine = new TooltipLine(Mod, "CalamityMod:DevItem", coloredText);
+                tooltips.Insert(++difficultyTooltipIdx, devLine);
             }
             else if (donorItem)
             {
-                TooltipLine line = new TooltipLine(Mod, "CalamityDonor", CalamityUtils.ColorMessage("- Donor Item -", CalamityUtils.DonatorItemColor));
-                tooltips.Add(line);
+                LocalizedText donorText = CalamityUtils.GetText("UI.DonorItemTooltip");
+                string coloredText = CalamityUtils.ColorMessage(donorText.Value, CalamityUtils.DonatorItemColor);
+                TooltipLine donorLine = new TooltipLine(Mod, "CalamityMod:DonorItem", coloredText);
+                tooltips.Insert(++difficultyTooltipIdx, donorLine);
             }
         }
         #endregion
