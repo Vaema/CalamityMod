@@ -410,7 +410,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.life = Main.npc[(int)npc.ai[1]].life;
             }
 
-            float segmentVelocity = deathModeEnragePhase_Head ? 19f : death ? 17.5f : 16f;
+            bool hasJustSpawned = calamityGlobalNPC.newAI[1] < resistanceTime * 0.4f && !doubleWormPhase; // Speed boost for the first 4 seconds after spawning
+            float segmentVelocity = hasJustSpawned ? 25f : deathModeEnragePhase_Head ? 19f : death ? 17.5f : 16f;
 
             float segmentVelocityBoost = 5f * (1f - lifeRatio);
             segmentVelocity += segmentVelocityBoost;
@@ -530,8 +531,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 // Speed and movement
                 float speedBoost = death ? (0.1f * (1f - lifeRatio)) : (0.13f * (1f - lifeRatio));
                 float turnSpeedBoost = death ? (0.18f * (1f - lifeRatio)) : (0.2f * (1f - lifeRatio));
-                float speed = (deathModeEnragePhase_Head ? 0.2f : death ? 0.18f : 0.13f) + speedBoost;
-                float turnSpeed = (deathModeEnragePhase_Head ? 0.27f : death ? 0.25f : 0.2f) + turnSpeedBoost;
+                float speed = (hasJustSpawned ? 0.26f : deathModeEnragePhase_Head ? 0.2f : death ? 0.18f : 0.13f) + speedBoost;
+                float turnSpeed = (hasJustSpawned ? 0.3f : deathModeEnragePhase_Head ? 0.27f : death ? 0.25f : 0.2f) + turnSpeedBoost;
                 speed += 0.05f * enrageScale;
                 turnSpeed += 0.08f * enrageScale;
 

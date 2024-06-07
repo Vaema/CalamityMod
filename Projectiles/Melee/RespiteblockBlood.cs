@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false; // Because it has a large hitbox it has custom tile kill
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.timeLeft = 900;
             Projectile.extraUpdates = 7;
             Projectile.usesLocalNPCImmunity = true;

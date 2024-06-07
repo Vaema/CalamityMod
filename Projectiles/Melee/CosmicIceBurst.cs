@@ -117,7 +117,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Frostburn, 180);
             target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }

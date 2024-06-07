@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using CalamityMod.Systems;
 
 namespace CalamityMod.Tiles.Abyss
 {
@@ -48,7 +49,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }

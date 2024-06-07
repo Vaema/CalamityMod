@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -94,7 +95,7 @@ namespace CalamityMod.Tiles.Ores
             Color drawColour = GetDrawColour(i, j, new Color(225, 255, 255, 255));
             Tile trackTile = Main.tile[i, j];
             double num6 = Main.time * 0.08;
-            TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

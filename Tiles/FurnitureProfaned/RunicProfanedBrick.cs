@@ -1,5 +1,6 @@
 ﻿
 using CalamityMod.Dusts.Furniture;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -55,7 +56,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             Color drawColour = GetDrawColour(i, j, new Color(128, 128, 128, 128));
             Tile trackTile = Main.tile[i, j];
 
-            TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

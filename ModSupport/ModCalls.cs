@@ -1001,7 +1001,7 @@ namespace CalamityMod
                 "SanguineTangerine" => player.Calamity().sTangerine,
                 "MiracleFruit" => player.Calamity().mFruit,
                 "TaintedCloudberry" => player.Calamity().tCloudberry,
-                "Dragonfruit" => player.Calamity().dFruit,
+                "SacredStrawberry" => player.Calamity().sStrawberry,
 
                 "CometShard" => player.Calamity().cShard,
                 "EtherealCore" => player.Calamity().eCore,
@@ -1030,7 +1030,7 @@ namespace CalamityMod
                 case "SanguineTangerine": player.Calamity().sTangerine = value; break;
                 case "MiracleFruit": player.Calamity().mFruit = value; break;
                 case "TaintedCloudberry": player.Calamity().tCloudberry = value; break;
-                case "Dragonfruit": player.Calamity().dFruit = value; break;
+                case "SacredStrawberry": player.Calamity().sStrawberry = value; break;
 
                 case "CometShard": player.Calamity().cShard = value; break;
                 case "EtherealCore": player.Calamity().eCore = value; break;

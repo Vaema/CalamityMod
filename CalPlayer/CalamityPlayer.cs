@@ -465,7 +465,7 @@ namespace CalamityMod.CalPlayer
         public bool mFruit = false;
         public bool sTangerine = false;
         public bool tCloudberry = false;
-        public bool dFruit = false;
+        public bool sStrawberry = false;
         public bool revJamDrop = false;
         public bool rageBoostOne = false;
         public bool rageBoostTwo = false;
@@ -1270,7 +1270,7 @@ namespace CalamityMod.CalPlayer
             mFruit = false;
             sTangerine = false;
             tCloudberry = false;
-            dFruit = false;
+            sStrawberry = false;
             pHeart = false;
             cShard = false;
             revJamDrop = false;
@@ -1322,7 +1322,7 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("miracleFruit", mFruit);
             boost.AddWithCondition("bloodOrange", sTangerine);
             boost.AddWithCondition("elderBerry", tCloudberry);
-            boost.AddWithCondition("dragonFruit", dFruit);
+            boost.AddWithCondition("dragonFruit", sStrawberry);
             boost.AddWithCondition("phantomHeart", pHeart);
             boost.AddWithCondition("cometShard", cShard);
             boost.AddWithCondition("revJam", revJamDrop);
@@ -1412,7 +1412,7 @@ namespace CalamityMod.CalPlayer
             mFruit = boost.Contains("miracleFruit");
             sTangerine = boost.Contains("bloodOrange");
             tCloudberry = boost.Contains("elderBerry");
-            dFruit = boost.Contains("dragonFruit");
+            sStrawberry = boost.Contains("dragonFruit");
             pHeart = boost.Contains("phantomHeart");
             cShard = boost.Contains("cometShard");
             revJamDrop = boost.Contains("revJam");
@@ -2249,7 +2249,7 @@ namespace CalamityMod.CalPlayer
             health.Base = sTangerine.ToInt() * SanguineTangerine.LifeBoost
                         + mFruit.ToInt() * MiracleFruit.LifeBoost
                         + tCloudberry.ToInt() * TaintedCloudberry.LifeBoost
-                        + dFruit.ToInt() * Dragonfruit.LifeBoost;
+                        + sStrawberry.ToInt() * SacredStrawberry.LifeBoost;
 
             mana = StatModifier.Default;
             mana.Base = cShard.ToInt() * CometShard.ManaBoost
@@ -2863,7 +2863,7 @@ namespace CalamityMod.CalPlayer
                             Player.Teleport(teleportLocation, 1);
                             NetMessage.SendData(MessageID.TeleportEntity, -1, -1, null, 0, (float)Player.whoAmI, teleportLocation.X, teleportLocation.Y, 1, 0, 0);
 
-                            int duration = chaosStateDuration;
+                            int duration = areThereAnyDamnBosses ? chaosStateDuration : 360;
                             Player.AddBuff(BuffID.ChaosState, duration, true);
                             Player.AddCooldown(ChaosState.ID, duration, true, "spectralveil");
 
@@ -3698,6 +3698,33 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
+            // PostUpdateMiscEffects runs after the cap has been applied. Do NOT put mining speed stuff there.
+            // Ancient Chisel nerf (also affects Hand of Creation)
+            if (Player.chiselSpeed)
+                Player.pickSpeed += 0.1f;
+
+            if (oceanCrest)
+            {
+                bool surface = Player.Center.Y < Main.worldSurface * 16.0;
+                bool GetEffects = ((Main.raining && surface) || Player.dripping || (Player.wet && !Player.lavaWet && !Player.honeyWet));
+                if (GetEffects)
+                {
+                    if (oceanCrestTimer < 300)
+                        oceanCrestTimer += 5;
+                    if (Player.StandingStill(0.1f) && !ZoneAbyss && Player.breath < 201 && Player.miscCounter % 2 == 0)
+                        Player.breath += 1;
+                }
+                else
+                    if (oceanCrestTimer > 0)
+                    oceanCrestTimer--;
+
+                if (oceanCrestTimer > 0 || GetEffects)
+                    Player.pickSpeed -= 0.15f; // 15% mining speed
+
+                Vector3 Light = new Vector3(0.090f, 0.180f, 0.200f);
+                Lighting.AddLight(Player.Center, Light * (0.55f + (oceanCrestTimer * 0.0035f)));
+            }
+
             // True melee damage from various vanilla equipment placed here.
 
             // Titan Glove and ALL upgrades.

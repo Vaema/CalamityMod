@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Ores;
+﻿using CalamityMod.Systems;
+using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -39,7 +40,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
             Tile trackTile = Main.tile[i, j];
             double num6 = Main.time * 0.08;
 
-            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)
@@ -56,7 +57,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
         }
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }

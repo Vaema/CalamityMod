@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
-    public class Dragonfruit : ModItem, ILocalizedModType
+    [LegacyName("Dragonfruit")]
+    public class SacredStrawberry : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
 
@@ -47,16 +48,16 @@ namespace CalamityMod.Items.PermanentBoosters
             if (player.itemAnimation > 0 && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
-                if (modPlayer.dFruit)
+                if (modPlayer.sStrawberry)
                 {
-                    string key = "Mods.CalamityMod.Misc.DragonfruitText";
+                    string key = "Mods.CalamityMod.Misc.SacredStrawberryText";
                     Color messageColor = Color.SpringGreen;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                     return false;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);
-                modPlayer.dFruit = true;
+                modPlayer.sStrawberry = true;
             }
             return true;
         }
@@ -65,7 +66,7 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
 
-            if (line != null && Main.LocalPlayer.Calamity().dFruit)
+            if (line != null && Main.LocalPlayer.Calamity().sStrawberry)
                 line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
         }
 

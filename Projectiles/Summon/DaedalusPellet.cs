@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.alpha = Utils.Clamp(Projectile.alpha - 50, 0, 255);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 180);
 
         public override Color? GetAlpha(Color lightColor)
         {

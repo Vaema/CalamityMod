@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
@@ -7,7 +6,6 @@ using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FurnitureAshen;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
@@ -18,12 +16,34 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod
+namespace CalamityMod.Systems
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    // OnModLoad is guaranteed to be run after all content has autoloaded.
-    public static class TileFraming
+    public class TileFramingSystem : ModSystem
     {
+        // This enum is intentionally not visible to the remainder of the codebase. It is only used here.
+        #region Similarity Enum
+        private enum Similarity
+        {
+            Same,
+            MergeLink,
+            None
+        }
+
+        private static Similarity GetSimilarity(Tile check, int myType, int mergeType)
+        {
+            if (!check.HasTile)
+                return Similarity.None;
+
+            if (check.TileType == myType || Main.tileMerge[myType][check.TileType])
+                return Similarity.Same;
+            else if (check.TileType == mergeType)
+                return Similarity.MergeLink;
+
+            return Similarity.None;
+        }
+        #endregion
+
+        #region Merge Frame Data
         public sealed class MergeFrameData
         {
             public byte[,] AdjacencyData { get; }
@@ -47,43 +67,80 @@ namespace CalamityMod
                 {
                     blendSheet = cachedBlendSheets[blendSheetPath] = ModContent.Request<Texture2D>(blendSheetPath);
                 }
-                
+
                 BlendSheet = blendSheet;
             }
         }
-        
-        private static int[][] PlantCheckAgainst;
-        private static Dictionary<ushort, ushort> VineToGrass;
+        #endregion
 
-        // CONSIDER -- This is a triangle array, but does it need to be? Main.tileMerge is a triangle array as well
-        public static bool[][] tileMergeTypes;
-
-        private static Dictionary<string, Asset<Texture2D>> cachedBlendSheets = new();
-
-        #region Similarity Enum
-        private enum Similarity
+        // This tiny GlobalTile exists for two purposes:
+        // 1 - Ensure merge data is loaded and cached
+        // 2 - Properly and automatically render merges in all cases for all tiles
+        #region Sealed Global Tile
+        private sealed class MergeableTileGlobalTile : GlobalTile
         {
-            Same,
-            MergeLink,
-            None
-        }
+            public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
+            {
+                DrawUniversalMergeFrames(i, j, GetOrCreateTileAdjacencies(type));
+            }
 
-        private static Similarity GetSimilarity(Tile check, int myType, int mergeType)
-        {
-            if (!check.HasTile)
-                return Similarity.None;
+            public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
+            {
+                // Custom plant framing
+                for (int k = 0; k < PlantTypes.Length; k++)
+                    if (type == PlantTypes[k])
+                    {
+                        PlantFrame(i, j);
+                        return false;
+                    }
 
-            if (check.TileType == myType || Main.tileMerge[myType][check.TileType])
-                return Similarity.Same;
-            else if (check.TileType == mergeType)
-                return Similarity.MergeLink;
+                // Custom vine framing
+                if (type == TileID.Vines || type == TileID.CrimsonVines || type == TileID.HallowedVines || type == ModContent.TileType<AstralVines>())
+                    VineFrame(i, j);
 
-            return Similarity.None;
+                foreach (var adjacency in GetOrCreateTileAdjacencies(type))
+                    GetAdjacencyData(i, j, adjacency);
+
+                return base.TileFrame(i, j, type, ref resetFrame, ref noBreak);
+            }
         }
         #endregion
 
-        #region Load/Unload
-        internal static void Load()
+        // CONSIDER -- This is a triangle array, but does it need to be? Main.tileMerge is a triangle array as well
+        public static bool[][] tileMergeTypes;
+        private static Dictionary<int, List<MergeFrameData>> tileAdjacencyMap = [];
+        private static Dictionary<string, Asset<Texture2D>> cachedBlendSheets = [];
+
+        #region Plant Stuff
+        private static ushort[] PlantTypes = new ushort[]
+        {
+            TileID.Plants,
+            TileID.CorruptPlants,
+            TileID.JunglePlants,
+            TileID.MushroomPlants,
+            TileID.Plants2,
+            TileID.JunglePlants2,
+            TileID.HallowedPlants,
+            TileID.HallowedPlants2,
+            TileID.CrimsonPlants,
+            (ushort)ModContent.TileType<AstralShortPlants>(),
+            (ushort)ModContent.TileType<AstralTallPlants>(),
+            (ushort)ModContent.TileType<LavaPistil>(),
+            (ushort)ModContent.TileType<CinderBlossomTallPlants>(),
+            (ushort)ModContent.TileType<SulphurTentacleCorals>(),
+            (ushort)ModContent.TileType<AbyssKelp>(),
+            (ushort)ModContent.TileType<TenebrisRemnant>(),
+            (ushort)ModContent.TileType<PhoviamareHalm>(),
+            (ushort)ModContent.TileType<SmallCorals>(),
+        };
+        private static int[][] PlantCheckAgainst;
+        private static Dictionary<ushort, ushort> VineToGrass;
+        #endregion
+
+        #region ModSystem Hooks (Load / Unload)
+
+        // All tiles from all mods are guaranteed to be loaded by the execution time of this hook.
+        public override void PostAddRecipes()
         {
             PlantCheckAgainst = new int[TileLoader.TileCount][];
             PlantCheckAgainst[TileID.Plants] = new int[3] { TileID.Grass, TileID.PlanterBox, TileID.ClayPot };
@@ -114,7 +171,7 @@ namespace CalamityMod
             };
 
             tileMergeTypes = new bool[TileLoader.TileCount][];
-            for (int i = 0; i < tileMergeTypes.Length; ++i)
+            for (var i = 0; i < tileMergeTypes.Length; ++i)
                 tileMergeTypes[i] = new bool[TileLoader.TileCount];
             tileMergeTypes[ModContent.TileType<AstralDirt>()][ModContent.TileType<AstralOre>()] = true;
             tileMergeTypes[ModContent.TileType<AstralDirt>()][ModContent.TileType<AstralStone>()] = true;
@@ -140,38 +197,54 @@ namespace CalamityMod
             tileMergeTypes[ModContent.TileType<SulphurousSandstone>()][ModContent.TileType<SulphurousSand>()] = true;
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             PlantCheckAgainst = null;
+
             VineToGrass?.Clear();
             VineToGrass = null;
+
             tileMergeTypes = null;
+
+            tileAdjacencyMap?.Clear();
+            tileAdjacencyMap = null;
+
+            cachedBlendSheets?.Clear();
+            cachedBlendSheets = null;
         }
         #endregion
 
         #region Framing Helpers
         private static bool GetMerge(Tile myTile, Tile mergeTile)
         {
-            return mergeTile.HasTile && (mergeTile.TileType == myTile.TileType || Main.tileMerge[myTile.TileType][mergeTile.TileType]);
+            if (!mergeTile.HasTile)
+                return false;
+            int myTileID = myTile.TileType;
+            int otherTileID = mergeTile.TileType;
+            return myTileID == otherTileID || Main.tileMerge[myTileID][otherTileID];
         }
 
         private static bool GetBlendSpecific(Tile myTile, Tile mergeTile, int blendType, bool includeSame)
         {
-            return mergeTile.HasTile && (mergeTile.TileType == blendType || (mergeTile.TileType == myTile.TileType && includeSame));
+            if (!mergeTile.HasTile)
+                return false;
+            int myTileID = myTile.TileType;
+            int otherTileID = mergeTile.TileType;
+            return otherTileID == blendType || includeSame && myTileID == otherTileID;
         }
 
         private static void GetAdjacentTiles(int x, int y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight)
         {
             // These all get null checked in the GetMerge function
-            Tile tile = Main.tile[x, y];
-            Tile north = Main.tile[x, y - 1];
-            Tile south = Main.tile[x, y + 1];
-            Tile west = Main.tile[x - 1, y];
-            Tile east = Main.tile[x + 1, y];
-            Tile southwest = Main.tile[x - 1, y + 1];
-            Tile southeast = Main.tile[x + 1, y + 1];
-            Tile northwest = Main.tile[x - 1, y - 1];
-            Tile northeast = Main.tile[x + 1, y - 1];
+            var tile = Main.tile[x, y];
+            var north = Main.tile[x, y - 1];
+            var south = Main.tile[x, y + 1];
+            var west = Main.tile[x - 1, y];
+            var east = Main.tile[x + 1, y];
+            var southwest = Main.tile[x - 1, y + 1];
+            var southeast = Main.tile[x + 1, y + 1];
+            var northwest = Main.tile[x - 1, y - 1];
+            var northeast = Main.tile[x + 1, y - 1];
 
             left = false;
             right = false;
@@ -202,7 +275,7 @@ namespace CalamityMod
 
         private static void SetFrameAt(int x, int y, int frameX, int frameY)
         {
-            Tile tile = Main.tile[x, y];
+            var tile = Main.tile[x, y];
             if (tile != null)
             {
                 tile.TileFrameX = (short)frameX;
@@ -218,8 +291,8 @@ namespace CalamityMod
                 return;
             if (y < 0 || y >= Main.maxTilesY)
                 return;
-            Tile tile = Main.tile[x, y];
-            int checkType = -1;
+            var tile = Main.tile[x, y];
+            var checkType = -1;
             int plantType = tile.TileType;
 
             // If the tile below is off the bottom of the map, then assume it's the same tile type.
@@ -227,7 +300,7 @@ namespace CalamityMod
                 checkType = plantType;
             else
             {
-                Tile below = Main.tile[x, y + 1];
+                var below = Main.tile[x, y + 1];
                 if (below != null && below.HasUnactuatedTile && !below.IsHalfBlock && below.Slope == 0)
                     checkType = below.TileType;
             }
@@ -238,7 +311,7 @@ namespace CalamityMod
                 if (PlantCheckAgainst[plant] is null)
                     return false;
 
-                for (int i = 0; i < PlantCheckAgainst[plant].Length; ++i)
+                for (var i = 0; i < PlantCheckAgainst[plant].Length; ++i)
                 {
                     if (PlantCheckAgainst[plant][i] == check)
                         return false;
@@ -293,7 +366,7 @@ namespace CalamityMod
             // Astral grass and plant behavior
             else if (checkType == ModContent.TileType<AstralGrass>())
             {
-                bool isShortPlant = plantType == TileID.Plants ||
+                var isShortPlant = plantType == TileID.Plants ||
                     plantType == TileID.CorruptPlants ||
                     plantType == TileID.CrimsonPlants ||
                     plantType == TileID.HallowedPlants ||
@@ -316,18 +389,18 @@ namespace CalamityMod
             if (y < 0 || y >= Main.maxTilesY)
                 return;
 
-            Tile tile = Main.tile[x, y];
+            var tile = Main.tile[x, y];
             int myType = tile.TileType;
 
             // Get the type of the tile above this vine. If that tile doesn't exist, just assume it's another vine.
-            Tile north = y <= 0 ? default : Main.tile[x, y - 1];
-            int northType = north == default(Tile) ? myType : (!north.HasTile || north.BottomSlope) ? -1 : north.TileType;
+            var north = y <= 0 ? default : Main.tile[x, y - 1];
+            var northType = north == default(Tile) ? myType : !north.HasTile || north.BottomSlope ? -1 : north.TileType;
 
             // Make this vine match the tile above it if that's another vine or a grass tile.
-            ushort[] vines = VineToGrass.Keys.ToArray();
-            for (int i = 0; i < vines.Length; ++i)
+            var vines = VineToGrass.Keys.ToArray();
+            for (var i = 0; i < vines.Length; ++i)
             {
-                ushort correspondingGrass = VineToGrass[vines[i]];
+                var correspondingGrass = VineToGrass[vines[i]];
                 if (myType != vines[i] && (northType == correspondingGrass || northType == vines[i]))
                 {
                     Main.tile[x, y].TileType = vines[i];
@@ -341,7 +414,7 @@ namespace CalamityMod
                 return;
 
             // If the tile above isn't sloped correctly or otherwise isn't a valid anchor for this vine, check whether the vine must die.
-            bool tileMustDie = northType == -1;
+            var tileMustDie = northType == -1;
             if (northType != -1)
             {
                 // Vanilla vines can hang from vanilla grass and vanilla leaf blocks.
@@ -351,7 +424,7 @@ namespace CalamityMod
                 }
                 else if (myType != TileID.Vines)
                 {
-                    for (int i = 0; i < vines.Length; ++i)
+                    for (var i = 0; i < vines.Length; ++i)
                     {
                         // Not matching grass? Die.
                         if (myType == vines[i] && northType != VineToGrass[vines[i]])
@@ -374,13 +447,13 @@ namespace CalamityMod
             if (y < 0 || y >= Main.maxTilesY)
                 return false;
 
-            Tile tile = Main.tile[x, y];
+            var tile = Main.tile[x, y];
             if (tile.Slope > 0 && TileID.Sets.HasSlopeFrames[tile.TileType])
             {
                 return true;
             }
 
-            GetAdjacentTiles(x, y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight);
+            GetAdjacentTiles(x, y, out var up, out var down, out var left, out var right, out var upLeft, out var upRight, out var downLeft, out var downRight);
 
             // Reset the tile's random frame style if the frame is being reset.
             int randomFrame;
@@ -493,13 +566,13 @@ namespace CalamityMod
             #region Inner Corner x2 (same side)
             if (up && down && left && right && !downLeft && !downRight && upLeft && upRight)
             {
-                tile.TileFrameX = (short)((6 * 18) + (randomFrame * 18));
+                tile.TileFrameX = (short)(6 * 18 + randomFrame * 18);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
             if (up && down && left && right && downLeft && downRight && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((6 * 18) + (randomFrame * 18));
+                tile.TileFrameX = (short)(6 * 18 + randomFrame * 18);
                 tile.TileFrameY = 1 * 18;
                 return false;
             }
@@ -620,11 +693,11 @@ namespace CalamityMod
             if (y < 0 || y >= Main.maxTilesY)
                 return false;
 
-            Tile tile = Main.tile[x, y];
+            var tile = Main.tile[x, y];
             if (tile.Slope > 0 && TileID.Sets.HasSlopeFrames[tile.TileType])
                 return true;
 
-            GetAdjacentTiles(x, y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight);
+            GetAdjacentTiles(x, y, out var up, out var down, out var left, out var right, out var upLeft, out var upRight, out var downLeft, out var downRight);
 
             // Reset the tile's random frame style if the frame is being reset.
             int randomFrame;
@@ -636,7 +709,7 @@ namespace CalamityMod
             else
                 randomFrame = Main.tile[x, y].TileFrameNumber;
 
-            int randomFrameX54 = randomFrame * 54;
+            var randomFrameX54 = randomFrame * 54;
 
             /*
                 8 2 9
@@ -647,28 +720,28 @@ namespace CalamityMod
             #region L States
             if (!up && down && !left && right && !downRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(16 * 18 + randomFrameX54);
                 tile.TileFrameY = 0;
                 return false;
             }
 
             if (!up && down && left && !right && !downLeft)
             {
-                tile.TileFrameX = (short)((18 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(18 * 18 + randomFrameX54);
                 tile.TileFrameY = 0;
                 return false;
             }
 
             if (up && !down && !left && right && !upRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(16 * 18 + randomFrameX54);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
 
             if (up && !down && left && !right && !upLeft)
             {
-                tile.TileFrameX = (short)((18 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(18 * 18 + randomFrameX54);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
@@ -677,28 +750,28 @@ namespace CalamityMod
             #region T States
             if (!up && down && left && right && !downLeft && !downRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(17 * 18 + randomFrameX54);
                 tile.TileFrameY = 0;
                 return false;
             }
 
             if (up && !down && left && right && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(17 * 18 + randomFrameX54);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
 
             if (up && down && !left && right && !downRight && !upRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(16 * 18 + randomFrameX54);
                 tile.TileFrameY = 18;
                 return false;
             }
 
             if (up && down && left && !right && !downLeft && !upLeft)
             {
-                tile.TileFrameX = (short)((18 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(18 * 18 + randomFrameX54);
                 tile.TileFrameY = 18;
                 return false;
             }
@@ -707,7 +780,7 @@ namespace CalamityMod
             #region X State
             if (up && down && left && right && !downLeft && !downRight && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + randomFrameX54);
+                tile.TileFrameX = (short)(17 * 18 + randomFrameX54);
                 tile.TileFrameY = 18;
                 return false;
             }
@@ -717,28 +790,28 @@ namespace CalamityMod
             if (up && down && left && right && !downLeft && downRight && upLeft && upRight)
             {
                 tile.TileFrameX = 14 * 18;
-                tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(5 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && right && downLeft && !downRight && upLeft && upRight)
             {
                 tile.TileFrameX = 13 * 18;
-                tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(5 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && right && downLeft && downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = 14 * 18;
-                tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(6 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && right && downLeft && downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 13 * 18;
-                tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(6 * 18 + randomFrame * 36);
                 return false;
             }
             #endregion
@@ -746,14 +819,14 @@ namespace CalamityMod
             #region Inner Corner x2 (same side)
             if (up && down && left && right && !downLeft && !downRight && upLeft && upRight)
             {
-                tile.TileFrameX = (short)((6 * 18) + (randomFrame * 18));
+                tile.TileFrameX = (short)(6 * 18 + randomFrame * 18);
                 tile.TileFrameY = 2 * 18;
                 return false;
             }
 
             if (up && down && left && right && downLeft && downRight && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((6 * 18) + (randomFrame * 18));
+                tile.TileFrameX = (short)(6 * 18 + randomFrame * 18);
                 tile.TileFrameY = 1 * 18;
                 return false;
             }
@@ -776,14 +849,14 @@ namespace CalamityMod
             #region Inner Corner x2 (opposite corners)
             if (up && down && left && right && !downLeft && downRight && upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((10 * 18) + (randomFrame * 18));
+                tile.TileFrameX = (short)(10 * 18 + randomFrame * 18);
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
 
             if (up && down && left && right && downLeft && !downRight && !upLeft && upRight)
             {
-                tile.TileFrameX = (short)((13 * 18) + (randomFrame * 18));
+                tile.TileFrameX = (short)(13 * 18 + randomFrame * 18);
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
@@ -793,28 +866,28 @@ namespace CalamityMod
             if (up && down && left && right && !downLeft && !downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = 15 * 18;
-                tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(6 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && right && !downLeft && downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 15 * 18;
-                tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(5 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && right && !downLeft && !downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 16 * 18;
-                tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(6 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && right && downLeft && !downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 16 * 18;
-                tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(5 * 18 + randomFrame * 36);
                 return false;
             }
             #endregion
@@ -822,28 +895,28 @@ namespace CalamityMod
             #region Corner and Side
             if (!up && down && left && right && !downLeft && downRight && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + (randomFrame * 36));
+                tile.TileFrameX = (short)(17 * 18 + randomFrame * 36);
                 tile.TileFrameY = 3 * 18;
                 return false;
             }
 
             if (!up && down && left && right && downLeft && !downRight && !upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + (randomFrame * 36));
+                tile.TileFrameX = (short)(16 * 18 + randomFrame * 36);
                 tile.TileFrameY = 3 * 18;
                 return false;
             }
 
             if (up && !down && left && right && !downLeft && !downRight && !upLeft && upRight)
             {
-                tile.TileFrameX = (short)((17 * 18) + (randomFrame * 36));
+                tile.TileFrameX = (short)(17 * 18 + randomFrame * 36);
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
 
             if (up && !down && left && right && !downLeft && !downRight && upLeft && !upRight)
             {
-                tile.TileFrameX = (short)((16 * 18) + (randomFrame * 36));
+                tile.TileFrameX = (short)(16 * 18 + randomFrame * 36);
                 tile.TileFrameY = 4 * 18;
                 return false;
             }
@@ -851,28 +924,28 @@ namespace CalamityMod
             if (up && down && !left && right && !downLeft && !downRight && !upLeft && upRight)
             {
                 tile.TileFrameX = 17 * 18;
-                tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(5 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && !left && right && !downLeft && downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 17 * 18;
-                tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(6 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && !right && !downLeft && !downRight && upLeft && !upRight)
             {
                 tile.TileFrameX = 18 * 18;
-                tile.TileFrameY = (short)((5 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(5 * 18 + randomFrame * 36);
                 return false;
             }
 
             if (up && down && left && !right && downLeft && !downRight && !upLeft && !upRight)
             {
                 tile.TileFrameX = 18 * 18;
-                tile.TileFrameY = (short)((6 * 18) + (randomFrame * 36));
+                tile.TileFrameY = (short)(6 * 18 + randomFrame * 36);
                 return false;
             }
             #endregion
@@ -887,7 +960,7 @@ namespace CalamityMod
             if (y < 0 || y >= Main.maxTilesY)
                 return;
 
-            Tile tile = Main.tile[x, y];
+            var tile = Main.tile[x, y];
             if (tile.Slope > 0 && TileID.Sets.HasSlopeFrames[tile.TileType])
                 return;
 
@@ -901,7 +974,7 @@ namespace CalamityMod
             else
                 randomFrame = Main.tile[x, y].TileFrameNumber;
 
-            GetAdjacentTiles(x, y, out bool up, out bool down, out bool left, out bool right, out bool upLeft, out bool upRight, out bool downLeft, out bool downRight);
+            GetAdjacentTiles(x, y, out var up, out var down, out var left, out var right, out var upLeft, out var upRight, out var downLeft, out var downRight);
 
             #region Middle State
             if (up && down && left && right && upLeft && upRight && downLeft && downRight)
@@ -1230,7 +1303,7 @@ namespace CalamityMod
 
         internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset, bool overrideTileFrame = false)
         {
-            Tile tile = Main.tile[i, j];
+            var tile = Main.tile[i, j];
 
             int TileFrameX = tile.TileFrameX;
             int TileFrameY = tile.TileFrameY;
@@ -1241,8 +1314,8 @@ namespace CalamityMod
                 TileFrameY = 0;
             }
 
-            int width = 16;
-            int height = 16;
+            var width = 16;
+            var height = 16;
 
             if (sourceRectangle != null)
             {
@@ -1250,16 +1323,16 @@ namespace CalamityMod
                 TileFrameY = ((Rectangle)sourceRectangle).Y;
             }
 
-            int iX16 = i * 16;
-            int jX16 = j * 16;
-            Vector2 location = new Vector2(iX16, jX16);
-            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
+            var iX16 = i * 16;
+            var jX16 = j * 16;
+            var location = new Vector2(iX16, jX16);
+            var zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
             if (Main.drawToScreen)
                 zero = Vector2.Zero;
 
-            Vector2 offsets = -Main.screenPosition + zero + positionOffset;
-            Vector2 drawCoordinates = location + offsets;
-            if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
+            var offsets = -Main.screenPosition + zero + positionOffset;
+            var drawCoordinates = location + offsets;
+            if (tile.Slope == 0 && !tile.IsHalfBlock || Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType]) //second one should be for platforms
             {
                 Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
@@ -1269,16 +1342,16 @@ namespace CalamityMod
             }
             else
             {
-                byte b = (byte)tile.Slope;
+                var b = (byte)tile.Slope;
                 Rectangle TileFrame;
                 Vector2 drawPos;
                 if (b == 1 || b == 2)
                 {
                     int length;
                     int height2;
-                    for (int a = 0; a < 8; ++a)
+                    for (var a = 0; a < 8; ++a)
                     {
-                        int aX2 = a * 2;
+                        var aX2 = a * 2;
                         if (b == 2)
                         {
                             length = 16 - aX2 - 2;
@@ -1303,9 +1376,9 @@ namespace CalamityMod
                 {
                     int length;
                     int height2;
-                    for (int a = 0; a < 8; ++a)
+                    for (var a = 0; a < 8; ++a)
                     {
-                        int aX2 = a * 2;
+                        var aX2 = a * 2;
                         if (b == 3)
                         {
                             length = aX2;
@@ -1350,26 +1423,26 @@ namespace CalamityMod
             Main.tileMerge[myType][mergeType] = false;
 
             // These all get null checked in the GetSimilarity and GetMerge functions
-            Tile tileLeft = Main.tile[x - 1, y];
-            Tile tileRight = Main.tile[x + 1, y];
-            Tile tileUp = Main.tile[x, y - 1];
-            Tile tileDown = Main.tile[x, y + 1];
-            Tile tileTopLeft = Main.tile[x - 1, y - 1];
-            Tile tileTopRight = Main.tile[x + 1, y - 1];
-            Tile tileBottomLeft = Main.tile[x - 1, y + 1];
-            Tile tileBottomRight = Main.tile[x + 1, y + 1];
+            var tileLeft = Main.tile[x - 1, y];
+            var tileRight = Main.tile[x + 1, y];
+            var tileUp = Main.tile[x, y - 1];
+            var tileDown = Main.tile[x, y + 1];
+            var tileTopLeft = Main.tile[x - 1, y - 1];
+            var tileTopRight = Main.tile[x + 1, y - 1];
+            var tileBottomLeft = Main.tile[x - 1, y + 1];
+            var tileBottomRight = Main.tile[x + 1, y + 1];
 
             // Cardinal directions
-            Similarity leftSim = forceSameLeft ? Similarity.Same : GetSimilarity(tileLeft, myType, mergeType);
-            Similarity rightSim = forceSameRight ? Similarity.Same : GetSimilarity(tileRight, myType, mergeType);
-            Similarity upSim = forceSameUp ? Similarity.Same : GetSimilarity(tileUp, myType, mergeType);
-            Similarity downSim = forceSameDown ? Similarity.Same : GetSimilarity(tileDown, myType, mergeType);
+            var leftSim = forceSameLeft ? Similarity.Same : GetSimilarity(tileLeft, myType, mergeType);
+            var rightSim = forceSameRight ? Similarity.Same : GetSimilarity(tileRight, myType, mergeType);
+            var upSim = forceSameUp ? Similarity.Same : GetSimilarity(tileUp, myType, mergeType);
+            var downSim = forceSameDown ? Similarity.Same : GetSimilarity(tileDown, myType, mergeType);
 
             // Diagonal directions
-            Similarity topLeftSim = GetSimilarity(tileTopLeft, myType, mergeType);
-            Similarity topRightSim = GetSimilarity(tileTopRight, myType, mergeType);
-            Similarity bottomLeftSim = GetSimilarity(tileBottomLeft, myType, mergeType);
-            Similarity bottomRightSim = GetSimilarity(tileBottomRight, myType, mergeType);
+            var topLeftSim = GetSimilarity(tileTopLeft, myType, mergeType);
+            var topRightSim = GetSimilarity(tileTopRight, myType, mergeType);
+            var bottomLeftSim = GetSimilarity(tileBottomLeft, myType, mergeType);
+            var bottomRightSim = GetSimilarity(tileBottomRight, myType, mergeType);
 
             // Reset the tile's random frame style if the frame is being reset.
             int randomFrame;
@@ -1895,15 +1968,15 @@ namespace CalamityMod
             if (y < 0 || y >= Main.maxTilesY)
                 return;
 
-            bool forceSameUp = false;
-            bool forceSameDown = false;
-            bool forceSameLeft = false;
-            bool forceSameRight = false;
+            var forceSameUp = false;
+            var forceSameDown = false;
+            var forceSameLeft = false;
+            var forceSameRight = false;
 
-            Tile north = Main.tile[x, y - 1];
-            Tile south = Main.tile[x, y + 1];
-            Tile west = Main.tile[x - 1, y];
-            Tile east = Main.tile[x + 1, y];
+            var north = Main.tile[x, y - 1];
+            var south = Main.tile[x, y + 1];
+            var west = Main.tile[x - 1, y];
+            var east = Main.tile[x + 1, y];
 
             if (north != null && north.HasTile && tileMergeTypes[myType][north.TileType])
             {
@@ -1957,6 +2030,20 @@ namespace CalamityMod
         // Apologies for how unreadable this makes the code, I did my best to comment what each part of the merge tree in DrawUniversalMergeFrames is responsible for to compensate for this but it's still not ideal
         // - Alta
 
+        internal static void RegisterUniversalMerge(int tileId, int mergeType, string blendSheetPath)
+        {
+            SetUpUniversalMerge(tileId, mergeType, blendSheetPath, out var data);
+            GetOrCreateTileAdjacencies(tileId).Add(data);
+        }
+
+        private static List<MergeFrameData> GetOrCreateTileAdjacencies(int tileId)
+        {
+            if (!tileAdjacencyMap.TryGetValue(tileId, out var adjacencies))
+                tileAdjacencyMap[tileId] = adjacencies = [];
+
+            return adjacencies;
+        }
+
         /// <summary>
         /// Call this in SetStaticDefaults. Used to set up the adjacency data array with the correct dimensions.
         /// </summary>
@@ -1971,39 +2058,39 @@ namespace CalamityMod
         /// </summary>
         internal static void DrawUniversalMergeFrames(int x, int y, List<MergeFrameData> mergeFrames)
         {
-            Color shadingColour = Lighting.GetColor(x, y);
-            Tile myTile = Main.tile[x, y];
-            
+            var shadingColour = Lighting.GetColor(x, y);
+            var myTile = Main.tile[x, y];
+
             foreach (var frame in mergeFrames)
             {
                 // If it hasn't yet been initialized somehow... for some reason.
                 if (frame is null)
                     continue;
-                
+
                 DrawUniversalMergeFrames(x, y, frame, shadingColour, myTile);
             }
         }
-        
+
         internal static void DrawUniversalMergeFrames(int x, int y, MergeFrameData mergeFrameData, Color shadingColour, Tile myTile)
         {
-            byte[,] adjacencyData = mergeFrameData.AdjacencyData;
+            var adjacencyData = mergeFrameData.AdjacencyData;
             var blendLayer = mergeFrameData.BlendSheet.Value;
-            int frameOffsetX = mergeFrameData.FrameOffsetX;
-            int frameOffsetY = mergeFrameData.FrameOffsetY;
-            
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(x * 16 - Main.screenPosition.X, y * 16 - Main.screenPosition.Y) + zero;
+            var frameOffsetX = mergeFrameData.FrameOffsetX;
+            var frameOffsetY = mergeFrameData.FrameOffsetY;
+
+            var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            var drawOffset = new Vector2(x * 16 - Main.screenPosition.X, y * 16 - Main.screenPosition.Y) + zero;
 
             // Used for blending with metatiles/composite tiles (as in the tile being blended with is a metatile, not this tile)
-            int subFrameX = frameOffsetX * 270;
-            int subFrameY = frameOffsetY * 198;
+            var subFrameX = frameOffsetX * 270;
+            var subFrameY = frameOffsetY * 198;
 
-            byte thisTileData = adjacencyData[x, y];
+            var thisTileData = adjacencyData[x, y];
 
             // Get tile variant number
-            int randomFrame = myTile.TileFrameNumber;
-            int randomFrameX18 = randomFrame * 18;
-            int randomFrameX36 = randomFrame * 36;
+            var randomFrame = myTile.TileFrameNumber;
+            var randomFrameX18 = randomFrame * 18;
+            var randomFrameX36 = randomFrame * 36;
 
             // Couple of commonly used masks
             // bit to relative tile pos for reference
@@ -2351,8 +2438,8 @@ namespace CalamityMod
         /// </summary>
         internal static void GetAdjacencyData(int x, int y, MergeFrameData data)
         {
-            int blendType = data.TileID;
-            
+            var blendType = data.TileID;
+
             // bit to relative tile pos for reference
             // 4 0 5
             // 3 X 1
@@ -2366,15 +2453,15 @@ namespace CalamityMod
             if (y < 0 || y >= Main.maxTilesY)
                 return;
 
-            Tile tile = Main.tile[x, y];
-            Tile north = Main.tile[x, y - 1];
-            Tile south = Main.tile[x, y + 1];
-            Tile west = Main.tile[x - 1, y];
-            Tile east = Main.tile[x + 1, y];
-            Tile southwest = Main.tile[x - 1, y + 1];
-            Tile southeast = Main.tile[x + 1, y + 1];
-            Tile northwest = Main.tile[x - 1, y - 1];
-            Tile northeast = Main.tile[x + 1, y - 1];
+            var tile = Main.tile[x, y];
+            var north = Main.tile[x, y - 1];
+            var south = Main.tile[x, y + 1];
+            var west = Main.tile[x - 1, y];
+            var east = Main.tile[x + 1, y];
+            var southwest = Main.tile[x - 1, y + 1];
+            var southeast = Main.tile[x + 1, y + 1];
+            var northwest = Main.tile[x - 1, y - 1];
+            var northeast = Main.tile[x + 1, y - 1];
 
             // North
             if (GetBlendSpecific(tile, north, blendType, false) && (north.Slope == 0 || north.Slope == SlopeType.SlopeDownLeft || north.Slope == SlopeType.SlopeDownRight))
@@ -2419,8 +2506,8 @@ namespace CalamityMod
             int edgeAType = mergeTileEdgeA.TileType;
             int edgeBType = mergeTileEdgeB.TileType;
 
-            bool isBlendTypeAdjacent = cornerType == blendType || edgeAType == blendType || edgeBType == blendType;
-            bool areAllAdjacentsBlendable = GetBlendSpecific(myTile, mergeTileCorner, blendType, true) && GetBlendSpecific(myTile, mergeTileEdgeA, blendType, true) && GetBlendSpecific(myTile, mergeTileEdgeB, blendType, true);
+            var isBlendTypeAdjacent = cornerType == blendType || edgeAType == blendType || edgeBType == blendType;
+            var areAllAdjacentsBlendable = GetBlendSpecific(myTile, mergeTileCorner, blendType, true) && GetBlendSpecific(myTile, mergeTileEdgeA, blendType, true) && GetBlendSpecific(myTile, mergeTileEdgeB, blendType, true);
 
             return isBlendTypeAdjacent && areAllAdjacentsBlendable;
         }

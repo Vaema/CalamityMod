@@ -780,18 +780,14 @@ namespace CalamityMod.CalPlayer
                 if (bloodflareMage && bloodflareMageCooldown <= 0 && crit)
                 {
                     bloodflareMageCooldown = 120;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        // Bloodflare Mage Fireballs: 3 x 50%, softcap starts at 500 base damage to not overly punish slow weapons
-                        int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
+                    // Bloodflare Mage Explosion: 50%, softcap starts at 500 base damage to not overly punish slow weapons
+                    int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
 
-                        int fire = Projectile.NewProjectile(source, position, velocity, ProjectileID.BallofFire, bloodflareFireballDamage, 0f, Player.whoAmI);
-                        if (fire.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[fire].DamageType = DamageClass.Generic;
-                            Main.projectile[fire].netUpdate = true;
-                        }
+                    int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
+                    if (fire.WithinBounds(Main.maxProjectiles))
+                    {
+                        Main.projectile[fire].DamageType = DamageClass.Generic;
+                        Main.projectile[fire].netUpdate = true;
                     }
                 }
             }

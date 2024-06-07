@@ -38,11 +38,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.ShadowFlame, 120);
-            target.AddBuff(BuffID.OnFire, 240);
+            target.AddBuff(BuffID.OnFire3, 240);
             if (hit.Crit)
             {
                 target.AddBuff(BuffID.ShadowFlame, 360);
-                target.AddBuff(BuffID.OnFire, 720);
+                target.AddBuff(BuffID.OnFire3, 720);
                 int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(2 * Item.damage);
                 player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
                 float firstDustScale = 1.7f;
@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(ModContent.BuffType<Shadowflame>(), 360);
-            target.AddBuff(BuffID.OnFire, 720);
+            target.AddBuff(BuffID.OnFire3, 720);
             SoundEngine.PlaySound(SoundID.Item14, target.Center);
         }
 

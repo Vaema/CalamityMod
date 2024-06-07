@@ -7245,18 +7245,19 @@ namespace CalamityMod.NPCs
                     float secondAfterimageSetHealthValue = (int)(npc.lifeMax * 0.8f);
                     if (npc.life < secondAfterimageSetHealthValue)
                     {
-                        Color currentColor = npc.GetAlpha(drawColor);
-                        float opacityScale = 1f - npc.life / (float)secondAfterimageSetHealthValue;
-                        float opacity = Main.getGoodWorld ? 1f : opacityScale;
-
-                        opacity = MathHelper.Clamp(opacity, 0f, 1f);
-                        currentColor.R = (byte)((float)(int)currentColor.R * opacity);
-                        currentColor.G = (byte)((float)(int)currentColor.G * opacity);
-                        currentColor.B = (byte)((float)(int)currentColor.B * opacity);
-                        currentColor.A = (byte)((float)(int)currentColor.A * opacity);
                         int totalAfterimages = death ? 12 : 4;
                         for (int i = 0; i < totalAfterimages; i++)
                         {
+                            Color currentColor = npc.GetAlpha(drawColor);
+                            float opacityScale = 1f - MathHelper.Lerp(0.3f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
+                            float opacity = Main.getGoodWorld ? 0.7f : opacityScale;
+
+                            opacity = MathHelper.Clamp(opacity, 0f, 1f);
+                            currentColor.R = (byte)((float)(int)currentColor.R * opacity);
+                            currentColor.G = (byte)((float)(int)currentColor.G * opacity);
+                            currentColor.B = (byte)((float)(int)currentColor.B * opacity);
+                            currentColor.A = (byte)((float)(int)currentColor.A * opacity);
+
                             Vector2 position = npc.position;
                             float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
                             float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
@@ -7266,6 +7267,8 @@ namespace CalamityMod.NPCs
                                 distanceFromTargetX *= 0.5f;
                                 distanceFromTargetY *= 0.5f;
                             }
+                            if (i > 7)
+                                currentColor *= 0.5f;
 
                             switch (i)
                             {
