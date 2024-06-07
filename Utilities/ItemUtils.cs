@@ -31,7 +31,7 @@ namespace CalamityMod
 
         #region Color Constants
         internal static readonly Color DevItemColor = new Color(255, 0, 255);
-        internal static readonly Color DonatorItemColor = new Color(196, 35, 44);
+        internal static readonly Color DonatorItemColor = new Color(255, 121, 156);
         #endregion
 
         // TODO -- This probably isn't the best place to put this but it needs to be somewhere easily accessible.
