@@ -238,7 +238,7 @@ namespace CalamityMod.Items
                 int idx = tooltips.FindIndex((line) => line.Name == lineName);
                 if (idx != -1)
                 {
-                    difficultyTooltipIdx = idx;
+                    difficultyTooltipIdx = idx + 1;
                     break;
                 }
             }
@@ -260,7 +260,7 @@ namespace CalamityMod.Items
             if (devItem)
             {
                 LocalizedText devText = CalamityUtils.GetText("UI.DevItemTooltip");
-                string coloredText = CalamityUtils.ColorMessage(devText.Value, CalamityUtils.DonatorItemColor);
+                string coloredText = CalamityUtils.ColorMessage(devText.Value, CalamityUtils.DevItemColor);
                 TooltipLine devLine = new TooltipLine(Mod, "CalamityMod:DevItem", coloredText);
                 tooltips.Insert(++difficultyTooltipIdx, devLine);
             }
