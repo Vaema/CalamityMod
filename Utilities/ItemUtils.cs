@@ -29,9 +29,16 @@ namespace CalamityMod
         /// <param name="item">The item to check.</param>
         public static bool IsWhip(this Item item) => item.shoot > ProjectileID.None && ProjectileID.Sets.IsAWhip[item.shoot];
 
+        /// <summary>
+        /// Marks the item as Revengeance Mode exclusive.<br />
+        /// This causes it to have a tooltip line which says "Revengeance", like how vanilla says "Expert" and "Master".
+        /// </summary>
+        /// <param name="item">The item to make difficulty exclusive.</param>
+        public static void SetRevExclusive(this Item item) => item.Calamity().revengeanceItem = true;
+
         #region Color Constants
         internal static readonly Color DevItemColor = new Color(255, 0, 255);
-        internal static readonly Color DonatorItemColor = new Color(196, 35, 44);
+        internal static readonly Color DonatorItemColor = new Color(255, 121, 156);
         #endregion
 
         // TODO -- This probably isn't the best place to put this but it needs to be somewhere easily accessible.
