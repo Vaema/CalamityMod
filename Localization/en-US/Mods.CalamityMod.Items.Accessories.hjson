@@ -132,7 +132,7 @@ AmbrosialAmpoule: {
 		'''
 		+50 max life
 		Grants +1 HP/s life regen
-		Increases life regen based on missing health
+		Grants +2 to +6 HP/s life regen based on missing health
 		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
