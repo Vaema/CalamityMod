@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+            target.AddBuff(BuffID.Daybreak, 120);
         }
     }
 }

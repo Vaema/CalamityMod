@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire3, 120);
+            target.AddBuff(BuffID.ShadowFlame, 120);
             if (Projectile.numHits >= 2) // Fades out after the third hit
                 Projectile.timeLeft = FadeOutTime;
 
@@ -111,7 +112,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
 
         public override bool? CanDamage() => Projectile.timeLeft < FadeOutTime ? false : null;
     }
