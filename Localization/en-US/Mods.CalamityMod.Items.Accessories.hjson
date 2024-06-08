@@ -1428,7 +1428,7 @@ RoverDrive: {
 	DisplayName: Rover Drive
 	Tooltip:
 		'''
-		Gain a barrier with 40 health, which grants 10 defense while active
+		Gain a barrier with 20 health, which grants 10 defense while active
 		[ADREN]
 		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
 		Getting hit resets the timer
