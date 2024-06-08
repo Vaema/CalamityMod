@@ -192,7 +192,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override Color? GetAlpha(Color drawColor)
         {
-            Color initialColor = new Color(100, 100, 170);
+            Color initialColor = new Color(100, 100, 175);
             Color newColor = initialColor;
             Color finalColor = new Color(150, 150, 255);
             float colorTelegraphGateValue = BuffDustGateValue - LightTelegraphDuration;
