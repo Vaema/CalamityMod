@@ -10,6 +10,11 @@ AcesHigh: {
 		'''
 }
 
+AcidwoodBow: {
+	DisplayName: Acidwood Bow
+	Tooltip: ""
+}
+
 AdamantiteParticleAccelerator: {
 	DisplayName: Adamantite Particle Accelerator
 	Tooltip: Charges and fires 2 beams of opposite polarities. Hitting with the opposite polarity increases the damage
@@ -78,6 +83,16 @@ Arbalest: {
 Archerfish: {
 	DisplayName: Archerfish
 	Tooltip: Converts musket balls into streams of water
+}
+
+ArcNovaDiffuser: {
+	DisplayName: Arc Nova Diffuser
+	Tooltip:
+		'''
+		Charges and fires a rapid burst of nova bolts
+		The first charging stage increases the fire rate of the burst
+		The second charging stage replaces the rapid burst with a devastating nova blast
+		'''
 }
 
 Arietes41: {
@@ -435,6 +450,11 @@ Drataliornus: {
 		'''
 }
 
+DriftwoodBow: {
+	DisplayName: Driftwood Bow
+	Tooltip: This bow is stronger while you are wet
+}
+
 ElementalEruption: {
 	DisplayName: Elemental Eruption
 	Tooltip:
@@ -659,6 +679,18 @@ Karasawa: {
 	Tooltip: ...This is heavy... too heavy
 }
 
+Kingsbane: {
+	DisplayName: Kingsbane
+	Tooltip:
+		'''
+		After revving up, rapidly fire bullets
+		When you stop firing you will release a barrage of auric bullets
+		Auric bullets aggressively home in on enemies and ignore 50 points of defense
+		Constantly consumes ammo while in use
+		90% chance to save ammo
+		'''
+}
+
 Leviatitan: {
 	DisplayName: Leviatitan
 	Tooltip: Converts musket balls into toxic and normal water blasts
@@ -670,16 +702,6 @@ LunarianBow: {
 		'''
 		Fires two arrows at once
 		Converts wooden arrows into sliding energy bolts
-		'''
-}
-
-ArcNovaDiffuser: {
-	DisplayName: Arc Nova Diffuser
-	Tooltip:
-		'''
-		Charges and fires a rapid burst of nova bolts
-		The first charging stage increases the fire rate of the burst
-		The second charging stage replaces the rapid burst with a devastating nova blast
 		'''
 }
 
@@ -766,18 +788,6 @@ MineralMortar: {
 		'''
 }
 
-Kingsbane: {
-	DisplayName: Kingsbane
-	Tooltip:
-		'''
-		After revving up, rapidly fire bullets
-		When you stop firing you will release a barrage of auric bullets
-		Auric bullets aggressively home in on enemies and ignore 50 points of defense
-		Constantly consumes ammo while in use
-		90% chance to save ammo
-		'''
-}
-
 MolecularManipulator: {
 	DisplayName: Molecular Manipulator
 	Tooltip:
@@ -785,6 +795,11 @@ MolecularManipulator: {
 		Fires a fast null bullet that distorts NPC stats
 		'Is it nullable or not? Let's find out!'
 		'''
+}
+
+MonolithBow: {
+	DisplayName: Monolith Bow
+	Tooltip: ""
 }
 
 Monsoon: {
@@ -1427,19 +1442,4 @@ WulfrumBlunderbuss: {
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
-}
-
-AcidwoodBow: {
-	DisplayName: Acidwood Bow
-	Tooltip: ""
-}
-
-DriftwoodBow: {
-	DisplayName: Driftwood Bow
-	Tooltip: This bow is stronger while you are wet
-}
-
-MonolithBow: {
-	DisplayName: Monolith Bow
-	Tooltip: ""
 }

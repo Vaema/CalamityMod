@@ -682,15 +682,6 @@ Lionfish: {
 		'''
 }
 
-RealityRupture: {
-	DisplayName: Reality Rupture
-	Tooltip:
-		'''
-		Cycles between throwing 3 small homing spears and throwing a single piercing lance
-		Stealth Strikes throw a high-velocity reality shattering lance that explodes on hit
-		'''
-}
-
 LunarKunai: {
 	DisplayName: Lunar Kunai
 	Tooltip:
@@ -890,6 +881,15 @@ RadiantStar: {
 		'''
 		Throws daggers that explode and split after a while
 		Stealth strike splits more with a devastating explosion and sucks enemies in
+		'''
+}
+
+RealityRupture: {
+	DisplayName: Reality Rupture
+	Tooltip:
+		'''
+		Cycles between throwing 3 small homing spears and throwing a single piercing lance
+		Stealth Strikes throw a high-velocity reality shattering lance that explodes on hit
 		'''
 }
 

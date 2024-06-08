@@ -40,6 +40,15 @@ BloodyWormFood: {
 		'''
 }
 
+CausticTear: {
+	DisplayName: Caustic Tear
+	Tooltip:
+		'''
+		Causes an acidic downpour in the Sulphurous Sea
+		Not consumable
+		'''
+}
+
 CeremonialUrn: {
 	DisplayName: Ceremonial Urn
 	Tooltip:
@@ -149,15 +158,6 @@ EyeofDesolation: {
 		'She is here.'
 		'''
 	GFBInfo: Creates a square arena of blocks, with you at its center
-}
-
-CausticTear: {
-	DisplayName: Caustic Tear
-	Tooltip:
-		'''
-		Causes an acidic downpour in the Sulphurous Sea
-		Not consumable
-		'''
 }
 
 MarkofProvidence: {

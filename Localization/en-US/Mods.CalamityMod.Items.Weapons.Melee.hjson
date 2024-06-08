@@ -17,6 +17,11 @@ AbyssBlade: {
 		'''
 }
 
+AcidwoodSword: {
+	DisplayName: Acidwood Sword
+	Tooltip: ""
+}
+
 AegisBlade: {
 	DisplayName: Aegis Blade
 	Tooltip:
@@ -395,6 +400,11 @@ DragonRage: {
 		'''
 }
 
+DriftwoodSword: {
+	DisplayName: Driftwood Sword
+	Tooltip: This sword is stronger while you are wet
+}
+
 Earth: {
 	DisplayName: Earth
 	Tooltip:
@@ -764,6 +774,11 @@ MirrorBlade: {
 		The amount of contact damage an enemy does is added to this weapons' damage
 		You must hit an enemy with the blade to trigger this effect
 		'''
+}
+
+MonolithSword: {
+	DisplayName: Monolith Sword
+	Tooltip: ""
 }
 
 MonstrousKnives: {
@@ -1434,19 +1449,4 @@ YinYo: {
 		Shards fly back and forth
 		A very agile yoyo
 		'''
-}
-
-AcidwoodSword: {
-	DisplayName: Acidwood Sword
-	Tooltip: ""
-}
-
-DriftwoodSword: {
-	DisplayName: Driftwood Sword
-	Tooltip: This sword is stronger while you are wet
-}
-
-MonolithSword: {
-	DisplayName: Monolith Sword
-	Tooltip: ""
 }
