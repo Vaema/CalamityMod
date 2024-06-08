@@ -41,7 +41,7 @@ AbyssalDivingSuit: {
 		Reduces the damage caused by drowning in the abyss, and removes the bleed effect in the upper layers
 		Grants the ability to swim, extends underwater breathing, emits light underwater, and improves mobility on ice
 		Provides a moderate amount of light and reduces breath loss in the abyss
-		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you fall faster in liquids
+		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
 		Grants immunity to the sulphurous waters
 		'''
 }
@@ -93,7 +93,7 @@ AlchemicalFlask: {
 	DisplayName: Alchemical Flask
 	Tooltip:
 		'''
-		All attacks inflict the Plague and weakens the Plague
+		All attacks inflict the Plague and lessens damage taken from the Plague
 		Projectiles spawn plague seekers on enemy hits
 		Releases plague bees when damaged and douses you in honey 
 		'''
@@ -185,7 +185,7 @@ AngelTreads: {
 		'''
 		36% increased running acceleration
 		Increased flight time and grants rocket flight
-		Provides extra mobility on ice and water walking
+		Provides water walking and extra mobility on ice
 		Immunity to On Fire! and temporary immunity to lava
 		'Extreme speed!'
 		'''
@@ -956,7 +956,7 @@ InfectedJewel: {
 		Massively boosts natural life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
 		Each debuff beyond the first grants 5 additional defense
-		Neutralizes the Astral Infection debuff
+		Nullifies the Astral Infection debuff
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
 }
@@ -973,7 +973,7 @@ InkBomb: {
 
 IronBoots: {
 	DisplayName: Iron Boots
-	Tooltip: Allows you to fall faster through liquids
+	Tooltip: Allows you to sink faster through liquids
 }
 
 JellyChargedBattery: {
@@ -1626,7 +1626,7 @@ StatisCurse: {
 		'''
 		Increases your max number of minions by 3, and summon damage by 12%
 		Increased minion knockback
-		Minion attacks inflict Shadowflame, and you are immune to it
+		Minion attacks inflict Shadowflame and you are immune to it
 		Does not stack with downgrades
 		'''
 }
