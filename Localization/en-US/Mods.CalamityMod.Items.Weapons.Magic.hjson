@@ -481,7 +481,11 @@ Keelhaul: {
 
 LashesofChaos: {
 	DisplayName: Lashes of Chaos
-	Tooltip: "'Watch the world burn...'"
+	Tooltip:
+		'''
+		Alternates between exploding hellfireballs and piercing hellblasts
+		'Watch the world burn...'
+		'''
 }
 
 Lazhar: {
