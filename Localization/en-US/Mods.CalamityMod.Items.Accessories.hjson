@@ -2058,8 +2058,3 @@ RedBow: {
 	DisplayName: Red Bow
 	Tooltip: "'Pelusa's favorite bow'"
 }
-
-PlanebreakersPouch: {
-	DisplayName: Planebreakers Pouch
-	Tooltip: ""
-}
