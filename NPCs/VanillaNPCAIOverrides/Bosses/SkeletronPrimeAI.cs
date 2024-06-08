@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
@@ -209,7 +209,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 int despawnDistanceInTiles = 500;
                 if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistanceInTiles)
                 {
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistanceInTiles)
                         npc.ai[1] = 3f;
                 }
@@ -433,7 +433,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[2] >= (phaseTimer - (death ? 60f * (1f - lifeRatio) : 0f)))
                     {
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                         npc.ai[2] = 0f;
                         npc.ai[1] = 4f;
                         npc.localAI[0] = 0f;
@@ -696,7 +696,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 calamityGlobalNPC.newAI[0] = 0f;
                                 npc.SyncVanillaLocalAI();
                                 npc.SyncExtraAI();
-                                npc.TargetClosest();
+                                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                                 npc.netUpdate = true;
                             }
                         }
@@ -767,7 +767,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.localAI[0] = 0f;
                                 npc.SyncVanillaLocalAI();
                                 npc.SyncExtraAI();
-                                npc.TargetClosest();
+                                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                                 npc.netUpdate = true;
                             }
                         }
@@ -786,7 +786,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Set direction
             npc.spriteDirection = -(int)npc.ai[0];
@@ -1055,7 +1055,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             npc.spriteDirection = -(int)npc.ai[0];
 
@@ -1335,7 +1335,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Direction
             npc.spriteDirection = -(int)npc.ai[0];
@@ -1704,7 +1704,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             Vector2 sawArmLocation = npc.Center;
             float sawArmIdleXPos = Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0] - sawArmLocation.X;
@@ -2059,7 +2059,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.reflectsProjectiles = false;
             if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 npc.ai[0] = 1f;
                 int num495 = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeCannon, npc.whoAmI);
                 Main.npc[num495].ai[0] = -1f;
@@ -2087,7 +2087,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (Main.player[npc.target].dead || Math.Abs(npc.position.X - Main.player[npc.target].position.X) > 6000f || Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 6000f)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 if (Main.player[npc.target].dead || Math.Abs(npc.position.X - Main.player[npc.target].position.X) > 6000f || Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 6000f)
                     npc.ai[1] = 3f;
             }
@@ -2193,7 +2193,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[2] = 0f;
                     npc.ai[1] = 0f;
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 }
 
                 if (NPC.IsMechQueenUp)
@@ -2351,7 +2351,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             npc.damage = 0;
 
@@ -2636,7 +2636,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             npc.damage = 0;
 
@@ -2911,7 +2911,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Avoid cheap bullshit
             npc.damage = 0;
@@ -3215,7 +3215,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Min saw damage
             int reducedSetDamage = (int)Math.Round(npc.defDamage * 0.5);

@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Despawn
             if (npc.target >= 0 && Main.player[npc.target].dead)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 if (Main.player[npc.target].dead)
                     npc.noTileCollide = true;
             }
@@ -258,7 +258,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Set jump velocity
                         if (!headAlive)
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
                         // Set damage
                         npc.damage = npc.defDamage;
@@ -597,12 +597,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Despawn
             if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) + Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > despawnDistance)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
                 if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) + Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > despawnDistance)
                 {
@@ -633,7 +633,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             NPC golem = Main.npc[NPC.golemBoss];
             Player player = Main.player[npc.target];
@@ -943,7 +943,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+            {
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+            }
 
             // Die if body is gone
             if (NPC.golemBoss < 0)
@@ -1182,7 +1187,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+            {
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+            }
 
             // Die if body is gone
             if (NPC.golemBoss < 0)
@@ -1509,7 +1519,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (npc.target >= 0 && Main.player[npc.target].dead)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 if (Main.player[npc.target].dead)
                     npc.noTileCollide = true;
             }
@@ -1655,7 +1665,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.noTileCollide = true;
 
                         if (!flag)
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                         
                         npc.velocity.X = 4 * npc.direction;
                         if (npc.life < npc.lifeMax)
@@ -1732,12 +1742,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (npc.target <= 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             int num8 = 3000;
             if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) + Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > (float)num8)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) + Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > (float)num8)
                     npc.active = false;
             }
@@ -1757,7 +1767,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if ((!Main.player[npc.target].ZoneLihzhardTemple && !Main.player[npc.target].ZoneJungle) || (double)Main.player[npc.target].Center.Y < Main.worldSurface * 16.0)
                 enrageScale *= 2f;
@@ -2028,7 +2038,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+            {
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+            }
 
             if ((!Main.player[npc.target].ZoneLihzhardTemple && !Main.player[npc.target].ZoneJungle) || (double)Main.player[npc.target].Center.Y < Main.worldSurface * 16.0)
                 enrageScale *= 2f;
@@ -2242,7 +2257,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+            {
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+            }
 
             if ((!Main.player[npc.target].ZoneLihzhardTemple && !Main.player[npc.target].ZoneJungle) || (double)Main.player[npc.target].Center.Y < Main.worldSurface * 16.0)
                 enrageScale *= 2f;

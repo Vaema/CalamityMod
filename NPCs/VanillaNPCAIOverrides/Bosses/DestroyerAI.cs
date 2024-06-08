@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             Player player = Main.player[npc.target];
 
@@ -545,7 +545,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
                         calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
                         npc.SyncExtraAI();
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     }
 
                     if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
@@ -562,7 +562,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
                             calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
                             npc.SyncExtraAI();
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                         }
 
                         // Laser speed
@@ -1134,7 +1134,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.realLife = (int)npc.ai[3];
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if (npc.type >= NPCID.TheDestroyer && npc.type <= NPCID.TheDestroyerTail)
             {
@@ -1279,7 +1279,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
                     npc.localAI[0] = laserShootTimeBonus;
                     npc.SyncVanillaLocalAI();
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+
                     if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                     {
                         float laserVelocity = (Main.masterMode ? 3.5f : Main.expertMode ? 3f : 2.5f) + Main.rand.NextFloat() * 1.5f;
@@ -1751,7 +1752,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, default);
 
             NPCAimedTarget targetData = npc.GetTargetData();
             bool targetDead = false;
@@ -2026,7 +2027,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool VanillaProbeAI(NPC npc, Mod mod)
         {
             if (npc.target < 0 || npc.target <= Main.maxPlayers || Main.player[npc.target].dead)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, default);
 
             NPCAimedTarget targetData = npc.GetTargetData();
             bool flag = false;
