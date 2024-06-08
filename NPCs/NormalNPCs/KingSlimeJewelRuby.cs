@@ -176,9 +176,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override Color? GetAlpha(Color drawColor)
         {
-            Color initialColor = new Color(150, 0, 0);
+            Color initialColor = new Color(175, 100, 100);
             Color newColor = initialColor;
-            Color finalColor = new Color(255, 125, 125);
+            Color finalColor = new Color(255, 150, 150);
             float colorTelegraphGateValue = (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue) - LightTelegraphDuration;
             if (NPC.ai[0] > colorTelegraphGateValue)
                 newColor = Color.Lerp(initialColor, finalColor, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);
