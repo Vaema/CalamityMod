@@ -140,7 +140,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[0] = 1f;
                         npc.ai[1] = 0f;
                         npc.netUpdate = true;
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     }
 
                     break;
@@ -160,7 +160,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] <= 10f)
                     {
                         if (npc.ai[1] == 0f)
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
                         // Despawn.
                         NPCAimedTarget targetData4 = npc.GetTargetData();
@@ -352,7 +352,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             attackType = 12;
                     }
 
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     NPCAimedTarget targetData5 = npc.GetTargetData();
                     bool despawnFlag = false;
                     if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
@@ -1203,7 +1203,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.velocity *= 0.95f;
 
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     NPCAimedTarget targetData = npc.GetTargetData();
 
                     visible = false;
@@ -1416,7 +1416,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[0] = 1f;
                         npc.ai[1] = 0f;
                         npc.netUpdate = true;
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     }
 
                     break;
@@ -1437,7 +1437,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[1] <= 10f)
                         {
                             if (npc.ai[1] == 0f)
-                                npc.TargetClosest();
+                                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
                             NPCAimedTarget targetData = npc.GetTargetData();
                             if (targetData.Invalid)
@@ -1573,7 +1573,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 phase = 12;
                         }
 
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                         NPCAimedTarget targetData2 = npc.GetTargetData();
                         bool transitionToEnrage = false;
                         if (npc.AI_120_HallowBoss_IsGenuinelyEnraged())
@@ -2253,7 +2253,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         npc.velocity *= 0.95f;
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                         NPCAimedTarget targetData = npc.GetTargetData();
                         becomeVisible = false;
                         bool turnInvisible = false;
