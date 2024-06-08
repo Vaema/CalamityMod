@@ -79,6 +79,16 @@ GodSlayerSlug: {
 		'''
 }
 
+HailstormBullet: {
+	DisplayName: Hailstorm Bullet
+	Tooltip:
+		'''
+		Bullets imbued with potent ice magic
+		These bullets rapidly decelerate after being fired
+		Critical hits cause a flash freeze, dealing additional damage and freezing normal enemies
+		'''
+}
+
 HallowPointRound: {
 	DisplayName: Hallow-Point Round
 	Tooltip:
@@ -94,16 +104,6 @@ HolyFireBullet: {
 		'''
 		Explosive holy bullets
 		Explosions are larger right when the bullets are fired
-		'''
-}
-
-HailstormBullet: {
-	DisplayName: Hailstorm Bullet
-	Tooltip:
-		'''
-		Bullets imbued with potent ice magic
-		These bullets rapidly decelerate after being fired
-		Critical hits cause a flash freeze, dealing additional damage and freezing normal enemies
 		'''
 }
 

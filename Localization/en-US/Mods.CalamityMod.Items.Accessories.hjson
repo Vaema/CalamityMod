@@ -64,16 +64,6 @@ AbyssalMirror: {
 		'''
 }
 
-AscendantInsignia: {
-	DisplayName: Ascendant Insignia
-	Tooltip:
-		'''
-		Increases wing flight time by 30%, movement and jump speed by 10%, and acceleration by 1.1x
-		Pressing [KEY] will give you the power of ascension, providing infinite flight time for 4 seconds
-		Ascension has a 40 second cooldown
-		'''
-}
-
 AeroStone: {
 	DisplayName: Aero Stone
 	Tooltip:
@@ -231,6 +221,16 @@ ArchaicPowder: {
 		'''
 }
 
+AscendantInsignia: {
+	DisplayName: Ascendant Insignia
+	Tooltip:
+		'''
+		Increases wing flight time by 30%, movement and jump speed by 10%, and acceleration by 1.1x
+		Pressing [KEY] will give you the power of ascension, providing infinite flight time for 4 seconds
+		Ascension has a 40 second cooldown
+		'''
+}
+
 AsgardianAegis: {
 	DisplayName: Asgardian Aegis
 	Tooltip:
@@ -280,6 +280,15 @@ BadgeofBravery: {
 		'''
 		Increases melee damage and melee crit by 10%
 		Increases melee armor penetration by 5
+		'''
+}
+
+Baroclaw: {
+	DisplayName: Baroclaw
+	Tooltip:
+		'''
+		10% increased damage and 5% increased damage reduction
+		Attackers take high damage and are inflicted with Armor Crunch and Crush Depth
 		'''
 }
 
@@ -392,6 +401,15 @@ ChaosStone: {
 		'''
 }
 
+CleansingJelly: {
+	DisplayName: Cleansing Jelly
+	Tooltip:
+		'''
+		Using a healing potion spawns a blue aura that lasts for 30 seconds
+		Walking into the aura removes all debuffs one time
+		'''
+}
+
 CoinofDeceit: {
 	DisplayName: Coin of Deceit
 	Tooltip:
@@ -436,15 +454,6 @@ CrawCarapace: {
 		'''
 		7% increased damage
 		Attackers take damage and are inflicted with Crumbling
-		'''
-}
-
-Baroclaw: {
-	DisplayName: Baroclaw
-	Tooltip:
-		'''
-		10% increased damage and 5% increased damage reduction
-		Attackers take high damage and are inflicted with Armor Crunch and Crush Depth
 		'''
 }
 
@@ -1040,15 +1049,6 @@ LuxorsGift: {
 		'''
 		Weapons fire unique projectiles based on their damage type
 		Some weapons are unable to receive this bonus
-		'''
-}
-
-CleansingJelly: {
-	DisplayName: Cleansing Jelly
-	Tooltip:
-		'''
-		Using a healing potion spawns a blue aura that lasts for 30 seconds
-		Walking into the aura removes all debuffs one time
 		'''
 }
 
