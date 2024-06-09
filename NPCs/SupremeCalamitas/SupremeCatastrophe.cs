@@ -76,8 +76,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.defense = 80;
             NPC.DR_NERD(SupremeCataclysm.NormalBrothersDR);
             NPC.lifeMax = 138000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

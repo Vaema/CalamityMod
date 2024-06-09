@@ -36,8 +36,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.DR_NERD(0.15f);
 
             NPC.lifeMax = 240;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
 
             NPC.knockBackResist = 0.7f;
             NPC.noGravity = true;

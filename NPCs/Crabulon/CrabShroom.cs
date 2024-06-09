@@ -40,8 +40,8 @@ namespace CalamityMod.NPCs.Crabulon
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 2;
 
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             AIType = -1;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;

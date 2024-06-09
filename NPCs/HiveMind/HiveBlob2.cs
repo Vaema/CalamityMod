@@ -40,8 +40,8 @@ namespace CalamityMod.NPCs.HiveMind
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 2;
 
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
 
             NPC.knockBackResist = 0.9f;
             AIType = -1;

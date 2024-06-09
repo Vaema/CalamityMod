@@ -229,8 +229,8 @@ namespace CalamityMod.NPCs.Providence
             NPC.defense = 50;
             NPC.DR_NERD(normalDR);
             NPC.LifeMaxNERB(312500, 375000, 1250000); // Old HP - 440000, 500000
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

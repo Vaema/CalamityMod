@@ -37,8 +37,8 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 NPC.lifeMax = 10000;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Opacity = 0f;
             NPC.HitSound = Cryogen.HitSound;
             NPC.DeathSound = BreakSound;

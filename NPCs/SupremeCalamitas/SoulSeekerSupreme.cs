@@ -66,8 +66,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.defense = 60;
             NPC.DR_NERD(NormalDR);
             NPC.lifeMax = 28000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;

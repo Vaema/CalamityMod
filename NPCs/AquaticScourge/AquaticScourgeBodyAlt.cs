@@ -36,8 +36,8 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax *= 2;
 
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

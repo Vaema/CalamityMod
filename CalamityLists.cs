@@ -1132,7 +1132,8 @@ namespace CalamityMod
                 NPCID.GolemFistRight,
                 NPCID.GolemFistLeft,
                 NPCID.MoonLordHead,
-                NPCID.MoonLordHand
+                NPCID.MoonLordHand,
+                NPCType<DarkEnergy>()
             };
 
             friendlyBeeList = new List<int>()
