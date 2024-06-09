@@ -78,13 +78,9 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        // Debuff applied depends on spark color.
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.ai[0] == 0f)
-                target.AddBuff(BuffID.Daybreak, 180);
-            else if (Projectile.ai[0] == 2f)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
 
         // Pure dust projectile, but dust used depends on AI variables

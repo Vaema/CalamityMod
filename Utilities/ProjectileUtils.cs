@@ -292,8 +292,8 @@ namespace CalamityMod
             return orb;
         }
 
-        // TODO -- This overused method should NOT have hardcoded projectile type checks in it.
-        public static void MagnetSphereHitscan(Projectile projectile, float distanceRequired, float homingVelocity, float projectileTimer, int maxTargets, int spawnedProjectile, double damageMult = 1D, bool attackMultiple = false)
+        // TODO -- This method is very overused.
+        public static void MagnetSphereHitscan(Projectile projectile, float distanceRequired, float homingVelocity, float projectileTimer, int maxTargets, int spawnedProjectile, double damageMult = 1D, bool attackMultiple = false, DamageClass damageType = null)
         {
             // Only shoot once every N frames.
             projectile.localAI[1] += 1f;
@@ -351,28 +351,22 @@ namespace CalamityMod
                             {
                                 int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                                if (projectile.type == ProjectileType<EradicatorProjectile>())
+                                if (damageType != null)
                                     if (projectile2.WithinBounds(Main.maxProjectiles))
-                                        Main.projectile[projectile2].DamageType = RogueDamageClass.Instance;
+                                        Main.projectile[projectile2].DamageType = damageType;
                             }
                         }
 
                         return;
                     }
 
-                    if (projectile.type == ProjectileType<GodsGambitYoyo>())
-                    {
-                        velocity.Y += Main.rand.Next(-30, 31) * 0.05f;
-                        velocity.X += Main.rand.Next(-30, 31) * 0.05f;
-                    }
-
                     if (projectile.owner == Main.myPlayer)
                     {
                         int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                        if (projectile.type == ProjectileType<GodsGambitYoyo>() || projectile.type == ProjectileType<ShimmersparkYoyo>())
+                        if (damageType != null)
                             if (projectile2.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile2].DamageType = DamageClass.MeleeNoSpeed;
+                                Main.projectile[projectile2].DamageType = damageType;
                     }
                 }
             }

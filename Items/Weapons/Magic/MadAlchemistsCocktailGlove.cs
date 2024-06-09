@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
             flaskIDs = new int[]
             {
                 ModContent.ProjectileType<MadAlchemistsCocktailRed>(),
