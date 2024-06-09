@@ -24,6 +24,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -876,6 +877,10 @@ namespace CalamityMod.NPCs.Crabulon
         public override void OnKill()
         {
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
+
+            // Start the Goblin Invasion if the player hasn't gotten one yet (this also gives players more of a reason to fight this boss)
+            if (!NPC.downedGoblins && Main.netMode != NetmodeID.MultiplayerClient && !Main.snowMoon && !Main.pumpkinMoon && !DD2Event.Ongoing && !Main.ShouldNormalEventsBeAbleToStart() && Main.invasionType != 1)
+                Main.StartInvasion();
 
             // Mark Crabulon as dead
             DownedBossSystem.downedCrabulon = true;
