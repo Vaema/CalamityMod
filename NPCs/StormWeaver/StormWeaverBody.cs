@@ -74,6 +74,9 @@ namespace CalamityMod.NPCs.StormWeaver
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
