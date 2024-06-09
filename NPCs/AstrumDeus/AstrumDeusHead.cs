@@ -117,6 +117,9 @@ namespace CalamityMod.NPCs.AstrumDeus
 
                 NPC.value /= 5;
             }
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
