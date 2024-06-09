@@ -1,7 +1,9 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.BrimstoneElemental;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -33,6 +35,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
+            if (Projectile.ai[0] == 0f)
+            {
+                SoundEngine.PlaySound(BrimstoneElemental.DartSound, Projectile.Center);
+                Projectile.ai[0] = 1f;
+            }
+
             if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < (Projectile.ai[1] == 1f ? 12f : 16f))
             {
                 Projectile.velocity *= 1.01f;

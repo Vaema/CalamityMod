@@ -956,14 +956,14 @@ namespace CalamityMod.NPCs
             // Holy Flames
             if (hFlames > 0)
             {
-                int baseHolyFlamesDoTValue = (int)(200 * heatDamageMult);
+                int baseHolyFlamesDoTValue = (int)(300 * heatDamageMult);
                 ApplyDPSDebuff(baseHolyFlamesDoTValue, baseHolyFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
             // God Slayer Inferno
             if (gsInferno > 0)
             {
-                int baseGodSlayerInfernoDoTValue = (int)(250 * heatDamageMult);
+                int baseGodSlayerInfernoDoTValue = (int)(500 * heatDamageMult);
                 ApplyDPSDebuff(baseGodSlayerInfernoDoTValue, baseGodSlayerInfernoDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 

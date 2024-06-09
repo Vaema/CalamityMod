@@ -44,10 +44,11 @@ namespace CalamityMod.Prefixes
         }
 
         // Extra tooltip for new modifier stats
+        internal const string StealthTooltipID = "CalamityMod:PrefixAccStealthGen";
         public LocalizedText StealthGenTooltip => CalamityUtils.GetText($"{LocalizationCategory}.StealthGenTooltip");
         public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
         {
-            yield return new TooltipLine(Mod, "PrefixStealthGenBoost", StealthGenTooltip.Format((stealthGenBonus * 100).ToString("N0")))
+            yield return new TooltipLine(Mod, StealthTooltipID, StealthGenTooltip.Format((stealthGenBonus * 100).ToString("N0")))
             {
                 IsModifier = true
             };

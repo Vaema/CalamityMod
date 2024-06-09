@@ -13,6 +13,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Prefixes;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -71,12 +72,14 @@ namespace CalamityMod.Items
         {
             "Expert",
             "SetBonus",
+            RogueAccessoryPrefix.StealthTooltipID,
             "PrefixAccMeleeSpeed",
             "PrefixAccMoveSpeed",
             "PrefixAccDamage",
             "PrefixAccCritChance",
             "PrefixAccMaxMana",
             "PrefixAccDefense",
+            RogueWeaponPrefix.StealthTooltipID,
             "PrefixKnockback",
             "PrefixShootSpeed",
             "PrefixSize",
@@ -232,27 +235,27 @@ namespace CalamityMod.Items
             //
 
             // The best possible position is identified using a separate backwards search.
-            int difficultyTooltipIdx = -1;
+            int difficultyTooltipIndex = -1;
             foreach (string lineName in RevTooltipInsertionPositions)
             {
                 int idx = tooltips.FindIndex((line) => line.Name == lineName);
                 if (idx != -1)
                 {
-                    difficultyTooltipIdx = idx + 1;
+                    difficultyTooltipIndex = idx;
                     break;
                 }
             }
 
             // If the backwards search fails, it defaults to the last known tooltip index from the previous search.
-            if (difficultyTooltipIdx == -1)
-                difficultyTooltipIdx = lastTooltipIndex;
+            if (difficultyTooltipIndex == -1)
+                difficultyTooltipIndex = lastTooltipIndex;
 
             // Adds "Revengeance" to all items which are Revengeance exclusive, like how vanilla does it for Expert and Master items.
             if (revengeanceItem)
             {
                 LocalizedText revText = CalamityUtils.GetText("UI.Revengeance");
                 TooltipLine revLine = new TooltipLine(Mod, "CalamityMod:RevengeanceItem", revText.Value);
-                tooltips.Insert(++difficultyTooltipIdx, revLine);
+                tooltips.Insert(++difficultyTooltipIndex, revLine);
             }
 
             // Adds "Donor Item" and "Developer Item" to donor items and developer items respectively.
@@ -262,14 +265,14 @@ namespace CalamityMod.Items
                 LocalizedText devText = CalamityUtils.GetText("UI.DevItemTooltip");
                 string coloredText = CalamityUtils.ColorMessage(devText.Value, CalamityUtils.DevItemColor);
                 TooltipLine devLine = new TooltipLine(Mod, "CalamityMod:DevItem", coloredText);
-                tooltips.Insert(++difficultyTooltipIdx, devLine);
+                tooltips.Insert(++difficultyTooltipIndex, devLine);
             }
             else if (donorItem)
             {
                 LocalizedText donorText = CalamityUtils.GetText("UI.DonorItemTooltip");
                 string coloredText = CalamityUtils.ColorMessage(donorText.Value, CalamityUtils.DonatorItemColor);
                 TooltipLine donorLine = new TooltipLine(Mod, "CalamityMod:DonorItem", coloredText);
-                tooltips.Insert(++difficultyTooltipIdx, donorLine);
+                tooltips.Insert(++difficultyTooltipIndex, donorLine);
             }
         }
         #endregion

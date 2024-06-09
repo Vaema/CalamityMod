@@ -835,7 +835,7 @@ Oblivion: {
 	DisplayName: Oblivion
 	Tooltip:
 		'''
-		Fires brimstone lasers when enemies are near
+		Fires brimstone darts when enemies are near
 		A very agile yoyo
 		'''
 }
