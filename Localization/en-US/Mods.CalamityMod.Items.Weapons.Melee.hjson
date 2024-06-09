@@ -634,6 +634,18 @@ GoldplumeSpear: {
 	Tooltip: Shoots falling feathers
 }
 
+GrandDad: {
+	DisplayName: Grand Dad
+	Tooltip:
+		'''
+		A high quality blade that rips through enemies
+		Striking weaker enemies will launch them with incredible force
+		Launched enemies take immense damage when colliding with walls and floors
+		Holding <right> will heavily reduce the damage of the blade and increase its launch damage and velocity
+		'Please read the weapon description.'
+		'''
+}
+
 GrandGuardian: {
 	DisplayName: Grand Guardian
 	Tooltip:

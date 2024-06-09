@@ -20,6 +20,8 @@ namespace CalamityMod.NPCs
         /// </summary>
         private Vector2 OlderVelocity = Vector2.Zero;
         private float terminalVelocityForFullFallDamage = 0;
+        private bool CheckTiles = false;
+        private Vector2 ForcedVel = Vector2.Zero;
 
         public int PotentialEnergyDamage
         {
@@ -64,7 +66,8 @@ namespace CalamityMod.NPCs
         /// <param name="npc">The npc to apply fall damage to</param>
         /// <param name="potentialDamage">The maximum fall damage taken by the npc once they hit the ground</param>
         /// <param name="terminalVelocityForFullDamage">The downwards velocity necessary to recieve the full fall damage. By default 10, the npc max fall speed</param>
-        public void ApplyFallDamage(NPC npc, int potentialDamage, float terminalVelocityForFullDamage = 10f)
+        /// <param name="checkTiles">Will check for tiles in the collision instead of velocity</param>
+        public void ApplyFallDamage(NPC npc, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false)
         {
             //NPCs that don't collide with tiles simply don't get fall damage, lol.
             if (npc.noTileCollide)
@@ -74,35 +77,54 @@ namespace CalamityMod.NPCs
             OldVelocity = npc.velocity;
             OlderVelocity = npc.velocity;
             terminalVelocityForFullFallDamage = terminalVelocityForFullDamage;
+            CheckTiles = checkTiles;
+            ForcedVel = forcedVel;
         }
 
         public override void PostAI(NPC npc)
         {
             if (FallDamageSusceptible)
             {
-                float newVerticalVelocity = npc.velocity.Y;
-                float oldVerticalVelocity = OldVelocity.Y;
-                float olderVerticalVelocity = OlderVelocity.Y;
-
-                //If the thing flies back up, cancel the fall dmg
-                if (newVerticalVelocity < 0 && oldVerticalVelocity >= 0)
-                    PotentialEnergyDamage = 0;
-
-                //Same goes for if it slows its fall. 
-                //We use 3 variables cuz there is a frame inbetween the fall and the landing where the velocity is still set to something.
-                if (newVerticalVelocity > 0 && olderVerticalVelocity > 0 && oldVerticalVelocity < olderVerticalVelocity)
-                    PotentialEnergyDamage = 0;
-
-                //If the npc hit a tile/Came to a stop after falling
-                if (newVerticalVelocity == 0 && oldVerticalVelocity > 0)
+                if (CheckTiles)
                 {
-                    //I don't think a tile check below the npc is necessary but if we find weird edge cases ill add it
-                    npc.StrikeNPC(npc.CalculateHitInfo((int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f)), 1), true);
-                    PotentialEnergyDamage = 0;
-                }
+                    float oldVelocity = OldVelocity.Length();
 
-                OlderVelocity = OldVelocity;
-                OldVelocity = npc.velocity;
+                    if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)))
+                    {
+                        npc.StrikeNPC(npc.CalculateHitInfo((int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f)), 1), true);
+                        PotentialEnergyDamage = 0;
+                    }
+
+                    oldVelocity = npc.velocity.Length();
+                    npc.Center += ForcedVel;
+                    ForcedVel *= 0.995f;
+                }
+                else
+                {
+                    float newVerticalVelocity = npc.velocity.Y;
+                    float oldVerticalVelocity = OldVelocity.Y;
+                    float olderVerticalVelocity = OlderVelocity.Y;
+
+                    //If the thing flies back up, cancel the fall dmg
+                    if (newVerticalVelocity < 0 && oldVerticalVelocity >= 0)
+                        PotentialEnergyDamage = 0;
+
+                    //Same goes for if it slows its fall. 
+                    //We use 3 variables cuz there is a frame inbetween the fall and the landing where the velocity is still set to something.
+                    if (newVerticalVelocity > 0 && olderVerticalVelocity > 0 && oldVerticalVelocity < olderVerticalVelocity)
+                        PotentialEnergyDamage = 0;
+
+                    //If the npc hit a tile/Came to a stop after falling
+                    if (newVerticalVelocity == 0 && oldVerticalVelocity > 0) //Collision.SolidCollision(npc.Center, npc.width, npc.height))
+                    {
+                        //I don't think a tile check below the npc is necessary but if we find weird edge cases ill add it
+                        npc.StrikeNPC(npc.CalculateHitInfo((int)(PotentialEnergyDamage * Math.Clamp(olderVerticalVelocity / terminalVelocityForFullFallDamage, 0f, 1f)), 1), true);
+                        PotentialEnergyDamage = 0;
+                    }
+
+                    OlderVelocity = OldVelocity;
+                    OldVelocity = npc.velocity;
+                }
             }
         }
     }
