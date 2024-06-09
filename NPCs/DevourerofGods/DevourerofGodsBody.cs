@@ -94,6 +94,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
