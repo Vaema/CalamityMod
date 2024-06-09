@@ -170,6 +170,9 @@ namespace CalamityMod.NPCs
         // Used to nerf desert prehardmode enemies pre-Desert Scourge
         private const double DesertEnemyStatMultiplier = 0.75;
 
+        // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
+        public const double MasterModeBossHPMultiplier = 0.9;
+
         // Used to nerf Master Mode enemies
         public const double MasterModeEnemyHPMultiplier = 0.75;
         public const double MasterModeEnemyDamageMultiplier = 0.9;
@@ -3057,6 +3060,47 @@ namespace CalamityMod.NPCs
                     case NPCID.SlimeSpiked:
                         AdjustMasterModeStatScaling(npc);
                         npc.defDamage = npc.damage;
+                        break;
+
+                    case NPCID.KingSlime:
+                    case NPCID.EyeofCthulhu:
+                    case NPCID.EaterofWorldsHead:
+                    case NPCID.EaterofWorldsBody:
+                    case NPCID.EaterofWorldsTail:
+                    case NPCID.BrainofCthulhu:
+                    case NPCID.Creeper:
+                    case NPCID.QueenBee:
+                    case NPCID.SkeletronHead:
+                    case NPCID.SkeletronHand:
+                    case NPCID.Deerclops:
+                    case NPCID.WallofFlesh:
+                    case NPCID.WallofFleshEye:
+                    case NPCID.QueenSlimeBoss:
+                    case NPCID.Retinazer:
+                    case NPCID.Spazmatism:
+                    case NPCID.TheDestroyer:
+                    case NPCID.TheDestroyerBody:
+                    case NPCID.TheDestroyerTail:
+                    case NPCID.SkeletronPrime:
+                    case NPCID.PrimeCannon:
+                    case NPCID.PrimeLaser:
+                    case NPCID.PrimeSaw:
+                    case NPCID.PrimeVice:
+                    case NPCID.Plantera:
+                    case NPCID.PlanterasTentacle:
+                    case NPCID.Golem:
+                    case NPCID.GolemHead:
+                    case NPCID.GolemHeadFree:
+                    case NPCID.GolemFistLeft:
+                    case NPCID.GolemFistRight:
+                    case NPCID.HallowBoss:
+                    case NPCID.DukeFishron:
+                    case NPCID.CultistBoss:
+                    case NPCID.MoonLordCore:
+                    case NPCID.MoonLordFreeEye:
+                    case NPCID.MoonLordHand:
+                    case NPCID.MoonLordHead:
+                        AdjustMasterModeStatScaling(npc, true);
                         break;
                 }
             }
@@ -8642,13 +8686,17 @@ namespace CalamityMod.NPCs
 
         #region Adjust Difficulty Stat Scaling
         // Adjust HP and damage in Master Mode
-        public static void AdjustMasterModeStatScaling(NPC npc)
+        public static void AdjustMasterModeStatScaling(NPC npc, bool isABoss = false)
         {
             if (!Main.masterMode)
                 return;
 
-            npc.lifeMax = (int)Math.Round(npc.lifeMax * MasterModeEnemyHPMultiplier);
-            npc.damage = (int)Math.Round(npc.damage * MasterModeEnemyDamageMultiplier);
+            // Bosses and enemies have separate HP reduction multipliers
+            npc.lifeMax = (int)Math.Round(npc.lifeMax * (isABoss ? MasterModeBossHPMultiplier : MasterModeEnemyHPMultiplier));
+
+            // Bosses do not get their damage reduced
+            if (!isABoss)
+                npc.damage = (int)Math.Round(npc.damage * MasterModeEnemyDamageMultiplier);
         }
 
         // Adjust only knockback resist in Expert Mode (this is also adjusted in Master Mode because Expert has to be enabled if Master is enabled)
