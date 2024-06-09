@@ -6236,11 +6236,20 @@ namespace CalamityMod.NPCs
                 spawnInfo.Player.Calamity().ZoneSunkenSea ||
                 (spawnInfo.Player.Calamity().ZoneAstral && !spawnInfo.Player.PillarZone());
 
-            // Fuck the Goblin
-            if (NPC.downedGoblins && !spawnInfo.Water && spawnInfo.Player.ZoneRockLayerHeight && !NPC.savedGoblin)
+            // Fuck the Goblin and the Wizard
+            if (!spawnInfo.Water && spawnInfo.Player.ZoneRockLayerHeight)
             {
-                if (!NPC.AnyNPCs(NPCID.BoundGoblin))
-                    pool[NPCID.BoundGoblin] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                if (NPC.downedGoblins && !NPC.savedGoblin)
+                {
+                    if (!NPC.AnyNPCs(NPCID.BoundGoblin))
+                        pool[NPCID.BoundGoblin] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                }
+
+                if (Main.hardMode && !NPC.savedWizard)
+                {
+                    if (!NPC.AnyNPCs(NPCID.BoundWizard))
+                        pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                }
             }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
