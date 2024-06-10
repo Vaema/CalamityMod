@@ -22,6 +22,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
 {
     public static class RevengeanceAndDeathAI
     {
+        #region Constants
+
+        public const float ClingerShootGateValue = 120f;
+        public const float ClingerShootGateValue_Rev = 90f;
+        public const float ClingerTelegraphTime = 30f;
+
+        #endregion
+
         #region Revengeance and Death Mode non-boss NPC AIs
 
         #region Fighter AI
@@ -5712,7 +5720,7 @@ PrepareToShoot:
                         npc.localAI[0] = 0f;
 
                     npc.localAI[0] += 1f;
-                    if (npc.localAI[0] >= 90f)
+                    if (npc.localAI[0] >= ClingerShootGateValue_Rev)
                     {
                         if (!Collision.SolidCollision(npc.position, npc.width, npc.height) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                         {
@@ -5726,7 +5734,7 @@ PrepareToShoot:
                         }
                         else
                         {
-                            npc.localAI[0] = 75f;
+                            npc.localAI[0] = ClingerShootGateValue_Rev - 15f;
                         }
                     }
                 }

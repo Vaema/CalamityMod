@@ -5080,7 +5080,7 @@ namespace CalamityMod.NPCs
             // Worm heads emit dust when close enough to the player and digging through tiles
             if (npc.type == NPCID.GiantWormHead || npc.type == NPCID.DiggerHead || npc.type == NPCID.DevourerHead ||
                 npc.type == NPCID.SeekerHead || npc.type == NPCID.TombCrawlerHead || npc.type == NPCID.BoneSerpentHead ||
-                npc.type == NPCID.DuneSplicerHead)
+                npc.type == NPCID.DuneSplicerHead || npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.TheDestroyer)
             {
                 Point point = npc.Center.ToTileCoordinates();
                 Tile tileSafely = Framing.GetTileSafely(point);
@@ -5126,6 +5126,23 @@ namespace CalamityMod.NPCs
                         Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.CursedTorch, 0f, 0f, 100, default, 1.5f);
                         dust.noGravity = true;
                     }
+                }
+
+                // Emit cursed flame dust from mouth when about to fire
+                else if (npc.localAI[0] > (CalamityWorld.revenge ? RevengeanceAndDeathAI.ClingerShootGateValue_Rev : RevengeanceAndDeathAI.ClingerShootGateValue) - RevengeanceAndDeathAI.ClingerTelegraphTime)
+                {
+                    if (Main.rand.NextBool(3))
+                    {
+                        Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.CursedTorch, 0f, 0f, 100, default, 1.5f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0f;
+                    }
+                }
+
+                // Reset shoot counter if inside tiles or cannot see the target
+                if (Collision.SolidCollision(npc.position, npc.width, npc.height) || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                {
+                    npc.localAI[0] = 0f;
                 }
             }
 
