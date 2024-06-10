@@ -89,6 +89,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Ozzatron",
             "Piky",
             "PokerFace",
+            "Poroboros",
             "Shade",
             "SharZz",
             "Shayy",
