@@ -44,6 +44,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnSpawn(IEntitySource source)
         {
+            Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
             base.OnSpawn(source);
@@ -183,10 +184,9 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().GeneralScreenShakePower = 6.5f;
             }
 
-            int heal = (int)(MathHelper.Clamp(12 - Projectile.numHits * 3, 1, 12));
-            if (Main.player[Main.myPlayer].lifeSteal > 0f)
+            int heal = (int)(MathHelper.Clamp(12 - Projectile.numHits * 5, 1, 12));
+            if (Projectile.numHits < 12)
             {
-                Owner.lifeSteal -= heal;
                 Owner.statLife += heal;
                 Owner.HealEffect(heal);
                 if (Owner.statLife > Owner.statLifeMax2)
@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Melee
                 target.knockBackResist = 1;
 
                 // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
-                target.FallingNPC().ApplyFallDamage(target, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel, 5f, true);
+                target.FallingNPC().ApplyFallDamage(target, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 4 : 1), launchVel, 5f, true);
             }
             Particle spark = new VoidSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35, false, 13, 0.5f, Color.DodgerBlue);
             GeneralParticleHandler.SpawnParticle(spark);

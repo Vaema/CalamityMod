@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useAnimation = 77;
             Item.useTime = 77;
             Item.useTurn = true;
-            Item.knockBack = 12f;
+            Item.knockBack = 77f;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
@@ -45,14 +45,7 @@ namespace CalamityMod.Items.Weapons.Melee
         // Has a GFB tooltip stuffed to the brim with various references
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
-            /*
-            var mainTooltip = list.FirstOrDefault(x => x.Text.Contains("[GFB]") && x.Mod == "Terraria");
-            if (mainTooltip != null)
-            {
-                mainTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("TooltipNormal"));
-            
-            }*/
+            list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
         }
         public override void AddRecipes()
         {

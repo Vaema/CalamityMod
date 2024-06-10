@@ -126,12 +126,12 @@ namespace CalamityMod.Projectiles.Melee
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
-                    if (time == (int)(timeMax * 0.4f))
+                    if (time == (int)(timeMax * 0.3f))
                     {
                         SoundEngine.PlaySound(SoundID.DD2_MonkStaffSwing with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
                         SoundEngine.PlaySound(SoundID.DD2_GhastlyGlaivePierce with { Volume = 1f, Pitch = -0.5f }, Projectile.Center);
                     }
-                    if ( time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.7f))
+                    if ( time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.9f))
                     {
                         CanHit = true;
 
@@ -190,9 +190,8 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
             int heal = (int)(MathHelper.Clamp(4 - Projectile.numHits * 2, 1, 4));
-            if (Main.player[Main.myPlayer].lifeSteal > 0f)
+            if (Projectile.numHits < 4)
             {
-                Owner.lifeSteal -= heal;
                 Owner.statLife += heal;
                 Owner.HealEffect(heal);
                 if (Owner.statLife > Owner.statLifeMax2)
