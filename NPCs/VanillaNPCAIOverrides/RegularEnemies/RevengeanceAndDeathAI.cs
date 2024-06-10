@@ -5092,36 +5092,30 @@ PrepareToShoot:
         #region Caster AI
         public static bool BuffedCasterAI(NPC npc, Mod mod)
         {
-            npc.TargetClosest(true);
-            npc.velocity.X = npc.velocity.X * 0.93f;
+            npc.TargetClosest();
+            npc.velocity.X *= 0.93f;
             if ((double)npc.velocity.X > -0.1 && (double)npc.velocity.X < 0.1)
-            {
                 npc.velocity.X = 0f;
-            }
+
             if (npc.ai[0] == 0f)
-            {
                 npc.ai[0] = 500f;
-            }
+
             if (npc.type == NPCID.RuneWizard)
             {
                 if (npc.alpha < 255)
-                {
                     npc.alpha++;
-                }
                 if (npc.justHit)
-                {
                     npc.alpha = 0;
-                }
             }
+
             if (npc.ai[2] != 0f && npc.ai[3] != 0f)
             {
                 if (npc.type == NPCID.RuneWizard)
-                {
                     npc.alpha = 255;
-                }
+
                 SoundEngine.PlaySound(SoundID.Item8, npc.Center);
-                int dustIncrement;
-                for (int i = 0; i < 50; i = dustIncrement + 1)
+
+                for (int i = 0; i < 50; i++)
                 {
                     if (npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.Tim)
                     {
@@ -5129,9 +5123,7 @@ PrepareToShoot:
                         Dust dust = Main.dust[goblinDust];
                         dust.velocity *= 3f;
                         if (Main.dust[goblinDust].scale > 1f)
-                        {
                             Main.dust[goblinDust].noGravity = true;
-                        }
                     }
                     else if (npc.type == NPCID.DarkCaster)
                     {
@@ -5182,16 +5174,20 @@ PrepareToShoot:
                         dust.velocity *= 3f;
                         Main.dust[fireImpDust].noGravity = true;
                     }
-                    dustIncrement = i;
                 }
+
                 npc.position.X = npc.ai[2] * 16f - (float)(npc.width / 2) + 8f;
                 npc.position.Y = npc.ai[3] * 16f - (float)npc.height;
+
                 npc.velocity.X = 0f;
                 npc.velocity.Y = 0f;
+
                 npc.ai[2] = 0f;
                 npc.ai[3] = 0f;
+
                 SoundEngine.PlaySound(SoundID.Item8, npc.Center);
-                for (int j = 0; j < 50; j = dustIncrement + 1)
+
+                for (int j = 0; j < 50; j++)
                 {
                     if (npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.Tim)
                     {
@@ -5199,9 +5195,7 @@ PrepareToShoot:
                         Dust dust = Main.dust[goblinCastDust];
                         dust.velocity *= 3f;
                         if (Main.dust[goblinCastDust].scale > 1f)
-                        {
                             Main.dust[goblinCastDust].noGravity = true;
-                        }
                     }
                     else if (npc.type == NPCID.DarkCaster)
                     {
@@ -5252,32 +5246,30 @@ PrepareToShoot:
                         dust.velocity *= 3f;
                         Main.dust[fireImpCastDust].noGravity = true;
                     }
-                    dustIncrement = j;
                 }
             }
 
             if (npc.justHit)
-                npc.ai[0] = (npc.type == NPCID.RuneWizard && Main.zenithWorld) ? 5f : 2f;
+                npc.ai[0] = (npc.type == NPCID.RuneWizard && Main.zenithWorld) ? 5f : CalamityWorld.revenge ? 2f : 1f;
 
-            npc.ai[0] += (npc.type == NPCID.RuneWizard && Main.zenithWorld) ? 5f : 2f;
+            npc.ai[0] += (npc.type == NPCID.RuneWizard && Main.zenithWorld) ? 5f : CalamityWorld.revenge ? 2f : 1f;
 
             if (npc.type == NPCID.Necromancer || npc.type == NPCID.NecromancerArmored)
             {
                 if (npc.ai[0] % 50f == 0f && npc.ai[0] <= 250f)
                 {
-                    npc.ai[1] = 30f;
+                    npc.ai[1] = 55f;
                     npc.netUpdate = true;
                 }
+
                 if (npc.ai[0] >= 400f)
-                {
                     npc.ai[0] = 700f;
-                }
             }
             else if (npc.type == NPCID.RuneWizard)
             {
                 if (npc.ai[0] == 80f || npc.ai[0] == 150f || npc.ai[0] == 230f || npc.ai[0] == 300f || npc.ai[0] == 380f || npc.ai[0] == 450f)
                 {
-                    npc.ai[1] = 30f;
+                    npc.ai[1] = 55f;
                     npc.netUpdate = true;
                 }
             }
@@ -5293,30 +5285,41 @@ PrepareToShoot:
             {
                 if (npc.ai[0] == 20f || npc.ai[0] == 40f || npc.ai[0] == 60f || npc.ai[0] == 120f || npc.ai[0] == 140f || npc.ai[0] == 160f || npc.ai[0] == 220f || npc.ai[0] == 240f || npc.ai[0] == 260f)
                 {
-                    npc.ai[1] = 30f;
+                    npc.ai[1] = 55f;
                     npc.netUpdate = true;
                 }
+
                 if (npc.ai[0] >= 460f)
-                {
                     npc.ai[0] = 700f;
+            }
+            else
+            {
+                if (Main.getGoodWorld && npc.type == NPCID.FireImp)
+                {
+                    if (NPC.AnyNPCs(NPCID.WallofFlesh))
+                    {
+                        npc.ai[0] += 1f;
+                        if (npc.ai[0] % 2f == 1f)
+                            npc.ai[0] -= 1f;
+                    }
+                }
+
+                if (npc.ai[0] % 100f == 0f && npc.ai[0] <= 300f)
+                {
+                    npc.ai[1] = 55f;
+                    npc.netUpdate = true;
                 }
             }
-            else if (npc.ai[0] % 100f == 0f && npc.ai[0] <= 300f)
-            {
-                npc.ai[1] = 30f;
-                npc.netUpdate = true;
-            }
+
             if ((npc.type == NPCID.DiabolistRed || npc.type == NPCID.DiabolistWhite) && npc.ai[0] > 400f)
-            {
                 npc.ai[0] = 650f;
-            }
+
             if (npc.type == NPCID.DesertDjinn && npc.ai[0] >= 360f)
-            {
                 npc.ai[0] = 650f;
-            }
+
             if (npc.ai[0] >= 650f && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.ai[0] = 2f;
+                npc.ai[0] = CalamityWorld.revenge ? 2f : 1f;
                 int targetTileX = (int)Main.player[npc.target].position.X / 16;
                 int targetTileY = (int)Main.player[npc.target].position.Y / 16;
                 Vector2 chosenTile = Vector2.Zero;
@@ -5326,8 +5329,10 @@ PrepareToShoot:
                     npc.ai[2] = chosenTile.X;
                     npc.ai[3] = chosenTile.Y;
                 }
+
                 npc.netUpdate = true;
             }
+
             if (npc.ai[1] > 0f)
             {
                 npc.ai[1] -= 1f;
@@ -5336,6 +5341,7 @@ PrepareToShoot:
                     if (npc.ai[1] % 30f == 0f && npc.ai[1] / 30f < 5f)
                     {
                         SoundEngine.PlaySound(SoundID.Item8, npc.Center);
+
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Point spiritCenter = npc.Center.ToTileCoordinates();
@@ -5348,15 +5354,13 @@ PrepareToShoot:
                             int projSpawnTries = 0;
                             bool targetTooFar = false;
                             if (targetDirection.Length() > 2000f)
-                            {
                                 targetTooFar = true;
-                            }
+
                             while (!targetTooFar)
                             {
                                 if (projSpawnTries >= 50)
-                                {
                                     break;
-                                }
+
                                 projSpawnTries++;
                                 int spiritProjSpawnX = Main.rand.Next(targetCenter.X - randProjRadius, targetCenter.X + randProjRadius + 1);
                                 int spiritProjSpawnY = Main.rand.Next(targetCenter.Y - randProjRadius, targetCenter.Y + randProjRadius + 1);
@@ -5364,18 +5368,16 @@ PrepareToShoot:
                                 {
                                     bool canSpawnProj = true;
                                     if (canSpawnProj && Main.tile[spiritProjSpawnX, spiritProjSpawnY].LiquidType == LiquidID.Lava)
-                                    {
                                         canSpawnProj = false;
-                                    }
                                     if (canSpawnProj && Collision.SolidTiles(spiritProjSpawnX - solidTileCheckRadius, spiritProjSpawnX + solidTileCheckRadius, spiritProjSpawnY - solidTileCheckRadius, spiritProjSpawnY + solidTileCheckRadius))
-                                    {
                                         canSpawnProj = false;
-                                    }
+
                                     if (canSpawnProj)
                                     {
                                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), (float)(spiritProjSpawnX * 16 + 8), (float)(spiritProjSpawnY * 16 + 8), 0f, 0f, ProjectileID.DesertDjinnCurse, 0, 1f, Main.myPlayer, (float)npc.target, 0f);
                                         if (CalamityWorld.death)
                                             Main.projectile[proj].extraUpdates += 1;
+
                                         break;
                                     }
                                 }
@@ -5391,13 +5393,10 @@ PrepareToShoot:
                         {
                             float dungeonCasterProjSpeed = CalamityWorld.death ? 8f : 6f;
                             if (npc.type == NPCID.DiabolistRed || npc.type == NPCID.DiabolistWhite)
-                            {
                                 dungeonCasterProjSpeed = CalamityWorld.death ? 10f : 8f;
-                            }
                             if (npc.type == NPCID.RaggedCaster || npc.type == NPCID.RaggedCasterOpenCoat)
-                            {
                                 dungeonCasterProjSpeed = CalamityWorld.death ? 5f : 4f;
-                            }
+
                             Vector2 dungeonCasterPos = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y);
                             float dungeonCasterTargetX = Main.player[npc.target].position.X + (float)Main.player[npc.target].width * 0.5f - dungeonCasterPos.X;
                             float dungeonCasterTargetY = Main.player[npc.target].position.Y + (float)Main.player[npc.target].height * 0.5f - dungeonCasterPos.Y;
@@ -5405,6 +5404,7 @@ PrepareToShoot:
                             dungeonCasterTargetDist = dungeonCasterProjSpeed / dungeonCasterTargetDist;
                             dungeonCasterTargetX *= dungeonCasterTargetDist;
                             dungeonCasterTargetY *= dungeonCasterTargetDist;
+
                             int damage = 16;
                             int projType = ProjectileID.ShadowBeamHostile;
                             if (npc.type == NPCID.DiabolistRed || npc.type == NPCID.DiabolistWhite)
@@ -5417,7 +5417,8 @@ PrepareToShoot:
                                 projType = ProjectileID.LostSoulHostile;
                                 damage = 32;
                             }
-                            int dungeonCasterProj = Projectile.NewProjectile(npc.GetSource_FromAI(), dungeonCasterPos.X, dungeonCasterPos.Y, dungeonCasterTargetX, dungeonCasterTargetY, projType, damage, 0f, Main.myPlayer, 0f, 0f);
+
+                            int dungeonCasterProj = Projectile.NewProjectile(npc.GetSource_FromAI(), dungeonCasterPos.X, dungeonCasterPos.Y, dungeonCasterTargetX, dungeonCasterTargetY, projType, damage, 0f, Main.myPlayer);
                             Main.projectile[dungeonCasterProj].timeLeft = 300;
                             if (projType == ProjectileID.InfernoHostileBolt)
                             {
@@ -5425,24 +5426,24 @@ PrepareToShoot:
                                 Main.projectile[dungeonCasterProj].ai[1] = Main.player[npc.target].Center.Y;
                                 Main.projectile[dungeonCasterProj].netUpdate = true;
                             }
+
                             npc.localAI[0] = 0f;
                         }
                     }
                     else
                     {
                         if (npc.type != NPCID.RuneWizard)
-                        {
                             SoundEngine.PlaySound(SoundID.Item8, npc.Center);
-                        }
+
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             if (npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.Tim)
                             {
-                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + npc.width / 2, (int)npc.position.Y - 8, NPCID.ChaosBall, 0, 0f, 0f, 0f, 0f, 255);
+                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + npc.width / 2, (int)npc.position.Y - 8, NPCID.ChaosBall);
                             }
                             else if (npc.type == NPCID.DarkCaster)
                             {
-                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + npc.width / 2, (int)npc.position.Y - 8, NPCID.WaterSphere, 0, 0f, 0f, 0f, 0f, 255);
+                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + npc.width / 2, (int)npc.position.Y - 8, NPCID.WaterSphere);
                             }
                             else if (npc.type == NPCID.RuneWizard)
                             {
@@ -5454,18 +5455,17 @@ PrepareToShoot:
                                 runeWizardTargetDist = runeWizardProjSpeed / runeWizardTargetDist;
                                 runeWizardTargetX *= runeWizardTargetDist;
                                 runeWizardTargetY *= runeWizardTargetDist;
-                                int runeWizardProj = Projectile.NewProjectile(npc.GetSource_FromAI(), vector14.X, vector14.Y, runeWizardTargetX, runeWizardTargetY, ProjectileID.RuneBlast, 40, 0f, Main.myPlayer, 0f, 0f);
+                                int runeWizardProj = Projectile.NewProjectile(npc.GetSource_FromAI(), vector14.X, vector14.Y, runeWizardTargetX, runeWizardTargetY, ProjectileID.RuneBlast, 40, 0f, Main.myPlayer);
                                 Main.projectile[runeWizardProj].timeLeft = 300;
                                 npc.localAI[0] = 0f;
                             }
                             else
-                            {
-                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + npc.width / 2 + npc.direction * 8, (int)npc.position.Y + 20, NPCID.BurningSphere, 0, 0f, 0f, 0f, 0f, 255);
-                            }
+                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + npc.width / 2 + npc.direction * 8, (int)npc.position.Y + 20, NPCID.BurningSphere);
                         }
                     }
                 }
             }
+
             if (npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.Tim)
             {
                 if (Main.rand.NextBool(5))
@@ -5495,11 +5495,9 @@ PrepareToShoot:
                 {
                     int runeWizardDustAmt = 1;
                     if (npc.alpha == 255)
-                    {
                         runeWizardDustAmt = 2;
-                    }
-                    int dustIncrement;
-                    for (int r = 0; r < runeWizardDustAmt; r = dustIncrement + 1)
+
+                    for (int r = 0; r < runeWizardDustAmt; r++)
                     {
                         if (Main.rand.Next(255) > 255 - npc.alpha)
                         {
@@ -5510,10 +5508,11 @@ PrepareToShoot:
                             dust.velocity.Y *= (0.1f + (float)Main.rand.Next(30) * 0.01f);
                             dust.scale *= 1f + (float)Main.rand.Next(6) * 0.1f;
                         }
-                        dustIncrement = r;
                     }
+
                     return false;
                 }
+
                 if (npc.type == NPCID.Necromancer || npc.type == NPCID.NecromancerArmored)
                 {
                     if (Main.rand.NextBool())
@@ -5554,6 +5553,7 @@ PrepareToShoot:
                         Lighting.AddLight(npc.Top, 0.6f, 0.6f, 0.3f);
                         return false;
                     }
+
                     if (Main.rand.NextBool())
                     {
                         int desertSpawnDust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.Torch, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 2f);
@@ -5564,6 +5564,7 @@ PrepareToShoot:
                     }
                 }
             }
+
             return false;
         }
         #endregion

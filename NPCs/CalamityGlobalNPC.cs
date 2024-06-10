@@ -3512,10 +3512,12 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.BloodNautilus)
                 return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
 
-            // Disable teleports for hardmode dungeon casters if they get hit
-            if (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite && npc.justHit && !CalamityWorld.revenge)
+            // Casters hold their hands up for longer before firing in all modes
+            if (npc.type == NPCID.FireImp || npc.type == NPCID.DarkCaster || npc.type == NPCID.Tim ||
+                npc.type == NPCID.RuneWizard || (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite) ||
+                npc.type == NPCID.DesertDjinn || npc.type == NPCID.GoblinSorcerer)
             {
-                npc.ai[0] = 1f;
+                return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
             }
 
             if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
@@ -4206,25 +4208,6 @@ namespace CalamityMod.NPCs
                                     return RevengeanceAndDeathAI.BuffedWormAI(npc, Mod);
                                 else
                                     return true;
-                        }
-                        break;
-
-                    case NPCAIStyleID.Caster:
-                        switch (npc.type)
-                        {
-                            case NPCID.FireImp:
-                            case NPCID.DarkCaster:
-                            case NPCID.Tim:
-                            case NPCID.RuneWizard:
-                            case NPCID.RaggedCaster:
-                            case NPCID.RaggedCasterOpenCoat:
-                            case NPCID.Necromancer:
-                            case NPCID.NecromancerArmored:
-                            case NPCID.DiabolistRed:
-                            case NPCID.DiabolistWhite:
-                            case NPCID.DesertDjinn:
-                            case NPCID.GoblinSorcerer:
-                                return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
                         }
                         break;
 
