@@ -5857,7 +5857,7 @@ namespace CalamityMod.NPCs
                 npc.type != NPCType<PhantomSpiritS>() &&
                 npc.type != NPCType<PhantomSpiritM>() &&
                 npc.type != NPCType<PhantomSpiritL>() &&
-                npc.value > 0f && npc.HasPlayerTarget &&
+                npc.value > 0f && !npc.boss && npc.HasPlayerTarget &&
                 NPC.downedMoonlord &&
                 Main.player[npc.target].ZoneDungeon)
             {
