@@ -3,6 +3,8 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -41,7 +43,17 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool MeleePrefix() => true;
 
         // Has a GFB tooltip stuffed to the brim with various references
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+            /*
+            var mainTooltip = list.FirstOrDefault(x => x.Text.Contains("[GFB]") && x.Mod == "Terraria");
+            if (mainTooltip != null)
+            {
+                mainTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("TooltipNormal"));
+            
+            }*/
+        }
         public override void AddRecipes()
         {
             CreateRecipe().

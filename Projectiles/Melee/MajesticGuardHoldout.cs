@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             base.SetDefaults();
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
         public override void OnSpawn(IEntitySource source)
@@ -77,6 +77,9 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!doSwing)
             {
+                for (int i = 0; i < Main.maxNPCs; i++)
+                    Projectile.localNPCImmunity[i] = 0;
+
                 Projectile.numHits = 0;
                 mousePos = Owner.Calamity().mouseWorld;
                 aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -130,12 +133,9 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         CanHit = true;
 
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
-                            Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 170), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                            GeneralParticleHandler.SpawnParticle(new AltLineParticle(particlePos, -particleVel.RotatedByRandom(0.2f), false, 19, Main.rand.NextFloat(0.3f, 0.7f), Main.rand.NextBool(3) ? Color.Silver : Color.Goldenrod));
-                        }
+                        Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
+                        Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 170), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
+                        GeneralParticleHandler.SpawnParticle(new AltLineParticle(particlePos, -particleVel.RotatedByRandom(0.2f), false, 19, Main.rand.NextFloat(0.3f, 0.7f), Main.rand.NextBool(3) ? Color.Silver : Color.Goldenrod));
                     }
                     else
                         CanHit = false;
@@ -184,13 +184,13 @@ namespace CalamityMod.Projectiles.Melee
                     Owner.statLife = Owner.statLifeMax2;
             }
 
-            for (int i = 0; i < MathHelper.Clamp(8 - Projectile.numHits * 2, 2, 8); i++)
+            for (int i = 0; i < MathHelper.Clamp(6 - Projectile.numHits * 2, 2, 6); i++)
             {
-                Particle spark2 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.Gold : Color.DarkGoldenrod);
+                Particle spark2 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.Gold : Color.DarkGoldenrod);
                 GeneralParticleHandler.SpawnParticle(spark2);
                 if (Main.rand.NextBool(3))
                 {
-                    Particle spark3 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Color.Silver);
+                    Particle spark3 = new AltLineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 40, Main.rand.NextFloat(0.3f, 1f), Color.Silver);
                     GeneralParticleHandler.SpawnParticle(spark3);
                 }
             }

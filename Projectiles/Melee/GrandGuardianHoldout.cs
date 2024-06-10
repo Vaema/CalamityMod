@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             base.SetDefaults();
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
         public override void OnSpawn(IEntitySource source)
@@ -78,6 +78,9 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!doSwing)
             {
+                for (int i = 0; i < Main.maxNPCs; i++)
+                    Projectile.localNPCImmunity[i] = 0;
+
                 spawnBoom = true;
                 Projectile.numHits = 0;
                 mousePos = Owner.Calamity().mouseWorld;

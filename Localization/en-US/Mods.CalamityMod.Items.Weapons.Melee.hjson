@@ -640,7 +640,7 @@ GrandDad: {
 	TooltipNormal:
 		'''
 		A high quality blade that rips through enemies using its immense weight
-Heals you on hit
+		Heals you on hit
 		Striking weaker enemies will launch them with incredible force
 		Launched enemies take immense damage when colliding with walls and floors
 		Holding <right> while swinging will heavily reduce the damage of the blade and increase its launch damage and velocity
