@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     NPC target = Main.npc[i];
                     bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-                    if (!isAPillar && !target.boss && target.IsAnEnemy(true, true) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false))
+                    if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false))
                     {
                         if (Vector2.Distance(target.Center, Projectile.Center) > 40 && Vector2.Distance(target.Center, Projectile.Center) < 600)
                             target.Center += target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX) * 22;

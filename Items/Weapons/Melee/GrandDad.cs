@@ -1,11 +1,13 @@
 ﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Rarities;
+using System.Collections.Generic;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -19,13 +21,12 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.damage = 2777;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = 77;
-            Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 77;
             Item.useTurn = true;
-            Item.knockBack = 7f;
+            Item.knockBack = 12f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
 
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<GrandDadHoldout>();
@@ -33,12 +34,18 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
         }
-
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GrandDadGlow").Value);
+        }
         public override bool MeleePrefix() => true;
+
+        // Has a GFB tooltip stuffed to the brim with various references
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<GrandGuardian>().
+                AddIngredient<MajesticGuard>().
                 AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

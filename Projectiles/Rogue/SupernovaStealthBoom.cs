@@ -306,7 +306,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     NPC target = Main.npc[i];
                     bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-                    if (!isAPillar && !target.boss && target.IsAnEnemy(true, true) && target.CanBeChasedBy(Projectile, false))
+                    if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && target.CanBeChasedBy(Projectile, false))
                     {
                         if (target != null && !CalamityPlayer.areThereAnyDamnBosses)
                         {

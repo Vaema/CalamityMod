@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Healing
                 if (Projectile.timeLeft > SlowDownTime)
                     Projectile.velocity *= 0.9f;
                 else
-                    Projectile.HealingProjectile(GrandGuardian.HealPerOrb, Projectile.owner, 12f, 15f);
+                    Projectile.HealingProjectile(10, Projectile.owner, 12f, 15f);
             }
 
             int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB));

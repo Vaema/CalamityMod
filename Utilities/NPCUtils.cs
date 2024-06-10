@@ -247,7 +247,7 @@ namespace CalamityMod
         //
         // TODO -- Use this function EVERYWHERE that target validity is checked, not just for Proximity Rage.
         // The easiest way to find locations this should be used is checks for whether something is statue spawned.
-        public static bool IsAnEnemy(this NPC npc, bool allowStatues = true, bool checkDead = true)
+        public static bool IsAnEnemy(this NPC npc, bool allowStatues = true, bool checkDead = true, bool checkDamage = true)
         {
             // Null, inactive, town NPCs, and friendlies are right out.
             if (npc is null || (!npc.active && (!checkDead || npc.life > 0)) || npc.townNPC || npc.friendly)
@@ -260,7 +260,7 @@ namespace CalamityMod
             // "Non-enemies" (e.g. butterflies or projectile enemies) with near zero max health,
             // or anything but the strongest enemies with no contact damage (e.g. Celestial Pillars, Providence)
             // do not generate rage.
-            if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || (npc.defDamage <= BalancingConstants.TinyDamageThreshold && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
+            if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || ((npc.defDamage <= BalancingConstants.TinyDamageThreshold && checkDamage) && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
                 return false;
             // Also explicitly exclude dummies and anything with a ridiculous health pool (dummies from Fargo's for example).
             if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>() || npc.lifeMax > BalancingConstants.UnreasonableHealthThreshold)

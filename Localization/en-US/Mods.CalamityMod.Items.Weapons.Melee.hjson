@@ -636,12 +636,22 @@ GoldplumeSpear: {
 
 GrandDad: {
 	DisplayName: Grand Dad
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
-		A high quality blade that rips through enemies
+		A high quality blade that rips through enemies using its immense weight
+Heals you on hit
 		Striking weaker enemies will launch them with incredible force
 		Launched enemies take immense damage when colliding with walls and floors
-		Holding <right> will heavily reduce the damage of the blade and increase its launch damage and velocity
+		Holding <right> while swinging will heavily reduce the damage of the blade and increase its launch damage and velocity
+		[c/00B8DF:'How are you swinging something that has half the mass of a star?']
+		'''
+	TooltipGFB:
+		'''
+		A high quality blade that rips through enemies
+		Striking weaker enemies will yeet them with incredible force, often leaving them Stuck Inside tiles
+		Yeeted enemies will turn to JAM when SLAMED into walls and floors
+		Listening to KFAD will heavily reduce the damage of the blade and increase its yeet damage and velocity, nice >:]
 		[c/00B8DF:'Please read the weapon description.']
 		'''
 }
@@ -650,11 +660,8 @@ GrandGuardian: {
 	DisplayName: Grand Guardian
 	Tooltip:
 		'''
-		Lowers enemy defense by 1 with every strike
-		If enemy defense is 0 or below your attacks will heal you
-		Striking enemies causes a large explosion
-		Striking enemies that are under half life will cause them to release rainbow bolts
-		Enemies spawn healing orbs on death
+		An ornate winged blade that easily cuts through enemies
+		Creates cosmic explosions and heals you slightly on hit
 		'''
 }
 
@@ -765,8 +772,8 @@ MajesticGuard: {
 	DisplayName: Majestic Guard
 	Tooltip:
 		'''
-		Lowers enemy defense by 1 with every strike
-		If enemy defense is 0 or below your attacks will heal you
+		An intricate blade, heavy enough to crush anything it wouldn't cut
+		Heals you slightly on hit
 		'''
 }
 

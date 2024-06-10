@@ -4,6 +4,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -16,15 +17,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class GrandDadHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
+    public class GrandGuardianHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
-        public override int AssignedItemID => ModContent.ItemType<GrandDad>();
+        public override int AssignedItemID => ModContent.ItemType<GrandGuardian>();
 
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<GrandDad>();
-        public override string Texture => "CalamityMod/Items/Weapons/Melee/GrandDad";
-        public override float HitboxOutset => 125;
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<GrandGuardian>();
+        public override string Texture => "CalamityMod/Items/Weapons/Melee/GrandGuardian";
+        public override float HitboxOutset => 105;
 
-        public override Vector2 HitboxSize => new Vector2(170, 170);
+        public override Vector2 HitboxSize => new Vector2(150, 150);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
         public override Vector2 SpriteOrigin => new(0, 124);
@@ -35,11 +36,12 @@ namespace CalamityMod.Projectiles.Melee
         public float fadeIn = 0;
         public int useAnim;
         public int swingCount;
+        public bool spawnBoom = true;
         public override void SetDefaults()
         {
             base.SetDefaults();
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
         public override void OnSpawn(IEntitySource source)
@@ -76,6 +78,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!doSwing)
             {
+                spawnBoom = true;
                 Projectile.numHits = 0;
                 mousePos = Owner.Calamity().mouseWorld;
                 aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -122,19 +125,18 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (time == (int)(timeMax * 0.4f))
                     {
-                        SoundStyle fire = new("CalamityMod/Sounds/Item/HeavySwing");
-                        SoundEngine.PlaySound(fire with { Volume = 0.8f, Pitch = 0.3f }, Projectile.Center);
+                        SoundEngine.PlaySound(SoundID.DD2_MonkStaffSwing with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
+                        SoundEngine.PlaySound(SoundID.DD2_GhastlyGlaivePierce with { Volume = 1f, Pitch = -0.5f }, Projectile.Center);
                     }
                     if ( time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.7f))
                     {
                         CanHit = true;
 
-                        for (int i = 0; i < 3; i++)
+                        for (int i = 0; i < 4; i++)
                         {
                             Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                             Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 170), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                            GeneralParticleHandler.SpawnParticle(new LineParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, false, 19, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue));
-                            GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, Main.rand.NextBool(4) ? Color.Black : Color.DarkBlue, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f));
+                            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(particlePos, -particleVel.RotatedByRandom(0.2f), false, 19, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.DarkOrchid : Color.DodgerBlue));
                         }
                     }
                     else
@@ -152,7 +154,14 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         for (int i = 0; i < 3; i++)
                         {
-                            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, false, 24, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.Gold : Color.Goldenrod));
+                            bool color = Main.rand.NextBool();
+                            GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, color ? Color.Cyan : Color.DarkOrchid, color ? Color.DarkOrchid : Color.Cyan, Main.rand.NextFloat(0.4f, 0.6f), 10, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
+                            GeneralParticleHandler.SpawnParticle(sparker);
+
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
+                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
+                            dust2.noGravity = true;
+                            dust2.color = Main.rand.NextBool() ? Color.Cyan : Color.DarkOrchid;
                         }
                     }   
                 }
@@ -166,21 +175,18 @@ namespace CalamityMod.Projectiles.Melee
             if (damageDone <= 2 && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
-            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
-            SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
-            SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
-            SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
-            if (Main.zenithWorld && Projectile.numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
+            if (spawnBoom)
             {
-                SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 5);
-                SoundEngine.PlaySound(fire3 with { Volume = 0.8f }, Projectile.Center);
-            }
-            if (Projectile.numHits == 0)
-            {
-                Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<GrandGuardianBoom>(), Projectile.damage / 3, Projectile.knockBack * 0.5f, Projectile.owner);
+                spawnBoom = false;
             }
 
-            int heal = (int)(MathHelper.Clamp(12 - Projectile.numHits * 3, 1, 12));
+            SoundStyle fire = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2");
+            SoundEngine.PlaySound(fire with { Volume = 0.65f, Pitch = -0.6f }, Projectile.Center);
+            SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
+            SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
+
+            int heal = (int)(MathHelper.Clamp(4 - Projectile.numHits * 2, 1, 4));
             if (Main.player[Main.myPlayer].lifeSteal > 0f)
             {
                 Owner.lifeSteal -= heal;
@@ -190,55 +196,39 @@ namespace CalamityMod.Projectiles.Melee
                     Owner.statLife = Owner.statLifeMax2;
             }
 
-            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false) || Main.zenithWorld || target.type == ModContent.NPCType<PrimordialWyrmHead>())
+            int points = 4;
+            float radians = MathHelper.TwoPi / points;
+            Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f)).RotatedByRandom(100);
+            Color useColor = Main.rand.NextBool() ? Color.Cyan : Color.DarkOrchid;
+            for (int k = 0; k < points; k++)
             {
-                if (target.type == ModContent.NPCType<PrimordialWyrmHead>())
-                {
-                    CombatText.NewText(target.Hitbox, Color.Aqua, "boop!");
-                    SoundStyle boop = new("CalamityMod/Sounds/Item/SnootBooped");
-                    SoundEngine.PlaySound(boop with {Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, Projectile.Center);
-                }
-
-                bool rightClicked = Owner.Calamity().mouseRight;
-
-                // Make all hit enemies able to hit tiles, so you can dunk them
-                target.noTileCollide = false;
-
-                // Launch the suckers
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (Main.zenithWorld ? -50 : -30) * (rightClicked ? 2 : 1);
-                target.velocity = launchVel * 0.5f;
-
-                // Remove knockback resist, just like it used to
-                target.knockBackResist = 1;
-
-                // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
-                target.FallingNPC().ApplyFallDamage(target, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel, 5f, true);
+                Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f);
+                Particle spark = new GlowSparkParticle((target.Center + velocity * 7.5f), velocity * 0.5f, false, 11, 0.07f, useColor, new Vector2(1f, 0.4f), true, false);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
-            Particle spark = new VoidSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35, false, 13, 0.5f, Color.DodgerBlue);
-            GeneralParticleHandler.SpawnParticle(spark);
+
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {
-                Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), true, 55, Main.rand.NextFloat(0.4f, 1.5f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue);
-                GeneralParticleHandler.SpawnParticle(spark2);
+                //Particle spark2 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 45, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(4) ? Color.DarkOrchid : Color.DodgerBlue);
+                //GeneralParticleHandler.SpawnParticle(spark2);
                 if (Main.rand.NextBool(3))
                 {
-                    Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), true, 55, Main.rand.NextFloat(0.4f, 1.5f), Color.Black);
-                    GeneralParticleHandler.SpawnParticle(spark3);
+                    //Particle spark3 = new LineParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 45, Main.rand.NextFloat(0.3f, 1f), Color.Lavender);
+                    //GeneralParticleHandler.SpawnParticle(spark3);
                 }
+
+                Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.7f));
+                dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
+                dust2.noGravity = true;
+                dust2.color = Main.rand.NextBool() ? Color.Cyan : Color.DarkOrchid;
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Owner.Calamity().mouseRight)
-                modifiers.SourceDamage *= 0.0025f;
-            else
-            {
-                float minMult = 0.5f;
-                int hitsToMinMult = 7;
-                float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-                modifiers.SourceDamage *= damageMult;
-            }
+            float minMult = 0.3f;
+            int hitsToMinMult = 5;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -246,14 +236,14 @@ namespace CalamityMod.Projectiles.Melee
             if ((useAnim > 0 || DrawUnconditionally) && Owner.ItemAnimationActive)
             {
                 Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-                Asset<Texture2D> glowTex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GrandDadGlow");
+                Asset<Texture2D> glowTex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GrandGuardianGlow");
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
 
                 for (int i = 0; i < 5; i++)
                 {
-                    Color auraColor = Color.Lerp(Color.DarkGoldenrod, Color.Gold, Utils.GetLerpValue(0, 5, i)) * 0.5f * fadeIn;
-                    Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/GrandDadGhost").Value;
+                    Color auraColor = Color.Lerp(Color.DodgerBlue, Color.Cyan, Utils.GetLerpValue(0, 5, i)) * 0.5f * fadeIn;
+                    Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/GrandGuardianGhost").Value;
                     Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
                     rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 1.5f);
                     Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + rotationalDrawOffset + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));

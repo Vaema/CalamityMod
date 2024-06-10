@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
