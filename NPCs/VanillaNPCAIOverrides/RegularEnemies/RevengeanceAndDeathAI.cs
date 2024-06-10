@@ -1171,58 +1171,22 @@ PrepareToShoot:
                 {
                     npc.localAI[3] -= 1f;
                 }
-                if (npc.justHit && npc.localAI[3] <= 0f && Main.rand.NextBool())
+                if (npc.justHit && npc.localAI[3] <= 0f)
                 {
-                    npc.localAI[3] = 30f;
-                    int nailCount = Main.rand.Next(3, 6);
-                    int[] players = new int[nailCount];
-                    int i = 0;
-                    foreach (Player plr in Main.ActivePlayers)
-                    {
-                        if (!plr.dead && Collision.CanHitLine(npc.position, npc.width, npc.height, plr.position, plr.width, plr.height))
-                        {
-                            players[i] = plr.whoAmI;
-                            i++;
-                            if (i == nailCount)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    if (i > 1)
-                    {
-                        for (int j = 0; j < 100; j++)
-                        {
-                            int rand = Main.rand.Next(i);
-                            int rand2;
-                            for (rand2 = rand; rand2 == rand; rand2 = Main.rand.Next(i))
-                            {
-                            }
-                            Utils.Swap(ref players[rand], ref players[rand2]);
-                        }
-                    }
-                    Vector2 velocityDelta = -Vector2.One;
-                    for (int j = 0; j < i; j++)
-                        velocityDelta += npc.SafeDirectionTo(Main.npc[players[j]].Center);
+                    npc.localAI[3] = CalamityWorld.death ? 45f : CalamityWorld.revenge ? 60f : 75f;
 
-                    velocityDelta.Normalize();
-                    for (int j = 0; j < nailCount; j++)
+                    float nailVelocity = CalamityWorld.death ? 12f : CalamityWorld.revenge ? 10f : 8f;
+                    int type = ProjectileID.Nail;
+                    int damage = (int)(npc.damage * 0.15);
+                    Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
+                    destination.Normalize();
+                    destination *= nailVelocity;
+                    int numProj = Main.rand.Next(3, 6);
+                    float rotation = MathHelper.ToRadians(numProj * 15);
+                    for (int i = 0; i < numProj; i++)
                     {
-                        float velocityMultiplier = Main.rand.Next(8, 13);
-                        Vector2 nailVelocity = Vector2.UnitY.RotatedByRandom(Math.PI * 2.0);
-                        if (i > 0)
-                        {
-                            nailVelocity += velocityDelta;
-                            nailVelocity.Normalize();
-                        }
-                        nailVelocity *= velocityMultiplier;
-                        if (i > 0)
-                        {
-                            i--;
-                            nailVelocity = npc.SafeDirectionTo(Main.npc[players[i]].Center, -Vector2.UnitY) * velocityMultiplier;
-                        }
-
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.width / 4), nailVelocity, ProjectileID.Nail, (int)(npc.damage * 0.15), 1f, 255, 0f, 0f);
+                        Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.width / 4), perturbedSpeed, type, damage, 1f, Main.maxPlayers);
                     }
                 }
             }
@@ -1523,7 +1487,7 @@ PrepareToShoot:
                 }
                 else if (npcType == NPCID.Nailhead)
                 {
-                    maxVelocity = 0.75f;
+                    maxVelocity = CalamityWorld.revenge ? 0.75f : 0.6f;
                 }
                 else if (npcType == NPCID.Psycho)
                 {
@@ -1539,7 +1503,7 @@ PrepareToShoot:
                 }
                 else if (npcType == NPCID.VortexRifleman)
                 {
-                    maxVelocity = 6f;
+                    maxVelocity = CalamityWorld.revenge ? 6f : 4.8f;
                 }
                 else if (npcType == NPCID.VortexSoldier)
                 {
@@ -1686,11 +1650,11 @@ PrepareToShoot:
             }
             else if (npcType == NPCID.IceGolem)
             {
-                FighterRunningAI(npc, CalamityWorld.death ? 4.5f : 3f, 0.3f, 0.7f);
+                FighterRunningAI(npc, CalamityWorld.death ? 4.5f : CalamityWorld.revenge ? 3f : 2f, CalamityWorld.revenge ? 0.3f : 0.2f, 0.7f);
             }
             else if (npcType == NPCID.Eyezor)
             {
-                FighterRunningAI(npc, CalamityWorld.death ? 5f : 3.5f, 0.3f, 0.8f);
+                FighterRunningAI(npc, CalamityWorld.death ? 5f : CalamityWorld.revenge ? 3.5f : 2.5f, CalamityWorld.revenge ? 0.3f : 0.2f, 0.8f);
             }
             else if (npcType == NPCID.MartianEngineer)
             {
@@ -2117,17 +2081,20 @@ PrepareToShoot:
                 {
                     npc.localAI[2]++;
                     bool closeToPlayer = npc.Distance(Main.player[npc.target].Center) < 600f && Math.Abs(npc.SafeDirectionTo(Main.player[npc.target].Center).Y) < 0.5f;
-                    if (npc.localAI[2] >= Main.rand.Next(240, CalamityWorld.death ? 300 : 480) && closeToPlayer && Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0))
+                    float vortexShotgunGateValue = CalamityWorld.death ? 240f : CalamityWorld.revenge ? 360f : 480f;
+                    if (npc.localAI[2] >= vortexShotgunGateValue && closeToPlayer && Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0))
                     {
                         npc.localAI[2] = 0f;
                         Vector2 spawnPosition = npc.Center + new Vector2(npc.direction * 30f, 2f);
-                        Vector2 baseLaserVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center, Vector2.UnitX * npc.direction) * 9f;
+                        float vortexLaserVelocity = CalamityWorld.death ? 7f : CalamityWorld.revenge ? 6f : 5f;
+                        Vector2 baseLaserVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center, Vector2.UnitX * npc.direction) * vortexLaserVelocity;
 
                         int damage = Main.expertMode ? 50 : 75;
+                        float maxSpread = CalamityWorld.death ? 0.7f : CalamityWorld.revenge ? 0.6f : 0.5f;
                         for (int i = 0; i < 4; i++)
                         {
-                            Vector2 randomizedVelocity = baseLaserVelocity + Utils.RandomVector2(Main.rand, -0.8f, 0.8f);
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition, randomizedVelocity, ProjectileID.VortexLaser, damage, 1f, Main.myPlayer, 0f, 0f);
+                            Vector2 randomizedVelocity = baseLaserVelocity + Utils.RandomVector2(Main.rand, -maxSpread, maxSpread);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition, randomizedVelocity, ProjectileID.VortexLaser, damage, 1f, Main.myPlayer);
                         }
                     }
                 }
@@ -2383,10 +2350,11 @@ PrepareToShoot:
                     npc.ai[2] = 0f;
 
                 npc.ai[2] += 1f;
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= (CalamityWorld.death ? 60f : 90f) && npc.velocity.Y == 0f && !Main.player[npc.target].dead && !Main.player[npc.target].frozen && ((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= (CalamityWorld.death ? 60f : CalamityWorld.revenge ? 90f : 120f) && npc.velocity.Y == 0f && !Main.player[npc.target].dead && !Main.player[npc.target].frozen && ((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
                     npc.netUpdate = true;
-                    Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 15;
+                    float iceLaserVelocity = CalamityWorld.death ? 12f : CalamityWorld.revenge ? 10f : 8f;
+                    Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * iceLaserVelocity;
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - Vector2.UnitY * 28 + velocity * 2f, velocity, ProjectileID.FrostBeam, 32, 0f, Main.myPlayer, 0f, 0f);
                     npc.ai[2] = 0f;
                 }
@@ -2401,12 +2369,12 @@ PrepareToShoot:
                     npc.ai[2] = 0f;
 
                 npc.ai[2] += 1f;
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= (CalamityWorld.death ? 60f : 90f) && npc.velocity.Y == 0f && !Main.player[npc.target].dead && !Main.player[npc.target].frozen && ((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= (CalamityWorld.death ? 60f : CalamityWorld.revenge ? 90f : 120f) && npc.velocity.Y == 0f && !Main.player[npc.target].dead && !Main.player[npc.target].frozen && ((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
-                    float speed = 12f;
+                    float eyeLaserVelocity = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
                     Vector2 spawnPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + 12f);
-                    Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * speed;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition, velocity, ProjectileID.EyeLaser, 40, 0f, Main.myPlayer, 0f, 0f);
+                    Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * eyeLaserVelocity;
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition, velocity, ProjectileID.EyeLaser, 40, 0f, Main.myPlayer);
                     npc.ai[2] = 0f;
                 }
             }
@@ -2492,7 +2460,7 @@ PrepareToShoot:
                     if (npc.ai[2] == 20f && Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         npc.ai[2] = (float)(-10 + Main.rand.Next(3) * -10);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y + 8f, (float)(npc.direction * 8), 0f, ProjectileID.GigaZapperSpear, 25, 1f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y + 8f, (float)(npc.direction * 8), 0f, ProjectileID.GigaZapperSpear, 25, 1f, Main.myPlayer);
                     }
                 }
             }
@@ -2917,17 +2885,13 @@ PrepareToShoot:
                                         distX = Main.player[npc.target].position.X + (float)Main.player[npc.target].width * 0.5f - spawnPosition.X;
                                         distY = Main.player[npc.target].position.Y + (float)Main.player[npc.target].height * 0.5f - spawnPosition.Y;
                                         magnitude = (float)Math.Sqrt((distX * distX + distY * distY));
-                                        magnitude = (CalamityWorld.death ? 8f : 12f) / magnitude;
-                                        distX += (float)Main.rand.Next(-40, 41);
-                                        distY += (float)Main.rand.Next(-40, 41);
+                                        magnitude = (CalamityWorld.death ? 8f : CalamityWorld.revenge ? 7f : 6f) / magnitude;
+                                        int shotgunSpread = 20;
+                                        distX += (float)Main.rand.Next(-shotgunSpread, shotgunSpread + 1);
+                                        distY += (float)Main.rand.Next(-shotgunSpread, shotgunSpread + 1);
                                         distX *= magnitude;
                                         distY *= magnitude;
-                                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer, 0f, 0f);
-                                        if (CalamityWorld.death)
-                                        {
-                                            Main.projectile[proj].extraUpdates += 1;
-                                            Main.projectile[proj].timeLeft = 1200;
-                                        }
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer);
                                     }
                                 }
                                 else if (npcType == NPCID.StardustSoldier)
@@ -2953,12 +2917,12 @@ PrepareToShoot:
                                 }
                                 else if (npcType == NPCID.StardustSpiderBig)
                                 {
-                                    int idx = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.StardustSpiderSmall, npc.whoAmI, 0f, 0f, 0f, 0f, 255);
+                                    int idx = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.StardustSpiderSmall, npc.whoAmI);
                                     Main.npc[idx].velocity = new Vector2(distX, -6f + distY);
                                 }
                                 else
                                 {
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer, 0f, 0f);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer);
                                     if (CalamityWorld.death)
                                     {
                                         Main.projectile[proj].extraUpdates += 1;

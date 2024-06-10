@@ -3512,6 +3512,13 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.BloodNautilus)
                 return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
 
+            // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
+            if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
+                npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead)
+            {
+                return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
+            }
+
             // Casters hold their hands up for longer before firing in all modes
             if (npc.type == NPCID.FireImp || npc.type == NPCID.DarkCaster || npc.type == NPCID.Tim ||
                 npc.type == NPCID.RuneWizard || (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite) ||
@@ -4008,8 +4015,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.ZombieRaincoat:
                                 case NPCID.JungleCreeper:
                                 case NPCID.BloodCrawler:
-                                case NPCID.IceGolem:
-                                case NPCID.Eyezor:
                                 case NPCID.ZombieMushroom:
                                 case NPCID.ZombieMushroomHat:
                                 case NPCID.AnomuraFungus:
@@ -4029,7 +4034,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.BoneLee:
                                 case NPCID.Paladin:
                                 case NPCID.SkeletonSniper:
-                                case NPCID.TacticalSkeleton:
                                 case NPCID.SkeletonCommando:
                                 case NPCID.AngryBonesBig:
                                 case NPCID.AngryBonesBigMuscle:
@@ -4106,7 +4110,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.StardustSoldier:
                                 case NPCID.StardustSpiderBig:
                                 case NPCID.NebulaSoldier:
-                                case NPCID.VortexRifleman:
                                 case NPCID.VortexSoldier:
                                 case NPCID.VortexLarva:
                                 case NPCID.VortexHornet:
@@ -4120,7 +4123,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.Butcher:
                                 case NPCID.CreatureFromTheDeep:
                                 case NPCID.Fritz:
-                                case NPCID.Nailhead:
                                 case NPCID.Psycho:
                                 case NPCID.ThePossessed:
                                 case NPCID.DrManFly:
