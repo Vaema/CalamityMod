@@ -642,7 +642,7 @@ GrandDad: {
 		Striking weaker enemies will launch them with incredible force
 		Launched enemies take immense damage when colliding with walls and floors
 		Holding <right> will heavily reduce the damage of the blade and increase its launch damage and velocity
-		'Please read the weapon description.'
+		[c/00B8DF:'Please read the weapon description.']
 		'''
 }
 
