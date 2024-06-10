@@ -1186,7 +1186,7 @@ PrepareToShoot:
                     for (int i = 0; i < numProj; i++)
                     {
                         Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.width / 4), perturbedSpeed, type, damage, 1f, Main.maxPlayers);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.width / 4), perturbedSpeed, type, damage, 1f, Main.maxPlayers);
                     }
                 }
             }
