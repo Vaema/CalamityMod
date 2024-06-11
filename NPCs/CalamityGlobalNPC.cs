@@ -5119,7 +5119,8 @@ namespace CalamityMod.NPCs
                 // Emit cursed flame dust from mouth when about to fire
                 else if (npc.localAI[0] > (CalamityWorld.revenge ? RevengeanceAndDeathAI.ClingerShootGateValue_Rev : RevengeanceAndDeathAI.ClingerShootGateValue) - RevengeanceAndDeathAI.ClingerTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 16f, 1, 1, DustID.CursedTorch, 0f, 0f, 100, default, 3f);
+                    Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 20f + Main.rand.NextVector2CircularEdge(5f, 5f);
+                    Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, DustID.CursedTorch, 0f, 0f, 100, default, 3f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
@@ -5134,7 +5135,7 @@ namespace CalamityMod.NPCs
                 // Emit ichor dust from mouth when about to fire
                 if (npc.ai[3] > (CalamityWorld.death ? RevengeanceAndDeathAI.IchorStickerShootGateValue_Death : CalamityWorld.revenge ? RevengeanceAndDeathAI.IchorStickerShootGateValue_Rev : RevengeanceAndDeathAI.IchorStickerShootGateValue) - RevengeanceAndDeathAI.IchorStickerTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(new Vector2(npc.Center.X - 4f, npc.position.Y + npc.height * 0.7f), 1, 1, DustID.IchorTorch, 0f, 0f, 100, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(new Vector2(npc.Center.X - 4f, npc.position.Y + npc.height * 0.7f) + Main.rand.NextVector2CircularEdge(2f, 2f), 1, 1, DustID.Ichor, 0f, 0f, 100, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
