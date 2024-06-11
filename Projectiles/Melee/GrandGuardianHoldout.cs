@@ -46,6 +46,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnSpawn(IEntitySource source)
         {
+            Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
             base.OnSpawn(source);
@@ -178,6 +179,14 @@ namespace CalamityMod.Projectiles.Melee
             if (damageDone <= 2 && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
+            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
+            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false))
+            {
+                // Launch
+                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -8;
+                target.velocity = launchVel * (target.knockBackResist == 0 ? 0 : 1f);
+            }
+
             if (spawnBoom)
             {
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<GrandGuardianBoom>(), Projectile.damage / 3, Projectile.knockBack * 0.5f, Projectile.owner);
@@ -189,8 +198,8 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
             SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(4 - Projectile.numHits * 2, 1, 4));
-            if (Projectile.numHits < 4)
+            int heal = (int)(MathHelper.Clamp(3 - Projectile.numHits, 1, 3));
+            if (Projectile.numHits < 3)
             {
                 Owner.statLife += heal;
                 Owner.HealEffect(heal);

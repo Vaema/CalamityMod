@@ -409,12 +409,10 @@ Earth: {
 	DisplayName: Earth
 	Tooltip:
 		'''
-		Lowers enemy defense by 1 with every strike
-		Your attacks will heal you a lot
-		Rains RGB meteors that explode into more meteors after a short time on enemy hits
-		Ice meteors freeze enemies
-		Flame meteors explode
-		Green meteors spawn healing orbs
+		A beautiful prismatic blade with unrivaled close combat proficiency
+		Heals you greatly on hit
+		Every other swing will summon three Gaia meteors to fall upon nearby enemies
+		'All its spawn shall know the beauty and wrath of their creator'
 		'''
 }
 
@@ -639,7 +637,7 @@ GrandDad: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		A high quality blade that rips through enemies using its immense weight
+		An unfathomably heavy blade that rips through enemies using its sheer mass
 		Heals you on hit
 		Striking weaker enemies will launch them with incredible force
 		Launched enemies take immense damage when colliding with walls and floors

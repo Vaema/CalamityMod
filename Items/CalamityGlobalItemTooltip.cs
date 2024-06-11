@@ -377,9 +377,9 @@ namespace CalamityMod.Items
             {
                 List<Color> earthColors = new List<Color>()
                 {
-                    new Color(255, 99, 146),
-                    new Color(255, 228, 94),
-                    new Color(127, 200, 248)
+                    Color.OrangeRed,
+                    Color.MediumTurquoise,
+                    Color.LimeGreen
                 };
                 if (nameLine != null)
                 {
