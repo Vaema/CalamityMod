@@ -771,7 +771,7 @@ MajesticGuard: {
 	Tooltip:
 		'''
 		An intricate blade, heavy enough to crush anything it wouldn't cut
-		Heals you slightly on hit
+		Strongly knocks back enemies and heals you slightly on hit
 		'''
 }
 
