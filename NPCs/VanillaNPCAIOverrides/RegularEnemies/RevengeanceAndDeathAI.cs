@@ -7141,7 +7141,7 @@ PrepareToShoot:
                 hoverDownwards = true;
                 if (npc.type == NPCID.IchorSticker)
                 {
-                    npc.velocity.Y = npc.velocity.Y + 3f;
+                    npc.velocity.Y += 2f;
                 }
             }
 

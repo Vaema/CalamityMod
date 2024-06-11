@@ -3528,6 +3528,10 @@ namespace CalamityMod.NPCs
                 return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
             }
 
+            // Ichor Sticker telegraph
+            if (npc.type == NPCID.IchorSticker)
+                return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
+
             // Spider web spit telegraph
             if (npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawlerWall || npc.type == NPCID.BlackRecluseWall ||
                 npc.type == NPCID.JungleCreeperWall)
@@ -4319,7 +4323,6 @@ namespace CalamityMod.NPCs
                             case NPCID.Gastropod:
                             case NPCID.IceElemental:
                             case NPCID.FloatyGross:
-                            case NPCID.IchorSticker:
                             case NPCID.Ghost:
                             case NPCID.Poltergeist:
                             case NPCID.Drippler:
