@@ -1,21 +1,23 @@
 ﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Rarities;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     public class GrandDad : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public static readonly SoundStyle GrandDadEasterEggSound = new("CalamityMod/Sounds/Custom/GFB/GrandDad");
         public override void SetDefaults()
         {
             Item.width = 124;
@@ -54,6 +56,12 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
+        }
+
+        public override void OnCreated(ItemCreationContext context)
+        {
+            if (Main.zenithWorld)
+                SoundEngine.PlaySound(GrandDadEasterEggSound, Main.LocalPlayer.MountedCenter);
         }
     }
 }
