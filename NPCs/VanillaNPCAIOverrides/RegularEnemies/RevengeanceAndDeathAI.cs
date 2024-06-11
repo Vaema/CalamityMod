@@ -1178,9 +1178,8 @@ PrepareToShoot:
             if (npcType == NPCID.Nailhead && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (npc.localAI[3] > 0f)
-                {
                     npc.localAI[3] -= 1f;
-                }
+
                 if (npc.justHit && npc.localAI[3] <= 0f)
                 {
                     npc.localAI[3] = CalamityWorld.death ? 45f : CalamityWorld.revenge ? 60f : 75f;
@@ -1196,7 +1195,7 @@ PrepareToShoot:
                     for (int i = 0; i < numProj; i++)
                     {
                         Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.width / 4), perturbedSpeed, type, damage, 1f, Main.maxPlayers);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - Vector2.UnitY * (npc.width / 4), perturbedSpeed, type, damage, 1f, Main.maxPlayers);
                     }
                 }
             }
@@ -2348,12 +2347,9 @@ PrepareToShoot:
                 // Emit web dust from mouth when about to fire
                 if (npc.localAI[0] > webSpitGateValue - SpiderWebSpitTelegraphTime)
                 {
-                    if (Main.rand.NextBool())
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
+                    Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
+                    dust.noGravity = true;
+                    dust.velocity *= 0f;
                 }
 
                 if (npc.localAI[0] >= webSpitGateValue)
@@ -2378,8 +2374,9 @@ PrepareToShoot:
                 {
                     npc.netUpdate = true;
                     float iceLaserVelocity = CalamityWorld.death ? 12f : CalamityWorld.revenge ? 10f : 8f;
-                    Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * iceLaserVelocity;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - Vector2.UnitY * 28 + velocity * 2f, velocity, ProjectileID.FrostBeam, 32, 0f, Main.myPlayer, 0f, 0f);
+                    Vector2 spawnPosition = npc.Center - Vector2.UnitY * 28f;
+                    Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * iceLaserVelocity;
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition + velocity.SafeNormalize(-Vector2.UnitY) * 100f, velocity, ProjectileID.FrostBeam, 32, 0f, Main.myPlayer);
                     npc.ai[2] = 0f;
                 }
             }
@@ -2398,7 +2395,7 @@ PrepareToShoot:
                     float eyeLaserVelocity = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
                     Vector2 spawnPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + 12f);
                     Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * eyeLaserVelocity;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition, velocity, ProjectileID.EyeLaser, 40, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition + velocity.SafeNormalize(Vector2.UnitY) * 80f, velocity, ProjectileID.EyeLaser, 40, 0f, Main.myPlayer);
                     npc.ai[2] = 0f;
                 }
             }
@@ -2904,6 +2901,7 @@ PrepareToShoot:
                             {
                                 if (npcType == NPCID.TacticalSkeleton)
                                 {
+                                    Vector2 bulletSpawnPosition = npc.Center;
                                     for (int num147 = 0; num147 < 4; num147++)
                                     {
                                         distX = Main.player[npc.target].position.X + (float)Main.player[npc.target].width * 0.5f - spawnPosition.X;
@@ -2915,7 +2913,8 @@ PrepareToShoot:
                                         distY += (float)Main.rand.Next(-shotgunSpread, shotgunSpread + 1);
                                         distX *= magnitude;
                                         distY *= magnitude;
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer);
+                                        Vector2 bulletVelocity = new Vector2(distX, distY);
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), bulletSpawnPosition + bulletVelocity.SafeNormalize(-Vector2.UnitY) * 30f, bulletVelocity, projectileType, damage, 0f, Main.myPlayer);
                                     }
                                 }
                                 else if (npcType == NPCID.StardustSoldier)
@@ -8821,12 +8820,9 @@ PrepareToShoot:
                     // Emit web dust from mouth when about to fire
                     if (npc.localAI[0] > webSpitGateValue - SpiderWebSpitTelegraphTime)
                     {
-                        if (Main.rand.NextBool())
-                        {
-                            Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
-                            dust.noGravity = true;
-                            dust.velocity *= 0f;
-                        }
+                        Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0f;
                     }
 
                     if (npc.localAI[0] >= webSpitGateValue)
