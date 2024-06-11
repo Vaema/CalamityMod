@@ -3514,7 +3514,8 @@ namespace CalamityMod.NPCs
 
             // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
             if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
-                npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead)
+                npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
+                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper)
             {
                 return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
             }
@@ -3525,6 +3526,13 @@ namespace CalamityMod.NPCs
                 npc.type == NPCID.DesertDjinn || npc.type == NPCID.GoblinSorcerer)
             {
                 return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
+            }
+
+            // Spider web spit telegraph
+            if (npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawlerWall || npc.type == NPCID.BlackRecluseWall ||
+                npc.type == NPCID.JungleCreeperWall)
+            {
+                return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
             }
 
             if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
@@ -3984,8 +3992,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.BaldZombie:
                                 case NPCID.PossessedArmor:
                                 case NPCID.ZombieEskimo:
-                                case NPCID.BlackRecluse:
-                                case NPCID.WallCreeper:
                                 case NPCID.UndeadViking:
                                 case NPCID.CorruptPenguin:
                                 case NPCID.FaceMonster:
@@ -4013,8 +4019,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.LacBeetle:
                                 case NPCID.SeaSnail:
                                 case NPCID.ZombieRaincoat:
-                                case NPCID.JungleCreeper:
-                                case NPCID.BloodCrawler:
                                 case NPCID.ZombieMushroom:
                                 case NPCID.ZombieMushroomHat:
                                 case NPCID.AnomuraFungus:
@@ -4395,10 +4399,6 @@ namespace CalamityMod.NPCs
                     case NPCAIStyleID.Spider:
                         switch (npc.type)
                         {
-                            case NPCID.BlackRecluseWall:
-                            case NPCID.WallCreeperWall:
-                            case NPCID.JungleCreeperWall:
-                            case NPCID.BloodCrawlerWall:
                             case NPCID.DesertScorpionWall:
                                 return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
                         }
