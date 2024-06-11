@@ -839,7 +839,7 @@ namespace CalamityMod.Items
             // Fairy Boots buff.
             if (item.type == ItemID.FairyBoots)
                 EditTooltipByNum(2, (line) => line.Text += "\nFairies can spawn at any time on the surface and spawn far more frequently\n" +
-                "Nearby fairies grant +2 HP/s life regen, 10 defense and  10% movement speed\n" +
+                "Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed\n" +
                 "Fairies are immune to damage and will no longer flee");
 
             // Reduced Nightwither and Holy Flames damage, and melee speed removal.
