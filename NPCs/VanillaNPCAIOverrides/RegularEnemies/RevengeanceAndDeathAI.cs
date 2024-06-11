@@ -28,6 +28,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         public const float ClingerShootGateValue_Rev = 90f;
         public const float ClingerTelegraphTime = 30f;
 
+        public const float IchorStickerShootGateValue = 120f;
+        public const float IchorStickerShootGateValue_Rev = 90f;
+        public const float IchorStickerShootGateValue_Death = 60f;
+        public const float IchorStickerTelegraphTime = 30f;
+
+        public const float SpiderWebSpitGateValue = 420f;
+        public const float SpiderWebSpitGateValue_Rev = 300f;
+        public const float SpiderWebSpitGateValue_Death = 180f;
+        public const float SpiderWebSpitTelegraphTime = 30f;
+
         #endregion
 
         #region Revengeance and Death Mode non-boss NPC AIs
@@ -2326,20 +2336,34 @@ PrepareToShoot:
             if (Main.netMode != NetmodeID.MultiplayerClient && npc.velocity.Y == 0f)
                 TryConvertToWallClimber(npc);
 
-            bool prehardmodeSpiders = npc.type == NPCID.WallCreeper || npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawler || npc.type == NPCID.BloodCrawlerWall;
+            bool prehardmodeSpiders = (npc.type == NPCID.WallCreeper || npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawler || npc.type == NPCID.BloodCrawlerWall) && CalamityWorld.revenge;
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.expertMode && npc.target >= 0 && (npcType == NPCID.BlackRecluse || npcType == NPCID.BlackRecluseWall || npc.type == NPCID.JungleCreeper || npc.type == NPCID.JungleCreeperWall || prehardmodeSpiders) && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
             {
                 npc.localAI[0] += 1f;
                 if (npc.justHit)
                     npc.localAI[0] = 0f;
 
-                float webSpitGateValue = CalamityWorld.death ? 240f : 390f;
+                float webSpitGateValue = CalamityWorld.death ? SpiderWebSpitGateValue_Death : CalamityWorld.revenge ? SpiderWebSpitGateValue_Rev : SpiderWebSpitGateValue;
+
+                // Emit web dust from mouth when about to fire
+                if (npc.localAI[0] > webSpitGateValue - SpiderWebSpitTelegraphTime)
+                {
+                    if (Main.rand.NextBool())
+                    {
+                        Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0f;
+                    }
+                }
+
                 if (npc.localAI[0] >= webSpitGateValue)
                 {
                     npc.localAI[0] = 0f;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * (prehardmodeSpiders ? 6f : 10f), ProjectileID.WebSpit, 18, 0f, Main.myPlayer, 0f, 0f);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * (prehardmodeSpiders ? 6f : 10f), ProjectileID.WebSpit, 18, 0f, Main.myPlayer);
                 }
             }
+            else
+                npc.localAI[0] = 0f;
 
             if (npcType == NPCID.IceGolem)
             {
@@ -7025,13 +7049,9 @@ PrepareToShoot:
                 npc.rotation = npc.velocity.X * 0.1f;
 
                 if (Main.player[npc.target].Center.Y < npc.Center.Y)
-                {
                     tileCheckLoopAmt = 18;
-                }
                 else
-                {
                     tileCheckLoopAmt = 9;
-                }
 
                 if (npc.justHit)
                     npc.ai[3] = 0f;
@@ -7039,12 +7059,12 @@ PrepareToShoot:
                 if (Main.netMode != NetmodeID.MultiplayerClient && !npc.confused)
                 {
                     npc.ai[3] += 1f;
-                    if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[3] >= (CalamityWorld.death ? 60f : 120f))
+                    if (npc.ai[3] >= (CalamityWorld.death ? IchorStickerShootGateValue_Death : CalamityWorld.revenge ? IchorStickerShootGateValue_Rev : IchorStickerShootGateValue))
                     {
                         npc.ai[3] = 0f;
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
                         {
-                            float ichorStickerProjSpeed = 10f;
+                            float ichorStickerProjSpeed = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
                             Vector2 ichorStickerPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f - 4f, npc.position.Y + (float)npc.height * 0.7f);
                             float ichorStickerTargetX = Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2) - ichorStickerPosition.X;
                             float ichorStickerAbsTargetX = Math.Abs(ichorStickerTargetX) * 0.1f;
@@ -7055,7 +7075,7 @@ PrepareToShoot:
                             ichorStickerTargetY *= ichorStickerTargetDist;
                             int dmg = 40;
                             int projType = ProjectileID.GoldenShowerHostile;
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), ichorStickerPosition.X, ichorStickerPosition.Y, ichorStickerTargetX, ichorStickerTargetY, projType, dmg, 0f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), ichorStickerPosition.X, ichorStickerPosition.Y, ichorStickerTargetX, ichorStickerTargetY, projType, dmg, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -8780,7 +8800,7 @@ PrepareToShoot:
                 }
             }
 
-            //Net update for changing directions
+            // Net update for changing directions
             if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
             {
                 npc.netUpdate = true;
@@ -8788,28 +8808,40 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                bool prehardmodeSpiders = npc.type == NPCID.WallCreeper || npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawler || npc.type == NPCID.BloodCrawlerWall;
-                if (Main.netMode != NetmodeID.MultiplayerClient &&
-                    npc.target >= 0 &&
-                    (npc.type == NPCID.BlackRecluse || npc.type == NPCID.BlackRecluseWall || npc.type == NPCID.JungleCreeper || npc.type == NPCID.JungleCreeperWall || prehardmodeSpiders) &&
+                bool prehardmodeSpiders = (npc.type == NPCID.WallCreeper || npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawler || npc.type == NPCID.BloodCrawlerWall) && CalamityWorld.revenge;
+                if (npc.target >= 0 && Main.expertMode && (npc.type == NPCID.BlackRecluse || npc.type == NPCID.BlackRecluseWall || npc.type == NPCID.JungleCreeper || npc.type == NPCID.JungleCreeperWall || prehardmodeSpiders) &&
                     Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
                 {
                     npc.localAI[0] += 1f;
                     if (npc.justHit)
                         npc.localAI[0] = 0f;
 
-                    float webSpitGateValue = CalamityWorld.death ? 240f : 390f;
+                    float webSpitGateValue = CalamityWorld.death ? SpiderWebSpitGateValue_Death : CalamityWorld.revenge ? SpiderWebSpitGateValue_Rev : SpiderWebSpitGateValue;
+
+                    // Emit web dust from mouth when about to fire
+                    if (npc.localAI[0] > webSpitGateValue - SpiderWebSpitTelegraphTime)
+                    {
+                        if (Main.rand.NextBool())
+                        {
+                            Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
+                            dust.noGravity = true;
+                            dust.velocity *= 0f;
+                        }
+                    }
+
                     if (npc.localAI[0] >= webSpitGateValue)
                     {
                         npc.localAI[0] = 0f;
                         Vector2 velocity = Main.player[npc.target].Center - npc.Center;
                         velocity.Normalize();
                         velocity *= prehardmodeSpiders ? 5f : 8f;
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, ProjectileID.WebSpit, 18, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, ProjectileID.WebSpit, 18, 0f, Main.myPlayer);
                     }
                 }
+                else
+                    npc.localAI[0] = 0f;
 
-                //Check for walls
+                // Check for walls
                 int npcX = (int)npc.Center.X / 16;
                 int npcY = (int)npc.Center.Y / 16;
                 bool climbingWall = false;

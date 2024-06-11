@@ -5116,7 +5116,7 @@ namespace CalamityMod.NPCs
                 // Emit cursed flame dust from mouth when about to fire
                 else if (npc.localAI[0] > (CalamityWorld.revenge ? RevengeanceAndDeathAI.ClingerShootGateValue_Rev : RevengeanceAndDeathAI.ClingerShootGateValue) - RevengeanceAndDeathAI.ClingerTelegraphTime)
                 {
-                    if (Main.rand.NextBool(3))
+                    if (Main.rand.NextBool())
                     {
                         Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.CursedTorch, 0f, 0f, 100, default, 1.5f);
                         dust.noGravity = true;
@@ -5126,9 +5126,25 @@ namespace CalamityMod.NPCs
 
                 // Reset shoot counter if inside tiles or cannot see the target
                 if (Collision.SolidCollision(npc.position, npc.width, npc.height) || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
                     npc.localAI[0] = 0f;
+            }
+
+            else if (npc.type == NPCID.IchorSticker)
+            {
+                // Emit ichor dust from mouth when about to fire
+                if (npc.ai[3] > (CalamityWorld.death ? RevengeanceAndDeathAI.IchorStickerShootGateValue_Death : CalamityWorld.revenge ? RevengeanceAndDeathAI.IchorStickerShootGateValue_Rev : RevengeanceAndDeathAI.IchorStickerShootGateValue) - RevengeanceAndDeathAI.IchorStickerTelegraphTime)
+                {
+                    if (Main.rand.NextBool())
+                    {
+                        Dust dust = Dust.NewDustDirect(new Vector2(npc.Center.X - 4f, npc.position.Y + npc.height * 0.7f), 1, 1, DustID.IchorTorch, 0f, 0f, 100, default, 1.5f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0f;
+                    }
                 }
+
+                // Reset shoot counter if cannot see the target
+                if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
+                    npc.ai[3] = 0f;
             }
 
             // Debuff decrements
