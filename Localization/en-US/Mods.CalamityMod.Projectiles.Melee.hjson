@@ -99,10 +99,8 @@ DracoBeam2.DisplayName: Draconic Beam
 DraconicSpark.DisplayName: Draconic Spark
 DragonPowFlail.DisplayName: Dragon Pow
 DragonRageFireball.DisplayName: Dragon Rage Fireball
-Earth2.DisplayName: Earth
-Earth3.DisplayName: Earth
-Earth4.DisplayName: Earth
-EarthProj.DisplayName: Earth
+EarthBoom.DisplayName: Earth's Judgement
+EarthMeteor.DisplayName: Gaia Meteor
 ElementalGlassStar.DisplayName: Glass Star
 ElementBall.DisplayName: Elemental Ball
 ElementBallShiv.DisplayName: Shiv
@@ -158,6 +156,7 @@ GhastlyChain.DisplayName: Ghastly Chain
 GhastlySoulLarge.DisplayName: Ghastly Soul
 GhastlySoulMedium.DisplayName: Ghastly Soul
 GhastlySoulSmall.DisplayName: Ghastly Soul
+GrandGuardianBoom.DisplayName: Cosmic burst
 GreenWater.DisplayName: Greentide Tooth
 GrovetendersEntanglingVines.DisplayName: Entangling Growth
 GrovetendersTouch.DisplayName: Grovetender's Touch
@@ -222,6 +221,8 @@ Razorwind.DisplayName: Razorwind
 RedtideWhirlpool.DisplayName: Whirlpool
 RemsRevengeProj.DisplayName: Rem's Revenge
 RendingNeedle.DisplayName: Rending Needle
+RespiteblockHoldout.DisplayName: Respiteblock
+RespiteblockBlood.DisplayName: Respiteblock Blood
 Rox1.DisplayName: Rock
 RoxcaliburProj.DisplayName: Roxcalibur
 RSSolarFlare.DisplayName: Flare
@@ -315,8 +316,3 @@ WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-RespiteblockHoldout.DisplayName: Respiteblock
-RespiteblockBlood.DisplayName: Respiteblock Blood
-GrandGuardianBoom.DisplayName: Grand Guardian Boom
-EarthBoom.DisplayName: Earth Boom
-EarthMeteor.DisplayName: Earth Meteor
