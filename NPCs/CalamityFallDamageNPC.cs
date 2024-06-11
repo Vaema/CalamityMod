@@ -23,6 +23,7 @@ namespace CalamityMod.NPCs
         private float terminalVelocityForFullFallDamage = 0;
         private bool CheckTiles = false;
         private Vector2 ForcedVel = Vector2.Zero;
+        private bool hitVoid = false;
 
         public int PotentialEnergyDamage
         {
@@ -90,15 +91,23 @@ namespace CalamityMod.NPCs
                 {
                     float oldVelocity = OldVelocity.Length();
 
-                    if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)))
+                    if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)) || !WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40))
                     {
                         npc.StrikeNPC(npc.CalculateHitInfo((int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f)), 1), true);
                         PotentialEnergyDamage = 0;
+                        hitVoid = false;
                     }
 
                     oldVelocity = npc.velocity.Length();
                     npc.Center += ForcedVel;
                     ForcedVel *= 0.995f;
+
+                    if (!WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40) && !hitVoid)
+                    {
+                        npc.velocity = -npc.velocity * 0.5f;
+                        ForcedVel = -ForcedVel * 0.5f;
+                        hitVoid = true;
+                    }
                 }
                 else
                 {

@@ -101,12 +101,12 @@ namespace CalamityMod.Projectiles.Melee
                 float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
 
                 Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
-                if (targetDist < 1400f)
+                if (targetDist < 1400f && time % 2 == 0)
                 {
-                    GlowSparkParticle orb = new(Projectile.Center + offset, -Projectile.velocity * 0.5f, false, 12, 0.02f, mainColor, new Vector2(0.3f, 1f), false, false);
+                    GlowSparkParticle orb = new(Projectile.Center + offset, -Projectile.velocity * 0.5f, false, 10, 0.03f, mainColor, new Vector2(0.5f, 1f), false, false);
                     GeneralParticleHandler.SpawnParticle(orb);
 
-                    GlowSparkParticle orb2 = new(Projectile.Center - offset, -Projectile.velocity * 0.5f, false, 12, 0.02f, mainColor, new Vector2(0.3f, 1f), false, false);
+                    GlowSparkParticle orb2 = new(Projectile.Center - offset, -Projectile.velocity * 0.5f, false, 10, 0.03f, mainColor, new Vector2(0.5f, 1f), false, false);
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }

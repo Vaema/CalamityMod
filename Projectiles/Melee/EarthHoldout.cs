@@ -231,8 +231,8 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
             SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(20 - Projectile.numHits * 15, 1, 20));
-            if (Projectile.numHits < 20)
+            int heal = (int)(MathHelper.Clamp(30 - Projectile.numHits * 25, 1, 30));
+            if (Projectile.numHits < 30)
             {
                 Owner.statLife += heal;
                 Owner.HealEffect(heal);
