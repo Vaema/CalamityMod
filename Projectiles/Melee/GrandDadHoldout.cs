@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             if (Main.zenithWorld && Projectile.numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
             {
-                SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 5);
+                SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 8);
                 SoundEngine.PlaySound(fire3 with { Volume = 0.8f }, Projectile.Center);
             }
             if (Projectile.numHits == 0)

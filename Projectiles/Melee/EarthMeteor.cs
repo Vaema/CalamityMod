@@ -77,8 +77,8 @@ namespace CalamityMod.Projectiles.Melee
             if (SoundEngine.TryGetActiveSound(AudSlot, out var ChargeSound) && ChargeSound.IsPlaying && Projectile.ai[2] == 2)
             {
                 ChargeSound.Position = Projectile.Center;
-                ChargeSound.Pitch = Utils.Remap(time, 0, fallTime, 0.4f, -0.6f) * 100;
-                ChargeSound.Volume = Utils.Remap(time, 0, fallTime, 0f, 0.7f) * 100;
+                ChargeSound.Pitch = Utils.Remap(time, 0, fallTime, 0.4f, -0.8f) * 100;
+                ChargeSound.Volume = Utils.Remap(time, fallTime * 0.2f, fallTime, 0f, 0.9f) * 100;
             }
             if (time == (int)(fallTime * 0.2f) && Projectile.ai[2] > 0)
             {
@@ -115,10 +115,10 @@ namespace CalamityMod.Projectiles.Melee
                 float randSize = Main.rand.NextFloat(0.8f, 1.2f);
                 for (int i = 0; i < 2; i++)
                 {
-                    Particle bloom = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * Utils.Remap(time, 0, fallTime, 0, 0.65f), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 3), Utils.Remap(time, fallTime * 0.7f, fallTime, 1, 2)), 0, 0.7f * randSize, 0f, 3);
+                    Particle bloom = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * Utils.Remap(time, 0, fallTime, 0, 0.65f), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 3), Utils.Remap(time, fallTime * 0.7f, fallTime, 1, 2)), 0, 0.8f * randSize, 0f, 3);
                     GeneralParticleHandler.SpawnParticle(bloom);
                 }
-                Particle bloom3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * Utils.Remap(time, 0, fallTime, 0f, 0.65f), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 3), Utils.Remap(time, fallTime * 0.7f, fallTime, 1, 2)), 0, 0.55f * randSize, 0f, 3);
+                Particle bloom3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * Utils.Remap(time, 0, fallTime, 0f, 0.65f), "CalamityMod/Particles/LargeBloom", new Vector2(Utils.Remap(time, 0, fallTime, 0.3f, 3), Utils.Remap(time, fallTime * 0.7f, fallTime, 1, 2)), 0, 0.65f * randSize, 0f, 3);
                 GeneralParticleHandler.SpawnParticle(bloom3);
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
