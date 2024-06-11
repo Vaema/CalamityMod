@@ -2343,6 +2343,7 @@ namespace CalamityMod.CalPlayer
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             AlchFlaskCooldown = 0;
+            ascendantInsigniaCooldown = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
