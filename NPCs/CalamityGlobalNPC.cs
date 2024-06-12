@@ -991,7 +991,7 @@ namespace CalamityMod.NPCs
             // Static Discharge
             if (staticDischarge > 0)
             {
-                int baseStaticDischargeDoTValue = (int)(8 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 32 on moving targets
+                int baseStaticDischargeDoTValue = (int)(6 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
                 ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
