@@ -38,6 +38,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         public const float SpiderWebSpitGateValue_Death = 180f;
         public const float SpiderWebSpitTelegraphTime = 30f;
 
+        public const float AntlionSandSpitGateValue = 200f;
+        public const float AntlionSandSpitTelegraphTime = 30f;
+
+        public const float BlazingWheelFlameGateValue = 120f;
+        public const float BlazingWheelFlameGateValue_Death = 90f;
+        public const float BlazingWheelTelegraphTime = 30f;
+
         #endregion
 
         #region Revengeance and Death Mode non-boss NPC AIs
@@ -6523,9 +6530,9 @@ PrepareToShoot:
         #region Antlion AI
         public static bool BuffedAntlionAI(NPC npc, Mod mod)
         {
-            npc.TargetClosest(true);
+            npc.TargetClosest();
 
-            //Calculate speed and velocity of the sand balls
+            // Calculate speed and velocity of the sand balls
             float speed = 12f;
             float xVel = Main.player[npc.target].Center.X - npc.Center.X;
             float yVel = Main.player[npc.target].position.Y - npc.Center.Y;
@@ -6536,26 +6543,23 @@ PrepareToShoot:
             velocity.X *= targetDist;
             velocity.Y *= targetDist;
 
-            //Adjust rotation and velocity
+            // Adjust rotation and velocity
             bool canShoot = false;
             if (npc.directionY < 0)
             {
-                //Set rotation based on the target location
+                // Set rotation based on the target location
                 npc.rotation = velocity.ToRotation() + MathHelper.PiOver2;
-                //Antlions can only shoot if rotated between a certain cone of spread based on the target location
+
+                // Antlions can only shoot if rotated between a certain cone of spread based on the target location
                 canShoot = Math.Abs(npc.rotation) <= 1.2f;
 
-                //Hardcap rotation so it doesn't look weird, but since the above calculation happens first, it ignores this cap
+                // Hardcap rotation so it doesn't look weird, but since the above calculation happens first, it ignores this cap
                 if (npc.rotation < -0.8f)
-                {
                     npc.rotation = -0.8f;
-                }
                 else if (npc.rotation > 0.8f)
-                {
                     npc.rotation = 0.8f;
-                }
 
-                //Antlions generally don't move horizontally so prevent that as needed
+                // Antlions generally don't move horizontally so prevent that as needed
                 if (npc.velocity.X != 0f)
                 {
                     npc.velocity.X *= 0.9f;
@@ -6567,33 +6571,41 @@ PrepareToShoot:
                 }
             }
 
-            if (npc.justHit)
-                npc.ai[0] = 199f;
+            bool lineofSight = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
 
-            //Decrement the firing cooldown, play a sound if at full meaning it just fired
+            if (npc.justHit || !lineofSight)
+                npc.ai[0] = AntlionSandSpitGateValue - 1f;
+
+            // Decrement the firing cooldown, play a sound if at full meaning it just fired
             if (npc.ai[0] > 0f)
             {
-                if (npc.ai[0] == 200f)
-                {
+                if (npc.ai[0] == AntlionSandSpitGateValue)
                     SoundEngine.PlaySound(SoundID.NPCDeath13, npc.Center);
-                }
+
                 npc.ai[0] -= 1f;
             }
 
-            //Antlions should only fire if the target is in the shooting cone and has a line of sight as well as not being on cooldown.
-            bool lineofSight = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+            // Emit sand dust from mouth when about to fire
+            if (npc.ai[0] <= AntlionSandSpitTelegraphTime)
+            {
+                Dust dust = Dust.NewDustDirect(npc.Center + velocity.SafeNormalize(-Vector2.UnitY) * 16f + Main.rand.NextVector2CircularEdge(6f, 6f), 1, 1, DustID.Sand, 0f, 0f, 0, default, 1.5f);
+                dust.noGravity = true;
+                dust.velocity *= 0f;
+            }
+
+            // Antlions should only fire if the target is in the shooting cone and has a line of sight as well as not being on cooldown.
             if (Main.netMode != NetmodeID.MultiplayerClient && canShoot && npc.ai[0] == 0f && lineofSight)
             {
-                //Reset the firing cooldown to 3.3333 seconds
-                npc.ai[0] = 200f;
+                // Reset the firing cooldown to 3.3333 seconds
+                npc.ai[0] = AntlionSandSpitGateValue;
 
-                //With the Rev and Death damage calculations, this becomes 56 damage.
+                // With the Rev and Death damage calculations, this becomes 56 damage.
                 int damage = 10;
 
                 int projType = ProjectileID.SandBallFalling;
 
                 // 2 to 3 in Rev, 3 to 5 in Death, if FTW is also enabled, 8 to 13 (random chance for 10x the amount)
-                int projAmt = Main.rand.Next(CalamityWorld.death ? 3 : 2, CalamityWorld.death ? 6 : 4);
+                int projAmt = CalamityWorld.revenge ? Main.rand.Next(CalamityWorld.death ? 3 : 2, CalamityWorld.death ? 6 : 4) : 1;
                 if (Main.getGoodWorld)
                 {
                     projAmt = Main.rand.Next(8, 14);
@@ -6603,31 +6615,31 @@ PrepareToShoot:
 
                 for (int i = 0; i < projAmt; i++)
                 {
-                    //Adjust the velocity to make it a shotgun-like spread
+                    // Adjust the velocity to make it a shotgun-like spread
                     velocity.X += (float)Main.rand.Next(-30, 31) * 0.05f;
                     velocity.Y += (float)Main.rand.Next(-30, 31) * 0.05f;
 
-                    int sandBall = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, projType, damage, 0f, Main.myPlayer, 0f, 0f);
+                    int sandBall = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, projType, damage, 0f, Main.myPlayer);
                     Main.projectile[sandBall].ai[0] = 2f;
                     Main.projectile[sandBall].timeLeft = 300;
                     Main.projectile[sandBall].friendly = false;
                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, sandBall, 0f, 0f, 0f, 0, 0, 0);
                 }
+
                 npc.netUpdate = true;
             }
 
             try
             {
-                //This tile checking behavior is used for when Antlions cover themselves in sand and need to rise upward to get to the surface
+                // This tile checking behavior is used for when Antlions cover themselves in sand and need to rise upward to get to the surface
                 int xLeft = (int)npc.position.X / 16;
                 int xCenter = (int)npc.Center.X / 16;
                 int xRight = (int)(npc.position.X + (float)npc.width) / 16;
                 int y = (int)(npc.position.Y + (float)npc.height) / 16;
                 bool tileClimbing = false;
                 if ((Main.tile[xLeft, y].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[xLeft, y].TileType]) || (Main.tile[xCenter, y].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[xCenter, y].TileType]) || (Main.tile[xRight, y].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[xRight, y].TileType]))
-                {
                     tileClimbing = true;
-                }
+
                 if (tileClimbing)
                 {
                     npc.noGravity = true;
@@ -6635,7 +6647,7 @@ PrepareToShoot:
                     npc.velocity.Y = -0.2f;
                 }
 
-                //If not rising up through tiles, occasionally spawn some dust
+                // If not rising up through tiles, occasionally spawn some dust
                 else
                 {
                     npc.noGravity = false;
@@ -6657,6 +6669,7 @@ PrepareToShoot:
             catch
             {
             }
+
             return false;
         }
         #endregion
@@ -6748,24 +6761,26 @@ PrepareToShoot:
         {
             if (npc.ai[0] == 0f)
             {
-                npc.TargetClosest(true);
+                npc.TargetClosest();
                 npc.directionY = 1;
                 npc.ai[0] = 1f;
             }
+
             int wheelVelocity = CalamityWorld.death ? 9 : 6;
             if (npc.ai[1] == 0f)
             {
                 npc.rotation += (float)(npc.direction * npc.directionY) * 0.13f;
+
                 if (npc.collideY)
-                {
                     npc.ai[0] = 2f;
-                }
+
                 if (!npc.collideY && npc.ai[0] == 2f)
                 {
                     npc.direction = -npc.direction;
                     npc.ai[1] = 1f;
                     npc.ai[0] = 1f;
                 }
+
                 if (npc.collideX)
                 {
                     npc.directionY = -npc.directionY;
@@ -6775,42 +6790,55 @@ PrepareToShoot:
             else
             {
                 npc.rotation -= (float)(npc.direction * npc.directionY) * 0.13f;
+
                 if (npc.collideX)
-                {
                     npc.ai[0] = 2f;
-                }
+
                 if (!npc.collideX && npc.ai[0] == 2f)
                 {
                     npc.directionY = -npc.directionY;
                     npc.ai[1] = 0f;
                     npc.ai[0] = 1f;
                 }
+
                 if (npc.collideY)
                 {
                     npc.direction = -npc.direction;
                     npc.ai[1] = 0f;
                 }
             }
+
             npc.velocity.X = (float)(wheelVelocity * npc.direction);
             npc.velocity.Y = (float)(wheelVelocity * npc.directionY);
+
             float lighting = (float)(270 - (int)Main.mouseTextColor) / 400f;
             Lighting.AddLight((int)(npc.position.X + (float)(npc.width / 2)) / 16, (int)(npc.position.Y + (float)(npc.height / 2)) / 16, 0.9f, 0.3f + lighting, 0.2f);
+
+            // Emit fire dust from center when about to fire
+            if (npc.localAI[0] > (CalamityWorld.death ? BlazingWheelFlameGateValue_Death : BlazingWheelFlameGateValue) - BlazingWheelTelegraphTime)
+            {
+                Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, DustID.Torch, 0f, 0f, 0, default, 3f);
+                dust.noGravity = true;
+                dust.velocity *= 0f;
+            }
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 npc.localAI[0] += 1f;
-                if (npc.localAI[0] >= (CalamityWorld.death ? 90f : 120f))
+                if (npc.localAI[0] >= (CalamityWorld.death ? BlazingWheelFlameGateValue_Death : BlazingWheelFlameGateValue))
                 {
                     npc.localAI[0] = 0f;
                     for (int i = 0; i < 4; i++)
                     {
                         Vector2 vector255 = new Vector2(0f, -5f).RotatedBy((double)(MathHelper.PiOver2 * (float)i));
-                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, vector255.X, vector255.Y, ProjectileID.FlamesTrap, 20, 0f, Main.myPlayer, 0f, 0f);
+                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, vector255, ProjectileID.FlamesTrap, 20, 0f, Main.myPlayer);
                         Main.projectile[proj].tileCollide = false;
                         Main.projectile[proj].friendly = false;
                         Main.projectile[proj].trap = false;
                     }
                 }
             }
+
             return false;
         }
         #endregion
@@ -7061,10 +7089,10 @@ PrepareToShoot:
                     if (npc.ai[3] >= (CalamityWorld.death ? IchorStickerShootGateValue_Death : CalamityWorld.revenge ? IchorStickerShootGateValue_Rev : IchorStickerShootGateValue))
                     {
                         npc.ai[3] = 0f;
-                        if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
+                        Vector2 ichorStickerPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f - 4f, npc.position.Y + (float)npc.height * 0.7f);
+                        if (Collision.CanHit(ichorStickerPosition, 1, 1, Main.player[npc.target].Center, 1, 1))
                         {
                             float ichorStickerProjSpeed = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
-                            Vector2 ichorStickerPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f - 4f, npc.position.Y + (float)npc.height * 0.7f);
                             float ichorStickerTargetX = Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2) - ichorStickerPosition.X;
                             float ichorStickerAbsTargetX = Math.Abs(ichorStickerTargetX) * 0.1f;
                             float ichorStickerTargetY = Main.player[npc.target].position.Y + (float)(Main.player[npc.target].height / 2) - ichorStickerPosition.Y - ichorStickerAbsTargetX;
@@ -7140,9 +7168,7 @@ PrepareToShoot:
             {
                 hoverDownwards = true;
                 if (npc.type == NPCID.IchorSticker)
-                {
-                    npc.velocity.Y += 2f;
-                }
+                    npc.velocity.Y += 3f;
             }
 
             if (hoverDownwards)
@@ -7237,18 +7263,18 @@ PrepareToShoot:
                 }
             }
 
-            float maxHoverVel = 4f;
+            float maxHoverVel = 2f;
             if (npc.type == NPCID.Pixie)
             {
-                maxHoverVel = 5f;
+                maxHoverVel = 3f;
             }
             if (npc.type == NPCID.Reaper)
             {
-                maxHoverVel = 6f;
+                maxHoverVel = 4f;
             }
             if (npc.type == NPCID.Drippler)
             {
-                maxHoverVel = 2.5f;
+                maxHoverVel = 1.5f;
             }
             if (CalamityWorld.death)
             {
@@ -7261,7 +7287,7 @@ PrepareToShoot:
                 maxHoverVel = 6f;
                 if (!runAway)
                 {
-                    npc.TargetClosest(true);
+                    npc.TargetClosest();
                 }
                 else if (npc.timeLeft > 10)
                 {
@@ -7269,11 +7295,11 @@ PrepareToShoot:
                 }
                 if (npc.direction < 0 && npc.velocity.X > 0f)
                 {
-                    npc.velocity.X = npc.velocity.X * 0.9f;
+                    npc.velocity.X = npc.velocity.X * 0.8f;
                 }
                 if (npc.direction > 0 && npc.velocity.X < 0f)
                 {
-                    npc.velocity.X = npc.velocity.X * 0.9f;
+                    npc.velocity.X = npc.velocity.X * 0.8f;
                 }
             }
 

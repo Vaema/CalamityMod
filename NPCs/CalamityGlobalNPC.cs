@@ -3528,6 +3528,10 @@ namespace CalamityMod.NPCs
                 return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
             }
 
+            // Antlion telegraph
+            if (npc.type == NPCID.Antlion)
+                return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
+
             // Ichor Sticker telegraph
             if (npc.type == NPCID.IchorSticker)
                 return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
@@ -4288,14 +4292,6 @@ namespace CalamityMod.NPCs
                             case NPCID.BloodJelly:
                             case NPCID.FungoFish:
                                 return RevengeanceAndDeathAI.BuffedJellyfishAI(npc, Mod);
-                        }
-                        break;
-
-                    case NPCAIStyleID.Antlion:
-                        switch (npc.type)
-                        {
-                            case NPCID.Antlion:
-                                return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
                         }
                         break;
 
