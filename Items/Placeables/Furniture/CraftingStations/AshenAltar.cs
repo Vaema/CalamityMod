@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             CreateRecipe().
                 AddIngredient<SmoothBrimstoneSlag>(10).
-                AddIngredient<DemonicBoneAsh>(3).
+                AddIngredient<DemonicBoneAsh>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
         {
             CreateRecipe().
                 AddIngredient<BrimstoneSlag>(10).
-                AddIngredient<DemonicBoneAsh>(1).
+                AddIngredient<DemonicBoneAsh>(5).
                 AddTile<AncientAltar>().
                 Register();
         }

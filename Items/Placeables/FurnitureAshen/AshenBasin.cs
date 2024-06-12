@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         {
             CreateRecipe().
                 AddIngredient<SmoothBrimstoneSlag>(10).
-                AddIngredient<DemonicBoneAsh>(1).
+                AddIngredient<DemonicBoneAsh>(5).
                 AddTile<AshenAltar>().
                 Register();
         }
