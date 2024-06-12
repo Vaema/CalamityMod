@@ -28,9 +28,8 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         {
             CreateRecipe().
                 AddIngredient<SmoothBrimstoneSlag>(10).
-                AddIngredient<UnholyCore>(5).
+                AddIngredient<DemonicBoneAsh>(1).
                 AddTile<AshenAltar>().
-                AddDecraftCondition(Condition.DownedMechBossAny).
                 Register();
         }
     }

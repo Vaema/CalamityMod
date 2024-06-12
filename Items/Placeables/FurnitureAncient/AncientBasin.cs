@@ -1,4 +1,5 @@
 ﻿
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
@@ -28,7 +29,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
         {
             CreateRecipe().
                 AddIngredient<BrimstoneSlag>(10).
-                AddIngredient<InfernalSuevite>(5).
+                AddIngredient<DemonicBoneAsh>(1).
                 AddTile<AncientAltar>().
                 Register();
         }
