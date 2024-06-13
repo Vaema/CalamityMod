@@ -22,6 +22,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
+using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
@@ -1492,6 +1493,46 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self);
+            }
+        }
+        #endregion
+
+        #region Block Abyss from Teleportation Potions
+
+        public static void TPOverride(Terraria.On_Player.orig_Teleport orig, Player self, Vector2 newPos, int Style = 0, int extraInfo = 0)
+        {
+            // Grab the tile from where the potion wants to teleport
+            Tile t = CalamityUtils.ParanoidTileRetrieval(newPos.ToTileCoordinates().X, newPos.ToTileCoordinates().Y);
+            // Check if it's a Teleportation Potion
+            if (Style == 2)
+            {
+                // Check if it's an Abyss wall
+                if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                {
+                    // If an Abyss wall is detected, try to find another teleportation location
+                    bool canSpawn = false;
+                    int teleportStartX = 100;
+                    int teleportRangeX = Main.maxTilesX - 200;
+                    int teleportStartY = 100;
+                    int underworldLayer = Main.UnderworldLayer;
+                    Vector2 newerPos = self.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, teleportRangeX, teleportStartY, underworldLayer, new Player.RandomTeleportationAttemptSettings
+                    {
+                        avoidLava = true,
+                        avoidHurtTiles = true,
+                        maximumFallDistanceFromOrignalPoint = 100,
+                        attemptsBeforeGivingUp = 1000
+                    });
+                    // Attempt teleporting again with the new location
+                    orig(self, newerPos, Style, extraInfo);
+                }
+                else
+                {
+                    orig(self, newPos, Style, extraInfo);
+                }
+            }
+            else
+            {
+                orig(self, newPos, Style, extraInfo);
             }
         }
         #endregion
