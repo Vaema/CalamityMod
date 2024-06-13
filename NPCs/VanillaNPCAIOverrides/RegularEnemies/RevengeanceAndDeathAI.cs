@@ -6005,7 +6005,7 @@ PrepareToShoot:
                 // Emit feather dust from center when about to shoot
                 if (npc.ai[0] > HarpyFeatherGateValue - HarpyFeatherTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 42, 0f, 0f, 0, default, 3f);
+                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 42, 0f, 0f, 0, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
@@ -6015,7 +6015,7 @@ PrepareToShoot:
                 // Emit shadowflame dust from center when about to shoot
                 if (npc.ai[0] > DemonScytheGateValue - DemonScytheTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(10f, 10f), 1, 1, 27, 0f, 0f, 100, default, 3f);
+                    Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 27, 0f, 0f, 100, default, 3f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
@@ -6025,7 +6025,7 @@ PrepareToShoot:
                 // Emit shadowflame dust from center when about to shoot
                 if (npc.ai[0] > RedDevilTridentGateValue - RedDevilTridentTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(10f, 10f), 1, 1, 27, 0f, 0f, 100, default, 3f);
+                    Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 27, 0f, 0f, 100, default, 3f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
