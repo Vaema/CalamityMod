@@ -5838,16 +5838,16 @@ PrepareToShoot:
             else
                 npc.TargetClosest();
 
-            float maxSpeedX = CalamityWorld.death ? 6f : 5f;
-            float maxSpeedY = CalamityWorld.death ? 2.5f : 2f;
+            float maxSpeedX = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
+            float maxSpeedY = CalamityWorld.death ? 2.5f : CalamityWorld.revenge ? 2f : 1.5f;
 
-            float xAccel = 0.12f;
-            float xAccelBoost1 = 0.12f;
-            float xAccelBoost2 = 0.06f;
+            float xAccel = CalamityWorld.revenge ? 0.12f : 0.1f;
+            float xAccelBoost1 = CalamityWorld.revenge ? 0.12f : 0.1f;
+            float xAccelBoost2 = CalamityWorld.revenge ? 0.06f : 0.04f;
 
-            float yAccel = 0.06f;
-            float yAccelBoost1 = 0.07f;
-            float yAccelBoost2 = 0.05f;
+            float yAccel = CalamityWorld.revenge ? 0.06f : 0.04f;
+            float yAccelBoost1 = CalamityWorld.revenge ? 0.07f : 0.05f;
+            float yAccelBoost2 = CalamityWorld.revenge ? 0.05f : 0.03f;
 
             if (npc.type == NPCID.VampireBat)
             {
@@ -5890,14 +5890,14 @@ PrepareToShoot:
                 npc.type == NPCID.GiantFlyingFox ||
                 npc.type == ModContent.NPCType<Melter>())
             {
-                maxSpeedX = CalamityWorld.death ? 6f : 5f;
-                maxSpeedY = CalamityWorld.death ? 2.5f : 2f;
+                maxSpeedX = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
+                maxSpeedY = CalamityWorld.death ? 2.5f : CalamityWorld.revenge ? 2f : 1.5f;
                 if (npc.wet)
                 {
                     if (npc.velocity.Y > 0f)
                         npc.velocity.Y *= 0.95f;
 
-                    npc.velocity.Y -= 0.6f;
+                    npc.velocity.Y -= CalamityWorld.revenge ? 0.6f : 0.5f;
                     if (npc.velocity.Y < -5f)
                         npc.velocity.Y = -5f;
 
@@ -5916,13 +5916,13 @@ PrepareToShoot:
                 }
                 else
                 {
-                    xAccel = 0.12f;
-                    xAccelBoost1 = 0.12f;
-                    xAccelBoost2 = 0.07f;
+                    xAccel = CalamityWorld.revenge ? 0.12f : 0.1f;
+                    xAccelBoost1 = CalamityWorld.revenge ? 0.12f : 0.1f;
+                    xAccelBoost2 = CalamityWorld.revenge ? 0.07f : 0.05f;
 
-                    yAccel = 0.06f;
-                    yAccelBoost1 = 0.07f;
-                    yAccelBoost2 = 0.05f;
+                    yAccel = CalamityWorld.revenge ? 0.06f : 0.04f;
+                    yAccelBoost1 = CalamityWorld.revenge ? 0.07f : 0.05f;
+                    yAccelBoost2 = CalamityWorld.revenge ? 0.05f : 0.03f;
                 }
 
                 DemonEyeAI.DemonEyeBatMovement(npc, maxSpeedX, maxSpeedY, xAccel, xAccelBoost1, xAccelBoost2, yAccel, yAccelBoost1, yAccelBoost2);
@@ -5935,7 +5935,7 @@ PrepareToShoot:
                 if (npc.velocity.Y > 0f)
                     npc.velocity.Y *= 0.95f;
 
-                npc.velocity.Y -= 0.6f;
+                npc.velocity.Y -= CalamityWorld.revenge ? 0.6f : 0.5f;
                 if (npc.velocity.Y < -5f)
                     npc.velocity.Y = -5f;
 

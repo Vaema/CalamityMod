@@ -3520,6 +3520,13 @@ namespace CalamityMod.NPCs
                 return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
             }
 
+            // More telegraphs
+            if (npc.type == NPCID.Harpy || npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon ||
+                npc.type == NPCID.RedDevil)
+            {
+                return RevengeanceAndDeathAI.BuffedBatAI(npc, Mod);
+            }
+
             // Casters hold their hands up for longer before firing in all modes
             if (npc.type == NPCID.FireImp || npc.type == NPCID.DarkCaster || npc.type == NPCID.Tim ||
                 npc.type == NPCID.RuneWizard || (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite) ||
@@ -4247,19 +4254,15 @@ namespace CalamityMod.NPCs
                         {
                             switch (npc.type)
                             {
-                                case NPCID.Harpy:
                                 case NPCID.CaveBat:
                                 case NPCID.JungleBat:
                                 case NPCID.Hellbat:
-                                case NPCID.Demon:
-                                case NPCID.VoodooDemon:
                                 case NPCID.GiantBat:
                                 case NPCID.Slimer:
                                 case NPCID.IlluminantBat:
                                 case NPCID.IceBat:
                                 case NPCID.Lavabat:
                                 case NPCID.GiantFlyingFox:
-                                case NPCID.RedDevil:
                                 case NPCID.FlyingSnake:
                                 case NPCID.VampireBat:
                                 case NPCID.SporeBat:
