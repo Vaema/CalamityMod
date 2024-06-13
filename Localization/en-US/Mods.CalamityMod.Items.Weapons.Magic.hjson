@@ -34,7 +34,17 @@ AlulaAustralis: {
 
 AnahitasArpeggio: {
 	DisplayName: Anahita's Arpeggio
-	Tooltip: Casts slow-moving treble clefs that confuse enemies
+	Tooltip: "[GFB]"
+	TooltipNormal:
+		'''
+		Holding <left> casts up to 6 treble clefs that orbit the player
+		Releasing <left> causes the treble clefs to fade away, then converge at the cursor
+		'''
+	TooltipGFB:
+		'''
+		"NOOOOOOOO! You're supposed to obey me!!!!"
+		The seven treble clef souls:
+		'''
 }
 
 ApoctosisArray: {

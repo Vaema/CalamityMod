@@ -10,6 +10,13 @@ namespace CalamityMod.Projectiles.Magic
     public class AnahitasArpeggioNote : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public ref float Timer => ref Projectile.ai[0];
+        public ref float AIState => ref Projectile.ai[1];
+        public int LingeringTime = 300;
+        public int FadeOutTime = 20;
+        public bool HasSetFadeOutVelocity = false;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
@@ -22,66 +29,153 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 30;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 5;
-            Projectile.timeLeft = 420;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 7;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
         {
-            if (Projectile.velocity.Length() > 4f)
-                Projectile.velocity *= 0.985f;
+            Player Owner = Main.player[Projectile.owner];
+            Timer++;
 
+            // Slight size oscillation
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.scale += 0.02f;
-                if (Projectile.scale >= 1.25f)
+                if (Projectile.scale >= 1.15f)
                     Projectile.localAI[0] = 1f;
             }
             else if (Projectile.localAI[0] == 1f)
             {
                 Projectile.scale -= 0.02f;
-                if (Projectile.scale <= 0.75f)
+                if (Projectile.scale <= 0.85f)
                     Projectile.localAI[0] = 0f;
             }
 
-            if (Projectile.ai[1] == 0f)
+            if (Timer == 1f)
             {
-                Projectile.ai[1] = 1f;
-                Main.musicPitch = Projectile.ai[0];
-                SoundEngine.PlaySound(SoundID.Item26, Projectile.Center);
+                Main.musicPitch = 0.1f * Owner.ownedProjectileCounts[Projectile.type];
+                SoundEngine.PlaySound(SoundID.Item26, Owner.Center);
             }
 
-            Lighting.AddLight(Projectile.Center, 0f, 0f, 1.2f);
-
-            if (Projectile.velocity.X > 0f)
-                Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X);
+            if (Main.zenithWorld)
+                Lighting.AddLight(Projectile.Center, 1.25f, 1.25f, 1.25f);
             else
-                Projectile.rotation = (float)Math.Atan2(-Projectile.velocity.Y, -Projectile.velocity.X);
-        }
+                Lighting.AddLight(Projectile.Center, 0f, 0f, 1.25f);
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (Projectile.velocity.X != oldVelocity.X)
-                Projectile.velocity.X = -oldVelocity.X;
 
-            if (Projectile.velocity.Y != oldVelocity.Y)
-                Projectile.velocity.Y = -oldVelocity.Y;
+            if (AIState == 0f) // Orbiting the player
+            {
+                // Keeps the projectile alive for as long as the weapon is being channeled
+                Projectile.timeLeft = LingeringTime + FadeOutTime;
 
-            return false;
+                // Makes the music notes appear to orbit around the player
+                float rotationSpeed = (Main.zenithWorld ? 2.5714f : 3f) * Owner.GetWeaponAttackSpeed(Owner.HeldItem);
+                Projectile.Center = Owner.Center + new Vector2(80, 0).RotatedBy(MathHelper.ToRadians(Timer * rotationSpeed));
+
+                // If the player stops using the weapon, switch to fade away mode
+                if (Owner.releaseUseItem)
+                {
+                    AIState = 1f;
+                }
+            }
+            else if (AIState == 1f) // Brief fade away
+            {
+                Vector2 playerDirection = Projectile.Center - Owner.Center;
+                if (!HasSetFadeOutVelocity)
+                {
+                    // Music notes move away from the player
+                    // Ensure this velocity is only set once so that their positions don't become desynced while moving
+                    // Vector2 playerDirection = Projectile.Center - Owner.Center;
+                    playerDirection.Normalize();
+                    playerDirection *= 5.5f;
+                    Projectile.velocity = playerDirection;
+                    HasSetFadeOutVelocity = true;
+                }
+
+                // Fade away; once it becomes completely invisible, teleport to around the cursor's position and switch to linger mode
+                Projectile.alpha += (int)Math.Ceiling(255f / FadeOutTime);
+                if (Projectile.alpha >= 255)
+                {
+                    Projectile.alpha = 255;
+
+                    float degreesAmt = Main.zenithWorld ? 51.428f : 60f;
+                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * Projectile.localAI[1]) + Projectile.ai[2]);
+
+                    Projectile.Center = Main.MouseWorld + musicNoteRotationOffset * 220f;
+                    playerDirection = Projectile.Center - Main.MouseWorld;
+                    playerDirection.Normalize();
+                    playerDirection *= -8f;
+                    Projectile.velocity = playerDirection;
+
+                    Main.musicPitch = 0f;
+                    SoundEngine.PlaySound(SoundID.Item26, Projectile.Center);
+                    AIState = 2f;
+                }
+            }
+            else if (AIState == 2f) // The actual attack state
+            {
+                // Quickly fade back in
+                // Fade out at the end of its lifetime
+                if (Projectile.timeLeft > 30)
+                {
+                    Projectile.alpha -= 17;
+                    if (Projectile.alpha < 0)
+                        Projectile.alpha = 0;
+                }
+                else
+                {
+                    Projectile.alpha += 9;
+                    if (Projectile.alpha > 255)
+                        Projectile.alpha = 255;
+                }
+
+                // Slow down quickly
+                if (Projectile.velocity.Length() > 0.5f)
+                    Projectile.velocity *= 0.959f;
+                else
+                    Projectile.velocity = Vector2.Zero;
+            }
         }
 
         public override Color? GetAlpha(Color lightColor)
         {
-            if (Projectile.timeLeft < 85)
+            if (Main.zenithWorld)
             {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(50f * (b2 / 255f));
-                return new Color(b2, b2, b2, a2);
+                Color stupidEasterEggColor = default;
+                switch (Projectile.localAI[1])
+                {
+                    case 0:
+                        stupidEasterEggColor = new Color(255, 0, 0);
+                        break;
+                    case 1:
+                        stupidEasterEggColor = new Color(255, 128, 0);
+                        break;
+                    case 2:
+                        stupidEasterEggColor = new Color(255, 255, 0);
+                        break;
+                    case 3:
+                        stupidEasterEggColor = new Color(0, 255, 0);
+                        break;
+                    case 4:
+                        stupidEasterEggColor = new Color(0, 255, 255);
+                        break;
+                    case 5:
+                        stupidEasterEggColor = new Color(0, 0, 255);
+                        break;
+                    case 6:
+                        stupidEasterEggColor = new Color(128, 0, 255);
+                        break;
+                    default:
+                        break;
+                }
+                return stupidEasterEggColor;
             }
-            return new Color(255, 255, 255, 50);
+            else
+                return base.GetAlpha(lightColor);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -90,6 +184,12 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Confused, 300);
+        public override bool? CanDamage() => AIState == 2f;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Wet, 900);
+            target.AddBuff(BuffID.Confused, 300);
+        }
     }
 }

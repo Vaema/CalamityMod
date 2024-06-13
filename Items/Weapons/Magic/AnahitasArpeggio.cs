@@ -1,6 +1,9 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
+using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,6 +14,8 @@ namespace CalamityMod.Items.Weapons.Magic
     public class AnahitasArpeggio : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public float RotationOffset;
+
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -18,9 +23,11 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 92;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
-            Item.useTime = 18;
-            Item.useAnimation = 18;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
+            Item.attackSpeedOnlyAffectsWeaponAnimation = true;
+            Item.useStyle = ItemUseStyleID.Guitar;
+            Item.channel = true;
             Item.noMelee = true;
             Item.knockBack = 6.5f;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
@@ -30,26 +37,59 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 13f;
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+        public override bool? UseItem(Player player)
+        {
+            // I FUCKING HATE ATTACK SPEED MULTIPLIERS
+            if (Item.useTime != 20)
+            {
+                Item.useTime = 20;
+                Item.useAnimation = 20;
+            }
+            return base.UseItem(player);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float xDist = Main.mouseX + Main.screenPosition.X - position.X;
-            float yDist = Main.mouseY + Main.screenPosition.Y - position.Y;
-            Vector2 mouseDist = new Vector2(xDist, yDist);
-            float soundMult = mouseDist.Length() / (Main.screenHeight / 2f);
-            if (soundMult > 1f)
-                soundMult = 1f;
-            float soundPitch = soundMult * 2f - 1f;
-            soundPitch = MathHelper.Clamp(soundPitch, -1f, 1f);
+            // Max music note check is in Shoot instead of CanUseItem so that the weapon can still be visually played while at the cap
+            int musicNoteCap = Main.zenithWorld ? 7 : 6;
+            if (player.ownedProjectileCounts[Item.shoot] >= musicNoteCap)
+            {
+                Main.musicPitch = -0.5f;
+                SoundEngine.PlaySound(SoundID.Item26 with { Volume = 0.8f }, player.Center);
+                return false;
+            }
+            else
+            {
+                if (player.ownedProjectileCounts[Item.shoot] <= 0)
+                    RotationOffset = Main.rand.NextFloat(0f, MathHelper.Pi / 3);
+                int note = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
+                Main.projectile[note].localAI[1] = player.ownedProjectileCounts[Item.shoot];
+                return false;
+            }
+        }
 
-            velocity.X += Main.rand.NextFloat(-0.75f, 0.75f);
-            velocity.Y += Main.rand.NextFloat(-0.75f, 0.75f);
-            velocity.X *= soundMult + 0.25f;
-            velocity.Y *= soundMult + 0.25f;
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.itemLocation.X -= 15f * player.direction;
+            player.itemLocation.Y += 15f * player.gravDir;
+        }
 
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, soundPitch, 0f);
-            return false;
+        // Consume much less mana while the maximum number of notes are present
+        public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
+        {
+            if (player.ownedProjectileCounts[Item.shoot] >= 6)
+                mult *= 0.25f;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            var line = tooltips.FirstOrDefault(x => x.Text.Contains("[GFB]") && x.Mod == "Terraria");
+            if (line != null)
+            {
+                line.Text = Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+                if (Main.zenithWorld)
+                    line.OverrideColor = Main.DiscoColor;
+            }
         }
     }
 }
