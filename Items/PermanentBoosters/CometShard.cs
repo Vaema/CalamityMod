@@ -49,7 +49,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.CometShardText";
                     Color messageColor = Color.SkyBlue;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseManaMaxIncreasingItem(ManaBoost);

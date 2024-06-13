@@ -34,9 +34,13 @@ namespace CalamityMod.Items.Fishing
 
         public override bool? UseItem(Player player)
         {
-            if (player.itemAnimation > 0 && (player.ConsumedManaCrystals < Player.ManaCrystalMax && player.itemTime == 0))
+            if (player.itemAnimation > 0 && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
+                // Still has the holding animation if fully consumed Mana Crystals, but not consuming the item
+                if (player.ConsumedManaCrystals >= Player.ManaCrystalMax)
+                    return null;
+
                 player.UseManaMaxIncreasingItem(20);
                 player.ConsumedManaCrystals++;
                 AchievementsHelper.HandleSpecialEvent(player, 1);

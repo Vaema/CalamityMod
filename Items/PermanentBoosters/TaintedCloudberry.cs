@@ -52,7 +52,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
                     Color messageColor = Color.Turquoise;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);
