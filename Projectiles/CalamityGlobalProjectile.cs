@@ -379,7 +379,7 @@ namespace CalamityMod.Projectiles
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
                     float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
-                        homingEndTime += 90f;
+                        homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
                     if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
