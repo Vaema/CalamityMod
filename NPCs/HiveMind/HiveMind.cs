@@ -841,8 +841,8 @@ namespace CalamityMod.NPCs.HiveMind
                     phase2timer--;
 
                     // Use an attack sooner if being hit
-                    if (NPC.justHit)
-                        phase2timer -= masterMode ? 4 : expertMode ? 3 : 2;
+                    if (NPC.justHit && masterMode)
+                        phase2timer -= 4;
 
                     // Use an attack sooner if target is close
                     if (NPC.Distance(player.Center) < 160f)

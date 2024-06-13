@@ -76,8 +76,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (dontAttack)
             {
                 npc.localAI[3] -= 1f;
-                if (npc.justHit)
-                    npc.localAI[3] -= masterMode ? 3f : 1f;
+                if (npc.justHit && masterMode)
+                    npc.localAI[3] -= 3f;
                 if (npc.Distance(player.Center) < 240f)
                     npc.localAI[3] -= masterMode ? 4f : expertMode ? 2f : 1f;
             }
@@ -343,8 +343,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 // Stay vulnerable for 3 seconds
                 npc.ai[1] += 1f;
-                if (npc.justHit)
-                    npc.ai[1] += masterMode ? 3f : 1f;
+                if (npc.justHit && masterMode)
+                    npc.ai[1] += 3f;
                 if (npc.Distance(player.Center) < 240f)
                     npc.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
