@@ -1671,7 +1671,7 @@ PrepareToShoot:
             }
             else if (npcType == NPCID.BoneLee)
             {
-                FighterRunningAI(npc, CalamityWorld.death ? 10f : 7f, 0.3f, 0.7f);
+                FighterRunningAI(npc, CalamityWorld.death ? 7f : CalamityWorld.revenge ? 6f : 5f, CalamityWorld.revenge ? 0.3f : 0.2f, 0.7f);
             }
             else if (npcType == NPCID.IceGolem)
             {
@@ -1686,14 +1686,10 @@ PrepareToShoot:
                 if (npc.ai[2] > 0f)
                 {
                     if (npc.velocity.Y == 0f)
-                    {
                         npc.velocity.X *= 0.8f;
-                    }
                 }
                 else
-                {
                     FighterRunningAI(npc, CalamityWorld.death ? 5f : 3.5f, 0.2f, 0.8f);
-                }
             }
             else if (npcType == NPCID.Butcher)
             {
@@ -3458,16 +3454,16 @@ PrepareToShoot:
                     {
                         npc.velocity.Y *= 1.1f;
                     }
-                    if (npcType == NPCID.BoneLee && npc.velocity.Y == 0f && Math.Abs(npc.position.X + (float)(npc.width / 2) - (Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2))) < 150f && Math.Abs(npc.position.Y + (float)(npc.height / 2) - (Main.player[npc.target].position.Y + (float)(Main.player[npc.target].height / 2))) < 50f && ((npc.direction > 0 && npc.velocity.X >= 1f) || (npc.direction < 0 && npc.velocity.X <= -1f)))
+                    if (npcType == NPCID.BoneLee && npc.velocity.Y == 0f && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) < 150f && Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) < 50f && ((npc.direction > 0 && npc.velocity.X >= 1f) || (npc.direction < 0 && npc.velocity.X <= -1f)))
                     {
-                        npc.velocity.X = (float)(9 * npc.direction);
-                        npc.velocity.Y = -5f;
+                        npc.velocity.X = (float)((CalamityWorld.death ? 9 : CalamityWorld.revenge ? 8 : 7) * npc.direction);
+                        npc.velocity.Y = -(CalamityWorld.death ? 4f : CalamityWorld.revenge ? 3.5f : 3f);
                         npc.netUpdate = true;
                     }
                     if (npcType == NPCID.BoneLee && npc.velocity.Y < 0f)
                     {
-                        npc.velocity.X *= 1.25f;
-                        npc.velocity.Y *= 1.15f;
+                        npc.velocity.X *= CalamityWorld.death ? 1.2f : CalamityWorld.revenge ? 1.15f : 1.1f;
+                        npc.velocity.Y *= CalamityWorld.death ? 1.1f : CalamityWorld.revenge ? 1.075f : 1.05f;
                     }
                     if (npcType == NPCID.Butcher && npc.velocity.Y < 0f)
                     {

@@ -3515,7 +3515,8 @@ namespace CalamityMod.NPCs
             // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
             if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
                 npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
-                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper)
+                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper ||
+                npc.type == NPCID.BoneLee)
             {
                 return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
             }
@@ -4050,7 +4051,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.HellArmoredBonesSpikeShield:
                                 case NPCID.HellArmoredBonesMace:
                                 case NPCID.HellArmoredBonesSword:
-                                case NPCID.BoneLee:
                                 case NPCID.Paladin:
                                 case NPCID.SkeletonSniper:
                                 case NPCID.SkeletonCommando:
