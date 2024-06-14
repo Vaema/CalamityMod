@@ -43,6 +43,12 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool? UseItem(Player player)
         {
             // I FUCKING HATE ATTACK SPEED MULTIPLIERS
+            // Setting ItemID.Sets.BonusAttackSpeedMultiplier to 0f did not work
+            // Setting Item.attackSpeedOnlyAffectsWeaponAnimation to true did not work
+            // Using UseSpeedMultiplier to force it to 1f did not work
+            // Even making an ENTIRE FUCKING DAMAGE CLASS that was just magic damage with no attack speed inheritance did not work
+            // So yes, I literally have to force its use time to be set to a certain value to work properly
+            // Good fucking lord what is wrong with this game.
             if (Item.useTime != 20)
             {
                 Item.useTime = 20;
