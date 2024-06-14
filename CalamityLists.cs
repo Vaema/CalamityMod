@@ -836,7 +836,7 @@ namespace CalamityMod
                 ProjectileType<ArkoftheElementsParryHoldout>(),
                 ProjectileType<ArkoftheCosmosSwungBlade>(),
                 ProjectileType<ArkoftheCosmosParryHoldout>(),
-
+                ProjectileType<HellkiteHoldout>(),
                 ProjectileType<PhangasmBow>(),
                 ProjectileType<ContagionBow>(),
                 ProjectileType<DaemonsFlameBow>(),
@@ -1930,6 +1930,7 @@ namespace CalamityMod
                 ProjectileType<FantasyTalismanProj>(),
                 ProjectileType<FantasyTalismanStealth>(),
                 ProjectileType<GodsParanoiaProj>(),
+                ProjectileType<HellkiteHoldout>(),
                 ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
                 ProjectileType<LeviathanTooth>(),
