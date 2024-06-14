@@ -1432,6 +1432,8 @@ namespace CalamityMod.CalPlayer
                 DragonsBreathAudioCooldown2--;
             if (PhotoAudioCooldown > 0)
                 PhotoAudioCooldown--;
+            if (arpeggioCooldown > 0)
+                arpeggioCooldown--;
             if (fullRageSoundCountdownTimer > 0)
                 --fullRageSoundCountdownTimer;
             if (plagueTaintedSMGDroneCooldown > 0)

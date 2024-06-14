@@ -15,12 +15,13 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public float RotationOffset;
+        public static int MusicNoteAmt = 0;
 
         public override void SetDefaults()
         {
             Item.width = 56;
             Item.height = 50;
-            Item.damage = 92;
+            Item.damage = 77;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useTime = 20;
@@ -37,6 +38,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 13f;
         }
 
+        public override bool CanUseItem(Player player) => player.Calamity().arpeggioCooldown <= 0;
+
         public override bool? UseItem(Player player)
         {
             // I FUCKING HATE ATTACK SPEED MULTIPLIERS
@@ -52,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             // Max music note check is in Shoot instead of CanUseItem so that the weapon can still be visually played while at the cap
             int musicNoteCap = Main.zenithWorld ? 7 : 6;
-            if (player.ownedProjectileCounts[Item.shoot] >= musicNoteCap)
+            if (MusicNoteAmt >= musicNoteCap)
             {
                 Main.musicPitch = -0.5f;
                 SoundEngine.PlaySound(SoundID.Item26 with { Volume = 0.8f }, player.Center);
@@ -60,10 +63,12 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             else
             {
-                if (player.ownedProjectileCounts[Item.shoot] <= 0)
+                if (MusicNoteAmt <= 0)
                     RotationOffset = Main.rand.NextFloat(0f, MathHelper.Pi / 3);
+
                 int note = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
-                Main.projectile[note].localAI[1] = player.ownedProjectileCounts[Item.shoot];
+                Main.projectile[note].localAI[1] = MusicNoteAmt;
+                MusicNoteAmt++;
                 return false;
             }
         }
@@ -77,7 +82,7 @@ namespace CalamityMod.Items.Weapons.Magic
         // Consume much less mana while the maximum number of notes are present
         public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
         {
-            if (player.ownedProjectileCounts[Item.shoot] >= 6)
+            if (MusicNoteAmt >= 6)
                 mult *= 0.25f;
         }
 

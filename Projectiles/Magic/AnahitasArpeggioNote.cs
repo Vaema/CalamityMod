@@ -1,5 +1,6 @@
-﻿using System;
+﻿using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.penetrate = 5;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 16;
         }
 
         public override void AI()
@@ -57,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Timer == 1f)
             {
-                Main.musicPitch = 0.1f * Owner.ownedProjectileCounts[Projectile.type];
+                Main.musicPitch = (0.1f * AnahitasArpeggio.MusicNoteAmt) - 0.1f;
                 SoundEngine.PlaySound(SoundID.Item26, Owner.Center);
             }
 
@@ -73,12 +74,14 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.timeLeft = LingeringTime + FadeOutTime;
 
                 // Makes the music notes appear to orbit around the player
-                float rotationSpeed = (Main.zenithWorld ? 2.5714f : 3f) * Owner.GetWeaponAttackSpeed(Owner.HeldItem);
+                float rotationSpeed = (Main.zenithWorld ? 2.5714f : 3f);
                 Projectile.Center = Owner.Center + new Vector2(80, 0).RotatedBy(MathHelper.ToRadians(Timer * rotationSpeed));
 
                 // If the player stops using the weapon, switch to fade away mode
                 if (Owner.releaseUseItem)
                 {
+                    AnahitasArpeggio.MusicNoteAmt = 0;
+                    Owner.Calamity().arpeggioCooldown = 40;
                     AIState = 1f;
                 }
             }
@@ -108,7 +111,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.Center = Main.MouseWorld + musicNoteRotationOffset * 220f;
                     playerDirection = Projectile.Center - Main.MouseWorld;
                     playerDirection.Normalize();
-                    playerDirection *= -8f;
+                    playerDirection *= -9.2f;
                     Projectile.velocity = playerDirection;
 
                     Main.musicPitch = 0f;
@@ -135,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Slow down quickly
                 if (Projectile.velocity.Length() > 0.5f)
-                    Projectile.velocity *= 0.959f;
+                    Projectile.velocity *= 0.95f;
                 else
                     Projectile.velocity = Vector2.Zero;
             }

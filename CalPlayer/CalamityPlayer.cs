@@ -185,6 +185,7 @@ namespace CalamityMod.CalPlayer
         public int DragonsBreathAudioCooldown2 = 0;
         public int PhotoAudioCooldown = 0;
         public int PhotoTimer = 90;
+        public int arpeggioCooldown = 0;
         public bool brittleStarBuffMode = false;
         public bool sBlasterDashActivated = false;
         public int saharaSlicersBolts = 0;

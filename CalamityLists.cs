@@ -1900,6 +1900,7 @@ namespace CalamityMod
                 ProjectileID.NettleBurstEnd,
                 ProjectileID.NettleBurstLeft,
                 ProjectileID.NettleBurstRight,
+                ProjectileType<AnahitasArpeggioNote>(),
                 ProjectileType<AtlantisSpear>(),
                 ProjectileType<AuroraFire>(),
                 ProjectileType<BallisticPoisonCloud>(),
