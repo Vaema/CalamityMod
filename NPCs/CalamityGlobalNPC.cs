@@ -3512,6 +3512,10 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.BloodNautilus)
                 return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
 
+            // More telegraphs
+            if (npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.SpikedJungleSlime || npc.type == NPCID.SlimeSpiked)
+                return SlimeAI.BuffedSlimeAI(npc, Mod);
+
             // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
             if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
                 npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
@@ -3924,8 +3928,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.ToxicSludge:
                                 case NPCID.IceSlime:
                                 case NPCID.Crimslime:
-                                case NPCID.SpikedIceSlime:
-                                case NPCID.SpikedJungleSlime:
                                 case NPCID.UmbrellaSlime:
                                 case NPCID.RainbowSlime:
                                 case NPCID.SlimeMasked:
@@ -3934,7 +3936,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.SlimeRibbonYellow:
                                 case NPCID.SlimeRibbonGreen:
                                 case NPCID.SlimeRibbonRed:
-                                case NPCID.SlimeSpiked:
                                 case NPCID.SandSlime:
                                 case NPCID.GoldenSlime:
                                 case NPCID.ShimmerSlime:

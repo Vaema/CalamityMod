@@ -6001,7 +6001,7 @@ PrepareToShoot:
                 // Emit feather dust from center when about to shoot
                 if (npc.ai[0] > HarpyFeatherGateValue - HarpyFeatherTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 42, 0f, 0f, 0, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 172, 0f, 0f, 0, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
