@@ -682,7 +682,7 @@ namespace CalamityMod.CalPlayer
                         Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
                         Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
                 }
 
                 if (tile.TileType == auricLandMineID)
