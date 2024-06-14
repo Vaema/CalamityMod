@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (damageDone <= 2 && Projectile.numHits > 0)
+            if ((damageDone <= 2 || target.life <= 0) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
             bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
