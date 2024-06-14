@@ -3000,7 +3000,7 @@ namespace CalamityMod.CalPlayer
                 bool hitAtFullAdrenaline = adrenaline >= adrenalineMax;
                 if (hitAtFullAdrenaline)
                 {
-                    SoundEngine.PlaySound(AdrenalineHurtSound, Player.Center);
+                    SoundEngine.PlaySound(Main.zenithWorld ? AdrenalineHurtGFB : AdrenalineHurtSound, Player.Center);
                     adrenaline = 0f;
                     return;
                 }
