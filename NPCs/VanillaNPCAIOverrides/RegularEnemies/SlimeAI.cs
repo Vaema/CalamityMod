@@ -201,7 +201,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                         }
                         else
                         {
-                            Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - Vector2.UnitY * 100f) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
+                            Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - Vector2.UnitY * (npc.type == NPCID.SpikedJungleSlime ? 10f : 100f)) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
                             int proj = Projectile.NewProjectile(source, npc.Center, velocity, projectileShootType, 9, 0f, Main.myPlayer);
                             if (CalamityWorld.death)
                             {
@@ -221,7 +221,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                     // Emit dust from center when about to shoot
                     if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
                     {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 56, 0f, 0f, 0, default, 3f);
+                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 135, 0f, 0f, 100, default, 3f);
                         dust.noGravity = true;
                         dust.velocity *= 0f;
                     }
@@ -241,7 +241,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                     // Emit dust from center when about to shoot
                     if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
                     {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 4, 0f, 0f, 0, new Color(78, 136, 255, 150), 3f);
+                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 4, 0f, 0f, 0, new Color(78, 136, 255, 150), 1.5f);
                         dust.noGravity = true;
                         dust.velocity *= 0f;
                     }
