@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Magic
             else
             {
                 if (MusicNoteAmt <= 0)
-                    RotationOffset = Main.rand.NextFloat(0f, MathHelper.Pi / 3);
+                    RotationOffset = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 
                 int note = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
                 Main.projectile[note].localAI[1] = MusicNoteAmt;
