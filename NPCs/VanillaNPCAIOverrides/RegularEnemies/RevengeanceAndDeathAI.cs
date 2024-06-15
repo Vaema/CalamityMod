@@ -946,104 +946,110 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
 
             if (npcType == NPCID.VortexLarva)
             {
-                npc.localAI[0] += 1f;
-                if (npc.localAI[0] >= (CalamityWorld.death ? 90f : 150f))
+                if (NPC.CountNPCS(NPCID.VortexHornet) < 6)
                 {
-                    int centerTileX = (int)npc.Center.X / 16 - 1;
-                    int centerTileY = (int)npc.Center.Y / 16 - 1;
-                    if (!Collision.SolidTiles(centerTileX, centerTileX + 2, centerTileY, centerTileY + 1) && Main.netMode != NetmodeID.MultiplayerClient)
+                    npc.localAI[0] += 1f;
+                    if (npc.localAI[0] >= (CalamityWorld.death ? 90f : CalamityWorld.revenge ? 150f : 300f))
                     {
-                        npc.Transform(NPCID.VortexHornet);
-                        npc.life = npc.lifeMax;
-                        npc.localAI[0] = 0f;
-                        return false;
+                        int centerTileX = (int)npc.Center.X / 16 - 1;
+                        int centerTileY = (int)npc.Center.Y / 16 - 1;
+                        if (!Collision.SolidTiles(centerTileX, centerTileX + 2, centerTileY, centerTileY + 1) && Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            npc.Transform(NPCID.VortexHornet);
+                            npc.life = npc.lifeMax;
+                            npc.localAI[0] = 0f;
+                            return false;
+                        }
                     }
-                }
-                int maxValue;
-                if (npc.localAI[0] < 30f)
-                {
-                    maxValue = 16;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 45f : 60f))
-                {
-                    maxValue = 8;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 60f : 90f))
-                {
-                    maxValue = 4;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 75f : 120f))
-                {
-                    maxValue = 2;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 90f : 150f))
-                {
-                    maxValue = 1;
-                }
-                else
-                {
-                    maxValue = 1;
-                }
-                if (Main.rand.NextBool(maxValue))
-                {
-                    Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, DustID.Vortex, 0f, 0f, 0, default, 1f)];
-                    dust.noGravity = true;
-                    dust.scale = 1f;
-                    dust.noLight = true;
-                    dust.velocity = npc.DirectionFrom(dust.position) * dust.velocity.Length();
-                    dust.position -= dust.velocity * 5f;
-                    dust.position.X += (float)(npc.direction * 6);
-                    dust.position.Y += 4f;
+                    int maxValue;
+                    if (npc.localAI[0] < (CalamityWorld.revenge ? 30f : 60f))
+                    {
+                        maxValue = 16;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 45f : CalamityWorld.revenge ? 60f : 120f))
+                    {
+                        maxValue = 8;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 60f : CalamityWorld.revenge ? 90f : 180f))
+                    {
+                        maxValue = 4;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 75f : CalamityWorld.revenge ? 120f : 240f))
+                    {
+                        maxValue = 2;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 90f : CalamityWorld.revenge ? 150f : 300f))
+                    {
+                        maxValue = 1;
+                    }
+                    else
+                    {
+                        maxValue = 1;
+                    }
+                    if (Main.rand.NextBool(maxValue))
+                    {
+                        Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, DustID.Vortex, 0f, 0f, 0, default, 1f)];
+                        dust.noGravity = true;
+                        dust.scale = 1f;
+                        dust.noLight = true;
+                        dust.velocity = npc.DirectionFrom(dust.position) * dust.velocity.Length();
+                        dust.position -= dust.velocity * 5f;
+                        dust.position.X += (float)(npc.direction * 6);
+                        dust.position.Y += 4f;
+                    }
                 }
             }
 
             if (npcType == NPCID.VortexHornet)
             {
-                npc.localAI[0] += 1f;
-                npc.localAI[0] += Math.Abs(npc.velocity.X) / 2f;
-                if (npc.localAI[0] >= (CalamityWorld.death ? 300f : 600f) && Main.netMode != NetmodeID.MultiplayerClient)
+                if (NPC.CountNPCS(NPCID.VortexHornetQueen) < 3)
                 {
-                    int centerTileX = (int)npc.Center.X / 16 - 2;
-                    int centerTileY = (int)npc.Center.Y / 16 - 3;
-                    if (!Collision.SolidTiles(centerTileX, centerTileX + 4, centerTileY, centerTileY + 4))
+                    npc.localAI[0] += 1f;
+                    npc.localAI[0] += Math.Abs(npc.velocity.X) / 2f;
+                    if (npc.localAI[0] >= (CalamityWorld.death ? 300f : CalamityWorld.revenge ? 600f : 1200f) && Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        npc.Transform(NPCID.VortexHornetQueen);
-                        npc.life = npc.lifeMax;
-                        npc.localAI[0] = 0f;
-                        return false;
+                        int centerTileX = (int)npc.Center.X / 16 - 2;
+                        int centerTileY = (int)npc.Center.Y / 16 - 3;
+                        if (!Collision.SolidTiles(centerTileX, centerTileX + 4, centerTileY, centerTileY + 4))
+                        {
+                            npc.Transform(NPCID.VortexHornetQueen);
+                            npc.life = npc.lifeMax;
+                            npc.localAI[0] = 0f;
+                            return false;
+                        }
                     }
-                }
-                int maxValue2;
-                if (npc.localAI[0] < (CalamityWorld.death ? 60f : 120f))
-                {
-                    maxValue2 = 32;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 120f : 240f))
-                {
-                    maxValue2 = 16;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 180f : 360f))
-                {
-                    maxValue2 = 6;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 240f : 480f))
-                {
-                    maxValue2 = 2;
-                }
-                else if (npc.localAI[0] < (CalamityWorld.death ? 300f : 600f))
-                {
-                    maxValue2 = 1;
-                }
-                else
-                {
-                    maxValue2 = 1;
-                }
-                if (Main.rand.NextBool(maxValue2))
-                {
-                    Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, DustID.Vortex, 0f, 0f, 0, default, 1f)];
-                    dust.noGravity = true;
-                    dust.scale = 1f;
-                    dust.noLight = true;
+                    int maxValue2;
+                    if (npc.localAI[0] < (CalamityWorld.death ? 60f : CalamityWorld.revenge ? 120f : 240f))
+                    {
+                        maxValue2 = 32;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 120f : CalamityWorld.revenge ? 240f : 480f))
+                    {
+                        maxValue2 = 16;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 180f : CalamityWorld.revenge ? 360f : 720f))
+                    {
+                        maxValue2 = 6;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 240f : CalamityWorld.revenge ? 480f : 960f))
+                    {
+                        maxValue2 = 2;
+                    }
+                    else if (npc.localAI[0] < (CalamityWorld.death ? 300f : CalamityWorld.revenge ? 600f : 1200f))
+                    {
+                        maxValue2 = 1;
+                    }
+                    else
+                    {
+                        maxValue2 = 1;
+                    }
+                    if (Main.rand.NextBool(maxValue2))
+                    {
+                        Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, DustID.Vortex, 0f, 0f, 0, default, 1f)];
+                        dust.noGravity = true;
+                        dust.scale = 1f;
+                        dust.noLight = true;
+                    }
                 }
             }
 
@@ -1653,7 +1659,7 @@ PrepareToShoot:
             }
             else if (npcType == NPCID.Crab || npcType == NPCID.SeaSnail || npcType == NPCID.VortexLarva)
             {
-                FighterRunningAI(npc, CalamityWorld.death ? 4f : 1f, 0.06f, 0.7f);
+                FighterRunningAI(npc, CalamityWorld.death ? 4f : CalamityWorld.revenge ? 1f : 0.5f, CalamityWorld.revenge ? 0.06f : 0.05f, 0.7f);
             }
             else if (npcType == NPCID.Mummy || npcType == NPCID.DarkMummy || npcType == NPCID.LightMummy)
             {
@@ -1671,7 +1677,7 @@ PrepareToShoot:
             }
             else if (npcType == NPCID.BoneLee)
             {
-                FighterRunningAI(npc, CalamityWorld.death ? 10f : 7f, 0.3f, 0.7f);
+                FighterRunningAI(npc, CalamityWorld.death ? 7f : CalamityWorld.revenge ? 6f : 5f, CalamityWorld.revenge ? 0.3f : 0.2f, 0.7f);
             }
             else if (npcType == NPCID.IceGolem)
             {
@@ -1686,14 +1692,10 @@ PrepareToShoot:
                 if (npc.ai[2] > 0f)
                 {
                     if (npc.velocity.Y == 0f)
-                    {
                         npc.velocity.X *= 0.8f;
-                    }
                 }
                 else
-                {
                     FighterRunningAI(npc, CalamityWorld.death ? 5f : 3.5f, 0.2f, 0.8f);
-                }
             }
             else if (npcType == NPCID.Butcher)
             {
@@ -1811,8 +1813,11 @@ PrepareToShoot:
                     acceleration = 0.15f;
                     turnMultiplier = 0.98f;
                 }
-                maxVelocity *= 1.25f;
-                acceleration *= 1.25f;
+                if (CalamityWorld.revenge)
+                {
+                    maxVelocity *= 1.25f;
+                    acceleration *= 1.25f;
+                }
                 if (CalamityWorld.death)
                 {
                     maxVelocity *= 1.25f;
@@ -1939,7 +1944,8 @@ PrepareToShoot:
                 {
                     velocityMax *= 1f + (1f - npc.scale);
                 }
-                velocityMax *= 1.25f;
+                if (CalamityWorld.revenge)
+                    velocityMax *= 1.25f;
                 if (CalamityWorld.death)
                     velocityMax *= 1.25f;
                 FighterRunningAI(npc, velocityMax, 0.09f, 0.8f, true, 0.8f);
@@ -2151,21 +2157,21 @@ PrepareToShoot:
                         {
                             npc.velocity.X *= 0.98f;
                         }
-                        if (playerDistX < -20f && npc.velocity.X > -8f)
+                        if (playerDistX < -20f && npc.velocity.X > -(CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X -= 0.025f;
+                            npc.velocity.X -= CalamityWorld.revenge ? 0.025f : 0.015f;
                         }
-                        else if (playerDistX > 20f && npc.velocity.X < 8f)
+                        else if (playerDistX > 20f && npc.velocity.X < (CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X += 0.025f;
+                            npc.velocity.X += CalamityWorld.revenge ? 0.025f : 0.015f;
                         }
-                        if (npc.velocity.X > 8f)
+                        if (npc.velocity.X > (CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X = 8f;
+                            npc.velocity.X = CalamityWorld.revenge ? 8f : 6f;
                         }
-                        if (npc.velocity.X < -8f)
+                        if (npc.velocity.X < -(CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X = -8f;
+                            npc.velocity.X = -(CalamityWorld.revenge ? 8f : 6f);
                         }
                         if (playerDistY < -20f && npc.velocity.Y > 0f)
                         {
@@ -2175,13 +2181,13 @@ PrepareToShoot:
                         {
                             npc.velocity.Y *= 0.98f;
                         }
-                        if (playerDistY < -20f && npc.velocity.Y > -8f)
+                        if (playerDistY < -20f && npc.velocity.Y > -(CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.Y -= 0.25f;
+                            npc.velocity.Y -= CalamityWorld.revenge ? 0.25f : 0.15f;
                         }
-                        else if (playerDistY > 20f && npc.velocity.Y < 8f)
+                        else if (playerDistY > 20f && npc.velocity.Y < (CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.Y += 0.25f;
+                            npc.velocity.Y += CalamityWorld.revenge ? 0.25f : 0.15f;
                         }
                     }
                     foreach (NPC n in Main.ActiveNPCs)
@@ -2209,7 +2215,7 @@ PrepareToShoot:
                 }
                 else if (Main.player[npc.target].Center.Y + 100f < npc.position.Y && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
-                    npc.velocity.Y = -7f;
+                    npc.velocity.Y = -(CalamityWorld.revenge ? 7f : 5f);
                     npc.ai[2] = 1f;
                 }
             }
@@ -2229,7 +2235,7 @@ PrepareToShoot:
                     npc.spriteDirection = npc.direction;
                     if (Collision.CanHit(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0))
                     {
-                        float distanceToLocationX = Main.player[npc.target].Center.X - (float)(npc.direction * 450) - npc.Center.X;
+                        float distanceToLocationX = Main.player[npc.target].Center.X - (float)(npc.direction * (CalamityWorld.revenge ? 450 : 300)) - npc.Center.X;
                         if (distanceToLocationX < 40f && npc.velocity.X > 0f)
                         {
                             npc.velocity.X *= 0.98f;
@@ -2238,27 +2244,27 @@ PrepareToShoot:
                         {
                             npc.velocity.X *= 0.98f;
                         }
-                        if (distanceToLocationX < 40f && npc.velocity.X > -7f)
+                        if (distanceToLocationX < 40f && npc.velocity.X > -(CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X -= 0.25f;
+                            npc.velocity.X -= CalamityWorld.revenge ? 0.25f : 0.2f;
                         }
-                        else if (distanceToLocationX > 40f && npc.velocity.X < 7f)
+                        else if (distanceToLocationX > 40f && npc.velocity.X < (CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X += 0.25f;
+                            npc.velocity.X += CalamityWorld.revenge ? 0.25f : 0.2f;
                         }
-                        if (npc.velocity.X > 8f)
+                        if (npc.velocity.X > (CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X = 8f;
+                            npc.velocity.X = CalamityWorld.revenge ? 8f : 6f;
                         }
-                        if (npc.velocity.X < -8f)
+                        if (npc.velocity.X < -(CalamityWorld.revenge ? 8f : 6f))
                         {
-                            npc.velocity.X = -8f;
+                            npc.velocity.X = -(CalamityWorld.revenge ? 8f : 6f);
                         }
                     }
                 }
                 else if (Main.player[npc.target].Center.Y + 100f < npc.position.Y && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
-                    npc.velocity.Y = -8f;
+                    npc.velocity.Y = -(CalamityWorld.revenge ? 8f : 6f);
                 }
                 foreach (NPC n in Main.ActiveNPCs)
                 {
@@ -2642,7 +2648,10 @@ PrepareToShoot:
                             attackTimeMax = 8;
                         }
                     }
-                    attackTimeMax = (int)(attackTimeMax * 0.75);
+
+                    if (CalamityWorld.revenge)
+                        attackTimeMax = (int)(attackTimeMax * 0.75);
+                    
                     int modifiedAttackTime = attackTimeMax / 2;
                     if (npcType == NPCID.NebulaSoldier)
                     {
@@ -2721,7 +2730,10 @@ PrepareToShoot:
                             {
                                 projSpeed = CalamityWorld.death ? 4f : 7f;
                             }
-                            projSpeed *= 1.25f;
+
+                            if (CalamityWorld.revenge)
+                                projSpeed *= 1.25f;
+                            
                             Vector2 spawnPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + (float)npc.height * 0.5f);
                             if (npcType == NPCID.GreekSkeleton)
                             {
@@ -2750,6 +2762,7 @@ PrepareToShoot:
                             if (npcType == NPCID.VortexHornetQueen)
                             {
                                 spawnPosition += new Vector2((float)(npc.spriteDirection * 2), -12f);
+                                projSpeed = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 9f : 7f;
                             }
                             float distX = Main.player[npc.target].position.X + (float)Main.player[npc.target].width * 0.5f - spawnPosition.X;
                             float projOffset = Math.Abs(distX) * 0.1f;
@@ -3130,8 +3143,17 @@ PrepareToShoot:
                             maxVelocity = 2f;
                             acceleration = 0.5f;
                         }
-                        maxVelocity *= 1.5f;
-                        acceleration *= 1.5f;
+                        else if (npc.type == NPCID.VortexHornetQueen)
+                        {
+                            maxVelocity = 4f;
+                            acceleration = 0.6f;
+                            decelerationFactor = 0.95f;
+                        }
+                        if (CalamityWorld.revenge)
+                        {
+                            maxVelocity *= 1.5f;
+                            acceleration *= 1.5f;
+                        }
                         bool forceDeceleration = false;
                         if ((npcType == NPCID.BrainScrambler || npcType == NPCID.RayGunner) && Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 300f && Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0))
                         {
@@ -3458,16 +3480,16 @@ PrepareToShoot:
                     {
                         npc.velocity.Y *= 1.1f;
                     }
-                    if (npcType == NPCID.BoneLee && npc.velocity.Y == 0f && Math.Abs(npc.position.X + (float)(npc.width / 2) - (Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2))) < 150f && Math.Abs(npc.position.Y + (float)(npc.height / 2) - (Main.player[npc.target].position.Y + (float)(Main.player[npc.target].height / 2))) < 50f && ((npc.direction > 0 && npc.velocity.X >= 1f) || (npc.direction < 0 && npc.velocity.X <= -1f)))
+                    if (npcType == NPCID.BoneLee && npc.velocity.Y == 0f && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) < 150f && Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) < 50f && ((npc.direction > 0 && npc.velocity.X >= 1f) || (npc.direction < 0 && npc.velocity.X <= -1f)))
                     {
-                        npc.velocity.X = (float)(9 * npc.direction);
-                        npc.velocity.Y = -5f;
+                        npc.velocity.X = (float)((CalamityWorld.death ? 9 : CalamityWorld.revenge ? 8 : 7) * npc.direction);
+                        npc.velocity.Y = -(CalamityWorld.death ? 4f : CalamityWorld.revenge ? 3.5f : 3f);
                         npc.netUpdate = true;
                     }
                     if (npcType == NPCID.BoneLee && npc.velocity.Y < 0f)
                     {
-                        npc.velocity.X *= 1.25f;
-                        npc.velocity.Y *= 1.15f;
+                        npc.velocity.X *= CalamityWorld.death ? 1.2f : CalamityWorld.revenge ? 1.15f : 1.1f;
+                        npc.velocity.Y *= CalamityWorld.death ? 1.1f : CalamityWorld.revenge ? 1.075f : 1.05f;
                     }
                     if (npcType == NPCID.Butcher && npc.velocity.Y < 0f)
                     {
@@ -6005,7 +6027,7 @@ PrepareToShoot:
                 // Emit feather dust from center when about to shoot
                 if (npc.ai[0] > HarpyFeatherGateValue - HarpyFeatherTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 42, 0f, 0f, 0, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(npc.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 172, 0f, 0f, 0, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
