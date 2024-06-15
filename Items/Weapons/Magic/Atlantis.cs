@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item34;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AtlantisSpear>();
-            Item.shootSpeed = 32f;
+            Item.shootSpeed = 40f;
         }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)

@@ -10,6 +10,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
@@ -4370,7 +4371,10 @@ namespace CalamityMod.Projectiles
             if (Main.LocalPlayer.Calamity().omniscience && projectile.hostile && projectile.damage > 0 && projectile.alpha < 255)
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
-                    return Color.Coral;
+                {
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
+                    return mainColor;
+                }
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)
