@@ -224,6 +224,28 @@ CrushsawCrasher: {
 		Throws bouncing axes
 		Stealth strikes throw five at once
 		'''
+	GFBFirstWord1: Crushsaw
+	GFBFirstWord2: Crashsaw
+	GFBFirstWord3: Crushclaw
+	GFBFirstWord4: Crashclaw
+	GFBFirstWord5: Crushcaw
+	GFBFirstWord6: Crushaw
+	GFBFirstWord7: Crushmaw
+	GFBFirstWord8: Crashmaw
+	GFBFirstWord9: Crawshaw
+	GFBFirstWord10: Coleslaw
+	GFBFirstWord11: Cashew
+	GFBFirstWord12: Cawcaw
+	GFBLastWord1: Crasher
+	GFBLastWord2: Crusher
+	GFBLastWord3: Clasher
+	GFBLastWord4: Casher
+	GFBLastWord5: Clacker
+	GFBLastWord6: Catcher
+	GFBLastWord7: Trasher
+	GFBLastWord8: Rasher
+	GFBLastWord9: Cracker
+	GFBLastWord10: Cackler
 }
 
 Crystalline: {
