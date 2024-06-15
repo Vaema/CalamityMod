@@ -7110,7 +7110,7 @@ PrepareToShoot:
                 // Emit frost dust when about to fire
                 if (npc.localAI[1] > (CalamityWorld.death ? IceElementalFrostBlastGateValue_Death : IceElementalFrostBlastGateValue) - IceElementalFrostBlastTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Frost, 0f, 0f, 200, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Frost, 0f, 0f, 200, default, 2f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
