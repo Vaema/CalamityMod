@@ -86,8 +86,8 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
             #region Desert Scourge
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DesertScourgeIDs, Do(ResistTrueMelee(0.5f))));
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DesertScourgeIDs, Do(ResistTrueMelee(0.75f))));
             #endregion
 
             #region Crabulon
@@ -249,23 +249,23 @@ namespace CalamityMod.Balancing
             // 75% resist to Plaguenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.25f, ProjectileType<PlaguenadeBee>(), ProjectileType<PlaguenadeProj>()))));
 
-            // 70% resist to Atlantis (Atlantis gaming!).
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.3f, ProjectileType<AtlantisSpear>()))));
-
             // 70% resist to Charged Blaster Cannon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.ChargedBlasterLaser))));
 
             // 70% resist to Stardust Dragon Staff.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
 
-            // 60% resist to Aurora Blazer.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<AuroraFire>()))));
+            // 65% resist to Atlantis (Atlantis gaming!).
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<AtlantisSpear>()))));
 
             // 55% resist to Flak Kraken.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.45f, ProjectileType<FlakKrakenProjectile>()))));
 
             // 50% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(ResistTrueMelee(0.5f))));
+
+            // 50% resist to Aurora Blazer.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AuroraFire>()))));
 
             // 35% resist to Ballistic Poison Bomb's clouds.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<BallisticPoisonCloud>()))));
