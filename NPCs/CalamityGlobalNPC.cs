@@ -3517,10 +3517,12 @@ namespace CalamityMod.NPCs
                 return SlimeAI.BuffedSlimeAI(npc, Mod);
 
             // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
+            // Also limit the amount of times Vortex Larvae and Hornets can evolve
             if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
                 npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
                 npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper ||
-                npc.type == NPCID.BoneLee)
+                npc.type == NPCID.BoneLee || npc.type == NPCID.VortexLarva || npc.type == NPCID.VortexHornet ||
+                npc.type == NPCID.VortexHornetQueen)
             {
                 return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
             }
@@ -4131,9 +4133,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.StardustSpiderBig:
                                 case NPCID.NebulaSoldier:
                                 case NPCID.VortexSoldier:
-                                case NPCID.VortexLarva:
-                                case NPCID.VortexHornet:
-                                case NPCID.VortexHornetQueen:
                                 case NPCID.SolarDrakomire:
                                 case NPCID.SolarSpearman:
                                 case NPCID.SolarSolenian:
