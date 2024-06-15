@@ -3546,8 +3546,8 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.Antlion)
                 return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
 
-            // Ichor Sticker telegraph
-            if (npc.type == NPCID.IchorSticker)
+            // Ichor Sticker and Ice Elemental telegraphs
+            if (npc.type == NPCID.IchorSticker || npc.type == NPCID.IceElemental)
                 return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
 
             // Spider web spit telegraph
@@ -4320,7 +4320,6 @@ namespace CalamityMod.NPCs
                             case NPCID.Pixie:
                             case NPCID.Wraith:
                             case NPCID.Gastropod:
-                            case NPCID.IceElemental:
                             case NPCID.FloatyGross:
                             case NPCID.Ghost:
                             case NPCID.Poltergeist:
