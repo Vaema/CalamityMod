@@ -323,3 +323,13 @@ SuperDummy: {
 		Right click to kill all super dummies
 		'''
 }
+
+NimbleBounder: {
+	DisplayName: Nimble Bounder
+	Tooltip:
+		'''
+		Permanently increases movement and jump speed by 5%
+		Permanently increases acceleration by 10%
+		[c/842593:'Might be useful for speedrunning']
+		'''
+}

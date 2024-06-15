@@ -1866,6 +1866,13 @@ namespace CalamityMod.CalPlayer
                 Player.thorns += 3.5f;
             }
 
+            // Nimble Bounder bonus
+            if (nimbleBounderBoost)
+            {
+                Player.moveSpeed += 0.05f;
+                Player.jumpSpeedBoost += 0.25f;
+            }
+
             // Affliction bonus
             if (affliction || afflicted)
             {
