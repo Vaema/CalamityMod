@@ -58,6 +58,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         public const float IceElementalFrostBlastGateValue_Death = 120f;
         public const float IceElementalFrostBlastTelegraphTime = 30f;
 
+        public const float FungiBulbSporeShootGateValue = 240f;
+        public const float GiantFungiBulbSporeShootGateValue = 150f;
+        public const float GiantFungiBulbSporeShootGateValue_Rev = 120f;
+        public const float FungiBulbSporeTelegraphTime = 30f;
+
         #endregion
 
         #region Revengeance and Death Mode non-boss NPC AIs
@@ -5602,9 +5607,7 @@ PrepareToShoot:
         public static bool BuffedPlantAI(NPC npc, Mod mod)
         {
             if (npc.ai[0] < 0f || npc.ai[0] >= (float)Main.maxTilesX || npc.ai[1] < 0f || npc.ai[1] >= (float)Main.maxTilesX)
-            {
                 return false;
-            }
 
             if (!Main.tile[(int)npc.ai[0], (int)npc.ai[1]].HasTile)
             {
@@ -5657,9 +5660,7 @@ PrepareToShoot:
                 minDistance *= 1.3f;
                 maxVelocity += 2f;
                 if (npc.ai[2] > 450f)
-                {
                     npc.ai[2] = 0f;
-                }
             }
 
             Vector2 anchorPosition = new Vector2(npc.ai[0] * 16f + 8f, npc.ai[1] * 16f + 8f);
@@ -5670,37 +5671,30 @@ PrepareToShoot:
                 float normalizedMagnitude = minDistance / distanceMagnitude;
                 distanceVector *= normalizedMagnitude;
             }
+
             if (npc.position.X < npc.ai[0] * 16f + 8f + distanceVector.X)
             {
                 npc.velocity.X += acceleration;
                 if (npc.velocity.X < 0f && distanceVector.X > 0f)
-                {
                     npc.velocity.X += acceleration * 1.5f;
-                }
             }
             else if (npc.position.X > npc.ai[0] * 16f + 8f + distanceVector.X)
             {
                 npc.velocity.X -= acceleration;
                 if (npc.velocity.X > 0f && distanceVector.X < 0f)
-                {
                     npc.velocity.X -= acceleration * 1.5f;
-                }
             }
             if (npc.position.Y < npc.ai[1] * 16f + 8f + distanceVector.Y)
             {
                 npc.velocity.Y += acceleration;
                 if (npc.velocity.Y < 0f && distanceVector.Y > 0f)
-                {
                     npc.velocity.Y += acceleration * 1.5f;
-                }
             }
             else if (npc.position.Y > npc.ai[1] * 16f + 8f + distanceVector.Y)
             {
                 npc.velocity.Y -= acceleration;
                 if (npc.velocity.Y > 0f && distanceVector.Y < 0f)
-                {
                     npc.velocity.Y -= acceleration * 1.5f;
-                }
             }
 
             npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-maxVelocity), new Vector2(maxVelocity));
@@ -5720,26 +5714,32 @@ PrepareToShoot:
                 npc.netUpdate = true;
                 npc.velocity.X = npc.oldVelocity.X * -0.7f;
                 if (npc.velocity.X > 0f && npc.velocity.X < 2f)
-                {
                     npc.velocity.X = 2f;
-                }
                 if (npc.velocity.X < 0f && npc.velocity.X > -2f)
-                {
                     npc.velocity.X = -2f;
-                }
             }
             if (npc.collideY)
             {
                 npc.netUpdate = true;
                 npc.velocity.Y = npc.oldVelocity.Y * -0.7f;
                 if (npc.velocity.Y > 0f && npc.velocity.Y < 2f)
-                {
                     npc.velocity.Y = 2f;
-                }
                 if (npc.velocity.Y < 0f && npc.velocity.Y > -2f)
-                {
                     npc.velocity.Y = -2f;
+            }
+
+            if ((npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungiBulb) && !Main.player[npc.target].DeadOrGhost)
+            {
+                if (npc.localAI[0] > ((npc.type == NPCID.GiantFungiBulb ? (CalamityWorld.revenge ? GiantFungiBulbSporeShootGateValue_Rev : GiantFungiBulbSporeShootGateValue) : FungiBulbSporeShootGateValue) - FungiBulbSporeTelegraphTime))
+                {
+                    Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * (npc.type == NPCID.GiantFungiBulb ? 20f : 12f) + Main.rand.NextVector2CircularEdge(5f, 5f);
+                    Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, DustID.BlueTorch, 0f, 0f, 100, default, 3f);
+                    dust.noGravity = true;
+                    dust.velocity *= 0f;
                 }
+
+                if (npc.localAI[0] == (npc.type == NPCID.GiantFungiBulb ? (CalamityWorld.revenge ? GiantFungiBulbSporeShootGateValue_Rev : GiantFungiBulbSporeShootGateValue) : FungiBulbSporeShootGateValue) - 1)
+                    SoundEngine.PlaySound(SoundID.Item17, npc.Center);
             }
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -5758,45 +5758,40 @@ PrepareToShoot:
                             int type = ProjectileID.CursedFlameHostile;
                             Vector2 flameVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 12f;
 
-                            int flame = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, flameVelocity, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            int flame = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, flameVelocity, type, damage, 0f, Main.myPlayer);
                             Main.projectile[flame].timeLeft = 180;
                             npc.localAI[0] = 0f;
                         }
                         else
-                        {
                             npc.localAI[0] = ClingerShootGateValue_Rev - 15f;
-                        }
                     }
                 }
 
                 if ((npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungiBulb) && !Main.player[npc.target].DeadOrGhost)
                 {
-                    if (npc.justHit)
+                    if (npc.justHit || Collision.SolidCollision(npc.position, npc.width, npc.height) || !Collision.CanHit(npc, Main.player[npc.target]))
                         npc.localAI[0] = 0f;
 
                     npc.localAI[0] += 1f;
-                    float sporeSpawnGateValue = npc.type == NPCID.GiantFungiBulb ? 120f : 240f;
+                    float sporeSpawnGateValue = npc.type == NPCID.GiantFungiBulb ? (CalamityWorld.revenge ? GiantFungiBulbSporeShootGateValue_Rev : GiantFungiBulbSporeShootGateValue) : FungiBulbSporeShootGateValue;
                     if (npc.localAI[0] >= sporeSpawnGateValue)
                     {
-                        if (!Collision.SolidCollision(npc.position, npc.width, npc.height))
+                        if (!Collision.SolidCollision(npc.position, npc.width, npc.height) && Collision.CanHit(npc, Main.player[npc.target]))
                         {
                             float speed = npc.type == NPCID.GiantFungiBulb ? 16f : 8f;
                             distanceVector.X = Main.player[npc.target].Center.X - npc.Center.X;
                             float absoluteYDistance = Math.Abs(distanceVector.X * 0.1f);
                             if (Main.player[npc.target].Center.Y - npc.Center.Y > 0f)
-                            {
                                 absoluteYDistance = 0f;
-                            }
 
                             Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - npc.Center - Vector2.UnitY * absoluteYDistance, -Vector2.UnitY) * speed;
 
                             int idx = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.FungiSpore);
                             Main.npc[idx].velocity = velocity;
                             Main.npc[idx].netUpdate = true;
-                            npc.localAI[0] = 0f;
-                            return false;
                         }
-                        npc.localAI[0] = 120f;
+
+                        npc.localAI[0] = 0f;
                     }
                 }
             }

@@ -3550,6 +3550,10 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.IchorSticker || npc.type == NPCID.IceElemental)
                 return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
 
+            // Fungi Bulb telegraphs
+            if (npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb)
+                return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
+
             // Spider web spit telegraph
             if (npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawlerWall || npc.type == NPCID.BlackRecluseWall ||
                 npc.type == NPCID.JungleCreeperWall)
@@ -4239,8 +4243,6 @@ namespace CalamityMod.NPCs
                             case NPCID.Snatcher:
                             case NPCID.Clinger:
                             case NPCID.AngryTrapper:
-                            case NPCID.FungiBulb:
-                            case NPCID.GiantFungiBulb:
                                 return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
                         }
                         break;
