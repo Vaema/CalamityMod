@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -29,20 +30,44 @@ namespace CalamityMod.Buffs.DamageOverTime
             npc.DelBuff(buffIndex);
             buffIndex--;
         }
+        internal static void DrawEffects(PlayerDrawSet drawInfo)
+        {
+            Player player = drawInfo.drawPlayer;
+            var modPlayer = player.Calamity();
+
+            if (Main.rand.NextBool())
+            {
+                Vector2 randVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
+                dust.noGravity = false;
+                Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.1f, 0.4f), Color.DarkRed * 0.5f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            if (Main.rand.NextBool(8))
+            {
+                Particle spark = new GlowOrbParticle(modPlayer.RandomDebuffVisualSpot, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.4f, 0.6f), Color.DarkRed * 0.8f, false, false, false);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+        }
 
         internal static void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (Main.rand.NextBool(3))
+            Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
+            Vector2 randVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
+            if (Main.rand.NextBool(4))
             {
-                for (int b = 0; b < 2; b++)
-                {
-                    Vector2 bloodVel = Main.rand.NextVector2CircularEdge(1f, 1f);
-                    bloodVel.SafeNormalize(Vector2.Zero);
-                    bloodVel *= Main.rand.NextFloat(4f, 7f);
-
-                    Particle bloody = new BloodParticle(npc.Center, bloodVel, 40, 0.75f, new Color(192, 0, 0));
-                    GeneralParticleHandler.SpawnParticle(bloody);
-                }
+                Particle spark = new AltSparkParticle(npcSize, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.1f, 0.4f), Color.DarkRed * 0.5f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            else
+            {
+                Dust dust = Dust.NewDustPerfect(npcSize, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
+                dust.noGravity = false;
+            }
+            if (Main.rand.NextBool(12))
+            {
+                Particle spark = new GlowOrbParticle(npcSize, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.4f, 0.6f), Color.DarkRed * 0.8f, false, false, false);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
         }
     }
