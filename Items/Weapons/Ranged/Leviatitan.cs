@@ -1,6 +1,12 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System.Diagnostics.Metrics;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Rogue;
+using Microsoft.Build.Tasks;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,46 +16,44 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Leviatitan : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 82;
             Item.height = 28;
-            Item.damage = 77;
+            Item.damage = 117;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 10;
-            Item.useAnimation = 10;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTime = Item.useAnimation = 18;
+            Item.noUseGraphic = true;
+            Item.channel = true;
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.UseSound = SoundID.Item92;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.7f, PitchVariance = 0.1f };
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<AquaBlast>();
+            Item.shoot = ModContent.ProjectileType<LeviatitanHoldout>();
             Item.shootSpeed = 12f;
-            Item.useAmmo = AmmoID.Bullet;
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.Calamity().canFirePointBlankShots = true;
+            Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-15, 0);
-        }
+        // Obviously we don't want multiple holdouts existing at the same time.
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
+        // Spawning the holdout won't consume ammo.
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
+
+        // Makes the rotation of the mouse around the player sync in multiplayer.
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float SpeedX = velocity.X + Main.rand.Next(-10, 11) * 0.05f;
-            float SpeedY = velocity.Y + Main.rand.Next(-10, 11) * 0.05f;
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<LeviatitanHoldout>(), 0, 0f, player.whoAmI);
 
-            if (type == ProjectileID.Bullet)
-            {
-                if (Main.rand.NextBool(3))
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<AquaBlastToxic>(), (int)(damage * 1.5), knockback, player.whoAmI);
-                else
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<AquaBlast>(), damage, knockback, player.whoAmI);
-            }
-            else
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
+            // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
 
             return false;
         }

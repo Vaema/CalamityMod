@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTime = Item.useAnimation = 44;
             Item.shoot = ModContent.ProjectileType<FlakToxicannonHoldout>();
             Item.shootSpeed = 15f;
-
             Item.width = 88;
             Item.height = 28;
             Item.noMelee = true;

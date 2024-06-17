@@ -1,5 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -45,12 +49,15 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + MathHelper.ToRadians(90) * Projectile.direction;
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.35f / 255f, (255 - Projectile.alpha) * 0.4f / 255f);
-            for (int i = 0; i < 2; i++)
+            if (Projectile.timeLeft <= 580 && Projectile.timeLeft % 3 == 0)
             {
-                Vector2 dspeed = -Projectile.velocity * Main.rand.NextFloat(0.5f * 0.8f);
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity = dspeed;
+                Particle spark = new LineParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.8f), false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.8f, 1.2f), Color.Chartreuse * Main.rand.NextFloat(0.15f, 0.5f));
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            if (Main.rand.NextBool(6))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 75, -Projectile.velocity.RotatedByRandom(0.1) * Main.rand.NextFloat(0.1f, 0.3f), 0, default, Main.rand.NextFloat(0.5f, 1.2f));
+                dust.noGravity = true;
             }
         }
 
@@ -59,6 +66,11 @@ namespace CalamityMod.Projectiles.Ranged
             for (int lol = 0; lol < 10; lol++)
             {
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
+            }
+            for (int i = 0; i <= 3; i++)
+            {
+                Particle skull = new DesertProwlerSkullParticle(Projectile.Center, new Vector2(2.5f, 2.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), Main.rand.NextBool() ? Color.LightGreen: Color.Lime, Color.LimeGreen, Main.rand.NextFloat(0.2f, 0.9f), 175);
+                GeneralParticleHandler.SpawnParticle(skull);
             }
         }
 

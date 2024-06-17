@@ -693,7 +693,12 @@ Kingsbane: {
 
 Leviatitan: {
 	DisplayName: Leviatitan
-	Tooltip: Converts musket balls into toxic and normal water blasts
+	Tooltip:
+		'''
+		Converts musket balls into high velocity aqua blasts
+		Fires homing aberrations that shred enemy defense every 7th shot
+		<right> to vomit a meteor that explodes on hit
+		'''
 }
 
 LunarianBow: {
