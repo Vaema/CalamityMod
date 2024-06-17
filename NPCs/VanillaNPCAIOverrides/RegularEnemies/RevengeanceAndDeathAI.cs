@@ -63,6 +63,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         public const float GiantFungiBulbSporeShootGateValue_Rev = 120f;
         public const float FungiBulbSporeTelegraphTime = 30f;
 
+        public const float CorruptorVileSpitGateValue = 180f;
+        public const float CorruptorVileSpitTelegraphTime = 30f;
+
+        public const float BloodSquidBloodShotGateValue = 120f;
+        public const float BloodSquidBloodShotTelegraphTime = 30f;
+
         #endregion
 
         #region Revengeance and Death Mode non-boss NPC AIs
@@ -3743,8 +3749,12 @@ PrepareToShoot:
                 }
             }
 
-            maxVelocity *= 1.25f;
-            acceleration *= 1.25f;
+            if (CalamityWorld.revenge)
+            {
+                maxVelocity *= 1.25f;
+                acceleration *= 1.25f;
+            }
+
             if (CalamityWorld.death && deathModeVelocityBuff)
             {
                 maxVelocity *= 1.25f;
@@ -3785,14 +3795,14 @@ PrepareToShoot:
                 {
                     npc.ai[0] += 1f;
                     if (npc.ai[0] > 0f)
-                        npc.velocity.Y += 0.03f;
+                        npc.velocity.Y += CalamityWorld.revenge ? 0.03f : 0.023f;
                     else
-                        npc.velocity.Y -= 0.03f;
+                        npc.velocity.Y -= CalamityWorld.revenge ? 0.03f : 0.023f;
 
                     if (npc.ai[0] < -100f || npc.ai[0] > 100f)
-                        npc.velocity.X += 0.03f;
+                        npc.velocity.X += CalamityWorld.revenge ? 0.03f : 0.023f;
                     else
-                        npc.velocity.X -= 0.03f;
+                        npc.velocity.X -= CalamityWorld.revenge ? 0.03f : 0.023f;
 
                     if (npc.ai[0] > 200f)
                         npc.ai[0] = -200f;
@@ -3800,8 +3810,8 @@ PrepareToShoot:
 
                 if (targetDistCheck < 150f && (npc.type == NPCID.EaterofSouls || npc.type == NPCID.Corruptor || npc.type == NPCID.Crimera || npc.type == NPCID.BloodSquid))
                 {
-                    npc.velocity.X += targetXDist * 0.009f;
-                    npc.velocity.Y += targetYDist * 0.009f;
+                    npc.velocity.X += targetXDist * (CalamityWorld.revenge ? 0.009f : 0.007f);
+                    npc.velocity.Y += targetYDist * (CalamityWorld.revenge ? 0.009f : 0.007f);
                 }
 
                 // Master Mode Queen Bee Bees
@@ -3986,9 +3996,9 @@ PrepareToShoot:
                 if (npc.velocity.Y > 0f)
                     npc.velocity.Y *= 0.95f;
 
-                npc.velocity.Y -= 0.4f;
-                if (npc.velocity.Y < -3f)
-                    npc.velocity.Y = -3f;
+                npc.velocity.Y -= CalamityWorld.revenge ? 0.4f : 0.3f;
+                if (npc.velocity.Y < -(CalamityWorld.revenge ? 3f : 2f))
+                    npc.velocity.Y = -(CalamityWorld.revenge ? 3f : 2f);
             }
 
             if (npc.type == NPCID.Moth && npc.wet)
@@ -4102,26 +4112,43 @@ PrepareToShoot:
 
                 if (npc.type == NPCID.Corruptor)
                 {
-                    if (npc.justHit)
+                    if (npc.justHit || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                         npc.localAI[0] = 0f;
 
                     npc.localAI[0] += 1f;
-                    if (npc.localAI[0] == 180f)
+                    if (npc.localAI[0] == CorruptorVileSpitGateValue)
                     {
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), 112, 0, 0f, 0f, 0f, 0f, 255);
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), NPCID.VileSpit);
 
                         npc.localAI[0] = 0f;
+                    }
+
+                    if (npc.localAI[0] > CorruptorVileSpitGateValue - CorruptorVileSpitTelegraphTime)
+                    {
+                        Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 25f + Main.rand.NextVector2CircularEdge(5f, 5f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, 0f, 0f, 100, default, 3f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0f;
+                        if (Main.rand.NextBool())
+                        {
+                            dust.scale *= 0.6f;
+                        }
+                        else
+                        {
+                            dust.velocity *= 1.4f;
+                            dust.noGravity = true;
+                        }
                     }
                 }
 
                 if (npc.type == NPCID.BloodSquid)
                 {
-                    if (npc.justHit)
+                    if (npc.justHit || targetData.Type == 0 || !Collision.CanHit(npc, targetData))
                         npc.localAI[0] = 0f;
 
                     npc.localAI[0] += 1f;
-                    if (npc.localAI[0] >= 120f)
+                    if (npc.localAI[0] >= BloodSquidBloodShotGateValue)
                     {
                         if (targetData.Type != 0 && Collision.CanHit(npc, targetData))
                         {
@@ -4140,10 +4167,19 @@ PrepareToShoot:
                                 }
                             }
                             else
-                                npc.localAI[0] = 50f;
+                                npc.localAI[0] = 0f;
                         }
                         else
-                            npc.localAI[0] = 50f;
+                            npc.localAI[0] = 0f;
+                    }
+
+                    if (npc.localAI[0] > BloodSquidBloodShotGateValue - BloodSquidBloodShotTelegraphTime)
+                    {
+                        Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 25f + Main.rand.NextVector2CircularEdge(5f, 5f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, DustID.Blood, 0f, 0f, 100, default, 3f);
+                        dust.fadeIn = 1.7f;
+                        dust.noGravity = true;
+                        dust.velocity *= 0f;
                     }
                 }
             }

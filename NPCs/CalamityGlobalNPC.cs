@@ -3546,6 +3546,10 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.Antlion)
                 return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
 
+            // Corruptor and Blood Squid telegraphs
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+                return RevengeanceAndDeathAI.BuffedFlyingAI(npc, Mod);
+
             // Ichor Sticker and Ice Elemental telegraphs
             if (npc.type == NPCID.IchorSticker || npc.type == NPCID.IceElemental)
                 return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
@@ -4168,13 +4172,11 @@ namespace CalamityMod.NPCs
                             case NPCID.ServantofCthulhu:
                             case NPCID.EaterofSouls:
                             case NPCID.MeteorHead:
-                            case NPCID.Corruptor:
                             case NPCID.Crimera:
                             case NPCID.Moth:
                             case NPCID.Parrot:
                             case NPCID.Bee:
                             case NPCID.BeeSmall:
-                            case NPCID.BloodSquid:
                             case NPCID.Hornet:
                             case NPCID.HornetFatty:
                             case NPCID.HornetHoney:
