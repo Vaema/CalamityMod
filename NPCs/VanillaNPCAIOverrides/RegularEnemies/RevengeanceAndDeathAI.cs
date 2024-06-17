@@ -5619,7 +5619,7 @@ PrepareToShoot:
 
             FixExploitManEaters.ProtectSpot((int)npc.ai[0], (int)npc.ai[1]);
 
-            npc.TargetClosest(true);
+            npc.TargetClosest();
 
             float acceleration = 0.035f;
             float minDistance = 250f;
@@ -5640,7 +5640,7 @@ PrepareToShoot:
                     break;
                 case NPCID.GiantFungiBulb:
                     acceleration = 0.15f;
-                    minDistance = 450f;
+                    minDistance = CalamityWorld.revenge ? 450f : 350f;
                     break;
             }
 
@@ -5658,7 +5658,10 @@ PrepareToShoot:
             if (npc.ai[2] > 300f)
             {
                 minDistance *= 1.3f;
-                maxVelocity += 2f;
+                
+                if (CalamityWorld.revenge)
+                    maxVelocity += 2f;
+
                 if (npc.ai[2] > 450f)
                     npc.ai[2] = 0f;
             }
@@ -5778,7 +5781,7 @@ PrepareToShoot:
                     {
                         if (!Collision.SolidCollision(npc.position, npc.width, npc.height) && Collision.CanHit(npc, Main.player[npc.target]))
                         {
-                            float speed = npc.type == NPCID.GiantFungiBulb ? 16f : 8f;
+                            float speed = npc.type == NPCID.GiantFungiBulb ? (CalamityWorld.revenge ? 16f : 14f) : 8f;
                             distanceVector.X = Main.player[npc.target].Center.X - npc.Center.X;
                             float absoluteYDistance = Math.Abs(distanceVector.X * 0.1f);
                             if (Main.player[npc.target].Center.Y - npc.Center.Y > 0f)
