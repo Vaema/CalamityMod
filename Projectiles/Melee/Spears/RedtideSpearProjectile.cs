@@ -302,7 +302,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             if (CurrentAttackState == AttackState.UpwardsThrust)
             {
                 target.velocity.Y -= 12 * (float)Math.Sqrt(target.knockBackResist);
-                target.FallingNPC().ApplyFallDamage(target, 50, Vector2.Zero, 5f);
+                target.FlungNPC().ApplyCollisionDamage(target, 50, Vector2.Zero, 5f);
             }
 
             target.AddBuff(BuffID.Poisoned, 180);

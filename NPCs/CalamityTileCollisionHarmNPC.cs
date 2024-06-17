@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs
 {
-    public class CalamityFallDamageNPC : GlobalNPC
+    public class CalamityTileCollisionHarmNPC : GlobalNPC
     {
         /// <summary>
         /// How much "gravity damage" is this npc slated to recieve once it hits the ground.
@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs
 
         public override GlobalNPC Clone(NPC npc, NPC npcClone)
         {
-            CalamityFallDamageNPC myClone = (CalamityFallDamageNPC)base.Clone(npc, npcClone);
+            CalamityTileCollisionHarmNPC myClone = (CalamityTileCollisionHarmNPC)base.Clone(npc, npcClone);
 
             myClone.potentialEnergyDamage = potentialEnergyDamage;
             myClone.OldVelocity = OldVelocity;
@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs
         /// <param name="potentialDamage">The maximum fall damage taken by the npc once they hit the ground</param>
         /// <param name="terminalVelocityForFullDamage">The downwards velocity necessary to recieve the full fall damage. By default 10, the npc max fall speed</param>
         /// <param name="checkTiles">Will check for tiles in the collision instead of velocity</param>
-        public void ApplyFallDamage(NPC npc, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false)
+        public void ApplyCollisionDamage(NPC npc, int potentialDamage, Vector2 forcedVel, float terminalVelocityForFullDamage = 10f, bool checkTiles = false)
         {
             //NPCs that don't collide with tiles simply don't get fall damage, lol.
             if (npc.noTileCollide)

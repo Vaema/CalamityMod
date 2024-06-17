@@ -184,8 +184,7 @@ namespace CalamityMod.Projectiles.Melee
                     Owner.statLife = Owner.statLifeMax2;
             }
 
-            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false))
+            if (target.CanBeMoved(true))
             {
                 // Launch
                 Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -15;

@@ -211,12 +211,11 @@ namespace CalamityMod.Projectiles.Melee
             if ((damageDone <= 2 || target.life <= 0) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
-            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
-            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false))
+            if (target.CanBeMoved(true))
             {
                 // Launch
                 Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -17;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0 : 1f);
+                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
             }
 
             if (Projectile.ai[1] == -1 && spawnBoom)

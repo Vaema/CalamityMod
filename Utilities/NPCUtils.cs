@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -734,6 +735,23 @@ namespace CalamityMod
             {
                 return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check if an NPC can be moved
+        /// </summary>
+        /// <param name="target">The NPC attacked.</param>
+        /// <returns>Whether or not the NPC can be moved around.</returns>
+        public static bool CanBeMoved(this NPC target, bool ignoreKBImmune = false)
+        {
+            // Ideally we can replace [!CalamityPlayer.areThereAnyDamnBosses] with a check for problematic boss minions so that you can knock back regular ones in bossfights.
+            // For now at least, when a boss is alive it will always fail to knockback enemies with 100% kb resist.
+            if (CalamityPlayer.areThereAnyDamnBosses)
+                ignoreKBImmune = false;
+            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
+            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune ? true : target.knockBackResist > 0))
+                return true;
             return false;
         }
 
