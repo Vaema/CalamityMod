@@ -40,12 +40,12 @@ namespace CalamityMod.Buffs.DamageOverTime
                 Vector2 randVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
                 Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
                 dust.noGravity = false;
-                Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.1f, 0.4f), Color.DarkRed * 0.5f);
+                Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), Color.DarkRed * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             if (Main.rand.NextBool(8))
             {
-                Particle spark = new GlowOrbParticle(modPlayer.RandomDebuffVisualSpot, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.4f, 0.6f), Color.DarkRed * 0.8f, false, false, false);
+                Particle spark = new GlowOrbParticle(modPlayer.RandomDebuffVisualSpot, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.55f, 0.8f), Color.DarkRed * 0.8f, false, false, false);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
         }
@@ -54,9 +54,9 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
             Vector2 randVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
-            if (Main.rand.NextBool(4))
+            if (Main.rand.NextBool(3))
             {
-                Particle spark = new AltSparkParticle(npcSize, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.1f, 0.4f), Color.DarkRed * 0.5f);
+                Particle spark = new AltSparkParticle(npcSize, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), Color.DarkRed * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             else
@@ -64,9 +64,9 @@ namespace CalamityMod.Buffs.DamageOverTime
                 Dust dust = Dust.NewDustPerfect(npcSize, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
                 dust.noGravity = false;
             }
-            if (Main.rand.NextBool(12))
+            if (Main.rand.NextBool(8))
             {
-                Particle spark = new GlowOrbParticle(npcSize, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.4f, 0.6f), Color.DarkRed * 0.8f, false, false, false);
+                Particle spark = new GlowOrbParticle(npcSize, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.55f, 0.8f), Color.DarkRed * 0.8f, false, false, false);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
         }
