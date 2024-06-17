@@ -4126,19 +4126,10 @@ PrepareToShoot:
 
                     if (npc.localAI[0] > CorruptorVileSpitGateValue - CorruptorVileSpitTelegraphTime)
                     {
-                        Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 25f + Main.rand.NextVector2CircularEdge(5f, 5f);
-                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, 0f, 0f, 100, default, 3f);
+                        Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 25f + Main.rand.NextVector2CircularEdge(3f, 3f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
                         dust.noGravity = true;
-                        dust.velocity *= 0f;
-                        if (Main.rand.NextBool())
-                        {
-                            dust.scale *= 0.6f;
-                        }
-                        else
-                        {
-                            dust.velocity *= 1.4f;
-                            dust.noGravity = true;
-                        }
+                        dust.velocity *= 0.3f;
                     }
                 }
 

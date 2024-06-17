@@ -6893,6 +6893,19 @@ namespace CalamityMod.NPCs
                     return false;
             }
 
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+            {
+                Texture2D texture = TextureAssets.Npc[npc.type].Value;
+
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (npc.spriteDirection == -1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
+
+                return false;
+            }
+
             if (npc.type == NPCID.GolemHeadFree)
             {
                 // Draw the head as usual.
