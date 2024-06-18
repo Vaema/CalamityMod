@@ -69,6 +69,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         public const float BloodSquidBloodShotGateValue = 120f;
         public const float BloodSquidBloodShotTelegraphTime = 30f;
 
+        public const float IceGolemFrostBeamGateValue = 120f;
+        public const float IceGolemFrostBeamGateValue_Rev = 90f;
+        public const float IceGolemFrostBeamGateValue_Death = 60f;
+        public const float IceGolemFrostBeamTelegraphTime = 30f;
+
         #endregion
 
         #region Revengeance and Death Mode non-boss NPC AIs
@@ -2400,21 +2405,27 @@ PrepareToShoot:
 
             if (npcType == NPCID.IceGolem)
             {
-                if (npc.justHit)
-                    npc.ai[2] = 0f;
-
-                if (npc.confused)
+                if (npc.justHit || npc.confused || npc.velocity.Y != 0f || Main.player[npc.target].dead || Main.player[npc.target].frozen || !((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                     npc.ai[2] = 0f;
 
                 npc.ai[2] += 1f;
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= (CalamityWorld.death ? 60f : CalamityWorld.revenge ? 90f : 120f) && npc.velocity.Y == 0f && !Main.player[npc.target].dead && !Main.player[npc.target].frozen && ((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                Vector2 eyeLocation = npc.Center + Vector2.UnitX * (npc.direction == -1 ? -14f : 6f) - Vector2.UnitY * 40f;
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= (CalamityWorld.death ? IceGolemFrostBeamGateValue_Death : CalamityWorld.revenge ? IceGolemFrostBeamGateValue_Rev : IceGolemFrostBeamGateValue) && npc.velocity.Y == 0f && !Main.player[npc.target].dead && !Main.player[npc.target].frozen && ((npc.direction > 0 && npc.Center.X < Main.player[npc.target].Center.X) || (npc.direction < 0 && npc.Center.X > Main.player[npc.target].Center.X)) && Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
                     npc.netUpdate = true;
                     float iceLaserVelocity = CalamityWorld.death ? 12f : CalamityWorld.revenge ? 10f : 8f;
-                    Vector2 spawnPosition = npc.Center - Vector2.UnitY * 28f;
+                    Vector2 spawnPosition = eyeLocation;
                     Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * iceLaserVelocity;
                     Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition + velocity.SafeNormalize(-Vector2.UnitY) * 100f, velocity, ProjectileID.FrostBeam, 32, 0f, Main.myPlayer);
                     npc.ai[2] = 0f;
+                }
+
+                // Emit ice dust from eye when about to fire
+                if (npc.ai[2] > (CalamityWorld.death ? IceGolemFrostBeamGateValue_Death : CalamityWorld.revenge ? IceGolemFrostBeamGateValue_Rev : IceGolemFrostBeamGateValue) - IceGolemFrostBeamTelegraphTime)
+                {
+                    Dust dust = Dust.NewDustDirect(eyeLocation, 1, 1, DustID.Frost, 0f, 0f, 200, default, 1.5f);
+                    dust.noGravity = true;
+                    dust.velocity *= 0f;
                 }
             }
 
