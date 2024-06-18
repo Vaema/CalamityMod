@@ -840,7 +840,7 @@ namespace CalamityMod
                 ProjectileType<GrandGuardianHoldout>(),
                 ProjectileType<EarthHoldout>(),
                 ProjectileType<MajesticGuardHoldout>(),
-
+                ProjectileType<HellkiteHoldout>(),
                 ProjectileType<PhangasmBow>(),
                 ProjectileType<ContagionBow>(),
                 ProjectileType<DaemonsFlameBow>(),
@@ -1937,6 +1937,7 @@ namespace CalamityMod
                 ProjectileType<GodsParanoiaProj>(),
                 ProjectileType<GrandDadHoldout>(),
                 ProjectileType<GrandGuardianHoldout>(),
+                ProjectileType<HellkiteHoldout>(),
                 ProjectileType<InsidiousHarpoon>(),
                 ProjectileType<JawsProjectile>(),
                 ProjectileType<LeviathanTooth>(),
