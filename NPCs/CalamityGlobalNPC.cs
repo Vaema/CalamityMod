@@ -3512,10 +3512,17 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.BloodNautilus)
                 return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
 
+            // More telegraphs
+            if (npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.SpikedJungleSlime || npc.type == NPCID.SlimeSpiked)
+                return SlimeAI.BuffedSlimeAI(npc, Mod);
+
             // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
+            // Also limit the amount of times Vortex Larvae and Hornets can evolve
             if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
                 npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
-                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper)
+                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper ||
+                npc.type == NPCID.BoneLee || npc.type == NPCID.VortexLarva || npc.type == NPCID.VortexHornet ||
+                npc.type == NPCID.VortexHornetQueen)
             {
                 return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
             }
@@ -3539,9 +3546,17 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.Antlion)
                 return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
 
-            // Ichor Sticker telegraph
-            if (npc.type == NPCID.IchorSticker)
+            // Corruptor and Blood Squid telegraphs
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+                return RevengeanceAndDeathAI.BuffedFlyingAI(npc, Mod);
+
+            // Ichor Sticker and Ice Elemental telegraphs
+            if (npc.type == NPCID.IchorSticker || npc.type == NPCID.IceElemental)
                 return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
+
+            // Fungi Bulb telegraphs
+            if (npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb)
+                return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
 
             // Spider web spit telegraph
             if (npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawlerWall || npc.type == NPCID.BlackRecluseWall ||
@@ -3923,8 +3938,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.ToxicSludge:
                                 case NPCID.IceSlime:
                                 case NPCID.Crimslime:
-                                case NPCID.SpikedIceSlime:
-                                case NPCID.SpikedJungleSlime:
                                 case NPCID.UmbrellaSlime:
                                 case NPCID.RainbowSlime:
                                 case NPCID.SlimeMasked:
@@ -3933,7 +3946,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.SlimeRibbonYellow:
                                 case NPCID.SlimeRibbonGreen:
                                 case NPCID.SlimeRibbonRed:
-                                case NPCID.SlimeSpiked:
                                 case NPCID.SandSlime:
                                 case NPCID.GoldenSlime:
                                 case NPCID.ShimmerSlime:
@@ -4050,7 +4062,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.HellArmoredBonesSpikeShield:
                                 case NPCID.HellArmoredBonesMace:
                                 case NPCID.HellArmoredBonesSword:
-                                case NPCID.BoneLee:
                                 case NPCID.Paladin:
                                 case NPCID.SkeletonSniper:
                                 case NPCID.SkeletonCommando:
@@ -4130,9 +4141,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.StardustSpiderBig:
                                 case NPCID.NebulaSoldier:
                                 case NPCID.VortexSoldier:
-                                case NPCID.VortexLarva:
-                                case NPCID.VortexHornet:
-                                case NPCID.VortexHornetQueen:
                                 case NPCID.SolarDrakomire:
                                 case NPCID.SolarSpearman:
                                 case NPCID.SolarSolenian:
@@ -4164,13 +4172,11 @@ namespace CalamityMod.NPCs
                             case NPCID.ServantofCthulhu:
                             case NPCID.EaterofSouls:
                             case NPCID.MeteorHead:
-                            case NPCID.Corruptor:
                             case NPCID.Crimera:
                             case NPCID.Moth:
                             case NPCID.Parrot:
                             case NPCID.Bee:
                             case NPCID.BeeSmall:
-                            case NPCID.BloodSquid:
                             case NPCID.Hornet:
                             case NPCID.HornetFatty:
                             case NPCID.HornetHoney:
@@ -4239,8 +4245,6 @@ namespace CalamityMod.NPCs
                             case NPCID.Snatcher:
                             case NPCID.Clinger:
                             case NPCID.AngryTrapper:
-                            case NPCID.FungiBulb:
-                            case NPCID.GiantFungiBulb:
                                 return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
                         }
                         break;
@@ -4320,7 +4324,6 @@ namespace CalamityMod.NPCs
                             case NPCID.Pixie:
                             case NPCID.Wraith:
                             case NPCID.Gastropod:
-                            case NPCID.IceElemental:
                             case NPCID.FloatyGross:
                             case NPCID.Ghost:
                             case NPCID.Poltergeist:
@@ -6888,6 +6891,19 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.SkeletronPrime || npc.type == ModContent.NPCType<SkeletronPrime2>() || CalamityLists.DestroyerIDs.Contains(npc.type))
                     return false;
+            }
+
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+            {
+                Texture2D texture = TextureAssets.Npc[npc.type].Value;
+
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (npc.spriteDirection == -1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
+
+                return false;
             }
 
             if (npc.type == NPCID.GolemHeadFree)

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,6 +10,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CrushsawCrasher : RogueWeapon
     {
+        bool HasHoveredOverNameInGFB = false;
+
         public override void SetDefaults()
         {
             Item.width = 38;
@@ -49,6 +50,27 @@ namespace CalamityMod.Items.Weapons.Rogue
                 return false;
             }
             return true;
+        }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.zenithWorld)
+            {
+                if (Main.HoverItem.type == Item.type)
+                {
+                    if (!HasHoveredOverNameInGFB)
+                    {
+                        HasHoveredOverNameInGFB = true;
+                        string firstWord = this.GetLocalizedValue("GFBFirstWord" + Main.rand.Next(1, 12 + 1).ToString());
+                        string lastWord = this.GetLocalizedValue("GFBLastWord" + Main.rand.Next(1, 10 + 1).ToString());
+                        Item.SetNameOverride(firstWord + " " + lastWord);
+                    }
+                }
+                else
+                    HasHoveredOverNameInGFB = false;
+            }
+            else
+                Item.ClearNameOverride();
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)

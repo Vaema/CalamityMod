@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -1411,6 +1412,9 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<LifeJelly>()] = ModContent.ItemType<CleansingJelly>();
             shimmerTransmute[ModContent.ItemType<CleansingJelly>()] = ModContent.ItemType<VitalJelly>();
             shimmerTransmute[ModContent.ItemType<VitalJelly>()] = ModContent.ItemType<LifeJelly>();
+
+            //Calamity Permanent Upgrades
+            shimmerTransmute[ItemID.FrogLeg] = ModContent.ItemType<NimbleBounder>();
         }
         #endregion
     }

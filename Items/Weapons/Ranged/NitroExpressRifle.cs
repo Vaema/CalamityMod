@@ -65,7 +65,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            player.velocity += -velocity * 0.3f;
+            Vector2 recoilVelocity = velocity;
+            recoilVelocity.Normalize();
+            player.velocity += -recoilVelocity * 7f;
             if (type == ProjectileID.Bullet)
                 type = ModContent.ProjectileType<NitroShot>();
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f);

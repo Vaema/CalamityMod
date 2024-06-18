@@ -682,7 +682,7 @@ namespace CalamityMod.CalPlayer
                         Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
                         Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
                 }
 
                 if (tile.TileType == auricLandMineID)
@@ -1864,6 +1864,13 @@ namespace CalamityMod.CalPlayer
                 Player.moveSpeed += 0.12f;
                 Player.jumpSpeedBoost += 0.6f;
                 Player.thorns += 3.5f;
+            }
+
+            // Nimble Bounder bonus
+            if (nimbleBounderBoost)
+            {
+                Player.moveSpeed += 0.05f;
+                Player.jumpSpeedBoost += 0.25f;
             }
 
             // Affliction bonus
