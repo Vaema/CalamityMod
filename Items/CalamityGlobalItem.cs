@@ -1239,6 +1239,10 @@ namespace CalamityMod.Items
             {
                 player.GetDamage<MeleeDamageClass>() += 0.02f;
             }
+            if (item.type == ItemID.FireGauntlet || item.type == ItemID.MagmaStone)
+            {
+                modPlayer.magmaStoneVisuals = !hideVisual; // hides the fire dust when hiding the accessory
+            }
 
             // The Frog Leg line is prevented from stacking.
             // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.

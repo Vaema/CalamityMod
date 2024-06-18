@@ -3845,6 +3845,16 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
+                // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                {
+                    if (Main.rand.NextBool(3))
+                    {
+                        int element = Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.RainbowTorch, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.25f);
+                        Main.dust[element].noGravity = true;
+                    }
+                }
+
                 if (!projectile.CountsAsClass<MeleeDamageClass>() && player.meleeEnchant == 7 && !projectile.noEnchantmentVisuals) //flask of party affects all types of weapons
                 {
                     Vector2 velocity = projectile.velocity;
