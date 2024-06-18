@@ -5605,6 +5605,9 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Modify Hit By Projectile
+        public static bool DisableMultWhipTag = false; 
+        //this bool does nothing on this branch, its just here so that CalTestHelpers doesn't crash searching for it
+        //if you want to mess with this, please do so in the summoner branch - Shade
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
