@@ -52,6 +52,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -69,7 +70,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -148,9 +149,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 MovingUp = (NPC.ai[0] == 1 ? true : false);
                 setMovement = false;
             }
-
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
 
             NPC.direction = NPC.spriteDirection;
 

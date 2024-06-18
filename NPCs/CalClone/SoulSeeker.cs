@@ -23,6 +23,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
@@ -39,7 +40,7 @@ namespace CalamityMod.NPCs.CalClone
             NPC.height = 40;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.damage = 40;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.defense = 10;
             NPC.DR_NERD(0.1f);
             NPC.lifeMax = CalamityWorld.death ? 1500 : 2500;
@@ -83,9 +84,6 @@ namespace CalamityMod.NPCs.CalClone
 
         public override bool PreAI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)

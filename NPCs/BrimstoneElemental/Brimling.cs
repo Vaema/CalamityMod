@@ -22,6 +22,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             Main.npcFrameCount[NPC.type] = 8;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
@@ -30,7 +31,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage values are pulled from NPCStats
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 0;
@@ -81,9 +82,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
 
             // Despawn if Brim doesn't exist

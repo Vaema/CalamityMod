@@ -13,12 +13,13 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 50;
+            NPC.damage = 0;
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 40;
@@ -60,9 +61,6 @@ namespace CalamityMod.NPCs.Ravager
 
                 return;
             }
-
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
 
             if (NPC.alpha > 0)
             {
