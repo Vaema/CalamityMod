@@ -17,12 +17,13 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 40;
@@ -67,9 +68,6 @@ namespace CalamityMod.NPCs.Ravager
 
             bool provy = DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
 
             if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;

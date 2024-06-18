@@ -15,6 +15,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace CalamityMod.NPCs.Astral
 {
@@ -24,6 +25,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstraglomerateGlow", AssetRequestMode.AsyncLoad);
             Main.npcFrameCount[NPC.type] = 6;
@@ -34,7 +36,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 38;
             NPC.height = 62;
             NPC.aiStyle = -1;
-            NPC.damage = 55;
+            NPC.damage = 0;
             NPC.defense = 15;
             NPC.DR_NERD(0.15f);
             NPC.lifeMax = 480;
@@ -72,9 +74,6 @@ namespace CalamityMod.NPCs.Astral
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             NPC.ai[0]++;
             if (NPC.ai[0] > (CalamityWorld.death ? 60f : CalamityWorld.revenge ? 120f : 180f))
             {

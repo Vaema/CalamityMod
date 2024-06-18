@@ -32,6 +32,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public int laserDelay = 150;
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -44,7 +45,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             AIType = -1;
             NPC.aiStyle = -1;
-            NPC.damage = 10;
+            NPC.damage = 0;
             NPC.width = 44;
             NPC.height = 44;
             NPC.defense = 4;
@@ -79,9 +80,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             List<int> SuperchargableEnemies = new List<int>()
             {
                 ModContent.NPCType<WulfrumDrone>(),

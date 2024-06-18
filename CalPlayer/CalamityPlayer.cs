@@ -510,7 +510,9 @@ namespace CalamityMod.CalPlayer
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
         public bool ascendantTrail = false;
+        public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
+        public bool eGauntletVisuals = true; // Used to control dust spawned when swinging
         public int gloveLevel = 0; // Used to prevent glove stacking
         public bool alreadyHasFrogLeg = false; // Used to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
@@ -1730,7 +1732,9 @@ namespace CalamityMod.CalPlayer
             cryogenSoul = false;
             ascendantInsignia = false;
             ascendantTrail = false;
+            magmaStoneVisuals = true;
             eGauntlet = false;
+            eGauntletVisuals = true;
             gloveLevel = 0;
             alreadyHasFrogLeg = false;
             eTalisman = false;
@@ -4037,7 +4041,7 @@ namespace CalamityMod.CalPlayer
                         Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, Main.rand.NextBool() ? 121 : DustID.Stone, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, Main.rand.NextFloat(0.2f, 0.7f));
                     }
                 }
-                if (eGauntlet)
+                if (eGauntlet && eGauntletVisuals)
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -4045,25 +4049,11 @@ namespace CalamityMod.CalPlayer
                         Main.dust[element].noGravity = true;
                     }
                 }
-                if (cryogenSoul)
-                {
-                    if (Main.rand.NextBool(3))
-                    {
-                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.IceRod, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 0.75f);
-                    }
-                }
-                if (xerocSet)
-                {
-                    if (Main.rand.NextBool(3))
-                    {
-                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Enchanted_Pink, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 1.25f);
-                    }
-                }
                 if (dsSetBonus)
                 {
                     if (Main.rand.NextBool(3))
                     {
-                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Shadowflame, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 2.5f);
+                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Shadowflame, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 0.7f);
                     }
                 }
             }

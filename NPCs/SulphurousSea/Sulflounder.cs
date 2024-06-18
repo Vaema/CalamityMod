@@ -16,6 +16,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 10f;
             value.PortraitPositionYOverride = -36f;
@@ -25,7 +26,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetDefaults()
         {
             NPC.chaseable = false;
-            NPC.damage = 10;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled in the general swimming AI
             NPC.width = 42;
             NPC.height = 32;
             NPC.defense = 15;
@@ -60,9 +61,6 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             int alphaControl = 200;
             if (NPC.ai[2] == 0f)

@@ -12,6 +12,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 //Preferably would have two animated lanterns, but this static one-headded wiki image will do for now
@@ -25,7 +26,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 50;
+            NPC.damage = 0;
             NPC.npcSlots = 3f;
             NPC.width = 72;
             NPC.height = 36;
@@ -63,9 +64,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             CalamityGlobalNPC.energyFlame = NPC.whoAmI;
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
