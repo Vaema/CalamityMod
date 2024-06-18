@@ -12,7 +12,6 @@ namespace CalamityMod.Particles
         private Color ColorFire;
         private Color ColorFade;
         private float Spin;
-        private bool AffectedByLight = false;
 
         public SmallSmokeParticle(Vector2 position, Vector2 velocity, Color colorFire, Color colorFade, float scale, float opacity, float rotationSpeed = 0f, bool affectedByLight = false)
         {

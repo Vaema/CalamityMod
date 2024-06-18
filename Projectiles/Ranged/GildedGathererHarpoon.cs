@@ -32,24 +32,24 @@ namespace CalamityMod.Projectiles.Ranged
         public NPC npcToTarget = null;
         public Vector2 latchOffset;
         public Vector2 mousePos;
-        public override Vector2 SpriteOrigin => new(4,4);
+        public override Vector2 SpriteOrigin => new(4, 7);
         public override int AssignedItemID => ModContent.ItemType<GildedGatherer>();
 
-        public int DamageOverTime => 12;
+        public int DamageOverTime => 24;
+        public int DoTDelay => 10;
         public int AirblastDamageMax => 50;
         public int AirblastDamageMin => 10;
-        public int DoTDelay => 5;
 
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Projectile.width = 16;
-            Projectile.height = 16;
+            Projectile.width = 42;
+            Projectile.height = 14;
             Projectile.penetrate = -1;
-            Projectile.height = 6;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.aiStyle = -1;
             Projectile.friendly = true;
+            Projectile.hide = true;
         }
         public override void OnSpawn(IEntitySource source)
         {
@@ -123,10 +123,6 @@ namespace CalamityMod.Projectiles.Ranged
                 latchOffset = (Projectile.DirectionFrom(npcToTarget.Center) * 14);
             }
             base.OnHitNPC(target, hit, damageDone);
-        }
-        public Vector2 ArmOffset()
-        {
-            return new Vector2(0, -6f * Main.player[Projectile.owner].direction).RotatedBy(Projectile.rotation);
         }
         public override void UseStyle()
         {
@@ -263,7 +259,6 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile.direction = Math.Sign(mousePos.X - player.Center.X);
                         player.direction = Projectile.direction;
                         player.itemAnimation = 2;
-                        Offset = ArmOffset();
                         break;
                     }
                 case 1:
@@ -355,10 +350,10 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (float i = 0; i < LinePositions.Count; i++)
             {
-                LinePositions[(int)i] = Vector2.Lerp(LinePositions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center + ArmOffset(), (i / (float)LinePositions.Count)),
+                LinePositions[(int)i] = Vector2.Lerp(LinePositions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center, (i / (float)LinePositions.Count)),
                     MathHelper.Clamp(CalamityUtils.CircInEasing(i / (float)LinePositions.Count, 1), 0f, 1f)
                     );
-                LinePositions[(int)i] = Vector2.Lerp(LinePositions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center + ArmOffset(), (i / (float)LinePositions.Count)),
+                LinePositions[(int)i] = Vector2.Lerp(LinePositions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center, (i / (float)LinePositions.Count)),
                     MathHelper.Lerp(1f,0f,CalamityUtils.CircOutEasing(i / (float)LinePositions.Count, 1))
                     );
             }
@@ -375,9 +370,13 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), lightColor, Projectile.rotation, new Vector2(12, 6), 1f, spriteEffects);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, spriteEffects != SpriteEffects.None ? 4 : 0), tex.Frame(), lightColor, Projectile.rotation, new Vector2(12, 6), 1f, spriteEffects);
             }
             return false;
+        }
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCsAndTiles.Add(index);
         }
         public override void ResetStyle()
         {
@@ -391,14 +390,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (poss.Count > 0)
             {
                 poss[0] = AbsolutePosition + new Vector2(0, 6);
+                poss[1] = AbsolutePosition + new Vector2(0, 6);
 
                 if (poss.Count > 1)
                 {
-                    poss[poss.Count - 1] = Main.player[Projectile.owner].Center + ArmOffset();
-                }
-                if (poss.Count > 2)
-                {
-                    poss[poss.Count - 2] = Main.player[Projectile.owner].Center + ArmOffset();
+                    poss[poss.Count - 1] = Main.player[Projectile.owner].Center;
+                    poss[poss.Count - 2] = Vector2.Lerp(poss[poss.Count - 2], Main.player[Projectile.owner].Center, 0.99f);
                 }
             }
 
@@ -411,12 +408,15 @@ namespace CalamityMod.Projectiles.Ranged
                 poss[i] = vec2;
             }
 
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/GildedGathererHarpoon_Line");
+
+            GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(tex);
+
+            GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(tex.Width());
+
             PrimitiveRenderer.RenderTrail(poss, new PrimitiveSettings(W => { return 3f; },
-                C => { return Lighting.GetColor((poss[Math.Clamp((int)((float)C * (float)poss.Count), 0, poss.Count)] / 16).ToPoint()).MultiplyRGB(new Color(50, 55, 85)); },
-                null, false, true));
-            PrimitiveRenderer.RenderTrail(poss, new PrimitiveSettings(W => { return 1f; },
-                C => { return Lighting.GetColor((poss[Math.Clamp((int)((float)C * (float)poss.Count), 0, poss.Count)] / 16).ToPoint()).MultiplyRGB(new Color(155, 200, 255)); },
-                null, false, true));
+                C => { return Lighting.GetColor((poss[Math.Clamp((int)((float)C * (float)poss.Count), 0, poss.Count)] / 16).ToPoint()); },
+                null, false, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]));
         }
     }
 }

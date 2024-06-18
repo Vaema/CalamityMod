@@ -21,7 +21,6 @@ namespace CalamityMod.Particles
         private float Spin;
         private bool StrongVisual;
         private bool Glowing;
-        private bool AffectedByLight = false;
         private float HueShift;
         static int FrameAmount = 6;
 

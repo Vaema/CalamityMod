@@ -10,7 +10,6 @@ namespace CalamityMod.Particles
     {
         public Color InitialColor;
         public bool AffectedByGravity;
-        public bool AffectedByLight = false;
         public bool FadeIn = false;
         public float FadeInScale = 0f;
         public override bool SetLifetime => true;
