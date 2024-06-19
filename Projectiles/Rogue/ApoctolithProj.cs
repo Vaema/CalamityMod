@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Rogue
         public static Color LowBlueColor => Color.Blue;
         public static Color HighBlueColor => Color.DodgerBlue;
 
-        public int ShardDamage => (int)(Projectile.damage * 0.5f);
+        public int ShardDamage => (int)(Projectile.damage * 0.12f);
         public int ExplosionDamage => (int)(Projectile.damage * 0.5f);
         public int ExplosionRadius => 150;
 
@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 foreach (NPC npc in Main.npc)
                 {
-                    if (npc.active && npc.Distance(Projectile.Center) < ExplosionRadius)
+                    if (npc.active && npc.Distance(Projectile.Center) < ExplosionRadius && !npc.justHit)
                     {
                         npc.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), ExplosionDamage, 0, Projectile.owner, npc.whoAmI);
