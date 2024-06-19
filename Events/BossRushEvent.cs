@@ -222,7 +222,7 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<SkeletronPrime2>(), NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser, NPCID.Probe }),
 
-                new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, dimnessFactor: 0.6f, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
+                new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
                     ModContent.NPCType<SoulSeeker>() }),
 
                 new Boss(NPCID.Plantera, TimeChangeContext.Day, permittedNPCs: new int[] { NPCID.PlanterasTentacle, ModContent.NPCType<PlanterasFreeTentacle>(), NPCID.PlanterasHook, NPCID.Spore }),
@@ -399,7 +399,7 @@ namespace CalamityMod.Events
                 {
                     SoundEngine.PlaySound(SupremeCalamitas.SpawnSound, Main.player[ClosestPlayerToWorldCenter].Center);
                     CalamityUtils.SpawnBossBetter(Main.player[ClosestPlayerToWorldCenter].Top - new Vector2(42f, 84f), type);
-                }, specialSpawnCountdown: 840, dimnessFactor: 0.6f, permittedNPCs: new int[] { ModContent.NPCType<SepulcherArm>(), ModContent.NPCType<SepulcherHead>(), ModContent.NPCType<SepulcherBody>(), ModContent.NPCType<SepulcherBodyEnergyBall>(), ModContent.NPCType<SepulcherTail>(),
+                }, specialSpawnCountdown: 840, permittedNPCs: new int[] { ModContent.NPCType<SepulcherArm>(), ModContent.NPCType<SepulcherHead>(), ModContent.NPCType<SepulcherBody>(), ModContent.NPCType<SepulcherBodyEnergyBall>(), ModContent.NPCType<SepulcherTail>(),
                     ModContent.NPCType<SoulSeekerSupreme>(), ModContent.NPCType<BrimstoneHeart>(), ModContent.NPCType<SupremeCataclysm>(), ModContent.NPCType<SupremeCatastrophe>() }),
             };
 
