@@ -1,7 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
+using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -11,7 +14,7 @@ namespace CalamityMod.Projectiles.Rogue
 {
     public class ApoctolithShard : ModProjectile, ILocalizedModType
     {
-        public int TimeBeforeHoming => 30;
+        public int TimeBeforeHoming = 30;
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Rogue/AbyssalMirrorProjectile";
 
@@ -24,6 +27,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
+            TimeBeforeHoming = Main.rand.Next(30, 60);
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.width = 13;
@@ -54,12 +58,18 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, 2, Color.Lerp(ApoctolithProj.HighBlueColor, Color.Transparent, 0.8f), texture: ModContent.Request<Texture2D>(Texture).Value);
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Rectangle fr = tex.Frame(1, 3, 0, Projectile.frame, 0, 0);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, 2, Color.Lerp(ApoctolithProj.HighBlueColor, Color.Transparent, 0.8f), texture: tex.Value);
+
+            float a = Math.Clamp(MathHelper.Lerp(255f, 0f, Projectile.ai[1] / (float)TimeBeforeHoming), 0, 1);
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, fr, ApoctolithProj.HighBlueColor.MultiplyRGBA(new Color(a, a, a, 0)), Projectile.rotation, new(fr.Width / 2, fr.Height / 2), 1.35f, SpriteEffects.None);
+            
             return base.PreDraw(ref lightColor);
         }
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Dig.WithPitchOffset(Main.rand.NextFloat(0.5f)).WithVolumeScale(0.6f), Projectile.position);
+            SoundEngine.PlaySound(AbyssGravel.MineSound, Projectile.position);
             //Dust effect
             int splash = 0;
             while (splash < 4)

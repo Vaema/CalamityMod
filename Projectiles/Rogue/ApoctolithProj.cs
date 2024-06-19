@@ -13,14 +13,9 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
-using Terraria.ModLoader;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Tiles.Abyss;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -77,7 +72,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
 
             if (hit.Crit)
@@ -163,10 +157,10 @@ namespace CalamityMod.Projectiles.Rogue
 
             // Sounds
 
-            SoundEngine.PlaySound(SoundID.Tink.WithPitchOffset(-0.4f), Projectile.position);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+            SoundEngine.PlaySound(AbyssGravel.MineSound, Projectile.position);
+            SoundEngine.PlaySound(GiantClam.SlamSound, Projectile.position);
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.5f), Projectile.position);
-            if (Projectile.Calamity().stealthStrike) SoundEngine.PlaySound(SoundID.DD2_KoboldExplosion.WithPitchOffset(-0.6f), Projectile.position);
+            if (Projectile.Calamity().stealthStrike) SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MineralMortarExplode"), Projectile.position);
 
 
             // This only triggers if stealth is full
@@ -178,6 +172,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (npc.active && npc.Distance(Projectile.Center) < ExplosionRadius)
                     {
+                        npc.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), ExplosionDamage, 0, Projectile.owner, npc.whoAmI);
                     }
                 }
