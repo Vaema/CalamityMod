@@ -1136,6 +1136,8 @@ namespace CalamityMod
                 NPCID.GolemHeadFree,
                 NPCID.GolemFistRight,
                 NPCID.GolemFistLeft,
+                NPCID.Sharkron,
+                NPCID.Sharkron2,
                 NPCID.MoonLordHead,
                 NPCID.MoonLordHand,
                 NPCType<DarkEnergy>(),
@@ -1158,6 +1160,7 @@ namespace CalamityMod
                 NPCType<AnahitasIceShield>(),
                 NPCType<CryogenShield>(),
                 NPCType<OldDukeToothBall>(),
+                NPCType<SulphurousSharkron>()
             };
 
             friendlyBeeList = new List<int>()
