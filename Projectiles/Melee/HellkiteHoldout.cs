@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             SoundStyle w = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGNukeWarning");
                             SoundEngine.PlaySound(w with { Volume = 0.5f, Pitch = 1f }, Projectile.Center);
-                            Main.NewText("I've gotta give you a flashing lights warning on this one", Color.Orange);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.LightsWarning"), Color.Orange);
                             GFBFlashWarning = true;
                         }
                         GFBMulti += 0.5f;
