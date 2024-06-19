@@ -1160,8 +1160,46 @@ namespace CalamityMod
                 NPCType<AnahitasIceShield>(),
                 NPCType<CryogenShield>(),
                 NPCType<OldDukeToothBall>(),
-                NPCType<SulphurousSharkron>()
+                NPCType<SulphurousSharkron>(),
+                NPCType<Bumblefuck2>(),
+                NPCType<AureusSpawn>(),
+                NPCType<Brimling>(),
+                NPCType<CrabShroom>(),
+                NPCType<CosmicGuardianBody>(),
+                NPCType<CosmicGuardianTail>(),
+                NPCType<CosmicGuardianHead>(),
+                NPCType<DankCreeper>(),
+                NPCType<HiveBlob>(),
+                NPCType<HiveBlob2>(),
+                NPCType<DarkHeart>(),
+                NPCType<DesertNuisanceBody>(),
+                NPCType<DesertNuisanceHead>(),
+                NPCType<DesertNuisanceTail>(),
+                NPCType<DesertNuisanceBodyYoung>(),
+                NPCType<DesertNuisanceHeadYoung>(),
+                NPCType<DesertNuisanceTailYoung>(),
+                NPCType<PolterPhantom>(),
+                NPCType<PhantomFuckYou>(),
+                NPCType<BloodlettingServant>(),
+                NPCType<KingSlimeJewelEmerald>(),
+                NPCType<KingSlimeJewelRuby>(),
+                NPCType<KingSlimeJewelSapphire>(),
+                NPCType<PlanterasFreeTentacle>(),
+                NPCType<SkeletronPrime2>(),
+                NPCType<PlagueHomingMissile>(),
+                NPCType<PlagueMine>(),
+                NPCType<ProfanedRocks>(),
+                NPCType<ProvSpawnDefense>(),
+                NPCType<ProvSpawnOffense>(),
+                NPCType<ProvSpawnHealer>(),
+                NPCType<RockPillar>(),
+                NPCType<FlamePillar>(),
+                NPCType<CosmicMine>(),
+                NPCType<CosmicLantern>(),
+                NPCType<ProfanedGuardianDefender>(),
+                NPCType<ProfanedGuardianHealer>(),
             };
+            //Many more are added later with AddRange
 
             friendlyBeeList = new List<int>()
             {
@@ -2046,6 +2084,7 @@ namespace CalamityMod
                 NPCType<PerforatorBodySmall>(),
                 NPCType<PerforatorTailSmall>()
             };
+            bossHPScaleList.AddRange(PerforatorIDs);
 
             DesertScourgeIDs = new List<int>
             {
@@ -2069,6 +2108,7 @@ namespace CalamityMod
                 NPCType<SplitCrimulanPaladin>(),
                 NPCType<SlimeGodCore>()
             };
+            bossHPScaleList.AddRange(SlimeGodIDs);
 
             DeathModeSplittingWormIDs = new List<int>
             {
@@ -2116,6 +2156,7 @@ namespace CalamityMod
                 NPCID.PrimeSaw,
                 NPCID.PrimeVice
             };
+            bossHPScaleList.AddRange(SkeletronPrimeIDs);
 
             StormWeaverIDs = new List<int>
             {
@@ -2134,6 +2175,7 @@ namespace CalamityMod
                 NPCType<RavagerLegRight>(),
                 NPCType<RavagerHead>()
             };
+            bossHPScaleList.AddRange(RavagerIDs);
 
             GolemIDs = new List<int>
             {
