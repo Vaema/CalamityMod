@@ -102,6 +102,10 @@ namespace CalamityMod.Skies
             Main.spriteBatch.End();
             Main.spriteBatch.Begin();
 
+            // Colors for the Eye
+            Color baseXerocColor = new Color(209, 183, 50);
+            Color dimXerocColor = new Color(181, 164, 81);
+
             // Draw the Xeroc eye at the back of the sky.
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && (BossRushEvent.EndTimer < BossRushEvent.EndVisualEffectTime - 40f || ShouldDrawRegularly || Main.LocalPlayer?.Calamity()?.monolithBossRushShader > 0))
             {
@@ -112,11 +116,11 @@ namespace CalamityMod.Skies
                 Vector2 drawPosition = (drawWorldPosition - screenCenter) * 0.097f + screenCenter - Main.screenPosition - Vector2.UnitY * 100f;
 
                 Texture2D eyeTexture = ModContent.Request<Texture2D>("CalamityMod/Skies/XerocEye").Value;
-                Color baseColorDraw = Color.Lerp(Color.White, Color.Red, IncrementalInterest);
+                Color baseColorDraw = Color.Lerp(baseXerocColor, Color.DimGray, IncrementalInterest);
                 Vector2 origin = eyeTexture.Size() * 0.5f;
 
                 spriteBatch.Draw(eyeTexture, drawPosition, null, baseColorDraw, 0f, origin, scale, SpriteEffects.None, 0f);
-                Color fadedColor = Color.Lerp(baseColorDraw, Color.Coral, 0.3f) * MathHelper.Lerp(0.18f, 0.3f, IncrementalInterest);
+                Color fadedColor = Color.Lerp(baseColorDraw, dimXerocColor, 0.3f) * MathHelper.Lerp(0.18f, 0.3f, IncrementalInterest);
                 fadedColor.A = 0;
 
                 float backEyeOutwardness = MathHelper.Lerp(8f, 4f, IncrementalInterest);
