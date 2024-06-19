@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.ai[0] = Projectile.Calamity().stealthStrike ? 1 : 0;
-            if (Main.rand.NextBool(3)) GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(12), 0).RotatedBy(Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), false, 10, Projectile.ai[0] == 1 ? 0.4f : 0.3f, Projectile.ai[0] == 1 ? Color.OrangeRed : Color.SaddleBrown, false));
+            if (Main.rand.NextBool(3)) GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(12), 0).RotatedBy(Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), false, 10, Projectile.ai[0] == 1 ? 0.4f : 0.3f, Projectile.ai[0] == 1 ? Color.OrangeRed : Color.SaddleBrown, false, true));
 
             Projectile.ai[1]++;
             //Constant rotation and gravity
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Rogue
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Projectile.ai[0] == 1 ? 1.2f : 0.6f, Projectile.ai[0] == 1 ? Color.OrangeRed : Color.SaddleBrown, false));
+                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Projectile.ai[0] == 1 ? 1.2f : 0.6f, Projectile.ai[0] == 1 ? Color.OrangeRed : Color.SaddleBrown, false, true));
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, 0f, 0f, 0, default, 0.5f);
                 dust_splash += 1;
             }
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Rogue
                 dust_splash = 0;
                 while (dust_splash < 9)
                 {
-                    GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(24), 0).RotatedByRandom(MathHelper.TwoPi), false, 6, 0.6f, Color.SaddleBrown, false));
+                    GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(24), 0).RotatedByRandom(MathHelper.TwoPi), false, 6, 0.6f, Color.SaddleBrown, false, true));
                     GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), Color.SaddleBrown, Color.SaddleBrown, Main.rand.NextFloat(1f, 1.5f), 150, affectedByLight: true));
                     dust_splash += 1;
                 }

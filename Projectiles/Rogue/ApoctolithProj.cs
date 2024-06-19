@@ -1,19 +1,46 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.CalPlayer;
+using CalamityMod.MainMenu;
+using CalamityMod.Particles;
+using CalamityMod.Systems;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
+using Terraria.ModLoader;
+using CalamityMod.Projectiles.Typeless;
 
 namespace CalamityMod.Projectiles.Rogue
 {
     public class ApoctolithProj : ModProjectile, ILocalizedModType
     {
+        public static Color LowBlueColor => Color.Blue;
+        public static Color HighBlueColor => Color.DodgerBlue;
+
+        public int ShardDamage => (int)(Projectile.damage * 0.5f);
+        public int ExplosionDamage => (int)(Projectile.damage * 0.5f);
+        public int ExplosionRadius => 150;
+
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Apoctolith";
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
 
         public override void SetDefaults()
         {
@@ -26,9 +53,17 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            Lighting.AddLight(Projectile.Center, new Vector3(0.2f, 0.2f, 0.5f));
+
+            Projectile.ai[0] = Projectile.Calamity().stealthStrike ? 1 : 0;
+            if (Main.rand.NextBool(3)) GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(12), 0).RotatedBy(Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), false, 10, 1f, Main.rand.NextBool(3) ? LowBlueColor : Color.Black, true));
+
+            Projectile.ai[1]++;
             //Constant rotation and gravity
             Projectile.rotation += 0.4f * Projectile.direction;
-            Projectile.velocity.Y += 0.3f;
+            Projectile.velocity.X *= 0.98f;
+            Projectile.velocity.Y = Projectile.velocity.Y + MathHelper.Clamp(Projectile.ai[1] / 40, 0, 0.6f);
+
             if (Projectile.velocity.Y > 16f)
             {
                 Projectile.velocity.Y = 16f;
@@ -42,6 +77,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
 
             if (hit.Crit)
@@ -60,19 +96,92 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
+        public override bool PreDrawExtras()
+        {
+            CalamityUtils.DrawAfterimagesCentered(Projectile, 2, Color.Lerp(HighBlueColor, Color.Transparent, 0.8f), texture: ModContent.Request<Texture2D>(Texture).Value);
+            return base.PreDrawExtras();
+        }
+
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Tink, Projectile.position);
-            //Dust on impact
-            int dust_splash = 0;
-            while (dust_splash < 9)
+            #region Long convoluted particle code
+
+            if (Projectile.Calamity().stealthStrike)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
-                dust_splash += 1;
+                float screenShakePower = 7 * Utils.GetLerpValue(1300f, 0f, Projectile.Distance(Main.LocalPlayer.Center), true);
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+
+                Particle blastRing = new CustomPulse(
+                Projectile.Center,
+                Vector2.Zero,
+                Projectile.Calamity().stealthStrike ? Color.Black : LowBlueColor,
+                "CalamityMod/Particles/FlameExplosion",
+                Vector2.One,
+                Main.rand.NextFloat(-10, 10),
+                0.05f,
+                Projectile.Calamity().stealthStrike ? 0.5f : 0.2f,
+                15);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+
+                Particle blastRing1 = new CustomPulse(
+                Projectile.Center,
+                Vector2.Zero,
+                LowBlueColor,
+                "CalamityMod/Particles/FlameExplosion",
+                Vector2.One,
+                Main.rand.NextFloat(-10, 10),
+                0.05f,
+                0.35f,
+                15);
+                GeneralParticleHandler.SpawnParticle(blastRing1);
+            
+                Particle blastRing2 = new CustomPulse(
+                Projectile.Center,
+                Vector2.Zero,
+                LowBlueColor,
+                "CalamityMod/Particles/FlameExplosion",
+                new(1f, 0.5f),
+                0,
+                0.05f,
+                0.35f,
+                20);
+                GeneralParticleHandler.SpawnParticle(blastRing2);
             }
+
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, LowBlueColor, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 1f, 0f, 25));
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", Vector2.One, 0f, 0.5f, 0f, 15));
+
+            for (int i = 0; i < 5; i++) GeneralParticleHandler.SpawnParticle(new BloodParticle2(Projectile.Center, new Vector2(Main.rand.NextFloat(6, 12), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), 12, Main.rand.NextFloat(0.2f, 0.8f), HighBlueColor));
+
+            GlowSparkParticle gs = new GlowSparkParticle(Projectile.Center, Vector2.Zero, false, 20, Projectile.Calamity().stealthStrike ? 0.06f : 0.03f, HighBlueColor, Vector2.One, true);
+            gs.Rotation = Main.rand.NextFloat(-10, 10);
+
+            GeneralParticleHandler.SpawnParticle(gs);
+
+            #endregion
+
+            // Sounds
+
+            SoundEngine.PlaySound(SoundID.Tink.WithPitchOffset(-0.4f), Projectile.position);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.5f), Projectile.position);
+            if (Projectile.Calamity().stealthStrike) SoundEngine.PlaySound(SoundID.DD2_KoboldExplosion.WithPitchOffset(-0.6f), Projectile.position);
+
+
             // This only triggers if stealth is full
             if (Projectile.Calamity().stealthStrike)
             {
+                // Explosion damage
+
+                foreach (NPC npc in Main.npc)
+                {
+                    if (npc.active && npc.Distance(Projectile.Center) < ExplosionRadius)
+                    {
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), ExplosionDamage, 0, Projectile.owner, npc.whoAmI);
+                    }
+                }
+
                 int split = 0;
                 while (split < 5)
                 {
@@ -89,8 +198,11 @@ namespace CalamityMod.Projectiles.Rogue
                         shardspeedY += -Projectile.velocity.Y;
                     }
 
+                    shardspeedX *= 2f;
+                    shardspeedY *= 2f;
+
                     //Spawn the projectile
-                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X + shardspeedX, Projectile.position.Y + shardspeedY, shardspeedX, shardspeedY, ModContent.ProjectileType<ApoctolithShard>(), (int)(Projectile.damage * 0.5), Projectile.knockBack / 2f, Projectile.owner);
+                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X + shardspeedX, Projectile.position.Y + shardspeedY, shardspeedX, shardspeedY, ModContent.ProjectileType<ApoctolithShard>(), ShardDamage, Projectile.knockBack / 2f, Projectile.owner);
                     Main.projectile[shard].frame = Main.rand.Next(3);
                     split += 1;
                 }

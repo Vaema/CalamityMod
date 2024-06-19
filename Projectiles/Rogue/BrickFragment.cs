@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(8), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, 0.4f, Color.SaddleBrown, false));
+                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(8), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, 0.4f, Color.SaddleBrown, false, true));
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, 0f, 0f, 0, default, 0.5f);
                 dust_splash += 1;
             }

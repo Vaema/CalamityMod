@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,10 +18,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 28;
             Item.height = 20;
-            Item.damage = 17;
+            Item.damage = 14;
             Item.shootSpeed = 15f;
             Item.shoot = ModContent.ProjectileType<Brick>();
-            Item.useTime = Item.useAnimation = 35;
+            Item.useTime = Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
             Item.value = Item.buyPrice(0, 0, 0, 50);
@@ -35,6 +36,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
+
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            ExtraArmAnimations.ThrowArmAnimationFast(player, Item);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
