@@ -275,6 +275,10 @@ namespace CalamityMod.NPCs.AstrumDeus
                 }
             }
 
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Notify players that Astral Ore can be mined if Deus has never been killed yet

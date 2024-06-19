@@ -1336,6 +1336,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Mark PBG as dead

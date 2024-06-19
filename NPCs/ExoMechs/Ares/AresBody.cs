@@ -1537,6 +1537,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
         public static void DoMiscDeathEffects(NPC npc, MechType mechType)
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(npc);
 
             switch (mechType)

@@ -968,6 +968,10 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
             DownedBossSystem.downedStormWeaver = true;
             CalamityNetcode.SyncWorld();

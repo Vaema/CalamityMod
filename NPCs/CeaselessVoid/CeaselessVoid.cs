@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Dusts;
+using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -209,6 +210,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
             DownedBossSystem.downedCeaselessVoid = true;
             CalamityNetcode.SyncWorld();

@@ -467,6 +467,10 @@ namespace CalamityMod.NPCs.Bumblebirb
         }
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Mark The Dragonfolly as dead

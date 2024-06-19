@@ -3038,8 +3038,10 @@ namespace CalamityMod.NPCs.Yharon
         #region On Kill
         public override void OnKill()
         {
-            // Things that happen on killing a boss BESIDES DROPPING ITEMS go in OnKill.
-            // This function is essentially equivalent to good old NPCLoot -- minus the loot, of course.
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedYharon);
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 

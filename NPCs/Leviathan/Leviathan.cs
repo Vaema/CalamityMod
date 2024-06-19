@@ -821,6 +821,10 @@ namespace CalamityMod.NPCs.Leviathan
 
         public static void RealOnKill(NPC npc)
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(npc);
 
             // Abyss awakens after killing Anahita & Leviathan
