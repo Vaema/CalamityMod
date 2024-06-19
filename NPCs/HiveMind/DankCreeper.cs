@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.HiveMind
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
 
-
             if ((CalamityWorld.LegendaryMode && CalamityWorld.revenge))
                 NPC.reflectsProjectiles = true;
 
