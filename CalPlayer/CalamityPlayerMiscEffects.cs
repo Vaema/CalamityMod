@@ -4255,6 +4255,11 @@ namespace CalamityMod.CalPlayer
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus1");
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus2");
                     }
+
+                    if (CalamityConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable)
+                    {
+                        CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.VCMMStatus");
+                    }
                 }
 
                 --startMessageDisplayDelay;
