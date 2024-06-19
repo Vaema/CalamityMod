@@ -48,6 +48,7 @@ using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
+using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.Ravager;
@@ -1137,7 +1138,26 @@ namespace CalamityMod
                 NPCID.GolemFistLeft,
                 NPCID.MoonLordHead,
                 NPCID.MoonLordHand,
-                NPCType<DarkEnergy>()
+                NPCType<DarkEnergy>(),
+                NPCType<BrimstoneHeart>(),
+                NPCType<SoulSeeker>(),
+                NPCType<SoulSeekerSupreme>(),
+                NPCType<Cataclysm>(),
+                NPCType<SupremeCataclysm>(),
+                NPCType<Catastrophe>(),
+                NPCType<SupremeCatastrophe>(),
+                NPCType<SepulcherHead>(),
+                NPCType<SepulcherBody>(),
+                NPCType<SepulcherTail>(),
+                NPCType<SepulcherArm>(),
+                NPCType<PrimordialWyrmBody>(),
+                NPCType<PrimordialWyrmBodyAlt>(),
+                NPCType<PrimordialWyrmHead>(),
+                NPCType<PrimordialWyrmTail>(),
+                NPCType<AquaticAberration>(),
+                NPCType<AnahitasIceShield>(),
+                NPCType<CryogenShield>(),
+                NPCType<OldDukeToothBall>(),
             };
 
             friendlyBeeList = new List<int>()
