@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -179,8 +180,9 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<CataclysmTrophy>(), 10);
-            npcLoot.Add(ModContent.ItemType<HavocsBreath>(), 4);
+            IItemDropRuleCondition KilledLast = DropHelper.If(() => !NPC.AnyNPCs(ModContent.NPCType<Catastrophe>()), desc: DropHelper.CataclysmKilledLast);
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<CataclysmTrophy>(), 5));
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<HavocsBreath>()));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

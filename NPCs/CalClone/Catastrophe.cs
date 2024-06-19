@@ -12,6 +12,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -173,8 +174,9 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<CatastropheTrophy>(), 10);
-            npcLoot.Add(ModContent.ItemType<CrushsawCrasher>(), 4);
+            IItemDropRuleCondition KilledLast = DropHelper.If(() => !NPC.AnyNPCs(ModContent.NPCType<Cataclysm>()), desc: DropHelper.CatastropheKilledLast);
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<CatastropheTrophy>(), 5));
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<CrushsawCrasher>()));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
