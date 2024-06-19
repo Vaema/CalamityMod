@@ -79,8 +79,6 @@ namespace CalamityMod.NPCs.Signus
             NPC.defense = 60;
             NPC.LifeMaxNERB(300000, 360000, 320000);
             NPC.value = Item.buyPrice(2, 0, 0, 0);
-            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

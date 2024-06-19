@@ -76,8 +76,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.value = Item.buyPrice(0, 50, 0, 0);
             NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.075f : 0.15f);
             NPC.LifeMaxNERB(37500, 45000, 520000);
-            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

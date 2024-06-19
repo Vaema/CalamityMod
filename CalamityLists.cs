@@ -1152,6 +1152,7 @@ namespace CalamityMod
                 NPCType<SepulcherBody>(),
                 NPCType<SepulcherTail>(),
                 NPCType<SepulcherArm>(),
+                NPCType<SepulcherBodyEnergyBall>(),
                 NPCType<PrimordialWyrmBody>(),
                 NPCType<PrimordialWyrmBodyAlt>(),
                 NPCType<PrimordialWyrmHead>(),
@@ -1198,6 +1199,10 @@ namespace CalamityMod
                 NPCType<CosmicLantern>(),
                 NPCType<ProfanedGuardianDefender>(),
                 NPCType<ProfanedGuardianHealer>(),
+                NPCType<CorruptSlimeSpawn>(),
+                NPCType<CorruptSlimeSpawn2>(),
+                NPCType<CrimsonSlimeSpawn>(),
+                NPCType<CrimsonSlimeSpawn2>(),
             };
             //Many more are added later with AddRange
 
@@ -2156,7 +2161,6 @@ namespace CalamityMod
                 NPCID.PrimeSaw,
                 NPCID.PrimeVice
             };
-            bossHPScaleList.AddRange(SkeletronPrimeIDs);
 
             StormWeaverIDs = new List<int>
             {

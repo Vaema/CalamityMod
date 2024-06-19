@@ -278,8 +278,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.DR_NERD(normalDR);
             NPC.value = Item.buyPrice(30, 0, 0, 0);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
-            //double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            //NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
