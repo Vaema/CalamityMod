@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -45,13 +46,14 @@ namespace CalamityMod.Items
                 { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
                 { ItemID.BatScepter, Do(DamageExact(50)) },
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(142), UseAnimationExact(45), ShootSpeedExact(23f), KnockbackExact(8)) },
-                { ItemID.BeeGun, Do(DamageExact(13), ManaExact(4)) },
-                { ItemID.BeeKeeper, Do((UseTurn),DamageExact(32)) },
-                { ItemID.BeesKnees, Do(PointBlank, DamageExact(24), UseExact(38)) },
+                { ItemID.BeeGun, Do(DamageExact(11), ManaExact(4)) },
+                { ItemID.BeeKeeper, Do(UseTurn, DamageExact(32)) },
+                { ItemID.Beenade, Do(DamageExact(11), UseTimeExact(22), ShootSpeedExact(10f)) },
+                { ItemID.BeesKnees, Do(PointBlank, DamageExact(21), UseExact(38)) },
                 { ItemID.Bladetongue, Do(UseTurn, UseRatio(0.8f), DamageExact(120)) },
                 { ItemID.BlizzardStaff, Do(DamageExact(41), ManaExact(7)) },
                 { ItemID.BloodyMachete, Do(AutoReuse, DamageExact(24)) },
-                { ItemID.Blowgun, Do(PointBlank, DamageExact(40)) },
+                { ItemID.Blowgun, Do(PointBlank, DamageExact(40), ShootSpeedExact(15f)) },
                 { ItemID.BluePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
                 { ItemID.BluePhasesaber, Do(DamageExact(60)) },
                 { ItemID.BookofSkulls, Do(ManaExact(12), ShootSpeedExact(5.5f)) },
@@ -127,7 +129,7 @@ namespace CalamityMod.Items
                 { ItemID.Handgun, Do(PointBlank, UseExact(22), DamageExact(36)) },
                 { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) },
-                { ItemID.HiveFive, Do(AutoReuse, DamageExact(26)) },
+                { ItemID.HiveFive, Do(AutoReuse, DamageExact(27)) },
                 { ItemID.HornetStaff, Do(AutoReuse, DamageExact(18), UseExact(30)) },
                 { ItemID.IceBlade, Do(UseMeleeSpeed) },
                 { ItemID.IceBoomerang, Do(UseExact(25), ShootSpeedExact(9)) },
@@ -1410,6 +1412,9 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<LifeJelly>()] = ModContent.ItemType<CleansingJelly>();
             shimmerTransmute[ModContent.ItemType<CleansingJelly>()] = ModContent.ItemType<VitalJelly>();
             shimmerTransmute[ModContent.ItemType<VitalJelly>()] = ModContent.ItemType<LifeJelly>();
+
+            //Calamity Permanent Upgrades
+            shimmerTransmute[ItemID.FrogLeg] = ModContent.ItemType<NimbleBounder>();
         }
         #endregion
     }

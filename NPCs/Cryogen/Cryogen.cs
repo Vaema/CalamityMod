@@ -130,6 +130,9 @@ namespace CalamityMod.NPCs.Cryogen
                 NPC.Calamity().VulnerableToCold = false;
                 NPC.Calamity().VulnerableToSickness = false;
             }
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)

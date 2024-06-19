@@ -17,8 +17,8 @@ namespace CalamityMod.Tiles.FurnitureAshen
             Main.tileBlockLight[Type] = true;
 
             HitSound = SoundID.Tink;
-            MineResist = 5f;
-            MinPick = 180;
+            MineResist = 2f;
+            MinPick = 100;
             AddMapEntry(new Color(40, 24, 48));
             AnimationFrameHeight = 90;
         }

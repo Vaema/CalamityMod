@@ -201,6 +201,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             NPC.BossBar = ModContent.GetInstance<ExoMechsBossBar>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

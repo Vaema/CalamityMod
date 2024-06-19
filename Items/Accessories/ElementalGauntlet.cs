@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -30,6 +31,7 @@ namespace CalamityMod.Items.Accessories
             player.meleeScaleGlove = true;
             modPlayer.gloveLevel = 5;
             player.GetDamage<TrueMeleeDamageClass>() += 0.10f;
+            modPlayer.eGauntletVisuals = !hideVisual; // hides the rainbow dust when hiding the accessory
         }
 
         public override void AddRecipes()

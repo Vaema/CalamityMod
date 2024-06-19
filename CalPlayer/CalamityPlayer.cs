@@ -263,6 +263,7 @@ namespace CalamityMod.CalPlayer
         public static readonly SoundStyle AdrenalineFilledSound = new("CalamityMod/Sounds/Custom/AbilitySounds/FullAdrenaline");
         public static readonly SoundStyle AdrenalineActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/AdrenalineActivate");
         public static readonly SoundStyle AdrenalineHurtSound = new("CalamityMod/Sounds/Custom/AdrenalineMajorLoss");
+        public static readonly SoundStyle AdrenalineHurtGFB = new("CalamityMod/Sounds/Custom/AdrenalineMajorLossGFB");
         public static readonly SoundStyle NanomachinesActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/NanomachinesActivate");
 
         public static readonly SoundStyle RogueStealthSound = new("CalamityMod/Sounds/Custom/RogueStealth");
@@ -466,6 +467,7 @@ namespace CalamityMod.CalPlayer
         public bool sTangerine = false;
         public bool tCloudberry = false;
         public bool sStrawberry = false;
+        public bool nimbleBounderBoost = false;
         public bool revJamDrop = false;
         public bool rageBoostOne = false;
         public bool rageBoostTwo = false;
@@ -508,7 +510,9 @@ namespace CalamityMod.CalPlayer
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
         public bool ascendantTrail = false;
+        public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
+        public bool eGauntletVisuals = true; // Used to control dust spawned when swinging
         public int gloveLevel = 0; // Used to prevent glove stacking
         public bool alreadyHasFrogLeg = false; // Used to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
@@ -1273,6 +1277,7 @@ namespace CalamityMod.CalPlayer
             sStrawberry = false;
             pHeart = false;
             cShard = false;
+            nimbleBounderBoost = false;
             revJamDrop = false;
             rageBoostOne = false;
             rageBoostTwo = false;
@@ -1325,6 +1330,7 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("dragonFruit", sStrawberry);
             boost.AddWithCondition("phantomHeart", pHeart);
             boost.AddWithCondition("cometShard", cShard);
+            boost.AddWithCondition("nimbleBounder", nimbleBounderBoost);
             boost.AddWithCondition("revJam", revJamDrop);
             boost.AddWithCondition("rageOne", rageBoostOne);
             boost.AddWithCondition("rageTwo", rageBoostTwo);
@@ -1415,6 +1421,7 @@ namespace CalamityMod.CalPlayer
             sStrawberry = boost.Contains("dragonFruit");
             pHeart = boost.Contains("phantomHeart");
             cShard = boost.Contains("cometShard");
+            nimbleBounderBoost = boost.Contains("nimbleBounder");
             revJamDrop = boost.Contains("revJam");
             rageBoostOne = boost.Contains("rageOne");
             rageBoostTwo = boost.Contains("rageTwo");
@@ -1725,7 +1732,9 @@ namespace CalamityMod.CalPlayer
             cryogenSoul = false;
             ascendantInsignia = false;
             ascendantTrail = false;
+            magmaStoneVisuals = true;
             eGauntlet = false;
+            eGauntletVisuals = true;
             gloveLevel = 0;
             alreadyHasFrogLeg = false;
             eTalisman = false;
@@ -2343,6 +2352,7 @@ namespace CalamityMod.CalPlayer
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
             AlchFlaskCooldown = 0;
+            ascendantInsigniaCooldown = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
@@ -3771,6 +3781,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
+                    (nimbleBounderBoost ? 0.1f : 0f) +
                     (blueCandle ? CirrusBlueCandleBuff.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
@@ -3786,6 +3797,7 @@ namespace CalamityMod.CalPlayer
                     (kamiBoost ? KamiBuff.RunSpeedBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
+                    (nimbleBounderBoost ? 0.1f : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     (hasteLevel * 0.05f);
 
@@ -4029,7 +4041,7 @@ namespace CalamityMod.CalPlayer
                         Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, Main.rand.NextBool() ? 121 : DustID.Stone, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, Main.rand.NextFloat(0.2f, 0.7f));
                     }
                 }
-                if (eGauntlet)
+                if (eGauntlet && eGauntletVisuals)
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -4037,25 +4049,11 @@ namespace CalamityMod.CalPlayer
                         Main.dust[element].noGravity = true;
                     }
                 }
-                if (cryogenSoul)
-                {
-                    if (Main.rand.NextBool(3))
-                    {
-                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.IceRod, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 0.75f);
-                    }
-                }
-                if (xerocSet)
-                {
-                    if (Main.rand.NextBool(3))
-                    {
-                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Enchanted_Pink, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 1.25f);
-                    }
-                }
                 if (dsSetBonus)
                 {
                     if (Main.rand.NextBool(3))
                     {
-                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Shadowflame, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 2.5f);
+                        Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Shadowflame, Player.velocity.X * 0.2f + Player.direction * 3f, Player.velocity.Y * 0.2f, 100, default, 0.7f);
                     }
                 }
             }

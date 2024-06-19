@@ -24,13 +24,14 @@ namespace CalamityMod.NPCs.HiveMind
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
             NPC.aiStyle = -1;
-            NPC.damage = 10;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.width = 25;
             NPC.height = 25;
 
@@ -57,9 +58,6 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;

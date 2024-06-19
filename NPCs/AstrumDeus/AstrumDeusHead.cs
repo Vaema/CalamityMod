@@ -117,6 +117,9 @@ namespace CalamityMod.NPCs.AstrumDeus
 
                 NPC.value /= 5;
             }
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -224,6 +227,13 @@ namespace CalamityMod.NPCs.AstrumDeus
                         Main.dust[astralDust].velocity *= 5f;
                         astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                         Main.dust[astralDust].velocity *= 2f;
+                    }
+                    if (Main.netMode != NetmodeID.Server)
+                    {
+                        float randomSpread = Main.rand.Next(-200, 201) / 100f;
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusHead1").Type, 1f);
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusHead2").Type, 1f);
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusHead3").Type, 1f);
                     }
                 }
             }

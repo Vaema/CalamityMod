@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 86;
+            Item.damage = 88;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 12;
             Item.useTime = 25;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item34;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AtlantisSpear>();
-            Item.shootSpeed = 32f;
+            Item.shootSpeed = 40f;
         }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)

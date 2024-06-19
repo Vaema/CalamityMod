@@ -631,7 +631,7 @@ namespace CalamityMod
                 { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
                 { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
                 { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 7200 }, // 2:00 (120 seconds)
+                { NPCID.SkeletronHead, 9000 }, // 2:30 (150 seconds)
                 { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
                 { NPCID.WallofFleshEye, 7200 },
                 { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
@@ -666,10 +666,10 @@ namespace CalamityMod
                 { ModContent.NPCType<SplitEbonianPaladin>(), 4500 }, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
                 { ModContent.NPCType<SplitCrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
                 { ModContent.NPCType<Cryogen>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<AquaticScourgeHead>(), 7200 }, // 2:00 (120 seconds)
-                { ModContent.NPCType<AquaticScourgeBody>(), 7200 },
-                { ModContent.NPCType<AquaticScourgeBodyAlt>(), 7200 },
-                { ModContent.NPCType<AquaticScourgeTail>(), 7200 },
+                { ModContent.NPCType<AquaticScourgeHead>(), 9000 }, // 2:30 (150 seconds)
+                { ModContent.NPCType<AquaticScourgeBody>(), 9000 },
+                { ModContent.NPCType<AquaticScourgeBodyAlt>(), 9000 },
+                { ModContent.NPCType<AquaticScourgeTail>(), 9000 },
                 { ModContent.NPCType<BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
                 { ModContent.NPCType<CalamitasClone>(), 14400 }, // 4:00 (240 seconds)
                 { ModContent.NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)

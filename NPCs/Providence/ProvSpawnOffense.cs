@@ -22,6 +22,7 @@ namespace CalamityMod.NPCs.Providence
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 10;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
         }
 
@@ -31,7 +32,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 1f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
+            NPC.damage = 0;
             NPC.width = 228;
             NPC.height = 186;
             NPC.defense = 40;
@@ -73,9 +74,6 @@ namespace CalamityMod.NPCs.Providence
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             CalamityGlobalNPC.holyBossAttacker = NPC.whoAmI;
 
             if (CalamityGlobalNPC.holyBoss < 0 || !Main.npc[CalamityGlobalNPC.holyBoss].active)

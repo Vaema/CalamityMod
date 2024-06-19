@@ -168,6 +168,9 @@ namespace CalamityMod.NPCs
         // Used to nerf desert prehardmode enemies pre-Desert Scourge
         private const double DesertEnemyStatMultiplier = 0.75;
 
+        // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
+        public const double MasterModeBossHPMultiplier = 0.9;
+
         // Used to nerf Master Mode enemies
         public const double MasterModeEnemyHPMultiplier = 0.75;
         public const double MasterModeEnemyDamageMultiplier = 0.9;
@@ -986,7 +989,7 @@ namespace CalamityMod.NPCs
             // Static Discharge
             if (staticDischarge > 0)
             {
-                int baseStaticDischargeDoTValue = (int)(8 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 32 on moving targets
+                int baseStaticDischargeDoTValue = (int)(6 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
                 ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
@@ -3052,6 +3055,47 @@ namespace CalamityMod.NPCs
                         AdjustMasterModeStatScaling(npc);
                         npc.defDamage = npc.damage;
                         break;
+
+                    case NPCID.KingSlime:
+                    case NPCID.EyeofCthulhu:
+                    case NPCID.EaterofWorldsHead:
+                    case NPCID.EaterofWorldsBody:
+                    case NPCID.EaterofWorldsTail:
+                    case NPCID.BrainofCthulhu:
+                    case NPCID.Creeper:
+                    case NPCID.QueenBee:
+                    case NPCID.SkeletronHead:
+                    case NPCID.SkeletronHand:
+                    case NPCID.Deerclops:
+                    case NPCID.WallofFlesh:
+                    case NPCID.WallofFleshEye:
+                    case NPCID.QueenSlimeBoss:
+                    case NPCID.Retinazer:
+                    case NPCID.Spazmatism:
+                    case NPCID.TheDestroyer:
+                    case NPCID.TheDestroyerBody:
+                    case NPCID.TheDestroyerTail:
+                    case NPCID.SkeletronPrime:
+                    case NPCID.PrimeCannon:
+                    case NPCID.PrimeLaser:
+                    case NPCID.PrimeSaw:
+                    case NPCID.PrimeVice:
+                    case NPCID.Plantera:
+                    case NPCID.PlanterasTentacle:
+                    case NPCID.Golem:
+                    case NPCID.GolemHead:
+                    case NPCID.GolemHeadFree:
+                    case NPCID.GolemFistLeft:
+                    case NPCID.GolemFistRight:
+                    case NPCID.HallowBoss:
+                    case NPCID.DukeFishron:
+                    case NPCID.CultistBoss:
+                    case NPCID.MoonLordCore:
+                    case NPCID.MoonLordFreeEye:
+                    case NPCID.MoonLordHand:
+                    case NPCID.MoonLordHead:
+                        AdjustMasterModeStatScaling(npc, true);
+                        break;
                 }
             }
         }
@@ -3462,10 +3506,57 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.BloodNautilus)
                 return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
 
-            // Disable teleports for hardmode dungeon casters if they get hit
-            if (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite && npc.justHit && !CalamityWorld.revenge)
+            // More telegraphs
+            if (npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.SpikedJungleSlime || npc.type == NPCID.SlimeSpiked)
+                return SlimeAI.BuffedSlimeAI(npc, Mod);
+
+            // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
+            // Also limit the amount of times Vortex Larvae and Hornets can evolve
+            if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
+                npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
+                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper ||
+                npc.type == NPCID.BoneLee || npc.type == NPCID.VortexLarva || npc.type == NPCID.VortexHornet ||
+                npc.type == NPCID.VortexHornetQueen)
             {
-                npc.ai[0] = 1f;
+                return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
+            }
+
+            // More telegraphs
+            if (npc.type == NPCID.Harpy || npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon ||
+                npc.type == NPCID.RedDevil)
+            {
+                return RevengeanceAndDeathAI.BuffedBatAI(npc, Mod);
+            }
+
+            // Casters hold their hands up for longer before firing in all modes
+            if (npc.type == NPCID.FireImp || npc.type == NPCID.DarkCaster || npc.type == NPCID.Tim ||
+                npc.type == NPCID.RuneWizard || (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite) ||
+                npc.type == NPCID.DesertDjinn || npc.type == NPCID.GoblinSorcerer)
+            {
+                return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
+            }
+
+            // Antlion telegraph
+            if (npc.type == NPCID.Antlion)
+                return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
+
+            // Corruptor and Blood Squid telegraphs
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+                return RevengeanceAndDeathAI.BuffedFlyingAI(npc, Mod);
+
+            // Ichor Sticker and Ice Elemental telegraphs
+            if (npc.type == NPCID.IchorSticker || npc.type == NPCID.IceElemental)
+                return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
+
+            // Fungi Bulb telegraphs
+            if (npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb)
+                return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
+
+            // Spider web spit telegraph
+            if (npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawlerWall || npc.type == NPCID.BlackRecluseWall ||
+                npc.type == NPCID.JungleCreeperWall)
+            {
+                return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
             }
 
             if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
@@ -3841,8 +3932,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.ToxicSludge:
                                 case NPCID.IceSlime:
                                 case NPCID.Crimslime:
-                                case NPCID.SpikedIceSlime:
-                                case NPCID.SpikedJungleSlime:
                                 case NPCID.UmbrellaSlime:
                                 case NPCID.RainbowSlime:
                                 case NPCID.SlimeMasked:
@@ -3851,7 +3940,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.SlimeRibbonYellow:
                                 case NPCID.SlimeRibbonGreen:
                                 case NPCID.SlimeRibbonRed:
-                                case NPCID.SlimeSpiked:
                                 case NPCID.SandSlime:
                                 case NPCID.GoldenSlime:
                                 case NPCID.ShimmerSlime:
@@ -3925,8 +4013,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.BaldZombie:
                                 case NPCID.PossessedArmor:
                                 case NPCID.ZombieEskimo:
-                                case NPCID.BlackRecluse:
-                                case NPCID.WallCreeper:
                                 case NPCID.UndeadViking:
                                 case NPCID.CorruptPenguin:
                                 case NPCID.FaceMonster:
@@ -3954,10 +4040,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.LacBeetle:
                                 case NPCID.SeaSnail:
                                 case NPCID.ZombieRaincoat:
-                                case NPCID.JungleCreeper:
-                                case NPCID.BloodCrawler:
-                                case NPCID.IceGolem:
-                                case NPCID.Eyezor:
                                 case NPCID.ZombieMushroom:
                                 case NPCID.ZombieMushroomHat:
                                 case NPCID.AnomuraFungus:
@@ -3974,10 +4056,8 @@ namespace CalamityMod.NPCs
                                 case NPCID.HellArmoredBonesSpikeShield:
                                 case NPCID.HellArmoredBonesMace:
                                 case NPCID.HellArmoredBonesSword:
-                                case NPCID.BoneLee:
                                 case NPCID.Paladin:
                                 case NPCID.SkeletonSniper:
-                                case NPCID.TacticalSkeleton:
                                 case NPCID.SkeletonCommando:
                                 case NPCID.AngryBonesBig:
                                 case NPCID.AngryBonesBigMuscle:
@@ -4054,11 +4134,7 @@ namespace CalamityMod.NPCs
                                 case NPCID.StardustSoldier:
                                 case NPCID.StardustSpiderBig:
                                 case NPCID.NebulaSoldier:
-                                case NPCID.VortexRifleman:
                                 case NPCID.VortexSoldier:
-                                case NPCID.VortexLarva:
-                                case NPCID.VortexHornet:
-                                case NPCID.VortexHornetQueen:
                                 case NPCID.SolarDrakomire:
                                 case NPCID.SolarSpearman:
                                 case NPCID.SolarSolenian:
@@ -4068,7 +4144,6 @@ namespace CalamityMod.NPCs
                                 case NPCID.Butcher:
                                 case NPCID.CreatureFromTheDeep:
                                 case NPCID.Fritz:
-                                case NPCID.Nailhead:
                                 case NPCID.Psycho:
                                 case NPCID.ThePossessed:
                                 case NPCID.DrManFly:
@@ -4091,13 +4166,11 @@ namespace CalamityMod.NPCs
                             case NPCID.ServantofCthulhu:
                             case NPCID.EaterofSouls:
                             case NPCID.MeteorHead:
-                            case NPCID.Corruptor:
                             case NPCID.Crimera:
                             case NPCID.Moth:
                             case NPCID.Parrot:
                             case NPCID.Bee:
                             case NPCID.BeeSmall:
-                            case NPCID.BloodSquid:
                             case NPCID.Hornet:
                             case NPCID.HornetFatty:
                             case NPCID.HornetHoney:
@@ -4159,25 +4232,6 @@ namespace CalamityMod.NPCs
                         }
                         break;
 
-                    case NPCAIStyleID.Caster:
-                        switch (npc.type)
-                        {
-                            case NPCID.FireImp:
-                            case NPCID.DarkCaster:
-                            case NPCID.Tim:
-                            case NPCID.RuneWizard:
-                            case NPCID.RaggedCaster:
-                            case NPCID.RaggedCasterOpenCoat:
-                            case NPCID.Necromancer:
-                            case NPCID.NecromancerArmored:
-                            case NPCID.DiabolistRed:
-                            case NPCID.DiabolistWhite:
-                            case NPCID.DesertDjinn:
-                            case NPCID.GoblinSorcerer:
-                                return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
-                        }
-                        break;
-
                     case NPCAIStyleID.ManEater:
                         switch (npc.type)
                         {
@@ -4185,8 +4239,6 @@ namespace CalamityMod.NPCs
                             case NPCID.Snatcher:
                             case NPCID.Clinger:
                             case NPCID.AngryTrapper:
-                            case NPCID.FungiBulb:
-                            case NPCID.GiantFungiBulb:
                                 return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
                         }
                         break;
@@ -4200,19 +4252,15 @@ namespace CalamityMod.NPCs
                         {
                             switch (npc.type)
                             {
-                                case NPCID.Harpy:
                                 case NPCID.CaveBat:
                                 case NPCID.JungleBat:
                                 case NPCID.Hellbat:
-                                case NPCID.Demon:
-                                case NPCID.VoodooDemon:
                                 case NPCID.GiantBat:
                                 case NPCID.Slimer:
                                 case NPCID.IlluminantBat:
                                 case NPCID.IceBat:
                                 case NPCID.Lavabat:
                                 case NPCID.GiantFlyingFox:
-                                case NPCID.RedDevil:
                                 case NPCID.FlyingSnake:
                                 case NPCID.VampireBat:
                                 case NPCID.SporeBat:
@@ -4248,14 +4296,6 @@ namespace CalamityMod.NPCs
                         }
                         break;
 
-                    case NPCAIStyleID.Antlion:
-                        switch (npc.type)
-                        {
-                            case NPCID.Antlion:
-                                return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
-                        }
-                        break;
-
                     case NPCAIStyleID.SpikeBall:
                         switch (npc.type)
                         {
@@ -4278,9 +4318,7 @@ namespace CalamityMod.NPCs
                             case NPCID.Pixie:
                             case NPCID.Wraith:
                             case NPCID.Gastropod:
-                            case NPCID.IceElemental:
                             case NPCID.FloatyGross:
-                            case NPCID.IchorSticker:
                             case NPCID.Ghost:
                             case NPCID.Poltergeist:
                             case NPCID.Drippler:
@@ -4360,10 +4398,6 @@ namespace CalamityMod.NPCs
                     case NPCAIStyleID.Spider:
                         switch (npc.type)
                         {
-                            case NPCID.BlackRecluseWall:
-                            case NPCID.WallCreeperWall:
-                            case NPCID.JungleCreeperWall:
-                            case NPCID.BloodCrawlerWall:
                             case NPCID.DesertScorpionWall:
                                 return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
                         }
@@ -5030,7 +5064,7 @@ namespace CalamityMod.NPCs
             // Worm heads emit dust when close enough to the player and digging through tiles
             if (npc.type == NPCID.GiantWormHead || npc.type == NPCID.DiggerHead || npc.type == NPCID.DevourerHead ||
                 npc.type == NPCID.SeekerHead || npc.type == NPCID.TombCrawlerHead || npc.type == NPCID.BoneSerpentHead ||
-                npc.type == NPCID.DuneSplicerHead)
+                npc.type == NPCID.DuneSplicerHead || npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.TheDestroyer)
             {
                 Point point = npc.Center.ToTileCoordinates();
                 Tile tileSafely = Framing.GetTileSafely(point);
@@ -5077,6 +5111,34 @@ namespace CalamityMod.NPCs
                         dust.noGravity = true;
                     }
                 }
+
+                // Emit cursed flame dust from mouth when about to fire
+                else if (npc.localAI[0] > (CalamityWorld.revenge ? RevengeanceAndDeathAI.ClingerShootGateValue_Rev : RevengeanceAndDeathAI.ClingerShootGateValue) - RevengeanceAndDeathAI.ClingerTelegraphTime)
+                {
+                    Vector2 dustCenter = npc.Center + npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * 20f + Main.rand.NextVector2CircularEdge(5f, 5f);
+                    Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, DustID.CursedTorch, 0f, 0f, 100, default, 3f);
+                    dust.noGravity = true;
+                    dust.velocity *= 0f;
+                }
+
+                // Reset shoot counter if inside tiles or cannot see the target
+                if (Collision.SolidCollision(npc.position, npc.width, npc.height) || !Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                    npc.localAI[0] = 0f;
+            }
+
+            else if (npc.type == NPCID.IchorSticker)
+            {
+                // Emit ichor dust from mouth when about to fire
+                if (npc.ai[3] > (CalamityWorld.death ? RevengeanceAndDeathAI.IchorStickerShootGateValue_Death : CalamityWorld.revenge ? RevengeanceAndDeathAI.IchorStickerShootGateValue_Rev : RevengeanceAndDeathAI.IchorStickerShootGateValue) - RevengeanceAndDeathAI.IchorStickerTelegraphTime)
+                {
+                    Dust dust = Dust.NewDustDirect(new Vector2(npc.Center.X - 4f, npc.position.Y + npc.height * 0.7f) + Main.rand.NextVector2CircularEdge(2f, 2f), 1, 1, DustID.Ichor, 0f, 0f, 100, default, 1.5f);
+                    dust.noGravity = true;
+                    dust.velocity *= 0f;
+                }
+
+                // Reset shoot counter if cannot see the target
+                if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
+                    npc.ai[3] = 0f;
             }
 
             // Debuff decrements
@@ -5537,6 +5599,9 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Modify Hit By Projectile
+        public static bool DisableMultWhipTag = false; 
+        //this bool does nothing on this branch, its just here so that CalTestHelpers doesn't crash searching for it
+        //if you want to mess with this, please do so in the summoner branch - Shade
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
@@ -5805,7 +5870,7 @@ namespace CalamityMod.NPCs
                 npc.type != NPCType<PhantomSpiritS>() &&
                 npc.type != NPCType<PhantomSpiritM>() &&
                 npc.type != NPCType<PhantomSpiritL>() &&
-                npc.value > 0f && npc.HasPlayerTarget &&
+                npc.value > 0f && !npc.boss && npc.HasPlayerTarget &&
                 NPC.downedMoonlord &&
                 Main.player[npc.target].ZoneDungeon)
             {
@@ -6185,6 +6250,22 @@ namespace CalamityMod.NPCs
                 spawnInfo.Player.Calamity().ZoneSulphur ||
                 spawnInfo.Player.Calamity().ZoneSunkenSea ||
                 (spawnInfo.Player.Calamity().ZoneAstral && !spawnInfo.Player.PillarZone());
+
+            // Fuck the Goblin and the Wizard
+            if (!spawnInfo.Water && spawnInfo.Player.ZoneRockLayerHeight)
+            {
+                if (NPC.downedGoblins && !NPC.savedGoblin)
+                {
+                    if (!NPC.AnyNPCs(NPCID.BoundGoblin))
+                        pool[NPCID.BoundGoblin] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                }
+
+                if (Main.hardMode && !NPC.savedWizard)
+                {
+                    if (!NPC.AnyNPCs(NPCID.BoundWizard))
+                        pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                }
+            }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
             if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
@@ -6807,6 +6888,19 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.SkeletronPrime || npc.type == ModContent.NPCType<SkeletronPrime2>() || CalamityLists.DestroyerIDs.Contains(npc.type))
                     return false;
+            }
+
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+            {
+                Texture2D texture = TextureAssets.Npc[npc.type].Value;
+
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (npc.spriteDirection == -1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
+
+                return false;
             }
 
             if (npc.type == NPCID.GolemHeadFree)
@@ -8636,13 +8730,17 @@ namespace CalamityMod.NPCs
 
         #region Adjust Difficulty Stat Scaling
         // Adjust HP and damage in Master Mode
-        public static void AdjustMasterModeStatScaling(NPC npc)
+        public static void AdjustMasterModeStatScaling(NPC npc, bool isABoss = false)
         {
             if (!Main.masterMode)
                 return;
 
-            npc.lifeMax = (int)Math.Round(npc.lifeMax * MasterModeEnemyHPMultiplier);
-            npc.damage = (int)Math.Round(npc.damage * MasterModeEnemyDamageMultiplier);
+            // Bosses and enemies have separate HP reduction multipliers
+            npc.lifeMax = (int)Math.Round(npc.lifeMax * (isABoss ? MasterModeBossHPMultiplier : MasterModeEnemyHPMultiplier));
+
+            // Bosses do not get their damage reduced
+            if (!isABoss)
+                npc.damage = (int)Math.Round(npc.damage * MasterModeEnemyDamageMultiplier);
         }
 
         // Adjust only knockback resist in Expert Mode (this is also adjusted in Master Mode because Expert has to be enabled if Master is enabled)

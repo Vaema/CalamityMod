@@ -990,7 +990,7 @@ JellyChargedBattery: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1, and summon damage by 7%
-		Minion attacks create electrified orbs
+		Minion attacks create orbs of static discharge
 		'''
 }
 
@@ -1951,7 +1951,7 @@ VoltaicJelly: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minion attacks inflict Electrified
+		Minion attacks inflict Static Discharge
 		'''
 }
 

@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
 
-            if (target.HasBuff(BuffID.Wet) || target.Calamity().rTide > 0 || target.Calamity().cDepth > 0)
+            if (target.HasBuff(BuffID.Wet) || target.Calamity().eutrophication > 0 || target.Calamity().rTide > 0 || target.Calamity().cDepth > 0)
             {
                 SpawnFireballs(false);
             }

@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             set => Projectile.ai[1] = value;
         }
 
-        public const int LaserFireRate = 20;
-        public const int LaserFireRateStealth = 16;
+        public const int LaserFireRate = 22;
+        public const int LaserFireRateStealth = 18;
         public const int MaxLaserCountPerShot = 4; // This only applies to stealth strikes.
         public const float MaxTargetSearchDistance = 480f;
         public const float MaxTargetSearchStealth = 800f;

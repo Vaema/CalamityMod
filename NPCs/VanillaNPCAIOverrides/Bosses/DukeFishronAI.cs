@@ -1148,7 +1148,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             Vector2 velocityVector = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
             float inertia = 30f;
-            float velocity = 24f;
+            float velocity = 23f;
             npc.velocity = (npc.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
             
             npc.scale = npc.ai[3];
@@ -1165,7 +1165,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.velocity.Y -= 0.04f;
 
             // Push Bubbles away from each other.
-            float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.1f : -0.08f;
+            float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.08f : -0.06f;
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 if (i != npc.whoAmI && Main.npc[i].active && Main.npc[i].type == npc.type)

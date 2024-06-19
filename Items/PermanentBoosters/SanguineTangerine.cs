@@ -51,7 +51,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
                     Color messageColor = Color.Orange;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);

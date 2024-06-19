@@ -53,7 +53,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.SacredStrawberryText";
                     Color messageColor = Color.SpringGreen;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);

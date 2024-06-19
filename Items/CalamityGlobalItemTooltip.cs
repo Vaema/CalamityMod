@@ -6,6 +6,7 @@ using CalamityMod.Balancing;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
@@ -296,6 +297,8 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
             if (item.type == ModContent.ItemType<ShatteredCommunity>())
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
+            if (item.type == ModContent.ItemType<NimbleBounder>())
+                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(132, 37, 147), new Color(0, 255, 0), 5f); //alternates purple and neon green
             if (item.type == ModContent.ItemType<ProfanedSoulCrystal>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
             if (item.type == ModContent.ItemType<TemporalUmbrella>())
@@ -374,9 +377,9 @@ namespace CalamityMod.Items
             {
                 List<Color> earthColors = new List<Color>()
                 {
-                    new Color(255, 99, 146),
-                    new Color(255, 228, 94),
-                    new Color(127, 200, 248)
+                    Color.OrangeRed,
+                    Color.MediumTurquoise,
+                    Color.LimeGreen
                 };
                 if (nameLine != null)
                 {
@@ -839,7 +842,7 @@ namespace CalamityMod.Items
             // Fairy Boots buff.
             if (item.type == ItemID.FairyBoots)
                 EditTooltipByNum(2, (line) => line.Text += "\nFairies can spawn at any time on the surface and spawn far more frequently\n" +
-                "Nearby fairies grant +2 HP/s life regen, 10 defense and  10% movement speed\n" +
+                "Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed\n" +
                 "Fairies are immune to damage and will no longer flee");
 
             // Reduced Nightwither and Holy Flames damage, and melee speed removal.

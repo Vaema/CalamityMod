@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
 
             Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] >= 6f)
+            if (Projectile.localAI[0] >= 7f)
             {
                 Projectile.localAI[0] = 0f;
                 if (Main.myPlayer == Projectile.owner)

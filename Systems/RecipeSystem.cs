@@ -791,6 +791,7 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.WormFood), WormFoodRecipeEdit },
                 { Vanilla(ItemID.BloodySpine), BloodySpineRecipeEdit },
                 { Vanilla(ItemID.GoblinBattleStandard), ChangeIngredientStack(ItemID.TatteredCloth, 5) },
+                { Vanilla(ItemID.Beenade), BeenadeRecipeEdit },
                 { Vanilla(ItemID.ChlorophyteBar), ChangeIngredientStack(ItemID.ChlorophyteOre, 4) },
                 { Vanilla(ItemID.OrichalcumAnvil), ChangeIngredientStack(ItemID.OrichalcumBar, 10) },
                 { Vanilla(ItemID.ShroomiteBar), ChangeIngredientStack(ItemID.GlowingMushroom, 5) },
@@ -942,6 +943,15 @@ namespace CalamityMod.Systems
             if (r.createItem.stack < intendedStack)
                 r.createItem.stack = intendedStack;
             r.ChangeIngredientStack(ItemID.BottledWater, intendedStack);
+        }
+
+        // Increases Beenade's recipe to use 4 Grenades and yield 4 Beenades
+        private static void BeenadeRecipeEdit(Recipe r)
+        {
+            int intendedStack = 4;
+            if (r.createItem.stack < intendedStack)
+                r.createItem.stack = intendedStack;
+            r.ChangeIngredientStack(ItemID.Grenade, intendedStack);
         }
 
         // Change True Night's Edge recipe to require far less mech boss souls

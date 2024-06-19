@@ -118,12 +118,13 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
-            ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 60) / (dynamoStemCells ? 2 : 1);
+            ApplyDoTDebuff(dragonFire, dragonfireDoT);
             int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
             ApplyDoTDebuff(miracleBlight, 80);
 
-            // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player starts taking damage over time.
+            // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;
             if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
             {
@@ -142,7 +143,7 @@ namespace CalamityMod.CalPlayer
             }
 
             bool ASPoisoning = ASPoisonLevel > 0f;
-            if (ASPoisoning || ((ZoneSulphur || Player.Calamity().ZoneAbyssLayer1) && !Player.creativeGodMode && Player.IsUnderwater() && !decayEffigy && !abyssalDivingSuit && !Player.lavaWet && !Player.honeyWet && !nearSafeZone))
+            if (ASPoisoning || ((ZoneSulphur || ZoneAbyssLayer1) && !Player.creativeGodMode && Player.IsUnderwater() && !decayEffigy && !abyssalDivingSuit && !Player.lavaWet && !Player.honeyWet && !nearSafeZone))
             {
                 float increment = 1f / SulphSeaWaterSafetyTime;
                 //No way to mitigate AS Poisoning
@@ -152,6 +153,8 @@ namespace CalamityMod.CalPlayer
                     increment *= 0.5f;
                 if (sulphurSet && !ASPoisoning)
                     increment *= 0.5f;
+                if (ZoneAbyssLayer1 && !ASPoisoning)
+                    increment *= 0.33f;
 
                 SulphWaterPoisoningLevel = MathHelper.Clamp(SulphWaterPoisoningLevel + increment, 0f, 1f);
                 if (SulphWaterPoisoningLevel >= 1f)
