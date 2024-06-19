@@ -1,5 +1,4 @@
-﻿using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,20 +23,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.extraUpdates = 0;
             Projectile.alpha = 255;
             Projectile.ignoreWater = true;
-            Projectile.scale = 0f;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 240;
         }
 
-        public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 150 && target.CanBeChasedBy(Projectile);
+        public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 200 && target.CanBeChasedBy(Projectile);
 
         public override void AI()
         {
-            Projectile.scale = MathHelper.Lerp(Projectile.scale, 1f, 0.2f);
-
-            float rot = Main.rand.NextFloat(MathHelper.TwoPi);
-
-            Projectile.velocity *= 0.9f;
+            Projectile.velocity *= 0.99f;
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.scale += 0.005f;
@@ -60,33 +54,28 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.frame = 0;
                 }
             }
-            if (Projectile.frameCounter == 0)
+            if (Projectile.ai[0] == 1f) //stealth strike
             {
-                GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(
-                Projectile.Center, new Vector2(2, 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), Color.White, Color.LightSkyBlue, (1f + Main.rand.NextFloat(0.3f)) * Projectile.scale, 50f, affectedByLight: true));
+                Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             }
-            Projectile.ai[1]++;
-            if (Projectile.ai[1] > 40)
+            if (Projectile.ai[1] == 1f)
             {
-                if (Projectile.Calamity().stealthStrike)
-                {
-                    CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 18, 0.1f);
-                }
-                else
-                {
-                    CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 10f, 0.02f);
-                }
+                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, Projectile.ai[0] == 1f ? 900f : 450f, 8f, 20f);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-
+            for (int k = 0; k < 10; k++)
+            {
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Flare_Blue, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
+            }
         }
     }
 }

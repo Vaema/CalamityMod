@@ -5,8 +5,6 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Magic;
-using System.Linq;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -15,56 +13,33 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 22;
+            Item.width = 32;
+            Item.height = 52;
+            Item.damage = 13;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 38;
-            Item.height = 68;
-            Item.useTime = 48;
-            Item.useAnimation = 48;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.channel = true;
             Item.knockBack = 3f;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.UseSound = SoundID.Item17;
+            Item.UseSound = SoundID.Item5;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<GaleforceHoldout>();
+            Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.shootSpeed = 20f;
+            Item.useAmmo = AmmoID.Arrow;
             Item.Calamity().canFirePointBlankShots = true;
         }
-        public override void HoldItem(Player player)
-        {
-            player.Calamity().mouseWorldListener = true;
-        }
 
-        public override bool CanUseItem(Player player)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<GaleforceHoldout>());
-        }
-
-        public override void UseItemFrame(Player player)
-        {
-            //Calculate the dirction in which the players arms should be pointing at.
-            Vector2 playerToCursor = (player.Calamity().mouseWorld - player.Center).SafeNormalize(Vector2.UnitX);
-            float armPointingDirection = (playerToCursor.ToRotation());
-
-            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, armPointingDirection - MathHelper.PiOver2);
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, armPointingDirection - MathHelper.PiOver2);
-        }
-
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
-            if (player.Calamity().mouseWorld.X > player.Center.X)
+            for (int i = -8; i <= 8; i += 8)
             {
-                player.ChangeDir(1);
+                Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
+                Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<FeatherLarge>(), damage / 4, 0f, player.whoAmI);
             }
-            else
-            {
-                player.ChangeDir(-1);
-            }
-
-            CalamityUtils.CleanHoldStyle(player, player.compositeFrontArm.rotation + MathHelper.PiOver2, player.GetFrontHandPosition(player.compositeFrontArm.stretch, player.compositeFrontArm.rotation).Floor(), new Vector2(38, 68), new Vector2(-9, 0));
+            return true;
         }
 
         public override void AddRecipes()
