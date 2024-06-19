@@ -13,6 +13,8 @@ namespace CalamityMod.Items.SummonItems
     public class DesertMedallion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+        public static readonly SoundStyle SummonSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeSummon");
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 1; // Suspicious Looking Eye
@@ -41,7 +43,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
+            SoundEngine.PlaySound(SummonSound, player.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<DesertScourgeHead>());
             else

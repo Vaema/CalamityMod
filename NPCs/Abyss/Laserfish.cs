@@ -20,6 +20,7 @@ namespace CalamityMod.NPCs.Abyss
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             Main.npcFrameCount[NPC.type] = 6;
             if (!Main.dedServ)
             {
@@ -30,7 +31,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = 40;
+            NPC.damage = 0; // 0 contact damage, laser damage is handled in the general swimming AI
             NPC.width = 58;
             NPC.height = 32;
             NPC.defense = 15;
@@ -75,9 +76,6 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.15f, 0.15f, 4f, 4f, 0.1f);
         }
 

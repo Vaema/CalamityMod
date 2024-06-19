@@ -278,8 +278,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.DR_NERD(normalDR);
             NPC.value = Item.buyPrice(30, 0, 0, 0);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -291,6 +289,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -3439,6 +3440,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Increase the player's SCal kill count

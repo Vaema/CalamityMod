@@ -231,11 +231,8 @@ namespace CalamityMod
             void EnemyRedirect(int item, string pageName) => wiki.Call(2, item, pageName);
 
             // Items
-            ItemRedirect(ItemType<BloodOrange>(), "Blood Orange (calamity)");
-            ItemRedirect(ItemType<Elderberry>(), "Elderberry (calamity)");
             ItemRedirect(ItemType<PineapplePet>(), "Pineapple (calamity)");
             ItemRedirect(ItemType<TrashmanTrashcan>(), "Trash Can (pet)");
-            ItemRedirect(ItemType<Butcher>(), "Butcher (weapon)");
             ItemRedirect(ItemType<SandstormGun>(), "Sandstorm (weapon)");
             ItemRedirect(ItemType<Thunderstorm>(), "Thunderstorm (weapon)");
             // Lore items
@@ -295,10 +292,9 @@ namespace CalamityMod
             ItemRedirect(ItemType<LoreYharon>(), loreItemPage);
 
             // Enemies
-            EnemyRedirect(NPCType<HiveEnemy>(), "Hive (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel>(), "Ruby Jewel (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel2>(), "Sapphire Jewel (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel3>(), "Emerald Jewel (enemy)");
+            EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
             EnemyRedirect(NPCType<OldDukeToothBall>(), "Tooth Ball (Old Duke)");
             EnemyRedirect(NPCType<CalamitasEnchantDemon>(), "Enchantment");
             EnemyRedirect(NPCType<LeviathanStart>(), "%3F%3F%3F");
@@ -744,7 +740,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection
                 });
             }
@@ -766,7 +762,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection,
                     ["customPortrait"] = portrait,
                     ["overrideHeadTextures"] = "CalamityMod/NPCs/StormWeaver/StormWeaverHead_Head_Boss"
@@ -784,7 +780,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection
                 });
             }
@@ -1240,6 +1236,10 @@ namespace CalamityMod
         private static Color MeleeDamageColor = new(254, 121, 2);
         private static Color MeleeCritColor = new(253, 62, 3);
 
+        private static Color MeleeRangedTooltipColor = new(144, 171, 76);
+        private static Color MeleeRangedDamageColor = new(144, 171, 76);
+        private static Color MeleeRangedCritColor = new(86, 102, 46);
+
         private static Color RogueTooltipColor = new(206, 132, 227);
         private static Color RogueDamageColor = new(206, 132, 227);
         private static Color RogueCritColor = new(194, 38, 212);
@@ -1259,6 +1259,9 @@ namespace CalamityMod
             // True melee uses the same colorations as regular Melee.
             coloredDamageTypes.Call("AddDamageType", TrueMeleeDamageClass.Instance, MeleeTooltipColor, MeleeDamageColor, MeleeCritColor);
             coloredDamageTypes.Call("AddDamageType", TrueMeleeNoSpeedDamageClass.Instance, MeleeTooltipColor, MeleeDamageColor, MeleeCritColor);
+
+            // Melee-ranged hybrid damage uses a 50% blend between Melee and Ranged, turning into Olive green
+            coloredDamageTypes.Call("AddDamageType", MeleeRangedHybridDamageClass.Instance, MeleeRangedTooltipColor, MeleeRangedDamageColor, MeleeRangedCritColor);
 
             // Rogue has its own lavender color. Stealth strikes are hued towards violet so they stick out more.
             // They would be hued towards magenta, but that would make them collide with Nebula-colored Magic in Colored Damage Types config.

@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 600;
             AIType = ProjectileID.ThrowingKnife;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override bool PreDraw(ref Color lightColor)

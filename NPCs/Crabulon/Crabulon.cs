@@ -24,6 +24,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -74,8 +75,6 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.height = 196;
             NPC.defense = 8;
             NPC.LifeMaxNERB(3700, 4400, 680000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;
@@ -94,6 +93,9 @@ namespace CalamityMod.NPCs.Crabulon
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
             }
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -127,6 +129,7 @@ namespace CalamityMod.NPCs.Crabulon
             bool death = CalamityWorld.death || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
 
             NPC.spriteDirection = NPC.direction;
 
@@ -139,10 +142,6 @@ namespace CalamityMod.NPCs.Crabulon
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-                NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
@@ -258,6 +257,10 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.ai[1] += 1f;
                 if (phase3)
                     NPC.ai[1] += 2f;
+                if (NPC.justHit)
+                    NPC.ai[1] += masterMode ? 7f : expertMode ? 5f : 3f;
+                if (NPC.Distance(player.Center) < 160f)
+                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
                 float idleTime = death ? 30f : expertMode ? 60f : 120f;
                 if (NPC.ai[1] >= idleTime)
@@ -351,10 +354,12 @@ namespace CalamityMod.NPCs.Crabulon
                 }
 
                 NPC.ai[1] += 1f;
+                if (NPC.Distance(player.Center) < 160f)
+                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+
                 float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 120f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
-                    NPC.TargetClosest();
                     NPC.noGravity = false;
                     NPC.noTileCollide = false;
                     NPC.ai[0] = 2f;
@@ -504,8 +509,6 @@ namespace CalamityMod.NPCs.Crabulon
                             }
                         }
                     }
-
-                    NPC.TargetClosest();
 
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= (phase2 ? 4f : 3f))
@@ -871,7 +874,15 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
+
+            // Start the Goblin Invasion if the player hasn't gotten one yet (this also gives players more of a reason to fight this boss)
+            if (!NPC.downedGoblins && Main.netMode != NetmodeID.MultiplayerClient && !Main.snowMoon && !Main.pumpkinMoon && !DD2Event.Ongoing && !Main.ShouldNormalEventsBeAbleToStart() && Main.invasionType != 1)
+                Main.StartInvasion();
 
             // Mark Crabulon as dead
             DownedBossSystem.downedCrabulon = true;

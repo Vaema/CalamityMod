@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
@@ -174,7 +175,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Electrified, 120, true);
+                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

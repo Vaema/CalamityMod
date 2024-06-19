@@ -1795,7 +1795,7 @@ DukeEditFailed:
                     SetNewBossJustDowned(npc);
 
                     // First kill: Notify of Abyss chests being unlocked.
-                    if (!NPC.downedBoss3)
+                    if (!NPC.downedBoss3 && !BossRushEvent.BossRushActive)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -1810,7 +1810,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant, NPCID.BestiaryGirl, ModContent.NPCType<THIEF>() }, Main.hardMode);
                     SetNewBossJustDowned(npc);
 
-                    if (!Main.hardMode)
+                    if (!Main.hardMode && !BossRushEvent.BossRushActive)
                     {
                         // Increase altar count to allow natural mech boss spawning.
                         if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
@@ -1837,7 +1837,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
-                    if (!NPC.downedMechBoss1 && CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                    if (!NPC.downedMechBoss1 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         SpawnMechBossHardmodeOres();
                     break;
 
@@ -1849,7 +1849,7 @@ DukeEditFailed:
                         SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                         SetNewBossJustDowned(npc);
 
-                        if (!NPC.downedMechBoss2 && CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                        if (!NPC.downedMechBoss2 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             SpawnMechBossHardmodeOres();
                     }
                     break;
@@ -1859,7 +1859,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
-                    if (!NPC.downedMechBoss3 && CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                    if (!NPC.downedMechBoss3 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         SpawnMechBossHardmodeOres();
                     break;
 
@@ -1868,7 +1868,7 @@ DukeEditFailed:
                     SetNewBossJustDowned(npc);
 
                     // Spawn Perennial Ore if Plantera has never been killed
-                    if (!NPC.downedPlantBoss)
+                    if (!NPC.downedPlantBoss && !BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Progression.PlantOreText";
                         Color messageColor = Color.GreenYellow;
@@ -1904,7 +1904,7 @@ DukeEditFailed:
                     SetNewBossJustDowned(npc);
 
                     // If Golem has never been killed, send a message about the Plague.
-                    if (!NPC.downedGolemBoss)
+                    if (!NPC.downedGolemBoss && !BossRushEvent.BossRushActive)
                     {
                         if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
                             SoundEngine.PlaySound(PlagueSound, Main.player[Main.myPlayer].Center);
@@ -1945,28 +1945,32 @@ DukeEditFailed:
                     string key7 = "Mods.CalamityMod.Status.Progression.FutureOreText";
                     Color messageColor7 = Color.LightGray;
 
-                    if (!CalamityWorld.HasGeneratedLuminitePlanetoids)
+                    // No progression stuff should run in Boss Rush.
+                    if (!BossRushEvent.BossRushActive)
                     {
-                        // Generate luminite planetoids.
-                        // This operation is done on a separate thread to lighten the load on servers so that they
-                        // can focus on more critical operations asychronously and ideally avoid a time-out crash.
-                        // Very few operations in Terraria utilize the pool, so it is highly unlikely that no threads will remain in it.
-                        ThreadPool.QueueUserWorkItem(_ => LuminitePlanet.GenerateLuminitePlanetoids());
+                        if (!CalamityWorld.HasGeneratedLuminitePlanetoids)
+                        {
+                            // Generate luminite planetoids.
+                            // This operation is done on a separate thread to lighten the load on servers so that they
+                            // can focus on more critical operations asychronously and ideally avoid a time-out crash.
+                            // Very few operations in Terraria utilize the pool, so it is highly unlikely that no threads will remain in it.
+                            ThreadPool.QueueUserWorkItem(_ => LuminitePlanet.GenerateLuminitePlanetoids());
 
-                        CalamityWorld.HasGeneratedLuminitePlanetoids = true;
+                            CalamityWorld.HasGeneratedLuminitePlanetoids = true;
 
-                        // If the moon lord is already marked as dead, an associated world sync packet will not be sent automatically
-                        // Send one manually.
-                        if (NPC.downedMoonlord)
-                            CalamityNetcode.SyncWorld();
-                    }
+                            // If the moon lord is already marked as dead, an associated world sync packet will not be sent automatically
+                            // Send one manually.
+                            if (NPC.downedMoonlord)
+                                CalamityNetcode.SyncWorld();
+                        }
 
-                    // Spawn Exodium planetoids and send messages about Providence, Exodium, and Necroplasm if ML has not been killed yet
-                    if (!NPC.downedMoonlord)
-                    {
-                        CalamityUtils.DisplayLocalizedText(key5, messageColor5);
-                        CalamityUtils.DisplayLocalizedText(key6, messageColor6);
-                        CalamityUtils.DisplayLocalizedText(key7, messageColor7);
+                        // Spawn Exodium planetoids and send messages about Providence, Exodium, and Necroplasm if ML has not been killed yet
+                        if (!NPC.downedMoonlord)
+                        {
+                            CalamityUtils.DisplayLocalizedText(key5, messageColor5);
+                            CalamityUtils.DisplayLocalizedText(key6, messageColor6);
+                            CalamityUtils.DisplayLocalizedText(key7, messageColor7);
+                        }
                     }
                     break;
             }

@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
     public class BansheeHookProj : BaseSpearProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<BansheeHook>();
+
         public override void SetDefaults()
         {
             Projectile.width = 40;
@@ -38,8 +39,9 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                                      Projectile.Center + Projectile.velocity * 0.5f,
                                      Projectile.velocity * 0.8f, ModContent.ProjectileType<BansheeHookScythe>(),
-                                     Projectile.damage, Projectile.knockBack * 0.85f, Projectile.owner, 0f, 0f);
+                                     (int)(Projectile.damage * 0.85f), Projectile.knockBack * 0.85f, Projectile.owner);
         };
+
         public override void ExtraBehavior()
         {
             Player player = Main.player[Projectile.owner];
@@ -123,13 +125,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.owner == Main.myPlayer)
-            {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(),
-                    target.Center, Vector2.Zero,
-                    ModContent.ProjectileType<BansheeHookBoom>(), (int)(hit.Damage * 0.25),
-                    10f, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
-            }
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<BansheeHookBoom>(), (int)(hit.Damage * 0.25), hit.Knockback * 0.25f, Projectile.owner);
         }
     }
 }

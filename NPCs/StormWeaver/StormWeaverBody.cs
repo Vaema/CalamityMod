@@ -47,9 +47,6 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = StormWeaverHead.DeathSound;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -74,6 +71,9 @@ namespace CalamityMod.NPCs.StormWeaver
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)

@@ -295,7 +295,7 @@ namespace CalamityMod
             EnemyStats.ContactDamageValues = new SortedDictionary<int, int[]>
             {
                 { NPCID.KingSlime, new int[] { 40, 64, 80, 96, 144 } },
-                { ModContent.NPCType<KingSlimeJewel3>(), new int[] { 30, 44, 60, 76, 114 } },
+                { ModContent.NPCType<KingSlimeJewelEmerald>(), new int[] { 30, 44, 60, 76, 114 } },
 
                 { ModContent.NPCType<DesertScourgeHead>(), new int[] { 45, 66, 88, 110, 165 } },
                 { ModContent.NPCType<DesertScourgeBody>(), new int[] { 24, 32, 40, 48, 72 } },
@@ -501,13 +501,10 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianCommander>(), new int[] { 150, 224, 256, 288, 444 } },
                 { ModContent.NPCType<ProfanedGuardianDefender>(), new int[] { 160, 240, 264, 288, 405 } },
                 { ModContent.NPCType<ProfanedGuardianHealer>(), new int[] { 100, 200, 220, 240, 300 } },
+                { ModContent.NPCType<ProfanedRocks>(), new int[] { 100, 200, 220, 232, 300 } },
 
                 { ModContent.NPCType<Bumblefuck>(), new int[] { 170, 256, 288, 320, 504 } },
                 { ModContent.NPCType<Bumblefuck2>(), new int[] { 145, 220, 242, 264, 435 } },
-
-                { ModContent.NPCType<ProvSpawnOffense>(), new int[] { 120, 240, 264, 278, 360 } },
-                { ModContent.NPCType<ProvSpawnDefense>(), new int[] { 100, 200, 220, 232, 300 } },
-                { ModContent.NPCType<ProfanedRocks>(), new int[] { 100, 200, 220, 232, 300 } },
 
                 { ModContent.NPCType<CeaselessVoid>(), new int[] { 240, 360, 396, 432, 720 } },
                 { ModContent.NPCType<DarkEnergy>(), new int[] { 175, 260, 288, 316, 525 } },
@@ -561,7 +558,7 @@ namespace CalamityMod
 
             EnemyStats.ProjectileDamageValues = new SortedDictionary<Tuple<int, int>, int[]>
             {
-                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewel>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 26, 36, 44, 52, 84 } },
+                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewelRuby>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 26, 36, 44, 52, 84 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 26, 36, 44, 52, 84 } },
                 { new Tuple<int, int>(ModContent.NPCType<DesertNuisanceHeadYoung>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 26, 36, 44, 52, 84 } },

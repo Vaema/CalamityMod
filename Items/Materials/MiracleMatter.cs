@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Materials
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-        public void DrawBackAfterimage(SpriteBatch spriteBatch, Vector2 baseDrawPosition, Rectangle frame, float baseScale)
+        public void DrawBackAfterimage(SpriteBatch spriteBatch, Vector2 baseDrawPosition, Rectangle frame, Vector2 origin, float baseScale)
         {
             if (Item.velocity.X != 0f)
                 return;
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Materials
             for (int i = 0; i < 8; i++)
             {
                 Vector2 drawPosition = baseDrawPosition + (MathHelper.TwoPi * i / 8f).ToRotationVector2() * drawPositionOffset;
-                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, 0f, Vector2.Zero, baseScale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, 0f, origin, baseScale, SpriteEffects.None, 0f);
             }
         }
 
@@ -55,14 +55,14 @@ namespace CalamityMod.Items.Materials
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
             Rectangle frame = TextureAssets.Item[Item.type].Value.Frame();
-            DrawBackAfterimage(spriteBatch, Item.position - Main.screenPosition, frame, scale);
+            DrawBackAfterimage(spriteBatch, Item.position - Main.screenPosition, frame, Vector2.Zero, scale);
             return true;
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Item.velocity.X = 0f;
-            DrawBackAfterimage(spriteBatch, position - frame.Size() * 0.25f, frame, scale);
+            DrawBackAfterimage(spriteBatch, position, frame, origin, scale);
             return true;
         }
 

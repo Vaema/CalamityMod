@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool masterMode = Main.masterMode || bossRush;
@@ -213,7 +213,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (phase == 4)
                         phase = 5;
 
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     npc.ai[0] = phase;
                     npc.ai[1] = 0f;
 
@@ -422,7 +422,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool spawnBee = phase4 && calamityGlobalNPC.newAI[0] % beeSpawnGateValue == 0f && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
                         if (spawnBee)
                         {
-                            SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
+                            SoundEngine.PlaySound(SoundID.NPCHit18, npc.Center);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -615,10 +615,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Spawn bees
                 if (Collision.CanHit(beeSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && spawnBee && (!beeLimitReached || !hornetLimitReached))
                 {
-                    if (!phase3 || Main.zenithWorld)
-                        SoundEngine.PlaySound(SoundID.NPCHit1, beeSpawnLocation);
-                    else
-                        SoundEngine.PlaySound(SoundID.NPCHit18, beeSpawnLocation);
+                    SoundEngine.PlaySound(SoundID.NPCHit18, beeSpawnLocation);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -717,9 +714,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Get target location and shoot from ass
                 float stingerAttackSpeed = 16f + enrageScale * 4f;
-                float stingerAttackAccel = phase6 ? 0.32f : 0.24f;
+                float stingerAttackAccel = phase6 ? 0.24f : 0.18f;
                 if (enrageScale > 0f)
-                    stingerAttackAccel = MathHelper.Lerp(phase6 ? 0.4f : 0.32f, phase6 ? 0.8f : 0.64f, enrageScale / maxEnrageScale);
+                    stingerAttackAccel = MathHelper.Lerp(phase6 ? 0.3f : 0.24f, phase6 ? 0.6f : 0.48f, enrageScale / maxEnrageScale);
 
                 if (masterMode)
                 {
@@ -930,7 +927,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             bool enrage = true;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
@@ -1027,7 +1024,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 while ((float)num647 == num646);
 
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 npc.ai[0] = num647;
                 npc.ai[1] = 0f;
                 npc.ai[2] = 0f;
@@ -1359,7 +1356,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Collision.CanHit(beeSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && flag35)
                 {
-                    SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
+                    SoundEngine.PlaySound(SoundID.NPCHit18, npc.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int num670 = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);

@@ -1,6 +1,8 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using CalamityMod.Systems;
+using CalamityMod.Tiles.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -28,6 +30,7 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
+            CalamityUtils.MergeWithFloralParadise(Type);
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
@@ -293,7 +296,7 @@ namespace CalamityMod.Tiles.Ores
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = GetDrawColour(i, j, new Color(175, 175, 175, 175));
             Tile trackTile = Main.tile[i, j];
-            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

@@ -50,7 +50,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.PhantomHeartText";
                     Color messageColor = Color.Pink;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseManaMaxIncreasingItem(ManaBoost);

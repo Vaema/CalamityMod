@@ -10,6 +10,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
@@ -379,7 +380,7 @@ namespace CalamityMod.Projectiles
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
                     float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
-                        homingEndTime += 90f;
+                        homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
                     if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
@@ -603,7 +604,8 @@ namespace CalamityMod.Projectiles
                 blood2.scale = 1.2f;
                 blood2.position = projectile.Center + Main.rand.NextFloat() * projectile.velocity * 2f;
 
-                for (int j = 1; j < projectile.oldPos.Length && !(projectile.oldPos[j] == Vector2.Zero); j++)
+                int trailLength = projectile.oldPos.Length / 2;
+                for (int j = 1; j < trailLength && !(projectile.oldPos[j] == Vector2.Zero); j++)
                 {
                     if (Main.rand.NextBool(3))
                     {
@@ -3497,6 +3499,23 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
+            if (projectile.type == ProjectileID.TheDaoofPow)
+            {
+                // Guide to ai[0]:
+                // 0: Spinning. 1: Being thrown. 2: Return after throw. 6: Dropped on ground. 4: Return after being dropped.
+                if (projectile.ai[0] == 1f)
+                {
+                    projectile.ai[2]++;
+                    if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
+                        projectile.ai[1]--;
+                }
+                if (projectile.ai[0] == 1f || projectile.ai[0] == 2f || projectile.ai[0] == 4f)
+                    projectile.extraUpdates = 1;
+                else
+                    projectile.extraUpdates = 0;
+            }
+
             // Random velocities for Bouncy Boulders in GFB
             if (projectile.type == ProjectileID.BouncyBoulder && Main.zenithWorld)
             {
@@ -3823,6 +3842,16 @@ namespace CalamityMod.Projectiles
                     {
                         Dust dust = Dust.NewDustDirect(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.GemDiamond, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 0, default, 0.5f);
                         dust.noGravity = true;
+                    }
+                }
+
+                // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                {
+                    if (Main.rand.NextBool(3))
+                    {
+                        int element = Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.RainbowTorch, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.25f);
+                        Main.dust[element].noGravity = true;
                     }
                 }
 
@@ -4352,7 +4381,10 @@ namespace CalamityMod.Projectiles
             if (Main.LocalPlayer.Calamity().omniscience && projectile.hostile && projectile.damage > 0 && projectile.alpha < 255)
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
-                    return Color.Coral;
+                {
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
+                    return mainColor;
+                }
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)

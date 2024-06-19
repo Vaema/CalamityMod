@@ -117,6 +117,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.AdamantiteDrill, standardDrillTweaks },
                 { ProjectileID.Anchor, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Bee, Do(PiercingExact(2)) },
+                { ProjectileID.BeeArrow, Do(PointBlank, ExtraUpdatesExact(1)) },
                 { ProjectileID.BlackCounterweight, counterweightTweaks },
                 { ProjectileID.BlueCounterweight, counterweightTweaks },
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
@@ -177,7 +178,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.MythrilDrill, standardDrillTweaks },
                 { ProjectileID.NanoBullet, standardBulletTweaks },
                 { ProjectileID.NebulaDrill, standardDrillTweaks },
-                { ProjectileID.NebulaLaser, Do(ExtraUpdatesDelta(+1)) },
+                { ProjectileID.NebulaLaser, Do(ExtraUpdatesDelta(-1)) },
                 { ProjectileID.OrichalcumChainsaw, standardChainsawTweaks },
                 { ProjectileID.OrichalcumDrill, standardDrillTweaks },
                 { ProjectileID.PalladiumChainsaw, standardChainsawTweaks },
@@ -193,7 +194,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.RocketFireworkRed, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.RocketFireworkYellow, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.SawtoothShark, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(6)) },
-                { ProjectileID.ShadowBeamHostile, Do(TimeLeftExact(60)) },
+                { ProjectileID.ShadowBeamHostile, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.SolarFlareDrill, standardDrillTweaks },
                 { ProjectileID.StardustDrill, standardDrillTweaks },
@@ -209,6 +210,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
+                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(2), TimeLeftExact(1400)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 
@@ -251,7 +253,6 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 4: Point Blank support
-                { ProjectileID.BeeArrow, pointBlank },
                 { ProjectileID.Blizzard, pointBlank }, // Blizzard Staff projectiles, re-used in Frostbite Blaster.
                 { ProjectileID.BlueFlare, pointBlank },
                 { ProjectileID.BoneArrow, pointBlank },
@@ -268,8 +269,8 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Flare, pointBlank },
                 { ProjectileID.FrostburnArrow, pointBlank },
                 { ProjectileID.Harpoon, pointBlank },
-                { ProjectileID.HellfireArrow, pointBlank },
                 { ProjectileID.Hellwing, pointBlank },
+                { ProjectileID.HellfireArrow, pointBlank },
                 { ProjectileID.HolyArrow, pointBlank },
                 { ProjectileID.IchorArrow, pointBlank },
                 { ProjectileID.JestersArrow, pointBlank },

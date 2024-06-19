@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using CalamityMod.Systems;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
@@ -12,15 +11,18 @@ namespace CalamityMod.Tiles.SunkenSea
     {
         public override void SetStaticDefaults()
         {
+            TileID.Sets.GeneralPlacementTiles[Type] = false;
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
+            Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = 96;
-            AddMapEntry(new Color(31, 92, 114));
+            AddMapEntry(new Color(17, 53, 77));
             HitSound = SoundID.Tink;
 
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
@@ -36,7 +38,28 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
+        }
+
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile Tile = Framing.GetTileSafely(i, j);
+            Tile Below = Framing.GetTileSafely(i, j + 1);
+            Tile Above = Framing.GetTileSafely(i, j - 1);
+
+            if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope) 
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    Below.TileType = (ushort)ModContent.TileType<DepthVines>();
+                    Below.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.netMode == NetmodeID.Server) 
+                    {
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
         }
     }
 }

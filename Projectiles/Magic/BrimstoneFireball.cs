@@ -23,32 +23,19 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = 300;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.25f, 0f, 0f);
-            if (Projectile.wet && !Projectile.lavaWet)
+            if (Projectile.wet)
             {
                 Projectile.Kill();
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        Vector2 velocity = new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-100f, -50f));
-                        while (velocity.X == 0f)
-                        {
-                            velocity.X = (float)Main.rand.Next(-100, 101);
-                        }
-                        velocity.Normalize();
-                        velocity *= Main.rand.NextFloat(7f, 10f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.oldPosition.X + (float)(Projectile.width / 2), Projectile.oldPosition.Y + (float)(Projectile.height / 2), velocity.X, velocity.Y, ModContent.ProjectileType<BrimstoneHomer>(), Projectile.damage, 0f, Projectile.owner, 0f, 0f);
-                    }
-                }
+                SpawnFireballs(true);
             }
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
@@ -113,6 +100,37 @@ namespace CalamityMod.Projectiles.Magic
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+
+            if (target.HasBuff(BuffID.Wet) || target.Calamity().eutrophication > 0 || target.Calamity().rTide > 0 || target.Calamity().cDepth > 0)
+            {
+                SpawnFireballs(false);
+            }
+        }
+
+        public void SpawnFireballs(bool isFromLiquidHit)
+        {
+            if (Projectile.owner == Main.myPlayer)
+            {
+                int homerAmt = 2;
+                if (!isFromLiquidHit && Projectile.numHits > 0)
+                    homerAmt = 1;
+
+                for (int j = 0; j < homerAmt; j++)
+                {
+                    Vector2 velocity = new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-100f, -50f));
+                    while (velocity.X == 0f)
+                    {
+                        velocity.X = (float)Main.rand.Next(-100, 101);
+                    }
+                    velocity.Normalize();
+                    velocity *= Main.rand.NextFloat(7f, 10f);
+                    float damageMult = isFromLiquidHit ? 1f : 0.25f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.oldPosition.X + (float)(Projectile.width / 2), Projectile.oldPosition.Y + (float)(Projectile.height / 2), velocity.X, velocity.Y, ModContent.ProjectileType<BrimstoneHomer>(), (int)(Projectile.damage * damageMult), 0f, Projectile.owner, 0f, 0f);
+                }
+            }
+        }
     }
 }

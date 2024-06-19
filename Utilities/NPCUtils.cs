@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -9,6 +11,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SlimeGod;
+using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -24,7 +27,7 @@ using static Terraria.ModLoader.ModContent;
 namespace CalamityMod
 {
     #region Calamity Targeting Parameters Struct
-    public struct CalamityTargetingParameters
+    public struct CalamityTargetingParameters : IEquatable<CalamityTargetingParameters>
     {
         // Vanilla argument to TargetClosest. Defaults to true as it does in vanilla.
         // If true, the NPC will turn to face the target.
@@ -87,12 +90,45 @@ namespace CalamityMod
         }
 
         // Quick defaults for recommended boss settings.
-        public CalamityTargetingParameters(bool isBoss)
+        public CalamityTargetingParameters(bool isBoss) => ignoreTankMinions = isBoss;
+
+        // Using the default keyword on structs produces garbage. Please use the below instead, or define your own parameters.
+        public static CalamityTargetingParameters Defaults => new();
+        public static CalamityTargetingParameters BossDefaults => new(true);
+
+        #region Equality Operators
+        public static bool operator ==(CalamityTargetingParameters ctp1, CalamityTargetingParameters ctp2)
         {
-            ignoreTankMinions = isBoss;
+            bool targetingCentersEqual = (ctp1.targetingCenter is null && ctp2.targetingCenter is null) || ctp1.targetingCenter == ctp2.targetingCenter;
+            if (!targetingCentersEqual)
+                return false;
+
+            return ctp1.faceTarget == ctp2.faceTarget &&
+                ctp1.maxSearchRange == ctp2.maxSearchRange &&
+                ctp1.targetType == ctp2.targetType &&
+                ctp1.aggroRatio == ctp2.aggroRatio &&
+                ctp1.requireLineOfSight == ctp2.requireLineOfSight &&
+                ctp1.finishThemOff == ctp2.finishThemOff &&
+                ctp1.ignoreTankMinions == ctp2.ignoreTankMinions &&
+                ctp1.ignoreStealthedPlayers == ctp2.ignoreStealthedPlayers &&
+                ctp1.forceNetUpdate == ctp2.forceNetUpdate;
         }
 
-        public static CalamityTargetingParameters BossDefaults => new(true);
+        public static bool operator !=(CalamityTargetingParameters ctp1, CalamityTargetingParameters ctp2) => !(ctp1 == ctp2);
+
+        public readonly bool Equals(CalamityTargetingParameters other) => this == other;
+
+        public override readonly bool Equals([NotNullWhen(true)] object obj)
+        {
+            if (obj is not CalamityTargetingParameters)
+                return false;
+
+            return this == (CalamityTargetingParameters)obj;
+        }
+
+        // Visual Studio complains if this is not here. I do not know why.
+        public override readonly int GetHashCode() => base.GetHashCode();
+        #endregion
     }
     #endregion
 
@@ -212,7 +248,7 @@ namespace CalamityMod
         //
         // TODO -- Use this function EVERYWHERE that target validity is checked, not just for Proximity Rage.
         // The easiest way to find locations this should be used is checks for whether something is statue spawned.
-        public static bool IsAnEnemy(this NPC npc, bool allowStatues = true, bool checkDead = true)
+        public static bool IsAnEnemy(this NPC npc, bool allowStatues = true, bool checkDead = true, bool checkDamage = true)
         {
             // Null, inactive, town NPCs, and friendlies are right out.
             if (npc is null || (!npc.active && (!checkDead || npc.life > 0)) || npc.townNPC || npc.friendly)
@@ -225,7 +261,7 @@ namespace CalamityMod
             // "Non-enemies" (e.g. butterflies or projectile enemies) with near zero max health,
             // or anything but the strongest enemies with no contact damage (e.g. Celestial Pillars, Providence)
             // do not generate rage.
-            if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || (npc.defDamage <= BalancingConstants.TinyDamageThreshold && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
+            if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || ((npc.defDamage <= BalancingConstants.TinyDamageThreshold && checkDamage) && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
                 return false;
             // Also explicitly exclude dummies and anything with a ridiculous health pool (dummies from Fargo's for example).
             if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>() || npc.lifeMax > BalancingConstants.UnreasonableHealthThreshold)
@@ -371,6 +407,12 @@ namespace CalamityMod
         /// <returns>The targeted player ID.</returns>
         public static int CalamityTargeting(this NPC npc, CalamityTargetingParameters options)
         {
+            // 05JUN2024: Ozzatron: Struct defaults are always memset to all-zero, giving garbage parameters.
+            // If you actually call this function with the default keyword for the struct,
+            // change the options on the spot to valid default / intended default parameters.
+            if (options == default)
+                options = new CalamityTargetingParameters();
+            
             float distance = 0f;
             // float realDist = 0f; // Defined but not used by vanilla. Commented out here.
             bool anyTargetAvailable = false;
@@ -689,10 +731,27 @@ namespace CalamityMod
                 target.HitSound != SoundID.NPCHit34 && target.HitSound != SoundID.NPCHit36 && target.HitSound != SoundID.NPCHit42 &&
                 target.HitSound != SoundID.NPCHit49 && target.HitSound != SoundID.NPCHit52 && target.HitSound != SoundID.NPCHit53 &&
                 target.HitSound != SoundID.NPCHit54 && target.HitSound != null) || target.type == NPCType<Providence>() ||
-                target.type == NPCType<ScornEater>())
+                target.type == NPCType<ScornEater>() || target.type == NPCType<Yharon>())
             {
                 return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check if an NPC can be moved
+        /// </summary>
+        /// <param name="target">The NPC attacked.</param>
+        /// <returns>Whether or not the NPC can be moved around.</returns>
+        public static bool CanBeMoved(this NPC target, bool ignoreKBImmune = false)
+        {
+            // Ideally we can replace [!CalamityPlayer.areThereAnyDamnBosses] with a check for problematic boss minions so that you can knock back regular ones in bossfights.
+            // For now at least, when a boss is alive it will always fail to knockback enemies with 100% kb resist.
+            if (CalamityPlayer.areThereAnyDamnBosses)
+                ignoreKBImmune = false;
+            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
+            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune ? true : target.knockBackResist > 0))
+                return true;
             return false;
         }
 

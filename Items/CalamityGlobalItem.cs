@@ -79,6 +79,7 @@ namespace CalamityMod.Items
         #endregion
 
         // Miscellaneous stuff
+        public bool revengeanceItem = false;
         public bool donorItem = false;
         public bool devItem = false;
         public bool canFirePointBlankShots = false;
@@ -118,6 +119,7 @@ namespace CalamityMod.Items
             myClone.DischargeEnchantExhaustion = DischargeEnchantExhaustion;
 
             // Miscellaneous
+            myClone.revengeanceItem = revengeanceItem;
             myClone.donorItem = donorItem;
             myClone.devItem = devItem;
             myClone.canFirePointBlankShots = canFirePointBlankShots;
@@ -1224,7 +1226,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.SniperScope)
             {
                 player.GetDamage<RangedDamageClass>() -= 0.03f;
-                player.GetCritChance<RangedDamageClass>() -= 0.03f;
+                player.GetCritChance<RangedDamageClass>() -= 3;
             }
 
             if (item.type == ItemID.MagicQuiver)
@@ -1236,6 +1238,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.FireGauntlet)
             {
                 player.GetDamage<MeleeDamageClass>() += 0.02f;
+            }
+            if (item.type == ItemID.FireGauntlet || item.type == ItemID.MagmaStone)
+            {
+                modPlayer.magmaStoneVisuals = !hideVisual; // hides the fire dust when hiding the accessory
             }
 
             // The Frog Leg line is prevented from stacking.

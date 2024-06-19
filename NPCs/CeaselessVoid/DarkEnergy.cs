@@ -51,8 +51,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.width = NPC.height = HitboxSize;
             NPC.defense = 50;
             NPC.lifeMax = BossRushEvent.BossRushActive ? MaxBossRushHP : MaxHP;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.Opacity = 0f;
             NPC.noGravity = true;
@@ -282,10 +280,11 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            int debufftype = Main.zenithWorld ? BuffID.Obstructed : BuffID.VortexDebuff;
-            int duration = Main.zenithWorld ? 30 : 60;
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(debufftype, duration, true);
+            if (Main.zenithWorld)
+            {
+                if (hurtInfo.Damage > 0)
+                    target.AddBuff(BuffID.Obstructed, 30, true);
+            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

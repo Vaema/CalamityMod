@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Projectile.timeLeft % 35 == 0)
+            if (Projectile.timeLeft % 15 == 0)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {

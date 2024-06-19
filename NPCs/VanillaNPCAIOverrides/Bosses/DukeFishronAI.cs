@@ -123,7 +123,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Get target
             if (npc.target < 0 || npc.target == Main.maxPlayers || player.dead || !player.active || Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 player = Main.player[npc.target];
                 npc.netUpdate = true;
             }
@@ -1137,7 +1137,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (npc.target == Main.maxPlayers)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, default);
                 npc.ai[3] = (float)Main.rand.Next(100, 151) / 100f;
                 float startingVelocity = (float)Main.rand.Next(250, 351) / 15f;
                 npc.velocity = (Main.player[npc.target].Center - npc.Center + new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101))).SafeNormalize(Vector2.UnitY) * startingVelocity;
@@ -1148,7 +1148,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             Vector2 velocityVector = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
             float inertia = 30f;
-            float velocity = 24f;
+            float velocity = 23f;
             npc.velocity = (npc.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
             
             npc.scale = npc.ai[3];
@@ -1165,7 +1165,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.velocity.Y -= 0.04f;
 
             // Push Bubbles away from each other.
-            float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.1f : -0.08f;
+            float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.08f : -0.06f;
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 if (i != npc.whoAmI && Main.npc[i].active && Main.npc[i].type == npc.type)
@@ -1314,7 +1314,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             Player player = Main.player[npc.target];
             if (npc.target < 0 || npc.target == Main.maxPlayers || player.dead || !player.active || Vector2.Distance(player.Center, center) > 5600f)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 player = Main.player[npc.target];
                 npc.netUpdate = true;
             }

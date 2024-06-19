@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
+using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
 using CalamityMod.Tiles.FurnitureEutrophic;
@@ -103,6 +105,9 @@ namespace CalamityMod
                         Wiring.SkipWire(x + k, y + l);
                 }
             }
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendTileSquare(-1, x, y, tileX, tileY);
         }
 
         public static void DrawFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
@@ -281,6 +286,13 @@ namespace CalamityMod
             return ParanoidTileRetrieval(x, y).HasTile && ParanoidTileRetrieval(x, y).TileType == type;
         }
 
+        // Extension shorthand for the Tile Framing System Universal Merges.
+        // As this must be defined in a static class, it's out here in CalamityUtils.
+        public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
+        {
+            TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+        }
+
         /// <summary>
         /// Sets the mergeability state of two tiles. By default, enables tile merging.
         /// </summary>
@@ -335,6 +347,12 @@ namespace CalamityMod
             TileType<AstralStone>(),
             TileType<AstralSand>(),
             TileType<AstralSnow>(),
+            TileType<Driftwood>(),
+            TileType<PinkPearlPile>(),
+            TileType<BlackPearlPile>(),
+            TileType<WhitePearlPile>(),
+            TileType<Shellstone>(),
+            TileType<RuneSand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
             TileType<SulphurousShale>(),
@@ -405,6 +423,15 @@ namespace CalamityMod
             TileType<AstralSandstone>(),
             TileType<CelestialRemains>(),
             // Sunken Sea
+            TileType<Limestone>(),
+            TileType<PolypSand>(),
+            TileType<VolcanicSand>(),
+            TileType<PinkPearlPile>(),
+            TileType<BlackPearlPile>(),
+            TileType<WhitePearlPile>(),
+            TileType<Shellstone>(),
+            TileType<Runestone>(),
+            TileType<RuneSand>(),
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
@@ -459,6 +486,17 @@ namespace CalamityMod
             TileType<Voidstone>(),
             TileType<PlantyMush>(),
             TileType<ScoriaOre>(),
+        });
+
+        /// <summary>
+        /// Makes the tile merge with all the tile types that generate within various types of floral paradise tiles.
+        /// </summary>
+        /// <param name="type">The tile whose merging properties will be set.</param>
+        public static void MergeWithFloralParadise(int type) => MergeWithSet(type, new int[] {
+            TileType<PeatMoss>(),
+            TileType<Peat>(),
+            TileType<AlgalSlate>(),
+            TileType<PerennialOre>(),
         });
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.FurniturePlagued;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -31,7 +32,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -43,7 +44,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = GetDrawColour(i, j, new Color(128, 128, 128, 128));
             Tile trackTile = Main.tile[i, j];
-            TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

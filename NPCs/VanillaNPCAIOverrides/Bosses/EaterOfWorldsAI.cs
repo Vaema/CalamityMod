@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             bool enrage = true;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
@@ -66,10 +66,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent body segments remaining
             float lifeRatio = MathHelper.Clamp(segmentCount / totalSegments, 0f, 1f);
 
-            // 10 seconds of resistance to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime)
-                calamityGlobalNPC.newAI[1] += 1f;
-
             // Phases
 
             // Cursed Flame phase
@@ -91,53 +87,83 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Vile spit
                 if (npc.type == NPCID.EaterofWorldsBody)
                 {
-                    int randomChanceLimit = (int)MathHelper.Lerp(masterMode ? 15f : 30f, 900f, lifeRatio);
-                    if (Main.getGoodWorld)
-                        randomChanceLimit = (int)(randomChanceLimit * 0.5f);
+                    if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                        npc.localAI[1] += 1f;
+                    else
+                        npc.localAI[1] -= 1f;
 
-                    if (Main.rand.NextBool(randomChanceLimit))
+                    int vileSpitGateValue = (int)MathHelper.Lerp(masterMode ? 45f : 90f, 900f, lifeRatio);
+                    if (Main.getGoodWorld)
+                        vileSpitGateValue = (int)(vileSpitGateValue * 0.5f);
+
+                    Vector2 vileSpitShootLocation = npc.Center + npc.velocity;
+                    if (npc.localAI[1] >= vileSpitGateValue)
                     {
-                        npc.TargetClosest();
-                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1) && Vector2.Distance(npc.Center, Main.player[npc.target].Center) > 320f)
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + npc.velocity.X), (int)(npc.Center.Y + npc.velocity.Y), NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                        
+                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)vileSpitShootLocation.X, (int)vileSpitShootLocation.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
+
+                        npc.localAI[1] = 0f;
+                    }
+
+                    if (npc.localAI[1] > vileSpitGateValue - 30f)
+                    {
+                        Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0.3f;
                     }
                 }
 
                 // Cursed flames (shadowflames in death mode)
                 else if (npc.type == NPCID.EaterofWorldsHead)
                 {
-                    if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                        calamityGlobalNPC.newAI[0] += ((npc.justHit && masterMode) ? 10f : 1f);
-
-                    float timer = enrageScale > 0f ? 120f : 180f;
-                    float shootBoost = lifeRatio * 120f;
-                    timer += shootBoost;
-
-                    if (enrageScale >= 2f)
-                        timer = 60f;
-
-                    if (calamityGlobalNPC.newAI[0] >= timer && phase2)
+                    if (phase2)
                     {
-                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1) &&
-                            (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(npc.velocity.ToRotation(), MathHelper.PiOver4) == npc.velocity.ToRotation() &&
-                            Vector2.Distance(npc.Center, Main.player[npc.target].Center) > 320f)
-                        {
-                            calamityGlobalNPC.newAI[0] = 0f;
-                            Vector2 cursedFlameDirection = npc.Center;
-                            float targetXDirection = Main.player[npc.target].Center.X - cursedFlameDirection.X;
-                            float targetYDirection = Main.player[npc.target].Center.Y - cursedFlameDirection.Y;
-                            float projSpeed = 7f + enrageScale * 2f;
-                            float flameTargetDistance = (float)Math.Sqrt(targetXDirection * targetXDirection + targetYDirection * targetYDirection);
-                            flameTargetDistance = projSpeed / flameTargetDistance;
-                            targetXDirection *= flameTargetDistance;
-                            targetYDirection *= flameTargetDistance;
-                            targetYDirection += npc.velocity.Y * 0.5f;
-                            targetXDirection += npc.velocity.X * 0.5f;
-                            cursedFlameDirection.X -= targetXDirection;
-                            cursedFlameDirection.Y -= targetYDirection;
+                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                            calamityGlobalNPC.newAI[0] += ((npc.justHit && masterMode && calamityGlobalNPC.newAI[0] < 30f) ? 10f : 1f);
+                        else
+                            calamityGlobalNPC.newAI[0] -= 1f;
 
-                            int type = (death && phase3) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                        float timer = enrageScale > 0f ? 60f : 90f;
+                        float shootBoost = lifeRatio * 60f;
+                        timer += shootBoost;
+
+                        if (enrageScale >= 2f)
+                            timer = 60f;
+
+                        if (calamityGlobalNPC.newAI[0] >= timer)
+                        {
+                            if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1) &&
+                                (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(npc.velocity.ToRotation(), MathHelper.PiOver4) == npc.velocity.ToRotation())
+                            {
+                                calamityGlobalNPC.newAI[0] = 0f;
+                                Vector2 cursedFlameDirection = npc.Center;
+                                float targetXDirection = Main.player[npc.target].Center.X - cursedFlameDirection.X;
+                                float targetYDirection = Main.player[npc.target].Center.Y - cursedFlameDirection.Y;
+                                float projSpeed = 7f + enrageScale * 2f;
+                                float flameTargetDistance = (float)Math.Sqrt(targetXDirection * targetXDirection + targetYDirection * targetYDirection);
+                                flameTargetDistance = projSpeed / flameTargetDistance;
+                                targetXDirection *= flameTargetDistance;
+                                targetYDirection *= flameTargetDistance;
+                                targetYDirection += npc.velocity.Y * 0.5f;
+                                targetXDirection += npc.velocity.X * 0.5f;
+                                cursedFlameDirection.X -= targetXDirection;
+                                cursedFlameDirection.Y -= targetYDirection;
+
+                                int type = (death && phase3) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                            }
+                        }
+
+                        if (calamityGlobalNPC.newAI[0] > timer - 30f)
+                        {
+                            Vector2 dustCenter = npc.Center + Main.rand.NextVector2CircularEdge(10f, 10f);
+                            int dustType = (death && phase3) ? DustID.Shadowflame : DustID.CursedTorch;
+                            Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, dustType, 0f, 0f, 0, default, 3f);
+                            dust.noGravity = true;
+                            dust.velocity *= 0f;
                         }
                     }
                 }
@@ -243,7 +269,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     CalamityGlobalNPC newCGN = npc.Calamity();
                     newCGN.newAI[1] = newAI1Holdover;
                     newCGN.debuffResistanceTimer = slowingDebuffResistTimer;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.netSpam = 0;
                     npc.alpha = 0;
@@ -264,7 +292,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.whoAmI = whoAmI;
                     npc.ai[1] = ai1Holdover;
                     npc.Calamity().debuffResistanceTimer = slowingDebuffResistTimer;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.netSpam = 0;
                     npc.alpha = 0;
@@ -666,6 +696,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // 10 seconds of resistance to prevent spawn killing
+            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+                calamityGlobalNPC.newAI[1] += 1f;
+
             // Calculate contact damage based on velocity
             // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
             float minimalContactDamageHeadVelocity = segmentVelocity * 0.25f;
@@ -750,39 +784,70 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int num8 = (int)(npc.Center.Y / 16f);
                     if (WorldGen.InWorld(num7, num8) && Main.tile[num7, num8].WallType == WallID.None)
                     {
-                        int num9 = Main.masterMode ? 600 : 900;
-                        if (Main.getGoodWorld)
-                            num9 /= 2;
+                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                            npc.localAI[1] += 1f;
+                        else
+                            npc.localAI[1] -= 1f;
 
-                        if (Main.rand.NextBool(num9))
+                        int vileSpitGateValue = Main.masterMode ? 600 : 900;
+                        if (Main.getGoodWorld)
+                            vileSpitGateValue = (int)(vileSpitGateValue * 0.5f);
+
+                        Vector2 vileSpitShootLocation = npc.Center + npc.velocity;
+                        if (npc.localAI[1] >= vileSpitGateValue)
                         {
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                            
                             if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                                NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + npc.velocity.X), (int)(npc.Center.Y + npc.velocity.Y), NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
+                                NPC.NewNPC(npc.GetSource_FromAI(), (int)vileSpitShootLocation.X, (int)vileSpitShootLocation.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
+
+                            npc.localAI[1] = 0f;
+                        }
+
+                        if (npc.localAI[1] > vileSpitGateValue - 30f)
+                        {
+                            Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
+                            Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
+                            dust.noGravity = true;
+                            dust.velocity *= 0.3f;
                         }
                     }
                 }
                 else if (npc.type == NPCID.EaterofWorldsHead)
                 {
-                    int num10 = Main.masterMode ? 15 : 90;
-                    num10 += (int)((float)npc.life / (float)npc.lifeMax * 300f);
-                    if (Main.rand.NextBool(num10))
+                    if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                        npc.localAI[1] += 1f;
+                    else
+                        npc.localAI[1] -= 1f;
+
+                    int vileSpitGateValue = Main.masterMode ? 45 : 90;
+                    vileSpitGateValue += (int)((float)npc.life / (float)npc.lifeMax * 300f);
+
+                    Vector2 vileSpitShootLocation = npc.Center + npc.velocity;
+                    if (npc.localAI[1] >= vileSpitGateValue)
                     {
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                        
                         if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + npc.velocity.X), (int)(npc.Center.Y + npc.velocity.Y), NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)vileSpitShootLocation.X, (int)vileSpitShootLocation.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 1f);
+
+                        npc.localAI[1] = 0f;
+                    }
+
+                    if (npc.localAI[1] > vileSpitGateValue - 30f)
+                    {
+                        Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
+                        dust.noGravity = true;
+                        dust.velocity *= 0.3f;
                     }
                 }
             }
 
-            // 10 seconds of resistance to prevent spawn killing
-            if (npc.Calamity().newAI[1] < DRIncreaseTime)
-                npc.Calamity().newAI[1] += 1f;
-
             npc.realLife = -1;
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if (Main.player[npc.target].dead)
                 npc.EncourageDespawn(300);
@@ -852,7 +917,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SetDefaultsKeepPlayerInteraction(npc.type);
                     npc.life = (int)((float)npc.lifeMax * num39);
                     npc.ai[0] = num40;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.whoAmI = num38;
                     npc.alpha = 0;
@@ -867,7 +934,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SetDefaultsKeepPlayerInteraction(npc.type);
                     npc.life = (int)((float)npc.lifeMax * num42);
                     npc.ai[1] = num43;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    
                     npc.netUpdate = true;
                     npc.whoAmI = num41;
                     npc.alpha = 0;
@@ -1177,6 +1246,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                 }
             }
+
+            // 10 seconds of resistance to prevent spawn killing
+            if (npc.Calamity().newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || npc.Calamity().newAI[1] > 0f))
+                npc.Calamity().newAI[1] += 1f;
 
             // Calculate contact damage based on velocity
             // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.

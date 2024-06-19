@@ -425,6 +425,17 @@ GuidelightofOblivion: {
 		'''
 }
 
+HarvestStaff: {
+	DisplayName: Harvest Staff
+	Tooltip:
+		'''
+		Grows a pumpkin patch that sprouts pumpkins nearby
+		Pumpkins will hop out when approached by nearby creatures or players
+		Once out, they will aggressively tackle enemies, exploding on hit
+		'No thoughts behind those eyes'
+		'''
+}
+
 HauntedScroll: {
 	DisplayName: Haunted Scroll
 	Tooltip: Summons a stack of haunted dishes to fight for you
@@ -437,7 +448,7 @@ HerringStaff: {
 
 HivePod: {
 	DisplayName: Hive Pod
-	Tooltip: Summons an astral hive to protect you
+	Tooltip: Summons an astraglomerate to protect you
 }
 
 IgneousExaltation: {
@@ -472,6 +483,16 @@ KingofConstellationsTenryu: {
 		'''
 }
 
+LiliesOfFinality: {
+	DisplayName: Lilies of Finality
+	Tooltip:
+		'''
+		Requires 2 minion slots to use
+		Can only be summoned once
+		'Wake up'
+		'''
+}
+
 Metastasis: {
 	DisplayName: Metastasis
 	Tooltip:
@@ -503,6 +524,17 @@ MirrorofKalandra: {
 		[c/EBC3A5:Wind Ripper unleashes a single high-speed, powerful arrow at enemies]
 		[c/9B6856:Hope Shredder shoots arrows that split into three and pierce enemies twice]
 		'Ultimate, Immeasurable, Indescribable'
+		'''
+}
+
+MutatedTruffle: {
+	DisplayName: Mutated Truffle
+	Tooltip:
+		'''
+		Summons a younger fishron to irradiate your foes
+		The fishron will cycle between charging, projectiles, and a typhoon
+		Requires 3 minion slots to be used
+		There can only be one minion
 		'''
 }
 
@@ -789,7 +821,7 @@ WulfrumController: {
 		Summons a wulfrum droid to fight for you
 		Hold right click while holding the remote to switch all of your drones into supercharge mode
 		Supercharged droids will stop attacking and focus wulfrum energy onto you
-		The beam provides extra regeneration and defense
+		Supercharged droids provide +0.5 HP/s life regen and 3 defense per droid
 		Can also be used to heal other players by keeping your mouse cursor close enough to them
 		'''
 }
@@ -800,37 +832,5 @@ YharonsKindleStaff: {
 		'''
 		Summons a fiery draconid to fight for you
 		Requires 5 minion slots to use
-		'''
-}
-
-MutatedTruffle: {
-	DisplayName: Mutated Truffle
-	Tooltip:
-		'''
-		Summons a younger fishron to irradiate your foes
-		The fishron will cycle between charging, projectiles, and a typhoon
-		Requires 3 minion slots to be used
-		There can only be one minion
-		'''
-}
-
-HarvestStaff: {
-	DisplayName: Harvest Staff
-	Tooltip:
-		'''
-		Grows a pumpkin patch that sprouts pumpkins nearby
-		Pumpkins will hop out when approached by nearby creatures or players
-		Once out, they will aggressively tackle enemies, exploding on hit
-		'No thoughts behind those eyes'
-		'''
-}
-
-LiliesOfFinality: {
-	DisplayName: Lilies of Finality
-	Tooltip:
-		'''
-		Requires 2 minion slots to use
-		Can only be summoned once
-		'Wake up'
 		'''
 }

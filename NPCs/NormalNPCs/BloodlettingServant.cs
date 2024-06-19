@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Gores;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
@@ -15,8 +16,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class BloodlettingServant : ModNPC
     {
-        public override string Texture => $"Terraria/Images/NPC_{NPCID.WanderingEye}";
-
         private const float ChargeGateValue = 180f;
         private const float ChargeTelegraphGateValue = 90f;
         private const float ChargeDuration = 60f;
@@ -24,7 +23,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 4;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
@@ -35,19 +34,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.GetNPCDamage();
-            NPC.width = 30;
-            NPC.height = 32;
+            NPC.width = 44;
+            NPC.height = 30;
             if (Main.tenthAnniversaryWorld)
                 NPC.scale *= 0.5f;
             if (Main.getGoodWorld)
                 NPC.scale *= 1.1f;
 
             NPC.defense = 5;
-
             NPC.lifeMax = 96;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -228,18 +223,28 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 1D;
-            if (NPC.frameCounter >= 8D)
-                NPC.frame.Y = frameHeight;
-            else
-                NPC.frame.Y = 0;
-
-            if (NPC.frameCounter >= 16D)
-            {
-                NPC.frame.Y = 0;
-                NPC.frameCounter = 0D;
-            }
             if (NPC.life < NPC.lifeMax * 0.5)
-                NPC.frame.Y += frameHeight * 2;
+            {
+                if (NPC.frame.Y < frameHeight * 3)
+                    NPC.frame.Y = frameHeight * 3;
+                if (NPC.frameCounter >= 8D)
+                {
+                    NPC.frameCounter = 0D;
+                    NPC.frame.Y += frameHeight;
+                    if (NPC.frame.Y > frameHeight * 5)
+                        NPC.frame.Y = frameHeight * 3;
+                }
+            }
+            else
+            {
+                if (NPC.frameCounter >= 8D)
+                {
+                    NPC.frameCounter = 0D;
+                    NPC.frame.Y += frameHeight;
+                    if (NPC.frame.Y > frameHeight * 2)
+                        NPC.frame.Y = 0;
+                }
+            }   
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -248,7 +253,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 Texture2D npcTexture = TextureAssets.Npc[NPC.type].Value;
                 Color originalColor = NPC.GetAlpha(drawColor);
-                Color newColor = new Color(255, 128, 128, 255 - NPC.alpha);
+                Color newColor = new Color(192, 0, 0, 255 - NPC.alpha);
                 Vector2 drawPosition = NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY);
                 Vector2 origin = NPC.frame.Size() / 2;
 
@@ -284,8 +289,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             return true;
         }
 
-        public override Color? GetAlpha(Color drawColor) => new Color(128, 0, 0, 255 - NPC.alpha);
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             if (NPC.life > 0)
@@ -296,6 +299,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.life < NPC.lifeMax * 0.5f && NPC.localAI[0] == 0f)
                 {
                     NPC.localAI[0] = 1f;
+                    Gore.NewGore(NPC.GetSource_FromThis(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("BloodlettingServant1").Type);
                     for (int i = 0; i < 50; i++)
                     {
                         int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 2f * hit.HitDirection, -2f);
@@ -313,6 +317,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                     Main.dust[dust].scale = Main.rand.NextFloat(1.6f, 2.4f);
                     Main.dust[dust].velocity *= Main.rand.NextFloat(1.6f, 2.4f);
                     Main.dust[dust].color = new Color(128, 0, 0, 255 - NPC.alpha);
+                }
+                for (int g = 2; g <= 4; g++)
+                {
+                    Vector2 goreVel = NPC.velocity.RotatedByRandom(MathHelper.Pi);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, goreVel, Mod.Find<ModGore>("BloodlettingServant" + g).Type);
                 }
             }
         }

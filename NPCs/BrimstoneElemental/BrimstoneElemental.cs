@@ -7,11 +7,9 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Items.Placeables.Pylons;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -22,6 +20,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -43,6 +42,12 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             Water = 4
         }
         public int currentMode = (int)Elemental.Brimstone;
+
+        public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/Teleport");
+        public static readonly SoundStyle HellfireballSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/Hellfireball", 3);
+        public static readonly SoundStyle DartSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/BrimstoneDartRing", 3);
+        public static readonly SoundStyle HideInShellSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/ShellTransform");
+        public static readonly SoundStyle ShellFireSound = new("CalamityMod/Sounds/Custom/BrimstoneElemental/ShellProjectiles", 3);
 
         public override void SetStaticDefaults()
         {
@@ -68,8 +73,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.value = Item.buyPrice(0, 40, 0, 0);
             NPC.LifeMaxNERB(41000, 49200, 780000);
             NPC.DR_NERD(0.15f);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -83,6 +86,9 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -235,6 +241,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Wizard }, DownedBossSystem.downedBrimstoneElemental);

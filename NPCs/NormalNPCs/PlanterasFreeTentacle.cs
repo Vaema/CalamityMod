@@ -36,11 +36,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 20;
-
             NPC.lifeMax = 500;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-
             NPC.knockBackResist = 0.4f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -69,7 +65,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                CalamityUtils.CalamityTargeting(NPC, default);
 
             // Emit light
             Lighting.AddLight(NPC.Center, 0.2f, 0.4f, 0.1f);

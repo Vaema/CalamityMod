@@ -9,15 +9,18 @@ using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.BrimstoneElemental;
+using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
+using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
+using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
@@ -165,12 +168,25 @@ namespace CalamityMod
             Tuple<GeneralImmunityStatus, int[]> plague = new(GeneralImmunityStatus.None, plagueEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> holy = new(GeneralImmunityStatus.None, holyEnemyImmunities);
 
-            // Is this sorted... like... at all??
+            // Please keep the bosses sorted based on boss progression.
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
-                { ModContent.NPCType<KingSlimeJewel>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewel2>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewel3>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewelRuby>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewelSapphire>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewelEmerald>(), immuneToEverything },
+
+                { ModContent.NPCType<HiveMind>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BrainRot>() }) },
+
+                { ModContent.NPCType<PerforatorHive>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorHeadSmall>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorBodySmall>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorTailSmall>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorHeadMedium>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorBodyMedium>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorTailMedium>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorHeadLarge>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorBodyLarge>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
+                { ModContent.NPCType<PerforatorTailLarge>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BurningBlood>() }) },
 
                 { NPCID.Deerclops, ice },
 
@@ -204,8 +220,6 @@ namespace CalamityMod
                 { NPCID.PlanterasTentacle, new(GeneralImmunityStatus.None, new int[] { BuffID.Venom }) },
                 { ModContent.NPCType<PlanterasFreeTentacle>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Venom }) },
 
-                { NPCID.HallowBoss, holy },
-
                 // She resists the cold because of her ice-related abilities.
                 { ModContent.NPCType<Anahita>(), ice },
                 { ModContent.NPCType<AnahitasIceShield>(), ice },
@@ -216,6 +230,8 @@ namespace CalamityMod
                 { ModContent.NPCType<PlaguebringerGoliath>(), plague },
                 { ModContent.NPCType<PlagueMine>(), plague },
                 { ModContent.NPCType<PlagueHomingMissile>(), plague },
+
+                { NPCID.HallowBoss, holy },
 
                 { ModContent.NPCType<RavagerHead2>(), immuneToEverything },
                 { ModContent.NPCType<FlamePillar>(), immuneToEverything },
@@ -234,6 +250,9 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianHealer>(), holy },
                 { ModContent.NPCType<ProfanedRocks>(), holy },
 
+                { ModContent.NPCType<Bumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<Bumblefuck2>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+
                 { ModContent.NPCType<Providence>(), holy },
                 { ModContent.NPCType<ProvSpawnOffense>(), holy },
                 { ModContent.NPCType<ProvSpawnDefense>(), holy },
@@ -242,9 +261,9 @@ namespace CalamityMod
                 { ModContent.NPCType<CeaselessVoid>(), immuneToEverything },
                 { ModContent.NPCType<DarkEnergy>(), immuneToEverything },
 
-                { ModContent.NPCType<StormWeaverHead>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
-                { ModContent.NPCType<StormWeaverBody>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
-                { ModContent.NPCType<StormWeaverTail>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
+                { ModContent.NPCType<StormWeaverHead>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
+                { ModContent.NPCType<StormWeaverBody>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
+                { ModContent.NPCType<StormWeaverTail>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
 
                 { ModContent.NPCType<Signus>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<WhisperingDeath>() }) },
                 { ModContent.NPCType<CosmicLantern>(), immuneToEverything },
@@ -374,8 +393,8 @@ namespace CalamityMod
                 { ModContent.NPCType<SightseerSpitter>(), astral },
                 { ModContent.NPCType<FusionFeeder>(), astral },
                 { ModContent.NPCType<Hadarian>(), astral },
-                { ModContent.NPCType<HiveEnemy>(), astral },
-                { ModContent.NPCType<Hiveling>(), astral },
+                { ModContent.NPCType<Astraglomerate>(), astral },
+                { ModContent.NPCType<Glomerling>(), astral },
                 { ModContent.NPCType<Mantis>(), astral },
                 { ModContent.NPCType<Nova>(), astral },
                 { ModContent.NPCType<SightseerCollider>(), astral },
@@ -402,7 +421,7 @@ namespace CalamityMod
                 { ModContent.NPCType<SeaUrchin>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },
 
-                { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified }) },
+                { ModContent.NPCType<ThiccWaifu>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Electrified, ModContent.BuffType<StaticDischarge>() }) },
 
                 { ModContent.NPCType<CrimulanBlightSlime>(), slime },
                 { ModContent.NPCType<EbonianBlightSlime>(), slime },

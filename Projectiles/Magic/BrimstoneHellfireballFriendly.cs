@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.BrimstoneElemental;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -63,19 +64,19 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+                SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
 
             // Speed up as time goes on
-            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * (Projectile.velocity.Length() + 1.2f);
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * (Projectile.velocity.Length() + 0.25f);
         }
 
         public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                int fire = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<HellfireExplosionFriendly>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int fire = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<HellfireExplosionFriendly>(), (int)(Projectile.damage * 0.66f), Projectile.knockBack, Projectile.owner);
             }
         }
 

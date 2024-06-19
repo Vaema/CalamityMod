@@ -50,7 +50,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.MiracleFruitText";
                     Color messageColor = Color.DeepSkyBlue;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);

@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 480;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 180);
-            target.AddBuff(BuffID.Frostburn, 180);
+            target.AddBuff(BuffID.Frostburn2, 180);
         }
     }
 }

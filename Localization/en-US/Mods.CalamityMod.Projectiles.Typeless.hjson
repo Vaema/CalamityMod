@@ -14,6 +14,7 @@ AstralSandBallFalling.DisplayName: Astral Sand
 AstralSandBallGun.DisplayName: Astral Sand
 AstralSpray.DisplayName: Astral Spray
 AstralStar.DisplayName: Star
+AuricLandMineExplosion.DisplayName: Auric Land Mine Explosion
 BallisticPoisonCloud.DisplayName: Ballistic Cloud
 BasicPlagueBee.DisplayName: Basic Plague Bee
 BlazingStarHeal.DisplayName: Blazing Star Heal
@@ -94,6 +95,7 @@ PauldronExplosion.DisplayName: Pauldron Explosion
 PendantProjectile1.DisplayName: Prism Shard
 PendantProjectile2.DisplayName: Prism Shard
 PendantProjectile3.DisplayName: Prism Shard
+PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks

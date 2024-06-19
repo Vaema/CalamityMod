@@ -165,9 +165,10 @@ namespace CalamityMod.Prefixes
             float stealthDamageValueMultiplier = 1f;
             float extraValue = 1f + stealthDamageValueMultiplier * extraStealthDamage;
             valueMult *= extraValue;
-        }        
+        }
 
         // Extra tooltip for new modifier stats
+        internal const string StealthTooltipID = "CalamityMod:PrefixStealthDamage";
         public LocalizedText StealthDamageTooltip => CalamityUtils.GetText($"{LocalizationCategory}.StealthDamageTooltip");
         public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
         {
@@ -175,7 +176,7 @@ namespace CalamityMod.Prefixes
             if (stealthDmgMult == 1f)
                 yield break;
 
-            yield return new TooltipLine(Mod, "PrefixStealthDamageBoost", StealthDamageTooltip.Format((stealthDmgMult >= 1f ? "+" : string.Empty) + ((stealthDmgMult * 100) - 100).ToString("N0")))
+            yield return new TooltipLine(Mod, StealthTooltipID, StealthDamageTooltip.Format((stealthDmgMult >= 1f ? "+" : string.Empty) + ((stealthDmgMult * 100) - 100).ToString("N0")))
             {
                 IsModifier = true,
                 IsModifierBad = stealthDmgMult < 1f

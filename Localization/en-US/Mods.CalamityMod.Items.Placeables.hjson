@@ -523,7 +523,6 @@ AltarOfTheAccursedItem: {
 		'''
 		Offer Ashes of Calamity at this altar to summon the Witch
 		Doing so will create a square arena of blocks, with the altar at its center
-		During the battle, heart pickups only heal for half as much
 		The Witch enrages while you are outside of the arena
 		{$CommonItemTooltip.SpecialCrafting}
 		'''
@@ -730,7 +729,9 @@ ResilientCandle: {
 	DisplayName: Resilient Candle
 	Tooltip:
 		'''
-		When placed, nearby players' defense blocks 10% more damage
+		<right> when placed to make defense block 10% more damage
+		(60% in Classic, 85% in Expert, and 110% in Master)
+		This cannot be stacked with other Cirrus Candle buffs
 		'Neither rain nor wind can snuff its undying flame'
 		'''
 }
@@ -749,8 +750,9 @@ SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
 		'''
-		When placed, nearby enemies take 5% more damage.
-		This extra damage bypasses enemy damage reduction and defense
+		<right> when placed to deal 1.07x damage to all enemies
+		The extra 0.07x damage bypasses enemy defense and damage reduction
+		This cannot be stacked with other Cirrus Candle buffs
 		'Its hateful glow flickers with ire'
 		'''
 }
@@ -974,8 +976,9 @@ VigorousCandle: {
 	DisplayName: Vigorous Candle
 	Tooltip:
 		'''
-		When placed, nearby players regenerate 0.4% of their maximum health per second
+		<right> when placed to regenerate 0.4% of your maximum health per second
 		This regeneration is at full power even while moving and bypasses Revengeance Mode caps
+		This cannot be stacked with other Cirrus Candle buffs
 		'Its brilliant light suffuses those nearby with hope'
 		'''
 }
@@ -984,7 +987,8 @@ WeightlessCandle: {
 	DisplayName: Weightless Candle
 	Tooltip:
 		'''
-		When placed, nearby players gain 5% increased movement speed, wing time and acceleration
+		<right> when placed to gain 10% increased movement speed, wing time and acceleration
+		This cannot be stacked with other Cirrus Candle buffs
 		'The floating flame seems to uplift your very spirit'
 		'''
 }
@@ -1415,6 +1419,11 @@ AuricConsole: {
 AuricDisplay: {
 	DisplayName: Auric Display
 	Tooltip: ""
+}
+
+AuricLandMine: {
+	DisplayName: Auric Land Mine
+	Tooltip: Explodes when stepped on...
 }
 
 AuricPanel: {
@@ -1899,6 +1908,121 @@ ExoToilet: {
 
 ExoWorkBench: {
 	DisplayName: Exo Work Bench
+	Tooltip: ""
+}
+
+MarniteChest: {
+	DisplayName: Marnite Chest
+	Tooltip: ""
+}
+
+MarniteDresser: {
+	DisplayName: Marnite Dresser
+	Tooltip: ""
+}
+
+MarniteBathtub: {
+	DisplayName: Marnite Bathtub
+	Tooltip: ""
+}
+
+MarniteBed: {
+	DisplayName: Marnite Bed
+	Tooltip: ""
+}
+
+MarniteBookcase: {
+	DisplayName: Marnite Bookcase
+	Tooltip: ""
+}
+
+MarniteCandelabra: {
+	DisplayName: Marnite Candelabra
+	Tooltip: ""
+}
+
+MarniteCandle: {
+	DisplayName: Marnite Candle
+	Tooltip: ""
+}
+
+MarniteChair: {
+	DisplayName: Marnite Chair
+	Tooltip: ""
+}
+
+MarniteChandelier: {
+	DisplayName: Marnite Chandelier
+	Tooltip: ""
+}
+
+MarniteClock: {
+	DisplayName: Marnite Clock
+	Tooltip: ""
+}
+
+MarniteDoor: {
+	DisplayName: Marnite Door
+	Tooltip: ""
+}
+
+MarniteLamp: {
+	DisplayName: Marnite Lamp
+	Tooltip: ""
+}
+
+MarniteLantern: {
+	DisplayName: Marnite Lantern
+	Tooltip: ""
+}
+
+MarniteLight: {
+	DisplayName: Marnite Light
+	Tooltip: ""
+}
+
+MarniteOrgan: {
+	DisplayName: Marnite Organ
+	Tooltip: ""
+}
+
+MarniteSink: {
+	DisplayName: Marnite Sink
+	Tooltip: ""
+}
+
+MarniteSofa: {
+	DisplayName: Marnite Sofa
+	Tooltip: ""
+}
+
+MarniteTable: {
+	DisplayName: Marnite Table
+	Tooltip: ""
+}
+
+MarniteToilet: {
+	DisplayName: Marnite Toilet
+	Tooltip: ""
+}
+
+MarniteWorkBench: {
+	DisplayName: Marnite Work Bench
+	Tooltip: ""
+}
+
+PolishedMarniteBlock: {
+	DisplayName: Polished Marnite Block
+	Tooltip: ""
+}
+
+PolishedMarnitePlatform: {
+	DisplayName: Polished Marnite Platform
+	Tooltip: ""
+}
+
+PolishedMarniteWall: {
+	DisplayName: Polished Marnite Wall
 	Tooltip: ""
 }
 
@@ -2981,8 +3105,48 @@ DraedonTalkMusicBox: {
 	Tooltip: Plays a variant of 'Signal Received' by CDMusic
 }
 
+Basalt: {
+	DisplayName: Basalt
+	Tooltip: ""
+}
+
+Driftwood: {
+	DisplayName: Driftwood
+	Tooltip: ""
+}
+
 Navystone: {
 	DisplayName: Navystone
+	Tooltip: ""
+}
+
+Shellstone: {
+	DisplayName: Shellstone
+	Tooltip: ""
+}
+
+PolishedNavystoneBrick: {
+	DisplayName: Polished Navystone Brick
+	Tooltip: ""
+}
+
+ShellstoneSlab: {
+	DisplayName: Shellstone Slab
+	Tooltip: ""
+}
+
+BlackPearlPile: {
+	DisplayName: Black Pearl Pile
+	Tooltip: ""
+}
+
+PinkPearlPile: {
+	DisplayName: Pink Pearl Pile
+	Tooltip: ""
+}
+
+WhitePearlPile: {
+	DisplayName: White Pearl Pile
 	Tooltip: ""
 }
 
@@ -3411,6 +3575,16 @@ ScoriaBrickWall: {
 	Tooltip: ""
 }
 
+ShellstoneSlabWall: {
+	DisplayName: Shellstone Slab Wall
+	Tooltip: ""
+}
+
+ShellstoneWall: {
+	DisplayName: Shellstone Wall
+	Tooltip: ""
+}
+
 SilvaWall: {
 	DisplayName: Silva Wall
 	Tooltip: ""
@@ -3577,4 +3751,79 @@ WaterTurret: {
 		Shoots high-speed water blasts at nearby enemies
 		Cannot attack while a boss is alive
 		'''
+}
+
+CyanCoral: {
+	DisplayName: Cyan Coral
+	Tooltip: ""
+}
+
+MagentaCoral: {
+	DisplayName: Magenta Coral
+	Tooltip: ""
+}
+
+OrangeCoral: {
+	DisplayName: Orange Coral
+	Tooltip: ""
+}
+
+LimeCoral: {
+	DisplayName: Lime Coral
+	Tooltip: ""
+}
+
+YellowCoral: {
+	DisplayName: Yellow Coral
+	Tooltip: ""
+}
+
+Runestone: {
+	DisplayName: Runestone
+	Tooltip: ""
+}
+
+RuneSand: {
+	DisplayName: Runesand
+	Tooltip: ""
+}
+
+Limestone: {
+	DisplayName: Limestone
+	Tooltip: ""
+}
+
+PolypSand: {
+	DisplayName: Polyp Sand
+	Tooltip: ""
+}
+
+VolcanicSand: {
+	DisplayName: Volcanic Sand
+	Tooltip: ""
+}
+
+DriftwoodWall: {
+	DisplayName: Driftwood Wall
+	Tooltip: ""
+}
+
+AlgalSlateItem: {
+	DisplayName: Algal Slate
+	Tooltip: ""
+}
+
+PeatItem: {
+	DisplayName: Peat
+	Tooltip: ""
+}
+
+PeatMossItem: {
+	DisplayName: Peat Moss
+	Tooltip: ""
+}
+
+ScintillatingBloom: {
+	DisplayName: Scintillating Bloom
+	Tooltip: ""
 }

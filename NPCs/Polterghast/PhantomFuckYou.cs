@@ -19,6 +19,7 @@ namespace CalamityMod.NPCs.Polterghast
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
         }
 
@@ -32,10 +33,8 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.DR_NERD(0.1f);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.lifeMax = 20000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;
@@ -57,9 +56,6 @@ namespace CalamityMod.NPCs.Polterghast
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (start)
             {
                 start = false;

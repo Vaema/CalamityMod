@@ -28,7 +28,8 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.healMana = 100;
             Item.consumable = true;
             Item.potion = true;
-            Item.value = Item.buyPrice(0, 0, 20, 0);
+            // Cirrus overcharges: 10% sell value instead of 20%
+            Item.value = Item.sellPrice(silver: 3);
         }
 
         public override void OnConsumeItem(Player player)

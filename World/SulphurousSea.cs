@@ -211,9 +211,10 @@ namespace CalamityMod.World
 
         public static void SulphurSeaGenerationAfterAbyss()
         {
-            CreateBeachNearSea();
+            CreateBeach();
             ClearOutStrayTiles();
             ClearAloneTiles();
+            //PlaceSulphurReef();
             var scrapPilePositions = PlaceScrapPiles();
             GenerateColumnsInCaverns();
             GenerateHardenedSandstone();
@@ -670,7 +671,149 @@ namespace CalamityMod.World
             }
         }
 
-        public static void CreateBeachNearSea()
+        /*
+        public static void PlaceSulphurReef()
+        {
+            int beachWidth = WorldGen.genRand.Next(150, 190 + 1);
+            int x = GetActualX(BiomeWidth - 10);
+            float xRatio = Utils.GetLerpValue(BiomeWidth - 10, BiomeWidth + beachWidth, x, true);
+            int depth = (int)(Math.Sin((1f - xRatio) * MathHelper.PiOver2) * BeachMaxDepth + 1f);
+
+            int cavePerlinSeed = WorldGen.genRand.Next();
+            int cavePerlinSeedWalls = WorldGen.genRand.Next();
+
+            Point origin = new Point(x + (x < Main.maxTilesX / 2 ? -35 : 35), YStart + depth + 80);
+            Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
+
+            float angle = MathHelper.Pi * 0.15f;
+            float otherAngle = MathHelper.PiOver2 - angle;
+
+            int size = 80 + (Main.maxTilesX / 180);
+            float actualSize = size * 16f;
+            float constant = actualSize * 2f / (float)Math.Sin(angle);
+
+            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            int verticalRadius = (int)(constant / 16f);
+
+            Vector2 fociOffset = Vector2.UnitY * fociSpacing;
+            Vector2 topFoci = center - fociOffset;
+            Vector2 bottomFoci = center + fociOffset;
+
+            //first, place a basalt barrier around where the biome will be
+            for (int X = origin.X - size - 3; X <= origin.X + size + 3; X++)
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                {
+                    if (CheckReefsCircle(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist))
+                    {
+                        float percent = dist / constant;
+                        float blurPercent = 0.98f;
+
+                        if (percent > blurPercent)
+                        {
+
+                        }
+                        else
+                        {
+                            //clear absolutely everything before generating the caverns
+                            Main.tile[X, Y].ClearEverything();
+
+                            //generate perlin noise caves
+                            float horizontalOffsetNoise = CalamityUtils.PerlinNoise2D(X / 20f, Y / 20f, 5, unchecked(cavePerlinSeed + 1)) * 0.01f;
+                            float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 350f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
+                            float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 350f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
+                            float caveNoiseMap = (cavePerlinValue + cavePerlinValue2) * 0.5f;
+                            float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.235f;
+
+                            //kill or place tiles depending on the noise map
+                            if (caveNoiseMap * caveNoiseMap > caveCreationThreshold)
+                            {
+                                WorldGen.KillTile(X, Y);
+                            }
+                            else
+                            {
+                                WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<HardenedSulphurousSandstone>());
+                            }
+
+                            Main.tile[X, Y].WallType = (ushort)ModContent.WallType<HardenedSulphurousSandstoneWall>();
+                            WorldGen.PlaceWall(X, Y, ModContent.WallType<HardenedSulphurousSandstoneWall>());
+
+                            Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
+                            Main.tile[X, Y].LiquidAmount = byte.MaxValue;
+                        }
+                    }
+                }
+            }
+
+            //place sand
+            for (int X = origin.X - size - 3; X <= origin.X + size + 3; X++)
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                {
+                    if (CheckReefsCircle(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist))
+                    {   
+                        bool canPlaceSand = false;
+
+                        //place sand clumps on top of exposed navystone
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedSulphurousSandstone>() && !Main.tile[X, Y - 1].HasTile)
+                        {
+                            canPlaceSand = true;
+                        }
+
+                        if (canPlaceSand)
+                        {
+                            SunkenSea.PlaceSand(X, Y, 3, ModContent.TileType<Tiles.SunkenSea.VolcanicSand>());
+                        }
+                    }
+                }
+            }
+
+            //cleanup
+            for (int X = origin.X - size - 3; X <= origin.X + size + 3; X++)
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                {
+                    if (CheckReefsCircle(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist))
+                    {
+                        //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
+                        bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
+                        bool OnlyLeft = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X + 1, Y].HasTile;
+                        bool OnlyDown = !Main.tile[X, Y - 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile;
+                        bool OnlyUp = !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile;
+
+                        if (OnlyRight || OnlyLeft || OnlyDown || OnlyUp)
+                        {
+                            WorldGen.KillTile(X, Y);
+                        }
+
+                        //kill random single floating tiles
+                        if (!Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
+                        {
+                            WorldGen.KillTile(X, Y);
+                        }
+
+                        Tile.SmoothSlope(X, Y);
+                    }
+                }
+            }
+        }
+
+        public static bool CheckReefsCircle(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance)
+        {
+            Vector2 point = tile.ToWorldCoordinates();
+
+            float distY = center.Y - point.Y;
+            point.Y -= distY * 3f;
+
+            float distance1 = Vector2.Distance(point, focus1);
+            float distance2 = Vector2.Distance(point, focus2);
+            distance = distance1 + distance2;
+
+            return distance <= distanceConstant;
+        }
+        */
+
+        public static void CreateBeach()
         {
             int beachWidth = WorldGen.genRand.Next(150, 190 + 1);
             var searchCondition = Searches.Chain(new Searches.Down(3000), new Conditions.IsSolid());

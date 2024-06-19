@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Magic
     public class Ancient2 : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override string Texture => "CalamityMod/Projectiles/Magic/Ancient";
+        public override string Texture => "CalamityMod/Projectiles/Magic/PrimordialAncientProjectile";
 
         public override void SetStaticDefaults()
         {

@@ -1,6 +1,6 @@
-﻿using System;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,9 +8,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class ShieldoftheHighRuler : ModItem, ILocalizedModType
+    public class ShieldoftheHighRuler : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public bool HasFlavorTooltip => true;
+        public Color? TooltipExtensionColor => new(195, 223, 255);
+
         public const int ShieldSlamIFrames = 12;
         public const float EoCDashVelocity = 14.5f;
         public const float TabiDashVelocity = 18.9f;

@@ -2,17 +2,21 @@
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -21,9 +25,6 @@ namespace CalamityMod.CalPlayer
         #region Update Bad Life Regen
         public override void UpdateBadLifeRegen()
         {
-            if (Player.ownedProjectileCounts[ModContent.ProjectileType<BloodBoilerFire>()] > 0)
-                noLifeRegen = true;
-
             // Universal +25% increase to DoT debuff damage in Death Mode
             float deathNegativeRegenBonus = 0.25f;
             float calamityDebuffMultiplier = 1f + (CalamityWorld.death ? deathNegativeRegenBonus : 0f);
@@ -98,24 +99,32 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
             ApplyDoTDebuff(bBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
-            ApplyDoTDebuff(elementalMix, 50, purity);
+            ApplyDoTDebuff(laceration, 12, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
+            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
             ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
             ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
-            ApplyDoTDebuff(pFlames, 30, purity);
+            ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
+            ApplyDoTDebuff(elementalMix, 50, purity);
+            ApplyDoTDebuff(banishingFire, 60);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
-            ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
+            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(vermillionFlux, fluxDoT);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 60) / (dynamoStemCells ? 2 : 1);
+            ApplyDoTDebuff(dragonFire, dragonfireDoT);
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(auricRebuke, rebukeDoT);
             ApplyDoTDebuff(miracleBlight, 80);
-            ApplyDoTDebuff(banishingFire, 60);
 
-            // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player starts taking damage over time.
+            // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;
             if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
             {
@@ -134,7 +143,7 @@ namespace CalamityMod.CalPlayer
             }
 
             bool ASPoisoning = ASPoisonLevel > 0f;
-            if (ASPoisoning || ((ZoneSulphur || Player.Calamity().ZoneAbyssLayer1) && !Player.creativeGodMode && Player.IsUnderwater() && !decayEffigy && !abyssalDivingSuit && !Player.lavaWet && !Player.honeyWet && !nearSafeZone))
+            if (ASPoisoning || ((ZoneSulphur || ZoneAbyssLayer1) && !Player.creativeGodMode && Player.IsUnderwater() && !decayEffigy && !abyssalDivingSuit && !Player.lavaWet && !Player.honeyWet && !nearSafeZone))
             {
                 float increment = 1f / SulphSeaWaterSafetyTime;
                 //No way to mitigate AS Poisoning
@@ -144,6 +153,8 @@ namespace CalamityMod.CalPlayer
                     increment *= 0.5f;
                 if (sulphurSet && !ASPoisoning)
                     increment *= 0.5f;
+                if (ZoneAbyssLayer1 && !ASPoisoning)
+                    increment *= 0.33f;
 
                 SulphWaterPoisoningLevel = MathHelper.Clamp(SulphWaterPoisoningLevel + increment, 0f, 1f);
                 if (SulphWaterPoisoningLevel >= 1f)
@@ -422,8 +433,8 @@ namespace CalamityMod.CalPlayer
             if (rOoze || aAmpoule || purity)
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / Player.statLifeMax2;
-                //Ambrosial Ampule and ooze give between 2 and 6 hp/s, Purity gives between 3 and 7 hp/s
-                float lifeRegenToGive = MathHelper.Lerp(purity ? 6f : 4f, purity ? 14f : 12f, missingLifeRatio);
+                //Ambrosial Ampule and ooze give between 2 and 6 hp/s
+                float lifeRegenToGive = MathHelper.Lerp(4f, 12f, missingLifeRatio);
                 Player.lifeRegen += (int)lifeRegenToGive;
             }
 
@@ -585,13 +596,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
-            // TODO -- Why is this here?
-            if (weakPetrification)
-            {
-                if (Player.mount.Active)
-                    Player.mount.Dismount(Player);
-            }
             #endregion
 
             // Chalice of the Blood God bleedout
@@ -742,7 +746,7 @@ namespace CalamityMod.CalPlayer
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)
-                pinkCandleHealFraction += Player.statLifeMax2 * 0.004 / 60;
+                pinkCandleHealFraction += Player.statLifeMax2 * CirrusPinkCandleBuff.PercentHealthPerSecond / 60;
 
                 if (pinkCandleHealFraction >= 1D)
                 {
@@ -883,6 +887,26 @@ namespace CalamityMod.CalPlayer
                         // Set the player's life regen to the scaled amount.
                         Player.lifeRegen = baseLifeRegenBoost + defLifeRegen;
                     }
+                }
+            }
+
+            if (toxicHeart) // Since it needs to know your life regen, it must be placed here
+            {
+                int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(200);
+                auraDamage = Player.ApplyArmorAccDamageBonusesTo(auraDamage);
+                var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ToxicHeart>()));
+                pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
+                if (pulseCounter >= 420)
+                {
+                    Projectile.NewProjectileDirect(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
+                    pulseCounter = 0;
+                    float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
+                    SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
+                    SoundEngine.PlaySound(heartbeat with { Volume = soundVolume, PitchVariance = 0.2f }, Player.Center);
+                }
+                else
+                {
+                    pulseCounter += MathHelper.Clamp(pulseRate, 1, 20);
                 }
             }
         }

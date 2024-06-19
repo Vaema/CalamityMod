@@ -52,6 +52,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -69,15 +70,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
             NPC.defense = 80;
             NPC.DR_NERD(SupremeCataclysm.NormalBrothersDR);
             NPC.lifeMax = 138000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -88,6 +87,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.localAI[1] = 500;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -145,9 +147,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 MovingUp = (NPC.ai[0] == 1 ? true : false);
                 setMovement = false;
             }
-
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
 
             NPC.direction = NPC.spriteDirection;
 

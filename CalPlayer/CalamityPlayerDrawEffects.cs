@@ -223,6 +223,15 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.cDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
+            if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
+                VermillionFlux.DrawEffects(drawInfo);
+
+            if (calamityPlayer.auricRebuke && drawInfo.shadow == 0f)
+                AuricRebuke.DrawEffects(drawInfo);
+
+            if (calamityPlayer.staticDischarge && drawInfo.shadow == 0f)
+                StaticDischarge.DrawEffects(drawInfo);
+
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
 
@@ -327,6 +336,24 @@ namespace CalamityMod.CalPlayer
                 {
                     Particle Plus = new HealingPlus(Player.Center - new Vector2(4, 0), Main.rand.NextFloat(0.4f, 0.8f), new Vector2(0, Main.rand.NextFloat(-2f, -3.5f)) + Player.velocity, Color.Red, Color.DarkRed, Main.rand.Next(10, 15));
                     GeneralParticleHandler.SpawnParticle(Plus);
+                }
+            }
+
+            // Prideful Hunter's Planar Ripper movement speed boost
+            if (calamityPlayer.planarSpeedBoost > 0 && drawInfo.shadow == 0f)
+            {
+                int spawnChance = (int)(13 - (calamityPlayer.planarSpeedBoost / 2));
+                if (Main.rand.NextBool(spawnChance))
+                {
+                    Vector2 sparkVelocity = -(Vector2.UnitY * Main.rand.NextFloat(2.5f, 5f)).RotatedByRandom(MathHelper.Pi / 10);
+                    Vector2 sparkPos = new Vector2(Player.position.X + Main.rand.NextFloat(-8f, 40f), Player.position.Y + Main.rand.NextFloat(-8f, 56f));
+                    Particle movementSpark = new AltLineParticle(sparkPos, sparkVelocity, false, 20, Main.rand.NextFloat(0.375f, 0.5f), new Color(130, 255, 255));
+                    GeneralParticleHandler.SpawnParticle(movementSpark);
+
+                    sparkVelocity = -(Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f)).RotatedByRandom(MathHelper.Pi / 6);
+                    sparkPos = new Vector2(Player.position.X + Main.rand.NextFloat(-8f, 40f), Player.position.Y + Main.rand.NextFloat(-8f, 56f));
+                    Particle addSparks = new CustomPulse(sparkPos, sparkVelocity, new Color(180, 255, 255), "CalamityMod/Particles/ElectricSpark", Vector2.One, 0f, 0.5f, 0.65f, 20);
+                    GeneralParticleHandler.SpawnParticle(addSparks);
                 }
             }
 

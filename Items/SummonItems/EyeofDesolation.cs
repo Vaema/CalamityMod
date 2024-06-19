@@ -26,7 +26,7 @@ namespace CalamityMod.Items.SummonItems
         public int spawnYAdd = 0;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 10; // Pirate Map
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Pirate Map (1 above Mechanical Skull)
         }
 
         public override void SetDefaults()
@@ -107,7 +107,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.HellstoneBar, 10).
                 // waffles% stipulation: you can only get 5 essences of havoc from the music box, not 7, and cal clone must be accessible
                 AddIngredient<EssenceofHavoc>(5).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

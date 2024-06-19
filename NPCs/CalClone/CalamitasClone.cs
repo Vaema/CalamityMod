@@ -21,6 +21,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -35,6 +36,11 @@ namespace CalamityMod.NPCs.CalClone
     public class CalamitasClone : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
+
+        public static readonly SoundStyle BulletHellWarning = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnding");
+        public static readonly SoundStyle BulletHellEnd = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnd");
+        public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
+        public SlotId BulletHellWarnSlot;
 
         public override void SetStaticDefaults()
         {
@@ -70,8 +76,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.value = Item.buyPrice(0, 50, 0, 0);
             NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.075f : 0.15f);
             NPC.LifeMaxNERB(37500, 45000, 520000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -83,6 +87,9 @@ namespace CalamityMod.NPCs.CalClone
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -127,7 +134,7 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void AI()
         {
-            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod);
+            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod, BulletHellWarnSlot);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -236,6 +243,10 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedCalamitasClone);

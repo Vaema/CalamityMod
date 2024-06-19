@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("SpiritGenerator")]
-    public class SpiritGlyph : ModItem, ILocalizedModType
+    public class SpiritGlyph : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()

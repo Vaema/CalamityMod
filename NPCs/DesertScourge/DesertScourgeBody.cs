@@ -50,9 +50,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.LifeMaxNERB(4200, 5000, 1650000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -61,8 +58,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = DesertScourgeHead.HitSound;
+            NPC.DeathSound = DesertScourgeHead.DeathSound;
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
@@ -72,6 +69,9 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;

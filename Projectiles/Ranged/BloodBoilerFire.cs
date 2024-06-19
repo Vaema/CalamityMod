@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         if (!Main.player[Projectile.owner].moonLeech)
                         {
-                            int bonusHeal = Main.rand.NextBool(3) ? 6 : 4;
+                            int bonusHeal = Main.rand.NextBool(3) ? 5 : 3;
                             int heal = improvedHeal ? bonusHeal : 2;
 
                             if (Main.player[Main.myPlayer].lifeSteal <= 0f)
@@ -210,7 +210,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 600);
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 360);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 360);
             improvedHeal = true;
         }
 

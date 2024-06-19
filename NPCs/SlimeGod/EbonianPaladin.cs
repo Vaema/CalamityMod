@@ -32,8 +32,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.scale = 1.1f;
             NPC.defense = 10;
             NPC.LifeMaxNERB(8000, 9600, 220000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -45,6 +43,9 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)

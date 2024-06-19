@@ -102,9 +102,6 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = DeathSound;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -128,6 +125,9 @@ namespace CalamityMod.NPCs.StormWeaver
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -965,6 +965,10 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
             DownedBossSystem.downedStormWeaver = true;
             CalamityNetcode.SyncWorld();
@@ -1009,7 +1013,7 @@ namespace CalamityMod.NPCs.StormWeaver
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
                 GFBOnly.Add(ModContent.ItemType<ElementalGauntlet>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<ElementalQuiver>(), hideLootReport: true);
+                GFBOnly.Add(ModContent.ItemType<PlanebreakersPouch>(), hideLootReport: true);
             }
 
             // Lore

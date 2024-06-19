@@ -59,7 +59,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
         private const int OpenMouthStopFrame = 4;
 
-        public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/DesertScourgeRoar");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/DesertScourgeHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/DesertScourgeDeath");
+        public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeRoar");
+        public static readonly SoundStyle SandBlastSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeSandBlast");
 
         public override void SetStaticDefaults()
         {
@@ -92,9 +95,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.LifeMaxNERB(4200, 5000, 1650000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -104,8 +104,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
 
             if (Main.getGoodWorld)
@@ -117,6 +117,9 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -257,47 +260,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 speed *= 1.1f;
                 turnSpeed *= 1.2f;
             }
-
-            // Projectile spit (unused, for now)
-            /*if ((phase2 || death) && revenge && NPC.Distance(Main.player[NPC.target].Center) > 400f && (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
-            {
-                if (NPC.Calamity().newAI[0] % (death ? SpitGateValue_Death : SpitGateValue) == 0f)
-                {
-                    SoundEngine.PlaySound(SoundID.NPCDeath11, NPC.Center);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * (masterMode ? 10f : 8f);
-                        int numProj = death ? 9 : 6;
-                        int spread = masterMode ? 49 : 35;
-                        if (masterMode)
-                        {
-                            numProj += 3;
-                            spread += 14;
-                        }
-
-                        float rotation = MathHelper.ToRadians(spread);
-                        int type = ModContent.ProjectileType<DesertScourgeSpit>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        for (int i = 0; i < numProj; i++)
-                        {
-                            Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-
-                            for (int k = 0; k < 10; k++)
-                            {
-                                int dust = Dust.NewDust(NPC.Center + Vector2.Normalize(perturbedSpeed) * 5f, 10, 10, (int)CalamityDusts.SulphurousSeaAcid);
-                                Main.dust[dust].velocity = perturbedSpeed;
-                            }
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[proj].aiStyle = -1;
-                                Main.projectile[proj].netUpdate = true;
-                            }
-                        }
-                    }
-                }
-            }*/
 
             // Sand splash
             if (!quickFall)
@@ -591,7 +553,7 @@ namespace CalamityMod.NPCs.DesertScourge
             float targetDistance = (float)Math.Sqrt((double)(playerX * playerX + targettingPosition * targettingPosition));
 
             // Lunge up towards target
-            if (burrow && NPC.Center.Y >= burrowTarget - 16f)
+            if (burrow && NPC.Center.Y >= burrowTarget - 16f && !lungeUpward && !quickFall)
             {
                 NPC.Calamity().newAI[1] = 1f;
                 NPC.localAI[3] = 0f;
@@ -603,10 +565,10 @@ namespace CalamityMod.NPCs.DesertScourge
             }
 
             // Quickly fall back down once above target
-            if (lungeUpward && NPC.Center.Y <= NPC.Calamity().newAI[3] + LungeUpwardDistanceOffset - LungeUpwardCutoffDistance && Math.Abs(NPC.Center.X - player.Center.X) < 480f)
+            if (lungeUpward && NPC.Center.Y <= NPC.Calamity().newAI[3] + LungeUpwardDistanceOffset - LungeUpwardCutoffDistance && Math.Abs(NPC.Center.X - player.Center.X) < 480f && !quickFall)
             {
                 // Spit a huge spread of sand upwards that falls down
-                SoundEngine.PlaySound(SoundID.NPCDeath13, NPC.Center);
+                SoundEngine.PlaySound(SandBlastSound, NPC.Center);
                 float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 16f : bossRush ? 10f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
                 int type = ModContent.ProjectileType<DesertScourgeSpit>();
                 int damage = NPC.GetProjectileDamage(type);
@@ -656,7 +618,9 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 NPC.Calamity().newAI[0] = 0f;
                 NPC.Calamity().newAI[1] = 0f;
+                NPC.Calamity().newAI[3] = 0f;
                 NPC.localAI[3] = 0f;
+                playRoarSound = false;
             }
 
             if (hide && !player.dead)
@@ -960,6 +924,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If Desert Scourge has not been killed yet, notify players that the Sunken Sea is open and Sandstorms can happen.

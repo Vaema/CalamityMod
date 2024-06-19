@@ -5,6 +5,7 @@ using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,9 +13,12 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class AsgardianAegis : ModItem, ILocalizedModType
+    public class AsgardianAegis : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public Color? TooltipExtensionColor => new(195, 223, 255);
+
         public const int ShieldSlamDamage = 1000;
         public const float ShieldSlamKnockback = 15f;
         public const int ShieldSlamIFrames = 12;

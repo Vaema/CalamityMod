@@ -10,11 +10,17 @@ namespace CalamityMod.Buffs.Placeables
 
         public override void SetStaticDefaults()
         {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.debuff[Type] = true;
+            // These settings are standard for a "opt-in eternal" buff, which has the following properties:
+            // - Is not removed on death
+            // - Saves with the player / is not removed on logout
+            // - Does not display its time
+            // - Never reduces its duration
+            // - Can be manually canceled
             Main.pvpBuff[Type] = true;
+            Main.persistentBuff[Type] = true;
             Main.buffNoSave[Type] = false;
-            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
+            Main.buffNoTimeDisplay[Type] = true;
+            BuffID.Sets.TimeLeftDoesNotDecrease[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
