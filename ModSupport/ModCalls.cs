@@ -1053,6 +1053,19 @@ namespace CalamityMod
         }
         #endregion
 
+        #region Adding minions to boss hp scaling config
+        //This is to add minions to the hp scaling config
+        public static bool AddToHPScaling(int type)
+        {
+            if (!CalamityLists.bossHPScaleList.Contains(type))
+            {
+                CalamityLists.bossHPScaleList.Add(type);
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
         #region Call
 
         public static object Call(params object[] args)
@@ -2216,6 +2229,16 @@ namespace CalamityMod
 
                         AndroombaFriendly.customConversionTypes.Add((itemID, texturePath, NPCaction));
                         return null;
+                    }
+                case "AddMinibossToHPScalingConfig":
+                case "AddMinionToHPScalingConfig":
+                case "AddToBossHPScalingConfig":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify an NPC id/type as an int or short ID. Example: NPCType<SomeBossMinion>()");
+                        if (!castID(args[1], out int npcType6))
+                            return new ArgumentException("ERROR: The first argument to \"AddToBossHPScalingConfig\" must be an int or short ID.");
+                        return AddToHPScaling(npcType6);
                     }
                 default:
                     return new ArgumentException("ERROR: Invalid method name.");

@@ -116,8 +116,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.defense = 90;
             NPC.DR_NERD(0.2f);
             NPC.LifeMaxNERB(350000, 420000, 325000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

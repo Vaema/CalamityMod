@@ -48,6 +48,7 @@ using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.Polterghast;
+using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.Ravager;
@@ -1135,9 +1136,75 @@ namespace CalamityMod
                 NPCID.GolemHeadFree,
                 NPCID.GolemFistRight,
                 NPCID.GolemFistLeft,
+                NPCID.Sharkron,
+                NPCID.Sharkron2,
                 NPCID.MoonLordHead,
-                NPCID.MoonLordHand
+                NPCID.MoonLordHand,
+                NPCType<DarkEnergy>(),
+                NPCType<BrimstoneHeart>(),
+                NPCType<SoulSeeker>(),
+                NPCType<SoulSeekerSupreme>(),
+                NPCType<Cataclysm>(),
+                NPCType<SupremeCataclysm>(),
+                NPCType<Catastrophe>(),
+                NPCType<SupremeCatastrophe>(),
+                NPCType<SepulcherHead>(),
+                NPCType<SepulcherBody>(),
+                NPCType<SepulcherTail>(),
+                NPCType<SepulcherArm>(),
+                NPCType<SepulcherBodyEnergyBall>(),
+                NPCType<PrimordialWyrmBody>(),
+                NPCType<PrimordialWyrmBodyAlt>(),
+                NPCType<PrimordialWyrmHead>(),
+                NPCType<PrimordialWyrmTail>(),
+                NPCType<AquaticAberration>(),
+                NPCType<AnahitasIceShield>(),
+                NPCType<CryogenShield>(),
+                NPCType<OldDukeToothBall>(),
+                NPCType<SulphurousSharkron>(),
+                NPCType<Bumblefuck2>(),
+                NPCType<AureusSpawn>(),
+                NPCType<Brimling>(),
+                NPCType<CrabShroom>(),
+                NPCType<CosmicGuardianBody>(),
+                NPCType<CosmicGuardianTail>(),
+                NPCType<CosmicGuardianHead>(),
+                NPCType<DankCreeper>(),
+                NPCType<HiveBlob>(),
+                NPCType<HiveBlob2>(),
+                NPCType<DarkHeart>(),
+                NPCType<DesertNuisanceBody>(),
+                NPCType<DesertNuisanceHead>(),
+                NPCType<DesertNuisanceTail>(),
+                NPCType<DesertNuisanceBodyYoung>(),
+                NPCType<DesertNuisanceHeadYoung>(),
+                NPCType<DesertNuisanceTailYoung>(),
+                NPCType<PolterPhantom>(),
+                NPCType<PhantomFuckYou>(),
+                NPCType<BloodlettingServant>(),
+                NPCType<KingSlimeJewelEmerald>(),
+                NPCType<KingSlimeJewelRuby>(),
+                NPCType<KingSlimeJewelSapphire>(),
+                NPCType<PlanterasFreeTentacle>(),
+                NPCType<SkeletronPrime2>(),
+                NPCType<PlagueHomingMissile>(),
+                NPCType<PlagueMine>(),
+                NPCType<ProfanedRocks>(),
+                NPCType<ProvSpawnDefense>(),
+                NPCType<ProvSpawnOffense>(),
+                NPCType<ProvSpawnHealer>(),
+                NPCType<RockPillar>(),
+                NPCType<FlamePillar>(),
+                NPCType<CosmicMine>(),
+                NPCType<CosmicLantern>(),
+                NPCType<ProfanedGuardianDefender>(),
+                NPCType<ProfanedGuardianHealer>(),
+                NPCType<CorruptSlimeSpawn>(),
+                NPCType<CorruptSlimeSpawn2>(),
+                NPCType<CrimsonSlimeSpawn>(),
+                NPCType<CrimsonSlimeSpawn2>(),
             };
+            //Many more are added later with AddRange
 
             friendlyBeeList = new List<int>()
             {
@@ -2024,6 +2091,7 @@ namespace CalamityMod
                 NPCType<PerforatorBodySmall>(),
                 NPCType<PerforatorTailSmall>()
             };
+            bossHPScaleList.AddRange(PerforatorIDs);
 
             DesertScourgeIDs = new List<int>
             {
@@ -2047,6 +2115,7 @@ namespace CalamityMod
                 NPCType<SplitCrimulanPaladin>(),
                 NPCType<SlimeGodCore>()
             };
+            bossHPScaleList.AddRange(SlimeGodIDs);
 
             DeathModeSplittingWormIDs = new List<int>
             {
@@ -2112,6 +2181,7 @@ namespace CalamityMod
                 NPCType<RavagerLegRight>(),
                 NPCType<RavagerHead>()
             };
+            bossHPScaleList.AddRange(RavagerIDs);
 
             GolemIDs = new List<int>
             {

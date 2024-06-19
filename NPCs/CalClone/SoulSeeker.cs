@@ -48,8 +48,6 @@ namespace CalamityMod.NPCs.CalClone
             {
                 NPC.lifeMax = 15000;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToHeat = false;

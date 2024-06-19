@@ -103,8 +103,6 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.value = Item.buyPrice(0, 60, 0, 0);
             NPC.boss = true;
             NPC.DeathSound = DeathSound;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };

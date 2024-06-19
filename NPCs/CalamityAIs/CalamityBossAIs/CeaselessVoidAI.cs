@@ -390,8 +390,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 // Destroy all Dark Energies if their total HP is below 20%
                 int darkEnergyMaxHP = bossRush ? DarkEnergy.MaxBossRushHP : DarkEnergy.MaxHP;
+                //These are still needed so that CV Dark energy despawn works properly
                 double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
                 darkEnergyMaxHP += (int)(darkEnergyMaxHP * HPBoost);
+
                 int totalDarkEnergiesSpawned = darkEnergyAmt * 3 + 2;
                 int totalDarkEnergyMaxHP = darkEnergyMaxHP * totalDarkEnergiesSpawned;
                 int succPhaseGateValue = (int)(totalDarkEnergyMaxHP * 0.2);
