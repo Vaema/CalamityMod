@@ -24,8 +24,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 77;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useTime = 22;
+            Item.useAnimation = 22;
             Item.attackSpeedOnlyAffectsWeaponAnimation = true;
             Item.useStyle = ItemUseStyleID.Guitar;
             Item.channel = true;
@@ -39,23 +39,6 @@ namespace CalamityMod.Items.Weapons.Magic
         }
 
         public override bool CanUseItem(Player player) => player.Calamity().arpeggioCooldown <= 0;
-
-        public override bool? UseItem(Player player)
-        {
-            // I FUCKING HATE ATTACK SPEED MULTIPLIERS
-            // Setting ItemID.Sets.BonusAttackSpeedMultiplier to 0f did not work
-            // Setting Item.attackSpeedOnlyAffectsWeaponAnimation to true did not work
-            // Using UseSpeedMultiplier to force it to 1f did not work
-            // Even making an ENTIRE FUCKING DAMAGE CLASS that was just magic damage with no attack speed inheritance did not work
-            // So yes, I literally have to force its use time to be set to a certain value to work properly
-            // Good fucking lord what is wrong with this game.
-            if (Item.useTime != 20)
-            {
-                Item.useTime = 20;
-                Item.useAnimation = 20;
-            }
-            return base.UseItem(player);
-        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
