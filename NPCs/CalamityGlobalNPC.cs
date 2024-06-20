@@ -51,8 +51,8 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
@@ -2258,19 +2258,15 @@ namespace CalamityMod.NPCs
 
             // Put this first so that any boss damage value modifications aren't reset
             bool vanillaNPC = npc.type < NPCID.Count;
-            if (vanillaNPC)
+            if (vanillaNPC && NPCStats.EnemyStats.ContactDamageValues.ContainsKey(npc.type))
             {
-                if (NPCStats.EnemyStats.ContactDamageValues.ContainsKey(npc.type))
-                {
-                    npc.GetNPCDamage();
-                    npc.defDamage = npc.damage;
-                }
-
-                if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityLists.bossHPScaleList.Contains(npc.type))
-                {
-                    double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-                    npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);
-                }
+                npc.GetNPCDamage();
+                npc.defDamage = npc.damage;
+            }
+            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityLists.bossHPScaleList.Contains(npc.type))
+            {
+                double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+                npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);
             }
 
             switch (npc.type)
@@ -4951,7 +4947,7 @@ namespace CalamityMod.NPCs
                 case NPCID.BigMimicHallow:
                 case NPCID.BigMimicJungle:
                     npc.damage = npc.ai[0] == 3f ? 0 : npc.defDamage;
-                    
+
                     // Spend less time in closed state
                     if (npc.ai[0] == 3f)
                         npc.ai[1] += 0.5f;
@@ -5269,9 +5265,9 @@ namespace CalamityMod.NPCs
                 //Particle boop = new CustomPulse(npc.Center, Vector2.Zero, new Color(233, 95, 212), "CalamityMod/Particles/Sparkle2", Vector2.One, Main.rand.NextFloat(-5f, 5f), 0.8f + (float)(0.04 * veriumDoomStacks), 1.6f + (float)(0.08 * veriumDoomStacks), 40);
                 //GeneralParticleHandler.SpawnParticle(boop);
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f}, npc.Center);
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
                 Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, 200f);
-                
+
                 veriumDoomMarked = false;
                 veriumDoomStacks = 0;
             }

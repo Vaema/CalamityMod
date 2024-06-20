@@ -300,6 +300,21 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
+        private static void PreventVanillaBossDeathsInBossRush(On_NPC.orig_DoDeathEvents orig, NPC self, Player closestPlayer)
+        {
+            // Aside from setting the boss' downed bool, DoDeathEvents also handles the following tasks:
+            // Advancing Slime Rain, spawning Dungeon Spirits, advancing invasion kills, spawning Wall of Flesh's loot box, dropping boss potions and hearts, and sending the boss defeated message.
+            // The first three do not matter at all in Boss Rush. Wall of Flesh's loot box not spawning is also a positive, so that it doesn't clutter the Underworld.
+            // Dropping potions is worthless at this point, and Boss Rush is already a horribly balanced hellscape as is, so I'm not worried about hearts.
+            // As for the last one, well, if anyone actually notices that and cares about it, then I suppose we could make a more sophisticated IL edit.
+            if (BossRushEvent.BossRushActive)
+                return;
+
+            orig(self, closestPlayer);
+        }
+        #endregion Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
+
         #region Enabling of Triggered NPC Platform Fallthrough
         // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
         private static void AllowTriggeredFallthrough(Terraria.On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)

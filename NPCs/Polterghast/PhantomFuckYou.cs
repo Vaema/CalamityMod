@@ -35,8 +35,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.noTileCollide = true;
             NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.lifeMax = 20000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;

@@ -699,10 +699,20 @@ Hellkite: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Summons flame geyser explosions on enemy hits
-		Contains the power of an ancient drake
+		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
+		Swings a slow and heavy blade with powerful knockback
+		Holding <right> while swinging will begin charging a strengthened swing
+		Releasing <right> while fully charged will unleash a devastating slash
+		[c/E1B65F:'Feel the strength of a blade forged through passion']
 		'''
-	TooltipGFB: "'My Beloved <3'"
+	TooltipGFB:
+		'''
+		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
+		Swings a slow and heavy blade with powerful knockback
+		Holding <right> while swinging will begin charging a strengthened swing
+		Releasing <right> while fully charged will unleash a devastating slash
+		[c/0C507F:'My beloved <3' -Xyk]
+		'''
 }
 
 HolyCollider: {

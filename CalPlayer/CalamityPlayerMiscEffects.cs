@@ -1432,6 +1432,8 @@ namespace CalamityMod.CalPlayer
                 DragonsBreathAudioCooldown2--;
             if (PhotoAudioCooldown > 0)
                 PhotoAudioCooldown--;
+            if (arpeggioCooldown > 0)
+                arpeggioCooldown--;
             if (fullRageSoundCountdownTimer > 0)
                 --fullRageSoundCountdownTimer;
             if (plagueTaintedSMGDroneCooldown > 0)
@@ -4252,6 +4254,11 @@ namespace CalamityMod.CalPlayer
                     {
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus1");
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus2");
+                    }
+
+                    if (CalamityConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable)
+                    {
+                        CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.VCMMStatus");
                     }
                 }
 

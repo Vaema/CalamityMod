@@ -91,19 +91,19 @@ namespace CalamityMod.Items.Weapons.Ranged
                     switch (Main.rand.Next(1, 5 + 1))
                     {
                         case 5:
-                            Main.NewText("You give Polaris belly rubs", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris1"), 72, 209, 204);
                             break;
                         case 4:
-                            Main.NewText("You give Polaris a small treat", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris2"), 72, 209, 204);
                             break;
                         case 3:
-                            Main.NewText("You tell Polaris she's a good girl", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris3"), 72, 209, 204);
                             break;
                         case 2:
-                            Main.NewText("You let Polaris cuddle your arm", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris4"), 72, 209, 204);
                             break;
                         default:
-                            Main.NewText("You pet Polaris", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris5"), 72, 209, 204);
                             break;
                     }
 

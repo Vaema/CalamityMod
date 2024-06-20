@@ -81,8 +81,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.defense = 20;
             NPC.DR_NERD(0.1f);
             NPC.LifeMaxNERB(200000, 240000, 650000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -274,6 +272,10 @@ namespace CalamityMod.NPCs.AstrumDeus
                     otherWormHead.netUpdate = true;
                 }
             }
+
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 

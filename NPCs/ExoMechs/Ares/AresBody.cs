@@ -225,8 +225,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
             NPC.LifeMaxNERB(1250000, 1495000, 650000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
@@ -1537,6 +1535,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
         public static void DoMiscDeathEffects(NPC npc, MechType mechType)
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(npc);
 
             switch (mechType)

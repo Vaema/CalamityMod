@@ -21,6 +21,7 @@ RecipeGroup: {
 // Status
 WikiStatus1: "[i:Book] [c/EE4939:Note: The Fandom wiki is no longer supported by Calamity.] [i:Book]"
 WikiStatus2: "[i:Book] [c/EE4939:Check out the Official Calamity Mod Wiki at ][c/3989FF:calamitymod.wiki.gg][c/EE4939:!] [i:Book]"
+VCMMStatus: "[i:MusicBoxMartians] [c/67F567:Check out the Vanilla Calamity Music Mod at ][c/3898FF:calamitymod.com/downloadvanillamusic][c/67F567:!] [i:MusicBoxMartians]"
 // Recipe Conditions
 Tier1ArsenalRecipeCondition: View an unencrypted schematic from the lab near the Sunken Sea
 Tier2ArsenalRecipeCondition: Decrypt a schematic from the lab in the large planetoid in the sky
@@ -39,6 +40,7 @@ CragmawVibeCheck: Vibe check.
 AutocannonHot: OUCH! HOT!
 NoComputer: No decryption computer installed
 ArkParry: Parry!
+LightsWarning: I've gotta give you a flashing lights warning on this one
 ClockworkTick: Tick
 ClockworkTock: Tock
 SevensJackpot: Jackpot!!!
@@ -56,5 +58,10 @@ EtherealCoreText: You have already used an Ethereal Core. Your brain would escap
 PhantomHeartText: You have already used a Phantom Heart. The voices are telling you it's a bad idea to use it again.
 SulphurSwitchLeft: The Sulphurous Sea is now on the left side of the world.
 SulphurSwitchRight: The Sulphurous Sea is now on the right side of the world.
+Polaris1: You give Polaris belly rubs
+Polaris2: You give Polaris a small treat
+Polaris3: You tell Polaris she's a good girl
+Polaris4: You let Polaris cuddle your arm
+Polaris5: You pet Polaris
 // Point Blank
 PointBlank: Does extra damage to enemies shot at point-blank range

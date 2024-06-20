@@ -34,8 +34,9 @@ A more detailed breakdown of the content available in Calamity:
 [*] 200+ pieces of furniture
 [*] 11 ores
 [*] 2 full difficulty settings above Expert, separate from Master
+[*] Significant improvements and changes to Master difficulty
 [*] 50+ changes to vanilla mechanics
 [*] 30+ new recipes for vanilla items
 [*] 450+ tweaks and improvements to vanilla items
-[*] Cross-mod support for the Thorium Mod
+[*] Minor cross-mod support for the Thorium Mod
 [/olist]

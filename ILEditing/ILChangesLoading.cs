@@ -64,6 +64,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
             On_NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
+            On_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
             IL_Projectile.Damage += RemoveLunaticCultistHomingResist;
 

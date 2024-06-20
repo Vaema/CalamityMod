@@ -12,6 +12,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -55,8 +56,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.defense = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 15 : 10;
             NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.225f : 0.15f);
             NPC.LifeMaxNERB(9200, 11025, 80000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -175,8 +174,9 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<CatastropheTrophy>(), 10);
-            npcLoot.Add(ModContent.ItemType<CrushsawCrasher>(), 4);
+            IItemDropRuleCondition KilledLast = DropHelper.If(() => !NPC.AnyNPCs(ModContent.NPCType<Cataclysm>()), desc: DropHelper.CatastropheKilledLast);
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<CatastropheTrophy>(), 5));
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<CrushsawCrasher>()));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
