@@ -1235,7 +1235,7 @@ PrepareToShoot:
                     int type = ProjectileID.Nail;
                     int damage = (int)(npc.damage * 0.15);
                     Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
-                    destination.Normalize();
+                    destination = destination.SafeNormalize(-Vector2.UnitY);
                     destination *= nailVelocity;
                     int numProj = Main.rand.Next(3, 6);
                     float rotation = MathHelper.ToRadians(numProj * 15);
@@ -1300,7 +1300,7 @@ PrepareToShoot:
                 {
                     Vector2 distanceVector = Main.player[npc.target].Center - npc.Center;
                     float distanceMagnitude = distanceVector.Length();
-                    distanceVector.Normalize();
+                    distanceVector = distanceVector.SafeNormalize(-Vector2.UnitY);
                     distanceVector *= 6f + distanceMagnitude / 300f;
                     npc.velocity = (npc.velocity * 29f + distanceVector) / 30f;
                     npc.noGravity = true;
@@ -2392,9 +2392,10 @@ PrepareToShoot:
                 float webSpitGateValue = CalamityWorld.death ? SpiderWebSpitGateValue_Death : CalamityWorld.revenge ? SpiderWebSpitGateValue_Rev : SpiderWebSpitGateValue;
 
                 // Emit web dust from mouth when about to fire
+                Vector2 mouth = new Vector2(npc.Center.X + (npc.direction == -1 ? -22f : 12f), npc.Center.Y - 4f);
                 if (npc.localAI[0] > webSpitGateValue - SpiderWebSpitTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(npc.Center, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(mouth, 1, 1, DustID.Web, 0f, 0f, 100, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
@@ -2402,7 +2403,8 @@ PrepareToShoot:
                 if (npc.localAI[0] >= webSpitGateValue)
                 {
                     npc.localAI[0] = 0f;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.SafeDirectionTo(Main.player[npc.target].Center, -Vector2.UnitY) * (prehardmodeSpiders ? 6f : 10f), ProjectileID.WebSpit, 18, 0f, Main.myPlayer);
+                    Vector2 velocity = (Main.player[npc.target].Center - mouth).SafeNormalize(-Vector2.UnitY) * (prehardmodeSpiders ? 6f : 10f);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), mouth, velocity, ProjectileID.WebSpit, 18, 0f, Main.myPlayer);
                 }
             }
             else
@@ -2420,7 +2422,7 @@ PrepareToShoot:
                     npc.netUpdate = true;
                     float iceLaserVelocity = CalamityWorld.death ? 12f : CalamityWorld.revenge ? 10f : 8f;
                     Vector2 spawnPosition = eyeLocation;
-                    Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * iceLaserVelocity;
+                    Vector2 velocity = (Main.player[npc.target].Center - spawnPosition).SafeNormalize(-Vector2.UnitY) * iceLaserVelocity;
                     Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition + velocity.SafeNormalize(-Vector2.UnitY) * 100f, velocity, ProjectileID.FrostBeam, 32, 0f, Main.myPlayer);
                     npc.ai[2] = 0f;
                 }
@@ -2445,8 +2447,8 @@ PrepareToShoot:
                 {
                     float eyeLaserVelocity = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
                     Vector2 spawnPosition = eyeLocation;
-                    Vector2 velocity = Vector2.Normalize(Main.player[npc.target].Center - spawnPosition) * eyeLaserVelocity;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition + velocity.SafeNormalize(Vector2.UnitY) * 80f, velocity, ProjectileID.EyeLaser, 40, 0f, Main.myPlayer);
+                    Vector2 velocity = (Main.player[npc.target].Center - spawnPosition).SafeNormalize(-Vector2.UnitY) * eyeLaserVelocity;
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition + velocity.SafeNormalize(-Vector2.UnitY) * 80f, velocity, ProjectileID.EyeLaser, 40, 0f, Main.myPlayer);
                     npc.ai[2] = 0f;
                 }
 
