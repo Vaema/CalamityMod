@@ -86,6 +86,10 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
+            // Don't draw the aura at all if visibility is toggled off
+            if (!Main.player[Projectile.owner].Calamity().blunderBoosterVisibility)
+                return false;
+
             Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color drawColour = Color.White;

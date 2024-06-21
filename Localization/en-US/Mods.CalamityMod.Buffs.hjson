@@ -846,11 +846,11 @@ RageMode: {
 
 ReaverRage: {
 	DisplayName: Reaver Rage
-	Description: 
-        '''
-        Rage of the earth
-        Defense increased by 5 and damage increased by 10%
-        '''
+	Description:
+		'''
+		Rage of the earth
+		Defense increased by 5 and damage increased by 10%
+		'''
 }
 
 SilvaRevival: {

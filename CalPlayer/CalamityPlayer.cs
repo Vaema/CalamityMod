@@ -684,6 +684,7 @@ namespace CalamityMod.CalPlayer
         public bool hasJetpack = false;
         public bool plaguedFuelPack = false;
         public bool blunderBooster = false;
+        public bool blunderBoosterVisibility = true;
         public int jetPackDash = 0;
         public int jetPackDirection = 0;
         public bool veneratedLocket = false;
@@ -1947,6 +1948,7 @@ namespace CalamityMod.CalPlayer
             hasJetpack = false;
             plaguedFuelPack = false;
             blunderBooster = false;
+            blunderBoosterVisibility = true;
             veneratedLocket = false;
 
             alcoholPoisoning = false;
