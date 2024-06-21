@@ -171,9 +171,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (phase2)
                 {
                     float aggressionScale = (phase2LifeRatio - lifeRatio) / phase2LifeRatio;
-                    chargeLineUpVelocity += chargeLineUpVelocity * 0.25f * aggressionScale;
-                    chargeLineUpAcceleration += chargeLineUpAcceleration * 0.25f * aggressionScale;
-                    chargeVelocity += chargeVelocity * 0.25f * aggressionScale;
+                    chargeLineUpVelocity += chargeLineUpVelocity * 0.15f * aggressionScale;
+                    chargeLineUpAcceleration += chargeLineUpAcceleration * 0.15f * aggressionScale;
+                    chargeVelocity += chargeVelocity * 0.15f * aggressionScale;
                     chargeDeceleration -= 0.05f * aggressionScale;
                 }
             }
@@ -666,7 +666,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[0] == 1f)
                     {
                         npc.localAI[0] = 2f;
-                        int totalTentacles = death ? (masterMode ? 15 : 10) : (masterMode ? 12 : 8);
+                        int totalTentacles = death ? (masterMode ? 12 : 10) : (masterMode ? 10 : 8);
                         if (Main.getGoodWorld)
                             totalTentacles += 6;
                         if (CalamityWorld.LegendaryMode)
@@ -1124,9 +1124,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (masterMode)
             {
-                tentacleAcceleration *= 1.25f;
+                tentacleAcceleration *= 1.2f;
                 extendedDistanceFromPlantera *= 1.1f;
-                tentacleVelocity *= 1.25f;
+                tentacleVelocity *= 1.2f;
                 deceleration *= 0.75f;
             }
 
