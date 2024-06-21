@@ -10,7 +10,7 @@ namespace CalamityMod
     {
         public static CalamityPlayer Calamity(this Player player) => player.GetModPlayer<CalamityPlayer>();
         public static CalamityGlobalNPC Calamity(this NPC npc) => npc.GetGlobalNPC<CalamityGlobalNPC>();
-        public static CalamityFallDamageNPC FallingNPC(this NPC npc) => npc.GetGlobalNPC<CalamityFallDamageNPC>();
+        public static CalamityTileCollisionHarmNPC FlungNPC(this NPC npc) => npc.GetGlobalNPC<CalamityTileCollisionHarmNPC>();
         public static CalamityPolarityNPC PolarityNPC(this NPC npc) => npc.GetGlobalNPC<CalamityPolarityNPC>();
         public static CalamityGlobalItem Calamity(this Item item) => item.GetGlobalItem<CalamityGlobalItem>();
         public static CalamityGlobalProjectile Calamity(this Projectile proj) => proj.GetGlobalProjectile<CalamityGlobalProjectile>();

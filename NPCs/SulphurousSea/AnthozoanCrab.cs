@@ -21,6 +21,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 16;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -33,7 +34,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = 45;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 22;
@@ -76,9 +77,6 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (NPC.ai[1]++ % 360f < 280f)
             {
                 if (NPC.ai[2] > 1f)

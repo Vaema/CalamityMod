@@ -118,7 +118,8 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
-            ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 60) / (dynamoStemCells ? 2 : 1);
+            ApplyDoTDebuff(dragonFire, dragonfireDoT);
             int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
             ApplyDoTDebuff(miracleBlight, 80);

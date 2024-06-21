@@ -75,8 +75,6 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.height = 196;
             NPC.defense = 8;
             NPC.LifeMaxNERB(3700, 4400, 680000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;
@@ -876,6 +874,10 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Start the Goblin Invasion if the player hasn't gotten one yet (this also gives players more of a reason to fight this boss)

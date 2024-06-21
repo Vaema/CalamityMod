@@ -468,7 +468,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         destination.Normalize();
                         destination *= projectileVelocity;
                         int totalFireballsPerSide = 3;
-                        int totalIterations = (turboEnrage && Main.getGoodWorld) ? 11 : masterMode ? 21 : 25;
+                        int totalIterations = (turboEnrage && Main.getGoodWorld) ? 11 : masterMode ? 25 : 35;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
                         {

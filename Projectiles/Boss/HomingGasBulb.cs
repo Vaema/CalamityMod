@@ -49,9 +49,9 @@ namespace CalamityMod.Projectiles.Boss
             int closestPlayer = (int)Player.FindClosest(Projectile.Center, 1, 1);
             Vector2 velocity = Main.player[closestPlayer].Center - Projectile.Center;
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= 30f)
+            if (Projectile.ai[0] >= (masterMode ? 0f : 30f))
             {
-                if (Projectile.ai[0] < 150f)
+                if (Projectile.ai[0] < (masterMode ? 210f : 150f))
                 {
                     float scaleFactor2 = Projectile.velocity.Length();
                     velocity.Normalize();
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            if (Projectile.ai[0] % (masterMode ? 15f : 20f) == 0f)
+            if (Projectile.ai[0] % (masterMode ? 10f : 20f) == 0f)
             {
                 int dustType = 73;
                 int totalDust = 12;

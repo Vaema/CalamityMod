@@ -108,8 +108,6 @@ namespace CalamityMod.NPCs.Yharon
             NPC.height = 200;
             NPC.defense = 90;
             NPC.LifeMaxNERB(1300000, 1560000, 740000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -3038,8 +3036,10 @@ namespace CalamityMod.NPCs.Yharon
         #region On Kill
         public override void OnKill()
         {
-            // Things that happen on killing a boss BESIDES DROPPING ITEMS go in OnKill.
-            // This function is essentially equivalent to good old NPCLoot -- minus the loot, of course.
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedYharon);
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 

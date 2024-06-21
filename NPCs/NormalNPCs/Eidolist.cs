@@ -23,6 +23,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -37,7 +38,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 60;
             NPC.height = 80;
             NPC.lifeMax = 5000;
@@ -84,9 +85,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             bool adultWyrmAlive = false;
             if (CalamityGlobalNPC.adultEidolonWyrmHead != -1)
             {

@@ -22,6 +22,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
+using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
@@ -298,6 +299,21 @@ namespace CalamityMod.ILEditing
             return orig();
         }
         #endregion
+
+        #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
+        private static void PreventVanillaBossDeathsInBossRush(On_NPC.orig_DoDeathEvents orig, NPC self, Player closestPlayer)
+        {
+            // Aside from setting the boss' downed bool, DoDeathEvents also handles the following tasks:
+            // Advancing Slime Rain, spawning Dungeon Spirits, advancing invasion kills, spawning Wall of Flesh's loot box, dropping boss potions and hearts, and sending the boss defeated message.
+            // The first three do not matter at all in Boss Rush. Wall of Flesh's loot box not spawning is also a positive, so that it doesn't clutter the Underworld.
+            // Dropping potions is worthless at this point, and Boss Rush is already a horribly balanced hellscape as is, so I'm not worried about hearts.
+            // As for the last one, well, if anyone actually notices that and cares about it, then I suppose we could make a more sophisticated IL edit.
+            if (BossRushEvent.BossRushActive)
+                return;
+
+            orig(self, closestPlayer);
+        }
+        #endregion Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
 
         #region Enabling of Triggered NPC Platform Fallthrough
         // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
@@ -1492,6 +1508,46 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self);
+            }
+        }
+        #endregion
+
+        #region Block Abyss from Teleportation Potions
+
+        public static void TPOverride(Terraria.On_Player.orig_Teleport orig, Player self, Vector2 newPos, int Style = 0, int extraInfo = 0)
+        {
+            // Grab the tile from where the potion wants to teleport
+            Tile t = CalamityUtils.ParanoidTileRetrieval(newPos.ToTileCoordinates().X, newPos.ToTileCoordinates().Y);
+            // Check if it's a Teleportation Potion
+            if (Style == 2)
+            {
+                // Check if it's an Abyss wall
+                if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                {
+                    // If an Abyss wall is detected, try to find another teleportation location
+                    bool canSpawn = false;
+                    int teleportStartX = 100;
+                    int teleportRangeX = Main.maxTilesX - 200;
+                    int teleportStartY = 100;
+                    int underworldLayer = Main.UnderworldLayer;
+                    Vector2 newerPos = self.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, teleportRangeX, teleportStartY, underworldLayer, new Player.RandomTeleportationAttemptSettings
+                    {
+                        avoidLava = true,
+                        avoidHurtTiles = true,
+                        maximumFallDistanceFromOrignalPoint = 100,
+                        attemptsBeforeGivingUp = 1000
+                    });
+                    // Attempt teleporting again with the new location
+                    orig(self, newerPos, Style, extraInfo);
+                }
+                else
+                {
+                    orig(self, newPos, Style, extraInfo);
+                }
+            }
+            else
+            {
+                orig(self, newPos, Style, extraInfo);
             }
         }
         #endregion

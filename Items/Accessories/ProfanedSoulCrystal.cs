@@ -207,12 +207,21 @@ namespace CalamityMod.Items.Accessories
         {
             bool scal = DownedBossSystem.downedCalamitas;
             bool draedon = DownedBossSystem.downedExoMechs;
-            if (!scal || !draedon)
+            if (!scal && !draedon)
             {
-                string reject = this.GetLocalizedValue(!draedon ? "ExoMechsLock" : "CalamitasLock") + "\n" + this.GetLocalizedValue("Reject");
+                string reject = this.GetLocalization("LockedBoth").Format(this.GetLocalizedValue("ExoMechsLock"), this.GetLocalizedValue("CalamitasLock")) + "\n" + this.GetLocalizedValue("Reject");
                 tooltips.FindAndReplace("[STATUS]", reject);
 
-                TooltipLine linePrice = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Sell price");
+                TooltipLine linePrice = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Price");
+                if (linePrice != null)
+                    linePrice.Text = "";
+            }
+            else if (!scal || !draedon)
+            {
+                string reject = this.GetLocalization("Locked").Format(!draedon ? this.GetLocalizedValue("ExoMechsLock") : this.GetLocalizedValue("CalamitasLock")) + "\n" + this.GetLocalizedValue("Reject");
+                tooltips.FindAndReplace("[STATUS]", reject);
+
+                TooltipLine linePrice = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Price");
                 if (linePrice != null)
                     linePrice.Text = "";
             }

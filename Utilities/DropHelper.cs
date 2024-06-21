@@ -114,6 +114,8 @@ namespace CalamityMod
         #region Bestiary Text
         public static string FirstKillText = CalamityUtils.GetTextValue("Condition.Drops.FirstKill");
         public static string MechBossText = CalamityUtils.GetTextValue("Condition.Drops.MechBoss");
+        public static string CataclysmKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CataclysmKilledLast");
+        public static string CatastropheKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CatastropheKilledLast");
         public static string CynosureText = CalamityUtils.GetTextValue("Condition.Drops.Cynosure");
 
         public static string ProvidenceHallowText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceHallow");

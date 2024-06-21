@@ -75,8 +75,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.defense = 40;
             NPC.DR_NERD(0.3f);
             NPC.LifeMaxNERB(100000, 120000, 200000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -1233,6 +1231,10 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Mark the Profaned Guardians as dead

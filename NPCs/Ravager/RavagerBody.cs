@@ -90,8 +90,6 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.lifeMax *= 4;
                 NPC.value *= 1.5f;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.boss = true;
@@ -1020,6 +1018,10 @@ namespace CalamityMod.NPCs.Ravager
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Mark Ravager as dead

@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
         public Color BlueFogColor = new Color(150, 120, 255);
         public float BlueFogRot = 0f;
         public float BlueFogScale = 1f;
+        public float damageMult = 1;
 
         public override void SetDefaults()
         {
@@ -58,7 +59,10 @@ namespace CalamityMod.Projectiles.Ranged
             // Turns around every once in a while
             int TurnRate = Lifetime / 5;
             if (Time % TurnRate == TurnRate - 1)
+            {
                 Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(-216f));
+                damageMult = 1;
+            }
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             // Determines particle size as well as hitbox
@@ -104,7 +108,11 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage *= damageMult;
+            damageMult *= 0.8f;
+        }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
 
         // Circular hitbox adjusted for the size of the smoke particles (rough estimate minimally accounting for fog)

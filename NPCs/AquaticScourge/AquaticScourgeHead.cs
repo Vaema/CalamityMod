@@ -63,9 +63,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.LifeMaxNERB(80000, 96000, 1000000);
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax *= 2;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 40, 0, 0);
             NPC.behindTiles = true;
@@ -270,6 +267,10 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SEAHOE>() }, DownedBossSystem.downedAquaticScourge);

@@ -501,13 +501,10 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianCommander>(), new int[] { 150, 224, 256, 288, 444 } },
                 { ModContent.NPCType<ProfanedGuardianDefender>(), new int[] { 160, 240, 264, 288, 405 } },
                 { ModContent.NPCType<ProfanedGuardianHealer>(), new int[] { 100, 200, 220, 240, 300 } },
+                { ModContent.NPCType<ProfanedRocks>(), new int[] { 100, 200, 220, 232, 300 } },
 
                 { ModContent.NPCType<Bumblefuck>(), new int[] { 170, 256, 288, 320, 504 } },
                 { ModContent.NPCType<Bumblefuck2>(), new int[] { 145, 220, 242, 264, 435 } },
-
-                { ModContent.NPCType<ProvSpawnOffense>(), new int[] { 120, 240, 264, 278, 360 } },
-                { ModContent.NPCType<ProvSpawnDefense>(), new int[] { 100, 200, 220, 232, 300 } },
-                { ModContent.NPCType<ProfanedRocks>(), new int[] { 100, 200, 220, 232, 300 } },
 
                 { ModContent.NPCType<CeaselessVoid>(), new int[] { 240, 360, 396, 432, 720 } },
                 { ModContent.NPCType<DarkEnergy>(), new int[] { 175, 260, 288, 316, 525 } },

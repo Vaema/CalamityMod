@@ -121,8 +121,6 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.height = 122;
             NPC.defense = 8;
             NPC.LifeMaxNERB(7700, 9200, 350000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -1299,6 +1297,10 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If neither The Hive Mind nor The Perforator Hive have been killed yet, notify players of Aerialite Ore

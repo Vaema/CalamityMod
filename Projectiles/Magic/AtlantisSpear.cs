@@ -9,7 +9,8 @@ namespace CalamityMod.Projectiles.Magic
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public bool devourer = DownedBossSystem.downedDoG;
-        public static int TotalSegments = 20;
+        public static int TotalSegments = 16;
+        public float damageMultiplier = 1f;
 
         public override void SetDefaults()
         {
@@ -19,7 +20,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 4;
             Projectile.extraUpdates = (Main.zenithWorld && devourer) ? 1 : 0;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = (Main.zenithWorld && devourer) ? 2 : 8;
@@ -77,6 +78,13 @@ namespace CalamityMod.Projectiles.Magic
         public override bool ShouldUpdatePosition() => false;
 
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Projectile.alpha);
+
+        // Damage falloff is handled in ModifyHitNPC instead of OnHitNPC so that the split spears don't inherit the lower damage
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage *= damageMultiplier;
+            damageMultiplier *= 0.8f;
+        }
 
         public override void OnKill(int timeLeft)
         {

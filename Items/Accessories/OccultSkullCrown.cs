@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<HeartofDarkness>().
                 AddIngredient<Laudanum>().
                 AddIngredient<StressPills>().
-                AddIngredient<NightmareFuel>(20).
+                AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

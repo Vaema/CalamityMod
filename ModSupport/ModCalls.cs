@@ -1003,6 +1003,8 @@ namespace CalamityMod
                 "TaintedCloudberry" => player.Calamity().tCloudberry,
                 "SacredStrawberry" => player.Calamity().sStrawberry,
 
+                "NimbleBounder" => player.Calamity().nimbleBounderBoost,
+
                 "CometShard" => player.Calamity().cShard,
                 "EtherealCore" => player.Calamity().eCore,
                 "PhantomHeart" => player.Calamity().pHeart,
@@ -1036,6 +1038,8 @@ namespace CalamityMod
                 case "EtherealCore": player.Calamity().eCore = value; break;
                 case "PhantomHeart": player.Calamity().pHeart = value; break;
 
+                case "NimbleBounder": player.Calamity().nimbleBounderBoost = value; break;
+
                 case "MushroomPlasmaRoot": player.Calamity().rageBoostOne = value; break;
                 case "InfernalBlood": player.Calamity().rageBoostTwo = value; break;
                 case "RedLightningContainer": player.Calamity().rageBoostThree = value; break;
@@ -1046,6 +1050,19 @@ namespace CalamityMod
 
                 case "CelestialOnion": player.Calamity().extraAccessoryML = value; break;
             };
+        }
+        #endregion
+
+        #region Adding minions to boss hp scaling config
+        //This is to add minions to the hp scaling config
+        public static bool AddToHPScaling(int type)
+        {
+            if (!CalamityLists.bossHPScaleList.Contains(type))
+            {
+                CalamityLists.bossHPScaleList.Add(type);
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -2212,6 +2229,16 @@ namespace CalamityMod
 
                         AndroombaFriendly.customConversionTypes.Add((itemID, texturePath, NPCaction));
                         return null;
+                    }
+                case "AddMinibossToHPScalingConfig":
+                case "AddMinionToHPScalingConfig":
+                case "AddToBossHPScalingConfig":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify an NPC id/type as an int or short ID. Example: NPCType<SomeBossMinion>()");
+                        if (!castID(args[1], out int npcType6))
+                            return new ArgumentException("ERROR: The first argument to \"AddToBossHPScalingConfig\" must be an int or short ID.");
+                        return AddToHPScaling(npcType6);
                     }
                 default:
                     return new ArgumentException("ERROR: Invalid method name.");

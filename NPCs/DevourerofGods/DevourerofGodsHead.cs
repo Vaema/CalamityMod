@@ -202,8 +202,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.height = 104;
             NPC.defense = 50;
             NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.takenDamageMultiplier = 1.1f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -2667,6 +2665,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedDoG);

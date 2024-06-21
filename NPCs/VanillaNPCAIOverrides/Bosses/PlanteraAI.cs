@@ -46,6 +46,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float phase2LifeRatio = 0.5f;
             bool addThornBallsToGatlingAttack = lifeRatio < 0.85f;
             bool addSporeGasBlastToGatlingAttack = lifeRatio < 0.75f;
+            bool useNewGatlingAttackVariant = addSporeGasBlastToGatlingAttack && masterMode;
             bool phase2 = lifeRatio <= phase2LifeRatio;
             bool phase3 = lifeRatio < 0.35f;
             bool phase4 = lifeRatio < 0.2f;
@@ -62,7 +63,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool surface = !bossRush && Main.player[npc.target].position.Y < Main.worldSurface * 16.0;
 
             // Tentacle limites
-            int maxTentaclesAfterFirstTentaclePhase = death ? (masterMode ? 5 : 4) : (masterMode ? 3 : 2);
+            int maxTentaclesAfterFirstTentaclePhase = death ? (masterMode ? 4 : 3) : (masterMode ? 3 : 2);
             int maxFreeTentaclesAfterFirstTentaclePhase = maxTentaclesAfterFirstTentaclePhase * 2;
 
             float speedUpDistance = 480f;
@@ -171,9 +172,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (phase2)
                 {
                     float aggressionScale = (phase2LifeRatio - lifeRatio) / phase2LifeRatio;
-                    chargeLineUpVelocity += chargeLineUpVelocity * 0.25f * aggressionScale;
-                    chargeLineUpAcceleration += chargeLineUpAcceleration * 0.25f * aggressionScale;
-                    chargeVelocity += chargeVelocity * 0.25f * aggressionScale;
+                    chargeLineUpVelocity += chargeLineUpVelocity * 0.15f * aggressionScale;
+                    chargeLineUpAcceleration += chargeLineUpAcceleration * 0.15f * aggressionScale;
+                    chargeVelocity += chargeVelocity * 0.15f * aggressionScale;
                     chargeDeceleration -= 0.05f * aggressionScale;
                 }
             }
@@ -202,42 +203,75 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     velocity *= MathHelper.Lerp(MovementVelocityMultiplierForSlowAttacks, 1f, (float)Math.Pow(currentSeedGatlingTime / SeedGatlingDuration, 2D));
 
                     // Shoot projectiles
-                    float shootProjectileGateValue = 30f;
+                    float shootProjectileGateValue = useNewGatlingAttackVariant ? 45f : 30f;
                     if (currentSeedGatlingTime >= 240f)
-                        shootProjectileGateValue = 3f;
+                        shootProjectileGateValue = useNewGatlingAttackVariant ? 9f : 3f;
                     else if (currentSeedGatlingTime >= 180f)
-                        shootProjectileGateValue = 5f;
+                        shootProjectileGateValue = useNewGatlingAttackVariant ? 15f : 5f;
                     else if (currentSeedGatlingTime >= 120f)
-                        shootProjectileGateValue = 9f;
+                        shootProjectileGateValue = useNewGatlingAttackVariant ? 18f : 9f;
                     else if (currentSeedGatlingTime >= 60f)
-                        shootProjectileGateValue = 15f;
+                        shootProjectileGateValue = useNewGatlingAttackVariant ? 30f : 15f;
 
                     if (npc.ai[1] % shootProjectileGateValue == 0f)
                     {
-                        bool shootThornBall = npc.ai[1] % 90f == 0f && addThornBallsToGatlingAttack;
-                        bool shootPoisonSeed = npc.ai[1] % 9f == 0f;
+                        bool shootThornBall = npc.ai[1] % 90f == 0f && addThornBallsToGatlingAttack && !useNewGatlingAttackVariant;
+                        bool shootPoisonSeed = npc.ai[1] % 9f == 0f && !shootThornBall;
                         float projectileSpeed = 14f;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                         int damage = npc.GetProjectileDamage(projectileType);
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
-                        int dustType = shootPoisonSeed ? 74 : 73;
-                        int dustSpawnBoxSize = shootThornBall ? 38 : 14;
-                        int dustAmount = shootThornBall ? 15 : 5;
-                        Vector2 dustVelocity = projectileVelocity * projectileSpeed;
-                        for (int k = 0; k < dustAmount; k++)
+                        if (useNewGatlingAttackVariant)
                         {
-                            int dust = Dust.NewDust(spawnOffset, dustSpawnBoxSize, dustSpawnBoxSize, dustType, dustVelocity.X, dustVelocity.Y);
-                            Main.dust[dust].noGravity = true;
-                            Main.dust[dust].scale = 1.4f;
-                        }
+                            int spread = 8;
+                            if (currentSeedGatlingTime >= 240f)
+                                spread = 16;
+                            else if (currentSeedGatlingTime >= 180f)
+                                spread = 14;
+                            else if (currentSeedGatlingTime >= 120f)
+                                spread = 12;
+                            else if (currentSeedGatlingTime >= 60f)
+                                spread = 10;
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                            float rotation = MathHelper.ToRadians(spread);
+                            int numProj = 3;
+                            for (int i = 0; i < numProj; i++)
+                            {
+                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                int dustType = shootPoisonSeed ? 74 : 73;
+                                Vector2 dustVelocity = perturbedSpeed * projectileSpeed;
+                                for (int k = 0; k < 5; k++)
+                                {
+                                    int dust = Dust.NewDust(spawnOffset, 14, 14, dustType, dustVelocity.X, dustVelocity.Y);
+                                    Main.dust[dust].noGravity = true;
+                                    Main.dust[dust].scale = 1.4f;
+                                }
+
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                            }
+                        }
+                        else
                         {
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
-                            if (projectileType == ProjectileID.ThornBall && (Main.rand.NextBool() || !Main.zenithWorld))
-                                Main.projectile[proj].tileCollide = false;
+                            int dustType = shootPoisonSeed ? 74 : 73;
+                            int dustSpawnBoxSize = shootThornBall ? 38 : 14;
+                            int dustAmount = shootThornBall ? 15 : 5;
+                            Vector2 dustVelocity = projectileVelocity * projectileSpeed;
+                            for (int k = 0; k < dustAmount; k++)
+                            {
+                                int dust = Dust.NewDust(spawnOffset, dustSpawnBoxSize, dustSpawnBoxSize, dustType, dustVelocity.X, dustVelocity.Y);
+                                Main.dust[dust].noGravity = true;
+                                Main.dust[dust].scale = 1.4f;
+                            }
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                                if (projectileType == ProjectileID.ThornBall && (Main.rand.NextBool() || !Main.zenithWorld))
+                                    Main.projectile[proj].tileCollide = false;
+                            }
                         }
                     }
                 }
@@ -332,7 +366,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 velocity *= MathHelper.Lerp(MovementVelocityMultiplierForSlowAttacks, 1f, (float)Math.Pow(absValueOfTimer / SeedGatlingDuration, 2D));
 
                 // Shoot homing pink bulb projectiles that leave behind lingering pink clouds
-                float shootBulbGateValue = death ? 90f : 120f;
+                float shootBulbGateValue = death ? (masterMode ? 150f : 90f) : (masterMode ? 200f : 120f);
                 if (addSporeGasBlastToGatlingAttack)
                     shootBulbGateValue *= 0.8f;
 
@@ -620,24 +654,50 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[1] >= shootProjectileGateValue)
                     {
                         npc.localAI[1] = 0f;
-                        bool shootPoisonSeed = CalamityWorld.LegendaryMode || Main.rand.NextBool(masterMode ? 2 : 4);
-                        int projectileType = shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
+
+                        bool shootThornBall = false;
+                        if (useNewGatlingAttackVariant)
+                        {
+                            int numThornBalls = 0;
+                            int thornBallLimit = 3;
+                            for (int i = 0; i < Main.maxProjectiles; i++)
+                            {
+                                if (Main.projectile[i].active && Main.projectile[i].type == ProjectileID.ThornBall)
+                                {
+                                    numThornBalls++;
+                                    if (numThornBalls >= thornBallLimit)
+                                    {
+                                        shootThornBall = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        bool shootPoisonSeed = (CalamityWorld.LegendaryMode || Main.rand.NextBool(masterMode ? 2 : 4)) && !shootThornBall;
+                        int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                         float projectileSpeed = masterMode ? 16f : 14f;
                         int damage = npc.GetProjectileDamage(projectileType);
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
                         int dustType = shootPoisonSeed ? 74 : 73;
+                        int dustSpawnBoxSize = shootThornBall ? 38 : 14;
+                        int dustAmount = shootThornBall ? 15 : 5;
                         Vector2 dustVelocity = projectileVelocity * projectileSpeed;
-                        for (int k = 0; k < 5; k++)
+                        for (int k = 0; k < dustAmount; k++)
                         {
-                            int dust = Dust.NewDust(spawnOffset, 14, 14, dustType, dustVelocity.X, dustVelocity.Y);
+                            int dust = Dust.NewDust(spawnOffset, dustSpawnBoxSize, dustSpawnBoxSize, dustType, dustVelocity.X, dustVelocity.Y);
                             Main.dust[dust].noGravity = true;
                             Main.dust[dust].scale = 1.4f;
                         }
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                        {
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                            if (projectileType == ProjectileID.ThornBall && (Main.rand.NextBool() || !Main.zenithWorld))
+                                Main.projectile[proj].tileCollide = false;
+                        }
                     }
                 }
             }
@@ -666,7 +726,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[0] == 1f)
                     {
                         npc.localAI[0] = 2f;
-                        int totalTentacles = death ? (masterMode ? 15 : 10) : (masterMode ? 12 : 8);
+                        int totalTentacles = death ? (masterMode ? 12 : 10) : (masterMode ? 10 : 8);
                         if (Main.getGoodWorld)
                             totalTentacles += 6;
                         if (CalamityWorld.LegendaryMode)
@@ -1124,9 +1184,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (masterMode)
             {
-                tentacleAcceleration *= 1.25f;
+                tentacleAcceleration *= 1.2f;
                 extendedDistanceFromPlantera *= 1.1f;
-                tentacleVelocity *= 1.25f;
+                tentacleVelocity *= 1.2f;
                 deceleration *= 0.75f;
             }
 
