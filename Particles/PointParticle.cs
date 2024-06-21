@@ -17,7 +17,7 @@ namespace CalamityMod.Particles
 
         public override string Texture => "CalamityMod/Particles/PointParticle";
 
-        public PointParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool AddativeBlend = true)
+        public PointParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool AddativeBlend = true, bool affectedByLight = false)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -26,12 +26,17 @@ namespace CalamityMod.Particles
             Lifetime = lifetime;
             Color = InitialColor = color;
             UseAltVisual = AddativeBlend;
+            AffectedByLight = affectedByLight;
         }
 
         public override void Update()
         {
             Scale *= 0.95f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
+            if (AffectedByLight)
+            {
+                Color = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGBA(Color);
+            }
             Velocity *= 0.95f;
             if (Velocity.Length() < 12f && AffectedByGravity)
             {
