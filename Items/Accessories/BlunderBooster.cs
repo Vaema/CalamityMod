@@ -27,6 +27,7 @@ namespace CalamityMod.Items.Accessories
             player.GetDamage<ThrowingDamageClass>() += 0.12f;
             player.Calamity().rogueVelocity += 0.15f;
             player.Calamity().blunderBooster = true;
+            player.Calamity().blunderBoosterVisibility = !hideVisual;
             player.Calamity().stealthGenStandstill += 0.1f;
             player.Calamity().stealthGenMoving += 0.1f;
         }
