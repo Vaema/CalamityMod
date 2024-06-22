@@ -1307,17 +1307,13 @@ ProfanedSoulCrystal: {
 		Grants additional effects if you have {0} minion slots
 		Summons your own personal Guardians to fight alongside you
 		All non-summon attacks are transformed, and are empowered if no minions are active
-		{1}
-		Thinking back, it was a boring life
-		[c/FFBF49:And so we burn it all in the name of purity]
-		'''
-	PSCDetails:
-		'''
 		[c/ffa680:Melee] [c/ffd2bf:attacks become a barrage of spears]
 		[c/99ffa7:Ranged] [c/bfffc8:attacks become a flurry of fireballs and meteors]
-		[c/8cbeff:Magic] [c/bfdbff:attacks become a giant splitting fireball, costing {0} mana]
+		[c/8cbeff:Magic] [c/bfdbff:attacks become a giant splitting fireball, costing {1} mana]
 		[c/d791f2:Whips] [c/e1b6f2:become overtaken by profaned crystal]
 		[c/f285a2:Rogue] [c/f2b6c6:attacks become a deadly crystalline spiral]
+		Thinking back, it was a boring life
+		[c/FFBF49:And so we burn it all in the name of purity]
 		'''
 }
 
