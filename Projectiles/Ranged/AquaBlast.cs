@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 2;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
@@ -46,31 +46,26 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + MathHelper.ToRadians(90) * Projectile.direction;
 
 
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.75f / 255f);
-            for (int i = 0; i < 2; i++)
+            Lighting.AddLight(Projectile.Center, Color.AliceBlue.ToVector3() * 0.5f);
+
+            if (Projectile.timeLeft <= 580 && Projectile.timeLeft % 5 == 0)
             {
-                Vector2 dspeed = -Projectile.velocity * Main.rand.NextFloat(0.5f * 0.8f);
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity = dspeed;
-            }
-            if (Projectile.timeLeft <= 580 && Projectile.timeLeft % 3 == 0)
-            {
-                Particle spark = new LineParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.8f), false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.8f, 1.2f), Color.Lerp(Color.Cyan, Color.AliceBlue, Main.rand.NextFloat(0.35f)) * Main.rand.NextFloat(0.15f, 0.5f));
+                Particle spark = new LineParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(15, 15), -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.8f), false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.8f, 1.2f), Color.Lerp(Color.Cyan, Color.AliceBlue, Main.rand.NextFloat(0.35f)) * Main.rand.NextFloat(0.15f, 0.5f));
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             if (Main.rand.NextBool(6))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 75, -Projectile.velocity.RotatedByRandom(0.1) * Main.rand.NextFloat(0.1f, 0.3f), 0, default, Main.rand.NextFloat(0.5f, 1.2f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 103, -Projectile.velocity.RotatedByRandom(0.1) * Main.rand.NextFloat(0.1f, 0.3f), 0, default, Main.rand.NextFloat(0.5f, 1.2f));
                 dust.noGravity = true;
             }
         }
 
         public override void OnKill(int timeLeft)
         {
-            for (int lol = 0; lol < 10; lol++)
+            for (int lol = 0; lol < 12; lol++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 103, new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
+                dust.scale = Main.rand.NextFloat(0.5f, 1.2f);
             }
         }
     }

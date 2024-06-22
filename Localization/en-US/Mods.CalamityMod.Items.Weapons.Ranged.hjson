@@ -695,9 +695,9 @@ Leviatitan: {
 	DisplayName: Leviatitan
 	Tooltip:
 		'''
-		Converts musket balls into high velocity aqua blasts
-		Fires homing aberrations that shred enemy defense every 7th shot
-		<right> to vomit a meteor that explodes on hit
+		Fires high velocity aqua blasts
+		Releases homing aberrations that shred enemy defense on every 6th shot
+		<right> while holding <left> to vomit a meteor that explodes on hit
 		'''
 }
 
