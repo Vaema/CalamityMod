@@ -1,4 +1,4 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Melee.Spears;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Green;
             Item.Calamity().donorItem = true;
 
-            Item.shoot = ModContent.ProjectileType<YateveoBloomProj>();
+            Item.shoot = ModContent.ProjectileType<YateveoBloomMace>();
             Item.shootSpeed = ShootSpeed;
         }
 
@@ -75,9 +75,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             float speedMult = SpearSpeed / ShootSpeed;
             if (player.altFunctionUse == 2)
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X * speedMult, velocity.Y * speedMult, ModContent.ProjectileType<YateveoBloomSpear>(), (int)(damage * 0.666666f), knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity * speedMult, ModContent.ProjectileType<YateveoBloomSpear>(), (int)(damage * 0.666666f), knockback, player.whoAmI);
             else
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.5f), knockback, player.whoAmI);
             return false;
         }
 
