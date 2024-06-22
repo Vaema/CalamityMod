@@ -49,6 +49,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool useNewGatlingAttackVariant = addSporeGasBlastToGatlingAttack && masterMode;
             bool phase2 = lifeRatio <= phase2LifeRatio;
             bool phase3 = lifeRatio < 0.35f;
+            bool vomitFreeTentacles = lifeRatio < 0.25f && masterMode;
             bool phase4 = lifeRatio < 0.2f;
 
             // Contact damage values for phase 2
@@ -192,6 +193,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool slowedDuringTentaclePhase = npc.ai[2] > 0f;
             bool doneWithTentaclePhase = npc.ai[2] == -1f;
             bool charging = npc.ai[3] <= -2f;
+            bool secondCharge = calamityGlobalNPC.newAI[2] == 1f;
             if (!phase2)
             {
                 npc.ai[1] += 1f;
@@ -405,18 +407,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] -= timeToDecelerateDecrement;
                     if (npc.ai[3] <= StopChargeGateValue)
                     {
-                        npc.ai[3] = 0f;
+                        bool canChargeAgain = phase4 ? true : phase3 ? Main.rand.NextBool() : false;
+                        bool chargeAgain = canChargeAgain && masterMode && calamityGlobalNPC.newAI[2] == 0f;
+                        npc.ai[3] = chargeAgain ? -2f : 0f;
+                        calamityGlobalNPC.newAI[2] = (masterMode && calamityGlobalNPC.newAI[2] == 0f && chargeAgain) ? 1f : 0f;
+                        npc.SyncExtraAI();
 
-                        // Spawn a few tentacles
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (!vomitFreeTentacles && !secondCharge)
                         {
-                            // If the most likely loop condition to be false isn't met, don't run the second one, this is more efficient
-                            if (NPC.CountNPCS(NPCID.PlanterasTentacle) < maxTentaclesAfterFirstTentaclePhase)
+                            // Spawn a few tentacles
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                if (NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxFreeTentaclesAfterFirstTentaclePhase)
+                                // If the most likely loop condition to be false isn't met, don't run the second one, this is more efficient
+                                if (NPC.CountNPCS(NPCID.PlanterasTentacle) < maxTentaclesAfterFirstTentaclePhase)
                                 {
-                                    for (int i = 0; i < maxTentaclesAfterFirstTentaclePhase; i++)
-                                        NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasTentacle, npc.whoAmI, 0f, 0f, 1f, 0f);
+                                    if (NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxFreeTentaclesAfterFirstTentaclePhase)
+                                    {
+                                        for (int i = 0; i < maxTentaclesAfterFirstTentaclePhase; i++)
+                                            NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasTentacle, npc.whoAmI, 0f, 0f, 1f, 0f);
+                                    }
                                 }
                             }
                         }
@@ -435,7 +444,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         int projectileType = ModContent.ProjectileType<SporeGasPlantera>();
                         int damage = npc.GetProjectileDamage(projectileType);
-                        float randomVelocityMultiplier = masterMode ? 0.3f : 0.2f;
+                        float randomVelocityMultiplier = secondCharge ? 0.05f : masterMode ? 0.3f : 0.2f;
                         Vector2 projectileVelocity = npc.velocity * Main.rand.NextVector2CircularEdge(randomVelocityMultiplier, randomVelocityMultiplier);
                         Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 30f;
 
@@ -519,7 +528,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         // Vomit spread of spore gas
-                        int totalProjectiles = masterMode ? 18 : 12;
+                        int totalProjectiles = secondCharge ? 6 : masterMode ? 18 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
                         int damage = npc.GetProjectileDamage(type);
@@ -529,7 +538,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
                             Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
-                            float randomSpeed = Main.rand.NextFloat(0.8f, masterMode ? 1.5f : 1.2f);
+                            float randomSpeed = Main.rand.NextFloat(0.8f, secondCharge ? 1f : masterMode ? 1.5f : 1.2f);
 
                             int dustType = 74;
                             Vector2 dustVelocity2 = projectileVelocity * randomSpeed;
@@ -806,6 +815,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int type = ProjectileID.PoisonSeedPlantera;
                         int damage = npc.GetProjectileDamage(type);
                         float rotation = MathHelper.ToRadians(spread);
+                        bool vomitTentacles = vomitFreeTentacles && NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxTentaclesAfterFirstTentaclePhase;
+                        if (vomitTentacles)
+                            SoundEngine.PlaySound(SoundID.NPCDeath11, npc.Center);
 
                         for (int i = 0; i < numProj; i++)
                         {
@@ -821,7 +833,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                             Vector2 spawnOffset = npc.Center + perturbedSpeed * 50f;
 
-                            int dustType = shootPinkSeed ? 73 : 74;
+                            int dustType = (shootPinkSeed && !vomitTentacles) ? 73 : 74;
                             Vector2 dustVelocity = perturbedSpeed * projectileSpeed;
                             for (int k = 0; k < 5; k++)
                             {
@@ -831,7 +843,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
+                            {
+                                if (vomitTentacles)
+                                {
+                                    int tentacle = NPC.NewNPC(npc.GetSource_FromAI(), (int)spawnOffset.X, (int)spawnOffset.Y, ModContent.NPCType<PlanterasFreeTentacle>(), 0, 120f, projectileSpeed);
+                                    Main.npc[tentacle].velocity.X = (perturbedSpeed * projectileSpeed * 0.5f).X;
+                                    Main.npc[tentacle].velocity.Y = (perturbedSpeed * projectileSpeed * 0.5f).Y;
+                                    Main.npc[tentacle].netUpdate = true;
+                                }
+                                else
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
+                            }
                         }
 
                         if (death)

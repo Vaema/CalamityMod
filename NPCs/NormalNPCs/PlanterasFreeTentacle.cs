@@ -98,6 +98,35 @@ namespace CalamityMod.NPCs.NormalNPCs
                 return;
             }
 
+            // If vomited out during Master Mode, maintain velocity until a certain time has passed
+            if (NPC.ai[0] > 0f)
+            {
+                NPC.ai[0] -= 1f;
+
+                if (NPC.velocity.Length() < NPC.ai[1])
+                {
+                    NPC.velocity *= 1.01f;
+                    if (NPC.velocity.Length() > NPC.ai[1])
+                    {
+                        NPC.velocity.Normalize();
+                        NPC.velocity *= NPC.ai[1];
+                    }
+                }
+
+                if (NPC.velocity.X > 0f)
+                {
+                    NPC.spriteDirection = 1;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
+                }
+                if (NPC.velocity.X < 0f)
+                {
+                    NPC.spriteDirection = -1;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.Pi;
+                }
+
+                return;
+            }
+
             // Velocity and acceleration
             Vector2 idealVelocity = new Vector2(death ? 8f : 6f, death ? 6f : 4.5f);
             float accelerationX = death ? 0.16f : 0.12f;
