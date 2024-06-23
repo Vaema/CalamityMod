@@ -2,6 +2,7 @@
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,60 +16,29 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 110;
+            Item.damage = 51;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 8;
-            Item.useTime = 5;
+            Item.mana = 15;
+            Item.useTime = 8;
             Item.useAnimation = 20;
+            Item.reuseDelay = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 3.5f;
+            Item.knockBack = 5.5f;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.UseSound = SoundID.Item103;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DeadSunShot") with { Volume = 0.6f, PitchVariance = 0.2f };
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CosmicTentacle>();
-            Item.shootSpeed = 17f;
+            Item.shootSpeed = 12f;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 3;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 12;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int i = Main.myPlayer;
-            float playerKnockback = knockback;
-            playerKnockback = player.GetWeaponKnockback(Item, playerKnockback);
-            player.itemTime = Item.useTime;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            Vector2 tentacleVelocity = new Vector2(mouseXDist, mouseYDist);
-            tentacleVelocity.Normalize();
-            Vector2 tentacleRandVelocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-            tentacleRandVelocity.Normalize();
-            tentacleVelocity = tentacleVelocity * 4f + tentacleRandVelocity;
-            tentacleVelocity.Normalize();
-            tentacleVelocity *= Item.shootSpeed;
-            int projChoice = Main.rand.Next(7);
-            float tentacleYDirection = (float)Main.rand.Next(10, 160) * 0.001f;
-            if (Main.rand.NextBool())
-            {
-                tentacleYDirection *= -1f;
-            }
-            float tentacleXDirection = (float)Main.rand.Next(10, 160) * 0.001f;
-            if (Main.rand.NextBool())
-            {
-                tentacleXDirection *= -1f;
-            }
-            if (projChoice == 0)
-            {
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, tentacleVelocity.X, tentacleVelocity.Y, ModContent.ProjectileType<BrimstoneTentacle>(), (int)((double)damage * 1.5f), playerKnockback, i, tentacleXDirection, tentacleYDirection);
-            }
-            else
-            {
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, tentacleVelocity.X, tentacleVelocity.Y, ModContent.ProjectileType<CosmicTentacle>(), damage, playerKnockback, i, tentacleXDirection, tentacleYDirection);
-            }
+            Projectile proj = Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.7f), ModContent.ProjectileType<CosmicTentacle>(), damage, knockback, player.whoAmI);
             return false;
         }
 
