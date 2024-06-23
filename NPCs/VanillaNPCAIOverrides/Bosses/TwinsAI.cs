@@ -170,7 +170,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Despawn
             bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
-            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.75f) || oblivionWasAlive || (oblivionAlive && !spazAlive && lifeRatio < 0.95f);
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.8f) || oblivionWasAlive || (oblivionAlive && !spazAlive && lifeRatio < 0.95f);
             if (Main.player[npc.target].dead || oblivionFightDespawn)
             {
                 npc.velocity.Y -= 0.04f;
@@ -1172,7 +1172,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Despawn
             bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
-            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.75f) || oblivionWasAlive || (oblivionAlive && !retAlive && lifeRatio < 0.95f);
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.8f) || oblivionWasAlive || (oblivionAlive && !retAlive && lifeRatio < 0.95f);
             if (Main.player[npc.target].dead || oblivionFightDespawn)
             {
                 npc.velocity.Y -= 0.04f;
