@@ -120,7 +120,6 @@ Exobeam.DisplayName: Exobeam
 ExobeamSlash.DisplayName: Exobeam Slash
 ExobeamSlashCreator.DisplayName: Anime Sword Effect
 Exoboom.DisplayName: Exoplasma Explosion
-Exocomet.DisplayName: Comet
 ExtantAbhorrence.DisplayName: Extant Abhorrence
 ExtantAbhorrenceMonolith.DisplayName: Abhorrent Monolith
 FallenBlast.DisplayName: Fallen Paladin's Wrath
@@ -144,7 +143,6 @@ GalaxySmasherBlast.DisplayName: Galactic Blast
 GalaxySmasherEcho.DisplayName: Galaxy Smasher Echo
 GalaxySmasherHammer.DisplayName: Galaxy Smasher
 GalaxySmasherMini.DisplayName: Galaxy Smasher
-GalaxyStar.DisplayName: Galaxy Star
 GalileosMoon.DisplayName: Crescent Moon
 GalileosPlanet.DisplayName: Planet
 GayBeam.DisplayName: Iridescent Beam
@@ -162,13 +160,13 @@ GrovetendersEntanglingVines.DisplayName: Entangling Growth
 GrovetendersTouch.DisplayName: Grovetender's Touch
 HeavensMight.DisplayName: Heaven's Might
 HellionSpike.DisplayName: Hellion Spike
-IridescentExcaliburSlash.DisplayName: Iridescent Excalibur Slash
-IridescentExcaliburSlash2.DisplayName: Iridescent Excalibur Slash
-IridescentExcaliburSlash3.DisplayName: Iridescent Excalibur Slash
 HolyColliderHolyFire.DisplayName: Holy Collider Fire
 IceBombFriendly.DisplayName: Ice Bomb
 IllustriousKnife.DisplayName: Illustrious Knife
 InsidiousHarpoon.DisplayName: Insidious Harpoon
+IridescentExcaliburSlash.DisplayName: Iridescent Excalibur Slash
+IridescentExcaliburSlash2.DisplayName: Iridescent Excalibur Slash
+IridescentExcaliburSlash3.DisplayName: Iridescent Excalibur Slash
 JudgementProj.DisplayName: JUDGEMENT
 LamentationsOfTheChained.DisplayName: Lamentations of the Chained
 LaserFountain.DisplayName: Laser Fountain
@@ -211,17 +209,16 @@ PrismTooth.DisplayName: Photon Ripper
 PurityProjection.DisplayName: Purity Projection
 PurityProjectionSigil.DisplayName: Purity Sigil
 PwnagehammerEcho.DisplayName: Pwnagehammer Echo
-PwnagehammerExplosionSmall.DisplayName: Pwnage Blast
 PwnagehammerExplosionBig.DisplayName: Pwnage Blast
+PwnagehammerExplosionSmall.DisplayName: Pwnage Blast
 PwnagehammerProj.DisplayName: Pwnagehammer
-PwnagehammerSmallExplosion.DisplayName: Pwnage Blast
 RainbowBoom.DisplayName: Boom
 Razorwind.DisplayName: Razorwind
 RedtideWhirlpool.DisplayName: Whirlpool
 RemsRevengeProj.DisplayName: Rem's Revenge
 RendingNeedle.DisplayName: Rending Needle
-RespiteblockHoldout.DisplayName: Respiteblock
 RespiteblockBlood.DisplayName: Respiteblock Blood
+RespiteblockHoldout.DisplayName: Respiteblock
 Rox1.DisplayName: Rock
 RoxcaliburProj.DisplayName: Roxcalibur
 RSSolarFlare.DisplayName: Flare
@@ -267,12 +264,12 @@ TaintedBladeSlasher.DisplayName: Tainted Blade
 TenebreusTidesWaterProjectile.DisplayName: Water Spear
 TenebreusTidesWaterSpear.DisplayName: Tenebreus Tides Water Spear
 TenebreusTidesWaterSword.DisplayName: Tenebreus Tides Water Sword
-TerratomereMeleeSlash.DisplayName: Terratomere Slash
-TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerratomereExplosion.DisplayName: Terratomere Explosion
 TerratomereHoldoutProj.DisplayName: Terratomere
+TerratomereMeleeSlash.DisplayName: Terratomere Slash
 TerratomereSlash.DisplayName: Terratomere Slash
 TerratomereSlashCreator.DisplayName: Anime Sword Effect
+TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerrorBeam.DisplayName: Terror Beam
 TerrorBlast.DisplayName: Terror Blast
 ThanatosBoom.DisplayName: Thanos Boom

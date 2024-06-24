@@ -14,6 +14,7 @@ AuroradicalSplitter.DisplayName: Auroradical Star
 AuroradicalStar.DisplayName: Auroradical Star
 BallisticPoisonBombProj.DisplayName: Poison Bomb
 BallisticPoisonBombSpike.DisplayName: Poison Spike
+BallisticPoisonCloud.DisplayName: Ballistic Cloud
 BarrelShrapnel.DisplayName: Barrel Shrapnel
 BettyExplosion.DisplayName: Betty Explosion
 BileExplosion.DisplayName: Bile
@@ -76,13 +77,13 @@ DesecratedBubble.DisplayName: Desecrated Bubble
 DesecratedWaterProj.DisplayName: Desecrated Water
 DestructionBolt.DisplayName: Destruction Bolt
 DestructionStar.DisplayName: Star of Destruction
+DragonScalesInfernado.DisplayName: Infernado
 DragonShit.DisplayName: Fire
 DukesDecapitatorBubble.DisplayName: Duke Bubble
 DukesDecapitatorProj.DisplayName: Duke's Decapitator
 DuststormCloud.DisplayName: Dust Cloud
 DuststormCloudHitbox.DisplayName: Duststorm Cloud
 DuststormInABottleProj.DisplayName: Duststorm Bottle
-DragonScalesInfernado.DisplayName: Infernado
 DynamicPursuerElectricity.DisplayName: Dynamic Electricity
 DynamicPursuerLaser.DisplayName: Dynamic Laser
 DynamicPursuerProjectile.DisplayName: Dynamic Pursuer
