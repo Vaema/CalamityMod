@@ -88,11 +88,11 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (curves > 1)
                         {
-                            Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0f, scalingTimerMax / 2, false);
+                            Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.4f, 0f, scalingTimerMax / 2, false);
                             GeneralParticleHandler.SpawnParticle(blastRing);
                             for (int i = 0; i < 2; i++)
                             {
-                                Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.13f, 0f, scalingTimerMax / 2, true);
+                                Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.26f, 0f, scalingTimerMax / 2, true);
                                 GeneralParticleHandler.SpawnParticle(blastRing2);
                             }
                             Projectile.velocity = Vector2.Zero;

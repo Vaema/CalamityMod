@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -36,21 +37,21 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.GetCritChance<ThrowingDamageClass>() += 5;
             }
 
-            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
-                float xOffset = 4f;
-                if (player.direction == 1)
+                Vector2 spawnPos = player.Center + new Vector2(-25 * player.direction, 0) + Main.rand.NextVector2Circular(20, 20);
+
+                float partScale = Main.rand.NextFloat(0.3f, 0.8f);
+                Vector2 partVel = new Vector2(0, 5).RotatedBy(0.5f * player.direction).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.5f, 0.8f);
+
+                Particle smoke = new HeavySmokeParticle(spawnPos, partVel, Color.Black, 13, partScale * 0.9f, 0.7f, Main.rand.NextFloat(-0.2f, 0.2f), false);
+                GeneralParticleHandler.SpawnParticle(smoke);
+                
+                if (Main.rand.NextBool((player.controlJump ? 2 : 4)))
                 {
-                    xOffset = -40f;
+                    Particle spark3 = new GlowOrbParticle(spawnPos, partVel, false, 19, partScale, Color.LightGreen, true, false, false);
+                    GeneralParticleHandler.SpawnParticle(spark3);
                 }
-                int index = Dust.NewDust(new Vector2(player.Center.X + xOffset, player.Center.Y - 15f), 30, 30, DustID.PurpleTorch, 0f, 0f, 100, default, 2.4f);
-                Main.dust[index].noGravity = true;
-                Main.dust[index].velocity *= 0.3f;
-                if (Main.rand.NextBool(10))
-                {
-                    Main.dust[index].fadeIn = 2f;
-                }
-                Main.dust[index].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
             player.wingTimeMax = 180;
             player.noFallDmg = true;
