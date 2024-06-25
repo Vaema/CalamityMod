@@ -134,11 +134,11 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i <= 12; i++)
                 {
                     int dustStyle = Main.rand.NextBool() ? 66 : 263;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 191 : dustStyle, Projectile.velocity);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, dustStyle, Projectile.velocity);
                     dust.scale = Main.rand.NextFloat(0.5f, 0.8f);
                     dust.velocity = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
                     dust.noGravity = true;
-                    dust.color = dust.type == dustStyle ? InnerColor : default;
+                    dust.color = Color.LightGreen;
                 }
                 preDamage = false;
                 moving = true;
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundStyle fire = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+            SoundStyle fire = new("CalamityMod/Sounds/Item/MeldShoot");
             SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = 0.9f }, Projectile.Center);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -163,11 +163,11 @@ namespace CalamityMod.Projectiles.Magic
             for (int i = 0; i <= 8; i++)
             {
                 int dustStyle = Main.rand.NextBool() ? 66 : 263;
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 191 : dustStyle, Projectile.velocity);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustStyle, Projectile.velocity);
                 dust.scale = Main.rand.NextFloat(0.5f, 0.8f);
                 dust.velocity = Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.3f, 3.1f);
                 dust.noGravity = true;
-                dust.color = dust.type == dustStyle ? InnerColor : default;
+                dust.color = InnerColor;
             }
         }
         public override bool? CanDamage() => preDamage ? false : null;

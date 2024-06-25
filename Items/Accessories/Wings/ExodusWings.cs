@@ -40,6 +40,7 @@ namespace CalamityMod.Items.Accessories.Wings
             if (player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 Vector2 spawnPos = player.Center + new Vector2(-25 * player.direction, 0) + Main.rand.NextVector2Circular(20, 20);
+                Vector2 spawnPos2 = player.Center + new Vector2(15 * player.direction, 0) + Main.rand.NextVector2Circular(20, 20);
 
                 float partScale = Main.rand.NextFloat(0.3f, 0.8f);
                 Vector2 partVel = new Vector2(0, 5).RotatedBy(0.5f * player.direction).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.5f, 0.8f);
@@ -52,6 +53,18 @@ namespace CalamityMod.Items.Accessories.Wings
                     Particle spark3 = new GlowOrbParticle(spawnPos, partVel, false, 19, partScale, Color.LightGreen, true, false, false);
                     GeneralParticleHandler.SpawnParticle(spark3);
                 }
+                if (Main.rand.NextBool())
+                {
+                    Particle smoke2 = new HeavySmokeParticle(spawnPos2, partVel, Color.Black, 13, partScale * 0.6f, 0.7f, Main.rand.NextFloat(-0.2f, 0.2f), false);
+                    GeneralParticleHandler.SpawnParticle(smoke2);
+
+                    if (Main.rand.NextBool((player.controlJump ? 2 : 4)))
+                    {
+                        Particle spark3 = new GlowOrbParticle(spawnPos2, partVel, false, 19, partScale * 0.7f, Color.LightGreen, true, false, false);
+                        GeneralParticleHandler.SpawnParticle(spark3);
+                    }
+                }
+
             }
             player.wingTimeMax = 180;
             player.noFallDmg = true;

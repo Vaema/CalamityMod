@@ -1,7 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
+using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -21,31 +23,36 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 130;
             Item.height = 130;
-            Item.damage = 80;
+            Item.damage = 100;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 20;
+            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 20;
+            Item.useTime = 30;
             Item.useTurn = true;
             Item.knockBack = 5.25f;
-            Item.UseSound = SoundID.Item1;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/SwingMid") with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) };
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.shoot = ModContent.ProjectileType<EntropicFlechetteSmall>();
+            Item.shoot = ModContent.ProjectileType<EntropicFlechette>();
             Item.shootSpeed = 12f;
         }
 
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
-            hitbox = CalamityUtils.FixSwingHitbox(130, 130);
+            //int hitX = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).X;
+            //int hitY = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).Y;
+            //hitbox = new Rectangle(hitX, hitY, Item.width / 3, Item.height / 3);
+
+            //Particle spark2 = new GlowOrbParticle(new Vector2(hitX, hitY), Vector2.Zero, false, 5, 1, Color.Red);
+            //GeneralParticleHandler.SpawnParticle(spark2);
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
             {
-                Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.6f), type, damage / 5, knockback * 0.5f, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectileDirect(source, position, velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.7f, 1.1f), type, damage / 2, knockback * 0.5f, player.whoAmI, 0f, 0f);
             }
             return false;
         }
@@ -61,8 +68,18 @@ namespace CalamityMod.Items.Weapons.Melee
             player.itemRotation = swingRotation - 1.7f * swordDirection;
             player.itemLocation = player.Center;
             player.direction = swordDirection;
-            //swingRotation += swordDirection == 1 ? 0.16f : -0.16f;
-            swingRotation = Utils.Remap(time, 0, player.itemAnimationMax, 0, 2.88f * swordDirection);
+
+            float val = MathF.Abs(time - player.itemAnimationMax * 0.75f) / player.itemAnimationMax;
+
+            float goalRot = Utils.Remap(time, 0, player.itemAnimationMax, -0.5f, 4.9f * swordDirection);
+            float swingEasing = Utils.GetLerpValue(0, player.itemAnimationMax * 0.4f, time, true) * (0.5f - val);
+            if (time < player.itemAnimationMax)
+            {
+                swingRotation = MathHelper.Lerp(swingRotation, goalRot, swingEasing);
+            }
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, swingRotation + MathHelper.ToRadians(120f * swordDirection));
+
             if (Main.rand.NextBool())
             {
                 Vector2 dustVel = new Vector2(5 * swordDirection, -5).RotatedByRandom(1.55f) * Main.rand.NextFloat(0.7f, 1.3f) * 2;
