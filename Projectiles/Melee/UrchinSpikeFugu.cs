@@ -11,8 +11,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
+            Projectile.width = Projectile.height = 6;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.ignoreWater = true;
@@ -24,10 +23,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            // Lionfish: ai[1] is 1 (unused)
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.ai[0] == 0f)
             {
-                float maxRange = Projectile.ai[1] == 1f ? 256f : 100f; // Increased homing range for Lionfish
+                float maxRange = 256f;
                 int npcIndex = -1;
                 foreach (NPC npc in Main.ActiveNPCs)
                 {
@@ -48,31 +48,25 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 if (Projectile.ai[0] > 0f)
                 {
-                    float scaleFactor5 = (float)Main.rand.Next(35, 75) / 30f;
-                    Projectile.velocity = (Projectile.velocity * 20f + Vector2.Normalize(Main.npc[(int)Projectile.ai[0] - 1].Center - Projectile.Center + new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101))) * scaleFactor5) / 21f;
+                    Projectile.velocity = (Projectile.velocity * 20f + Projectile.SafeDirectionTo(Main.npc[(int)Projectile.ai[0] - 1].Center) * 4f) / 21f;
                     Projectile.netUpdate = true;
                 }
             }
             else if (Projectile.ai[0] > 0f)
-            {
-                Vector2 value16 = Vector2.Normalize(Main.npc[(int)Projectile.ai[0] - 1].Center - Projectile.Center);
-                Projectile.velocity = (Projectile.velocity * 40f + value16 * 12f) / 41f;
-            }
+                Projectile.velocity = (Projectile.velocity * 40f + Projectile.SafeDirectionTo(Main.npc[(int)Projectile.ai[0] - 1].Center) * 12f) / 41f;
             else
             {
-                Projectile.ai[0] += 1f;
+                Projectile.ai[0]++;
                 Projectile.alpha -= 25;
                 if (Projectile.alpha < 0)
-                {
                     Projectile.alpha = 0;
-                }
-                Projectile.velocity.Y = Projectile.velocity.Y + 0.015f;
+
+                Projectile.velocity.Y += 0.015f;
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Poisoned, 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Poisoned, 120);
+
+        public override bool? CanDamage() => Projectile.ai[0] < 0f ? false : base.CanDamage();
     }
 }

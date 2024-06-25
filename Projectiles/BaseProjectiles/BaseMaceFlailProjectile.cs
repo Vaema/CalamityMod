@@ -49,6 +49,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		public virtual float SpinHitboxRadius => 55f;
 
 		/// <summary>
+		/// Effect which runs as soon as a spinning mace launches. Does nothing by default.
+		/// </summary>
+		public virtual Action<Projectile> EffectBeforeLaunch => null;
+
+		/// <summary>
 		/// Max amount of afterimages, which is only drawn while the mace is launched.<br/>
 		/// Defaults to 6.
 		/// </summary>
@@ -168,6 +173,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 					Projectile.ResetLocalNPCHitImmunity();
 					Projectile.localNPCHitCooldown = LaunchIFrames * Projectile.MaxUpdates;
 					Projectile.ownerHitCheck = false;
+					EffectBeforeLaunch?.Invoke(Projectile);
 					return;
 				}
 			}
@@ -216,7 +222,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			}
 
 			float forceMult = forced ? 2f : 1f;
-			Vector2 toPlayer = Projectile.DirectionTo(Owner.MountedCenter).SafeNormalize(Vector2.Zero);
+			Vector2 toPlayer = Projectile.SafeDirectionTo(Owner.MountedCenter);
 			Vector2 value = Owner.MountedCenter.DirectionFrom(Projectile.Center + Projectile.velocity).SafeNormalize(Vector2.Zero);
 			if (Projectile.Distance(Owner.MountedCenter) <= maxSpeed * forceMult || (forced && Vector2.Dot(toPlayer, value) < 0f))
 			{
@@ -260,6 +266,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 				CurrentFlailState = FlailState.ForcedRetracting;
 				StateTimer = 0f;
 				Projectile.netUpdate = true;
+				EffectBeforePullback?.Invoke(Projectile);
 				return;
 			}
 
@@ -397,14 +404,14 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			if (CurrentFlailState == FlailState.Ricochet || CurrentFlailState == FlailState.Dropping)
 			{
 				if (Projectile.velocity.Length() > 1f)
-					Projectile.rotation = Projectile.velocity.ToRotation() + Projectile.velocity.X * 0.1f;
+					Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi + Projectile.velocity.X * 0.1f;
 				else
 					Projectile.rotation += Projectile.velocity.X * 0.1f;
 			}
 			else
 			{
-				Vector2 vectorTowardsPlayer = Projectile.DirectionTo(Owner.MountedCenter).SafeNormalize(Vector2.Zero);
-				Projectile.rotation = vectorTowardsPlayer.ToRotation() + MathHelper.PiOver2;
+				Vector2 vectorTowardsPlayer = Projectile.SafeDirectionTo(Owner.MountedCenter);
+				Projectile.rotation = vectorTowardsPlayer.ToRotation() + MathHelper.ToRadians(270f);
 			}
 
 			Projectile.timeLeft = 2;
@@ -484,14 +491,14 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			return base.CanDamage();
 		}
 
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+		{
 			if (CurrentFlailState == FlailState.Spinning)
 			{
 				Vector2 distance = targetHitbox.ClosestPointInRect(Owner.MountedCenter) - Owner.MountedCenter;
 				distance.Y /= SpinVerticalFactor;
 				return distance.Length() <= SpinHitboxRadius;
 			}
-			// Regular collision logic happens otherwise.
 			return base.Colliding(projHitbox, targetHitbox);
 		}
 

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee.MaceFlails;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
