@@ -286,6 +286,10 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
+                case ProjectileID.Cascade:
+                    target.AddBuff(BuffID.OnFire, 60);
+                    break;
+
                 case ProjectileID.Bee:
                 case ProjectileID.GiantBee:
                 case ProjectileID.BladeOfGrass:
