@@ -47,8 +47,8 @@ AnahitasArpeggio: {
 		'''
 }
 
-Apathenull: {
-	DisplayName: Apathenull
+Apathanull: {
+	DisplayName: Apathanull
 	Tooltip:
 		'''
 		Casts a spread of dark cosmic tentacles to skewer your enemies
