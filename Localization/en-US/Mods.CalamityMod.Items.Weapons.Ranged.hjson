@@ -163,7 +163,7 @@ Barinautical: {
 
 BarracudaGun: {
 	DisplayName: Barracuda Gun
-	Tooltip: Fires two barracudas that latch onto enemies and shred them
+	Tooltip: Fires four barracudas that latch onto enemies and shred them
 }
 
 BladedgeRailbow: {
