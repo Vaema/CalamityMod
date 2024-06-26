@@ -14,16 +14,15 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
     public class BallOFuguProj : BaseMaceFlailProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<BallOFugu>();
+        public override int LaunchLifespan => 25;
+        public override float MaxDropRange => 640f;
 
         public static float MaxSpikeTime = 180f;
         public static float SpikeRate = 10f;
         public static float SpikeDamage => 0.6f;
         public static float SpikeKnockback => 0.2f;
 
-        public ref float CurrentFlailState => ref Projectile.ai[0];
         public ref float SpikeTimer => ref Projectile.ai[2];
-
-        public Player Owner => Main.player[Projectile.owner];
 
         public override void SetDefaults()
         {

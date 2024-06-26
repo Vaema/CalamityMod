@@ -8,6 +8,7 @@ namespace CalamityMod.Items.Weapons.Melee
     public class BallOFugu : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults() => ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
         public override void SetDefaults()
         {
             Item.width = 30;

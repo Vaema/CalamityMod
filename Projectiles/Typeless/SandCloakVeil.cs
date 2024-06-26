@@ -72,15 +72,10 @@ namespace CalamityMod.Projectiles.Typeless
                 Vector2 dustPos = dustCircle.RandomPointInCircle();
                 if ((dustPos - Projectile.Center).Length() > 48)
                 {
-                    int dustIndex = Dust.NewDust(dustPos, 1, 1, DustID.Sand);
-                    Main.dust[dustIndex].noGravity = true;
-                    Main.dust[dustIndex].fadeIn = 1f;
-                    Vector2 dustVelocity = Projectile.Center - Main.dust[dustIndex].position;
-                    float distToCenter = dustVelocity.Length();
-                    dustVelocity.Normalize();
-                    dustVelocity = dustVelocity.RotatedBy(MathHelper.ToRadians(-90f));
-                    dustVelocity *= distToCenter * 0.04f;
-                    Main.dust[dustIndex].velocity = dustVelocity;
+                    Dust sand = Dust.NewDustPerfect(dustPos, DustID.Sand);
+                    sand.noGravity = true;
+                    sand.fadeIn = 1f;
+                    sand.velocity = Projectile.SafeDirectionTo(dustPos).RotatedBy(-MathHelper.PiOver4) * Vector2.Distance(Projectile.Center, dustPos) * 0.04f;
                 }
             }
 

@@ -48,6 +48,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		/// </summary>
 		public virtual float SpinHitboxRadius => 55f;
 
+		/// </summary>
+		/// The distance between the projectile and the player's centers while spinning.<br/>
+		/// Defaults to 30f. (1.875 tiles)
+		/// </summary>
+		public virtual float SpinVisualRadius => 30f;
+
 		/// <summary>
 		/// Effect which runs as soon as a spinning mace launches. Does nothing by default.
 		/// </summary>
@@ -184,7 +190,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			if (spinOffset.Y * Owner.gravDir > 0f)
 				spinOffset.Y *= 0.5f;
 
-			Projectile.Center = Owner.MountedCenter + spinOffset * 30f + new Vector2(0, Owner.gfxOffY);
+			Projectile.Center = Owner.MountedCenter + spinOffset * SpinVisualRadius + new Vector2(0, Owner.gfxOffY);
 			Projectile.velocity = Vector2.Zero;
 			Projectile.localNPCHitCooldown = SpinIFrames * Projectile.MaxUpdates;
 		}

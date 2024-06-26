@@ -1394,7 +1394,12 @@ TrueCausticEdge: {
 
 Tumbleweed: {
 	DisplayName: Tumbleweed
-	Tooltip: Releases a rolling tumbleweed on hit
+	Tooltip:
+		'''
+		Throws a tumbleweed flail
+		Forms a localized duststorm while spinning
+		Launched tumbleweed detaches and rolls forward on enemy hit
+		'''
 }
 
 TyphonsGreed: {
