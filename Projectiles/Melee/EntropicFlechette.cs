@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (time >= 5)
             {
-                NPC target = Projectile.Center.ClosestNPCAt(250);
+                NPC target = Projectile.Center.ClosestNPCAt(320);
 
                 if (target == null)
                 {
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.numHits > 0)
             {
                 SoundStyle sound = new("CalamityMod/Sounds/Item/MeldBurn");
-                SoundEngine.PlaySound(sound with { Volume = 0.35f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
+                SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
             }
             for (int i = 0; i <= 9; i++)
             {

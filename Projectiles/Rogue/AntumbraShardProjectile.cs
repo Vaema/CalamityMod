@@ -17,12 +17,6 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ShardofAntumbra";
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
         public ref float time => ref Projectile.ai[0];
 
         // Vanilla sticky code is jank, So I did my own (for better or worse)
@@ -201,9 +195,9 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.Center = portalSpot;
 
                     if (closestTarget == null)
-                        Projectile.velocity = (Projectile.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * -12;
+                        Projectile.velocity = (Projectile.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * -16;
                     else
-                        Projectile.velocity = (Projectile.Center - closestTarget.Center).SafeNormalize(Vector2.UnitX) * -12;
+                        Projectile.velocity = (Projectile.Center - closestTarget.Center).SafeNormalize(Vector2.UnitX) * -16;
 
                     for (int i = 0; i <= 12; i++)
                     {
@@ -351,7 +345,6 @@ namespace CalamityMod.Projectiles.Rogue
                     Main.EntitySpriteDraw(portal.Value, portalDrawPos, null, Color.LightGreen with { A = 0 } * (1 - fading * 0.3f) * 0.7f, 0, portal.Size() * 0.5f, (0.8f - (i * 0.15f)) * portalFading, SpriteEffects.None);
                 }
             }
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
         public override bool? CanDamage() => canDamage ? null : false;

@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.CopperShortsword).
-                AddIngredient<TomeofFates>().
+                AddIngredient<Apathenull>().
                 AddIngredient<FlareBolt>().
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.TinShortsword).
-                AddIngredient<TomeofFates>().
+                AddIngredient<Apathenull>().
                 AddIngredient<FlareBolt>().
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().

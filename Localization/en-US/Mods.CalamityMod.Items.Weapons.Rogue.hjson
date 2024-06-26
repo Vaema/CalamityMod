@@ -1058,7 +1058,12 @@ Seraphim: {
 
 ShardofAntumbra: {
 	DisplayName: Shard of Antumbra
-	Tooltip: Stealth strikes leave homing stars in their wake
+	Tooltip:
+		'''
+		Throws a cosmic javelin that sticks into enemies and tiles, creating a small rift nearby on enemy hits
+		After hitting a target, it will charge with energy and teleport to the rift, aiming itself at the nearest target
+		Stealth strikes create a multitude of rifts to spawn additional javelins upon teleporting
+		'''
 }
 
 ShatteredSun: {

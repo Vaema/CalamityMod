@@ -47,6 +47,15 @@ AnahitasArpeggio: {
 		'''
 }
 
+Apathenull: {
+	DisplayName: Apathenull
+	Tooltip:
+		'''
+		Casts a spread of dark cosmic tentacles to skewer your enemies
+		Tentacles will aim at your cursor and lash out three times before disappearing
+		'''
+}
+
 ApoctosisArray: {
 	DisplayName: Apoctosis Array
 	Tooltip:
@@ -884,15 +893,6 @@ Thunderstorm: {
 		'''
 		Fires a stream of exploding green plasma bullets that rain down additional plasma from the sky
 		'Make it rain'
-		'''
-}
-
-TomeofFates: {
-	DisplayName: Tome of Fates
-	Tooltip:
-		'''
-		Casts cosmic tentacles to spear your enemies
-		Can randomly fire a red tentacle for immense damage
 		'''
 }
 

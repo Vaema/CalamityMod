@@ -106,7 +106,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             float partScale2 = Main.rand.NextFloat(0.8f, 1.2f);
             Vector2 partVel2 = dustVel2 * Main.rand.NextFloat(0.2f, 0.3f);
-            Particle smoke = new HeavySmokeParticle(player.Center + dustVel2 * 25 + Main.rand.NextVector2Circular(12, 12), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection) * -5, Color.Black, 19, partScale2, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false);
+            Particle smoke = new HeavySmokeParticle(player.Center + dustVel2 * 20 + Main.rand.NextVector2Circular(12, 12), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection) * -5, Color.Black, 19, partScale2, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false);
             GeneralParticleHandler.SpawnParticle(smoke);
             time++;
         }

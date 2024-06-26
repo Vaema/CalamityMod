@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class TomeofFates : ModItem, ILocalizedModType
+    public class Apathenull : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 5.5f;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DeadSunShot") with { Volume = 0.6f, PitchVariance = 0.2f };
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/MeldBurn") with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.45f, -0.6f) };
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CosmicTentacle>();
             Item.shootSpeed = 12f;
