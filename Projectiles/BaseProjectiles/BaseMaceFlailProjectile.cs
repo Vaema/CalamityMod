@@ -294,6 +294,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		/// </summary>
 		public virtual void DrawChain()
 		{
+			Texture2D Chain = ModContent.Request<Texture2D>(ChainTexturePath).Value;
 			Vector2 playerArmPosition = Main.GetPlayerArmPosition(Projectile);
 
 			// This fixes a vanilla GetPlayerArmPosition bug causing the chain to draw incorrectly when stepping up slopes. The flail itself still draws incorrectly due to another similar bug.
@@ -302,14 +303,14 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
 			Vector2 chainPos = Projectile.Center;
 			Vector2 toArms = playerArmPosition.MoveTowards(chainPos, 4f) - chainPos;
-			float chainSegmentLength = MathF.Max(1f, Chain.Height());
+			float chainSegmentLength = MathF.Max(1f, Chain.Height);
 			float rotation = toArms.ToRotation() + MathHelper.PiOver2;
 
 			float chainsLeft = toArms.Length() + chainSegmentLength * 0.5f;
 			while (chainsLeft > 0f)
 			{
 				Color chainDrawColor = Lighting.GetColor((int)(chainPos.X / 16f), (int)(chainPos.Y / 16f));
-				Main.spriteBatch.Draw(Chain.Value, chainPos - Main.screenPosition, null, chainDrawColor, rotation, Chain.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
+				Main.spriteBatch.Draw(Chain, chainPos - Main.screenPosition, null, chainDrawColor, rotation, Chain.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
 
 				chainPos += toArms.SafeNormalize(Vector2.Zero) * chainSegmentLength;
 				chainsLeft -= chainSegmentLength;
@@ -337,13 +338,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		public ref float CollisionCounter => ref Projectile.localAI[0];
 
 		public Player Owner => Main.player[Projectile.owner];
-
-		public static Asset<Texture2D> Chain;
-		public override void Load()
-		{
-			if (!String.IsNullOrEmpty(ChainTexturePath))
-				Chain = ModContent.Request<Texture2D>(ChainTexturePath);
-		}
 
 		public override void SetStaticDefaults()
 		{
