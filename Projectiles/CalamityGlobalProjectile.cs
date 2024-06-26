@@ -2516,12 +2516,12 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.RocketSkeleton && projectile.ai[1] == 1f)
+                else if (projectile.type == ProjectileID.RocketSkeleton && projectile.ai[1] >= 1f)
                 {
                     bool primeCannonProjectile = projectile.ai[1] == 2f;
                     bool homeIn = false;
-                    float homingTime = masterMode ? 90f : 180f;
-                    float spreadOutCutoffTime = 555f;
+                    float homingTime = masterMode ? 80f : 140f;
+                    float spreadOutCutoffTime = 510f;
                     float homeInCutoffTime = spreadOutCutoffTime - homingTime;
                     float minAcceleration = masterMode ? 0.072f : 0.08f;
                     float maxAcceleration = masterMode ? 0.108f : 0.12f;
