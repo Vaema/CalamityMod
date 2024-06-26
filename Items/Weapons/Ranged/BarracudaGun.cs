@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Ranged;
-using Humanizer;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
