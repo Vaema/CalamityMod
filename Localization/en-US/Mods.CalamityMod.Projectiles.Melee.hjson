@@ -38,7 +38,6 @@ BlazingPhantomBlade.DisplayName: Blazing Phantom Blade
 Blood.DisplayName: Carnage Blood
 Blood2.DisplayName: Blood
 BloodBall.DisplayName: Blood Ball
-BloodExplosion.DisplayName: Blood
 BloodScythe.DisplayName: Blood Scythe
 BonebreakerFragment1.DisplayName: Bone Crunching Shrapnel
 BonebreakerProjectile.DisplayName: Bonebreaker
@@ -212,7 +211,7 @@ PwnagehammerProj.DisplayName: Pwnagehammer
 RainbowBoom.DisplayName: Boom
 Razorwind.DisplayName: Razorwind
 RedtideWhirlpool.DisplayName: Whirlpool
-RemsRevengeProj.DisplayName: Rem's Revenge
+RemsRevengeExplosion.DisplayName: Blood Explosion
 RendingNeedle.DisplayName: Rending Needle
 RespiteblockBlood.DisplayName: Respiteblock Blood
 RespiteblockHoldout.DisplayName: Respiteblock
@@ -286,7 +285,7 @@ TrueBitingEmbrace.DisplayName: Biting Embrace
 TrueDecaysRetort.DisplayName: Decay's Retort
 TrueGrovetendersTouch.DisplayName: Grovetender's Touch
 TruePurityProjection.DisplayName: Purity Projection
-TumbleweedRolling.DisplayName: Tumbleweed
+TumbleweedRolling.DisplayName: Rolling Tumbleweed
 TyphonsGreedBubble.DisplayName: Typhon's Greed
 UltimusCleaverDust.DisplayName: Ultimus Flame
 UrchinBall.DisplayName: Urchin Ball

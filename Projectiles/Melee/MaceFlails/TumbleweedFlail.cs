@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
         public override float LaunchSpeed => 20f;
         public override int LaunchLifespan => 20;
         public override float MaxDropRange => 640f;
+        public override float MaxRetractSpeed => 24f;
+        public override float RetractAcceleration => 3.6f;
 
         public static float MaxAuraTime = 60f;
 
@@ -43,8 +45,11 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                 Projectile.ownerHitCheck = false; // Dust aura can hit through walls
                 AuraScale = MathHelper.Clamp(AuraScale + 1f / MaxAuraTime, 0f, 1f);
 
+                if (AuraScale < 0.15f)
+                    return;
+
                 // The dust machine
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < (int)(10 * AuraScale); i++)
                 {
                     Circle dustCircle = new Circle(Owner.MountedCenter, 240f * AuraScale);
                     Vector2 dustPos = dustCircle.RandomPointInCircle();

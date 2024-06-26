@@ -532,7 +532,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 				SpriteEffects spriteEffects = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 				for (int k = 0; k < Projectile.oldPos.Length && k < StateTimer; k++)
 				{
-					Vector2 drawPos = Projectile.oldPos[k] - Main.screenPosition + drawOrigin + new Vector2(0f, Projectile.gfxOffY);
+					Vector2 drawPos = Projectile.oldPos[k] - Main.screenPosition + drawOrigin * Projectile.scale + new Vector2(0f, Projectile.gfxOffY);
 					Color color = Projectile.GetAlpha(lightColor) * ((float)(Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length);
 					Main.spriteBatch.Draw(maceTex, drawPos, null, color, Projectile.rotation, drawOrigin, Projectile.scale - k / (float)Projectile.oldPos.Length / 3, spriteEffects, 0f);
 				}
