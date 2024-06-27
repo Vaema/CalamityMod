@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Amarok, RebalanceYoyo(-1f, 432f, 28f, 1, 12) },
 
                 // original: 13s lifetime | 235px range | 14px/f top speed | 0 extra updates
-                { ProjectileID.Cascade, RebalanceYoyo(30f, 384f, 28f, 1, 12) },
+                { ProjectileID.Cascade, RebalanceYoyo(30f, 384f, 28f, 1, 15) },
 
                 // original: 16s lifetime | 275px range | 17px/f top speed | 0 extra updates
                 { ProjectileID.Chik, RebalanceYoyo(-1f, 400f, 32f, 1, 12) },
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Gradient, RebalanceYoyo(-1f, 384f, 36f, 1, 12) },
 
                 // original: 12s lifetime | 275px range | 15px/f top speed | 0 extra updates
-                { ProjectileID.HelFire, RebalanceYoyo(-1f, 320f, 42f, 2, 12) },
+                { ProjectileID.HelFire, RebalanceYoyo(-1f, 368f, 42f, 2, 12) },
 
                 // original: 11s lifetime | 225px range | 14px/f top speed | 0 extra updates
                 { ProjectileID.HiveFive, RebalanceYoyo(24f, 320f, 20f, 0, 15) },
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ValkyrieYoyo, RebalanceYoyo(-1f, 480f, 42f, 2, 12) },
 
                 // original: 11s lifetime | 225px range | 14px/f top speed | 0 extra updates
-                { ProjectileID.Valor, RebalanceYoyo(30f, 400f, 36f, 1, 12) },
+                { ProjectileID.Valor, RebalanceYoyo(30f, 400f, 36f, 1, 15) },
 
                 // original: 3s lifetime | 130px range | 9px/f top speed | 0 extra updates
                 { ProjectileID.WoodYoyo, RebalanceYoyo(15f, 240f, 14f, 0, 20) },

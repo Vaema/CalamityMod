@@ -27,14 +27,15 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<GelWave>();
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = 16f;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(15))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurificationPowder);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.BlueFairy);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PinkFairy);
             }
         }
 

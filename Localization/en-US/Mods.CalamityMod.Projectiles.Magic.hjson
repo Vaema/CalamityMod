@@ -5,7 +5,6 @@ AcidicSaxBubble.DisplayName: Acid Bubble
 AcidicSaxMist.DisplayName: Acid Mist
 AetherBeam.DisplayName: Aether Beam
 AnahitasArpeggioNote.DisplayName: Anahita's Song
-Ancient.DisplayName: Ancient Dust
 Ancient2.DisplayName: Ancient Dust
 ApotheosisEnergy.DisplayName: Apotheosis Energy
 ApotheosisWorm.DisplayName: The Devourer of Gods
@@ -26,8 +25,6 @@ BeamingBolt.DisplayName: Beaming Bolt
 BeamingBolt2.DisplayName: Beaming Bolt
 BeamStar.DisplayName: Stardust Star
 BeastScythe.DisplayName: Beast Scythe
-BigBeamofDeath.DisplayName: Big Beam of Death
-BigBeamofDeath2.DisplayName: Big Beam of Death
 BlackAnurianBubble.DisplayName: Anurian Bubble
 BlackAnurianPlankton.DisplayName: Anurian Plankton
 BlindingLight.DisplayName: Blinding Light
@@ -56,8 +53,8 @@ CryoBlast.DisplayName: Cryo Blast
 DarkSparkBeam.DisplayName: Dark Spark Beam
 DarkSparkPrism.DisplayName: Dark Crystal
 DeathhailBeam.DisplayName: Deathhail
+DeathValleyDusterProjectile.DisplayName: Death Valley Duster
 DivineRetributionSpear.DisplayName: Divine Retribution
-DustProjectile.DisplayName: Death Valley Dust
 EelDrop.DisplayName: Acid Eel Drop
 EidolicWailSoundwave.DisplayName: Eidolic Wail
 EldritchTentacle.DisplayName: Eldritch Tentacle
@@ -75,7 +72,6 @@ ExoVortex2.DisplayName: Subsuming Vortex
 FabBolt.DisplayName: Fab Bolt
 FabRay.DisplayName: Fab Ray
 FatesRevealFlame.DisplayName: Fate's Reveal
-FlamingPumpkin.DisplayName: Pumpkin
 FlareBoltProjectile.DisplayName: Flare Bolt
 ForbiddenAxeBlade.DisplayName: Ruin Blade
 ForbiddenSunburst.DisplayName: Sunburst
@@ -169,6 +165,10 @@ PlasmaRay.DisplayName: Plasma Ray
 PlasmaRay2.DisplayName: Plasma Ray
 PlasmaShot.DisplayName: Plasma Shot
 PoseidonTyphoon.DisplayName: Poseidon Typhoon
+PrimordialAncientExplosion.DisplayName: Primordial Ancient
+PrimordialAncientProjectile.DisplayName: Primordial Ancient
+PrimordialEarthExplosion.DisplayName: Primordial Earth
+PrimordialEarthProjectile.DisplayName: Primordial Earth
 PrinceFlameLarge.DisplayName: Holy Fireball
 PrinceFlameSmall.DisplayName: Holy Fire
 RainbowComet.DisplayName: Comet
@@ -219,8 +219,6 @@ SpiritDust.DisplayName: Spirit Dust
 Starblast.DisplayName: Star
 StardustElementalBeam.DisplayName: Stardust Beam
 StickyFeather.DisplayName: Feather
-SupremeDustFlakProjectile.DisplayName: Earthy Dust
-SupremeDustProjectile.DisplayName: Earthy Dust
 TacticiansElectricBoom.DisplayName: Electric Explosion
 TacticiansTrumpCardProj.DisplayName: Trump Beam
 TearsofHeavenProjectile.DisplayName: Tears of Heaven
@@ -255,8 +253,8 @@ VolatileStarcore.DisplayName: Volatile Starcore
 VortexElementalBeam.DisplayName: Vortex Lightning
 WaterLeechProj.DisplayName: Water Leech
 WaywasherProj.DisplayName: Waywasher Blast
-WingmanShot.DisplayName: Mana Shot
 WingmanGrenade.DisplayName: Mana Grenade
+WingmanShot.DisplayName: Mana Shot
 WulfrumBolt.DisplayName: Wulfrum Bolt
 WulfrumManaDrain.DisplayName: Mana Drain
 WyvernFeatherGreen.DisplayName: Feather
@@ -265,8 +263,3 @@ WyvernFeatherPurple.DisplayName: Feather
 WyvernProjectile.DisplayName: Wyvern
 YharimsCrystalBeam.DisplayName: Yharim's Beam
 YharimsCrystalPrism.DisplayName: Yermes Christal
-DeathValleyDusterProjectile.DisplayName: Death Valley Duster
-PrimordialEarthExplosion.DisplayName: Primordial Earth
-PrimordialEarthProjectile.DisplayName: Primordial Earth
-PrimordialAncientProjectile.DisplayName: Primordial Ancient
-PrimordialAncientExplosion.DisplayName: Primordial Ancient

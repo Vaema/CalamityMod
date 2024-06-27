@@ -151,6 +151,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.numHits <= 0)
             {
+                Player Owner = Main.player[Projectile.owner];
+                Owner.Calamity().GeneralScreenShakePower = 4f;
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
                 for (int i = 0; i < 20; i++)
                 {

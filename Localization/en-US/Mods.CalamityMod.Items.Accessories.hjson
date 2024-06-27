@@ -1247,7 +1247,7 @@ PhantomicArtifact: {
 		'''
 		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants 10% increased summon damage and throws knives at enemies]
 		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense, 5% damage reduction and a 20% damage reduction bulwark]
-		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants 2 HP/s life regen and occasionally drops restorative phantom hearts]
+		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants 1 HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
 		'''
 }
 

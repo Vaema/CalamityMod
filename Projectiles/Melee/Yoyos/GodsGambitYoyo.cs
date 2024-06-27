@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.penetrate = -1;
             Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12 * MaxUpdates;
+            Projectile.localNPCHitCooldown = 15 * MaxUpdates;
         }
 
         public override void AI()

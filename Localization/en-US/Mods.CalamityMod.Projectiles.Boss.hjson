@@ -148,6 +148,7 @@ SwirlingFire.DisplayName: Fire
 ThanatosBeamStart.DisplayName: T Hanos Beam
 ThanatosBeamTelegraph.DisplayName: Gamma Disintegration Beam Telegraph
 ThanatosLaser.DisplayName: Exo Pulse Laser
+THanosSideLaser.DisplayName: T Hanos Side Laser
 ThornBallSpike.DisplayName: Thorn Ball Spike
 ToxicCloud.DisplayName: Toxic Cloud
 UnstableCrimulanGlob.DisplayName: Unstable Crimulan Glob
@@ -157,4 +158,3 @@ WaterSpear.DisplayName: Water Spear
 YharonBulletHellVortex.DisplayName: Bullet Hell Vortex
 YharonFireball.DisplayName: Dragon Fireball
 YharonFireball2.DisplayName: Dragon Fireball
-THanosSideLaser.DisplayName: T Hanos Side Laser

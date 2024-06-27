@@ -15,7 +15,6 @@ AstralSandBallGun.DisplayName: Astral Sand
 AstralSpray.DisplayName: Astral Spray
 AstralStar.DisplayName: Star
 AuricLandMineExplosion.DisplayName: Auric Land Mine Explosion
-BallisticPoisonCloud.DisplayName: Ballistic Cloud
 BasicPlagueBee.DisplayName: Basic Plague Bee
 BlazingStarHeal.DisplayName: Blazing Star Heal
 BlazingStarThatDoesNotHeal.DisplayName: Blazing Star That Does Not Heal
@@ -30,7 +29,6 @@ BossRushEffectThing.DisplayName: Boss Rush Effect Thing
 BossRushEndEffectThing.DisplayName: Boss Rush End Effect Thing
 BossRushFailureEffectThing.DisplayName: Boss Rush Failure Effect Thing
 BossRushTierAnimation.DisplayName: Boss Rush Tier Animation
-BrimstoneHellfireballFriendly2.DisplayName: Hellfire
 ChaoticGeyser.DisplayName: Chaotic Geyser
 ChlorophyteLifePulse.DisplayName: Life Pulse
 ChronoClock.DisplayName: Chrono Clock
@@ -66,10 +64,8 @@ GodKiller.DisplayName: God Killer
 GodSlayerShrapnel.DisplayName: Flame
 GodSlayerShrapnelRound.DisplayName: Round
 GreenLabSeeker.DisplayName: Seeking Mechanism
-HellfireExplosionFriendly2.DisplayName: Explosion
 HeronBobber.DisplayName: Heron Bobber
 HideOfAstrumDeusExplosion.DisplayName: Explosion
-HolyExplosion.DisplayName: Explosion
 HolyExplosionSupreme.DisplayName: Explosion
 HydrothermalSmoke.DisplayName: Smoke
 HydrothermicFlare.DisplayName: Hydrothermic Flare

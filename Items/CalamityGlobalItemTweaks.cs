@@ -61,7 +61,7 @@ namespace CalamityMod.Items
                 { ItemID.Boomstick, Do(PointBlank, DamageExact(11)) },
                 { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, DamageExact(97)) },
                 { ItemID.CandyCornRifle, Do(PointBlank, DamageExact(66)) },
-                { ItemID.Cascade, Do(AutoReuse, DamageExact(30)) },
+                { ItemID.Cascade, Do(AutoReuse, DamageExact(31)) },
                 { ItemID.ChainGuillotines, Do(DamageExact(100)) },
                 { ItemID.ChainGun, Do(PointBlank, DamageExact(35)) },
                 { ItemID.ChainKnife, Do(AutoReuse, DamageRatio(1.34f)) },  // Uses ratios due to remix seed
