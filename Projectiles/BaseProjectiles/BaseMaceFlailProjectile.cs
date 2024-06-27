@@ -15,8 +15,32 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 	public abstract class BaseMaceFlailProjectile : ModProjectile
 	{
 		public abstract int AssociatedItemID { get; }
-		public override LocalizedText DisplayName => CalamityUtils.GetItemName(AssociatedItemID);
 
+		// The following can also be used in each individual projectile class, without the need to re-define:
+		#region Utilities
+		public enum FlailState
+		{
+			Spinning = 0,
+			LaunchingForward = 1,
+			Retracting = 2,
+			ForcedRetracting = 4,
+			Ricochet = 5,
+			Dropping = 6
+		}
+
+		public FlailState CurrentFlailState
+		{
+			get => (FlailState)Projectile.ai[0];
+			set => Projectile.ai[0] = (float)value;
+		}
+		public ref float StateTimer => ref Projectile.ai[1];
+		public ref float CollisionCounter => ref Projectile.localAI[0];
+		// ai[2] and localAI[1] are completely open for additional gimmicks.
+
+		public Player Owner => Main.player[Projectile.owner];
+		#endregion
+
+		// Core properties of the mace's function.
 		#region Properties
 		/// <summary>
 		/// Local immunity frames granted while dropped or retracted<br/>
@@ -103,15 +127,15 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
 		/// <summary>
 		/// Max speed when retracted, affected by attack speed.<br/>
-		/// Defaults to 14f.
+		/// Defaults to 15f.
 		/// </summary>
-		public virtual float MaxRetractSpeed { get; set; } = 14f;
+		public virtual float MaxRetractSpeed { get; set; } = 15f;
 		
 		/// <summary>
 		/// Acceleration when retracted, affected by attack speed.<br/>
-		/// Defaults to 2f.
+		/// Defaults to 2.5f.
 		/// </summary>
-		public virtual float RetractAcceleration { get; set; } = 2f;
+		public virtual float RetractAcceleration { get; set; } = 2.5f;
 		#endregion
 
 		// Most of these should be kept default for consistency with vanilla maces.
@@ -149,6 +173,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		public virtual float DropKnockback => 0.5f;
 		#endregion
 
+		// Methods for most individual behaviour steps which can be useful to override.
 		#region Overridable Methods
 		/// <summary>
 		/// Scales every value that should be affected by melee speed.<br/>
@@ -160,6 +185,25 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			launchSpeed *= meleeSpeedMultiplier;
 			maxSpeed *= meleeSpeedMultiplier;
 			acceleration *= meleeSpeedMultiplier;
+		}
+
+		/// <summary>
+		/// Calculates the damage and knockback multiplier based on the current behaviour.<br/>
+		/// Can be overridden to include any extra stat adjustments.
+		/// </summary>
+		public virtual void UpdateDamageKB(out float damageMult, out float kbMult)
+		{
+			damageMult = 1f;
+			kbMult = 1f;
+			if (CurrentFlailState == FlailState.Spinning)
+			{
+				damageMult = SpinDamage;
+				kbMult = SpinKnockback;
+			}
+			else if (CurrentFlailState == FlailState.LaunchingForward || CurrentFlailState == FlailState.Retracting)
+				damageMult = LaunchDamage;
+			else if (CurrentFlailState == FlailState.Dropping)
+				kbMult = DropKnockback;
 		}
 
 		public virtual void SpinAI(float launchSpeed)
@@ -318,26 +362,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		}
 		#endregion
 
-		public enum FlailState
-		{
-			Spinning = 0,
-			LaunchingForward = 1,
-			Retracting = 2,
-			ForcedRetracting = 4,
-			Ricochet = 5,
-			Dropping = 6
-		}
-
-		// These properties wrap the usual ai and localAI arrays for cleaner and easier to understand code.
-		public FlailState CurrentFlailState
-		{
-			get => (FlailState)Projectile.ai[0];
-			set => Projectile.ai[0] = (float)value;
-		}
-		public ref float StateTimer => ref Projectile.ai[1];
-		public ref float CollisionCounter => ref Projectile.localAI[0];
-
-		public Player Owner => Main.player[Projectile.owner];
+		#region Hook Overrides
+		public override LocalizedText DisplayName => CalamityUtils.GetItemName(AssociatedItemID);
 
 		public override void SetStaticDefaults()
 		{
@@ -504,15 +530,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
 		public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
 		{
-			if (CurrentFlailState == FlailState.Spinning)
-				modifiers.SourceDamage *= SpinDamage;
-			else if (CurrentFlailState == FlailState.LaunchingForward || CurrentFlailState == FlailState.Retracting)
-				modifiers.SourceDamage *= LaunchDamage;
-
-			if (CurrentFlailState == FlailState.Spinning)
-				modifiers.Knockback *= SpinKnockback;
-			else if (CurrentFlailState == FlailState.Dropping)
-				modifiers.Knockback *= DropKnockback;
+			UpdateDamageKB(out float damageMult, out float kbMult);
+			modifiers.SourceDamage *= damageMult;
+			modifiers.Knockback *= kbMult;
 
 			modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
 		}
@@ -539,5 +559,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			}
 			return true;
 		}
+		#endregion
 	}
 }

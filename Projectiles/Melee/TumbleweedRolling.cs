@@ -10,8 +10,8 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/MaceFlails/TumbleweedFlail";
 
-        public static int Lifetime = 180;
-        public static int Rolltime = 45; // How long it remains gravity-defiant if it doesn't hit tiles
+        public static int Lifetime = 120;
+        public static int Rolltime = 30; // How long it remains gravity-defiant if it doesn't hit tiles
 
         public ref float RollState => ref Projectile.ai[0]; // 1f: falling
 
@@ -19,11 +19,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.width = Projectile.height = 42;
             Projectile.friendly = true;
-            Projectile.penetrate = 8;
+            Projectile.penetrate = 6;
             Projectile.timeLeft = Lifetime;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 15;
         }
 
         public override void AI()

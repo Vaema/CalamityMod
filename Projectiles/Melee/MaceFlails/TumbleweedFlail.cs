@@ -19,14 +19,14 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
     {
         public override int AssociatedItemID => ModContent.ItemType<Tumbleweed>();
         public override int SpinIFrames => 10;
-        public override float SpinHitboxRadius => 70f + 160f * AuraScale;
+        public override float SpinHitboxRadius => MathF.Max(64f, 224f * AuraScale);
         public override float SpinVerticalFactor => 1f; // The aura is fully circular, rather than elliptical
         public override float SpinVisualRadius => 45f;
-        public override float LaunchSpeed => 20f;
+        public override float LaunchSpeed => 24f;
         public override int LaunchLifespan => 20;
         public override float MaxDropRange => 640f;
-        public override float MaxRetractSpeed => 24f;
-        public override float RetractAcceleration => 3.6f;
+        public override float MaxRetractSpeed => 28f;
+        public override float RetractAcceleration => 4f;
 
         public static float MaxAuraTime = 60f;
 
@@ -40,6 +40,13 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
 
         public override void ExtraBehavior()
         {
+            if (CurrentFlailState != FlailState.Spinning || Main.rand.NextBool())
+            {
+                Dust sand = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, Alpha: 100, Scale: Main.rand.NextFloat(0.6f, 1.2f));
+                sand.noGravity = CurrentFlailState == FlailState.Dropping;
+                sand.velocity = CurrentFlailState == FlailState.Spinning ? Main.rand.NextVector2Unit() * 1.5f : Projectile.velocity * 0.25f;
+            }
+
             if (CurrentFlailState == FlailState.Spinning)
             {
                 Projectile.ownerHitCheck = false; // Dust aura can hit through walls
@@ -83,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (CurrentFlailState != FlailState.LaunchingForward && CurrentFlailState != FlailState.Dropping && CurrentFlailState != FlailState.Ricochet)
+            if (CurrentFlailState == FlailState.Spinning)
                 return;
 
             SoundEngine.PlaySound(SoundID.NPCDeath15, Projectile.Center);

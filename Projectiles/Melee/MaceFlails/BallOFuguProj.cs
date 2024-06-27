@@ -14,8 +14,13 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
     public class BallOFuguProj : BaseMaceFlailProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<BallOFugu>();
-        public override int LaunchLifespan => 25;
+        public override float SpinHitboxRadius => 66f;
+        public override float SpinVisualRadius => 36f;
+        public override float LaunchSpeed => 20f;
+        public override int LaunchLifespan => 20;
         public override float MaxDropRange => 640f;
+        public override float MaxRetractSpeed => 24f;
+        public override float RetractAcceleration => 3.6f;
 
         public static float MaxSpikeTime = 180f;
         public static float SpikeRate = 10f;
@@ -39,7 +44,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             if (Projectile.owner == Main.myPlayer && SpikeTimer > MaxSpikeTime && SpikeTimer % SpikeRate == 0f)
             {
                 Vector2 velocity = Projectile.DirectionFrom(Owner.MountedCenter).SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(4.5f, 6.5f);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner, -10f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner);
             }
             base.SpinAI(launchSpeed);
         }
@@ -49,9 +54,13 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             int SpikeCount = (int)(MathHelper.Clamp(SpikeTimer, 0f, MaxSpikeTime) / SpikeRate);
             for (int i = 0; i < SpikeCount; i++)
             {
-                Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(3.5f, 5f);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner, -10f);
+                Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 7.2f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner);
             }
+
+            if (SpikeCount > 0)
+                SoundEngine.PlaySound(BallOFugu.BlowSound, Projectile.Center);
+
             SpikeTimer = 0f;
             Projectile.netUpdate = true;
         };

@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.Flairon).
                 AddIngredient<BallOFugu>().
                 AddIngredient<Tumbleweed>().
-                AddIngredient<UrchinFlail>().
                 AddIngredient<YharonSoulFragment>(4).
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().

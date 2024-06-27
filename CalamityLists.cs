@@ -2038,8 +2038,6 @@ namespace CalamityMod
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
-                ProjectileType<UrchinBall>(),
-                ProjectileType<UrchinBallSpike>(),
                 ProjectileType<UrchinMaceProjectile>(),
                 ProjectileType<UrchinStingerProj>(),
                 ProjectileType<ViolenceThrownProjectile>(),
