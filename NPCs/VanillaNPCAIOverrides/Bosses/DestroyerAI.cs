@@ -176,7 +176,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                if (masterMode && !bossRush && npc.localAI[3] != -1f)
+                if (masterMode && !bossRush && npc.localAI[3] == 1f)
                 {
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
@@ -186,18 +186,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
                         }
                     }
-                }
-
-                // Set variable to force despawn when Prime dies in Master Rev+
-                // Set to -1f if Prime isn't alive when summoned
-                if (npc.localAI[3] == 0f)
-                {
-                    if (oblivionAlive)
-                        npc.localAI[3] = 1f;
-                    else
-                        npc.localAI[3] = -1f;
-
-                    npc.SyncExtraAI();
                 }
             }
 
@@ -295,7 +283,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Regenerate Probes in Master Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
-                if (masterMode && probeLaunched)
+                // This doesn't happen if Oblivion is alive
+                if (masterMode && probeLaunched && !oblivionAlive)
                 {
                     npc.localAI[2] += 1f;
                     if (npc.localAI[2] >= 600f)
@@ -776,8 +765,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
-            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.8f) || oblivionWasAlive;
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.8f) && npc.localAI[3] == 1f;
             if (player.dead || oblivionFightDespawn)
             {
                 shouldFly = false;
@@ -916,7 +904,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool flyWyvernMovement = false;
                     if (flyAtTarget)
                     {
-                        if (((npc.velocity.X > 0f && targetTilePosX < 0f) || (npc.velocity.X < 0f && targetTilePosX > 0f) || (npc.velocity.Y > 0f && targetTilePosY < 0f) || (npc.velocity.Y < 0f && targetTilePosY > 0f)) && Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) > speed / 2f && targetTileDist < 600f)
+                        float chargeDistance = 600f;
+                        if (((npc.velocity.X > 0f && targetTilePosX < 0f) || (npc.velocity.X < 0f && targetTilePosX > 0f) || (npc.velocity.Y > 0f && targetTilePosY < 0f) || (npc.velocity.Y < 0f && targetTilePosY > 0f)) && Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) > speed / 2f && targetTileDist < chargeDistance)
                         {
                             flyWyvernMovement = true;
 

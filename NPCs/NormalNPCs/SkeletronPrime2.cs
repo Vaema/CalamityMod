@@ -10,8 +10,11 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Chat;
+using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
@@ -208,8 +211,23 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 Player spazmatismSpawnPlayer = Main.player[Player.FindClosest(NPC.position, NPC.width, NPC.height)];
                 SoundEngine.PlaySound(SoundID.Roar, spazmatismSpawnPlayer.Center);
+
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    NPC.SpawnOnPlayer(spazmatismSpawnPlayer.whoAmI, NPCID.Spazmatism);
+                {
+                    int spazmatism = NPC.NewNPC(NPC.GetBossSpawnSource(spazmatismSpawnPlayer.whoAmI), (int)spazmatismSpawnPlayer.Center.X, (int)spazmatismSpawnPlayer.Center.Y - 810, NPCID.Retinazer, 1);
+                    if (spazmatism != Main.maxNPCs)
+                    {
+                        Main.npc[spazmatism].target = spazmatismSpawnPlayer.whoAmI;
+                        Main.npc[spazmatism].timeLeft *= 20;
+                        Main.npc[spazmatism].localAI[3] = 1f;
+                        Main.npc[spazmatism].SyncVanillaLocalAI();
+                        string typeName = Main.npc[spazmatism].TypeName;
+                        if (Main.netMode == NetmodeID.Server && spazmatism < Main.maxNPCs)
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spazmatism);
+
+                        AchievementsHelper.CheckMechaMayhem();
+                    }
+                }
 
                 NPC.localAI[2] = 1f;
                 NPC.SyncVanillaLocalAI();

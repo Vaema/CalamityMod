@@ -7,7 +7,10 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Chat;
+using Terraria.GameContent.Achievements;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
@@ -184,8 +187,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 Player destroyerSpawnPlayer = Main.player[Player.FindClosest(npc.position, npc.width, npc.height)];
                 SoundEngine.PlaySound(SoundID.Roar, destroyerSpawnPlayer.Center);
+
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    NPC.SpawnOnPlayer(destroyerSpawnPlayer.whoAmI, NPCID.TheDestroyer);
+                {
+                    int destroyer = NPC.NewNPC(NPC.GetBossSpawnSource(destroyerSpawnPlayer.whoAmI), (int)destroyerSpawnPlayer.Center.X, (int)destroyerSpawnPlayer.Center.Y + 810, NPCID.TheDestroyer, 1);
+                    if (destroyer != Main.maxNPCs)
+                    {
+                        Main.npc[destroyer].target = destroyerSpawnPlayer.whoAmI;
+                        Main.npc[destroyer].timeLeft *= 20;
+                        Main.npc[destroyer].localAI[3] = 1f;
+                        Main.npc[destroyer].SyncVanillaLocalAI();
+                        string typeName = Main.npc[destroyer].TypeName;
+                        if (Main.netMode == NetmodeID.Server && destroyer < Main.maxNPCs)
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, destroyer);
+
+                        AchievementsHelper.CheckMechaMayhem();
+
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), 175, 75);
+                        else if (Main.netMode == NetmodeID.Server)
+                            ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", Main.npc[destroyer].GetTypeNetName()), new Color(175, 75, 255));
+                    }
+                }
 
                 npc.localAI[2] = 1f;
                 npc.SyncVanillaLocalAI();
@@ -196,8 +219,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 Player retinazerSpawnPlayer = Main.player[Player.FindClosest(npc.position, npc.width, npc.height)];
                 SoundEngine.PlaySound(SoundID.Roar, retinazerSpawnPlayer.Center);
+
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    NPC.SpawnOnPlayer(retinazerSpawnPlayer.whoAmI, NPCID.Retinazer);
+                {
+                    int retinazer = NPC.NewNPC(NPC.GetBossSpawnSource(retinazerSpawnPlayer.whoAmI), (int)retinazerSpawnPlayer.Center.X, (int)retinazerSpawnPlayer.Center.Y - 810, NPCID.Retinazer, 1);
+                    if (retinazer != Main.maxNPCs)
+                    {
+                        Main.npc[retinazer].target = retinazerSpawnPlayer.whoAmI;
+                        Main.npc[retinazer].timeLeft *= 20;
+                        Main.npc[retinazer].localAI[3] = 1f;
+                        Main.npc[retinazer].SyncVanillaLocalAI();
+                        string typeName = Main.npc[retinazer].TypeName;
+                        if (Main.netMode == NetmodeID.Server && retinazer < Main.maxNPCs)
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazer);
+
+                        AchievementsHelper.CheckMechaMayhem();
+
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            Main.NewText(Lang.misc[48].Value, 175, 75);
+                        else if (Main.netMode == NetmodeID.Server)
+                            ChatHelper.BroadcastChatMessage(Lang.misc[48].ToNetworkText(), new Color(175, 75, 255));
+                    }
+                }
 
                 npc.localAI[2] = 2f;
                 npc.SyncVanillaLocalAI();
