@@ -1172,9 +1172,10 @@ StarofDestruction: {
 	DisplayName: Star of Destruction
 	Tooltip:
 		'''
-		Fires a huge destructive mine that explodes into destruction bolts
-		Amount of bolts scales with enemies hit, up to 16
-		Stealth strikes always explode into the max amount of bolts
+		Throws a fan of cosmic bolts that meld together into a star of destruction
+		The explosive star will slowly follow your cursor until it expires or hits and enemy
+		Stealth strikes throw additional bolts that converge into faster star that will explode but not expire when hitting an enemy
+		Upon running out of time, the star will burst into a huge explosion that deals increased damage
 		'''
 }
 

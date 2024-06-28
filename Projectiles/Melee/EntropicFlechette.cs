@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.numHits > 0 && Projectile.numHits < 2)
+            if (Projectile.numHits == 0)
             {
                 SoundStyle sound = new("CalamityMod/Sounds/Item/MeldBurn");
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
