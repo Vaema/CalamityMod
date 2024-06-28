@@ -36,11 +36,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 20;
-
             NPC.lifeMax = 500;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-
             NPC.knockBackResist = 0.4f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -69,7 +65,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                CalamityUtils.CalamityTargeting(NPC, default);
 
             // Emit light
             Lighting.AddLight(NPC.Center, 0.2f, 0.4f, 0.1f);
@@ -96,6 +94,35 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     NPC.StrikeInstantKill();
+
+                return;
+            }
+
+            // If vomited out during Master Mode, maintain velocity until a certain time has passed
+            if (NPC.ai[0] > 0f)
+            {
+                NPC.ai[0] -= 1f;
+
+                if (NPC.velocity.Length() < NPC.ai[1])
+                {
+                    NPC.velocity *= 1.01f;
+                    if (NPC.velocity.Length() > NPC.ai[1])
+                    {
+                        NPC.velocity.Normalize();
+                        NPC.velocity *= NPC.ai[1];
+                    }
+                }
+
+                if (NPC.velocity.X > 0f)
+                {
+                    NPC.spriteDirection = 1;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
+                }
+                if (NPC.velocity.X < 0f)
+                {
+                    NPC.spriteDirection = -1;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.Pi;
+                }
 
                 return;
             }

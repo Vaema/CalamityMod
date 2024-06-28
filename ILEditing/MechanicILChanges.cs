@@ -22,6 +22,8 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
+using CalamityMod.Walls;
+using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -297,6 +299,21 @@ namespace CalamityMod.ILEditing
             return orig();
         }
         #endregion
+
+        #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
+        private static void PreventVanillaBossDeathsInBossRush(On_NPC.orig_DoDeathEvents orig, NPC self, Player closestPlayer)
+        {
+            // Aside from setting the boss' downed bool, DoDeathEvents also handles the following tasks:
+            // Advancing Slime Rain, spawning Dungeon Spirits, advancing invasion kills, spawning Wall of Flesh's loot box, dropping boss potions and hearts, and sending the boss defeated message.
+            // The first three do not matter at all in Boss Rush. Wall of Flesh's loot box not spawning is also a positive, so that it doesn't clutter the Underworld.
+            // Dropping potions is worthless at this point, and Boss Rush is already a horribly balanced hellscape as is, so I'm not worried about hearts.
+            // As for the last one, well, if anyone actually notices that and cares about it, then I suppose we could make a more sophisticated IL edit.
+            if (BossRushEvent.BossRushActive)
+                return;
+
+            orig(self, closestPlayer);
+        }
+        #endregion Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
 
         #region Enabling of Triggered NPC Platform Fallthrough
         // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
@@ -724,6 +741,42 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Fog Effect in Floral Paradise
+        private static void DrawFloralParadiseFog(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+
+            cursor.GotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings"));
+            cursor.EmitDelegate<Action>(() =>
+            {
+                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                    DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
+            });
+        }
+
+        private static void DrawFog(float intensity)
+        {
+            Main.spriteBatch.EnterShaderRegion();
+            WaterfallRenderer.DrawWaterfalls();
+
+            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
+            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.74f);
+            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
+            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.67f);
+            GameShaders.Misc["CalamityMod:Fog"].Shader.Parameters["fogMovementSpeed"].SetValue(1.75f);
+            GameShaders.Misc["CalamityMod:Fog"].Apply();
+
+            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin();
+        }
+        #endregion Fog Effect in Floral Paradise
+
         #region Custom Draw Layers
         private static void AdditiveDrawing(ILContext il)
         {
@@ -864,7 +917,11 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 4);
 
             // Caching these values can save a LOT of overhead at runtime.
-            ModWaterStyle sunkenSeaWater = ModContent.GetInstance<SunkenSeaWater>();
+            ModWaterStyle basaltWater = ModContent.GetInstance<BasaltGullyWater>();
+            ModWaterStyle burrowsWater = ModContent.GetInstance<SunkenSeaBurrowsWater>();
+            ModWaterStyle polypWater = ModContent.GetInstance<SunkenSeaPolypWater>();
+            ModWaterStyle reefsWater = ModContent.GetInstance<SunkenSeaReefsWater>();
+            ModWaterStyle shoresWater = ModContent.GetInstance<SunkenSeaShoresWater>();
             ModWaterStyle sulphuricWater = ModContent.GetInstance<SulphuricWater>();
             ModWaterStyle sulphuricDepthsWater = ModContent.GetInstance<SulphuricDepthsWater>();
             ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
@@ -878,8 +935,11 @@ namespace CalamityMod.ILEditing
                 {
                     initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
                 }
-
-                if (liquidType == sunkenSeaWater.Slot ||
+                if (liquidType == burrowsWater.Slot ||
+                liquidType == basaltWater.Slot ||
+                liquidType == polypWater.Slot ||
+                liquidType == shoresWater.Slot ||
+                liquidType == reefsWater.Slot ||
                 liquidType == sulphuricWater.Slot ||
                 liquidType == sulphuricDepthsWater.Slot ||
                 liquidType == upperAbyssWater.Slot ||
@@ -1000,13 +1060,13 @@ namespace CalamityMod.ILEditing
                 return;
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-            if (tile.LiquidAmount <= 0 || tile.HasTile || (Main.waterStyle != SulphuricWater.Type &&
-            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaWater.Type))
+            if (tile.LiquidAmount <= 0 || tile.HasTile || tile.Get<LiquidData>().LiquidType != LiquidID.Water || (Main.waterStyle != SulphuricWater.Type &&
+            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaBurrowsWater.Type && Main.waterStyle != SunkenSeaPolypWater.Type && 
+            Main.waterStyle != SunkenSeaReefsWater.Type && Main.waterStyle != SunkenSeaShoresWater.Type && Main.waterStyle != BasaltGullyWater.Type))
                 return;
 
             Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) &&
-            Main.waterStyle == SulphuricWater.Type)
+            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) && Main.waterStyle == SulphuricWater.Type)
             {
                 MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
                 GeneralParticleHandler.SpawnParticle(acidFoam);
@@ -1073,8 +1133,34 @@ namespace CalamityMod.ILEditing
                 if (Main.waterStyle == SulphuricDepthsWater.Type)
                     outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
 
-                if (Main.waterStyle == SunkenSeaWater.Type)
+                if (Main.waterStyle == SunkenSeaBurrowsWater.Type || Main.waterStyle == SunkenSeaPolypWater.Type || Main.waterStyle == SunkenSeaReefsWater.Type || 
+                Main.waterStyle == SunkenSeaShoresWater.Type || Main.waterStyle == BasaltGullyWater.Type)
                 {
+                    //default to white
+                    Color waterGlowColor = Color.White;
+
+                    //set the glow colors for each sunken sea biome water style
+                    if (Main.waterStyle == SunkenSeaShoresWater.Type)
+                    {
+                        waterGlowColor = new Color(233, 170, 184);
+                    }
+                    if (Main.waterStyle == SunkenSeaPolypWater.Type)
+                    {
+                        waterGlowColor = new Color(213, 185, 178);
+                    }
+                    if (Main.waterStyle == SunkenSeaReefsWater.Type)
+                    {
+                        waterGlowColor = new Color(140, 222, 239);
+                    }
+                    if (Main.waterStyle == SunkenSeaBurrowsWater.Type)
+                    {
+                        waterGlowColor = new Color(76, 211, 231);
+                    }
+                    if (Main.waterStyle == BasaltGullyWater.Type)
+                    {
+                        waterGlowColor = new Color(144, 174, 200);
+                    }
+
                     float brightness = MathHelper.Clamp(0.07f, 0f, 0.07f);
                     float waveScale1 = Main.GameUpdateCount * 0.028f;
                     float waveScale2 = Main.GameUpdateCount * 0.1f;
@@ -1094,7 +1180,7 @@ namespace CalamityMod.ILEditing
                     float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
-                    outputColor = Vector3.Lerp(outputColor, Color.DeepSkyBlue.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
+                    outputColor = Vector3.Lerp(outputColor, Color.DarkSlateGray.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
                     outputColor *= brightness;
                 }
             }
@@ -1422,6 +1508,46 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self);
+            }
+        }
+        #endregion
+
+        #region Block Abyss from Teleportation Potions
+
+        public static void TPOverride(Terraria.On_Player.orig_Teleport orig, Player self, Vector2 newPos, int Style = 0, int extraInfo = 0)
+        {
+            // Grab the tile from where the potion wants to teleport
+            Tile t = CalamityUtils.ParanoidTileRetrieval(newPos.ToTileCoordinates().X, newPos.ToTileCoordinates().Y);
+            // Check if it's a Teleportation Potion
+            if (Style == 2)
+            {
+                // Check if it's an Abyss wall
+                if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                {
+                    // If an Abyss wall is detected, try to find another teleportation location
+                    bool canSpawn = false;
+                    int teleportStartX = 100;
+                    int teleportRangeX = Main.maxTilesX - 200;
+                    int teleportStartY = 100;
+                    int underworldLayer = Main.UnderworldLayer;
+                    Vector2 newerPos = self.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, teleportRangeX, teleportStartY, underworldLayer, new Player.RandomTeleportationAttemptSettings
+                    {
+                        avoidLava = true,
+                        avoidHurtTiles = true,
+                        maximumFallDistanceFromOrignalPoint = 100,
+                        attemptsBeforeGivingUp = 1000
+                    });
+                    // Attempt teleporting again with the new location
+                    orig(self, newerPos, Style, extraInfo);
+                }
+                else
+                {
+                    orig(self, newPos, Style, extraInfo);
+                }
+            }
+            else
+            {
+                orig(self, newPos, Style, extraInfo);
             }
         }
         #endregion

@@ -8,7 +8,7 @@ namespace CalamityMod.Projectiles.Summon
     public class Hiveling : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/NPCs/Astral/Hiveling";
+        public override string Texture => "CalamityMod/NPCs/Astral/Glomerling";
 
         public override void SetStaticDefaults()
         {

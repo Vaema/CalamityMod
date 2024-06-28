@@ -56,9 +56,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.LifeMaxNERB(1300, 1560, 35000);
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax = 4000;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -72,6 +69,9 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
 
             if (Main.zenithWorld)
                 NPC.scale *= 2;

@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -66,7 +67,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
 
             if (target.knockBackResist <= 0f)
                 return;
@@ -81,10 +82,14 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Electrified, 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
+            // Don't draw the aura at all if visibility is toggled off
+            if (!Main.player[Projectile.owner].Calamity().blunderBoosterVisibility)
+                return false;
+
             Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color drawColour = Color.White;

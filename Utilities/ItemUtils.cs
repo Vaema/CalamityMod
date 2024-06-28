@@ -29,9 +29,16 @@ namespace CalamityMod
         /// <param name="item">The item to check.</param>
         public static bool IsWhip(this Item item) => item.shoot > ProjectileID.None && ProjectileID.Sets.IsAWhip[item.shoot];
 
+        /// <summary>
+        /// Marks the item as Revengeance Mode exclusive.<br />
+        /// This causes it to have a tooltip line which says "Revengeance", like how vanilla says "Expert" and "Master".
+        /// </summary>
+        /// <param name="item">The item to make difficulty exclusive.</param>
+        public static void SetRevExclusive(this Item item) => item.Calamity().revengeanceItem = true;
+
         #region Color Constants
         internal static readonly Color DevItemColor = new Color(255, 0, 255);
-        internal static readonly Color DonatorItemColor = new Color(196, 35, 44);
+        internal static readonly Color DonatorItemColor = new Color(255, 121, 156);
         #endregion
 
         // TODO -- This probably isn't the best place to put this but it needs to be somewhere easily accessible.
@@ -132,11 +139,11 @@ namespace CalamityMod
             }
 
             // MELEE (includes tools and whips)
-            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
+            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MeleeRangedHybridDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible
-                if (item.type == ItemID.Terrarian || PrefixLegacy.ItemSets.ItemsThatCanHaveLegendary2[item.type])
+                if (PrefixLegacy.ItemSets.ItemsThatCanHaveLegendary2[item.type])
                 {
                     int[][] terrarianReforgeTiers = new int[][]
                     {
@@ -148,26 +155,8 @@ namespace CalamityMod
                     prefix = IteratePrefix(rand, terrarianReforgeTiers, currentPrefix);
                 }
 
-                // Yoyos, Flails, Spears, etc.
-                // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
-                // Rapiers, whips, and other specific vanilla weapons (ie. Zenith or Excalibur) are specifically excluded from this, so they get broadsword reforges despite not scaling with melee speed.
-                //
-                // 18FEB2024: Ozzatron: removed the (item.channel || item.noMelee) because vanilla lets Burning Sky get Legendary
-                // 12MAY2024: Shade: added item.useStyle != ItemUseStyleID.Shoot because vanilla lets Sahara Slicers and Death's Ascension get Legendary
-                else if (item.channel && item.useStyle != ItemUseStyleID.Rapier && !item.CountsAsClass<SummonMeleeSpeedDamageClass>() && !PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] && item.useStyle != ItemUseStyleID.Shoot)
-                {
-                    int[][] meleeNoSpeedReforgeTiers = new int[][]
-                    {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
-                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
-                        /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
-                        /* 3 */ new int[] { PrefixID.Godly }
-                    };
-                    prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
-                }
-
-                // All other melee weapons
-                else
+                // Swords, Whips, Tools, other items that support the Legendary modifier
+                else if (PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix()))
                 {
                     int[][] meleeReforgeTiers = new int[][]
                     {
@@ -180,7 +169,7 @@ namespace CalamityMod
                     };
                     int[][] toolReforgeTiers = new int[][]
                     {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Heavy, PrefixID.Light, PrefixID.Forceful, PrefixID.Strong },
+                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Heavy, PrefixID.Forceful, PrefixID.Strong },
                         /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, PrefixID.Pointy, PrefixID.Bulky },
                         /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Large, PrefixID.Dangerous, PrefixID.Sharp },
                         /* 3 */ new int[] { PrefixID.Massive, PrefixID.Unpleasant, PrefixID.Savage, PrefixID.Superior },
@@ -190,6 +179,20 @@ namespace CalamityMod
 
                     var tierListToUse = (item.pick > 0 || item.axe > 0 || item.hammer > 0) ? toolReforgeTiers : meleeReforgeTiers;
                     prefix = IteratePrefix(rand, tierListToUse, currentPrefix);
+                }
+
+                // Yoyos, Flails, Spears, etc.
+                // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
+                else
+                {
+                    int[][] meleeNoSpeedReforgeTiers = new int[][]
+                    {
+                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
+                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
+                        /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
+                        /* 3 */ new int[] { PrefixID.Godly }
+                    };
+                    prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
                 }
             }
 
@@ -335,51 +338,6 @@ namespace CalamityMod
 
             string finalKey = mhk.TooltipHotkeyString();
             tooltips.FindAndReplace("[KEY]", finalKey);
-        }
-
-        // Original code lifted from Iban's extended armor tooltips.
-        /// <summary>
-        /// Performs standard edits to a list of tooltip lines to add more if the Left SHIFT key is held down.<br />
-        /// Optionally, hides the normal tooltip to replace it entirely.
-        /// </summary>
-        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
-        /// <param name="holdShiftTooltips">An array of tooltip lines to add. Instantiate these yourself with C# elaborate new syntax.</param>
-        /// <param name="hideNormalTooltip">Set to true to replace the normal tooltip when holding SHIFT. Otherwise both tooltips will show at once.</param>
-        public static void HoldShiftTooltip(List<TooltipLine> tooltips, TooltipLine[] holdShiftTooltips, bool hideNormalTooltip = false)
-        {
-            // Only perform any changes while holding SHIFT.
-            if (!Main.keyState.IsKeyDown(Keys.LeftShift))
-                return;
-
-            // Get the first index, last index and total count of standard vanilla tooltip lines.
-            // The first index and count are used to delete all vanilla tooltips when holding SHIFT, if requested.
-            // The last index is used to insert the "Hold SHIFT" tooltips in the right position.
-            int firstTooltipIndex = -1;
-            int lastTooltipIndex = -1;
-            int standardTooltipCount = 0;
-            for (int i = 0; i < tooltips.Count; i++)
-            {
-                if (tooltips[i].Name.StartsWith("Tooltip"))
-                {
-                    if (firstTooltipIndex == -1)
-                        firstTooltipIndex = i;
-                    lastTooltipIndex = i;
-                    standardTooltipCount++;
-                }
-            }
-
-            if (firstTooltipIndex != -1)
-            {
-                // If asked to, remove all standard tooltip lines. This moves the last tooltip index.
-                if (hideNormalTooltip)
-                {
-                    tooltips.RemoveRange(firstTooltipIndex, standardTooltipCount);
-                    lastTooltipIndex -= standardTooltipCount;
-                }
-
-                // Append every "Hold SHIFT" tooltip at the end of standard tooltips.
-                tooltips.InsertRange(lastTooltipIndex + 1, holdShiftTooltips);
-            }
         }
 
         private const float WorldInsertionOffset = 15f;

@@ -10,7 +10,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class SeaAnemoneEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/SeaAnemone";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SeaAnemone";
         public override void SetStaticDefaults()
         {
             AnimationFrameHeight = 36;

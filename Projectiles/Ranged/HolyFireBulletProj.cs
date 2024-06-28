@@ -87,6 +87,8 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.damage = (int)(Projectile.damage * HolyFireBullet.ExplosionMultiplier);
                 Projectile.penetrate = -1;
                 Projectile.ExpandHitboxBy((25 * SizeVariance) * SizeBonus);
+                Projectile.usesLocalNPCImmunity = true;
+                Projectile.localNPCHitCooldown = 10;
                 Projectile.Damage();
             }
             SoundEngine.PlaySound(HolyFireBullet.Explosion with { Pitch = -0.15f, Volume = 0.3f }, Projectile.Center);

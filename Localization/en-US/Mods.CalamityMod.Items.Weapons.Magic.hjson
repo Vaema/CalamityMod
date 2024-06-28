@@ -34,7 +34,17 @@ AlulaAustralis: {
 
 AnahitasArpeggio: {
 	DisplayName: Anahita's Arpeggio
-	Tooltip: Casts slow-moving treble clefs that confuse enemies
+	Tooltip: "[GFB]"
+	TooltipNormal:
+		'''
+		Holding <left> casts up to 6 treble clefs that orbit the player
+		Releasing <left> causes the treble clefs to fade away, then converge at the cursor
+		'''
+	TooltipGFB:
+		'''
+		"NOOOOOOOO! You're supposed to obey me!!!!"
+		The seven treble clef souls:
+		'''
 }
 
 ApoctosisArray: {
@@ -144,7 +154,11 @@ BrimroseStaff: {
 
 BurningSea: {
 	DisplayName: Burning Sea
-	Tooltip: Fires a bouncing brimstone fireball that splits into homing fireballs upon collision with water
+	Tooltip:
+		'''
+		Fires a bouncing brimstone fireball that splits into homing fireballs upon collision with liquid
+		Enemies inflicted with a water debuff also spawn homing fireballs on hit
+		'''
 }
 
 ChronomancersScythe: {
@@ -221,7 +235,12 @@ DeathhailStaff: {
 
 DeathValleyDuster: {
 	DisplayName: Death Valley Duster
-	Tooltip: Casts a large blast of dust
+	Tooltip:
+		'''
+		Casts an enchanted blast of sand that passes through enemies and tiles
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Sand's Wind Buff
+		The Sand's Wind Buff increases your defense by 10 and damage by 12%
+		'''
 }
 
 DivineRetribution: {
@@ -472,7 +491,11 @@ Keelhaul: {
 
 LashesofChaos: {
 	DisplayName: Lashes of Chaos
-	Tooltip: "'Watch the world burn...'"
+	Tooltip:
+		'''
+		Alternates between exploding hellfireballs and piercing hellblasts
+		'Watch the world burn...'
+		'''
 }
 
 Lazhar: {
@@ -490,7 +513,7 @@ MadAlchemistsCocktailGlove: {
 	Tooltip:
 		'''
 		Fires a variety of high-velocity flasks
-		Press <right> to throw a prismatic flask that inflicts many debuffs
+		Press <right> to throw a prismatic flask that inflicts Elemental Mix
 		Red flasks explode violently
 		Blue flasks contain poison gas
 		Green flasks summon lunar flares
@@ -520,7 +543,11 @@ Mistlestorm: {
 
 NanoPurge: {
 	DisplayName: Nano Purge
-	Tooltip: Fires a barrage of nano lasers
+	Tooltip:
+		'''
+		Fires a barrage of nano lasers
+		Bounces towards the nearest enemy after hitting a wall
+		'''
 }
 
 NebulousCataclysm: {
@@ -612,12 +639,22 @@ Poseidon: {
 
 PrimordialAncient: {
 	DisplayName: Primordial Ancient
-	Tooltip: Casts a gigantic blast of dust
+	Tooltip:
+		'''
+		Casts five primordial sand blasts that converge at your cursor after a moment and create a giant explosion
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Aeolian Earth Buff
+		The Aeolian Earth Buff increases your damage reduction by 8% and damage by 18%
+		'''
 }
 
 PrimordialEarth: {
 	DisplayName: Primordial Earth
-	Tooltip: Casts a large blast of dust
+	Tooltip:
+		'''
+		Casts two enchanted blasts of sand that coverge with each other and explode
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Sand's Wind Buff
+		The Sand's Wind Buff increases your defense by 10 and damage by 12%
+		'''
 }
 
 PurgeGuzzler: {
@@ -789,6 +826,16 @@ Teslastaff: {
 		Each successive hit on the same enemy increases damage per hit
 		The damage increases 10% per hit to a maximum of 500% damage
 		This damage will rapidly decrease after the enemy stops being hit
+		'''
+}
+
+TheCauldron: {
+	DisplayName: The Cauldron
+	Tooltip:
+		'''
+		Launches lava bombs which explode into more lava bombs
+		80% reduced mana usage while submerged in lava or while in the underworld
+		'Believe it or not, its original wielder was only a few centimeters tall!'
 		'''
 }
 

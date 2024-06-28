@@ -35,9 +35,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.LifeMaxNERB(80000, 96000, 1000000);
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax *= 2;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -63,6 +60,9 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)

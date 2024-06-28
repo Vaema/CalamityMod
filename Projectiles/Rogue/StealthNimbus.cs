@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
                         }
                     }
                 }
-                if (projCount > 2)
+                if (projCount >= 5)
                 {
                     Main.projectile[oldestCloud].netUpdate = true;
                     Main.projectile[oldestCloud].ai[1] = 36000f;

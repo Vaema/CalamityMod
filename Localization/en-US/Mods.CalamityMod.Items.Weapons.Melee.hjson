@@ -17,6 +17,11 @@ AbyssBlade: {
 		'''
 }
 
+AcidwoodSword: {
+	DisplayName: Acidwood Sword
+	Tooltip: ""
+}
+
 AegisBlade: {
 	DisplayName: Aegis Blade
 	Tooltip:
@@ -287,7 +292,7 @@ CosmicDischarge: {
 	Tooltip:
 		'''
 		Striking an enemy with the whip causes glacial explosions and grants the player the cosmic freeze buff
-		This buff gives the player increased life regen while standing still and freezes enemies near the player
+		This buff gives the player +2 HP/s life regen while standing still and freezes enemies near the player
 		'''
 }
 
@@ -395,16 +400,19 @@ DragonRage: {
 		'''
 }
 
+DriftwoodSword: {
+	DisplayName: Driftwood Sword
+	Tooltip: This sword is stronger while you are wet
+}
+
 Earth: {
 	DisplayName: Earth
 	Tooltip:
 		'''
-		Lowers enemy defense by 1 with every strike
-		Your attacks will heal you a lot
-		Rains RGB meteors that explode into more meteors after a short time on enemy hits
-		Ice meteors freeze enemies
-		Flame meteors explode
-		Green meteors spawn healing orbs
+		A beautiful prismatic blade with unrivaled close combat proficiency
+		Heals you greatly on hit
+		Every other swing will summon three Gaia meteors to fall upon nearby enemies
+		'All its spawn shall know the beauty and wrath of their creator'
 		'''
 }
 
@@ -624,15 +632,34 @@ GoldplumeSpear: {
 	Tooltip: Shoots falling feathers
 }
 
+GrandDad: {
+	DisplayName: Grand Dad
+	Tooltip: "[GFB]"
+	TooltipNormal:
+		'''
+		An unfathomably heavy blade that rips through enemies using its sheer mass
+		Heals you on hit
+		Striking weaker enemies will launch them with incredible force
+		Launched enemies take immense damage when colliding with walls and floors
+		Holding <right> while swinging will heavily reduce the damage of the blade and increase its launch damage and velocity
+		[c/00B8DF:'How are you swinging something that has half the mass of a star?']
+		'''
+	TooltipGFB:
+		'''
+		A high quality blade that rips through enemies
+		Striking weaker enemies will yeet them with incredible force, often leaving them Stuck Inside tiles
+		Yeeted enemies will turn to JAM when SLAMMED into walls and floors
+		Holding <right> while swinging will heavily reduce the damage of the blade and increase its yeet damage and velocity, nice >:]
+		[c/00B8DF:'Please read the weapon description.']
+		'''
+}
+
 GrandGuardian: {
 	DisplayName: Grand Guardian
 	Tooltip:
 		'''
-		Lowers enemy defense by 1 with every strike
-		If enemy defense is 0 or below your attacks will heal you
-		Striking enemies causes a large explosion
-		Striking enemies that are under half life will cause them to release rainbow bolts
-		Enemies spawn healing orbs on death
+		An ornate winged blade that easily cuts through enemies
+		Creates cosmic explosions and heals you slightly on hit
 		'''
 }
 
@@ -672,10 +699,20 @@ Hellkite: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Summons flame geyser explosions on enemy hits
-		Contains the power of an ancient drake
+		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
+		Swings a slow and heavy blade with powerful knockback
+		Holding <right> while swinging will begin charging a strengthened swing
+		Releasing <right> while fully charged will unleash a devastating slash
+		[c/E1B65F:'Feel the strength of a blade forged through passion']
 		'''
-	TooltipGFB: "'My Beloved <3'"
+	TooltipGFB:
+		'''
+		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
+		Swings a slow and heavy blade with powerful knockback
+		Holding <right> while swinging will begin charging a strengthened swing
+		Releasing <right> while fully charged will unleash a devastating slash
+		[c/0C507F:'My beloved <3' -Xyk]
+		'''
 }
 
 HolyCollider: {
@@ -707,7 +744,7 @@ Lacerator: {
 	DisplayName: Lacerator
 	Tooltip:
 		'''
-		Enemies that are hit by the yoyo will have their life drained
+		Accelerates natural life regeneration on hits with the yoyo
 		An exceptionally agile yoyo
 		[GFB]
 		'''
@@ -743,8 +780,8 @@ MajesticGuard: {
 	DisplayName: Majestic Guard
 	Tooltip:
 		'''
-		Lowers enemy defense by 1 with every strike
-		If enemy defense is 0 or below your attacks will heal you
+		An intricate blade, heavy enough to crush anything it wouldn't cut
+		Strongly knocks back enemies and heals you slightly on hit
 		'''
 }
 
@@ -764,6 +801,11 @@ MirrorBlade: {
 		The amount of contact damage an enemy does is added to this weapons' damage
 		You must hit an enemy with the blade to trigger this effect
 		'''
+}
+
+MonolithSword: {
+	DisplayName: Monolith Sword
+	Tooltip: ""
 }
 
 MonstrousKnives: {
@@ -820,7 +862,7 @@ Oblivion: {
 	DisplayName: Oblivion
 	Tooltip:
 		'''
-		Fires brimstone lasers when enemies are near
+		Fires brimstone darts when enemies are near
 		A very agile yoyo
 		'''
 }
@@ -967,6 +1009,16 @@ RemsRevenge: {
 		'''
 		Summons blood explosions and lowers enemy defense on hit
 		Wielded by the most powerful fighter
+		'''
+}
+
+Respiteblock: {
+	DisplayName: Respiteblock
+	Tooltip:
+		'''
+		A glistening white chainsaw that spews green and purple blood all over
+		Hitting enemies with the blade will heal you and deal immense damage
+		[c/0e8401:'It's Ok To Be Dangerous']
 		'''
 }
 
@@ -1265,7 +1317,7 @@ TheOracle: {
 	DisplayName: The Oracle
 	Tooltip:
 		'''
-		Emits an aura of red lightning which charges up when hitting enemies
+		Emits an aura of lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
 		An exceptionally agile yoyo
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'

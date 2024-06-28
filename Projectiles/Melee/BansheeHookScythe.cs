@@ -2,11 +2,13 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class BansheeHookScythe : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
         public override void SetDefaults()
         {
             Projectile.width = 38;
@@ -24,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.timeLeft = 90;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()

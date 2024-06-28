@@ -12,7 +12,6 @@ namespace CalamityMod.Projectiles.Turret
     public class PlagueShot : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/GoliathRocket";
         public override void SetDefaults()
         {
             Projectile.width = 14;

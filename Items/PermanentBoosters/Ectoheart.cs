@@ -22,7 +22,8 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item122;
             Item.consumable = true;
-            Item.rare = ModContent.RarityType<PureGreen>();  // Not researchable, only drops one time.
+            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.SetRevExclusive();
         }
 
         public override bool CanUseItem(Player player) => !player.Calamity().adrenalineBoostThree;

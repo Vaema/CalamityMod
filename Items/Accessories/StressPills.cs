@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
+            Item.SetRevExclusive();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

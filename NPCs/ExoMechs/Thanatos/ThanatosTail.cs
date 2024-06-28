@@ -73,8 +73,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.DR_NERD(0.9999f);
             NPC.Calamity().unbreakableDR = true;
             NPC.LifeMaxNERB(960000, 1150000, 600000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -90,6 +88,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)

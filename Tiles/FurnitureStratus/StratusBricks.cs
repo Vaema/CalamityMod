@@ -1,4 +1,5 @@
 ﻿
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -31,7 +32,7 @@ namespace CalamityMod.Tiles.FurnitureStratus
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -44,7 +45,7 @@ namespace CalamityMod.Tiles.FurnitureStratus
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Tile trackTile = Main.tile[i, j];
 
-            TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

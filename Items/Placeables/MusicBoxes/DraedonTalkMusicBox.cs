@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Placeables.MusicBoxes
         {
             ItemID.Sets.CanGetPrefixes[Type] = false;
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.MusicBox;
+            MusicLoader.AddMusicBox(Mod, MusicLoader.GetMusicSlot(Mod, "Sounds/Music/DraedonTalk"), Type, ModContent.TileType<Tiles.MusicBoxes.DraedonTalkMusicBox>());
         }
 
         public override void SetDefaults() => Item.DefaultToMusicBox(ModContent.TileType<Tiles.MusicBoxes.DraedonTalkMusicBox>(), 0);

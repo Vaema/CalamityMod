@@ -73,8 +73,6 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.defense = 90;
             NPC.DR_NERD(0.5f, null, null, null, true);
             NPC.LifeMaxNERB(500000, 600000, 400000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.noTileCollide = true;
             NPC.noGravity = true;
@@ -90,6 +88,9 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -404,6 +405,10 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SEAHOE>() }, DownedBossSystem.downedBoomerDuke);

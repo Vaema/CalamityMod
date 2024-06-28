@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void AI()
         {
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 48f, 5, ModContent.ProjectileType<BrimstoneLaserFriendly>(), 0.5);
+            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 9f, 48f, 5, ModContent.ProjectileType<SeethingDischargeBrimstoneBarrage>(), 0.5, damageType: Projectile.DamageType);
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
                 Projectile.Kill();
         }

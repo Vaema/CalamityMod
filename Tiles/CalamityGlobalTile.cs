@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using CalamityMod.Events;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
-using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -27,33 +23,13 @@ namespace CalamityMod.Tiles
 {
     public class CalamityGlobalTile : GlobalTile
     {
-        public static ushort[] PlantTypes = new ushort[]
-        {
-            TileID.Plants,
-            TileID.CorruptPlants,
-            TileID.JunglePlants,
-            TileID.MushroomPlants,
-            TileID.Plants2,
-            TileID.JunglePlants2,
-            TileID.HallowedPlants,
-            TileID.HallowedPlants2,
-            TileID.CrimsonPlants,
-            (ushort)ModContent.TileType<AstralShortPlants>(),
-            (ushort)ModContent.TileType<AstralTallPlants>(),
-            (ushort)ModContent.TileType<LavaPistil>(),
-            (ushort)ModContent.TileType<CinderBlossomTallPlants>(),
-            (ushort)ModContent.TileType<SulphurTentacleCorals>(),
-            (ushort)ModContent.TileType<AbyssKelp>(),
-            (ushort)ModContent.TileType<TenebrisRemnant>(),
-            (ushort)ModContent.TileType<PhoviamareHalm>(),
-            (ushort)ModContent.TileType<SmallCorals>(),
-
-        };
 
         public static List<int> GrowthTiles = new List<int>()
         {
             ModContent.TileType<SeaPrism>(),
             ModContent.TileType<Navystone>(),
+            ModContent.TileType<Shellstone>(),
+            ModContent.TileType<Limestone>(),
             ModContent.TileType<Voidstone>()
         };
 
@@ -61,30 +37,6 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
-        }
-
-        public override bool PreHitWire(int i, int j, int type)
-        {
-            return !BossRushEvent.BossRushActive;
-        }
-
-        public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
-        {
-            // Custom plant framing
-            for (int k = 0; k < PlantTypes.Length; k++)
-            {
-                if (type == PlantTypes[k])
-                {
-                    TileFraming.PlantFrame(i, j);
-                    return false;
-                }
-            }
-
-            // Custom vine framing
-            if (type == TileID.Vines || type == TileID.CrimsonVines || type == TileID.HallowedVines || type == ModContent.TileType<AstralVines>())
-                TileFraming.VineFrame(i, j);
-
-            return base.TileFrame(i, j, type, ref resetFrame, ref noBreak);
         }
 
         public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)

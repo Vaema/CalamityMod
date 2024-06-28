@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Dusts.Furniture;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -68,7 +69,7 @@ namespace CalamityMod.Tiles
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
         }
 
         #region 'Extra Drapes' Drawing

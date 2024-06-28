@@ -10,6 +10,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
@@ -269,6 +270,15 @@ namespace CalamityMod.Projectiles
                     projectile.damage = (int)projectile.ai[2];
             }
 
+            // This code fixes the wacky close-up burst damage bug which occurs with double yoyos and local iframes.
+            // Oh my good friends, do not ask me how or why this works, for I do not know!
+            // That being said, PLEASE DON'T REMOVE THIS, unless you think The Microwave killing Provi in 2 seconds with no effort is okay.
+            if (projectile.aiStyle == ProjAIStyleID.Yoyo)
+            {
+                if (projectile.ai[0] == -1)
+                    projectile.Kill();
+            }
+
             // Chlorophyte Crystal AI rework.
             if (projectile.type == ProjectileID.CrystalLeaf)
                 return ChlorophyteCrystalAI.DoChlorophyteCrystalAI(projectile);
@@ -379,7 +389,7 @@ namespace CalamityMod.Projectiles
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
                     float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
-                        homingEndTime += 90f;
+                        homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
                     if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
@@ -2506,12 +2516,12 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.RocketSkeleton && projectile.ai[1] == 1f)
+                else if (projectile.type == ProjectileID.RocketSkeleton && projectile.ai[1] >= 1f)
                 {
                     bool primeCannonProjectile = projectile.ai[1] == 2f;
                     bool homeIn = false;
-                    float homingTime = masterMode ? 90f : 180f;
-                    float spreadOutCutoffTime = 555f;
+                    float homingTime = masterMode ? 80f : 140f;
+                    float spreadOutCutoffTime = 510f;
                     float homeInCutoffTime = spreadOutCutoffTime - homingTime;
                     float minAcceleration = masterMode ? 0.072f : 0.08f;
                     float maxAcceleration = masterMode ? 0.108f : 0.12f;
@@ -3498,6 +3508,23 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
+            if (projectile.type == ProjectileID.TheDaoofPow)
+            {
+                // Guide to ai[0]:
+                // 0: Spinning. 1: Being thrown. 2: Return after throw. 6: Dropped on ground. 4: Return after being dropped.
+                if (projectile.ai[0] == 1f)
+                {
+                    projectile.ai[2]++;
+                    if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
+                        projectile.ai[1]--;
+                }
+                if (projectile.ai[0] == 1f || projectile.ai[0] == 2f || projectile.ai[0] == 4f)
+                    projectile.extraUpdates = 1;
+                else
+                    projectile.extraUpdates = 0;
+            }
+
             // Random velocities for Bouncy Boulders in GFB
             if (projectile.type == ProjectileID.BouncyBoulder && Main.zenithWorld)
             {
@@ -3824,6 +3851,16 @@ namespace CalamityMod.Projectiles
                     {
                         Dust dust = Dust.NewDustDirect(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.GemDiamond, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 0, default, 0.5f);
                         dust.noGravity = true;
+                    }
+                }
+
+                // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                {
+                    if (Main.rand.NextBool(3))
+                    {
+                        int element = Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.RainbowTorch, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.25f);
+                        Main.dust[element].noGravity = true;
                     }
                 }
 
@@ -4353,7 +4390,10 @@ namespace CalamityMod.Projectiles
             if (Main.LocalPlayer.Calamity().omniscience && projectile.hostile && projectile.damage > 0 && projectile.alpha < 255)
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
-                    return Color.Coral;
+                {
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
+                    return mainColor;
+                }
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)

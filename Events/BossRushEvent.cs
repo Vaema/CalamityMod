@@ -155,10 +155,11 @@ namespace CalamityMod.Events
 
                 new Boss(ModContent.NPCType<DesertScourgeHead>(), spawnContext: type =>
                 {
+                    Player player = Main.player[ClosestPlayerToWorldCenter];
+                    SoundEngine.PlaySound(DesertMedallion.SummonSound, player.Center);
+
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<DesertScourgeHead>());
-                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<DesertNuisanceHead>());
-                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<DesertNuisanceHeadYoung>());
-                }, permittedNPCs: new int[] { ModContent.NPCType<DesertScourgeBody>(), ModContent.NPCType<DesertScourgeTail>(), ModContent.NPCType<DesertNuisanceHead>(),
+                }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<DesertScourgeBody>(), ModContent.NPCType<DesertScourgeTail>(), ModContent.NPCType<DesertNuisanceHead>(),
                     ModContent.NPCType<DesertNuisanceBody>(), ModContent.NPCType<DesertNuisanceTail>(), ModContent.NPCType<DesertNuisanceHeadYoung>(),
                     ModContent.NPCType<DesertNuisanceBodyYoung>(), ModContent.NPCType<DesertNuisanceTailYoung>() }),
 
@@ -221,7 +222,7 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<SkeletronPrime2>(), NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser, NPCID.Probe }),
 
-                new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, dimnessFactor: 0.6f, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
+                new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
                     ModContent.NPCType<SoulSeeker>() }),
 
                 new Boss(NPCID.Plantera, TimeChangeContext.Day, permittedNPCs: new int[] { NPCID.PlanterasTentacle, ModContent.NPCType<PlanterasFreeTentacle>(), NPCID.PlanterasHook, NPCID.Spore }),
@@ -328,7 +329,7 @@ namespace CalamityMod.Events
 
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
-                    SoundEngine.PlaySound(RuneofKos.CVSound, player.Center);
+                    SoundEngine.PlaySound(MarkofProvidence.CVSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, usesSpecialSound: true, permittedNPCs: ModContent.NPCType<DarkEnergy>()),
 
@@ -336,7 +337,7 @@ namespace CalamityMod.Events
                 {
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
-                    SoundEngine.PlaySound(RuneofKos.StormSound, player.Center);
+                    SoundEngine.PlaySound(MarkofProvidence.StormSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<StormWeaverBody>(), ModContent.NPCType<StormWeaverTail>(), }),
 
@@ -344,7 +345,7 @@ namespace CalamityMod.Events
                 {
                     Player player = Main.player[ClosestPlayerToWorldCenter];
 
-                    SoundEngine.PlaySound(RuneofKos.SignutSound, player.Center);
+                    SoundEngine.PlaySound(MarkofProvidence.SignutSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
                 }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<CosmicLantern>(), ModContent.NPCType<CosmicMine>() }),
 
@@ -398,7 +399,7 @@ namespace CalamityMod.Events
                 {
                     SoundEngine.PlaySound(SupremeCalamitas.SpawnSound, Main.player[ClosestPlayerToWorldCenter].Center);
                     CalamityUtils.SpawnBossBetter(Main.player[ClosestPlayerToWorldCenter].Top - new Vector2(42f, 84f), type);
-                }, specialSpawnCountdown: 840, dimnessFactor: 0.6f, permittedNPCs: new int[] { ModContent.NPCType<SepulcherArm>(), ModContent.NPCType<SepulcherHead>(), ModContent.NPCType<SepulcherBody>(), ModContent.NPCType<SepulcherBodyEnergyBall>(), ModContent.NPCType<SepulcherTail>(),
+                }, specialSpawnCountdown: 840, permittedNPCs: new int[] { ModContent.NPCType<SepulcherArm>(), ModContent.NPCType<SepulcherHead>(), ModContent.NPCType<SepulcherBody>(), ModContent.NPCType<SepulcherBodyEnergyBall>(), ModContent.NPCType<SepulcherTail>(),
                     ModContent.NPCType<SoulSeekerSupreme>(), ModContent.NPCType<BrimstoneHeart>(), ModContent.NPCType<SupremeCataclysm>(), ModContent.NPCType<SupremeCatastrophe>() }),
             };
 
@@ -486,7 +487,7 @@ namespace CalamityMod.Events
                     return -1;
                 }
                 int tier = CurrentTier;
-                if (CalamityMod.Instance.musicMod != null)
+                if (CalamityMod.Instance.MusicAvailable)
                 {
                     // Boss Rush music for tier 5 doesn't exist
                     if (tier > 4)

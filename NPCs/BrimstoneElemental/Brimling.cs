@@ -22,6 +22,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             Main.npcFrameCount[NPC.type] = 8;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
@@ -30,7 +31,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage values are pulled from NPCStats
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 0;
@@ -45,8 +46,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             {
                 NPC.lifeMax = 10000;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
@@ -81,9 +80,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
 
             // Despawn if Brim doesn't exist
@@ -232,7 +228,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 NPC.ai[2] = 0f;
                 NPC.ai[3] = 0f;
 
-                SoundEngine.PlaySound(SoundID.Item8, NPC.Center);
+                SoundEngine.PlaySound(BrimstoneElemental.TeleportSound, NPC.Center);
 
                 for (int j = 0; j < 20; j++)
                 {
@@ -251,6 +247,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 float projectileVelocity = 5f;
                 int type = ModContent.ProjectileType<BrimstoneHellfireball>();
                 int damage = NPC.GetProjectileDamage(type);
+                SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, NPC.Center);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.X, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.Y);
             }
 

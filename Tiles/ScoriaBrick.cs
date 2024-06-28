@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -53,7 +54,7 @@ namespace CalamityMod.Tiles
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.CompactFraming(i, j, resetFrame);
+            TileFramingSystem.CompactFraming(i, j, resetFrame);
             return false;
         }
 
@@ -70,7 +71,7 @@ namespace CalamityMod.Tiles
             Color drawColour = GetDrawColour(i, j, Color.White);
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawPosition + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, GlowTexture, drawPosition + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), GetDrawColour(i, j, drawColour), default);
         }
         private Color GetDrawColour(int i, int j, Color colour)
         {

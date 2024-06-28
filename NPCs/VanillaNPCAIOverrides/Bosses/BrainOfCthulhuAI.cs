@@ -27,7 +27,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+            {
+                // Ignore tank players, target low HP players, Brain is smart
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+            }
 
             bool enrage = true;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
@@ -550,7 +556,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.localAI[1] >= 210f)
                         {
                             npc.localAI[1] = 0f;
-                            npc.TargetClosest();
+                            
+                            CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                            options.aggroRatio = -1f;
+                            options.finishThemOff = true;
+                            CalamityUtils.CalamityTargeting(npc, options);
+
                             int numTeleportTries = 0;
                             int maxTeleportTries = 100;
                             int teleportTileX;
@@ -727,7 +738,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[0] = -1f;
                     npc.localAI[1] = 0f;
                     npc.alpha = 0;
-                    npc.TargetClosest();
+                    
+                    CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                    options.aggroRatio = -1f;
+                    options.finishThemOff = true;
+                    CalamityUtils.CalamityTargeting(npc, options);
+
                     npc.netUpdate = true;
                     return false;
                 }
@@ -768,7 +784,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             // Teleport location
                             npc.localAI[1] = 0f;
-                            npc.TargetClosest();
+
+                            CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                            options.aggroRatio = -1f;
+                            options.finishThemOff = true;
+                            CalamityUtils.CalamityTargeting(npc, options);
+                            
                             int phase1TeleportTries = 0;
                             int maxTeleportTries = 100;
                             int phase1TeleportTileX;
@@ -872,7 +893,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, default);
 
             float enrageScaleMax = 2f;
             float enrageScale = bossRush ? enrageScaleMax : masterMode ? 0.5f : 0f;
@@ -973,7 +994,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[1] >= TimeBeforeCreeperAttack)
                 {
                     npc.ai[1] = 0f;
-                    npc.TargetClosest();
+
+                    CalamityUtils.CalamityTargeting(npc, default);
+                    
                     creeperCenter = npc.Center;
                     brainXDist = Main.player[npc.target].Center.X - creeperCenter.X;
                     brainYDist = Main.player[npc.target].Center.Y - creeperCenter.Y;
@@ -1077,7 +1100,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.TargetClosest();
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+
                 int num839 = 6000;
                 if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) + Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > (float)num839)
                 {
@@ -1111,7 +1138,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 npc.dontTakeDamage = false;
-                npc.TargetClosest();
+                
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+
                 Vector2 vector104 = npc.Center;
                 float num841 = Main.player[npc.target].Center.X - vector104.X;
                 float num842 = Main.player[npc.target].Center.Y - vector104.Y;
@@ -1138,7 +1170,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.localAI[1] >= (float)num845)
                         {
                             npc.localAI[1] = 0f;
-                            npc.TargetClosest();
+                            
+                            CalamityUtils.CalamityTargeting(npc, options);
+
                             int num846 = 0;
                             Player player2 = Main.player[npc.target];
                             do
@@ -1231,7 +1265,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
-                npc.TargetClosest();
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+                CalamityUtils.CalamityTargeting(npc, options);
+
                 Vector2 vector105 = npc.Center;
                 float num853 = Main.player[npc.target].Center.X - vector105.X;
                 float num854 = Main.player[npc.target].Center.Y - vector105.Y;
@@ -1275,7 +1313,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.localAI[1] >= (float)(120 + Main.rand.Next(Main.masterMode ? 150 : 300)))
                         {
                             npc.localAI[1] = 0f;
-                            npc.TargetClosest();
+                            
+                            CalamityUtils.CalamityTargeting(npc, options);
+
                             int num859 = 0;
                             Player player3 = Main.player[npc.target];
                             do
@@ -1395,7 +1435,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Main.netMode != NetmodeID.MultiplayerClient && ((Main.expertMode && Main.rand.NextBool(Main.masterMode ? 50 : 100)) || Main.rand.NextBool(200)))
                 {
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, default);
+
                     vector106 = npc.Center;
                     num866 = Main.player[npc.target].Center.X - vector106.X;
                     num867 = Main.player[npc.target].Center.Y - vector106.Y;

@@ -51,9 +51,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.height = 44;
             NPC.defense = 35;
             NPC.DR_NERD(0.25f);
-            NPC.LifeMaxNERB(200000, 240000, 650000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.LifeMaxNERB(200000, 240000, 650000);  
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -78,6 +76,9 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.dontCountMe = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -190,6 +191,20 @@ namespace CalamityMod.NPCs.AstrumDeus
                     Main.dust[astralDust].velocity *= 5f;
                     astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                     Main.dust[astralDust].velocity *= 2f;
+                }
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    float randomSpread = Main.rand.Next(-200, 201) / 100f;
+                    if (NPC.localAI[3] == 1f)
+                    {
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusAltBody1").Type, 1f);
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusAltBody2").Type, 1f);
+                    }
+                    else
+                    {
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusBody1").Type, 1f);
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("AstrumDeusBody2").Type, 1f);
+                    }
                 }
             }
         }

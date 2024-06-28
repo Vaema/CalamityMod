@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -89,7 +90,7 @@ namespace CalamityMod.Tiles.Astral
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.CompactFraming(i, j, resetFrame);
+            TileFramingSystem.CompactFraming(i, j, resetFrame);
             return false;
         }
 

@@ -63,7 +63,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.SDMG).
-                AddIngredient<FetidEmesis>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).
                 AddTile<CosmicAnvil>().

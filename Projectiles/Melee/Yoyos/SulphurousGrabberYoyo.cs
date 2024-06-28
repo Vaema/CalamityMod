@@ -46,13 +46,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 if (bubbleStronk)
                 {
                     Projectile.MaxUpdates = 3;
-                    Projectile.localNPCHitCooldown = 12 * Projectile.MaxUpdates;
+                    Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates;
                     bubbleStronkCounter++;
                 }
                 else
                 {
                     Projectile.MaxUpdates = 2;
-                    Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
+                    Projectile.localNPCHitCooldown = 12 * Projectile.MaxUpdates;
                     bubbleStronkCounter = 0;
                 }
 

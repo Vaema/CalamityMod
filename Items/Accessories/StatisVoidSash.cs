@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("StatisBeltOfCurses")]
-    public class StatisVoidSash : ModItem, ILocalizedModType
+    public class StatisVoidSash : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()

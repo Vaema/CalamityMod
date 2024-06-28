@@ -21,6 +21,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
         }
@@ -29,16 +30,12 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 10;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.width = 22;
             NPC.height = 22;
             NPC.defense = 10;
             NPC.DR_NERD(0.1f);
-
             NPC.lifeMax = 120;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-
             NPC.knockBackResist = 0.8f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -49,9 +46,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             // Despawn
             if (!CalamityPlayer.areThereAnyDamnBosses)
             {
@@ -67,12 +61,16 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Float around the player
             NPC.rotation = NPC.velocity.X / 15f;
 
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+            {
+                CalamityUtils.CalamityTargeting(NPC, default);
+            }
 
             float velocity = 5f;
             float acceleration = 0.1f;
 
-            if (NPC.position.Y > Main.player[NPC.target].position.Y - 400f)
+            if (NPC.position.Y > Main.player[NPC.target].position.Y - 350f)
             {
                 if (NPC.velocity.Y > 0f)
                     NPC.velocity.Y *= 0.98f;
@@ -82,7 +80,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.velocity.Y > velocity)
                     NPC.velocity.Y = velocity;
             }
-            else if (NPC.position.Y < Main.player[NPC.target].position.Y - 500f)
+            else if (NPC.position.Y < Main.player[NPC.target].position.Y - 450f)
             {
                 if (NPC.velocity.Y < 0f)
                     NPC.velocity.Y *= 0.98f;
@@ -172,9 +170,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override Color? GetAlpha(Color drawColor)
         {
-            Color initialColor = new Color(150, 0, 0);
+            Color initialColor = new Color(175, 100, 100);
             Color newColor = initialColor;
-            Color finalColor = new Color(255, 125, 125);
+            Color finalColor = new Color(255, 150, 150);
             float colorTelegraphGateValue = (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue) - LightTelegraphDuration;
             if (NPC.ai[0] > colorTelegraphGateValue)
                 newColor = Color.Lerp(initialColor, finalColor, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);

@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = SoundID.Item61;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Aquashard>();
-            Item.shootSpeed = 22f;
+            Item.shootSpeed = 30f;
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -40,8 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int projAmt = Main.rand.Next(2, 4);
-            for (int index = 0; index < projAmt; ++index)
+            for (int index = 0; index < 2; ++index)
             {
                 float SpeedX = velocity.X + Main.rand.Next(-40, 41) * 0.05f;
                 float SpeedY = velocity.Y + Main.rand.Next(-40, 41) * 0.05f;

@@ -130,6 +130,10 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<WhisperingDeath>(), 120);
                     break;
 
+                case ItemID.InfluxWaver:
+                    target.AddBuff(BuffID.Electrified, 300);
+                    break;
+
                 case ItemID.BeeKeeper:
                 case ItemID.BladeofGrass:
                     target.AddBuff(BuffID.Poisoned, 240);
@@ -262,12 +266,28 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;
 
+                case ProjectileID.InfluxWaver:
+                case ProjectileID.UFOLaser:
+                case ProjectileID.Electrosphere:
+                    target.AddBuff(BuffID.Electrified, 180);
+                    break;
+
+                case ProjectileID.ThunderSpear:
+                case ProjectileID.ThunderSpearShot:
+                case ProjectileID.ThunderStaffShot:
+                    target.AddBuff(BuffType<StaticDischarge>(), 90);
+                    break;
+
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
                     break;
 
                 case ProjectileID.DeathSickle:
                     target.AddBuff(BuffType<WhisperingDeath>(), 60);
+                    break;
+
+                case ProjectileID.Cascade:
+                    target.AddBuff(BuffID.OnFire, 60);
                     break;
 
                 case ProjectileID.Bee:
@@ -595,14 +615,17 @@ namespace CalamityMod.CalPlayer
             if (!proj.CountsAsClass<MeleeDamageClass>() && !proj.CountsAsClass<SummonMeleeSpeedDamageClass>() && Player.meleeEnchant == 7)
                 Projectile.NewProjectile(source, position, proj.velocity, ProjectileID.ConfettiMelee, 0, 0f, proj.owner);
 
-            if (alchFlask && Player.ownedProjectileCounts[ProjectileType<PlagueSeeker>()] < 3 && hasClass)
+            if (alchFlask && AlchFlaskCooldown == 0 && proj.type != ModContent.ProjectileType<BasicPlagueBee>())
             {
-                int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(30);
+                int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(10);
                 seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
+                Vector2 seekerVelocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f);
 
-                Projectile projectile = CalamityUtils.SpawnOrb(proj, seekerDamage, ProjectileType<PlagueSeeker>(), 400f, 12f);
-                if (projectile.whoAmI.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[projectile.whoAmI].DamageType = DamageClass.Generic;
+                Projectile bee = Projectile.NewProjectileDirect(source, position, seekerVelocity, ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
+                bee.ArmorPenetration = 20;
+                bee.penetrate = 2;
+                bee.extraUpdates = 1;
+                AlchFlaskCooldown = 7;
             }
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
@@ -761,18 +784,14 @@ namespace CalamityMod.CalPlayer
                 if (bloodflareMage && bloodflareMageCooldown <= 0 && crit)
                 {
                     bloodflareMageCooldown = 120;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        // Bloodflare Mage Fireballs: 3 x 50%, softcap starts at 500 base damage to not overly punish slow weapons
-                        int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
+                    // Bloodflare Mage Explosion: 50%, softcap starts at 500 base damage to not overly punish slow weapons
+                    int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
 
-                        int fire = Projectile.NewProjectile(source, position, velocity, ProjectileID.BallofFire, bloodflareFireballDamage, 0f, Player.whoAmI);
-                        if (fire.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[fire].DamageType = DamageClass.Generic;
-                            Main.projectile[fire].netUpdate = true;
-                        }
+                    int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
+                    if (fire.WithinBounds(Main.maxProjectiles))
+                    {
+                        Main.projectile[fire].DamageType = DamageClass.Generic;
+                        Main.projectile[fire].netUpdate = true;
                     }
                 }
             }
@@ -1237,9 +1256,6 @@ namespace CalamityMod.CalPlayer
                 if (divineBless)
                     target.AddBuff(BuffType<BanishingFire>(), 60);
 
-                if (holyMinions)
-                    target.AddBuff(BuffType<HolyFlames>(), 180);
-
                 if (shadowMinions)
                     target.AddBuff(BuffID.ShadowFlame, 180);
 
@@ -1249,7 +1265,7 @@ namespace CalamityMod.CalPlayer
                     //20% chance for Voltaic Jelly
                     if (Main.rand.NextBool(starTaintedGenerator ? 1 : 5))
                     {
-                        target.AddBuff(BuffID.Electrified, 60);
+                        target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
                     }
                 }
 

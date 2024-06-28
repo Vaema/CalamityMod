@@ -41,6 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.idStaticNPCHitCooldown = 6;
             Projectile.frameCounter = 0;
             Projectile.alpha = 255;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override bool PreDraw(ref Color lightColor)

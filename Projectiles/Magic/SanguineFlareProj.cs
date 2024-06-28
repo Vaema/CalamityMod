@@ -95,6 +95,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 60);
+
             int heal = (int)Math.Round(hit.Damage * 0.025);
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
@@ -104,6 +106,8 @@ namespace CalamityMod.Projectiles.Magic
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Laceration>(), 60);
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -8,9 +8,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class EclipseMirror : ModItem, ILocalizedModType
+    public class EclipseMirror : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public bool HasFlavorTooltip => true;
+
         public override void SetDefaults()
         {
             Item.width = 30;

@@ -10,8 +10,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,6 +23,11 @@ namespace CalamityMod.NPCs.CalClone
     public class Cataclysm : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
+
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CataclysmHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CataclysmDeath");
+        public static readonly SoundStyle FlamethrowerStart = new("CalamityMod/Sounds/Custom/CalamitasClone/BrimstoneFlamethrowerCast");
+        public static readonly SoundStyle FlamethrowerLoop = new("CalamityMod/Sounds/Custom/CalamitasClone/BrimstoneFlamethrowerLoop");
 
         public override void SetStaticDefaults()
         {
@@ -55,15 +62,13 @@ namespace CalamityMod.NPCs.CalClone
             NPC.defense = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 15 : 10;
             NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.225f : 0.15f);
             NPC.LifeMaxNERB(11000, 13200, 80000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit4;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
@@ -175,8 +180,9 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<CataclysmTrophy>(), 10);
-            npcLoot.Add(ModContent.ItemType<HavocsBreath>(), 4);
+            IItemDropRuleCondition KilledLast = DropHelper.If(() => !NPC.AnyNPCs(ModContent.NPCType<Catastrophe>()), desc: DropHelper.CataclysmKilledLast);
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<CataclysmTrophy>(), 5));
+            npcLoot.Add(ItemDropRule.ByCondition(KilledLast, ModContent.ItemType<HavocsBreath>()));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

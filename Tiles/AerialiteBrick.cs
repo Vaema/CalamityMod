@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
         public override bool CreateDust(int i, int j, ref int type)

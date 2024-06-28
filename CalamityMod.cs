@@ -100,7 +100,7 @@ namespace CalamityMod
         // Astral Snow Sky/BG
         public static Texture2D AstralSnowSurfaceMiddle;
 
-        // Sulpher Sea Sky/BG
+        // Sulphur Sea Sky/BG
         public static Texture2D SulphurSeaSky;
         public static Texture2D SulphurSeaSkyFront;
         public static Texture2D SulphurSeaSurface;
@@ -132,8 +132,15 @@ namespace CalamityMod
         internal static CalamityMod Instance;
 
         // TODO -- Mod references should be contained in a ModSystem (example name "ModLoadedChecker")
-        internal Mod musicMod = null; // This is Calamity's official music mod, CalamityModMusic
-        internal bool MusicAvailable => !(musicMod is null);
+
+        // This is Calamity's official music mod, CalamityModMusic. It is now a hard dependency.
+        internal Mod musicMod = null;
+        internal bool MusicAvailable => musicMod is not null;
+
+        // This is Vanilla Calamity Mod Music, internally named UnCalamityModMusic.
+        // VCMM is an official music add-on. Unlike the main music mod, it is not a dependency.
+        internal Mod vcmm = null;
+        internal bool VCMMAvailable => vcmm is not null;
 
         // Please keep this in alphabetical order so it's easy to read
         internal Mod ancientsAwakened = null;
@@ -166,6 +173,9 @@ namespace CalamityMod
             // If any of these mods aren't loaded, it will simply keep them as null.
             musicMod = null;
             ModLoader.TryGetMod("CalamityModMusic", out musicMod);
+            vcmm = null;
+            ModLoader.TryGetMod("UnCalamityModMusic", out vcmm);
+
             ancientsAwakened = null;
             ModLoader.TryGetMod("AAMod", out ancientsAwakened);
             bossChecklist = null;
@@ -246,29 +256,6 @@ namespace CalamityMod
             BalancingChangesManager.Load();
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
-
-            /*
-            //keep this disabled for now, hell bg system isnt used and there is a better way to load it
-            //hell background loading
-            HellBGManager.Load();
-
-            //load stuff for hell background
-            loadCache = new List<HellBGLoad>();
-
-            foreach (Type type in Code.GetTypes())
-            {
-                if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(HellBGLoad)))
-                {
-                    var instance = Activator.CreateInstance(type);
-                    loadCache.Add(instance as HellBGLoad);
-                }
-            }
-
-            for (int k = 0; k < loadCache.Count; k++)
-            {
-                loadCache[k].Load();
-            }
-            */
         }
 
         private void LoadClient()
@@ -412,6 +399,7 @@ namespace CalamityMod
         public override void Unload()
         {
             musicMod = null;
+            vcmm = null;
 
             ancientsAwakened = null;
             bossChecklist = null;
@@ -454,8 +442,6 @@ namespace CalamityMod
             CooldownRegistry.Unload();
             PlayerDashManager.Unload();
 
-            TileFraming.Unload();
-
             Main.QueueMainThreadAction(() =>
             {
                 Main.OnPreDraw -= PrepareRenderTargets;
@@ -482,21 +468,6 @@ namespace CalamityMod
             SceneMetrics.GraveyardTileThreshold = 28;
 
             carpetOriginal = null;
-
-            /*
-            //unload hell background stuff
-            HellBGManager.Unload();
-
-            if (loadCache != null)
-            {
-                foreach (var loadable in loadCache)
-                {
-                    loadable.Unload();
-                }
-            }
-
-            loadCache = null;
-            */
 
             Instance = null;
             base.Unload();
@@ -669,7 +640,7 @@ namespace CalamityMod
                 { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
                 { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
                 { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 7200 }, // 2:00 (120 seconds)
+                { NPCID.SkeletronHead, 9000 }, // 2:30 (150 seconds)
                 { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
                 { NPCID.WallofFleshEye, 7200 },
                 { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
@@ -704,10 +675,10 @@ namespace CalamityMod
                 { ModContent.NPCType<SplitEbonianPaladin>(), 4500 }, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
                 { ModContent.NPCType<SplitCrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
                 { ModContent.NPCType<Cryogen>(), 10800 }, // 3:00 (180 seconds)
-                { ModContent.NPCType<AquaticScourgeHead>(), 7200 }, // 2:00 (120 seconds)
-                { ModContent.NPCType<AquaticScourgeBody>(), 7200 },
-                { ModContent.NPCType<AquaticScourgeBodyAlt>(), 7200 },
-                { ModContent.NPCType<AquaticScourgeTail>(), 7200 },
+                { ModContent.NPCType<AquaticScourgeHead>(), 9000 }, // 2:30 (150 seconds)
+                { ModContent.NPCType<AquaticScourgeBody>(), 9000 },
+                { ModContent.NPCType<AquaticScourgeBodyAlt>(), 9000 },
+                { ModContent.NPCType<AquaticScourgeTail>(), 9000 },
                 { ModContent.NPCType<BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
                 { ModContent.NPCType<CalamitasClone>(), 14400 }, // 4:00 (240 seconds)
                 { ModContent.NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
@@ -754,6 +725,10 @@ namespace CalamityMod
 
         // This function returns an available Calamity Music Mod track, or null if the Calamity Music Mod is not available.
         public int? GetMusicFromMusicMod(string songFilename) => MusicAvailable ? MusicLoader.GetMusicSlot(musicMod, "Sounds/Music/" + songFilename) : null;
+
+        // This function returns an available VCMM track, or null if VCMM is not available.
+        // Unlike the main Music Mod, VCMM is hierarchical.
+        public int? GetMusicFromVCMM(string songPath) => VCMMAvailable ? MusicLoader.GetMusicSlot(vcmm, "Assets/" + songPath) : null;
 
         #endregion
 

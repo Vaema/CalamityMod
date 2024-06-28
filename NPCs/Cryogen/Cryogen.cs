@@ -101,8 +101,6 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.defense = 15;
             NPC.DR_NERD(0.3f);
             NPC.LifeMaxNERB(40000, 48000, 300000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -130,6 +128,9 @@ namespace CalamityMod.NPCs.Cryogen
                 NPC.Calamity().VulnerableToCold = false;
                 NPC.Calamity().VulnerableToSickness = false;
             }
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -178,10 +179,6 @@ namespace CalamityMod.NPCs.Cryogen
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-                NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
@@ -268,7 +265,7 @@ namespace CalamityMod.NPCs.Cryogen
 
             if (CalamityConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
-            else if (!Main.raining)
+            else if (!Main.raining && !BossRushEvent.BossRushActive)
                 CalamityUtils.StartRain();
 
             if (!player.active || player.dead)
@@ -381,7 +378,6 @@ namespace CalamityMod.NPCs.Cryogen
                 if (NPC.localAI[0] >= 120f)
                 {
                     NPC.localAI[0] = 0f;
-                    NPC.TargetClosest();
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                     {
                         SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -449,7 +445,6 @@ namespace CalamityMod.NPCs.Cryogen
                     if (NPC.localAI[0] >= 120f)
                     {
                         NPC.localAI[0] = 0f;
-                        NPC.TargetClosest();
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
                             SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -639,7 +634,6 @@ namespace CalamityMod.NPCs.Cryogen
                     if (NPC.localAI[0] >= 120f)
                     {
                         NPC.localAI[0] = 0f;
-                        NPC.TargetClosest();
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
                             SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -759,11 +753,10 @@ namespace CalamityMod.NPCs.Cryogen
                     NPC.ai[1] -= 1f;
                     if (NPC.ai[1] == chargeGateValue)
                     {
-                        NPC.TargetClosest();
-
                         calamityGlobalNPC.newAI[1] += 1f;
                         if (calamityGlobalNPC.newAI[1] > 1f)
                         {
+                            NPC.TargetClosest();
                             NPC.ai[1] = 0f;
                             NPC.localAI[0] = 0f;
                             calamityGlobalNPC.newAI[1] = 0f;
@@ -855,16 +848,13 @@ namespace CalamityMod.NPCs.Cryogen
                         NPC.localAI[2] += 1f;
                         if (NPC.localAI[2] >= 180f)
                         {
-                            NPC.TargetClosest();
                             NPC.localAI[2] = 0f;
                             int attackTimer = 0;
-                            int playerTileX;
-                            int playerTileY;
-                            while (true)
+                            int playerTileX = (int)player.Center.X / 16;
+                            int playerTileY = (int)player.Center.Y / 16;
+                            while (attackTimer <= 100)
                             {
                                 attackTimer++;
-                                playerTileX = (int)player.Center.X / 16;
-                                playerTileY = (int)player.Center.Y / 16;
 
                                 int min = 16;
                                 int max = 20;
@@ -882,15 +872,13 @@ namespace CalamityMod.NPCs.Cryogen
                                 if (!WorldGen.SolidTile(playerTileX, playerTileY) && Collision.CanHit(new Vector2(playerTileX * 16, playerTileY * 16), 1, 1, player.position, player.width, player.height))
                                     break;
 
-                                if (attackTimer > 100)
-                                    goto Block;
+                                playerTileX = (int)player.Center.X / 16;
+                                playerTileY = (int)player.Center.Y / 16;
                             }
                             NPC.ai[1] = 1f;
                             teleportLocationX = playerTileX;
                             calamityGlobalNPC.newAI[2] = playerTileY;
                             NPC.netUpdate = true;
-Block:
-                            ;
                         }
                     }
                 }
@@ -951,6 +939,7 @@ Block:
                             }
                         }
 
+                        NPC.TargetClosest();
                         NPC.ai[1] = 2f;
                         NPC.netUpdate = true;
                     }
@@ -1046,7 +1035,6 @@ Block:
                     if (NPC.ai[1] <= 0f) // Set the next charge, or switch back to floating above the player
                     {
                         NPC.ai[3] += 1f;
-                        NPC.TargetClosest();
                         if (NPC.ai[3] > 2f)
                         {
                             NPC.ai[0] = 5f;
@@ -1429,6 +1417,10 @@ Block:
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Spawn Permafrost if he isn't in the world

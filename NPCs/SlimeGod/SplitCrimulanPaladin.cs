@@ -36,8 +36,6 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.LifeMaxNERB(1875, 2250, 80000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.GetNPCDamage();
             NPC.width = 150;
@@ -57,6 +55,9 @@ namespace CalamityMod.NPCs.SlimeGod
             AIType = -1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

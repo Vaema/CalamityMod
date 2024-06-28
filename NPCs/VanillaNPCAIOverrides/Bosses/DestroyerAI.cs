@@ -65,10 +65,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            // 10 seconds of resistance to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime)
-                calamityGlobalNPC.newAI[1] += 1f;
-
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < DRIncreaseTime;
 
             // Percent life remaining
@@ -114,7 +110,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             Player player = Main.player[npc.target];
 
@@ -180,7 +176,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                if (masterMode && !bossRush && npc.localAI[3] != -1f)
+                if (masterMode && !bossRush && npc.localAI[3] == 1f)
                 {
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
@@ -190,18 +186,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
                         }
                     }
-                }
-
-                // Set variable to force despawn when Prime dies in Master Rev+
-                // Set to -1f if Prime isn't alive when summoned
-                if (npc.localAI[3] == 0f)
-                {
-                    if (oblivionAlive)
-                        npc.localAI[3] = 1f;
-                    else
-                        npc.localAI[3] = -1f;
-
-                    npc.SyncExtraAI();
                 }
             }
 
@@ -299,7 +283,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Regenerate Probes in Master Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
-                if (masterMode && probeLaunched)
+                // This doesn't happen if Oblivion is alive
+                if (masterMode && probeLaunched && !oblivionAlive)
                 {
                     npc.localAI[2] += 1f;
                     if (npc.localAI[2] >= 600f)
@@ -549,7 +534,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
                         calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
                         npc.SyncExtraAI();
-                        npc.TargetClosest();
+                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     }
 
                     if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
@@ -566,7 +551,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
                             calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
                             npc.SyncExtraAI();
-                            npc.TargetClosest();
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                         }
 
                         // Laser speed
@@ -780,8 +765,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
-            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.75f) || oblivionWasAlive;
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.8f) && npc.localAI[3] == 1f;
             if (player.dead || oblivionFightDespawn)
             {
                 shouldFly = false;
@@ -920,7 +904,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool flyWyvernMovement = false;
                     if (flyAtTarget)
                     {
-                        if (((npc.velocity.X > 0f && targetTilePosX < 0f) || (npc.velocity.X < 0f && targetTilePosX > 0f) || (npc.velocity.Y > 0f && targetTilePosY < 0f) || (npc.velocity.Y < 0f && targetTilePosY > 0f)) && Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) > speed / 2f && targetTileDist < 600f)
+                        float chargeDistance = 600f;
+                        if (((npc.velocity.X > 0f && targetTilePosX < 0f) || (npc.velocity.X < 0f && targetTilePosX > 0f) || (npc.velocity.Y > 0f && targetTilePosY < 0f) || (npc.velocity.Y < 0f && targetTilePosY > 0f)) && Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) > speed / 2f && targetTileDist < chargeDistance)
                         {
                             flyWyvernMovement = true;
 
@@ -1066,6 +1051,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation = mechdusaRotation * 0.75f + (float)Math.PI;
             }
 
+            // 10 seconds of resistance to prevent spawn killing
+            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+                calamityGlobalNPC.newAI[1] += 1f;
+
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = segmentVelocity * 0.25f;
             float minimalDamageVelocity = segmentVelocity * 0.5f;
@@ -1128,17 +1117,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            // 10 seconds of resistance to prevent spawn killing
-            if (npc.Calamity().newAI[1] < DRIncreaseTime)
-                npc.Calamity().newAI[1] += 1f;
-
             npc.Calamity().CurrentlyIncreasingDefenseOrDR = npc.Calamity().newAI[1] < DRIncreaseTime;
 
             if (npc.ai[3] > 0f)
                 npc.realLife = (int)npc.ai[3];
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if (npc.type >= NPCID.TheDestroyer && npc.type <= NPCID.TheDestroyerTail)
             {
@@ -1283,7 +1268,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
                     npc.localAI[0] = laserShootTimeBonus;
                     npc.SyncVanillaLocalAI();
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+
                     if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                     {
                         float laserVelocity = (Main.masterMode ? 3.5f : Main.expertMode ? 3f : 2.5f) + Main.rand.NextFloat() * 1.5f;
@@ -1711,6 +1697,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation = num30 * 0.75f + (float)Math.PI;
             }
 
+            // 10 seconds of resistance to prevent spawn killing
+            if (npc.Calamity().newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || npc.Calamity().newAI[1] > 0f))
+                npc.Calamity().newAI[1] += 1f;
+
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = num18 * 0.25f;
             float minimalDamageVelocity = num18 * 0.5f;
@@ -1751,7 +1741,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, default);
 
             NPCAimedTarget targetData = npc.GetTargetData();
             bool targetDead = false;
@@ -2026,7 +2016,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool VanillaProbeAI(NPC npc, Mod mod)
         {
             if (npc.target < 0 || npc.target <= Main.maxPlayers || Main.player[npc.target].dead)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, default);
 
             NPCAimedTarget targetData = npc.GetTargetData();
             bool flag = false;

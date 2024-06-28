@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         {
             CreateRecipe(50).
                 AddIngredient<SmoothBrimstoneSlag>(50).
-                AddIngredient<UnholyCore>().
                 AddTile<AshenAltar>().
                 AddCondition(Condition.InGraveyard).
                 Register();

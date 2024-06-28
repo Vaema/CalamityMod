@@ -1,6 +1,5 @@
 ﻿[h1]Calamity Mod[/h1]
 [url=https://discord.gg/calamity]Discord[/url] [url=https://calamitymod.wiki.gg]Official Wiki[/url]
-[b]LIMITED TIME![/b] [url=https://calamitymod.com/plush]Gimme Swag Plushie Campaign[/url]
 
 The Calamity Mod is a vast content mod that creates a new and refreshing experience for Terraria!
 
@@ -35,8 +34,9 @@ A more detailed breakdown of the content available in Calamity:
 [*] 200+ pieces of furniture
 [*] 11 ores
 [*] 2 full difficulty settings above Expert, separate from Master
+[*] Significant improvements and changes to Master difficulty
 [*] 50+ changes to vanilla mechanics
 [*] 30+ new recipes for vanilla items
 [*] 450+ tweaks and improvements to vanilla items
-[*] Cross-mod support for the Thorium Mod
+[*] Minor cross-mod support for the Thorium Mod
 [/olist]

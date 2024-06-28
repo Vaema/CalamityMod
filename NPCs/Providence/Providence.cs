@@ -229,8 +229,6 @@ namespace CalamityMod.NPCs.Providence
             NPC.defense = 50;
             NPC.DR_NERD(normalDR);
             NPC.LifeMaxNERB(312500, 375000, 1250000); // Old HP - 440000, 500000
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -248,6 +246,9 @@ namespace CalamityMod.NPCs.Providence
 
             if (Main.getGoodWorld)
                 NPC.scale *= 0.25f;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -1999,6 +2000,10 @@ namespace CalamityMod.NPCs.Providence
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             if (Main.netMode != NetmodeID.MultiplayerClient && NPC.Top.Y >= (Main.maxTilesY - 240f) * 16f)
@@ -2035,8 +2040,8 @@ namespace CalamityMod.NPCs.Providence
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ProvidenceBag>()));
 
-            // Drops Rune of Cos on first kill
-            npcLoot.AddIf(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<RuneofKos>(), desc: DropHelper.FirstKillText);
+            // Drops Mark of Providence on first kill
+            npcLoot.AddIf(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<MarkofProvidence>(), desc: DropHelper.FirstKillText);
 
             npcLoot.AddConditionalPerPlayer(info =>
             {

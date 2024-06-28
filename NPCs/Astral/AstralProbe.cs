@@ -24,6 +24,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -32,7 +33,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetDefaults()
         {
-            NPC.damage = 20;
+            NPC.damage = 0; // 0 contact damage, laser damage in handled separately
             NPC.width = 30; //324
             NPC.height = 30; //216
             NPC.defense = 10;
@@ -73,9 +74,6 @@ namespace CalamityMod.NPCs.Astral
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
             {
                 NPC.TargetClosest(true);

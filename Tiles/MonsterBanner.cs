@@ -184,7 +184,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<AstralachneaGround>();
                     break;
                 case 40:
-                    npc = NPCType<HiveEnemy>();
+                    npc = NPCType<Astraglomerate>();
                     break;
                 case 41:
                     npc = NPCType<StellarCulex>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
@@ -71,8 +72,6 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.defense = 40;
             NPC.DR_NERD(0.1f);
             NPC.LifeMaxNERB(187500, 225000, 300000); // Old HP - 227500, 252500
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.boss = true;
             NPC.noTileCollide = true;
@@ -85,6 +84,9 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -456,9 +458,17 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedDragonfolly, ModContent.ItemType<LoreDragonfolly>(), desc: DropHelper.FirstKillText);
         }
-
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<VermillionFlux>(), 120, true);
+        }
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Mark The Dragonfolly as dead

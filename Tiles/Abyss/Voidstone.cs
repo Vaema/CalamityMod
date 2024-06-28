@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -273,7 +274,7 @@ namespace CalamityMod.Tiles.Abyss
             brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
             drawColour *= brightness;
 
-            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)
