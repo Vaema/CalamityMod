@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 8;
             Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 8 * Projectile.extraUpdates;

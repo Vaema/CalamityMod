@@ -82,19 +82,17 @@ namespace CalamityMod.Items.Tools
                 Vector2 partVel = dustVel * Main.rand.NextFloat(0.1f, 0.3f);
                 Particle spark3 = new GlowOrbParticle(player.Center + dustVel * 7, partVel, false, 18, partScale, Color.Black, false, false, false);
                 GeneralParticleHandler.SpawnParticle(spark3);
-                Particle spark2 = new GlowOrbParticle(player.Center + dustVel * 7, partVel, false, 18, partScale * 0.5f, Color.LightGreen, true, false, false);
-                GeneralParticleHandler.SpawnParticle(spark2);
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle spark2 = new GlowOrbParticle(player.Center + dustVel * 7, partVel, false, 18, partScale * 0.5f, Color.LightGreen, true, false, false);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
             }
 
             Vector2 dustVel2 = new Vector2(5 * swordDirection, -5).RotatedBy(swingRotation - 1.7f * swordDirection);
 
             float partScale2 = Main.rand.NextFloat(0.5f, 0.8f);
             Vector2 partVel2 = dustVel2 * Main.rand.NextFloat(0.1f, 0.7f);
-
-            //Particle smoke = new GlowOrbParticle(player.Center + dustVel2 * 12 + Main.rand.NextVector2Circular(12, 12), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection) * -5, false, 9, Main.rand.NextFloat(0.3f, 0.5f), Color.LightGreen);
-            //GeneralParticleHandler.SpawnParticle(smoke);
-            //Particle smoke2 = new GlowOrbParticle(player.Center + dustVel2 * 12 + Main.rand.NextVector2Circular(12, 12), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection) * -5, false, 9, Main.rand.NextFloat(0.3f, 0.5f), Color.Black, false, false, false);
-            //GeneralParticleHandler.SpawnParticle(smoke2);
 
             Particle smoke = new HeavySmokeParticle(player.Center + dustVel2 * 12 + Main.rand.NextVector2Circular(8, 8), partVel2.RotatedBy(MathHelper.ToRadians(90f * swordDirection)).RotatedBy(-0.3 * swordDirection) * -5, Color.Black, 13, partScale2, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), false);
             GeneralParticleHandler.SpawnParticle(smoke);

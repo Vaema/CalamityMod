@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Potions;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,10 +25,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.width = 50;
             Projectile.height = 50;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = 5;
             Projectile.extraUpdates = 1;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.timeLeft = 450;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -59,39 +64,54 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (time >= 5)
             {
-                NPC target = Projectile.Center.ClosestNPCAt(320);
-
-                if (target == null)
+                if (Projectile.numHits < 1)
                 {
-                    Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 14)
-                        Projectile.velocity += moveToMouse * 0.3f;
-                    else
-                        Projectile.velocity *= 0.8f;
+                    NPC target = Projectile.Center.ClosestNPCAt(320);
 
+                    if (target == null)
+                    {
+                        Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                        if (Projectile.velocity.Length() < 14)
+                            Projectile.velocity += moveToMouse * 0.3f;
+                        else
+                            Projectile.velocity *= 0.8f;
+
+                        if (time % waveOften == 0)
+                            spinDir *= -1;
+
+                        Projectile.velocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.05f, 0.15f) * spinDir * Utils.GetLerpValue(60, 180, time, true));
+                    }
+                    else
+                    {
+                        Vector2 moveToEnemy = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                        if (Projectile.velocity.Length() < 14)
+                            Projectile.velocity += moveToEnemy * 0.8f;
+                        else
+                            Projectile.velocity *= 0.7f;
+                    }
+                }
+                else
+                {
                     if (time % waveOften == 0)
                         spinDir *= -1;
 
                     Projectile.velocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.05f, 0.15f) * spinDir * Utils.GetLerpValue(60, 180, time, true));
                 }
-                else
-                {
-                    Vector2 moveToEnemy = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 14)
-                        Projectile.velocity += moveToEnemy * 0.8f;
-                    else
-                        Projectile.velocity *= 0.7f;
-                }
             }
+            if (Projectile.numHits > 0)
+                Projectile.extraUpdates = 2; 
             time++;
         }
-        public override void OnKill(int timeLeft)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.numHits > 0)
+            if (Projectile.numHits > 0 && Projectile.numHits < 2)
             {
                 SoundStyle sound = new("CalamityMod/Sounds/Item/MeldBurn");
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
             }
+        }
+        public override void OnKill(int timeLeft)
+        {
             for (int i = 0; i <= 9; i++)
             {
                 int dustStyle = Main.rand.NextBool() ? 66 : 263;

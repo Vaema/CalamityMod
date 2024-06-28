@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
         public bool jitter = false;
         public Vector2 portalSpot;
         public Vector2 shadowPlacement;
+        public int clones = 9; // This is just a counter for the clones, it will not change how many spawn
         NPC closestTarget;
         public override void SetDefaults()
         {
@@ -167,13 +168,24 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.Calamity().stealthStrike && time % 20 == 0)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2CircularEdge(450, 450) * Main.rand.NextFloat(0.7f, 1.3f), Vector2.Zero, ModContent.ProjectileType<AntumbraShardProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1, 5);
+                    clones--;
                 }
 
                 stuckTimer--;
                 if (Projectile.ai[2] == 0)
                 {
                     if (chosenTarget.life <= 0 || chosenTarget == null)
+                    {
+                        if (clones > 0 && Projectile.Calamity().stealthStrike)
+                        {
+                            for (int i = 0; i < clones; i++)
+                            {
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2CircularEdge(450, 450) * Main.rand.NextFloat(0.7f, 1.3f), Vector2.Zero, ModContent.ProjectileType<AntumbraShardProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1, 5);
+                            }
+                            clones = 0;
+                        }
                         stuckTimer = 0;
+                    }
                 }
                 if (stuckTimer <= 0)
                 {

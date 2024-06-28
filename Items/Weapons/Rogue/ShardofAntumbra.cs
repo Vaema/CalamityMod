@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 140;
+            Item.damage = 132;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 17;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.autoReuse = true;
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<AntumbraShardProjectile>();
-            Item.shootSpeed = 13f;
+            Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
