@@ -8,6 +8,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         private const float LaserLength = 40f;
         private const float LaserLengthChangeRate = 1.5f;
+        public bool HasBounced = false;
 
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
 
@@ -51,6 +52,51 @@ namespace CalamityMod.Projectiles.Magic
                 if (Projectile.localAI[0] <= 0f)
                     Projectile.Kill();
             }
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (!HasBounced)
+            {
+                HasBounced = true;
+
+                float npcDistCheck = 640f; // 40 tiles
+                int index = -1;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (!n.CanBeChasedBy(Projectile))
+                        continue;
+
+                    float currentNPCDist = Vector2.Distance(n.Center, Main.MouseWorld);
+                    if (currentNPCDist < npcDistCheck)
+                    {
+                        npcDistCheck = currentNPCDist;
+                        index = n.whoAmI;
+                    }
+                }
+                // If the index is not default, smart bounce in the direction of that enemy.
+                if (index != -1)
+                {
+                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Main.player[Projectile.owner].ActiveItem().shootSpeed, 3);
+                }
+                else // Otherwise, use standard bouncing behavior.
+                {
+                    if (Projectile.velocity.X != oldVelocity.X)
+                    {
+                        Projectile.velocity.X = -oldVelocity.X;
+                    }
+                    if (Projectile.velocity.Y != oldVelocity.Y)
+                    {
+                        Projectile.velocity.Y = -oldVelocity.Y;
+                    }
+                }
+
+                // The laser loses 20% damage after bouncing.
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
+                return false;
+            }
+            else
+                return true;
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(96, 255, 96, 0);

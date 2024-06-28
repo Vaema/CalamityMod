@@ -543,7 +543,11 @@ Mistlestorm: {
 
 NanoPurge: {
 	DisplayName: Nano Purge
-	Tooltip: Fires a barrage of nano lasers
+	Tooltip:
+		'''
+		Fires a barrage of nano lasers
+		Bounces towards the nearest enemy after hitting a wall
+		'''
 }
 
 NebulousCataclysm: {
