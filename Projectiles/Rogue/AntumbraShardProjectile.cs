@@ -299,10 +299,6 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(sound2 with { Volume = 0.15f, Pitch = 0.7f }, Projectile.Center);
             }
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.SourceDamage *= canStick ? 0.7f : 1f;
-        }
         public override bool PreDraw(ref Color lightColor)
         {
             Player Owner = Main.player[Projectile.owner];

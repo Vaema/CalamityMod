@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 132;
+            Item.damage = 97;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 17;
@@ -29,13 +29,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<AntumbraShardProjectile>();
             Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 0.8f;
+        public override float StealthDamageMultiplier => 0.7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
