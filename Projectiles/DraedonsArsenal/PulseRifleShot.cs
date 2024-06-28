@@ -269,7 +269,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 if (onKill)
                 {
-                    timesItCanHit += 1;
+                    timesItCanHit += 2;
                     Projectile.timeLeft += 90;
                 }
             }

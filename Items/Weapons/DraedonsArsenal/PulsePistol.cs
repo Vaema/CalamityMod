@@ -22,30 +22,30 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 22;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 22;
+            Item.damage = 49;
             Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 23;
+            Item.useTime = Item.useAnimation = 44;
             Item.autoReuse = true;
-            Item.mana = 6;
+            Item.mana = 3;
 
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = PulseRifle.FireSound;
+            Item.UseSound = PulseRifle.FireSound with { Pitch = 0.5f };
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
-            Item.shootSpeed = 5.2f; // This may seem low but the shot has 10 extra updates.
+            Item.shootSpeed = 8.2f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 50f;
-            modItem.ChargePerUse = 0.05f;
+            modItem.ChargePerUse = 0.01f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PulsePistolShot>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position + velocity * 4, velocity, ModContent.ProjectileType<PulsePistolShot>(), damage, knockback, player.whoAmI, 0f, 3f);
             return false;
         }
 

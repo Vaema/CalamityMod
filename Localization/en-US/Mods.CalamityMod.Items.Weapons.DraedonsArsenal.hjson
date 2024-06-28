@@ -139,7 +139,7 @@ PulseDragon: {
 
 PulsePistol: {
 	DisplayName: Pulse Pistol
-	Tooltip: Fires a pulse that arcs to a new target on enemy hits
+	Tooltip: Fires a pulse orb that tracks nearby targets and will not decrease its pierce when killing enemies
 }
 
 PulseRifle: {
