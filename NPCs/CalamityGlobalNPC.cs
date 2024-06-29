@@ -7329,10 +7329,10 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe)
+            else if (npc.type == NPCID.Probe && CalamityConfig.Instance.NewVanillaTextures)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
-                Texture2D glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.ProbeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
+                Texture2D glowTexture = CalamityMod.ProbeGlowmask.Value;
                 Vector2 halfSize = npc.frame.Size() / 2;
                 SpriteEffects spriteEffects = SpriteEffects.None;
                 if (npc.spriteDirection == 1)
