@@ -40,6 +40,13 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
 
         public override void ExtraBehavior()
         {
+            // Randomly play grass sounds idly if it is moving/spinning
+            if ((CurrentFlailState == FlailState.Spinning || Projectile.velocity.Length() > 2f) && Projectile.soundDelay <= 0)
+            {
+                SoundEngine.PlaySound(SoundID.Grass with { PitchVariance = 1.2f }, Projectile.Center);
+                Projectile.soundDelay = Main.rand.Next(12, 15);
+            }
+
             if (CurrentFlailState != FlailState.Spinning || Main.rand.NextBool())
             {
                 Dust sand = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, Alpha: 100, Scale: Main.rand.NextFloat(0.6f, 1.2f));

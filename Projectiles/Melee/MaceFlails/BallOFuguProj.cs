@@ -1,8 +1,10 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -14,8 +16,8 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
     public class BallOFuguProj : BaseMaceFlailProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<BallOFugu>();
-        public override float SpinHitboxRadius => 66f;
-        public override float SpinVisualRadius => 36f;
+        public override float SpinHitboxRadius => 80f;
+        public override float SpinVisualRadius => 48f;
         public override float LaunchSpeed => 20f;
         public override int LaunchLifespan => 20;
         public override float MaxDropRange => 640f;
@@ -26,8 +28,12 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
         public static float SpikeRate = 10f;
         public static float SpikeDamage => 0.6f;
         public static float SpikeKnockback => 0.2f;
+        public static Color SpikeColor => new Color(91, 62, 153);
 
         public ref float SpikeTimer => ref Projectile.ai[2];
+
+        public static Asset<Texture2D> ChargeGlow;
+        public override void Load() => ChargeGlow = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeBloom");
 
         public override void SetDefaults()
         {
@@ -40,11 +46,20 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
         {
             SpikeTimer++;
 
+            // Play Jellyfish idle sounds as it spins
+            if (Projectile.soundDelay <= 0)
+            {
+                SoundEngine.PlaySound(SoundID.Zombie35 with { Pitch = -0.4f, PitchVariance = 0.2f }, Projectile.Center);
+                Projectile.soundDelay = Main.rand.Next(48, 60);
+            }
+
             // Spews spikes while spinning if timer exceeded
-            if (Projectile.owner == Main.myPlayer && SpikeTimer > MaxSpikeTime && SpikeTimer % SpikeRate == 0f)
+            // This is slightly random and a bit faster than building up normally
+            if (Projectile.owner == Main.myPlayer && SpikeTimer > MaxSpikeTime + SpikeRate)
             {
                 Vector2 velocity = Projectile.DirectionFrom(Owner.MountedCenter).SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(4.5f, 6.5f);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner);
+                SpikeTimer = MaxSpikeTime + Main.rand.Next(5);
             }
             base.SpinAI(launchSpeed);
         }
@@ -52,25 +67,41 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
         public override Action<Projectile> EffectBeforePullback => (proj) =>
         {
             int SpikeCount = (int)(MathHelper.Clamp(SpikeTimer, 0f, MaxSpikeTime) / SpikeRate);
-            for (int i = 0; i < SpikeCount; i++)
-            {
-                Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 7.2f);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner);
-            }
-
             if (SpikeCount > 0)
+            {
                 SoundEngine.PlaySound(BallOFugu.BlowSound, Projectile.Center);
+                Particle BlowParticle = new CustomPulse(Projectile.Center, Vector2.Zero, SpikeColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(0, MathHelper.TwoPi), 0f, 0.05f + 0.005f * SpikeCount, 12);
+                GeneralParticleHandler.SpawnParticle(BlowParticle);
+
+                for (int i = 0; i < SpikeCount; i++)
+                {
+                    Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 7.2f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner);
+                }
+            }
 
             SpikeTimer = 0f;
             Projectile.netUpdate = true;
         };
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Poisoned, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Poisoned, 180);
+
+            if (CurrentFlailState == FlailState.LaunchingForward)
+            {
+                StateTimer = LaunchLifespan;
+                Projectile.netUpdate = true;
+            }
+        }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float glowStrength = MathHelper.Clamp(SpikeTimer, 0f, MaxSpikeTime) / SpikeRate;
-            Projectile.DrawBackglow(Color.Indigo * glowStrength, 0.15f);
+            if (SpikeTimer > SpikeRate)
+            {
+                float power = Utils.GetLerpValue(0f, MaxSpikeTime, SpikeTimer, true);
+                Main.EntitySpriteDraw(ChargeGlow.Value, Projectile.Center - Main.screenPosition, null, SpikeColor * (0.6f + 0.12f * power), 0f, ChargeGlow.Size() * 0.5f, 0.1f + 0.05f * power, SpriteEffects.None);
+            }
             return base.PreDraw(ref lightColor);
         }
     }
