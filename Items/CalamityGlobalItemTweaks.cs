@@ -258,7 +258,7 @@ namespace CalamityMod.Items
                 { ItemID.TitaniumSword, Do(UseTurn, DamageExact(77)) },
                 { ItemID.TitaniumTrident, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(72), ShootSpeedRatio(1.25f)) },
                 { ItemID.TopazStaff, Do(ManaExact(2)) },
-                { ItemID.Toxikarp, Do(UseTimeExact(7), UseAnimationExact(14)) },
+                { ItemID.Toxikarp, Do(UseExact(9)) },
                 { ItemID.Trident, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.Trimarang, Do(DamageExact(24)) },
                 { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(107)) },
