@@ -7328,6 +7328,25 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Laser telegraph
+            else if (npc.type == NPCID.Probe)
+            {
+                float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
+                Texture2D glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.ProbeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
+                Vector2 halfSize = npc.frame.Size() / 2;
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (npc.spriteDirection == 1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                float colorScale = MathHelper.Clamp((npc.localAI[0] - eyeTelegraphGateValue) / DestroyerAI.ProbeLaserTelegraphTime, 0f, 1f);
+                Color drawColor2 = Color.Lerp(new Color(150, 0, 0, 192), new Color(255, 100, 150, 192), colorScale);
+                for (int i = 0; i < 2; i++)
+                {
+                    spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
+                        drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                }
+            }
+
             if (revenge)
             {
                 // Create additional afterimages in the cardinal directions in Rev+

@@ -29,6 +29,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float FlightTelegraphStartGateValue = FlightPhaseGateValue - PhaseTransitionTelegraphTime;
         private const int OneInXChanceToFireLaser = 200;
 
+        public const float ProbeLaserGateValue_Mechdusa = 360f;
+        public const float ProbeLaserGateValue_Rev = 240f;
+        public const float ProbeLaserGateValue_BossRush = 150f;
+        public const float ProbeLaserGateValue = 120f;
+        public const float ProbeLaserTelegraphTime = 60f;
+
         public static bool BuffedDestroyerAI(NPC npc, Mod mod)
         {
             int mechdusaCurvedSpineSegmentIndex = 0;
@@ -1894,7 +1900,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.justHit && !masterMode)
                 npc.localAI[0] = 0f;
 
-            float laserGateValue = NPC.IsMechQueenUp ? 360f : bossRush ? 150f : 240f;
+            float laserGateValue = NPC.IsMechQueenUp ? ProbeLaserGateValue_Mechdusa : bossRush ? ProbeLaserGateValue_BossRush : ProbeLaserGateValue_Rev;
             if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] >= laserGateValue)
             {
                 npc.localAI[0] = 0f;
@@ -2150,9 +2156,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.justHit && !Main.masterMode)
                 npc.localAI[0] = 0f;
 
-            float num10 = 120f;
+            float num10 = ProbeLaserGateValue;
             if (NPC.IsMechQueenUp)
-                num10 = 360f;
+                num10 = ProbeLaserGateValue_Mechdusa;
 
             if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] >= num10)
             {
