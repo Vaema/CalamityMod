@@ -1397,8 +1397,8 @@ Tumbleweed: {
 	Tooltip:
 		'''
 		Throws a tumbleweed flail
-		Forms a localized duststorm while spinning
-		Launched tumbleweed detaches and rolls forward on enemy hit
+		Spinning tumbleweeds brew a localized dust storm
+		Launched tumbleweeds detach from their chain upon striking an enemy and roll forwards
 		'''
 }
 
