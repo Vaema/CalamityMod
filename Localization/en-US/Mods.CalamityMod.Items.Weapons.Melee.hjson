@@ -448,7 +448,7 @@ EntropicClaymore: {
 	DisplayName: Entropic Claymore
 	Tooltip:
 		'''
-		Fires a spread living plasma that swims though the air
+		Fires a spread of living plasma that swims though the air
 		Plasma will track your cursor or enemies near it, prioritizing which is closest
 		The plasma pierces, but will stop tracking after hitting the first enemy
 		'''
