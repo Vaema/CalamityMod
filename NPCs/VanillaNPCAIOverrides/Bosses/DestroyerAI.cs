@@ -1957,12 +1957,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (probeTargetX > 0f)
             {
-                npc.spriteDirection = 1;
+                npc.spriteDirection = -1;
                 npc.rotation = (float)Math.Atan2(probeTargetY, probeTargetX);
             }
             if (probeTargetX < 0f)
             {
-                npc.spriteDirection = -1;
+                npc.spriteDirection = 1;
                 npc.rotation = (float)Math.Atan2(probeTargetY, probeTargetX) + MathHelper.Pi;
             }
 
@@ -2200,13 +2200,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (num4 > 0f)
             {
-                npc.spriteDirection = 1;
+                npc.spriteDirection = -1;
                 npc.rotation = (float)Math.Atan2(num5, num4);
             }
 
             if (num4 < 0f)
             {
-                npc.spriteDirection = -1;
+                npc.spriteDirection = 1;
                 npc.rotation = (float)Math.Atan2(num5, num4) + MathHelper.Pi;
             }
 

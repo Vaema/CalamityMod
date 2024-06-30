@@ -6893,7 +6893,7 @@ namespace CalamityMod.NPCs
                     return false;
             }
 
-            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe)
             {
                 Texture2D texture = TextureAssets.Npc[npc.type].Value;
 
@@ -7335,7 +7335,7 @@ namespace CalamityMod.NPCs
                 Texture2D glowTexture = CalamityMod.ProbeGlowmask.Value;
                 Vector2 halfSize = npc.frame.Size() / 2;
                 SpriteEffects spriteEffects = SpriteEffects.None;
-                if (npc.spriteDirection == 1)
+                if (npc.spriteDirection == -1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
                 float colorScale = MathHelper.Clamp((npc.localAI[0] - eyeTelegraphGateValue) / DestroyerAI.ProbeLaserTelegraphTime, 0f, 1f);
