@@ -29,7 +29,6 @@ AtaraxiaMain.DisplayName: Not Exoblade
 AtaraxiaSide.DisplayName: Also Not Exoblade
 AtaraxiaSplit.DisplayName: Still Not Exoblade
 BalefulHarvesterProjectile.DisplayName: Pumpkin Skull
-BallOFuguProj.DisplayName: Ball O Fugu
 BansheeHookBoom.DisplayName: Banshee Boom
 BansheeHookScythe.DisplayName: Banshee Scythe
 BiomeBladeHoldout.DisplayName: Mended Biome Blade
@@ -39,7 +38,6 @@ BlazingPhantomBlade.DisplayName: Blazing Phantom Blade
 Blood.DisplayName: Carnage Blood
 Blood2.DisplayName: Blood
 BloodBall.DisplayName: Blood Ball
-BloodExplosion.DisplayName: Blood
 BloodScythe.DisplayName: Blood Scythe
 BonebreakerFragment1.DisplayName: Bone Crunching Shrapnel
 BonebreakerProjectile.DisplayName: Bonebreaker
@@ -106,8 +104,6 @@ ElementBall.DisplayName: Elemental Ball
 ElementBallShiv.DisplayName: Shiv
 EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
-EntropicFlechetteLarge.DisplayName: Entropic Flechette
-EntropicFlechetteSmall.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceFlame2.DisplayName: Essence Flame
 EssenceScythe.DisplayName: Essence Scythe
@@ -215,7 +211,7 @@ PwnagehammerProj.DisplayName: Pwnagehammer
 RainbowBoom.DisplayName: Boom
 Razorwind.DisplayName: Razorwind
 RedtideWhirlpool.DisplayName: Whirlpool
-RemsRevengeProj.DisplayName: Rem's Revenge
+RemsRevengeExplosion.DisplayName: Blood Explosion
 RendingNeedle.DisplayName: Rending Needle
 RespiteblockBlood.DisplayName: Respiteblock Blood
 RespiteblockHoldout.DisplayName: Respiteblock
@@ -289,12 +285,9 @@ TrueBitingEmbrace.DisplayName: Biting Embrace
 TrueDecaysRetort.DisplayName: Decay's Retort
 TrueGrovetendersTouch.DisplayName: Grovetender's Touch
 TruePurityProjection.DisplayName: Purity Projection
-TumbleweedFlail.DisplayName: Tumbleweed
-TumbleweedRolling.DisplayName: Tumbleweed
+TumbleweedRolling.DisplayName: Rolling Tumbleweed
 TyphonsGreedBubble.DisplayName: Typhon's Greed
 UltimusCleaverDust.DisplayName: Ultimus Flame
-UrchinBall.DisplayName: Urchin Ball
-UrchinBallSpike.DisplayName: Urchin Ball Spike
 UrchinMaceProjectile.DisplayName: Urchin Mace
 UrchinSpikeFugu.DisplayName: Urchin Spike
 VirulentBeeWave.DisplayName: Virulent Bee Wave
@@ -309,6 +302,5 @@ WhiteOrb.DisplayName: White Orb
 Whiterain.DisplayName: White Rain
 WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
-YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard

@@ -63,6 +63,7 @@ using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
@@ -2037,13 +2038,11 @@ namespace CalamityMod
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
-                ProjectileType<UrchinBall>(),
-                ProjectileType<UrchinBallSpike>(),
                 ProjectileType<UrchinMaceProjectile>(),
                 ProjectileType<UrchinStingerProj>(),
                 ProjectileType<ViolenceThrownProjectile>(),
                 ProjectileType<WaterLeechProj>(),
-                ProjectileType<YateveoBloomProj>(),
+                ProjectileType<YateveoBloomMace>(),
                 ProjectileType<YharimsCrystalBeam>(),
             };
 

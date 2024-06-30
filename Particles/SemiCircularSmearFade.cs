@@ -9,7 +9,7 @@ namespace CalamityMod.Particles
 {
     public class SemiCircularSmearFade : Particle
     {
-        public override string Texture => "CalamityMod/Particles/SemiCircularSmearVertical";
+        public override string Texture => "CalamityMod/Particles/SemiCircularSmearVerticalBlank";
         public override bool UseAdditiveBlend => true;
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
