@@ -57,8 +57,8 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
             if (Projectile.numHits == 0 || Projectile.Calamity().stealthStrike)
             {
-                if (Projectile.velocity.Length() < (Projectile.Calamity().stealthStrike ? 18 : 12) && time > 8)
-                    Projectile.velocity += moveToMouse * (Projectile.Calamity().stealthStrike ? 0.8f : 0.35f);
+                if (Projectile.velocity.Length() < (Projectile.Calamity().stealthStrike ? 18 : 13) && time > 8)
+                    Projectile.velocity += moveToMouse * (Projectile.Calamity().stealthStrike ? 0.8f : 0.4f);
                 else if (time > 8)
                     Projectile.velocity *= 0.9f;
 
@@ -151,13 +151,14 @@ namespace CalamityMod.Projectiles.Rogue
         internal void Explode(bool big)
         {
             float sizeBonus = big ? 2 : 1;
+            float bigExplosionDamage = 1f;
             Player Owner = Main.player[Projectile.owner];
             Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen with { A = 0 }, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.82f * sizeBonus, 11);
             GeneralParticleHandler.SpawnParticle(orb);
             Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.74f * sizeBonus, 11);
             GeneralParticleHandler.SpawnParticle(orb2);
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DestructionExplosion>(), (int)((Projectile.damage * sizeBonus) * 0.75f), Projectile.knockBack * 1.5f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DestructionExplosion>(), (int)(Projectile.damage * (big ? bigExplosionDamage : Projectile.Calamity().stealthStrike ? 0.4f : 0.8f)), Projectile.knockBack * 1.5f, Projectile.owner);
             SoundStyle explo = new("CalamityMod/Sounds/Item/MeldExplosion");
             SoundEngine.PlaySound(explo with { Volume = 0.9f }, Projectile.Center);
             if (big)
@@ -198,7 +199,7 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.scale = Main.rand.NextFloat(0.8f, 1.2f);
                 dust.color = Color.LightGreen;
             }
-            Owner.Calamity().GeneralScreenShakePower = 6f * (big ? 3 : 1);
+            Owner.Calamity().GeneralScreenShakePower = 6f * (big ? 2.5f : 1f);
         }
 
         public override bool PreDraw(ref Color lightColor)

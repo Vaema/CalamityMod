@@ -99,7 +99,10 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DestructionStar>(), Projectile.damage, Projectile.knockBack * 5, Projectile.owner);
                 if (Projectile.ai[2] >= 1)
+                {
                     proj.Calamity().stealthStrike = true;
+                    proj.timeLeft = 240;
+                }
 
                 for (int i = 0; i < 2; i++)
                 {
