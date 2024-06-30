@@ -181,6 +181,10 @@ namespace CalamityMod.CalPlayer
 
             if (rageModeActive && shatteredCommunity)
                 Player.GetModPlayer<ShatteredCommunityPlayer>().AccumulateRageDamage(damageDone);
+
+            // Ursa Sergeant slash cooldown is reset on kill
+            if (ursaSergeant && target.life <= 0 && target.realLife == -1)
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
         }
         #endregion
 
@@ -337,6 +341,10 @@ namespace CalamityMod.CalPlayer
                 else
                     target.AddBuff(BuffID.OnFire3, 120);
             }
+
+            // Ursa Sergeant slash cooldown is reset on kill
+            if (ursaSergeant && target.life <= 0 && target.realLife == -1)
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
@@ -665,6 +673,16 @@ namespace CalamityMod.CalPlayer
                 AbaddonCooldown = 15;
                 int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.03f, 25);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
+            }
+
+            if (ursaSergeant && ursaSergeantCooldown <= 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<UrsaSlash>()] <= 0)
+            {
+                ursaSergeantCooldown = 300;
+
+                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(500);
+                ursaSlashdamage = Player.ApplyArmorAccDamageBonusesTo(ursaSlashdamage);
+
+                Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
             }
 
             if (proj.CountsAsClass<MeleeDamageClass>())

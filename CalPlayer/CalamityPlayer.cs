@@ -574,6 +574,7 @@ namespace CalamityMod.CalPlayer
         public bool alchFlask = false;
         public bool toxicHeart = false;
         public bool abaddon = false;
+
         public bool aeroStone = false;
         public bool lifejelly = false;
         public bool cleansingjelly = false;
@@ -638,6 +639,7 @@ namespace CalamityMod.CalPlayer
         public bool royalGel = false;
         public bool handWarmer = false;
         public bool ursaSergeant = false;
+        public bool ursaSergeantVisual = false;
         public bool scuttlersJewel = false;
         public int scuttlerCooldown = 0;
         public bool thiefsDime = false;
@@ -804,6 +806,7 @@ namespace CalamityMod.CalPlayer
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
         public int AbaddonCooldown = 0;
+        public int ursaSergeantCooldown = 0;
         public int AlchFlaskCooldown = 0;
         public bool plagueReaper = false;
         public bool plaguebringerPatronSet = false;
@@ -1802,6 +1805,7 @@ namespace CalamityMod.CalPlayer
             tracersElysian = false;
             tracersSeraph = false;
             ursaSergeant = false;
+            ursaSergeantVisual = false;
             scuttlersJewel = false;
             thiefsDime = false;
             dynamoStemCells = false;
@@ -2352,6 +2356,7 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
+            ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
             silvaMageCooldown = 0;

@@ -653,25 +653,6 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-            if (ursaSergeant)
-            {
-                if (Player.statLife <= (int)(actualMaxLife * 0.15))
-                {
-                    Player.lifeRegen += 3;
-                    Player.lifeRegenTime += 3;
-                }
-                else if (Player.statLife <= (int)(actualMaxLife * 0.25))
-                {
-                    Player.lifeRegen += 2;
-                    Player.lifeRegenTime += 2;
-                }
-                else if (Player.statLife <= (int)(actualMaxLife * 0.5))
-                {
-                    Player.lifeRegen += 1;
-                    Player.lifeRegenTime += 1;
-                }
-            }
-
             if (evolutionLifeRegenCounter > 0)
             {
                 Player.lifeRegenTime += 2;
