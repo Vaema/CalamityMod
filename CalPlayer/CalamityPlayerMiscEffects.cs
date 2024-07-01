@@ -2693,7 +2693,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.statDefense += 30;
                 Player.endurance += 0.1f;
-                Player.GetDamage<MeleeDamageClass>() += 0.2f;
+                Player.GetDamage<GenericDamageClass>() += 0.15f;
             }
 
             if (brutalCarnage)
