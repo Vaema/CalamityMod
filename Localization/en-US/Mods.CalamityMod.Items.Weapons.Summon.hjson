@@ -744,7 +744,7 @@ UniverseSplitter: {
 		Summons an energy field at the mouse cursor
 		After the field has been deployed, it begins to summon multiple small beams
 		After several seconds have passed, an enormous laser beam appears at the field's position
-		This effect has a cooldown
+		This effect has a 30 second cooldown
 		Attempting to use this item during the cooldown will cause it to short circuit and do damage to you
 		[c/BB57FF:'An ancient artifact from a previous age, it waits for your command.]
 		[c/BB57FF:This is a terrible idea, but it isn't yours anyways... right?']
