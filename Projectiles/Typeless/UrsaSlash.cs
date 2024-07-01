@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
-        private static float radius = 50f;
+        private static float radius = 65f;
         public bool visuals = true;
 
         public override void SetDefaults()
@@ -33,53 +33,70 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void AI()
         {
-            if (visuals && Owner.Calamity().ursaSergeantVisual)
+            if (visuals)
             {
+                bool visible = Owner.Calamity().ursaSergeantVisual;
                 Vector2 slashDir = new Vector2(13, 13).RotatedByRandom(100);
                 Vector2 slashPos1 = Projectile.Center + slashDir.RotatedBy(MathHelper.ToRadians(90f));
                 Vector2 slashPos2 = Projectile.Center + slashDir.RotatedBy(MathHelper.ToRadians(-90f));
 
                 for (int i = 0; i < 3; i++)
                 {
-                    Particle bigSpark = new GlowSparkParticle(Projectile.Center - slashDir * 6, slashDir * 0.65f, false, 19, 0.07f * (1 - i * 0.25f), Color.Coral, new Vector2(1.9f, 1), true, false, 0.7f);
+                    Particle bigSpark = new GlowSparkParticle(Projectile.Center - slashDir * 6, slashDir * 0.65f, false, 19, 0.07f * (1 - i * 0.25f), Color.Coral * (visible ? 1 : 0.3f), new Vector2(1.9f, 1), true, false, 0.7f);
                     GeneralParticleHandler.SpawnParticle(bigSpark);
-                    Particle spark1 = new GlowSparkParticle(slashPos1 - slashDir * 6, slashDir * 0.65f, false, 19, 0.052f * (1 - i * 0.25f), Color.DarkTurquoise, new Vector2(1.9f, 1), true, false, 0.7f);
+                    Particle spark1 = new GlowSparkParticle(slashPos1 - slashDir * 6, slashDir * 0.65f, false, 19, 0.052f * (1 - i * 0.25f), Color.DarkTurquoise * (visible ? 1 : 0.3f), new Vector2(1.9f, 1), true, false, 0.7f);
                     GeneralParticleHandler.SpawnParticle(spark1);
-                    Particle spark2 = new GlowSparkParticle(slashPos2 - slashDir * 6, slashDir * 0.65f, false, 19, 0.052f * (1 - i * 0.25f), Color.DarkTurquoise, new Vector2(1.9f, 1), true, false, 0.7f);
+                    Particle spark2 = new GlowSparkParticle(slashPos2 - slashDir * 6, slashDir * 0.65f, false, 19, 0.052f * (1 - i * 0.25f), Color.DarkTurquoise * (visible ? 1 : 0.3f), new Vector2(1.9f, 1), true, false, 0.7f);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
                 for (int i = 0; i <= 9; i++)
                 {
                     int dustStyle = Main.rand.NextBool() ? 66 : 263;
                     Dust dust = Dust.NewDustPerfect(Projectile.Center - slashDir * 6, dustStyle);
-                    dust.scale = Main.rand.NextFloat(0.6f, 1.2f);
+                    dust.scale = Main.rand.NextFloat(0.6f, 1.2f) * (visible ? 1 : 0.3f);
                     dust.velocity = slashDir.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 2);
                     dust.noGravity = true;
                     dust.color = Color.Coral;
-
+                    if (!visible)
+                    {
+                        dust.noLight = true;
+                        dust.noLightEmittence = true;
+                    }
                     Dust dust2 = Dust.NewDustPerfect(slashPos1 - slashDir * 6, dustStyle);
-                    dust2.scale = Main.rand.NextFloat(0.6f, 1.2f);
+                    dust2.scale = Main.rand.NextFloat(0.6f, 1.2f) * (visible ? 1 : 0.3f);
                     dust2.velocity = slashDir.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 2);
                     dust2.noGravity = true;
                     dust2.color = Color.DarkTurquoise;
-
+                    if (!visible)
+                    {
+                        dust2.noLight = true;
+                        dust2.noLightEmittence = true;
+                    }
                     Dust dust3 = Dust.NewDustPerfect(slashPos2 - slashDir * 6, dustStyle);
-                    dust3.scale = Main.rand.NextFloat(0.6f, 1.2f);
+                    dust3.scale = Main.rand.NextFloat(0.6f, 1.2f) * (visible ? 1 : 0.3f);
                     dust3.velocity = slashDir.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 2);
                     dust3.noGravity = true;
                     dust3.color = Color.DarkTurquoise;
+                    if (!visible)
+                    {
+                        dust3.noLight = true;
+                        dust3.noLightEmittence = true;
+                    }
                 }
 
-                SoundStyle sound = new("CalamityMod/Sounds/Item/AstralSlash", 3);
-                SoundEngine.PlaySound(sound with { Volume = 0.7f }, Projectile.Center);
-                SoundStyle sound2 = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
-                SoundEngine.PlaySound(sound2 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.4f, 0.5f) }, Projectile.Center);
+                if (visible)
+                {
+                    SoundStyle sound = new("CalamityMod/Sounds/Item/AstralSlash", 3);
+                    SoundEngine.PlaySound(sound with { Volume = 0.65f }, Projectile.Center);
+                    SoundStyle sound2 = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
+                    SoundEngine.PlaySound(sound2 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.4f, 0.5f) }, Projectile.Center);
+                }
             }
             visuals = false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Buffs.DamageOverTime.AstralInfectionDebuff>(), 300);
+            target.AddBuff(ModContent.BuffType<Buffs.DamageOverTime.AstralInfectionDebuff>(), 120);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

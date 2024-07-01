@@ -675,11 +675,11 @@ namespace CalamityMod.CalPlayer
                 Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
             }
 
-            if (ursaSergeant && ursaSergeantCooldown <= 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<UrsaSlash>()] <= 0)
+            if (ursaSergeant && ursaSergeantCooldown <= 0)
             {
                 ursaSergeantCooldown = 300;
 
-                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(500);
+                int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(333);
                 ursaSlashdamage = Player.ApplyArmorAccDamageBonusesTo(ursaSlashdamage);
 
                 Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
