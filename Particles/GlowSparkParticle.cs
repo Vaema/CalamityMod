@@ -42,8 +42,16 @@ namespace CalamityMod.Particles
             Velocity *= 0.95f;
             if (QuickShrink)
             {
-                Squash.X *= (1 - 0.2f * ShrinkSpeed);
-                Squash.Y *= (1 + 0.2f * ShrinkSpeed);
+                if (ShrinkSpeed == 1)
+                {
+                    Squash.X *= 0.8f;
+                    Squash.Y *= 1.2f;
+                }
+                else
+                {
+                    Squash.X *= (1 - 0.2f * ShrinkSpeed);
+                    Squash.Y *= (1 + 0.2f * ShrinkSpeed);
+                }
             }
             if (Velocity.Length() < 12f && AffectedByGravity)
             {
