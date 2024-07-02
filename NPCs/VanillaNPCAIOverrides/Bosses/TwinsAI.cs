@@ -96,9 +96,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
+                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism || Main.npc[i].type == ModContent.NPCType<Foveanator>()) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
                         npc.timeLeft = Main.npc[i].timeLeft - 1;
-
                 }
             }
 
@@ -1083,9 +1082,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
+                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism || Main.npc[i].type == ModContent.NPCType<Foveanator>()) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
                         npc.timeLeft = Main.npc[i].timeLeft - 1;
-
                 }
             }
 

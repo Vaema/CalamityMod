@@ -929,6 +929,7 @@ namespace CalamityMod
                 NPCID.Probe,
                 NPCID.Retinazer,
                 NPCID.Spazmatism,
+                NPCType<Foveanator>(),
                 NPCID.SkeletronPrime,
                 NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,
@@ -2555,6 +2556,7 @@ namespace CalamityMod
 
                 { NPCID.Spazmatism, 150000 }, // 30 seconds
                 { NPCID.Retinazer, 125000 },
+                { NPCType<Foveanator>(), 137500 },
 
                 { NPCID.TheDestroyer, 250000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 250000 },
@@ -2602,20 +2604,20 @@ namespace CalamityMod
 
             BossValues = new SortedDictionary<int, int>
             {
-                { NPCID.KingSlime, Item.buyPrice(0, 5)},
-                { NPCID.EyeofCthulhu, Item.buyPrice(0, 10)},
-                { NPCID.QueenBee, Item.buyPrice(0, 15)},
+                { NPCID.KingSlime, Item.buyPrice(0, 5) },
+                { NPCID.EyeofCthulhu, Item.buyPrice(0, 10) },
+                { NPCID.QueenBee, Item.buyPrice(0, 15) },
                 { NPCID.SkeletronHead, Item.buyPrice(0, 20) },
                 { NPCID.Deerclops, Item.buyPrice(0, 20) },
-                { NPCID.WallofFlesh, Item.buyPrice(0, 25)},
-                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 30)},
-                { NPCID.Spazmatism, Item.buyPrice(0, 40)},
-                { NPCID.Retinazer, Item.buyPrice(0, 40)},
-                { NPCID.TheDestroyer, Item.buyPrice(0, 40)},
-                { NPCID.SkeletronPrime, Item.buyPrice(0, 40)},
-                { NPCID.Plantera, Item.buyPrice(0, 50)},
-                { NPCID.HallowBoss, Item.buyPrice(0, 60)},
-                { NPCID.Golem, Item.buyPrice(0, 60)},
+                { NPCID.WallofFlesh, Item.buyPrice(0, 25) },
+                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 30) },
+                { NPCID.Spazmatism, Item.buyPrice(0, 40) },
+                { NPCID.Retinazer, Item.buyPrice(0, 40) },
+                { NPCID.TheDestroyer, Item.buyPrice(0, 40) },
+                { NPCID.SkeletronPrime, Item.buyPrice(0, 40) },
+                { NPCID.Plantera, Item.buyPrice(0, 50) },
+                { NPCID.HallowBoss, Item.buyPrice(0, 60) },
+                { NPCID.Golem, Item.buyPrice(0, 60) },
                 { NPCID.DukeFishron, Item.buyPrice(0, 75) },
                 { NPCID.CultistBoss, Item.buyPrice(1) },
                 { NPCID.MoonLordCore, Item.buyPrice(1, 50) }

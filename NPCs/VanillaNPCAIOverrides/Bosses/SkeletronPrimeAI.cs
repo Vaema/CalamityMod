@@ -319,6 +319,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.ai[2] = 0f;
                             npc.ai[1] = 1f;
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                             npc.netUpdate = true;
                         }
                         else if (shouldSpinAround || npc.ai[1] != 4f)

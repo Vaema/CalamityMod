@@ -212,7 +212,8 @@ namespace CalamityMod.Events
                 {
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, NPCID.Spazmatism);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, NPCID.Retinazer);
-                }, permittedNPCs: NPCID.Retinazer),
+                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<Foveanator>());
+                }, permittedNPCs: new int[] { NPCID.Retinazer, ModContent.NPCType<Foveanator>() }),
 
                 new Boss(ModContent.NPCType<AquaticScourgeHead>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<AquaticScourgeBody>(), ModContent.NPCType<AquaticScourgeBodyAlt>(), ModContent.NPCType<AquaticScourgeTail>() }),
 

@@ -136,6 +136,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
             else
             {
+                // Set direction to the other head's direction
+                NPC.direction = Main.npc[(int)NPC.ai[0]].direction;
+
                 // Link the HP of both heads
                 if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                     NPC.life = Main.npc[(int)NPC.ai[0]].life;
