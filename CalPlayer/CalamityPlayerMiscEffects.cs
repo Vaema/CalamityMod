@@ -1464,6 +1464,8 @@ namespace CalamityMod.CalPlayer
                 astralStarRainCooldown--;
             if (AbaddonCooldown > 0)
                 AbaddonCooldown--;
+            if (ursaSergeantCooldown > 0)
+                ursaSergeantCooldown--;
             if (AlchFlaskCooldown > 0)
                 AlchFlaskCooldown--;
             if (tarraRangedCooldown > 0)
@@ -3257,9 +3259,6 @@ namespace CalamityMod.CalPlayer
                 float moveSpeedLoss = (3 - abyssalDivingSuitPlateHits) * 0.2f;
                 Player.moveSpeed -= moveSpeedLoss;
             }
-
-            if (ursaSergeant)
-                Player.moveSpeed -= 0.15f;
 
             if (godSlayerThrowing)
             {

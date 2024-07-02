@@ -13,7 +13,6 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         {
             Item.width = 36;
             Item.height = 26;
-            Item.defense = 20;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
@@ -23,8 +22,10 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.ursaSergeant = true;
-            player.buffImmune[ModContent.BuffType<AstralInfectionDebuff>()] = true;
-            player.buffImmune[BuffID.Rabies] = true; //Feral Bite
+            if (!hideVisual)
+                modPlayer.ursaSergeantVisual = true;
+            else
+                modPlayer.ursaSergeantVisual = false;
         }
     }
 }
