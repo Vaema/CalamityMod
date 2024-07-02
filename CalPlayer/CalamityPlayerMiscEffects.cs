@@ -2693,7 +2693,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.statDefense += 30;
                 Player.endurance += 0.1f;
-                Player.GetDamage<MeleeDamageClass>() += 0.2f;
+                Player.GetDamage<GenericDamageClass>() += 0.15f;
             }
 
             if (brutalCarnage)
@@ -3221,6 +3221,25 @@ namespace CalamityMod.CalPlayer
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                         }
                     }
+                }
+            }
+
+            if (silvaSummon && Player.whoAmI == Main.myPlayer)
+            {
+                var source = Player.GetSource_FromThis(SilvaHeadSummon.SilvaCrystalEntitySourceContext);
+                if (Player.FindBuffIndex(ModContent.BuffType<SilvaCrystalBuff>()) == -1)
+                {
+                    Player.AddBuff(ModContent.BuffType<SilvaCrystalBuff>(), 3600, true);
+                }
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
+                {
+                    // 08DEC2023: Ozzatron: Silva Crystals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = Player.ApplyArmorAccDamageBonusesTo(600);
+                    var damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
+                    var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
+                    if (Main.projectile.IndexInRange(p))
+                        Main.projectile[p].originalDamage = 600;
                 }
             }
 

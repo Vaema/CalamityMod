@@ -5983,7 +5983,7 @@ namespace CalamityMod.NPCs
             }
 
             // Plague debuff on kill effect
-            if (pFlames > 0 && npc.life <= 0)
+            if (pFlames > 0 && npc.life <= 0 && npc.realLife == -1)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {

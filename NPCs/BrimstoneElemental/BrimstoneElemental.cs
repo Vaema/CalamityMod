@@ -72,7 +72,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.defense = 15;
             NPC.value = Item.buyPrice(0, 40, 0, 0);
             NPC.LifeMaxNERB(41000, 49200, 780000);
-            NPC.DR_NERD(0.15f);
+            NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

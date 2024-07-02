@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Armor.Silva
     public class SilvaHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+        internal static string SilvaCrystalEntitySourceContext => "SetBonus_Calamity_SilvaSummon";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaActivation");
         public static readonly SoundStyle DispelSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaDispel");
 
@@ -47,24 +48,6 @@ namespace CalamityMod.Items.Armor.Silva
             modPlayer.silvaSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
             player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<SilvaArmor>("CommonSetBonus");
-            if (player.whoAmI == Main.myPlayer)
-            {
-                var source = player.GetSource_ItemUse(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<SilvaCrystalBuff>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<SilvaCrystalBuff>(), 3600, true);
-                }
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
-                {
-                    // 08DEC2023: Ozzatron: Silva Crystals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(600);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
-
-                    var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 600;
-                }
-            }
             player.GetDamage<SummonDamageClass>() += 0.65f;
             player.maxMinions += 5;
         }

@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(BuffID.Electrified, 180);
             if (Projectile.owner == Main.myPlayer)
             {
-                if (target.life <= 0)
+                if ((target.life <= 0 && target.realLife == -1))
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<PlanarRipperExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
                 }

@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public const float DistanceToCheck = 2600f;
+        public ref float Timer => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -83,17 +84,18 @@ namespace CalamityMod.Projectiles.Summon
 
             if (potentialTarget != null)
             {
-                Projectile.ai[0]++;
-                if (Projectile.ai[0] % 360f < 180f)
+                Timer++;
+                if (Timer % 330f < 180f)
                 {
                     Projectile.rotation = Projectile.rotation.AngleTowards(0f, 0.2f);
-                    float angle = MathHelper.ToRadians(2f * Projectile.ai[0] % 180f);
+                    float angle = MathHelper.ToRadians(2f * Timer % 180f);
                     Vector2 destination = potentialTarget.Center - new Vector2((float)Math.Cos(angle) * potentialTarget.width * 0.65f, 250f);
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(destination) * 24f, 0.03f);
 
-                    if (Projectile.ai[0] % MidnightSunBeacon.MachineGunRate == Projectile.localAI[0] && potentialTarget.Top.Y > Projectile.Bottom.Y)
+                    if (Timer % MidnightSunBeacon.MachineGunRate == Projectile.localAI[0] && potentialTarget.Top.Y > Projectile.Bottom.Y)
                     {
-                        Vector2 laserVelocity = Projectile.SafeDirectionTo(potentialTarget.Center, Vector2.UnitY).RotatedByRandom(0.15f) * 25f;
+                        // Vector2 laserVelocity = Projectile.SafeDirectionTo(potentialTarget.Center, Vector2.UnitY).RotatedByRandom(0.05f) * 25f;
+                        Vector2 laserVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, potentialTarget, 25f, MidnightSunShot.MaxUpdate).RotatedByRandom(0.04f);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Bottom, laserVelocity, ModContent.ProjectileType<MidnightSunShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                     Projectile.MinionAntiClump(0.35f);
@@ -102,12 +104,12 @@ namespace CalamityMod.Projectiles.Summon
                 else
                 {
                     // Move very, very quickly above the target.
-                    Vector2 hoverDestination = potentialTarget.Top - Vector2.UnitY * 40f + (Projectile.minionPos + Projectile.ai[0] / 7f).ToRotationVector2() * 40f;
+                    Vector2 hoverDestination = potentialTarget.Top - Vector2.UnitY * 40f + (Projectile.minionPos + Timer / 7f).ToRotationVector2() * 40f;
                     Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.1f).MoveTowards(hoverDestination, 20f);
                     Projectile.velocity = Projectile.velocity.MoveTowards(Vector2.Zero, 4f);
                     Projectile.ai[1] = Math.Abs(hoverDestination.Y - potentialTarget.Bottom.Y) + MathHelper.Lerp(30f, 50f, Projectile.identity % 7f / 7f);
 
-                    if (Projectile.ai[0] % 360f == 240f)
+                    if (Timer % 330f == 210f)
                     {
                         if (Main.myPlayer == Projectile.owner)
                         {

@@ -7,6 +7,7 @@ namespace CalamityMod.Projectiles.Summon
     public class MidnightSunShot : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public static int MaxUpdate = 4;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -17,7 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.width = Projectile.height = 14;
             Projectile.alpha = 255;
-            Projectile.MaxUpdates = 3;
+            Projectile.MaxUpdates = MaxUpdate;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.friendly = true;

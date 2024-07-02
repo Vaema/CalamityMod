@@ -185,6 +185,8 @@ namespace CalamityMod.Effects
         #region Aqua's Shaders
         internal static Effect CircularGradientWithEdge;
         internal static Effect GaleforceArrowTrailShader;
+        internal static Effect WavyOpacity;
+        internal static Effect HellBall;
         #endregion
 
         //
@@ -410,6 +412,12 @@ namespace CalamityMod.Effects
 
             GaleforceArrowTrailShader = LoadShader("GaleforceArrowTrail");
             RegisterMiscShader(ArtAttackTrailShader, "TrailPass", "GaleforceArrowTrail");
+
+            WavyOpacity = LoadShader("WavyOpacity");
+            RegisterMiscShader(WavyOpacity, "WavyOpacityPass", "WavyOpacity");
+
+            HellBall = LoadShader("HellBall");
+            RegisterScreenShader(HellBall, "HellBallPass", "HellBall");
             #endregion
 
             #region Loading Amber's Shaders
