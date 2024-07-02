@@ -210,7 +210,7 @@ AndromedaAttunement: {
 		'''
 		Hold <left> to charge a spatial lunge, release to shred all enemies in your path
 		Charging the sword periodically emits homing bolts
-		Lunging into the ground will cause a shockwave which summons a wave of homing stars
+		Lunging into tiles releases a ripple of large homing stars
 		'''
 	PassiveName: Cancer's Blessing
 	PassiveDesc:
