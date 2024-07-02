@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Magic
     public class SubsumingVortex : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public override string Texture => "CalamityMod/Items/Weapons/Magic/SubsumingVortexSmall";
         public const int RightClickVortexCount = 3;
 
         public const int VortexReleaseRate = 27;
@@ -78,18 +79,16 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.4f,
-                drawOffset: default
-            );
+            Texture2D actualSprite = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortex").Value;
+
+            spriteBatch.DrawNewInventorySprite(actualSprite, new Vector2(48f, 52f), position, drawColor, origin, scale, new Vector2(-6f, -6f));
+            return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D actualSprite = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortex").Value;
+            spriteBatch.Draw(actualSprite, Item.Center - Main.screenPosition, null, lightColor, rotation, actualSprite.Size() / 2f, scale, 0, 0);
             return false;
         }
 
