@@ -25,6 +25,7 @@ using CalamityMod.Tiles.Abyss;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -1548,6 +1549,36 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, newPos, Style, extraInfo);
+            }
+        }
+        #endregion
+
+        #region Change the Twins' announcement name in Revengeance Master Mode
+        public static void TripletsSpawnTextOverride(Terraria.On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
+        {
+            if (Main.masterMode && CalamityWorld.revenge && type == NPCID.Retinazer)
+            {
+                int retinazerIndex = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), x, y, type, 1);
+                if (retinazerIndex == 200)
+                {
+                    return;
+                }
+                Main.npc[retinazerIndex].target = targetPlayerIndex;
+                Main.npc[retinazerIndex].timeLeft *= 20;
+
+                if (Main.netMode == NetmodeID.Server && retinazerIndex < 200)
+                {
+                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
+                }
+
+                AchievementsHelper.CheckMechaMayhem();
+
+                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.TripletsBossText", new Color(175, 75, 255));
+                return;
+            }
+            else
+            {
+                orig(x, y, type, targetPlayerIndex);
             }
         }
         #endregion
