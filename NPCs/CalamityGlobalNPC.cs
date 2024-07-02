@@ -171,7 +171,7 @@ namespace CalamityMod.NPCs
         private const double DesertEnemyStatMultiplier = 0.75;
 
         // Used to nerf Master Mode boss HP (base is 27.5% more than Expert)
-        public const double MasterModeBossHPMultiplier = 0.9;
+        public const double MasterModeBossHPMultiplier = 0.85;
 
         // Used to nerf Master Mode enemies
         public const double MasterModeEnemyHPMultiplier = 0.75;
