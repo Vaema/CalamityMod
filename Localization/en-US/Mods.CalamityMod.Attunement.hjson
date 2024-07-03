@@ -8,14 +8,14 @@ HotAttunement: {
 	Name: Arid Grandeur
 	Function:
 		'''
-		Hold <left> to conjure searing blades in front of you that get larger and stronger with enemy hits
+		Conjure searing blades in front of you that get larger and stronger with enemy hits
         The blades will bounce you off of tiles while in the air
 		'''
 }
 
 ColdAttunement: {
 	Name: Biting Embrace
-	Function: Perform a 3 strike combo with a glacial blade, with The final strike freezing foes for a split second
+	Function: Perform a 3 strike combo with a glacial blade, with the final strike freezing foes for a split second
 
 }
 
@@ -50,7 +50,7 @@ TrueHotAttunement: {
 	Name: Arid Grandeur
 	Function:
 		'''
-		Hold <left> to conjure searing blades in front of you that get larger and stronger with enemy hits
+		Conjure searing blades in front of you that get larger and stronger with enemy hits
 		The blades will bounce you off of tiles while in the air
 		Releasing after the blades are fully charged sends them hurtling forwards to shred your foes
 		'''
@@ -60,7 +60,7 @@ TrueColdAttunement: {
 	Name: Biting Embrace
 	Function:
 		'''
-		Perform a 3 strike combo with a glacial blade, with The final strike freezing foes for a split second
+		Perform a 3 strike combo with a glacial blade, with the final strike freezing foes for a split second
 		Harmful lingering glacial mist is released on each swing
 		'''
 }
@@ -88,7 +88,7 @@ HolyAttunement: {
 	Name: Heaven's Might
 	Function:
 		'''
-		Hold <left> to swing the sword around you, accelerating over time
+		Swing the sword around you, accelerating over time
 		Releasing hurls the sword towards your cursor for a short time
 		'''
 }
@@ -97,7 +97,7 @@ AstralAttunement: {
 	Name: Extant Abhorrence
 	Function:
 		'''
-		Hold <left> to charge a star-piercing lunge, release to unleash a devastating blow
+		Charge a star-piercing lunge, release to unleash a devastating blow
 		Striking the earth with the lunge will cause a massive otherworldly impact, raising monoliths from the ground
 		'''
 }
@@ -116,7 +116,7 @@ WhirlwindAttunement: {
 	Name: Swordsmith's Pride
 	Function:
 		'''
-		Hold <left> to swing the sword around you, accelerating over time. Sword beams are fired at random while swinging
+		Swing the sword around you, accelerating over time. Sword beams are fired at random while swinging
 		Releasing hurls the sword towards your cursor. Sword beams home onto enemies struck by the thrown sword
 		'''
 	PassiveDesc: All attacks randomly fire sword beams
@@ -136,19 +136,19 @@ SuperPogoAttunement: {
 	Name: Sanguine Fury
 	Function:
 		'''
-		Hold <left> to conjure molten blades in front of you that get larger and stronger with enemy hits
+		Conjure molten blades in front of you that get larger and stronger with enemy hits
 		The blades will bounce you off of tiles while in the air
 		Releasing sends the charged blades hurtling forwards like a wheel
         Attacking immediately after throwing the blade launches you toward it, damaging enemies
 		'''
-	PassiveDesc: Striking enemies will rarely steal life, healing you
+	PassiveDesc: Striking enemies will rarely heal you
 }
 
 ShockwaveAttunement: {
 	Name: Mercurial Tides
 	Function:
 		'''
-		Hold <left> to charge a heaven-shattering lunge, release to unleash a devastating blow
+		Charge a heaven-shattering lunge, release to unleash a devastating blow
 		Shockwaves are emitted as the sword charges up
 		Striking the earth with the lunge will cause a massive otherworldly impact, raising monoliths from the ground
 		'''
@@ -160,7 +160,7 @@ PhoenixAttunement: {
 	Name: Phoenix's Pride
 	Function:
 		'''
-		<left> to swing the sword around you, accelerating over time
+		Swing the sword around you, accelerating over time
 		The swirling nebula constantly emits homing cosmic bolts
 		Release to hurl the sword toward the cursor alongside 6 gigantic cosmic bolts
 		'''
@@ -176,7 +176,7 @@ AriesAttunement: {
 	Name: Aries' Wrath
 	Function:
 		'''
-		The sword follows your cursor, creating a chain of constellations back to you
+        Binds the sword to your cursor through a chain of constellations
 		Striking enemies causes nebulous explosions which spawn homing cosmic bolts
 		'''
 	PassiveName: Capricorn's Blessing
@@ -191,7 +191,7 @@ PolarisAttunement: {
 	Name: Polaris' Gaze
 	Function:
 		'''
-		Hold <left> to channel Galaxia's power into a vortex of celestial energies
+		Channel Galaxia's power into a vortex of celestial energies
 		The vortex powers up over time and while hitting enemies
 		Release to fire a powerful star directly at your cursor
         Attacking immediately after firing the star launches you toward it, damaging enemies
@@ -208,7 +208,7 @@ AndromedaAttunement: {
 	Name: Andromeda's Stride
 	Function:
 		'''
-		Hold <left> to charge a spatial lunge, release to shred all enemies in your path
+		Charge a spatial lunge, release to shred all enemies in your path
 		Charging the sword periodically emits homing bolts
 		Lunging into tiles releases a ripple of large homing stars
 		'''
