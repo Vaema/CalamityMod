@@ -1357,9 +1357,6 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 {
                     ModContent.ItemType<Virulence>(),
                     ModContent.ItemType<DiseasedPike>(),
-                    ModContent.ItemType<Pandemic>(),
-                    ModContent.ItemType<Malevolence>(),
-                    ModContent.ItemType<PestilentDefiler>(),
                     ModContent.ItemType<TheHive>(),
                     ModContent.ItemType<BlightSpewer>(),
                     ModContent.ItemType<PlagueStaff>(),

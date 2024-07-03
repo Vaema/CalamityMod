@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -45,6 +46,16 @@ namespace CalamityMod.Items.Weapons.Ranged
 
 
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<SlagMagnum>().
+                AddIngredient<PlagueCellCanister>(12).
+                AddIngredient<InfectedArmorPlating>(7).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }
