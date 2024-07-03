@@ -23,8 +23,7 @@ namespace CalamityMod.Projectiles.Melee
     {
         bool AnimationCooldown = false;
 
-        int JetDamage => 900;
-        int SlashDamage => 125;
+        float JetDamageMultiplier => 7.5f;
         int SlashSpeed => 6;
 
         int BlastChargeUses => 3;
@@ -71,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().mouseWorldListener = true;
 
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(20, 0).RotatedBy(Projectile.rotation), 
-                    Owner.DirectionTo(Owner.Calamity().mouseWorld) * 30, ModContent.ProjectileType<MantisClawJet>(), JetDamage, 7, Owner.whoAmI);
+                    Owner.DirectionTo(Owner.Calamity().mouseWorld) * 30, ModContent.ProjectileType<MantisClawJet>(), (int)(Projectile.damage * JetDamageMultiplier), 7, Owner.whoAmI);
 
                 for (int i = 0; i < 9; i++)
                 {
@@ -83,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound((Main.rand.NextBool(2) ? SoundID.Item85 : SoundID.Item86).WithPitchOffset(-0.5f), Owner.Center);
                 SoundEngine.PlaySound(SoundID.NPCDeath14.WithPitchOffset(1f), Owner.Center);
 
-                Owner.Calamity().GeneralScreenShakePower = 2.5f;
+                Owner.Calamity().GeneralScreenShakePower = 3f;
 
                 GeneralParticleHandler.SpawnParticle(new MantisPunch(Owner.Center + new Vector2(26, 0).RotatedBy(Projectile.rotation), Projectile.rotation));
             }
@@ -128,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
 
                         Owner.Calamity().mouseWorldListener = true;
 
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), SlashDamage, 4f, Owner.whoAmI).rotation = Owner.AngleTo(Owner.Calamity().mouseWorld) + MathHelper.ToRadians(Main.rand.NextFloat(-25, 25));
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), Projectile.damage, 4f, Owner.whoAmI).rotation = Owner.AngleTo(Owner.Calamity().mouseWorld) + MathHelper.ToRadians(Main.rand.NextFloat(-25, 25));
                     }
 
                     SlashTimer++;
@@ -265,10 +264,9 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            Projectile.scale = 0f;
-            Projectile.damage = 0;
-        }
+        // The holdout cannot deal damage.
+        public override bool? CanDamage() => false;
+
+        public override void OnSpawn(IEntitySource source) => Projectile.scale = 0f;
     }
 }

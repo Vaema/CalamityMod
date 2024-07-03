@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 4;
+            Projectile.extraUpdates = 5;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ai[1] = 40;
         }
@@ -74,6 +74,13 @@ namespace CalamityMod.Projectiles.Melee
         public override bool? CanDamage()
         {
             return true;
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            Player owner = Main.player[Projectile.owner];
+            if (Main.rand.Next(100) < owner.GetWeaponCrit(owner.ActiveItem()) + 20)
+                modifiers.SetCrit();
         }
 
         public override bool PreDraw(ref Color lightColor)

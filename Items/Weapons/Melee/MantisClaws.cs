@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             base.SetDefaults();
             Item.width = 26;
             Item.height = 20;
-            Item.damage = 125;
+            Item.damage = 111;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.HiddenAnimation;
             Item.noUseGraphic = true;
