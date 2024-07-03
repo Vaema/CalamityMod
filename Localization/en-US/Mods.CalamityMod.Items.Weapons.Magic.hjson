@@ -127,8 +127,8 @@ Atlantis: {
 	TooltipGFBDoG: Take good care of my weapon, or else... -CIT
 }
 
-AuguroftheElements: {
-	DisplayName: Augur of the Elements
+AuguroftheVoid: {
+	DisplayName: Augur of the Void
 	Tooltip: Casts a burst of elemental tentacles to spear your enemies
 }
 
@@ -288,18 +288,6 @@ EidolonStaff: {
 EldritchTome: {
 	DisplayName: Eldritch Tome
 	Tooltip: Casts eldritch tentacles to spear your enemies
-}
-
-ElementalRay: {
-	DisplayName: Elemental Ray
-	Tooltip:
-		'''
-		Casts four celestial beams near the player
-		Solar beams explode into fire on enemy hits
-		Nebula beams sweep a little bit over time
-		Vortex beams act like fast lightning and electrify enemies on hit
-		Stardust beams release small stars that home on enemy hits
-		'''
 }
 
 Eternity: {
@@ -576,6 +564,18 @@ NightsRay: {
 NuclearFury: {
 	DisplayName: Nuclear Fury
 	Tooltip: Casts a torrent of cosmic typhoons
+}
+
+Nucleosynthesis: {
+	DisplayName: Nucleosynthesis
+	Tooltip:
+		'''
+		Casts four celestial beams near the player
+		Solar beams explode into fire on enemy hits
+		Nebula beams sweep a little bit over time
+		Vortex beams act like fast lightning and electrify enemies on hit
+		Stardust beams release small stars that home on enemy hits
+		'''
 }
 
 Omicron: {

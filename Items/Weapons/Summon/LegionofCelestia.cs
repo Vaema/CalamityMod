@@ -8,7 +8,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class ElementalAxe : ModItem, ILocalizedModType
+    [LegacyName("ElementalAxe")]
+    public class LegionofCelestia : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
@@ -26,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ElementalAxeMinion>();
+            Item.shoot = ModContent.ProjectileType<CelestialAxeMinion>();
             Item.shootSpeed = 10f;
         }
 

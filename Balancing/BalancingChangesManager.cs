@@ -313,8 +313,8 @@ namespace CalamityMod.Balancing
             // 50% resist to Dazzling Stabber Staff.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DazzlingStabber>()))));
 
-            // 50% resist to Elemental Axe.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<ElementalAxeMinion>()))));
+            // 50% resist to Legion of Celestia.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<CelestialAxeMinion>()))));
 
             // 50% resist to Pristine Fury's alt fire.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<PristineSecondary>()))));

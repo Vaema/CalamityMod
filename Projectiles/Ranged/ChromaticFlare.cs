@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ElementalFlare : ModProjectile, ILocalizedModType
+    public class ChromaticFlare : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/ExtraTextures/SmallGreyscaleCircle";

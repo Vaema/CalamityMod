@@ -10,9 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ElementalEruptionHoldout : BaseGunHoldoutProjectile
+    public class ChromaticEruptionHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ModContent.ItemType<ElementalEruption>();
+        public override int AssociatedItemID => ModContent.ItemType<ChromaticEruption>();
         public override float MaxOffsetLengthFromArm => 15f;
         public override float OffsetXUpwards => -10f;
         public override float BaseOffsetY => -5f;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() < 0.70f);
                     for (int i = 0; i < 2; i++)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 10).RotatedByRandom(0.12f), ModContent.ProjectileType<ElementalFire>(), damage, knockback, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 10).RotatedByRandom(0.12f), ModContent.ProjectileType<ChromaticFire>(), damage, knockback, Projectile.owner);
                     }
                     ShotsFired++;
                     ShotCooldown = HeldItem.useTime;
@@ -57,8 +57,8 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Vector2 newVel = (Projectile.velocity * 9);
                         Vector2 newPos = GunTipPosition + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 36f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), newPos, newVel, ModContent.ProjectileType<ElementalFlare>(), damage, knockback, Projectile.owner, newVel.Length(), -1f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), newPos, newVel, ModContent.ProjectileType<ElementalFlare>(), damage, knockback, Projectile.owner, newVel.Length(), 1f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), newPos, newVel, ModContent.ProjectileType<ChromaticFlare>(), damage, knockback, Projectile.owner, newVel.Length(), -1f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), newPos, newVel, ModContent.ProjectileType<ChromaticFlare>(), damage, knockback, Projectile.owner, newVel.Length(), 1f);
                         FireBlobs = 3;
                     }
                     else

@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class ElementalAxeBuff : ModBuff
+    public class LegionofCelestiaBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -17,7 +17,7 @@ namespace CalamityMod.Buffs.Summon
         public override void Update(Player player, ref int buffIndex)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<ElementalAxeMinion>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<CelestialAxeMinion>()] > 0)
             {
                 modPlayer.eAxe = true;
             }

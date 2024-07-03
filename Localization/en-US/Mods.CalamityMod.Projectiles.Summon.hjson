@@ -56,6 +56,7 @@ Catastromini.DisplayName: Catastromini
 CatastropheSummon.DisplayName: Catastrophe
 CausticStaffProjectile.DisplayName: Thorn
 CausticStaffSummon.DisplayName: Caustic Dragon
+CelestialAxeMinion.DisplayName: Celestial Axe
 Cinder.DisplayName: Cinder
 CinderBlossom.DisplayName: Cinder Blossom
 CloudElementalMinion.DisplayName: Cloudy Waifu
@@ -89,7 +90,6 @@ DormantBrimseekerBab.DisplayName: Dormant Brimseeker
 DormantBrimseekerSummoner.DisplayName: Dormant Brimseeker
 Dreadmine.DisplayName: Dreadmine
 DreadmineTurret.DisplayName: Dreadmine Turret
-ElementalAxeMinion.DisplayName: Elemental Axe
 EndoBeam.DisplayName: Endo Beam
 EndoCooperBody.DisplayName: Ascened Cooper
 EndoCooperLimbs.DisplayName: Ascened Cooper

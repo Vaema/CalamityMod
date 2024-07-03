@@ -1160,9 +1160,9 @@ DemonshadeSetDevilBuff: {
 	Description: The red devil will protect you
 }
 
-ElementalAxeBuff: {
-	DisplayName: Elemental Axe
-	Description: The elemental axe will protect you
+LegionofCelestiaBuff: {
+	DisplayName: Celestial Axe
+	Description: If only it was this good at chopping trees...
 }
 
 EndoCooperBuff: {

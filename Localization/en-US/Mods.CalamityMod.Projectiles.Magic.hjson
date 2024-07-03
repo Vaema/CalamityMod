@@ -19,6 +19,7 @@ AstralCrystal.DisplayName: Astral Crystal
 AstralCrystalInvisibleExplosion.DisplayName: Astral Crystal Invisible Explosion
 AstralStarMagic.DisplayName: Astral Star
 AtlantisSpear.DisplayName: Atlantis Spear
+AugurTentacle.DisplayName: Elemental Tentacle
 AuraRain.DisplayName: Aura Rain
 AuroraAustralis.DisplayName: Aurora Australis
 BeamingBolt.DisplayName: Beaming Bolt
@@ -58,7 +59,6 @@ DivineRetributionSpear.DisplayName: Divine Retribution
 EelDrop.DisplayName: Acid Eel Drop
 EidolicWailSoundwave.DisplayName: Eidolic Wail
 EldritchTentacle.DisplayName: Eldritch Tentacle
-ElementTentacle.DisplayName: Elemental Tentacle
 EnormousConsumingVortex.DisplayName: Subsuming Vortex
 EternityCircle.DisplayName: Eternity
 EternityCrystal.DisplayName: Crystal

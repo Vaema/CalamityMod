@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ElementBallShiv : ModProjectile, ILocalizedModType
+    public class StarburstBeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, x > 2, 800f, 800f, 0f, 800f, 20f, ModContent.ProjectileType<SHIV>(), Projectile.damage, Projectile.knockBack, Projectile.owner, false, 50f);
+                    CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, x > 2, 800f, 800f, 0f, 800f, 20f, ModContent.ProjectileType<StarburstSHIV>(), Projectile.damage, Projectile.knockBack, Projectile.owner, false, 50f);
                 }
             }
         }

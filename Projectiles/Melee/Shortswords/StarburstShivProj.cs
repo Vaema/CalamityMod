@@ -10,10 +10,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class ElementalShivProj : BaseShortswordProjectile
+    public class StarburstShivProj : BaseShortswordProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<ElementalShiv>();
-        public override string Texture => "CalamityMod/Items/Weapons/Melee/ElementalShiv";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<StarburstShiv>();
+        public override string Texture => "CalamityMod/Items/Weapons/Melee/StarburstShiv";
 
         public override void SetDefaults()
         {
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
 
         public override Action<Projectile> EffectBeforePullback => (proj) =>
         {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 14f, ModContent.ProjectileType<ElementBallShiv>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0f, 0f);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 14f, ModContent.ProjectileType<StarburstBeam>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0f, 0f);
         };
 
         public override void SetVisualOffsets()

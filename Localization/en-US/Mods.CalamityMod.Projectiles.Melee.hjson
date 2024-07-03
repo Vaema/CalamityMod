@@ -101,7 +101,6 @@ EarthBoom.DisplayName: Earth's Judgement
 EarthMeteor.DisplayName: Gaia Meteor
 ElementalGlassStar.DisplayName: Glass Star
 ElementBall.DisplayName: Elemental Ball
-ElementBallShiv.DisplayName: Shiv
 EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
@@ -227,7 +226,6 @@ SanguineFuryWheel.DisplayName: Sanguine Bladewheel
 ScourgeoftheCosmosMini.DisplayName: Miniature Cosmic Scourge
 ScourgeoftheCosmosProj.DisplayName: Cosmic Scourge
 SeashineSwordProj.DisplayName: Seashine Beam
-SHIV.DisplayName: Shiv
 SolarNeedle.DisplayName: Solar Needle
 SolsticeBeam.DisplayName: Solstice Beam
 SoulScythe.DisplayName: Soul Scythe
@@ -238,6 +236,8 @@ SpatialSpear2.DisplayName: Elemental Spear
 SpatialSpear3.DisplayName: Elemental Spear
 SpatialSpear4.DisplayName: Elemental Spear
 SpineOfThanatosProjectile.DisplayName: Spine of Thanatos
+StarburstBeam.DisplayName: Star Shiv
+StarburstSHIV.DisplayName: SHIV
 StarnightBeam.DisplayName: Starnight Beam
 StellarContemptBlast.DisplayName: Stellar Blast
 StellarContemptEcho.DisplayName: Echoes of Contempt

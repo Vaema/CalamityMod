@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalAxe>().
+                AddIngredient<LegionofCelestia>().
                 AddIngredient<EtherealSubjugator>().
                 AddIngredient<Cosmilamp>().
                 AddIngredient<CalamarisLament>().

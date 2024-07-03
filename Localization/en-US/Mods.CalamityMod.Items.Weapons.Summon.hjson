@@ -280,11 +280,6 @@ DreadmineStaff: {
 	Tooltip: Summons a dreadmine turret to fight for you
 }
 
-ElementalAxe: {
-	DisplayName: Elemental Axe
-	Tooltip: Summons an elemental axe to fight for you
-}
-
 EnchantedConch: {
 	DisplayName: Enchanted Conch
 	Tooltip: Summons a hermit crab to fight for you
@@ -481,6 +476,11 @@ KingofConstellationsTenryu: {
 		There can only be one pair of dragons at a time
 		'The ones who will devour the Unmoving Star'
 		'''
+}
+
+LegionofCelestia: {
+	DisplayName: Legion of Celestia
+	Tooltip: Summons a possessed, celestial axe to fight for you
 }
 
 LiliesOfFinality: {

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -9,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class ElementalAxeMinion : ModProjectile, ILocalizedModType
+    public class CelestialAxeMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
@@ -41,8 +42,8 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            bool isMinion = Projectile.type == ModContent.ProjectileType<ElementalAxeMinion>();
-            player.AddBuff(ModContent.BuffType<ElementalAxeBuff>(), 3600);
+            bool isMinion = Projectile.type == ModContent.ProjectileType<CelestialAxeMinion>();
+            player.AddBuff(ModContent.BuffType<LegionofCelestiaBuff>(), 3600);
             if (isMinion)
             {
                 if (player.dead)
@@ -57,6 +58,14 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += 0.075f;
 
             Projectile.ChargingMinionAI(1600f, 1800f, 2500f, 400f, 1, 30f, 24f, 12f, new Vector2(0f, -60f), 30f, 16f, true, true);
+
+            // Destroy trees in GFB, because it's an axe, and axes should do that
+            if (Main.zenithWorld)
+            {
+                Point pointToCheck = (Projectile.position + Projectile.Size * 0.5f).ToTileCoordinates();
+                var prismTooth = new PrismTooth(); // Grrrr CS0120
+                prismTooth.AbsolutelyFuckingAnnihilateTrees(pointToCheck.X, pointToCheck.Y);
+            }
         }
 
         public override Color? GetAlpha(Color lightColor)

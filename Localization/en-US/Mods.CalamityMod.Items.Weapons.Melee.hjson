@@ -439,11 +439,6 @@ ElementalLance: {
 		'''
 }
 
-ElementalShiv: {
-	DisplayName: Elemental Shiv
-	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
-}
-
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
 	Tooltip: Throws a flurry of bouncing knives that can heal the user
@@ -1125,6 +1120,11 @@ SpineOfThanatos: {
 		Once all three collide, a prism of light is shot outward
 		If an enemy is within the line of sight of the whips on collision, the light will fire towards it
 		'''
+}
+
+StarburstShiv: {
+	DisplayName: Starburst Shiv
+	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
 }
 
 StarnightLance: {

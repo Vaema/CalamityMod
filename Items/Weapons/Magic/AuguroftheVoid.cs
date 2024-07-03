@@ -8,7 +8,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class AuguroftheElements : ModItem, ILocalizedModType
+    [LegacyName("AuguroftheElements")]
+    public class AuguroftheVoid : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
@@ -29,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item103;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ElementTentacle>();
+            Item.shoot = ModContent.ProjectileType<AugurTentacle>();
             Item.shootSpeed = 30f;
         }
 

@@ -119,7 +119,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AuguroftheElements>().
+                AddIngredient<AuguroftheVoid>().
                 AddIngredient<EventHorizon>().
                 AddIngredient<TearsofHeaven>().
                 AddIngredient<MiracleMatter>().

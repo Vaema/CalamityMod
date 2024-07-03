@@ -8,7 +8,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class ElementalEruption : ModItem, ILocalizedModType
+    [LegacyName("ElementalEruption")]
+    public class ChromaticEruption : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
@@ -31,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ElementalEruptionHoldout>();
+            Item.shoot = ModContent.ProjectileType<ChromaticEruptionHoldout>();
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Gel;
             Item.channel = true;
@@ -48,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ElementalEruptionHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ChromaticEruptionHoldout>(), damage, knockback, player.whoAmI, 0, 1);
             holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
             return false;
         }

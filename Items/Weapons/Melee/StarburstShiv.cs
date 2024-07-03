@@ -6,8 +6,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    [LegacyName("ElementalShortsword")]
-    public class ElementalShiv : ModItem, ILocalizedModType
+    [LegacyName("ElementalShortsword", "ElementalShiv")]
+    public class StarburstShiv : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.damage = 138;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 13;
-            Item.shoot = ModContent.ProjectileType<ElementalShivProj>();
+            Item.shoot = ModContent.ProjectileType<StarburstShivProj>();
             Item.shootSpeed = 2.4f;
             Item.knockBack = 8.5f;
             Item.UseSound = SoundID.Item1;

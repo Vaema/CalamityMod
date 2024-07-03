@@ -246,6 +246,16 @@ ChickenCannon: {
 		'''
 }
 
+ChromaticEruption: {
+	DisplayName: Chromatic Eruption
+	Tooltip:
+		'''
+		Charges up to spew rainbow flames and pairs of homing chromatic flares
+		Uses gel for ammo
+		70% chance to save ammo
+		'''
+}
+
 ClamorRifle: {
 	DisplayName: Clamor Rifle
 	Tooltip: Converts musket balls into homing energy bolts
@@ -453,16 +463,6 @@ Drataliornus: {
 DriftwoodBow: {
 	DisplayName: Driftwood Bow
 	Tooltip: This bow is stronger while you are wet
-}
-
-ElementalEruption: {
-	DisplayName: Elemental Eruption
-	Tooltip:
-		'''
-		Charges up to spew rainbow flames and pairs of homing elemental flares
-		Uses gel for ammo
-		70% chance to save ammo
-		'''
 }
 
 EternalBlizzard: {
