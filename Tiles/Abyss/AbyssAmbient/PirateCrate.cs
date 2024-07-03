@@ -34,8 +34,8 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             //also instakill players in for the worthy
             Vector2 spawnPosition = new(i * 16f + 24f, j * 16f - 4f);
             // NOTE: The damage of ProjectileID.Explosives is reduced in CalamityPlayerHitHurt, this actually deals 52 / 67 / 101 damage.
-            int blastDamage = 150 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-            Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition.X, spawnPosition.Y, 0, 0, ProjectileID.Explosives, Main.getGoodWorld ? 99999 : blastDamage, 0f);
+            int blastDamage = (Main.getGoodWorld ? 99999 : 150) * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
+            Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition.X, spawnPosition.Y, 0, 0, ProjectileID.Explosives, blastDamage, 0f);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
