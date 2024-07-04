@@ -5484,7 +5484,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.HallowBoss:
-                    target.AddBuff(NPC.ShouldEmpressBeEnraged() ? BuffType<HolyFlames>() : BuffType<Nightwither>(), 240);
+                    if (NPC.ShouldEmpressBeEnraged())
+                        target.AddBuff(BuffType<HolyFlames>(), 240);
                     break;
 
                 case NPCID.BloodNautilus:
