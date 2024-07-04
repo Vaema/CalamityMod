@@ -107,7 +107,7 @@ namespace CalamityMod.Items
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(15)) },
                 // For now, I think I will balance Celebration like a serious weapon. -CIT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
-                { ItemID.Flairon, Do(DamageExact(73)) },
+                { ItemID.Flairon, Do(DamageExact(65)) },
                 { ItemID.Flamarang, Do(DamageExact(40)) },
                 { ItemID.Flamelash, Do(DamageExact(40)) },
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) },

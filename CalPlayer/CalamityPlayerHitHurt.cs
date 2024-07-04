@@ -711,7 +711,7 @@ namespace CalamityMod.CalPlayer
                         heldItem.CountsAsClass<ThrowingDamageClass>()
                     );
 
-                    bool heldItemIsTool = (heldItem.pick > 0 || heldItem.axe > 0 || heldItem.hammer > 0) && heldItem.type != ModContent.ItemType<PhotonRipper>();
+                    bool heldItemIsTool = (heldItem.pick > 0 || heldItem.axe > 0 || heldItem.hammer > 0) && heldItem.type != ModContent.ItemType<PhotonRipper>() && heldItem.type != ModContent.ItemType<Respiteblock>();
                     bool heldItemCanBeUsed = heldItem.useStyle != ItemUseStyleID.None;
                     bool heldItemIsAccessoryOrAmmo = heldItem.accessory || heldItem.ammo != AmmoID.None;
                     bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(heldItem.type);
