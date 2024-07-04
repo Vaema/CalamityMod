@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -19,7 +20,9 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Abyss;
@@ -693,32 +696,8 @@ namespace CalamityMod.CalPlayer
             {
                 Item heldItem = Player.ActiveItem();
 
-                bool wearingForbiddenSet = Player.armor[0].type == ItemID.AncientBattleArmorHat && Player.armor[1].type == ItemID.AncientBattleArmorShirt && Player.armor[2].type == ItemID.AncientBattleArmorPants;
-
-                bool forbiddenWithMagicWeapon = wearingForbiddenSet && heldItem.CountsAsClass<MagicDamageClass>();
-                bool gemTechBlueGem = GemTechSet && GemTechState.IsBlueGemActive;
-
-                bool crossClassNerfDisabled = forbiddenWithMagicWeapon || fearmongerSet || gemTechBlueGem || profanedCrystalBuffs || DD2Event.Ongoing;
-                crossClassNerfDisabled |= CalamityLists.DisabledSummonerNerfMinions.Contains(proj.type);
-
-                // If this projectile is a summon, its owner is holding an item, and the cross class nerf isn't disabled from equipment:
-                if (isSummon && heldItem.type > ItemID.None && !crossClassNerfDisabled)
-                {
-                    bool heldItemIsClassedWeapon = !heldItem.CountsAsClass<SummonDamageClass>() && (
-                        heldItem.CountsAsClass<MeleeDamageClass>() ||
-                        heldItem.CountsAsClass<RangedDamageClass>() ||
-                        heldItem.CountsAsClass<MagicDamageClass>() ||
-                        heldItem.CountsAsClass<ThrowingDamageClass>()
-                    );
-
-                    bool heldItemIsTool = (heldItem.pick > 0 || heldItem.axe > 0 || heldItem.hammer > 0) && heldItem.type != ModContent.ItemType<PhotonRipper>() && heldItem.type != ModContent.ItemType<Respiteblock>();
-                    bool heldItemCanBeUsed = heldItem.useStyle != ItemUseStyleID.None;
-                    bool heldItemIsAccessoryOrAmmo = heldItem.accessory || heldItem.ammo != AmmoID.None;
-                    bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(heldItem.type);
-
-                    if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
-                        modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
-                }
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !CalamityLists.DisabledSummonerNerfMinions.Contains(proj.type))
+                    modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
         #endregion

@@ -703,23 +703,9 @@ namespace CalamityMod.NPCs
 
                 Item heldItem = Main.player[owner].ActiveItem();
                 int totalDamage = (int)Main.player[owner].GetTotalDamage<SummonDamageClass>().ApplyTo(150f);
-                bool forbidden = Main.player[owner].head == ArmorIDs.Head.AncientBattleArmor && Main.player[owner].body == ArmorIDs.Body.AncientBattleArmor && Main.player[owner].legs == ArmorIDs.Legs.AncientBattleArmor;
-                bool negateNerf = Main.player[owner].Calamity().fearmongerSet || (forbidden && heldItem.CountsAsClass<MagicDamageClass>());
 
-                double summonNerfMult = negateNerf ? 1 : 0.75;
-                if (!Main.player[owner].Calamity().profanedCrystalBuffs)
-                {
-                    if (heldItem.type > ItemID.None)
-                    {
-                        if (!heldItem.CountsAsClass<SummonDamageClass>() &&
-                            (heldItem.CountsAsClass<MeleeDamageClass>() || heldItem.CountsAsClass<RangedDamageClass>() || heldItem.CountsAsClass<MagicDamageClass>() || heldItem.CountsAsClass<ThrowingDamageClass>()) &&
-                            heldItem.hammer == 0 && heldItem.pick == 0 && heldItem.axe == 0 && heldItem.useStyle != ItemUseStyleID.None &&
-                            !heldItem.accessory && heldItem.ammo == AmmoID.None)
-                        {
-                            totalDamage = (int)(totalDamage * summonNerfMult);
-                        }
-                    }
-                }
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Main.player[owner], heldItem))
+                    totalDamage = (int)(totalDamage * BalancingConstants.SummonerCrossClassNerf);
 
                 int totalDisplayedDamage = totalDamage / 5;
                 ApplyDPSDebuff(projectileCount * totalDamage, projectileCount * totalDisplayedDamage, ref npc.lifeRegen, ref damage);
