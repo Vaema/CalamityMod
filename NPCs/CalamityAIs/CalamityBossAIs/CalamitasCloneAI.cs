@@ -740,9 +740,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
-
+                npc.active = false;
                 return;
             }
 
@@ -1058,9 +1056,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
-
+                npc.active = false;
                 return;
             }
 
