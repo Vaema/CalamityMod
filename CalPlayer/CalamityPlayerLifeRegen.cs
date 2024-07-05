@@ -75,7 +75,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //
-            // Calamity debuffs (Vanilla Shadowflame is added here)
+            // Calamity debuffs (Vanilla Shadowflame and Daybroken are added here)
             //
             void ApplyDoTDebuff(bool hasDebuff, int negativeLifeRegenToApply, bool immuneCondition = false)
             {
@@ -104,8 +104,9 @@ namespace CalamityMod.CalPlayer
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
+            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(hFlames, 40, purity);
             ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);

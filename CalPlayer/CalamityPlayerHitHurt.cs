@@ -446,6 +446,10 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Shadowflame").Format(Player.name));
                 }
+                if (daybroken)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Daybroken").Format(Player.name));
+                }
                 if (bBlood)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BurningBlood" + Main.rand.Next(1, 2 + 1)).Format(Player.name));
@@ -1385,6 +1389,10 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.Poisoned, 300);
                 }
+                else if (proj.type == ProjectileID.CultistBossFireBall)
+                {
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                }
                 else if (proj.type == ProjectileID.CultistBossIceMist)
                 {
                     if (!Player.frozen)
@@ -1418,15 +1426,15 @@ namespace CalamityMod.CalPlayer
                 }
                 else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<HolyFlames>(), 60);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 60);
                 }
                 else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
                 }
                 else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {

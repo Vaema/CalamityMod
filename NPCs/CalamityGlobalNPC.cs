@@ -5480,12 +5480,12 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.AncientLight:
-                    target.AddBuff(BuffType<HolyFlames>(), 120);
+                    target.AddBuff(BuffType<Daybroken>(), 120);
                     break;
 
                 case NPCID.HallowBoss:
                     if (NPC.ShouldEmpressBeEnraged())
-                        target.AddBuff(BuffType<HolyFlames>(), 240);
+                        target.AddBuff(BuffType<Daybroken>(), 240);
                     break;
 
                 case NPCID.BloodNautilus:
@@ -6787,7 +6787,7 @@ namespace CalamityMod.NPCs
                     if (npc.javelined)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.BoneJavelin].Value);
                     if (npc.daybreak)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Daybroken").Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/Buffs/DamageOverTime/Daybroken").Value);
                     if (npc.celled)
                         currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Celled").Value);
                     if (npc.dryadBane)

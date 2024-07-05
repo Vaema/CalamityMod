@@ -1205,10 +1205,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.MoonStone)
                 modPlayer.reducedNightwitherDamage = true;
             if (item.type == ItemID.SunStone)
-                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedDaybrokenDamage = true;
             if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
-                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedDaybrokenDamage = true;
                 modPlayer.reducedNightwitherDamage = true;
             }
 

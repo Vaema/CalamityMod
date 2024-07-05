@@ -845,7 +845,7 @@ namespace CalamityMod.Items
                 "Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed\n" +
                 "Fairies are immune to damage and will no longer flee");
 
-            // Reduced Nightwither and Holy Flames damage, and melee speed removal.
+            // Reduced Nightwither and Daybroken damage, and melee speed removal.
             if (item.type == ItemID.MoonStone)
             {
                 EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither debuff");
@@ -853,17 +853,17 @@ namespace CalamityMod.Items
             }
             if (item.type == ItemID.SunStone)
             {
-                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Holy Flames debuff");
+                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Daybroken debuff");
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("melee speed, ", ""));
             }
             if (item.type == ItemID.CelestialStone)
             {
-                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither and Holy Flames debuffs");
+                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither and Daybroken debuffs");
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" melee speed,", ""));
             }
             if (item.type == ItemID.CelestialShell)
             {
-                EditTooltipByNum(4, (line) => line.Text += "\nReduces the damage of the Nightwither and Holy Flames debuffs");
+                EditTooltipByNum(4, (line) => line.Text += "\nReduces the damage of the Nightwither and Daybroken debuffs");
                 EditTooltipByNum(2, (line) => line.Text = line.Text.Replace(" melee speed,", ""));
             }
 

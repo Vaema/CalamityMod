@@ -95,7 +95,7 @@ namespace CalamityMod.CalPlayer
         public bool blockAllDashes = false;
         public bool resetHeightandWidth = false;
         public bool noLifeRegen = false;
-        public bool reducedHolyFlamesDamage = false;
+        public bool reducedDaybrokenDamage = false;
         public bool reducedNightwitherDamage = false;
         public float rangedAmmoCost = 1f;
         public float healingPotionMultiplier = 1f;
@@ -876,6 +876,7 @@ namespace CalamityMod.CalPlayer
         #region Debuff
         public bool alcoholPoisoning = false;
         public bool shadowflame = false;
+        public bool daybroken = false;
         public bool wDeath = false;
         public bool dragonFire = false;
         public bool vermillionFlux = false;
@@ -1828,7 +1829,7 @@ namespace CalamityMod.CalPlayer
             CryoStoneVanity = false;
             voidField = false;
             copyrightInfringementShield = false;
-            reducedHolyFlamesDamage = false;
+            reducedDaybrokenDamage = false;
             reducedNightwitherDamage = false;
 
             daedalusReflect = false;
@@ -1956,6 +1957,7 @@ namespace CalamityMod.CalPlayer
 
             alcoholPoisoning = false;
             shadowflame = false;
+            daybroken = false;
             wDeath = false;
             dragonFire = false;
             vermillionFlux = false;
@@ -2386,6 +2388,7 @@ namespace CalamityMod.CalPlayer
             noLifeRegen = false;
             alcoholPoisoning = false;
             shadowflame = false;
+            daybroken = false;
             wDeath = false;
             dragonFire = false;
             vermillionFlux = false;
