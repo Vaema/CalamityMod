@@ -740,6 +740,24 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)
             {
+                if (npc.alpha < 255)
+                {
+                    npc.velocity *= 0.9f;
+
+                    npc.alpha += 2;
+                    if (npc.alpha > 255)
+                        npc.alpha = 255;
+
+                    for (int i = 0; i < 5; i++)
+                    {
+                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f, 90, default, Main.rand.NextFloat(0.5f, 2f));
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].fadeIn = 1f;
+                    }
+                }
+                else
+                    npc.active = false;
+
                 npc.active = false;
                 return;
             }
@@ -1056,7 +1074,24 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)
             {
-                npc.active = false;
+                if (npc.alpha < 255)
+                {
+                    npc.velocity *= 0.9f;
+
+                    npc.alpha += 2;
+                    if (npc.alpha > 255)
+                        npc.alpha = 255;
+
+                    for (int i = 0; i < 5; i++)
+                    {
+                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f, 90, default, Main.rand.NextFloat(0.5f, 2f));
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].fadeIn = 1f;
+                    }
+                }
+                else
+                    npc.active = false;
+                
                 return;
             }
 
