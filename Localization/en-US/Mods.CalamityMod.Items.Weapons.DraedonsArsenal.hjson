@@ -63,6 +63,19 @@ HeavyLaserRifle: {
 		'''
 }
 
+HolofiberImmolator: {
+	DisplayName: Holofiber Immolator
+	Tooltip:
+'''
+Fires three gravity-affected plasma drops which dissolve through foes
+Holding <left> quickly charges the bow, firing a homing plasma arrow
+Plasma arrows will detonate after impact, creating larger explosion if stuck into tiles
+Holding <right> will repeatedly fire uncharged shots
+[c/1FFBFF:'The elegance of holofibre is unmatched.]
+[c/1FFBFF:However, mechanical tension may have produced more consistent results.']
+'''
+}
+
 HydraulicVoltCrasher: {
 	DisplayName: Hydraulic Volt Crasher
 	Tooltip:
@@ -71,15 +84,6 @@ HydraulicVoltCrasher: {
 		Press <right> to use without hammering down walls
 		[c/1FFBFF:'A device made to electrically stamp metal plates, instantly fusing them.]
 		[c/1FFBFF:Naturally, it can also function as a devastating weapon.']
-		'''
-}
-
-MatterModulator: {
-	DisplayName: Matter Modulator
-	Tooltip:
-		'''
-		Fires a burst of unstable matter that pierces infinitely but deals little damage
-		After striking a tile, the matter will gain enhanced damage and no longer pierce
 		'''
 }
 

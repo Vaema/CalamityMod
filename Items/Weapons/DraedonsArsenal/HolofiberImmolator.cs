@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,42 +13,47 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    public class MatterModulator : ModItem, ILocalizedModType
+    public class HolofiberImmolator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 40;
-            Item.height = 22;
+            Item.width = 30;
+            Item.height = 62;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 100;
-            Item.knockBack = 11f;
-            Item.useTime = Item.useAnimation = 33;
+            Item.damage = 61;
+            Item.knockBack = 0.8f;
+            Item.useTime = Item.useAnimation = 14;
             Item.autoReuse = true;
+            Item.noUseGraphic = true;
+            Item.channel = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
+            Item.UseSound = null;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
-            Item.shoot = ModContent.ProjectileType<UnstableMatter>();
+            Item.shoot = ModContent.ProjectileType<HolofiberImmolatorHoldout>();
             Item.shootSpeed = 12f;
+            Item.useAmmo = AmmoID.Arrow;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 85f;
-            modItem.ChargePerUse = 0.075f;
+            modItem.ChargePerUse = 0.001f; // Charge depletion is done in the holdout, but it needs a small fee to prevent usage at 0%
         }
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i < Main.rand.Next(3, 5 + 1); i++)
-            {
-                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.8f, 1.3f), type, damage, knockback, player.whoAmI);
-            }
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<HolofiberImmolatorHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }
 

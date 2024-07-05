@@ -70,3 +70,6 @@ PlagueShot.DisplayName: Plague Shot
 PlagueShotBuffer.DisplayName: Plague Shot
 WaterShot.DisplayName: Water Shot
 WaterShotBuffer.DisplayName: Water Shot
+ImmolationArrow.DisplayName: Immolation Arrow
+ImmolationBurst.DisplayName: Immolation Burst
+ImmolationSpray.DisplayName: Immolation Spray
