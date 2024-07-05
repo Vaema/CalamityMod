@@ -281,6 +281,7 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
+        public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
         public int sulphurPoison = 0;
@@ -500,6 +501,7 @@ namespace CalamityMod.NPCs
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
+            myClone.voidfrost = voidfrost;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
             myClone.sulphurPoison = sulphurPoison;
@@ -1038,6 +1040,13 @@ namespace CalamityMod.NPCs
             {
                 int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
                 ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Voidfrost
+            if (voidfrost > 0)
+            {
+                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
+                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
             // Plague
@@ -5208,6 +5217,8 @@ namespace CalamityMod.NPCs
                 wDeath--;
             if (nightwither > 0)
                 nightwither--;
+            if (voidfrost > 0)
+                voidfrost--;
             if (shellfishVore > 0)
                 shellfishVore--;
             if (clamDebuff > 0)
@@ -6514,6 +6525,9 @@ namespace CalamityMod.NPCs
             if (nightwither > 0)
                 Nightwither.DrawEffects(npc, ref drawColor);
 
+            if (voidfrost > 0)
+                Voidfrost.DrawEffects(npc, ref drawColor);
+
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
@@ -6731,6 +6745,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
             ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
             ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
+            ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost > 0),
             ("CalamityMod/Buffs/DamageOverTime/VulnerabilityHex", NPC => NPC.Calamity().vulnerabilityHex > 0),
 
             // All other important Calamity debuffs, in alphabetical order

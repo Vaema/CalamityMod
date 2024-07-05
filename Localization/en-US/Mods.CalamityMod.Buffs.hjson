@@ -1562,3 +1562,8 @@ AeolianEarthBuff: {
 		Damage reduction increased by 8%, damage increased by 18%
 		'''
 }
+
+Voidfrost: {
+	DisplayName: Voidfrost
+	Description: Mods.CalamityMod.Buffs.Voidfrost.Description
+}

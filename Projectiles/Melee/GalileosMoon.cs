@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
     }
 }
