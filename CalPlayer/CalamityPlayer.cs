@@ -488,6 +488,7 @@ namespace CalamityMod.CalPlayer
         public bool unstableGraniteCore = false;
         public bool regenator = false;
         public bool theBee = false;
+        public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
         public bool alluringBait = false;
         public bool enchantedPearl = false;

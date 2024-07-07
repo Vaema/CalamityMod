@@ -7,6 +7,7 @@ namespace CalamityMod.Items.Accessories
 {
     public class TheBee : ModItem, ILocalizedModType
     {
+        public static int CooldownLength = 600;
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {

@@ -839,7 +839,7 @@ namespace CalamityMod.CalPlayer
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
                 contactDamageReduction += 0.5;
-                theBeeCooldown = 600;
+                shouldTriggerBeeCooldown = true;
             }
 
             // Apply Adrenaline DR if available
@@ -1078,7 +1078,7 @@ namespace CalamityMod.CalPlayer
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
                 projectileDamageReduction += 0.5;
-                theBeeCooldown = 600;
+                shouldTriggerBeeCooldown = true;
             }
 
             // Apply Adrenaline DR if available
@@ -1175,6 +1175,14 @@ namespace CalamityMod.CalPlayer
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
                 Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
+
+            // Same thing with The Bee
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
+            } 
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -1297,6 +1305,14 @@ namespace CalamityMod.CalPlayer
                     if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
                         p.AddBuff(BuffID.Poisoned, 60);
                 }
+            }
+
+            // Apply The Bee cooldown, must be applied here so that it does not apply on dodges
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
             }
 
             if (proj.hostile && hurtInfo.Damage > 0)
