@@ -1393,21 +1393,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             npc.ai[3] -= 1f +
-                ((phase2 || turboEnrage) ? 1f : 0f) +
-                ((phase3 || turboEnrage) ? 1f : 0f) +
-                ((phase4 || turboEnrage) ? 2f : 0f);
+                (turboEnrage ? 1f : phase2 ? 0.5f : 0f) +
+                (turboEnrage ? 1f : phase3 ? 0.5f : 0f) +
+                (turboEnrage ? 2f : phase4 ? 1f : 0f);
 
             float offsetX = calamityGlobalNPC.newAI[0];
             float offsetY = calamityGlobalNPC.newAI[1];
             Vector2 destination = Main.player[npc.target].Center + new Vector2(offsetX, offsetY);
 
             // Velocity and acceleration
-            float velocity = 16f +
-                ((phase2 || turboEnrage) ? 8f : 0f) +
-                ((phase3 || turboEnrage) ? 8f : 0f);
+            float velocity = (turboEnrage ? 15f : 10f) +
+                (turboEnrage ? 7.5f : phase2 ? 5f : 0f) +
+                (turboEnrage ? 7.5f : phase3 ? 5f : 0f);
 
             if (enrage)
-                velocity = (phase3 || turboEnrage) ? 40f : 32f;
+                velocity = (phase3 || turboEnrage) ? 35f : 25f;
 
             float acceleration = phase3 ? 0f : turboEnrage ? 6f : enrage ? 4.8f : phase2 ? 1.2f : 0.8f;
 
