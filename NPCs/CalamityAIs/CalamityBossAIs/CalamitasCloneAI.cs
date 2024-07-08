@@ -748,7 +748,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.alpha > 255)
                         npc.alpha = 255;
 
-                    for (int i = 0; i < 5; i++)
+                    int dustAmount = (int)Math.Round(MathHelper.Lerp(1f, 5f, (255 - npc.alpha) / 255f));
+                    for (int i = 0; i < dustAmount; i++)
                     {
                         int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f, 90, default, Main.rand.NextFloat(0.5f, 2f));
                         Main.dust[dust].noGravity = true;
@@ -1082,7 +1083,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.alpha > 255)
                         npc.alpha = 255;
 
-                    for (int i = 0; i < 5; i++)
+                    int dustAmount = (int)Math.Round(MathHelper.Lerp(1f, 5f, (255 - npc.alpha) / 255f));
+                    for (int i = 0; i < dustAmount; i++)
                     {
                         int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f, 90, default, Main.rand.NextFloat(0.5f, 2f));
                         Main.dust[dust].noGravity = true;
