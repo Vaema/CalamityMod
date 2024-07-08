@@ -689,13 +689,13 @@ ElysianAegis: {
 		Allows the ability to dash, empowered by holy fire
 		This dash can ram through enemies without taking damage
 		Grants immunity to knockback, fire blocks, as well as multiple debuffs
-		Blessed by the Profaned Flame
 		'''
 	HoldShiftTooltip:
 		'''
 		  On Fire!, Hellfire, Cursed Inferno, Shadowflame, Daybroken,
 		  Holy Flames, Brimstone Flames, Burning
 		'''
+	FlavorTooltip: "'Blessed by the Profaned Flame'"
 }
 
 EnchantedPearl: {
@@ -1199,8 +1199,8 @@ OldDukeScales: {
 		[c/c3dfff:  Stamina will gradually restore after not dashing for 1 second]
 		[c/c3dfff:  Stamina recovers faster when you are stationary]
 		[c/c3dfff:  If your stamina reaches 0%, you become exhausted]
-		[c/CE0E18:  While exhausted, this item's damage reduction and movement bonuses are negated]
-		[c/CE0E18:  Being exhausted reduces movement speed by 30% and dash velocity by 50%]
+		[c/e3545c:  While exhausted, this item's damage reduction and movement bonuses are negated]
+		[c/e3545c:  Being exhausted reduces movement speed by 30% and dash velocity by 50%]
 		[c/c3dfff:  This debuff lasts until your stamina reaches 100% again]
 		'''
 }
