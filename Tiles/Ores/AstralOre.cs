@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Astral;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -37,6 +39,7 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
+            TileID.Sets.AvoidedByMeteorLanding[Type] = true;
 
             this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
         }
@@ -57,14 +60,23 @@ namespace CalamityMod.Tiles.Ores
             }
         }
 
-        public override bool CanKillTile(int i, int j, ref bool blockDamaged)
+        public override void RandomUpdate(int i, int j)
         {
-            return DownedBossSystem.downedAstrumDeus;
+            if (Main.rand.NextBool(4))
+            {
+                int xRandom = Main.rand.Next(-3, 3);
+                int yRandom = Main.rand.Next(-3, 3);
+                if (Main.tile[i + xRandom, j + yRandom].TileType == TileID.Meteorite)
+                    AstralBiome.ConvertToAstral(i + xRandom, j + yRandom, true);
+            }
         }
 
-        public override bool CanExplode(int i, int j)
+        public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
-            return false;
+            if (!DownedBossSystem.downedAstrumDeus)
+                yield return new Item(ModContent.ItemType<StarblightSoot>(), Main.rand.Next(1, 2 + 1));
+            else
+                yield return new Item(ModContent.ItemType<Items.Placeables.Ores.AstralOre>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
