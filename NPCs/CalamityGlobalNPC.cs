@@ -117,14 +117,15 @@ namespace CalamityMod.NPCs
         public const double VulnerableToDoTDamageMult = 2D;
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
 
-        // Eskimo Set and Cryo Stone effects
+        // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
+        public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
         // Transformer effect
         public bool IncreasedElectricityEffects_Transformer = false;
 
-        // Fireball, Cinnamon Roll and Hellfire Treads effects
+        // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
         public bool IncreasedHeatEffects_FlameWakerBoots = false;
@@ -411,6 +412,7 @@ namespace CalamityMod.NPCs
             myClone.VulnerableToWater = VulnerableToWater;
 
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
+            myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
@@ -841,6 +843,8 @@ namespace CalamityMod.NPCs
             }
 
             if (IncreasedColdEffects_EskimoSet)
+                coldDamageMult += 0.25;
+            if (IncreasedColdEffects_FrozenWings)
                 coldDamageMult += 0.25;
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;

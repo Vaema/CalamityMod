@@ -1418,10 +1418,9 @@ namespace CalamityMod.Items
                 player.noFallDmg = true;
                 if (player.head == ArmorIDs.Head.FrostHelmet && player.body == ArmorIDs.Body.FrostBreastplate && player.legs == ArmorIDs.Legs.FrostLeggings)
                 {
-                    player.GetDamage<MeleeDamageClass>() += 0.02f;
-                    player.GetDamage<RangedDamageClass>() += 0.02f;
-                    player.GetCritChance<MeleeDamageClass>() += 1;
-                    player.GetCritChance<RangedDamageClass>() += 1;
+                    player.GetDamage<MeleeDamageClass>() += 0.04f;
+                    player.GetDamage<RangedDamageClass>() += 0.04f;
+                    player.Calamity().frozenWingsCold = true;
                 }
             }
             else if (item.type == ItemID.FlameWings) // Bonus to melee stats
