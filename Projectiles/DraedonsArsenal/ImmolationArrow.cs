@@ -1,13 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -212,14 +205,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundEngine.PlaySound(sound2 with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
             }
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-
-        }
         public override void OnKill(int timeLeft)
         {
             float bonus = (stuckInGround ? 2f : 1);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ImmolationBurst>(), Projectile.damage / 2, Projectile.knockBack * 2, Projectile.owner, 0, bonus != 1 ? 1 : 0);
+            float explosionDamage = (stuckInGround ? 2.3f : 0.5f);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ImmolationBurst>(), (int)(Projectile.damage * explosionDamage), Projectile.knockBack * 2, Projectile.owner, 0, bonus != 1 ? 1 : 0);
             Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * 0.75f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1.2f * bonus, 26);
             GeneralParticleHandler.SpawnParticle(bolt2);
 

@@ -1,11 +1,5 @@
-﻿using System;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -36,10 +30,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.damage = (int)(Projectile.damage * 0.88f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
-        }
-        public override void OnKill(int timeLeft)
-        {
-            
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
     }

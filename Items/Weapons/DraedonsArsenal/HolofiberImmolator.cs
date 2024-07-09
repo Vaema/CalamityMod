@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -23,7 +21,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 30;
             Item.height = 62;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 61;
+            Item.damage = 57;
             Item.knockBack = 0.8f;
             Item.useTime = Item.useAnimation = 14;
             Item.autoReuse = true;
@@ -39,7 +37,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<HolofiberImmolatorHoldout>();
             Item.shootSpeed = 12f;
-            Item.useAmmo = AmmoID.Arrow;
+            //Item.useAmmo = AmmoID.Arrow;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 85f;

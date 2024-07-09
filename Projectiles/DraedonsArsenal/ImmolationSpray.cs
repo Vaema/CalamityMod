@@ -1,8 +1,4 @@
-﻿using System;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -68,13 +64,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.88f);
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
-        }
-        public override void OnKill(int timeLeft)
-        {
-            
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
