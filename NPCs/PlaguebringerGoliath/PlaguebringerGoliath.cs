@@ -464,8 +464,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.rotation = NPC.velocity.X * 0.02f;
                     charging = false;
 
-                    float maxLineUpSpeed = revenge ? 25f : 20f;
-                    float lineUpAccel = revenge ? 0.75f : 0.6f;
+                    float maxLineUpSpeed = revenge ? 20f : 16f;
+                    float lineUpAccel = revenge ? 0.4f : 0.3f;
                     if (phase2)
                     {
                         maxLineUpSpeed += 3f;
@@ -1039,8 +1039,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.rotation = NPC.velocity.X * 0.02f;
                     charging = false;
 
-                    float maxLineUpSpeed = revenge ? 31f : 26f;
-                    float lineUpAccel = revenge ? 1.05f : 0.9f;
+                    float maxLineUpSpeed = revenge ? 26f : 22f;
+                    float lineUpAccel = revenge ? 0.7f : 0.6f;
                     maxLineUpSpeed += 7f * enrageScale;
                     lineUpAccel += 0.35f * enrageScale;
 
