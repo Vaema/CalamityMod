@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles
         public bool CreatedByPlayerDash = false;
 
         // Speed cap for accelerating boss laser projectiles with 2 extraUpdates.
-        public const float AcceleratingBossLaserVelocityCap = 10f;
+        public const float AcceleratingBossLaserVelocityCap = 8f;
 
         // Damage Adjusters
         public const float PierceResistHarshness = 0.12f;
