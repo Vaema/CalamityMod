@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -83,6 +84,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Projectile.DrawProjectileWithBackglow(PlaguebringerGoliath.BackglowColor, lightColor, 4f);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
