@@ -628,9 +628,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 // Move closer
                 bool canHitTarget = Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height);
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -711,9 +711,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                 // Move closer
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -800,9 +800,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                 // Move closer
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -892,9 +892,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                 // Move closer
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -1164,8 +1164,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         private void Movement(float distanceAboveTarget, Player player, float enrageScale)
         {
-            float acceleration = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 0.24f : 0.48f; // Reduce acceleration while spawning minions
-            float velocity = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 12f : (NPC.ai[0] == 2f ? 18f : 24f); // Reduce velocity while preparing to spawn minions and spawning minions
+            float acceleration = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 0.12f : (NPC.ai[0] == 2f ? 0.15f : 0.18f); // Reduce acceleration while spawning minions
+            float velocity = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 12f : (NPC.ai[0] == 2f ? 15f : 18f); // Reduce velocity while preparing to spawn minions and spawning minions
             acceleration *= 0.5f * enrageScale + 1f;
             velocity *= 1f + enrageScale * 0.5f;
             Vector2 hoverDestination = player.Center - Vector2.UnitY * distanceAboveTarget;
