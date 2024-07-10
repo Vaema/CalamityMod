@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            MinPick = 210;
+            MinPick = 110;
             DustType = 173;
             AddMapEntry(new Color(255, 153, 255), CreateMapEntryName());
             MineResist = 3f;
@@ -38,7 +38,7 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
-            TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
+            // TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
             TileID.Sets.AvoidedByMeteorLanding[Type] = true;
 
             this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
