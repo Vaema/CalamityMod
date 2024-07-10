@@ -177,6 +177,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float fade = Utils.GetLerpValue(chargeMax / 3, chargeMax, CurrentChargingFrames, true);
 
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofiberImmolator").Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofiberImmolatorGlow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
@@ -187,6 +188,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Texture2D pointTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            Main.EntitySpriteDraw(glowTexture, drawPosition, null, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
             if (CurrentChargingFrames > 0 && downtime == 0)
             {
