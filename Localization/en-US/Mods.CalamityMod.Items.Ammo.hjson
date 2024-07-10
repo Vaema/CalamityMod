@@ -66,8 +66,7 @@ GodSlayerSlug: {
 	Tooltip:
 		'''
 		Heavy ammunition with unlimited piercing that tears through spacetime
-		After a slug lands a hit, if it strikes a wall or runs out of targets to pierce,
-		it warps backwards through space and supercharges, exploding on impact
+		Slugs that strike a target will warp back and supercharge, shattering on hit
 		'''
 }
 
