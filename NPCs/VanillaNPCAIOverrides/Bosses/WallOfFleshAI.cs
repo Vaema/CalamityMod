@@ -724,6 +724,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool shouldFireLasers = true;
             float phase2LifeRatio = 0.5f;
             bool masterModeDetach = lifeRatio < phase2LifeRatio && masterMode;
+            bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
             if (!masterModeDetach)
             {
                 npc.position.X = Main.npc[Main.wofNPCIndex].position.X;
@@ -759,7 +760,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                float distanceAboveTarget = 240f * npc.ai[0];
+                float distanceAboveTarget = (canHit ? 240f : 120f) * npc.ai[0];
                 float distanceAwayFromTargetX = 560f;
                 float distanceAwayFromTargetXLeeway = 40f;
                 float distanceAwayFromTargetY = Main.player[npc.target].Center.Y - npc.Center.Y;
@@ -863,8 +864,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 float shootBoost = fireEnragedLasers ? (death ? 5f : 4f) : (death ? 3f : 3f * (1f - lifeRatio));
                 npc.localAI[1] += 1f + shootBoost;
-
-                bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
 
                 if (npc.localAI[2] == 0f)
                 {
