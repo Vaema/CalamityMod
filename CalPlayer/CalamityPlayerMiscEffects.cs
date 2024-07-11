@@ -3327,13 +3327,9 @@ namespace CalamityMod.CalPlayer
                         if (Main.rand.NextBool(10))
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f);
-                            int spark = Projectile.NewProjectile(source, npc.Center, velocity, ModContent.ProjectileType<EutrophicSpark>(), damage / 2, 0f, Player.whoAmI);
-                            if (spark.WithinBounds(Main.maxProjectiles))
-                            {
-                                Main.projectile[spark].DamageType = DamageClass.Generic;
-                                Main.projectile[spark].localNPCHitCooldown = -2;
-                                Main.projectile[spark].penetrate = 5;
-                            }
+                            Projectile spark = Projectile.NewProjectileDirect(source, npc.Center, velocity, ModContent.ProjectileType<GenericElectricSpark>(), damage / 2, 0f, Player.whoAmI);
+                            spark.localNPCHitCooldown = -2;
+                            spark.timeLeft = 30;
                         }
                     }
                 }

@@ -512,6 +512,7 @@ namespace CalamityMod.CalPlayer
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
         public bool ascendantTrail = false;
+        public bool frozenWingsCold = false;
         public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
         public bool eGauntletVisuals = true; // Used to control dust spawned when swinging
@@ -1738,6 +1739,7 @@ namespace CalamityMod.CalPlayer
             cryogenSoul = false;
             ascendantInsignia = false;
             ascendantTrail = false;
+            frozenWingsCold = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
