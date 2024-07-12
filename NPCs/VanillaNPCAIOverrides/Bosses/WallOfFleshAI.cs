@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 distanceFromTarget = targetPosition - npcPosition;
 
             float halfAverageScreenWidth = 960f;
-            float distanceBeforeSlowingDown = 400f;
+            float distanceBeforeSlowingDown = 480f;
             float timeBeforeEnrage = (masterMode ? 150f : 600f) - (death ? (masterMode ? 130f : 390f) * (1f - lifeRatio) : 0f);
             float speedMult = 1f;
 
@@ -285,7 +285,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         calamityGlobalNPC.newAI[0] -= 1f;
                 }
 
-                speedMult = MathHelper.Clamp(speedMult, 0.75f, 2f);
+                speedMult = MathHelper.Clamp(speedMult, 0.4f, 2f);
             }
 
             // Enrage if target is off screen for too long
@@ -1110,6 +1110,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.velocity.Y = 0f;
             npc.position.Y = num368;
 
+            float targetPosition = Main.player[npc.target].Center.X;
+            float npcPosition = npc.Center.X;
+
+            // Slow down if close
+            float distanceFromTarget;
+            if (npc.velocity.X < 0f)
+                distanceFromTarget = npcPosition - targetPosition;
+            else
+                distanceFromTarget = targetPosition - npcPosition;
+
+            float distanceBeforeSlowingDown = 480f;
+            float speedMult = 1f;
+
+            if (distanceFromTarget < distanceBeforeSlowingDown)
+                speedMult += (distanceFromTarget - distanceBeforeSlowingDown) * 0.002f;
+
+            speedMult = MathHelper.Clamp(speedMult, 0.4f, 1f);
+
             float masterModeVelocityBoost = 0f;
             if (Main.masterMode)
             {
@@ -1173,6 +1191,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 num369 *= 1.1f;
                 num369 += 0.2f;
             }
+
+            num369 *= speedMult;
 
             if (npc.velocity.X == 0f)
             {
