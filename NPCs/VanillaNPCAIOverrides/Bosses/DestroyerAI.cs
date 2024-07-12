@@ -1765,9 +1765,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idealVelocity.X *= npc.direction;
                 idealVelocity.Y *= 2.5f;
                 npc.SimpleFlyMovement(idealVelocity, acceleration);
-
-                if (npc.timeLeft > 10)
-                    npc.timeLeft = 10;
+                npc.EncourageDespawn(10);
             }
             else if (npc.Distance(targetData.Center) > 400f)
             {
@@ -1854,7 +1852,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.dontTakeDamage = false;
 
             npc.localAI[0] += 1f;
-            if (npc.justHit && !masterMode)
+            if ((npc.justHit && !masterMode) || targetDead)
                 npc.localAI[0] = 0f;
 
             float laserGateValue = NPC.IsMechQueenUp ? ProbeLaserGateValue_Mechdusa : bossRush ? ProbeLaserGateValue_BossRush : ProbeLaserGateValue_Rev;
@@ -1957,9 +1955,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idealVelocity.X *= npc.direction;
                 idealVelocity.Y *= 2.5f;
                 npc.SimpleFlyMovement(idealVelocity, acceleration);
-
-                if (npc.timeLeft > 10)
-                    npc.timeLeft = 10;
+                npc.EncourageDespawn(10);
             }
             else if (npc.Distance(targetData.Center) > 400f)
             {
@@ -2028,7 +2024,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[3] != 0f)
                 npc.localAI[0] += 2f;
 
-            if (npc.justHit && !Main.masterMode)
+            if ((npc.justHit && !Main.masterMode) || targetDead)
                 npc.localAI[0] = 0f;
 
             float num10 = ProbeLaserGateValue;
