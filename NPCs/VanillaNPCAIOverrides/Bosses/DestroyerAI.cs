@@ -1773,7 +1773,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.SimpleFlyMovement(idealVelocity, acceleration);
             }
             else
-                npc.velocity *= deceleration;
+            {
+                if (npc.Distance(targetData.Center) < 160f)
+                {
+                    Vector2 idealVelocity = npc.SafeDirectionTo(targetData.Center) * velocity;
+                    npc.SimpleFlyMovement(-idealVelocity, acceleration);
+                }
+                else
+                    npc.velocity *= deceleration;
+            }
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -1963,7 +1971,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.SimpleFlyMovement(idealVelocity, acceleration);
             }
             else
-                npc.velocity *= deceleration;
+            {
+                if (npc.Distance(targetData.Center) < 160f)
+                {
+                    Vector2 idealVelocity = npc.SafeDirectionTo(targetData.Center) * velocity;
+                    npc.SimpleFlyMovement(-idealVelocity, acceleration);
+                }
+                else
+                    npc.velocity *= deceleration;
+            }
 
             if (npc.ai[3] != 0f)
             {
