@@ -341,6 +341,9 @@ namespace CalamityMod.Balancing
             // 35% resist to Venusian Trident's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>(), ProjectileType<VenusianExplosion>()))));
 
+            // 25% resist to Corinth Prime's Grenades.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
+
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NuclearFuryProjectile>()))));
 
