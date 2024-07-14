@@ -102,15 +102,6 @@ AstralAttunement: {
 		'''
 }
 
-MarineAttunement: {
-	Name: Gesture for the Drowned
-	Function:
-		'''
-		Shoot out two water balls at your sides. On ground contact the water balls will turn into small waves that ride along the ground
-		Waves fired while underwater or that touch water will become much larger and faster
-		'''
-}
-
 // True Biome Blade
 WhirlwindAttunement: {
 	Name: Swordsmith's Pride

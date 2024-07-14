@@ -14,7 +14,7 @@ namespace CalamityMod.DataStructures
     public enum AttunementID : byte
     {
         Default, Hot, Cold, Tropical, Evil,  //Broken biome blade
-        TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, Astral, Marine, //Biome blade
+        TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, Astral, //Biome blade
         Whirlwind, FlailBlade, SuperPogo, Shockwave, //True biome blade
         Phoenix, Aries, Polaris, Andromeda //Galaxia
     }
@@ -28,7 +28,7 @@ namespace CalamityMod.DataStructures
         {
             attunementArray = new Attunement[] {
                   new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
-                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(), new MarineAttunement(),
+                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(),
                   new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),
                   new PhoenixAttunement(), new AriesAttunement(), new PolarisAttunement(), new AndromedaAttunement(),
                   null
@@ -451,31 +451,6 @@ namespace CalamityMod.DataStructures
             item.noUseGraphic = true;
             item.useStyle = ItemUseStyleID.Thrust;
             item.shoot = ProjectileType<ExtantAbhorrence>();
-            item.shootSpeed = 12f;
-            item.UseSound = null;
-            item.noMelee = true;
-        }
-    }
-
-    public class MarineAttunement : Attunement
-    {
-        public MarineAttunement()
-        {
-            id = AttunementID.Marine;
-            tooltipColor = new Color(61, 103, 209);
-
-            energyParticleEdgeColor = new Color(27, 59, 101);
-            energyParticleCenterColor = new Color(27, 112643, 255);
-        }
-
-        public override float DamageMultiplier => TrueBiomeBlade.MarineAttunement_BaseDamage / (float)TrueBiomeBlade.BaseDamage;
-
-        public override void ApplyStats(Item item)
-        {
-            item.channel = false;
-            item.noUseGraphic = true;
-            item.useStyle = ItemUseStyleID.Thrust;
-            item.shoot = ProjectileType<GestureForTheDrowned>();
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;

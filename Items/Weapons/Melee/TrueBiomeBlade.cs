@@ -74,16 +74,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float AstralAttunement_MonolithDamageBoost = 1.25f;
         public static float AstralAttunement_MonolithDamageFalloff = 0.25f; //Damage multiplier for all subsequent hits after the first one.
 
-        public static int MarineAttunement_BaseDamage = 300;
-        public static float MarineAttunement_InWaterDamageMultiplier = 1.5f;
-
         #endregion
-
-
-        public override void SetStaticDefaults()
-        {
-            //Theres potential for flavor text as well but im not a writer
-        }
 
         #region tooltip editing
 
@@ -226,10 +217,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement != null)
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Marine)];
+                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Astral)];
 
             if (secondaryAttunement != null)
-                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Marine)];
+                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Astral)];
         }
 
         public override void HoldItem(Player player)
@@ -297,8 +288,7 @@ namespace CalamityMod.Items.Weapons.Melee
              n.type == ProjectileType<TrueGrovetendersTouch>() ||
              n.type == ProjectileType<TrueAridGrandeur>() ||
              n.type == ProjectileType<HeavensMight>() ||
-             n.type == ProjectileType<ExtantAbhorrence>() ||
-             n.type == ProjectileType<GestureForTheDrowned>()));
+             n.type == ProjectileType<ExtantAbhorrence>()));
         }
 
         // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.

@@ -120,12 +120,11 @@ namespace CalamityMod.Projectiles.Melee
             bool jungle = Owner.ZoneJungle;
             bool snow = Owner.ZoneSnow;
             bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
+            bool desert = Owner.ZoneDesert || Owner.Calamity().ZoneSunkenSea;
             bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
+            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur || Owner.Calamity().ZoneAbyss;
             bool hallow = Owner.ZoneHallow;
             bool astral = Owner.Calamity().ZoneAstral;
-            bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
 
             Attunement attunement = Attunement.attunementArray[(int)AttunementID.TrueDefault];
 
@@ -141,8 +140,6 @@ namespace CalamityMod.Projectiles.Melee
                 attunement = Attunement.attunementArray[(int)AttunementID.Holy];
             if (astral)
                 attunement = Attunement.attunementArray[(int)AttunementID.Astral];
-            if (marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Marine];
 
             //If the owner already had the attunement , break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
