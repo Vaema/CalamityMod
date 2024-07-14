@@ -3635,6 +3635,7 @@ PrepareToShoot:
                     npc.localAI[2] = 0f;
                     npc.SyncVanillaLocalAI();
                 }
+
                 if (npc.localAI[1] == 0f)
                 {
                     npc.alpha = 0;
@@ -3816,15 +3817,11 @@ PrepareToShoot:
                 }
 
                 if (targetData.Center.X - npc.Center.X > 0f)
-                {
                     npc.spriteDirection = -1;
-                    npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X);
-                }
                 else
-                {
                     npc.spriteDirection = 1;
-                    npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X) + MathHelper.Pi;
-                }
+
+                npc.rotation = npc.velocity.X * 0.1f;
 
                 float reboundSpeed = 0.7f;
                 if (npc.collideX)
