@@ -81,42 +81,56 @@ namespace CalamityMod.NPCs.PlagueEnemies
         {
             Lighting.AddLight((int)(NPC.Center.X / 16f), (int)(NPC.Center.Y / 16f), 0.1f, 0.3f, 0f);
 
-            bool outsideJungle = false;
-            if (!Main.player[NPC.target].ZoneJungle)
-            {
-                outsideJungle = true;
-                if (NPC.timeLeft > 150)
-                    NPC.timeLeft = 150;
-            }
-            else
-            {
-                if (NPC.timeLeft < 750)
-                    NPC.timeLeft = 750;
-            }
-
-            int playerAmt = Main.CurrentFrameFlags.ActivePlayersCount;
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool dead4 = Main.player[NPC.target].dead;
-            if (dead4 && Main.expertMode)
+            // Despawn
+            float distanceFromTarget = Vector2.Distance(NPC.Center, Main.player[NPC.target].Center);
+            if (NPC.ai[0] != 6f)
+            {
+                if (NPC.timeLeft < 60)
+                    NPC.timeLeft = 60;
+                if (distanceFromTarget > 3000f)
+                    NPC.ai[0] = 4f;
+            }
+            if (Main.player[NPC.target].dead || !Main.player[NPC.target].ZoneJungle)
+                NPC.ai[0] = 6f;
+
+            if (NPC.ai[0] == 6f)
             {
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                if ((double)NPC.position.Y < Main.worldSurface * 16D + 2000D)
-                    NPC.velocity.Y += 0.04f;
+                NPC.velocity.Y *= 0.98f;
 
-                if (NPC.position.X < (float)(Main.maxTilesX * 8))
-                    NPC.velocity.X -= 0.04f;
+                if (NPC.velocity.X < 0f)
+                    NPC.direction = -1;
                 else
-                    NPC.velocity.X += 0.04f;
+                    NPC.direction = 1;
+
+                NPC.spriteDirection = NPC.direction;
+
+                if (NPC.position.X < (Main.maxTilesX * 8))
+                {
+                    if (NPC.velocity.X > 0f)
+                        NPC.velocity.X *= 0.98f;
+                    else
+                        NPC.localAI[0] = 1f;
+
+                    NPC.velocity.X -= 0.08f;
+                }
+                else
+                {
+                    if (NPC.velocity.X < 0f)
+                        NPC.velocity.X *= 0.98f;
+                    else
+                        NPC.localAI[0] = 1f;
+
+                    NPC.velocity.X += 0.08f;
+                }
 
                 if (NPC.timeLeft > 10)
-                {
                     NPC.timeLeft = 10;
-                    return;
-                }
             }
             else if (NPC.ai[0] == -1f)
             {
@@ -135,9 +149,9 @@ namespace CalamityMod.NPCs.PlagueEnemies
             else if (NPC.ai[0] == 0f)
             {
                 // Charging distance from player
-                int chargeDistanceX = (outsideJungle ? 500 : 750) - (CalamityWorld.death ? 100 : CalamityWorld.revenge ? 75 : Main.expertMode ? 50 : 0);
+                int chargeDistanceX = 750 - (CalamityWorld.death ? 100 : CalamityWorld.revenge ? 75 : Main.expertMode ? 50 : 0);
 
-                int chargeDelay = outsideJungle ? 4 : 2;
+                int chargeDelay = 2;
                 if (NPC.ai[1] > (float)(2 * chargeDelay) && NPC.ai[1] % 2f == 0f)
                 {
                     NPC.ai[0] = -1f;
@@ -152,7 +166,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    NPC.TargetClosest(true);
+                    NPC.TargetClosest();
 
                     float chargeDistanceY = 20f;
                     float distanceFromTargetX = Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X);
@@ -165,7 +179,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                         NPC.localAI[0] = 1f;
                         NPC.ai[1] += 1f;
                         NPC.ai[2] = 0f;
-                        float chargeSpeed = outsideJungle ? 36f : 24f;
+                        float chargeSpeed = 16f;
                         Vector2 chargeBeePos = NPC.Center;
                         float chargeTargetX = Main.player[NPC.target].Center.X - chargeBeePos.X;
                         float chargeTargetY = Main.player[NPC.target].Center.Y - chargeBeePos.Y;
@@ -173,46 +187,53 @@ namespace CalamityMod.NPCs.PlagueEnemies
                         chargeTargetDist = chargeSpeed / chargeTargetDist;
                         NPC.velocity.X = chargeTargetX * chargeTargetDist;
                         NPC.velocity.Y = chargeTargetY * chargeTargetDist;
+
+                        // Direction
+                        float playerLocation = NPC.Center.X - Main.player[NPC.target].Center.X;
+                        NPC.direction = playerLocation < 0 ? 1 : -1;
                         NPC.spriteDirection = NPC.direction;
+
                         SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
+
                         return;
                     }
 
                     // Velocity variables
                     NPC.localAI[0] = 0f;
-                    float chargeVelocityX = 16f;
-                    float chargeVelocityY = outsideJungle ? 16f : 12f;
-                    float chargeAccelerationX = 0.15f;
-                    float chargeAccelerationY = outsideJungle ? 0.24f : 0.16f;
+                    float chargeVelocity = 12f;
+                    float chargeAcceleration = 0.15f;
 
                     // Velocity calculations
                     if (NPC.Center.Y < Main.player[NPC.target].Center.Y - chargeDistanceY)
-                        NPC.velocity.Y += chargeAccelerationY;
+                        NPC.velocity.Y += chargeAcceleration;
                     else if (NPC.Center.Y > Main.player[NPC.target].Center.Y + chargeDistanceY)
-                        NPC.velocity.Y -= chargeAccelerationY;
+                        NPC.velocity.Y -= chargeAcceleration;
                     else
                         NPC.velocity.Y *= 0.7f;
 
-                    if (NPC.velocity.Y < -chargeVelocityY)
-                        NPC.velocity.Y = -chargeVelocityY;
-                    if (NPC.velocity.Y > chargeVelocityY)
-                        NPC.velocity.Y = chargeVelocityY;
+                    if (NPC.velocity.Y < -chargeVelocity)
+                        NPC.velocity.Y = -chargeVelocity;
+                    if (NPC.velocity.Y > chargeVelocity)
+                        NPC.velocity.Y = chargeVelocity;
 
                     float distanceXMax = 100f;
                     float distanceXMin = 20f;
                     if (distanceFromTargetX > chargeDistanceX + distanceXMax)
-                        NPC.velocity.X += chargeAccelerationX * NPC.direction;
+                        NPC.velocity.X += chargeAcceleration * NPC.direction;
                     else if (distanceFromTargetX < chargeDistanceX + distanceXMin)
-                        NPC.velocity.X -= chargeAccelerationX * NPC.direction;
+                        NPC.velocity.X -= chargeAcceleration * NPC.direction;
                     else
-                        NPC.velocity.X *= 0.8f;
+                        NPC.velocity.X *= 0.7f;
 
                     // Limit velocity
-                    if (NPC.velocity.X < -chargeVelocityX)
-                        NPC.velocity.X = -chargeVelocityX;
-                    if (NPC.velocity.X > chargeVelocityX)
-                        NPC.velocity.X = chargeVelocityX;
+                    if (NPC.velocity.X < -chargeVelocity)
+                        NPC.velocity.X = -chargeVelocity;
+                    if (NPC.velocity.X > chargeVelocity)
+                        NPC.velocity.X = chargeVelocity;
 
+                    // Direction
+                    float playerLocation2 = NPC.Center.X - Main.player[NPC.target].Center.X;
+                    NPC.direction = playerLocation2 < 0 ? 1 : -1;
                     NPC.spriteDirection = NPC.direction;
                 }
                 else
@@ -245,19 +266,17 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    NPC.TargetClosest(true);
+                    // Direction
+                    float playerLocation = NPC.Center.X - Main.player[NPC.target].Center.X;
+                    NPC.direction = playerLocation < 0 ? 1 : -1;
                     NPC.spriteDirection = NPC.direction;
+
+                    NPC.TargetClosest();
 
                     NPC.localAI[0] = 0f;
 
-                    NPC.velocity *= 0.9f;
-                    float chargeDeceleration = 0.12f;
-                    if (outsideJungle)
-                    {
-                        NPC.velocity *= 0.9f;
-                        chargeDeceleration += 0.08f;
-                    }
-
+                    NPC.velocity *= 0.92f;
+                    float chargeDeceleration = 0.08f;
                     if (Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y) < chargeDeceleration)
                     {
                         NPC.ai[2] = 0f;
@@ -270,8 +289,13 @@ namespace CalamityMod.NPCs.PlagueEnemies
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                float stingerAttackSpeed = outsideJungle ? 24f : 16f;
-                float stingerAttackAccel = outsideJungle ? 0.4f : 0.3f;
+                // Direction
+                float playerLocation = NPC.Center.X - Main.player[NPC.target].Center.X;
+                NPC.direction = playerLocation < 0 ? 1 : -1;
+                NPC.spriteDirection = NPC.direction;
+
+                float stingerAttackSpeed = 12f;
+                float stingerAttackAccel = 0.12f;
                 Vector2 stingerSpawnPos = new Vector2(NPC.Center.X + (float)(40 * NPC.direction), NPC.position.Y + (float)NPC.height * 0.8f);
                 Vector2 stingerAttackPos = NPC.Center;
                 float stingerAttackTargetX = Main.player[NPC.target].Center.X - stingerAttackPos.X;
@@ -293,7 +317,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     SoundEngine.PlaySound(SoundID.Item42, stingerSpawnPos);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        float stingerSpeed = outsideJungle ? 8f : 6f;
+                        float stingerSpeed = 6f;
                         float stingerTargetX = Main.player[NPC.target].Center.X - stingerSpawnPos.X;
                         float stingerTargetY = Main.player[NPC.target].Center.Y - stingerSpawnPos.Y;
                         float stingerTargetDist = (float)Math.Sqrt((double)(stingerTargetX * stingerTargetX + stingerTargetY * stingerTargetY));
@@ -318,6 +342,31 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 1f;
                     NPC.netUpdate = true;
+                }
+            }
+            else if (NPC.ai[0] == 4f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.localAI[0] = 1f;
+                float despawnVelMult = 14f;
+
+                Vector2 despawnTargetDist = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
+                despawnTargetDist *= 14f;
+
+                NPC.velocity = (NPC.velocity * despawnVelMult + despawnTargetDist) / (despawnVelMult + 1f);
+                if (NPC.velocity.X < 0f)
+                    NPC.direction = -1;
+                else
+                    NPC.direction = 1;
+
+                NPC.spriteDirection = NPC.direction;
+
+                if (distanceFromTarget < 2000f)
+                {
+                    NPC.ai[0] = -1f;
+                    NPC.localAI[0] = 0f;
                 }
             }
 
