@@ -30,10 +30,9 @@ namespace CalamityMod.Projectiles.Melee
 
         const float MaxTime = 90;
         const int coyoteTimeFrames = 15; //How many frames does the whip stay extended
-        const int MaxReach = 400;
-        const int MinReach = 300;
+        const int MaxReach = 450;
+        const int MinReach = 250;
         const float SnappingPoint = 0.55f; //When does the snap occur.
-        const float ReelBackStrenght = 14f;
 
         const float MaxTangleReach = 400f; //How long can tangling vines from crits be
 
@@ -171,10 +170,9 @@ namespace CalamityMod.Projectiles.Melee
                 SnapCoyoteTime = coyoteTimeFrames;
             }
 
-            if (SnapCoyoteTime > 0) //keep checking for the tile hook
+            if (SnapCoyoteTime > 0)
             {
                 Lighting.AddLight(Projectile.Center, 0.8f, 1f, 0.35f);
-                HookToTile();
                 SnapCoyoteTime--;
             }
 
@@ -188,19 +186,6 @@ namespace CalamityMod.Projectiles.Melee
             //MessWithTiles();
 
             Owner.itemRotation = MathHelper.WrapAngle(Owner.AngleTo(Owner.Calamity().mouseWorld) - (Owner.direction < 0 ? MathHelper.Pi : 0));
-        }
-        public void HookToTile()
-        {
-            if (Main.myPlayer == Owner.whoAmI)
-            {
-                //Shmoove the player if a tile is hit. This movement always happens if the owner isnt on the ground, but will only happen if the projectile is above the player if they are standing on the ground)
-                if (Collision.SolidCollision(Projectile.position, 32, 32) && (Owner.velocity.Y != 0 || Projectile.position.Y < Owner.position.Y))
-                {
-                    Owner.velocity = Owner.SafeDirectionTo(Projectile.Center, Vector2.Zero) * ReelBackStrenght;
-                    SnapCoyoteTime = 0f;
-                }
-                SoundEngine.PlaySound(SoundID.Item65, Projectile.position);
-            }
         }
 
         internal static float EaseInFunction(float progress) => progress == 0 ? 0f : (float)Math.Pow(2, 10 * progress - 10); //Potion seller i need your strongest easeIns

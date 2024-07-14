@@ -24,7 +24,6 @@ TropicalAttunement: {
 		'''
 		Throw out the blade using a vine whip
 		Striking enemies with the tip of the whip as it cracks guarantees a critical hit
-		The whip will also propel you towards struck tiles
 		'''
 }
 
@@ -70,10 +69,9 @@ TrueTropicalAttunement: {
 	Name: Grovetender's Touch
 	Function:
 		'''
-		Throw out the blade using a vine whip.
+		Throw out the blade using a vine whip
 		Striking enemies with the tip of the whip as it cracks guarantees a critical hit
-		The whip will also propel you towards struck tiles
-		Spreading vines sprout from critical strikes. These vines can hit up to three targets
+		Spreading vines sprout from critical strikes, which can hit up to three targets
 		'''
 }
 
