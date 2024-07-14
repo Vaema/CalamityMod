@@ -59,8 +59,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Floodtide>().
                 AddIngredient(ItemID.TerraBlade).
+                AddIngredient<Floodtide>().
+                AddIngredient<EntropicClaymore>().
                 AddIngredient<UelibloomBar>(7).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
