@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 distanceFromTarget = targetPosition - npcPosition;
 
             float halfAverageScreenWidth = 960f;
-            float distanceBeforeSlowingDown = 400f;
+            float distanceBeforeSlowingDown = 480f;
             float timeBeforeEnrage = (masterMode ? 150f : 600f) - (death ? (masterMode ? 130f : 390f) * (1f - lifeRatio) : 0f);
             float speedMult = 1f;
 
@@ -285,7 +285,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         calamityGlobalNPC.newAI[0] -= 1f;
                 }
 
-                speedMult = MathHelper.Clamp(speedMult, 0.75f, 2f);
+                speedMult = MathHelper.Clamp(speedMult, 0.4f, 2f);
             }
 
             // Enrage if target is off screen for too long
@@ -450,50 +450,55 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Main.rand.NextBool(chance))
                 {
-                    int hungryAmt = 0;
-                    float[] array = new float[10];
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(2f, 8f, npc.life / (float)npc.lifeMax));
+                    if (NPC.CountNPCS(NPCID.TheHungry) < maxHungriesBasedOnHP)
                     {
-                        if (hungryAmt < 10 && Main.npc[j].active && Main.npc[j].type == NPCID.TheHungry)
+                        int hungryAmt = 0;
+                        int maxHungries = 10;
+                        float[] array = new float[maxHungries];
+                        for (int j = 0; j < Main.maxNPCs; j++)
                         {
-                            array[hungryAmt] = Main.npc[j].ai[0];
-                            hungryAmt++;
-                        }
-                    }
-
-                    int maxValue = 1 + hungryAmt * 2;
-                    if (masterMode)
-                        maxValue /= 2;
-
-                    if (maxValue < 2)
-                        maxValue = 2;
-
-                    if (hungryAmt < 10 && Main.rand.Next(maxValue) <= 1)
-                    {
-                        int spawnHungryControl = -1;
-                        for (int k = 0; k < 1000; k++)
-                        {
-                            int randomHungrySpawnValue = Main.rand.Next(10);
-                            float hungryArrayValue = randomHungrySpawnValue * 0.1f - 0.05f;
-                            bool shouldRespawnHungry = true;
-                            for (int i = 0; i < hungryAmt; i++)
+                            if (hungryAmt < maxHungries && Main.npc[j].active && Main.npc[j].type == NPCID.TheHungry)
                             {
-                                if (hungryArrayValue == array[i])
+                                array[hungryAmt] = Main.npc[j].ai[0];
+                                hungryAmt++;
+                            }
+                        }
+
+                        int maxValue = 1 + hungryAmt * 2;
+                        if (masterMode)
+                            maxValue /= 2;
+
+                        if (maxValue < 2)
+                            maxValue = 2;
+
+                        if (hungryAmt < maxHungries && Main.rand.Next(maxValue) <= 1)
+                        {
+                            int spawnHungryControl = -1;
+                            for (int k = 0; k < 1000; k++)
+                            {
+                                int randomHungrySpawnValue = Main.rand.Next(maxHungries);
+                                float hungryArrayValue = randomHungrySpawnValue * 0.1f - 0.05f;
+                                bool shouldRespawnHungry = true;
+                                for (int i = 0; i < hungryAmt; i++)
                                 {
-                                    shouldRespawnHungry = false;
+                                    if (hungryArrayValue == array[i])
+                                    {
+                                        shouldRespawnHungry = false;
+                                        break;
+                                    }
+                                }
+                                if (shouldRespawnHungry)
+                                {
+                                    spawnHungryControl = randomHungrySpawnValue;
                                     break;
                                 }
                             }
-                            if (shouldRespawnHungry)
+                            if (spawnHungryControl >= 0)
                             {
-                                spawnHungryControl = randomHungrySpawnValue;
-                                break;
+                                int hungryRespawns = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)mouthYPosition, NPCID.TheHungry, npc.whoAmI);
+                                Main.npc[hungryRespawns].ai[0] = spawnHungryControl * 0.1f - 0.05f;
                             }
-                        }
-                        if (spawnHungryControl >= 0)
-                        {
-                            int hungryRespawns = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)mouthYPosition, NPCID.TheHungry, npc.whoAmI);
-                            Main.npc[hungryRespawns].ai[0] = spawnHungryControl * 0.1f - 0.05f;
                         }
                     }
                 }
@@ -724,6 +729,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool shouldFireLasers = true;
             float phase2LifeRatio = 0.5f;
             bool masterModeDetach = lifeRatio < phase2LifeRatio && masterMode;
+            bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
             if (!masterModeDetach)
             {
                 npc.position.X = Main.npc[Main.wofNPCIndex].position.X;
@@ -759,7 +765,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                float distanceAboveTarget = 240f * npc.ai[0];
+                float distanceAboveTarget = (canHit ? 240f : 120f) * npc.ai[0];
                 float distanceAwayFromTargetX = 560f;
                 float distanceAwayFromTargetXLeeway = 40f;
                 float distanceAwayFromTargetY = Main.player[npc.target].Center.Y - npc.Center.Y;
@@ -863,8 +869,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 float shootBoost = fireEnragedLasers ? (death ? 5f : 4f) : (death ? 3f : 3f * (1f - lifeRatio));
                 npc.localAI[1] += 1f + shootBoost;
-
-                bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
 
                 if (npc.localAI[2] == 0f)
                 {
@@ -1111,6 +1115,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.velocity.Y = 0f;
             npc.position.Y = num368;
 
+            float targetPosition = Main.player[npc.target].Center.X;
+            float npcPosition = npc.Center.X;
+
+            // Slow down if close
+            float distanceFromTarget;
+            if (npc.velocity.X < 0f)
+                distanceFromTarget = npcPosition - targetPosition;
+            else
+                distanceFromTarget = targetPosition - npcPosition;
+
+            float distanceBeforeSlowingDown = 480f;
+            float speedMult = 1f;
+
+            if (distanceFromTarget < distanceBeforeSlowingDown)
+                speedMult += (distanceFromTarget - distanceBeforeSlowingDown) * 0.002f;
+
+            speedMult = MathHelper.Clamp(speedMult, 0.4f, 1f);
+
             float masterModeVelocityBoost = 0f;
             if (Main.masterMode)
             {
@@ -1174,6 +1196,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 num369 *= 1.1f;
                 num369 += 0.2f;
             }
+
+            num369 *= speedMult;
 
             if (npc.velocity.X == 0f)
             {
@@ -1255,66 +1279,71 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (Main.expertMode && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                int num378 = (int)(1f + (float)npc.life / (float)npc.lifeMax * 10f);
-                num378 *= num378;
-                if (num378 < 400)
-                    num378 = (num378 * 19 + 400) / 20;
+                int chanceToSpawnHungry = (int)(1f + (float)npc.life / (float)npc.lifeMax * 10f);
+                chanceToSpawnHungry *= chanceToSpawnHungry;
+                if (chanceToSpawnHungry < 400)
+                    chanceToSpawnHungry = (chanceToSpawnHungry * 19 + 400) / 20;
 
-                if (num378 < 60)
-                    num378 = (num378 * 3 + 60) / 4;
+                if (chanceToSpawnHungry < 60)
+                    chanceToSpawnHungry = (chanceToSpawnHungry * 3 + 60) / 4;
 
-                if (num378 < 20)
-                    num378 = (num378 + 20) / 2;
+                if (chanceToSpawnHungry < 20)
+                    chanceToSpawnHungry = (chanceToSpawnHungry + 20) / 2;
 
-                num378 = (int)((double)num378 * (Main.masterMode ? 0.5 : 0.7));
-                if (num378 < 2)
-                    num378 = 2;
+                chanceToSpawnHungry = (int)((double)chanceToSpawnHungry * (Main.masterMode ? 0.5 : 0.7));
+                if (chanceToSpawnHungry < 2)
+                    chanceToSpawnHungry = 2;
 
-                if (Main.rand.NextBool(num378))
+                if (Main.rand.NextBool(chanceToSpawnHungry))
                 {
-                    int num379 = 0;
-                    float[] array = new float[10];
-                    for (int num380 = 0; num380 < Main.maxNPCs; num380++)
+                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(2f, 8f, npc.life / (float)npc.lifeMax));
+                    if (NPC.CountNPCS(NPCID.TheHungry) < maxHungriesBasedOnHP)
                     {
-                        if (num379 < 10 && Main.npc[num380].active && Main.npc[num380].type == NPCID.TheHungry)
+                        int hungryCount = 0;
+                        int maxHungries = 10;
+                        float[] hungryArray = new float[maxHungries];
+                        for (int i = 0; i < Main.maxNPCs; i++)
                         {
-                            array[num379] = Main.npc[num380].ai[0];
-                            num379++;
-                        }
-                    }
-
-                    int maxValue = 1 + num379 * 2;
-                    if (Main.masterMode)
-                        maxValue /= 2;
-                    if (maxValue < 2)
-                        maxValue = 2;
-
-                    if (num379 < 10 && Main.rand.Next(maxValue) <= 1)
-                    {
-                        int num381 = -1;
-                        for (int num382 = 0; num382 < 1000; num382++)
-                        {
-                            int num383 = Main.rand.Next(10);
-                            float num384 = (float)num383 * 0.1f - 0.05f;
-                            bool flag26 = true;
-                            for (int num385 = 0; num385 < num379; num385++)
+                            if (hungryCount < maxHungries && Main.npc[i].active && Main.npc[i].type == NPCID.TheHungry)
                             {
-                                if (num384 == array[num385])
+                                hungryArray[hungryCount] = Main.npc[i].ai[0];
+                                hungryCount++;
+                            }
+                        }
+
+                        int maxValue = 1 + hungryCount * 2;
+                        if (Main.masterMode)
+                            maxValue /= 2;
+                        if (maxValue < 2)
+                            maxValue = 2;
+
+                        if (hungryCount < maxHungries && Main.rand.Next(maxValue) <= 1)
+                        {
+                            int ai0 = -1;
+                            for (int i = 0; i < 1000; i++)
+                            {
+                                int randomHungryLocation = Main.rand.Next(maxHungries);
+                                float hungryLocation = (float)randomHungryLocation * 0.1f - 0.05f;
+                                bool spawnHungry = true;
+                                for (int j = 0; j < hungryCount; j++)
                                 {
-                                    flag26 = false;
+                                    if (hungryLocation == hungryArray[j])
+                                    {
+                                        spawnHungry = false;
+                                        break;
+                                    }
+                                }
+
+                                if (spawnHungry)
+                                {
+                                    ai0 = randomHungryLocation;
                                     break;
                                 }
                             }
 
-                            if (flag26)
-                            {
-                                num381 = num383;
-                                break;
-                            }
+                            if (ai0 >= 0)
+                                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)num368, NPCID.TheHungry, npc.whoAmI, (float)ai0 * 0.1f - 0.05f);
                         }
-
-                        if (num381 >= 0)
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)num368, NPCID.TheHungry, npc.whoAmI, (float)num381 * 0.1f - 0.05f);
                     }
                 }
             }

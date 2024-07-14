@@ -839,7 +839,7 @@ namespace CalamityMod.CalPlayer
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
                 contactDamageReduction += 0.5;
-                theBeeCooldown = 600;
+                shouldTriggerBeeCooldown = true;
             }
 
             // Apply Adrenaline DR if available
@@ -1078,7 +1078,7 @@ namespace CalamityMod.CalPlayer
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
                 projectileDamageReduction += 0.5;
-                theBeeCooldown = 600;
+                shouldTriggerBeeCooldown = true;
             }
 
             // Apply Adrenaline DR if available
@@ -1175,6 +1175,14 @@ namespace CalamityMod.CalPlayer
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
                 Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
+
+            // Same thing with The Bee
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
+            } 
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -1297,6 +1305,14 @@ namespace CalamityMod.CalPlayer
                     if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
                         p.AddBuff(BuffID.Poisoned, 60);
                 }
+            }
+
+            // Apply The Bee cooldown, must be applied here so that it does not apply on dodges
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
             }
 
             if (proj.hostile && hurtInfo.Damage > 0)
@@ -2515,10 +2531,6 @@ namespace CalamityMod.CalPlayer
                     if (hurtInfo.Damage > 0)
                     {
                         SoundEngine.PlaySound(SoundID.Item93, Player.Center);
-                        float spread = 45f * 0.0174f;
-                        double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 8f;
-                        double offsetAngle;
 
                         // Start with base damage, then apply the best damage class you can
                         int sDamage = 6;
@@ -2529,32 +2541,17 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < (transformer ? 5 : 4); i++)
+                            float sparkCount = transformer ? 10f : 8f;
+                            for (float i = 0f; i < sparkCount; i++)
                             {
-                                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                                int spark1 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<Spark>(), sDamage, 1.25f, Player.whoAmI, 0f, 0f);
-                                int spark2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<Spark>(), sDamage, 1.25f, Player.whoAmI, 0f, 0f);
-                                if (spark1.WithinBounds(Main.maxProjectiles))
+                                Vector2 velocity = (MathHelper.TwoPi * i / sparkCount).ToRotationVector2() * 5f;
+                                Projectile spark = Projectile.NewProjectileDirect(source, Player.Center, velocity, ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI);
+                                spark.timeLeft = 120;
+                                if (transformer)
                                 {
-                                    Main.projectile[spark1].timeLeft = 120;
-                                    Main.projectile[spark1].DamageType = DamageClass.Generic;
-                                    if (transformer)
-                                    {
-                                        Main.projectile[spark1].timeLeft = 240;
-                                        Main.projectile[spark1].extraUpdates = 1;
-                                        Main.projectile[spark1].penetrate = 10;
-                                    }
-                                }
-                                if (spark2.WithinBounds(Main.maxProjectiles))
-                                {
-                                    Main.projectile[spark2].timeLeft = 120;
-                                    Main.projectile[spark2].DamageType = DamageClass.Generic;
-                                    if (transformer)
-                                    {
-                                        Main.projectile[spark2].timeLeft = 240;
-                                        Main.projectile[spark2].extraUpdates = 1;
-                                        Main.projectile[spark2].penetrate = 10;
-                                    }
+                                    spark.timeLeft = 240;
+                                    spark.extraUpdates = 1;
+                                    spark.penetrate = 10;
                                 }
                             }
                         }

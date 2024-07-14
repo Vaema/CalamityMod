@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.PlaguebringerGoliath;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -50,6 +51,12 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             target.AddBuff(ModContent.BuffType<Plague>(), 90);
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Projectile.DrawProjectileWithBackglow(PlaguebringerGoliath.BackglowColor, lightColor, 4f);
+            return false;
         }
 
         public override void PostDraw(Color lightColor)

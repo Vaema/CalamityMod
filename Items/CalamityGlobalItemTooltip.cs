@@ -1301,9 +1301,8 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 160, "5% increased melee damage and critical strike chance");
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(6.75f, 1f, 1, 130, "2% increased melee and ranged damage\n" +
-                    "and 1% increased melee and ranged critical strike chance\n" +
-                    "while wearing the Frost Armor");
+                AddWingStats(6.75f, 1f, 1, 130, "4% increased melee and ranged damage\n" +
+                    "and multiplies all cold debuff damage by 1.25x while wearing Frost armor");
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(7.5f, 1f, 1, 170, "+10 defense and 5% increased damage reduction while wearing the Spectre Hood set\n" +
