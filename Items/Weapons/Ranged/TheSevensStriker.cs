@@ -17,9 +17,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
         public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f };
         public static readonly SoundStyle BustSound = new("CalamityMod/Sounds/Item/SevensStrikerBust");
+        public static readonly SoundStyle BustGFB = new("CalamityMod/Sounds/Item/SevensStrikerBustGFB");
         public static readonly SoundStyle DoublesSound = new("CalamityMod/Sounds/Item/SevensStrikerDoubles");
         public static readonly SoundStyle TriplesSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
         public static readonly SoundStyle JackpotSound = new("CalamityMod/Sounds/Item/SevensStrikerJackpot");
+        public static readonly SoundStyle JackpotGFB = new("CalamityMod/Sounds/Item/SevensStrikerJackpotGFB");
         public static readonly SoundStyle CoinSound = new("CalamityMod/Sounds/Item/SevensStrikerCoinShot") { MaxInstances = 0, PitchVariance = 0.5f };
 
         public static int ShotCoin = 0; // projectile ID to use for right click, affects damage multiplier
@@ -31,7 +33,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly float TriplesCherryMultiplier = 1f;
         public static readonly float TriplesCherrySplitMultiplier = 0.333f;
         public static readonly float TriplesGrapeMultiplier = 0.333f; // fixed the grapes interfering with each other's iframes
-        public static readonly float JackpotMultiplier = 0.5f; // Jackpot fires 49 shots total and thus needs to be reduced somehow
+        public static readonly float JackpotMultiplier = 0.5f; // Jackpot fires 49 shots total and thus needs to be reduced somehow...
+        public static readonly float JackpotMultiplierGFB = 7f; // ...Unless you simply cannot stop winning
 
         public override void SetStaticDefaults()
         {

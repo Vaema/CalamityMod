@@ -134,18 +134,18 @@ namespace CalamityMod.Projectiles.Ranged
                             // Play a sound and display the jackpot text
                             if (shottimer == 1)
                             {
-                                SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
+                                SoundEngine.PlaySound(Main.zenithWorld ? TheSevensStriker.JackpotGFB : TheSevensStriker.JackpotSound, Projectile.Center);
                                 CombatText.NewText(player.getRect(), Color.Gold, CalamityUtils.GetTextValue("Misc.SevensJackpot"), true);
                             }
                             // Every 7 frames, shoot 7 coins. The first 7 frames are excluded for timing purposes
-                            if (shottimer % 7 == 0 && shottimer > 7)
+                            if (shottimer % 7 == 0 && shottimer > 7 && shottimer <= 56)
                             {
-                                int jackpotDamage = (int)(weaponDamage * TheSevensStriker.JackpotMultiplier);
+                                int jackpotDamage = (int)(weaponDamage * (Main.zenithWorld ? TheSevensStriker.JackpotMultiplierGFB : TheSevensStriker.JackpotMultiplier));
                                 Shoot(7, ModContent.ProjectileType<SevensStrikerPlatinumCoin>(), jackpotDamage, weaponKnockback, (int)scaleFactor * 2f, 0.2f);
                                 SoundEngine.PlaySound(TheSevensStriker.CoinSound, Projectile.Center);
                             }
                             // After 7 waves have been shot, reset the gun and roll again
-                            if (shottimer > 56)
+                            if (shottimer > (Main.zenithWorld ? 88 : 56))
                             {
                                 soundtimer = 0;
                                 rolling = true;
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Ranged
                                     case 1:
                                         Shoot(1, ModContent.ProjectileType<SevensStrikerBrick>(), weaponDamage, 0, 2f, 0);
                                         CombatText.NewText(player.getRect(), Color.Gray, CalamityUtils.GetTextValue("Misc.SevensBust"), true);
-                                        SoundEngine.PlaySound(TheSevensStriker.BustSound, Projectile.Center);
+                                        SoundEngine.PlaySound(Main.zenithWorld ? TheSevensStriker.BustGFB : TheSevensStriker.BustSound, Projectile.Center);
                                         break;
                                     // 7 exploding oranges with 100% damage
                                     case 2:
@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Ranged
                             }
 
                             // Reset the gun and roll again
-                            if (shottimer > 16)
+                            if (shottimer > (Main.zenithWorld ? 56 : 16))
                             {
                                 soundtimer = 0;
                                 rolling = true;
@@ -237,62 +237,73 @@ namespace CalamityMod.Projectiles.Ranged
         // Calculates which attack will occur based on coin.
         public int CalculateOutcome()
         {
-            switch (Projectile.ai[0])
+            if (Main.zenithWorld)
             {
-                // Copper Coins have:
-                // 50% chance for a brick
-                // 30% chance for oranges
-                // 15% chance for grapes and cherries
-                // 5% chance for a jackpot
-                case ProjectileID.CopperCoin:
-                    {
-                        int roll = Main.rand.Next(100);
-                        if (roll <= 50)
-                            return 1;
-                        else if (roll > 50 && roll <= 80)
-                            return 2;
-                        else if (roll > 80 && roll <= 95)
-                            return 3;
-                        else
-                            return 4;
-                    }
-                // Silver Coins have:
-                // 20% chance for a brick
-                // 50% chance for oranges
-                // 20% chance for grapes and cherries
-                // 10% chance for a jackpot
-                case ProjectileID.SilverCoin:
-                    {
-                        int roll = Main.rand.Next(100);
-                        if (roll <= 20)
-                            return 1;
-                        else if (roll > 20 && roll <= 70)
-                            return 2;
-                        else if (roll > 70 && roll <= 90)
-                            return 3;
-                        else
-                            return 4;
-                    }
-                // Gold Coins have:
-                // 5% chance for a brick
-                // 30% chance for oranges
-                // 50% chance for grapes and cherries
-                // 15% chance for a jackpot
-                case ProjectileID.GoldCoin:
-                    {
-                        int roll = Main.rand.Next(100);
-                        if (roll <= 5)
-                            return 1;
-                        else if (roll > 5 && roll <= 35)
-                            return 2;
-                        else if (roll > 35 && roll <= 85)
-                            return 3;
-                        else
-                            return 4;
-                    }
-                // Platinum Coins are a guaranteed jackpot
-                case ProjectileID.PlatinumCoin:
+                int roll = Main.rand.Next(100);
+                if (roll < 20)
                     return 4;
+                else
+                    return 1;
+            }
+            else
+            {
+                switch (Projectile.ai[0])
+                {
+                    // Copper Coins have:
+                    // 50% chance for a brick
+                    // 30% chance for oranges
+                    // 15% chance for grapes and cherries
+                    // 5% chance for a jackpot
+                    case ProjectileID.CopperCoin:
+                        {
+                            int roll = Main.rand.Next(100);
+                            if (roll <= 50)
+                                return 1;
+                            else if (roll > 50 && roll <= 80)
+                                return 2;
+                            else if (roll > 80 && roll <= 95)
+                                return 3;
+                            else
+                                return 4;
+                        }
+                    // Silver Coins have:
+                    // 20% chance for a brick
+                    // 50% chance for oranges
+                    // 20% chance for grapes and cherries
+                    // 10% chance for a jackpot
+                    case ProjectileID.SilverCoin:
+                        {
+                            int roll = Main.rand.Next(100);
+                            if (roll <= 20)
+                                return 1;
+                            else if (roll > 20 && roll <= 70)
+                                return 2;
+                            else if (roll > 70 && roll <= 90)
+                                return 3;
+                            else
+                                return 4;
+                        }
+                    // Gold Coins have:
+                    // 5% chance for a brick
+                    // 30% chance for oranges
+                    // 50% chance for grapes and cherries
+                    // 15% chance for a jackpot
+                    case ProjectileID.GoldCoin:
+                        {
+                            int roll = Main.rand.Next(100);
+                            if (roll <= 5)
+                                return 1;
+                            else if (roll > 5 && roll <= 35)
+                                return 2;
+                            else if (roll > 35 && roll <= 85)
+                                return 3;
+                            else
+                                return 4;
+                        }
+                    // Platinum Coins are a guaranteed jackpot
+                    case ProjectileID.PlatinumCoin:
+                        return 4;
+                }
             }
             // This should never be returned
             return 1;
