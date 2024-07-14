@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
         public int soundtimer = 0; // Counts how long the slot machine has been spinning + the cooldown
 
         public SlotId RouletteSoundSlot;
+        public SlotId JingleSoundSlot;
 
         public override void SetStaticDefaults()
         {
@@ -134,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
                             // Play a sound and display the jackpot text
                             if (shottimer == 1)
                             {
-                                SoundEngine.PlaySound(Main.zenithWorld ? TheSevensStriker.JackpotGFB : TheSevensStriker.JackpotSound, Projectile.Center);
+                                JingleSoundSlot = SoundEngine.PlaySound(Main.zenithWorld ? TheSevensStriker.JackpotGFB : TheSevensStriker.JackpotSound, player.Center);
                                 CombatText.NewText(player.getRect(), Color.Gold, CalamityUtils.GetTextValue("Misc.SevensJackpot"), true);
                             }
                             // Every 7 frames, shoot 7 coins. The first 7 frames are excluded for timing purposes
@@ -166,14 +167,14 @@ namespace CalamityMod.Projectiles.Ranged
                                     case 1:
                                         Shoot(1, ModContent.ProjectileType<SevensStrikerBrick>(), weaponDamage, 0, 2f, 0);
                                         CombatText.NewText(player.getRect(), Color.Gray, CalamityUtils.GetTextValue("Misc.SevensBust"), true);
-                                        SoundEngine.PlaySound(Main.zenithWorld ? TheSevensStriker.BustGFB : TheSevensStriker.BustSound, Projectile.Center);
+                                        JingleSoundSlot = SoundEngine.PlaySound(Main.zenithWorld ? TheSevensStriker.BustGFB : TheSevensStriker.BustSound, player.Center);
                                         break;
                                     // 7 exploding oranges with 100% damage
                                     case 2:
                                         int doublesDamage = (int)(weaponDamage * TheSevensStriker.DoublesMultiplier);
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerOrange>(), doublesDamage, weaponKnockback, 2f, 0.1f);
                                         CombatText.NewText(player.getRect(), Color.Orange, CalamityUtils.GetTextValue("Misc.SevensDoubles"), true);
-                                        SoundEngine.PlaySound(TheSevensStriker.DoublesSound, Projectile.Center);
+                                        JingleSoundSlot = SoundEngine.PlaySound(TheSevensStriker.DoublesSound, player.Center);
                                         break;
                                     // 7 piercing grapes with X% damage
                                     // Also fires 7 splitting cherries in a tighter spread with Y% damage
@@ -183,7 +184,7 @@ namespace CalamityMod.Projectiles.Ranged
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerCherry>(), cherryDamage, weaponKnockback, 1.5f, 0.1f);
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerGrape>(), grapeDamage, weaponKnockback, 2f, 0.2f);
                                         CombatText.NewText(player.getRect(), Color.Red, CalamityUtils.GetTextValue("Misc.SevensTriples"), true);
-                                        SoundEngine.PlaySound(TheSevensStriker.TriplesSound, Projectile.Center);
+                                        JingleSoundSlot = SoundEngine.PlaySound(TheSevensStriker.TriplesSound, player.Center);
                                         break;
                                 }
                             }
@@ -198,9 +199,12 @@ namespace CalamityMod.Projectiles.Ranged
                             }
                         }
                     }
-                    // Update the roll sound position
+                    // Update the roll and jingle sound positions, if applicable
                     if (SoundEngine.TryGetActiveSound(RouletteSoundSlot, out var rouletteSound) && rouletteSound.IsPlaying)
                         rouletteSound.Position = Projectile.Center;
+
+                    if (SoundEngine.TryGetActiveSound(JingleSoundSlot, out var jingle) && jingle.IsPlaying)
+                        jingle.Position = player.Center;
                 }
                 // If the player can't use the gun, KILL it
                 else
@@ -347,11 +351,14 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        // When the gun disappears, stop any in-progress slots sounds and set a cooldown of 12 frames.
+        // When the gun disappears, stop any in-progress slot or jingle sounds and set a cooldown of 12 frames.
         public override void OnKill(int timeLeft)
         {
             if (SoundEngine.TryGetActiveSound(RouletteSoundSlot, out var dringdring))
                 dringdring.Stop();
+
+            if (SoundEngine.TryGetActiveSound(JingleSoundSlot, out var jingle))
+                jingle.Stop();
 
             Main.player[Projectile.owner].SetDummyItemTime(12);
         }
