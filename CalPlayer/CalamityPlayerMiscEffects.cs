@@ -691,18 +691,8 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
                     GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
                     GeneralParticleHandler.SpawnParticle(sparker);
-                    //GeneralScreenShakePower = 200;
                     Player.RemoveAllIFrames();
                     Projectile.NewProjectile(new EntitySource_TileInteraction(Player, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ModContent.ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
-                    //for (int i = 0; i < 3; i++)
-                    {
-                       /* int p = Projectile.NewProjectile(new EntitySource_TileInteraction(Player, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ModContent.ProjectileType<AresGaussNukeProjectileBoom>(), 0, 0f);
-                        Projectile explosion = Main.projectile[p];
-                        explosion.ai[1] = 560f +  90f;
-                        explosion.localAI[1] = 0.25f;
-                        explosion.Opacity = MathHelper.Lerp(0.18f, 0.6f, 0.2f) + Main.rand.NextFloat(-0.08f, 0.08f);
-                        explosion.netUpdate = true;*/
-                    }
                     WorldGen.KillTile(touchedTile.X, touchedTile.Y, noItem: true);
                 }
             }
