@@ -73,10 +73,5 @@ namespace CalamityMod.Projectiles.Ranged
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, speed, 12f);
             return false;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 800);
-        }
     }
 }
