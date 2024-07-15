@@ -296,7 +296,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
                 float stingerAttackSpeed = 12f;
                 float stingerAttackAccel = 0.12f;
-                Vector2 stingerSpawnPos = new Vector2(NPC.Center.X + (float)(40 * NPC.direction), NPC.position.Y + (float)NPC.height * 0.8f);
+                Vector2 stingerSpawnPos = new Vector2(NPC.Center.X + (float)(40 * NPC.direction), NPC.Bottom.Y + 30f);
                 Vector2 stingerAttackPos = NPC.Center;
                 float stingerAttackTargetX = Main.player[NPC.target].Center.X - stingerAttackPos.X;
                 float stingerAttackTargetY = Main.player[NPC.target].Center.Y - 300f - stingerAttackPos.Y;
@@ -382,22 +382,23 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
-            int afterimageAmt = 7;
-            if (NPC.ai[0] != 0f)
-                afterimageAmt = 5;
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int i = 1; i < afterimageAmt; i += 2)
+                if (NPC.ai[0] == 0f && NPC.localAI[0] == 1f)
                 {
-                    Color afterimageColor = drawColor;
-                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
-                    afterimageColor = NPC.GetAlpha(afterimageColor);
-                    afterimageColor *= (float)(afterimageAmt - i) / 15f;
-                    Vector2 afterimagePos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
-                    afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    int chargeAfterimageAmount = 6;
+                    for (int i = 1; i < chargeAfterimageAmount; i += 2)
+                    {
+                        Color afterimageColor = drawColor;
+                        afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                        afterimageColor = NPC.GetAlpha(afterimageColor);
+                        afterimageColor *= (float)(chargeAfterimageAmount - i) / 15f;
+                        Vector2 afterimagePos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
+                        afterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                        afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                        spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    }
                 }
             }
 
