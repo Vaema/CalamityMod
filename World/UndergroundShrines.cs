@@ -348,8 +348,10 @@ namespace CalamityMod.World
 
             do
             {
-                int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.1f), (int)(Main.maxTilesX * 0.9f));
-                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.2f), (int)(Main.maxTilesY * 0.85f));
+                int placementPositionX = Main.rand.NextBool() ? WorldGen.genRand.Next((int)(Main.maxTilesX * 0.55f), Main.maxTilesX - WorldGen.beachDistance) : WorldGen.genRand.Next(WorldGen.beachDistance, (int)(Main.maxTilesX * 0.45f));
+                int placementPositionY = WorldGen.genRand.Next((int)GenVars.rockLayer + 20, Main.maxTilesY - 220);
+                if (Main.remixWorld)
+                    placementPositionY = WorldGen.genRand.Next((int)GenVars.worldSurface + 100, (int)GenVars.rockLayer);
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
                 Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
@@ -366,9 +368,10 @@ namespace CalamityMod.World
                             canGenerateInLocation = false;
 
                         //The granite geode is supposed to fully float in free air. No tile replacements
-                        if (tile.WallType == WallID.GraniteUnsafe && !tile.HasTile && !Main.remixWorld)
+                        if (tile.WallType == WallID.GraniteUnsafe && !tile.HasTile && !Main.drunkWorld)
                             graniteWallsInArea++;
-                        else if ((tile.WallType == WallID.MarbleUnsafe || tile.TileType == TileID.Marble) && Main.remixWorld) //Get fixed boi makes it generate in marble biomes
+                        // Drunk world variant
+                        else if ((tile.WallType == WallID.MarbleUnsafe || tile.TileType == TileID.Marble) && Main.drunkWorld)
                             graniteWallsInArea++;
                     }
                 }
@@ -379,8 +382,45 @@ namespace CalamityMod.World
                 else
                 {
                     bool _ = true;
-                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, new Action<Chest>(FillGraniteShrineChest));
+                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, Main.drunkWorld ? new Action<Chest>(FillMarbleShrineChest) : new Action<Chest>(FillGraniteShrineChest));
                     CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 4);
+
+                    // Drunk world: turns into a Marble Geode
+                    if (Main.drunkWorld)
+                    {
+                        for (int x = placementPoint.X; x < placementPoint.X + schematicSize.X; x++)
+                        {
+                            for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y; y++)
+                            {
+                                Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+                                switch (tile.TileType)
+                                {
+                                    case TileID.Granite: // Granite Block --> Marble Block
+                                        tile.TileType = TileID.Marble;
+                                        break;
+                                    case TileID.GraniteBlock: // Smooth Granite Block --> Smooth Marble Block
+                                        tile.TileType = TileID.MarbleBlock;
+                                        break;
+                                    case TileID.Containers: // Granite Chest --> Marble Chest
+                                        tile.TileFrameX += 36;
+                                        break;
+                                    case TileID.ExposedGems: // Sapphire --> Diamond
+                                        tile.TileFrameX += 54;
+                                        break;
+                                }
+                                switch (tile.WallType)
+                                {
+                                    case WallID.Granite: // Granite Wall --> Marble Wall
+                                        tile.WallType = WallID.Marble;
+                                        break;
+                                    case WallID.SapphireGemspark: // Sapphire Gemspark Wall --> Diamond Gemspark Wall
+                                        tile.WallType = WallID.DiamondGemspark;
+                                        tile.WallColor = PaintID.None;
+                                        break;
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
 
@@ -501,8 +541,10 @@ namespace CalamityMod.World
 
             do
             {
-                int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.1f), (int)(Main.maxTilesX * 0.9f));
-                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.2f), (int)(Main.maxTilesY * 0.85f));
+                int placementPositionX = Main.rand.NextBool() ? WorldGen.genRand.Next((int)(Main.maxTilesX * 0.55f), Main.maxTilesX - WorldGen.beachDistance) : WorldGen.genRand.Next(WorldGen.beachDistance, (int)(Main.maxTilesX * 0.45f));
+                int placementPositionY = WorldGen.genRand.Next((int)GenVars.rockLayer + 20, Main.maxTilesY - 220);
+                if (Main.remixWorld)
+                    placementPositionY = WorldGen.genRand.Next((int)GenVars.worldSurface + 100, (int)GenVars.rockLayer);
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
                 Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
@@ -521,9 +563,10 @@ namespace CalamityMod.World
 
                         //Marble biomes either have blocks or walls, occasionally both
                         //This should be near maximum to prevent the structure from overextending
-                        if ((tile.TileType == TileID.Marble || tile.WallType == WallID.MarbleUnsafe) && !Main.zenithWorld)
+                        if ((tile.TileType == TileID.Marble || tile.WallType == WallID.MarbleUnsafe) && !Main.drunkWorld)
                             marbleStuffInArea++;
-                        else if ((tile.WallType == WallID.GraniteUnsafe || tile.TileType == TileID.Granite) && Main.zenithWorld) //Generates in granite in gfb
+                        // Drunk world variant
+                        else if ((tile.TileType == TileID.Granite || tile.WallType == WallID.GraniteUnsafe) && Main.drunkWorld)
                             marbleStuffInArea++;
 
                         //There should be some space between the pillars so it doesn't make pillars in the middle of nowhere zone
@@ -541,8 +584,48 @@ namespace CalamityMod.World
                 else
                 {
                     bool _ = true;
-                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, new Action<Chest>(FillMarbleShrineChest));
+                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, Main.drunkWorld ? new Action<Chest>(FillGraniteShrineChest) : new Action<Chest>(FillMarbleShrineChest));
                     CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 4);
+
+                    // Drunk world: turns into a Granite Column
+                    if (Main.drunkWorld)
+                    {
+                        for (int x = placementPoint.X; x < placementPoint.X + schematicSize.X; x++)
+                        {
+                            for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y; y++)
+                            {
+                                Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+                                switch (tile.TileType)
+                                {
+                                    case TileID.Marble: // Marble Block --> Granite Block
+                                        tile.TileType = TileID.Granite;
+                                        break;
+                                    case TileID.MarbleBlock: // Smooth Marble Block --> Smooth Granite Block
+                                        tile.TileType = TileID.GraniteBlock;
+                                        break;
+                                    case TileID.MarbleColumn: // Marble Column --> Granite Column
+                                        tile.TileType = TileID.GraniteColumn;
+                                        break;
+                                    case TileID.Containers: // Marble Chest --> Granite Chest
+                                        tile.TileFrameX -= 36;
+                                        break;
+                                    case TileID.Platforms: // Marble Platform --> Granite Platform
+                                        tile.TileFrameY -= 18;
+                                        break;
+                                }
+                                switch (tile.WallType)
+                                {
+                                    case WallID.Marble: // Marble Wall --> Granite Wall
+                                        tile.WallType = WallID.Granite;
+                                        break;
+                                    case WallID.MarbleBlock: // Smooth Marble Wall --> Smooth Granite Wall
+                                        tile.WallType = WallID.GraniteBlock;
+                                        tile.WallColor = PaintID.None;
+                                        break;
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
 
