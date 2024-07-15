@@ -34,13 +34,13 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             Player Player = drawInfo.drawPlayer;
 
-            if (Main.rand.NextBool(4))
+            if (Main.rand.NextBool(5))
             {
                 Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
                 SnowflakeSparkle snowflake = new SnowflakeSparkle(Player.Calamity().RandomDebuffVisualSpot, Vect, Main.rand.NextBool() ? Color.Cyan : Color.DarkBlue, Color.DodgerBlue, 0.4f, 15, 2f, 1.9f);
                 GeneralParticleHandler.SpawnParticle(snowflake);
             }
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool(40))
             {
                 Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
                 MediumMistParticle mist = new MediumMistParticle(Player.Calamity().RandomDebuffVisualSpot, Vect, new Color(172, 238, 255), new Color(145, 170, 188), Main.rand.NextFloat(0.5f, 1.5f), 245 - Main.rand.Next(50), 0.02f);

@@ -292,6 +292,10 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
+                case ProjectileID.LunarFlare:
+                    target.AddBuff(BuffType<Nightwither>(), 180);
+                    break;
+
                 case ProjectileID.Cascade:
                     target.AddBuff(BuffID.OnFire, 60);
                     break;

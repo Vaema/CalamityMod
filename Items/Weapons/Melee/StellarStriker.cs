@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -34,12 +35,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
             if (player.whoAmI == Main.myPlayer)
                 SpawnFlaresNPC(player, Item.knockBack, GetOnHitDamage(player), target);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
             if (player.whoAmI == Main.myPlayer)
                 SpawnFlaresPvp(player, Item.knockBack, GetOnHitDamage(player), target);
         }
