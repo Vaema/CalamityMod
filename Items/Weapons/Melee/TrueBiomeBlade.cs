@@ -67,13 +67,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float HolyAttunement_FullChargeDamageBoost = 2f;
         public static float HolyAttunement_ThrowDamageBoost = 3.8f;
         public static int HolyAttunement_LocalIFrames = 16; //Be warned its got 1 extra update yadda yadda
-
-        public static int AstralAttunement_BaseDamage = 250;
-        public static int AstralAttunement_DashHitIFrames = 20;
-        public static float AstralAttunement_FullChargeBoost = 4f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
-        public static float AstralAttunement_MonolithDamageBoost = 1.25f;
-        public static float AstralAttunement_MonolithDamageFalloff = 0.25f; //Damage multiplier for all subsequent hits after the first one.
-
+        public static float HolyAttunement_MonolithDamage = 0.5f;
         #endregion
 
         #region tooltip editing
@@ -217,10 +211,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement != null)
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Astral)];
+                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Holy)];
 
             if (secondaryAttunement != null)
-                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Astral)];
+                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.TrueDefault, (float)AttunementID.Holy)];
         }
 
         public override void HoldItem(Player player)
@@ -287,8 +281,7 @@ namespace CalamityMod.Items.Weapons.Melee
             (n.type == ProjectileType<TrueBitingEmbrace>() ||
              n.type == ProjectileType<TrueGrovetendersTouch>() ||
              n.type == ProjectileType<TrueAridGrandeur>() ||
-             n.type == ProjectileType<HeavensMight>() ||
-             n.type == ProjectileType<ExtantAbhorrence>()));
+             n.type == ProjectileType<HeavensMight>()));
         }
 
         // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.

@@ -88,17 +88,9 @@ HolyAttunement: {
 	Name: Heaven's Might
 	Function:
 		'''
-		Hold <left> to swing the sword around you, accelerating over time
-		Releasing hurls the sword towards your cursor. The sword then quickly returns to your hand
-		'''
-}
-
-AstralAttunement: {
-	Name: Extant Abhorrence
-	Function:
-		'''
-		Hold <left> to charge a star-piercing lunge, release to unleash the devastating blow
-		Striking the earth with the lunge will cause a massive impact which raises otherworldly monoliths
+		Hold <left> to swing the sword around you, accelerating and dealing more damage over time
+		Once swung for long enough, releasing hurls the sword towards your cursor before quickly returning to your hand
+		Striking an enemy with the hurled sword at maximum power causes an astral monolith to erupt from them
 		'''
 }
 

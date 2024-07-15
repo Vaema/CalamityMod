@@ -14,7 +14,7 @@ namespace CalamityMod.DataStructures
     public enum AttunementID : byte
     {
         Default, Hot, Cold, Tropical, Evil,  //Broken biome blade
-        TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, Astral, //Biome blade
+        TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, //Biome blade
         Whirlwind, FlailBlade, SuperPogo, Shockwave, //True biome blade
         Phoenix, Aries, Polaris, Andromeda //Galaxia
     }
@@ -28,7 +28,7 @@ namespace CalamityMod.DataStructures
         {
             attunementArray = new Attunement[] {
                   new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
-                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(),
+                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(),
                   new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),
                   new PhoenixAttunement(), new AriesAttunement(), new PolarisAttunement(), new AndromedaAttunement(),
                   null
@@ -427,30 +427,6 @@ namespace CalamityMod.DataStructures
             item.noUseGraphic = true;
             item.useStyle = ItemUseStyleID.Shoot;
             item.shoot = ProjectileType<HeavensMight>();
-            item.shootSpeed = 12f;
-            item.UseSound = null;
-            item.noMelee = true;
-        }
-    }
-
-    public class AstralAttunement : Attunement
-    {
-        public AstralAttunement()
-        {
-            id = AttunementID.Astral;
-            tooltipColor = new Color(91, 73, 196);
-
-            energyParticleEdgeColor = new Color(58, 56, 165);
-            energyParticleCenterColor = new Color(153, 120, 255);
-        }
-
-        public override float DamageMultiplier => TrueBiomeBlade.AstralAttunement_BaseDamage / (float)TrueBiomeBlade.BaseDamage;
-        public override void ApplyStats(Item item)
-        {
-            item.channel = true;
-            item.noUseGraphic = true;
-            item.useStyle = ItemUseStyleID.Thrust;
-            item.shoot = ProjectileType<ExtantAbhorrence>();
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;

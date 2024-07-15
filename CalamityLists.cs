@@ -819,7 +819,6 @@ namespace CalamityMod
                 ProjectileType<TrueDecaysRetort>(),
                 ProjectileType<TrueGrovetendersTouch>(),
                 ProjectileType<HeavensMight>(),
-                ProjectileType<ExtantAbhorrence>(),
                 ProjectileType<TrueBiomeBladeHoldout>(),
                 ProjectileType<LamentationsOfTheChained>(),
                 ProjectileType<ChainedMeatHook>(),

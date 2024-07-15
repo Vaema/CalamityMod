@@ -2,6 +2,8 @@
 using System.IO;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -96,6 +98,7 @@ namespace CalamityMod.Projectiles.Melee
                 else if (CurrentState == 0f)
                 {
                     CurrentState = 1f;
+                    Projectile.numHits = 0;
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                     //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES YES YES MH YES YES
@@ -120,12 +123,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Owner.whoAmI == Main.myPlayer)
                 {
-                    if (hasMadeChargeSound == 0f && Empowerment / maxEmpowerment >= 0.5)
-                    {
-                        hasMadeChargeSound = 1f;
-                        SoundEngine.PlaySound(SoundID.Item76);
-                    }
-
                     float rotation = direction.ToRotation();
                     if (rotation > -MathHelper.PiOver2 - MathHelper.PiOver4 && rotation < -MathHelper.PiOver2 + MathHelper.PiOver4 && hasMadeSound == 1f)
                         hasMadeSound = 0f;
@@ -134,6 +131,22 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         hasMadeSound = 1f;
                         SoundEngine.PlaySound(SoundID.Item71);
+                    }
+                }
+
+                if (Empowerment / maxEmpowerment >= 0.5f && hasMadeChargeSound == 0f)
+                {
+                    SoundEngine.PlaySound(DeusRitualDrama.PulseSound with { Pitch = -0.05f }, Projectile.Center);
+                    hasMadeChargeSound++;
+                }
+
+                if (Empowerment >= maxEmpowerment)
+                {
+                    Empowerment = Empowerment;
+                    if (Owner.whoAmI == Main.myPlayer && hasMadeChargeSound < 2f)
+                    {
+                        SoundEngine.PlaySound(AstralBeacon.UseSound, Projectile.Center);
+                        hasMadeChargeSound++;
                     }
                 }
 
@@ -151,7 +164,7 @@ namespace CalamityMod.Projectiles.Melee
                         smear.Time = 0;
                         smear.Position = Owner.Center;
                         smear.Scale = Projectile.scale * 1.5f;
-                        smear.Color = Color.Lerp(Color.HotPink, Color.Cyan, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f)) * (((Empowerment / maxEmpowerment) - 0.75f) / 0.25f * 0.8f);
+                        smear.Color = Color.Lerp(Color.HotPink, Color.Purple, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f)) * (((Empowerment / maxEmpowerment) - 0.75f) / 0.25f * 0.8f);
                     }
                 }
 
@@ -189,6 +202,16 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemAnimation = 2;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Spawn a monolith on max power sword throws
+            if (!(CurrentState == 1f && Projectile.numHits <= 0))
+                return;
+
+            if (Empowerment >= maxEmpowerment)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10), ProjectileType<HeavensMonolith>(), (int)(Projectile.damage * TrueBiomeBlade.HolyAttunement_MonolithDamage), 10f, Owner.whoAmI, Main.rand.Next(4));
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (CurrentState == 1f)
@@ -224,7 +247,7 @@ namespace CalamityMod.Projectiles.Melee
                     Main.spriteBatch.Draw(handle, drawOffset, null, color * MathHelper.Lerp(0f, 0.5f, MathHelper.Clamp(Empowerment / maxEmpowerment - 0.4f / 0.1f, 0f, 1f)), afterimageRotation, drawOrigin, Projectile.scale - 0.2f * ((i / (float)Projectile.oldRot.Length)), 0f, 0f);
                 }
 
-                Main.spriteBatch.End(); //Haha sup babe what if i restarted the spritebatch way too many times haha /blushes
+                Main.spriteBatch.End(); //Yippee spritebatch resetting wahoo
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 Vector2 afterimageDrawOrigin = new Vector2(0f, blade.Height);
