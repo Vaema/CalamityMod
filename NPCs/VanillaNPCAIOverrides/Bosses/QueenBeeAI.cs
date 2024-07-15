@@ -897,9 +897,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                // Movement calculations
-                npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
-
                 // Go to a random phase after pausing for a bit
                 if (npc.ai[1] >= phaseLimit)
                 {
@@ -922,6 +919,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
                 }
+                else
+                    npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
             }
 
             if (Main.netMode == NetmodeID.Server)
