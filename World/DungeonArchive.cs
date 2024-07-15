@@ -61,13 +61,8 @@ namespace CalamityMod.World
                     Tile tileUp4 = Main.tile[i, j - 4];
                     Tile tileUp5 = Main.tile[i, j - 5];
 
-                    int[] DungeonWalls = { 7, 94, 95, 8, 98, 99, 9, 96, 97 };
-                    //if (Main.tileDungeon[tile.TileType] && DungeonWalls.Contains(tileUp.WallType) && !tileUp.HasTile)
-
                     if (Main.tileDungeon[tile.TileType] && !tileUp1.HasTile && !tileUp2.HasTile && !tileUp3.HasTile && !tileUp4.HasTile && !tileUp5.HasTile)
                     {
-                        //i += WorldGen.dungeonSide * -16;
-
                         //determine the archive brick color
                         if (tile.TileType == TileID.BlueDungeonBrick)
                             dungeonArchiveColor = 0;
@@ -77,7 +72,6 @@ namespace CalamityMod.World
                             dungeonArchiveColor = 2;
 
                         placedArchive = true;
-
                         break;
                     }
                 }
@@ -88,20 +82,74 @@ namespace CalamityMod.World
 
                     if (dungeonArchiveColor == 0)
                     {
-                        SchematicManager.PlaceSchematic(SchematicManager.BlueArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
+                        PlaceSchematic(BlueArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
                         ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
                     }
                     if (dungeonArchiveColor == 1)
                     {
-                        SchematicManager.PlaceSchematic(SchematicManager.GreenArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
+                        PlaceSchematic(GreenArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
                         ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
                     }
                     if (dungeonArchiveColor == 2)
                     {
-                        SchematicManager.PlaceSchematic(SchematicManager.PinkArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
+                        PlaceSchematic(PinkArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
                         ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
                     }
 
+                    // Paint the archives in secret seeds
+                    byte PaintType = 0;
+                    if (Main.remixWorld)
+                    {
+                        PaintType = PaintID.DeepPurplePaint;
+                        if (Main.drunkWorld && (GenVars.crimsonLeft && i < Main.maxTilesX / 2) || (!GenVars.crimsonLeft && i > Main.maxTilesX / 2))
+                            PaintType = PaintID.DeepRedPaint;
+                        else if (!Main.drunkWorld && WorldGen.crimson)
+                            PaintType = PaintID.DeepRedPaint;
+                    }
+                    else if (Main.tenthAnniversaryWorld)
+                        PaintType = PaintID.DeepPinkPaint;
+                    else if (Main.notTheBeesWorld)
+                        PaintType = PaintID.DeepOrangePaint;
+                    else if (Main.drunkWorld || Main.getGoodWorld)
+                    {
+                        switch (dungeonArchiveColor)
+                        {
+                            case 0:
+                                PaintType = (byte)WorldGen.genRand.Next(19, 23);
+                                break;
+                            case 1:
+                                PaintType = (byte)WorldGen.genRand.Next(15, 19);
+                                break;
+                            default:
+                                PaintType = WorldGen.genRand.NextBool(2) ? (byte)WorldGen.genRand.Next(23, 25) : (byte)WorldGen.genRand.Next(13, 15);
+                                break;
+                        }
+                    }
+
+                    if (PaintType == 0)
+                        return;
+
+                    bool BlackDungeonWall = Main.drunkWorld || Main.remixWorld || Main.getGoodWorld;
+                    // All the variants are the same size so just pick one of them
+                    // Note that it is anchored top center so the for loop check has to be changed accordingly
+                    Vector2 schematicSize = new Vector2(TileMaps[BlueArchiveKey].GetLength(0), TileMaps[BlueArchiveKey].GetLength(1)) + Vector2.One;
+                    for (int x = i - (int)schematicSize.X; x < i + schematicSize.X; x++)
+                    {
+                        for (int y = j; y < j + schematicSize.Y; y++)
+                        {
+                            Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+                            if (Main.tileDungeon[tile.TileType] || TileID.Sets.CrackedBricks[tile.TileType])
+                                tile.TileColor = PaintType;
+                            if (tile.TileType == TileID.Platforms) // Dungeon platforms
+                            {
+                                int variant = tile.TileFrameY / 18;
+                                if (variant >= 6 && variant <= 12)
+                                    tile.TileColor = PaintType;
+                            }
+                            if (Main.wallDungeon[tile.WallType])
+                                tile.WallColor = BlackDungeonWall ? PaintID.BlackPaint : PaintType;
+                        }
+                    }
                     break;
                 }
             }
