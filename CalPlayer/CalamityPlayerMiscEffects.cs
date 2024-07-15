@@ -2266,11 +2266,12 @@ namespace CalamityMod.CalPlayer
                     double breathLossMult = 1D -
                         (Player.gills ? 0.2 : 0D) - // 0.8
                         (oceanCrest ? 0.2 : 0D) - // 0.8
+                        (victideSet ? 0.2 : 0D) - // 0.8
                         (Player.accDivingHelm ? 0.25 : 0D) - // 0.75
                         (Player.arcticDivingGear ? 0.25 : 0D) - // 0.75
                         (aquaticEmblem ? 0.25 : 0D) - // 0.75
                         (Player.accMerman ? 0.3 : 0D) - // 0.7
-                        (victideSet ? 0.2 : 0D) - // 0.85
+                        (reaverExplore ? 0.3 : 0D) - // 0.7
                         ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) - // 0.7
                         (abyssalDivingSuit ? 0.3 : 0D); // 0.7
 
