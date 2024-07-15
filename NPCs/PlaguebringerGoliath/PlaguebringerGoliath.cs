@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
     public class PlaguebringerGoliath : ModNPC
     {
         // Use for all projectiles and spawned enemies.
-        public static Color BackglowColor => new Color(255, 100, 24, 80) * 0.6f;
+        public static Color BackglowColor => new Color(255, 100, 24, 80);
 
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private const float MissileAngleSpread = 60;
@@ -1265,22 +1265,23 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             Rectangle rectangle = new Rectangle(NPC.frame.X, NPC.frame.Y, texture.Width / 2, texture.Height / frameCount);
             Vector2 halfSizeTexture = rectangle.Size() / 2f;
             Vector2 posOffset = new Vector2(charging ? 175 : 125, 0);
-            int afterimageAmt = 10;
-            if (NPC.ai[0] != 0f && NPC.ai[0] != 4f)
-                afterimageAmt = 7;
+            int chargeAfterimageAmount = 10;
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int j = 1; j < afterimageAmt; j += 2)
+                if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
-                    Color afterimageColor = drawColor;
-                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
-                    afterimageColor = NPC.GetAlpha(afterimageColor);
-                    afterimageColor *= (afterimageAmt - j) / 15f;
-                    Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture.Width, texture.Height / frameCount) * NPC.scale / 2f;
-                    afterimagePos += halfSizeTexture * NPC.scale + posOffset;
-                    spriteBatch.Draw(texture, afterimagePos, new Rectangle?(rectangle), afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    for (int j = 1; j < chargeAfterimageAmount; j += 2)
+                    {
+                        Color afterimageColor = drawColor;
+                        afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                        afterimageColor = NPC.GetAlpha(afterimageColor);
+                        afterimageColor *= (chargeAfterimageAmount - j) / 15f;
+                        Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                        afterimagePos -= new Vector2(texture.Width, texture.Height / frameCount) * NPC.scale / 2f;
+                        afterimagePos += halfSizeTexture * NPC.scale + posOffset;
+                        spriteBatch.Draw(texture, afterimagePos, new Rectangle?(rectangle), afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    }
                 }
             }
 
@@ -1293,15 +1294,18 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int k = 1; k < afterimageAmt; k++)
+                if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
-                    Color otherAfterimageColor = redLerpColor;
-                    otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
-                    otherAfterimageColor *= (afterimageAmt - k) / 15f;
-                    Vector2 otherAfterimagePos = NPC.oldPos[k] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    otherAfterimagePos -= new Vector2(glowTexture.Width, glowTexture.Height / frameCount) * NPC.scale / 2f;
-                    otherAfterimagePos += halfSizeTexture * NPC.scale + posOffset;
-                    spriteBatch.Draw(glowTexture, otherAfterimagePos, new Rectangle?(rectangle), otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    for (int k = 1; k < chargeAfterimageAmount; k++)
+                    {
+                        Color otherAfterimageColor = redLerpColor;
+                        otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
+                        otherAfterimageColor *= (chargeAfterimageAmount - k) / 15f;
+                        Vector2 otherAfterimagePos = NPC.oldPos[k] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                        otherAfterimagePos -= new Vector2(glowTexture.Width, glowTexture.Height / frameCount) * NPC.scale / 2f;
+                        otherAfterimagePos += halfSizeTexture * NPC.scale + posOffset;
+                        spriteBatch.Draw(glowTexture, otherAfterimagePos, new Rectangle?(rectangle), otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    }
                 }
             }
 
