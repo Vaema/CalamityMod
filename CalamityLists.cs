@@ -834,7 +834,6 @@ namespace CalamityMod
                 ProjectileType<ArkoftheAncientsParryHoldout>(),
                 ProjectileType<TrueArkoftheAncientsSwungBlade>(),
                 ProjectileType<TrueArkoftheAncientsParryHoldout>(),
-                ProjectileType<TrueAncientBlast>(),
                 ProjectileType<ArkoftheElementsSwungBlade>(),
                 ProjectileType<ArkoftheElementsParryHoldout>(),
                 ProjectileType<ArkoftheCosmosSwungBlade>(),

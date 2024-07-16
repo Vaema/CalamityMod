@@ -23,10 +23,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float beamDamageMultiplier = 1f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
         public static float glassStarDamageMultiplier = 0.6f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
 
-        public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
-        public static float blastFalloffSpeed = 0.1f; //How much the blast damage falls off as you hit more and more targets
-        public static float blastFalloffStrenght = 0.75f; //Value between 0 and 1 that determines how much falloff increases affect the damage : Closer to 0 = damage falls off less intensely, closer to 1 : damage falls off way harder
-
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             if (tooltips == null)
@@ -79,19 +75,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
-                if (Charge > 0 && player.controlUp)
-                {
-                    float angle = player.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).ToRotation();
-                    Vector2 laserVector = player.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 600;
-                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, laserVector, ProjectileType<TrueAncientBlast>(), (int)(damage * Charge * chargeDamageMultiplier * blastDamageMultiplier), 0, player.whoAmI);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
-
-                    Charge = 0;
-                }
-
-                else if (!Main.projectile.Any(n => n.active && n.owner == player.whoAmI && (n.type == ProjectileType<ArkoftheAncientsParryHoldout>() || n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() || n.type == ProjectileType<ArkoftheElementsParryHoldout>() || n.type == ProjectileType<ArkoftheCosmosParryHoldout>())))
+                if (!Main.projectile.Any(n => n.active && n.owner == player.whoAmI && (n.type == ProjectileType<ArkoftheAncientsParryHoldout>() || n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() || n.type == ProjectileType<ArkoftheElementsParryHoldout>() || n.type == ProjectileType<ArkoftheCosmosParryHoldout>())))
                     Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<TrueArkoftheAncientsParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
 
                 return false;
