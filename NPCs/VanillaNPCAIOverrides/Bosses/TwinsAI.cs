@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 CalamityUtils.CalamityTargeting(npc, options);
             }
 
-            float enrageScale = bossRush ? 0.5f : masterMode ? 0.4f : 0f;
+            float enrageScale = bossRush ? 0.5f : masterMode ? 0.3f : 0f;
             if (Main.IsItDay() || bossRush)
             {
                 npc.Calamity().CurrentlyEnraged = !bossRush;
@@ -1009,7 +1009,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 CalamityUtils.CalamityTargeting(npc, options);
             }
 
-            float enrageScale = bossRush ? 0.5f : masterMode ? 0.4f : 0f;
+            float enrageScale = bossRush ? 0.5f : masterMode ? 0.3f : 0f;
             if (Main.IsItDay() || bossRush)
             {
                 npc.Calamity().CurrentlyEnraged = !bossRush;
