@@ -34,6 +34,9 @@ namespace CalamityMod.Projectiles.Melee
         public Vector2 lastDisplacement;
         public float dashDuration;
 
+        public static readonly SoundStyle FullChargeSound = new("CalamityMod/Sounds/Item/MagicRockSound");
+        public static readonly SoundStyle GroundImpact = new("CalamityMod/Sounds/Item/MagicRockImpact");
+
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -112,14 +115,13 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = 2;
                 if ((Charge / MaxCharge >= 0.25f && CurrentIndicator == 0f) || (Charge / MaxCharge >= 0.5f && CurrentIndicator == 1f) || (Charge / MaxCharge >= 0.75f && CurrentIndicator == 2f) && Owner.whoAmI == Main.myPlayer)
                 {
-                    int swordAmt = 3 + (int)CurrentIndicator;
-                    for (int s = 0; s < swordAmt; s++)
+                    for (int s = 0; s < 2; s++)
                     {
                         Vector2 swordVel = (Vector2.UnitX.RotatedBy(Projectile.rotation) * 10f).RotatedByRandom(MathHelper.Pi / 8);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, swordVel, ProjectileType<EarthenTidesBeam>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_BeamDamageMult), 10f, Owner.whoAmI);
                     }
 
-                    SoundEngine.PlaySound(DeusRitualDrama.PulseSound with { Pitch = DeusRitualDrama.PulseSound.Pitch - 0.2f + 0.1f * CurrentIndicator }, Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.Item69 with { Pitch = -0.2f + 0.1f * CurrentIndicator }, Projectile.Center);
 
                     CurrentIndicator++;
                     OverCharge = 20f;
@@ -130,13 +132,13 @@ namespace CalamityMod.Projectiles.Melee
                     Charge = MaxCharge;
                     if (Owner.whoAmI == Main.myPlayer && CurrentIndicator < 4f)
                     {
-                        for (int s = 0; s < 6; s++)
+                        for (int s = 0; s < 5; s++)
                         {
                             Vector2 swordVel = (Vector2.UnitX.RotatedBy(Projectile.rotation) * 10f).RotatedByRandom(MathHelper.Pi / 8);
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, swordVel, ProjectileType<EarthenTidesBeam>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_BeamDamageMult), 10f, Owner.whoAmI);
                         }
                         OverCharge = 20f;
-                        SoundEngine.PlaySound(AstralBeacon.UseSound, Projectile.Center);
+                        SoundEngine.PlaySound(FullChargeSound, Projectile.Center);
                         CurrentIndicator++;
                     }
                 }
@@ -190,7 +192,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void SlamDown()
         {
-            SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with { Volume = SoundID.DD2_MonkStaffGroundImpact.Volume * 1.5f }, Projectile.Center);
+            SoundEngine.PlaySound(GroundImpact, Projectile.Center);
 
 
             if (Owner.whoAmI != Main.myPlayer || Owner.velocity.Y == 0f)

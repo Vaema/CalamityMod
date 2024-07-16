@@ -339,24 +339,24 @@ namespace CalamityMod.Projectiles.Melee
 
             if (ChainSwapTimer % 6 == 0 || whip1.Y == 0)
             {
-                whip1.X = Projectile.velocity.RotatedBy(Main.rand.NextFloat(MathHelper.PiOver4 / 16f, -MathHelper.PiOver4 / 16f)).ToRotation(); //X is the orientation
-                whip1.Y = Main.rand.NextFloat(0.2f, 100f);//Y is the "seed"
+                whip1.X = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 64f).ToRotation(); //X is the orientation
+                whip1.Y = Main.rand.NextFloat(0.2f, 50f);//Y is the "seed"
 
                 ChainSwapTimer++;
             }
 
             if ((ChainSwapTimer - 2) % 6 == 0 || whip2.Y == 0)
             {
-                whip2.X = Projectile.velocity.RotatedBy(Main.rand.NextFloat(MathHelper.Pi / 16f, -MathHelper.Pi / 16f)).ToRotation(); //X is the orientation
-                whip2.Y = Main.rand.NextFloat(0.2f, 100f);//Y is the "seed"
+                whip2.X = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 32f).ToRotation(); //X is the orientation
+                whip2.Y = Main.rand.NextFloat(0.2f, 50f);//Y is the "seed"
 
                 ChainSwapTimer++;
             }
 
             if ((ChainSwapTimer - 4) % 6 == 0 || whip3.Y == 0)
             {
-                whip3.X = Projectile.velocity.RotatedBy(Main.rand.NextFloat(MathHelper.Pi / 16f, -MathHelper.Pi / 16f)).ToRotation(); //X is the orientation
-                whip3.Y = Main.rand.NextFloat(0.2f, 100f);//Y is the "seed"
+                whip3.X = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 24f).ToRotation(); //X is the orientation
+                whip3.Y = Main.rand.NextFloat(0.2f, 50f);//Y is the "seed"
 
                 ChainSwapTimer++;
             }
