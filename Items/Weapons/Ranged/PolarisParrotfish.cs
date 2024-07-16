@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.NPCs.NormalNPCs;
+﻿using System.Collections.Generic;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -37,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 38;
             Item.height = 34;
-            Item.damage = 35;
+            Item.damage = 41;
             Item.DamageType = DamageClass.Ranged;
 
             Item.useTime = SetUseTime;

@@ -18,7 +18,7 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool UseAdditiveBlend => true;
 
-        public override string Texture => "CalamityMod/Particles/GlowOrbParticle";
+        public override string Texture => "CalamityMod/Particles/GlowSquareParticle";
 
         public GlowSquareParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool GlowCenter = true, float rotation = 0)
         {
@@ -60,7 +60,7 @@ namespace CalamityMod.Particles
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
             if (glowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.White * fadeOut, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.5f, 0.5f), 0, 0f);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.White * fadeOut * 0.7f, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.9f, 0.9f), 0, 0f);
         }
     }
 }

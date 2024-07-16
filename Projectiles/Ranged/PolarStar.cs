@@ -1,21 +1,8 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Items.Weapons.Ranged.PolarisParrotfish;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -42,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.penetrate = -1; // Only hits once, "pierces" so that it can last a bit after hitting
             Projectile.extraUpdates = 2;
-            Projectile.timeLeft = 50;
+            Projectile.timeLeft = 40;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
