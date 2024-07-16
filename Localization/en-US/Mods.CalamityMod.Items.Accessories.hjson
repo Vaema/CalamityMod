@@ -689,13 +689,13 @@ ElysianAegis: {
 		Allows the ability to dash, empowered by holy fire
 		This dash can ram through enemies without taking damage
 		Grants immunity to knockback, fire blocks, as well as multiple debuffs
-		Blessed by the Profaned Flame
 		'''
 	HoldShiftTooltip:
 		'''
 		  On Fire!, Hellfire, Cursed Inferno, Shadowflame, Daybroken,
 		  Holy Flames, Brimstone Flames, Burning
 		'''
+	FlavorTooltip: "'Blessed by the Profaned Flame'"
 }
 
 EnchantedPearl: {
@@ -877,20 +877,6 @@ GrandGelatin: {
 		'''
 }
 
-GravistarSabaton: {
-	DisplayName: Gravistar Sabaton
-	Tooltip:
-		'''
-		20% increased jump speed and negates fall damage
-		Hold DOWN to increase your maximum fall speed
-		Hold [KEY] for 1 second while midair to charge up a superspeed slam
-		While falling, you ram through enemies and don't take contact damage
-		Once you hit the ground, you create an explosion at your feet 
-		The explosion scales in both damage and size the longer you slam for
-		Temporary 40% increased jump speed after slamming into the ground
-		'''
-}
-
 HallowedRune: {
 	DisplayName: Hallowed Rune
 	Tooltip:
@@ -978,6 +964,20 @@ InkBomb: {
 		Throws several ink bombs when hit that explode into ink
 		Gain a lot of stealth and confuse enemies when struck
 		This effect has a 20 second cooldown before it can occur again
+		'''
+}
+
+InterstellarStompers: {
+	DisplayName: Interstellar Stompers
+	Tooltip:
+		'''
+		6% increased movement speed, 20% increased jump speed, and negates fall damage
+		Hold DOWN to increase your maximum fall speed
+		Hold [KEY] for 0.5 seconds while midair to charge up a superspeed slam
+		While falling, you ram through enemies and don't take contact damage
+		Once you hit the ground, you create an explosion at your feet 
+		The explosion scales in both damage and size the longer you slam for
+		Temporary 40% increased jump speed after slamming into the ground
 		'''
 }
 
@@ -1199,8 +1199,8 @@ OldDukeScales: {
 		[c/c3dfff:  Stamina will gradually restore after not dashing for 1 second]
 		[c/c3dfff:  Stamina recovers faster when you are stationary]
 		[c/c3dfff:  If your stamina reaches 0%, you become exhausted]
-		[c/CE0E18:  While exhausted, this item's damage reduction and movement bonuses are negated]
-		[c/CE0E18:  Being exhausted reduces movement speed by 30% and dash velocity by 50%]
+		[c/e3545c:  While exhausted, this item's damage reduction and movement bonuses are negated]
+		[c/e3545c:  Being exhausted reduces movement speed by 30% and dash velocity by 50%]
 		[c/c3dfff:  This debuff lasts until your stamina reaches 100% again]
 		'''
 }

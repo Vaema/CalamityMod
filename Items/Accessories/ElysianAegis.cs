@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
     public class ElysianAegis : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
-
+        public bool HasFlavorTooltip => true;
         public Color? TooltipExtensionColor => new(195, 223, 255);
 
         public const int ShieldSlamDamage = 500;

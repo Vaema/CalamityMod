@@ -1339,6 +1339,7 @@ TheSevensStriker: {
 		'A gun given to a great gunslinger
 		Forged by the arms of a man given no name'
 		'''
+	HoldShiftTooltip: "[c/ADD8E6:'LET'S GO GAMBLING!']"
 }
 
 TheStorm: {

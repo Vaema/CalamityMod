@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -19,7 +20,9 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Abyss;
@@ -443,6 +446,10 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Shadowflame").Format(Player.name));
                 }
+                if (daybroken)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Daybroken").Format(Player.name));
+                }
                 if (bBlood)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BurningBlood" + Main.rand.Next(1, 2 + 1)).Format(Player.name));
@@ -491,7 +498,7 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaBurn").Format(Player.name));
                 }
-                if (bloodyMary || everclear || evergreenGin || fireball || margarita || moonshine || moscowMule || redWine || screwdriver || starBeamRye || tequila || tequilaSunrise || vodka || whiteWine || Player.tipsy)
+                if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AlcoholSmall").Format(Player.name));
                 }
@@ -693,32 +700,8 @@ namespace CalamityMod.CalPlayer
             {
                 Item heldItem = Player.ActiveItem();
 
-                bool wearingForbiddenSet = Player.armor[0].type == ItemID.AncientBattleArmorHat && Player.armor[1].type == ItemID.AncientBattleArmorShirt && Player.armor[2].type == ItemID.AncientBattleArmorPants;
-
-                bool forbiddenWithMagicWeapon = wearingForbiddenSet && heldItem.CountsAsClass<MagicDamageClass>();
-                bool gemTechBlueGem = GemTechSet && GemTechState.IsBlueGemActive;
-
-                bool crossClassNerfDisabled = forbiddenWithMagicWeapon || fearmongerSet || gemTechBlueGem || profanedCrystalBuffs || DD2Event.Ongoing;
-                crossClassNerfDisabled |= CalamityLists.DisabledSummonerNerfMinions.Contains(proj.type);
-
-                // If this projectile is a summon, its owner is holding an item, and the cross class nerf isn't disabled from equipment:
-                if (isSummon && heldItem.type > ItemID.None && !crossClassNerfDisabled)
-                {
-                    bool heldItemIsClassedWeapon = !heldItem.CountsAsClass<SummonDamageClass>() && (
-                        heldItem.CountsAsClass<MeleeDamageClass>() ||
-                        heldItem.CountsAsClass<RangedDamageClass>() ||
-                        heldItem.CountsAsClass<MagicDamageClass>() ||
-                        heldItem.CountsAsClass<ThrowingDamageClass>()
-                    );
-
-                    bool heldItemIsTool = (heldItem.pick > 0 || heldItem.axe > 0 || heldItem.hammer > 0) && heldItem.type != ModContent.ItemType<PhotonRipper>();
-                    bool heldItemCanBeUsed = heldItem.useStyle != ItemUseStyleID.None;
-                    bool heldItemIsAccessoryOrAmmo = heldItem.accessory || heldItem.ammo != AmmoID.None;
-                    bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(heldItem.type);
-
-                    if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
-                        modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
-                }
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !CalamityLists.DisabledSummonerNerfMinions.Contains(proj.type))
+                    modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
         #endregion
@@ -856,7 +839,7 @@ namespace CalamityMod.CalPlayer
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
                 contactDamageReduction += 0.5;
-                theBeeCooldown = 600;
+                shouldTriggerBeeCooldown = true;
             }
 
             // Apply Adrenaline DR if available
@@ -1095,7 +1078,7 @@ namespace CalamityMod.CalPlayer
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
                 projectileDamageReduction += 0.5;
-                theBeeCooldown = 600;
+                shouldTriggerBeeCooldown = true;
             }
 
             // Apply Adrenaline DR if available
@@ -1192,6 +1175,14 @@ namespace CalamityMod.CalPlayer
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
                 Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
+
+            // Same thing with The Bee
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
+            } 
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -1316,6 +1307,14 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            // Apply The Bee cooldown, must be applied here so that it does not apply on dodges
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
+            }
+
             if (proj.hostile && hurtInfo.Damage > 0)
             {
                 if (proj.type == ProjectileID.TorchGod)
@@ -1406,6 +1405,10 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.Poisoned, 300);
                 }
+                else if (proj.type == ProjectileID.CultistBossFireBall)
+                {
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                }
                 else if (proj.type == ProjectileID.CultistBossIceMist)
                 {
                     if (!Player.frozen)
@@ -1437,17 +1440,17 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(ModContent.BuffType<Nightwither>(), 300);
                 }
-                else if (proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore)
+                else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(NPC.ShouldEmpressBeEnraged() ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 60);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 60);
                 }
-                else if (proj.type == ProjectileID.HallowBossLastingRainbow)
+                else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(NPC.ShouldEmpressBeEnraged() ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
                 }
-                else if (proj.type == ProjectileID.FairyQueenSunDance)
+                else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(NPC.ShouldEmpressBeEnraged() ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 180);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
@@ -1555,14 +1558,14 @@ namespace CalamityMod.CalPlayer
                         Rectangle npcHitbox = n.getRect();
                         if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
                         {
-                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(GravistarSabaton.PassthroughDamage));
+                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage));
 
                             Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
                             // 17APR2024: Ozzatron: Gravistar Sabaton gives iframes when passing through enemies for projectile safety.
                             // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
                             n.Calamity().dashImmunityTime[Player.whoAmI] = 4;
-                            Player.GiveUniversalIFrames(GravistarSabaton.PassthroughIFrames, false);
+                            Player.GiveUniversalIFrames(InterstellarStompers.PassthroughIFrames, false);
 
                             return true;
                         }
@@ -2528,10 +2531,6 @@ namespace CalamityMod.CalPlayer
                     if (hurtInfo.Damage > 0)
                     {
                         SoundEngine.PlaySound(SoundID.Item93, Player.Center);
-                        float spread = 45f * 0.0174f;
-                        double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 8f;
-                        double offsetAngle;
 
                         // Start with base damage, then apply the best damage class you can
                         int sDamage = 6;
@@ -2542,32 +2541,17 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < (transformer ? 5 : 4); i++)
+                            float sparkCount = transformer ? 10f : 8f;
+                            for (float i = 0f; i < sparkCount; i++)
                             {
-                                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                                int spark1 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<Spark>(), sDamage, 1.25f, Player.whoAmI, 0f, 0f);
-                                int spark2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<Spark>(), sDamage, 1.25f, Player.whoAmI, 0f, 0f);
-                                if (spark1.WithinBounds(Main.maxProjectiles))
+                                Vector2 velocity = (MathHelper.TwoPi * i / sparkCount).ToRotationVector2() * 5f;
+                                Projectile spark = Projectile.NewProjectileDirect(source, Player.Center, velocity, ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI);
+                                spark.timeLeft = 120;
+                                if (transformer)
                                 {
-                                    Main.projectile[spark1].timeLeft = 120;
-                                    Main.projectile[spark1].DamageType = DamageClass.Generic;
-                                    if (transformer)
-                                    {
-                                        Main.projectile[spark1].timeLeft = 240;
-                                        Main.projectile[spark1].extraUpdates = 1;
-                                        Main.projectile[spark1].penetrate = 10;
-                                    }
-                                }
-                                if (spark2.WithinBounds(Main.maxProjectiles))
-                                {
-                                    Main.projectile[spark2].timeLeft = 120;
-                                    Main.projectile[spark2].DamageType = DamageClass.Generic;
-                                    if (transformer)
-                                    {
-                                        Main.projectile[spark2].timeLeft = 240;
-                                        Main.projectile[spark2].extraUpdates = 1;
-                                        Main.projectile[spark2].penetrate = 10;
-                                    }
+                                    spark.timeLeft = 240;
+                                    spark.extraUpdates = 1;
+                                    spark.penetrate = 10;
                                 }
                             }
                         }

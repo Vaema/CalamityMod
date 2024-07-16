@@ -71,6 +71,7 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
 
             target.Calamity().IncreasedColdEffects_EskimoSet = eskimoSet;
+            target.Calamity().IncreasedColdEffects_FrozenWings = frozenWingsCold;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
 
             target.Calamity().IncreasedElectricityEffects_Transformer = transformer;
@@ -212,6 +213,7 @@ namespace CalamityMod.CalPlayer
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
 
             cgn.IncreasedColdEffects_EskimoSet = eskimoSet;
+            cgn.IncreasedColdEffects_FrozenWings = frozenWingsCold;
             cgn.IncreasedColdEffects_CryoStone = CryoStone;
 
             cgn.IncreasedElectricityEffects_Transformer = transformer;
@@ -1093,7 +1095,7 @@ namespace CalamityMod.CalPlayer
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
                 damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
-                Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<SabatonBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
+                Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
                 for (int dustexplode = 0; dustexplode < 360; dustexplode++)
                 {

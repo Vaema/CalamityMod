@@ -117,14 +117,15 @@ namespace CalamityMod.NPCs
         public const double VulnerableToDoTDamageMult = 2D;
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
 
-        // Eskimo Set and Cryo Stone effects
+        // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
+        public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
         // Transformer effect
         public bool IncreasedElectricityEffects_Transformer = false;
 
-        // Fireball, Cinnamon Roll and Hellfire Treads effects
+        // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
         public bool IncreasedHeatEffects_FlameWakerBoots = false;
@@ -411,6 +412,7 @@ namespace CalamityMod.NPCs
             myClone.VulnerableToWater = VulnerableToWater;
 
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
+            myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Transformer = IncreasedElectricityEffects_Transformer;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
@@ -703,23 +705,9 @@ namespace CalamityMod.NPCs
 
                 Item heldItem = Main.player[owner].ActiveItem();
                 int totalDamage = (int)Main.player[owner].GetTotalDamage<SummonDamageClass>().ApplyTo(150f);
-                bool forbidden = Main.player[owner].head == ArmorIDs.Head.AncientBattleArmor && Main.player[owner].body == ArmorIDs.Body.AncientBattleArmor && Main.player[owner].legs == ArmorIDs.Legs.AncientBattleArmor;
-                bool negateNerf = Main.player[owner].Calamity().fearmongerSet || (forbidden && heldItem.CountsAsClass<MagicDamageClass>());
 
-                double summonNerfMult = negateNerf ? 1 : 0.75;
-                if (!Main.player[owner].Calamity().profanedCrystalBuffs)
-                {
-                    if (heldItem.type > ItemID.None)
-                    {
-                        if (!heldItem.CountsAsClass<SummonDamageClass>() &&
-                            (heldItem.CountsAsClass<MeleeDamageClass>() || heldItem.CountsAsClass<RangedDamageClass>() || heldItem.CountsAsClass<MagicDamageClass>() || heldItem.CountsAsClass<ThrowingDamageClass>()) &&
-                            heldItem.hammer == 0 && heldItem.pick == 0 && heldItem.axe == 0 && heldItem.useStyle != ItemUseStyleID.None &&
-                            !heldItem.accessory && heldItem.ammo == AmmoID.None)
-                        {
-                            totalDamage = (int)(totalDamage * summonNerfMult);
-                        }
-                    }
-                }
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Main.player[owner], heldItem))
+                    totalDamage = (int)(totalDamage * BalancingConstants.SummonerCrossClassNerf);
 
                 int totalDisplayedDamage = totalDamage / 5;
                 ApplyDPSDebuff(projectileCount * totalDamage, projectileCount * totalDisplayedDamage, ref npc.lifeRegen, ref damage);
@@ -855,6 +843,8 @@ namespace CalamityMod.NPCs
             }
 
             if (IncreasedColdEffects_EskimoSet)
+                coldDamageMult += 0.25;
+            if (IncreasedColdEffects_FrozenWings)
                 coldDamageMult += 0.25;
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
@@ -1423,7 +1413,6 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.GolemHeadFree)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.7);
                 npc.dontTakeDamage = false;
             }
             else if (npc.type == NPCID.HallowBoss)
@@ -5329,11 +5318,12 @@ namespace CalamityMod.NPCs
                     npc.velocity *= 0.9f;
             }
 
-            // Auric Ore/Repulsers reject Town NPCs and dummies
+            // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
             if ((NPCID.Sets.ActsLikeTownNPC[npc.type] || npc.townNPC) && !npc.dontTakeDamage || npc.type == NPCType<SuperDummyNPC>())
             {
                 int auricOreID = TileType<AuricOre>();
                 int auricRepulserID = TileType<AuricRepulserPanelTile>();
+                int auricLandMineID = TileType<AuricLandMineTile>();
 
                 // Get a list of tiles near the npc
                 // This is just Collision.GetEntityTiles but with a larger detection square because the sheer speed from auric boosts causes the detection to fail at higher speeds
@@ -5383,6 +5373,18 @@ namespace CalamityMod.NPCs
                     Tile tile = Framing.GetTileSafely(touchedTile);
                     if (!tile.HasTile || !tile.HasUnactuatedTile)
                         continue;
+
+                    if (tile.TileType == auricLandMineID)
+                    {
+                        SoundStyle explode = new("CalamityMod/Sounds/Item/DudFire");
+                        SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
+                        GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
+                        GeneralParticleHandler.SpawnParticle(sparker);
+                        Projectile.NewProjectile(new EntitySource_TileInteraction(npc, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ModContent.ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
+                        WorldGen.KillTile(touchedTile.X, touchedTile.Y, noItem: true);
+                        continue;
+                    }
+
                     if (tile.TileType != auricOreID && tile.TileType != auricRepulserID)
                         continue;
 
@@ -5494,11 +5496,12 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.AncientLight:
-                    target.AddBuff(BuffType<HolyFlames>(), 120);
+                    target.AddBuff(BuffType<Daybroken>(), 120);
                     break;
 
                 case NPCID.HallowBoss:
-                    target.AddBuff(NPC.ShouldEmpressBeEnraged() ? BuffType<HolyFlames>() : BuffType<Nightwither>(), 240);
+                    if (NPC.ShouldEmpressBeEnraged())
+                        target.AddBuff(BuffType<Daybroken>(), 240);
                     break;
 
                 case NPCID.BloodNautilus:
@@ -6800,7 +6803,7 @@ namespace CalamityMod.NPCs
                     if (npc.javelined)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.BoneJavelin].Value);
                     if (npc.daybreak)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Daybroken").Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/Buffs/DamageOverTime/Daybroken").Value);
                     if (npc.celled)
                         currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Celled").Value);
                     if (npc.dryadBane)
@@ -6893,7 +6896,7 @@ namespace CalamityMod.NPCs
                     return false;
             }
 
-            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe)
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
             {
                 Texture2D texture = TextureAssets.Npc[npc.type].Value;
 

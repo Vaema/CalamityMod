@@ -59,6 +59,7 @@ FlameLickedHellblast.DisplayName: Flame Licked Hellblast
 FuckYou.DisplayName: Explosion
 FungalClumpMinion.DisplayName: Fungal Clump
 GemTechArmorGem.DisplayName: Trireme's Gem
+GenericElectricSpark.DisplayName: Electric Spark
 GhostlyBolt.DisplayName: Bolt
 GodKiller.DisplayName: God Killer
 GodSlayerShrapnel.DisplayName: Flame
@@ -99,8 +100,6 @@ ReaverOrb.DisplayName: Reaver Orb
 ReaverThornBase.DisplayName: Thorn
 RedLabSeeker.DisplayName: Seeking Mechanism
 RiftReelerBobber.DisplayName: Chaotic Bobber
-SabatonBoom.DisplayName: Sabaton Boom
-SabatonSlam.DisplayName: Sabaton Slam
 SandCloakVeil.DisplayName: Dust Veil
 SandExplosion.DisplayName: Sand
 Seashell.DisplayName: Seashell
@@ -115,12 +114,14 @@ SpiritOriginBullseye.DisplayName: Spirit Origin Bullseye
 StandingFire.DisplayName: Flame
 StarStruckWaterBottle.DisplayName: Bottle
 StickyFeatherAero.DisplayName: Feather
+StomperSlam.DisplayName: Stomper Slam
 SuicideBomberDemon.DisplayName: Demon
 SulphuricAcidBubbleFriendly.DisplayName: Acid Bubble
 SulphurousSandBallGun.DisplayName: Sulphurous Sand
 TarraEnergy.DisplayName: Tarra Energy
 TarragonAura.DisplayName: Tarragon Aura
 TeslaAura.DisplayName: Tesla's Electricity
+TitanHeartBoom.DisplayName: Titan Heart Boom
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
 VoidFieldGenerator.DisplayName: Void Field Generator
 WaterConvertor.DisplayName: Water Convertor

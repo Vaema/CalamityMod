@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ClusterFragmentsI, Do(IDStaticIFrames(15)) },
                 { ProjectileID.ClusterRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterFragmentsII, Do(IDStaticIFrames(15)) },
-                { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },
+                { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },   
                 { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3)) }, // Flying Dragon
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.ExplosiveBullet, standardBulletTweaks },
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
-                { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(400)) },
+                { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150)) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2)) },
                 { ProjectileID.Flames, Do(IDStaticIFrames(5)) }, // Flamethrower AND Elf Melter flames
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1)) },

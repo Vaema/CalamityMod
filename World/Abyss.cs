@@ -324,8 +324,7 @@ namespace CalamityMod.World
             AbyssIsland(abyssChasmX, Main.remixWorld ? 105 : AbyssChasmBottom + 5, 65, 75, 40, 45, ModContent.TileType<Voidstone>(), false, false, false);
 
             //place terminus shrine
-            UndergroundShrines.SpecialHut((ushort)ModContent.TileType<SmoothVoidstone>(), (ushort)ModContent.TileType<Voidstone>(),
-            (ushort)ModContent.WallType<VoidstoneWallUnsafe>(), UndergroundShrines.UndergroundShrineType.Abyss, abyssChasmX, Main.remixWorld ? 100 : AbyssChasmBottom);
+            UndergroundShrines.PlaceAbyssShrine(abyssChasmX, Main.remixWorld ? 100 : AbyssChasmBottom);
 
             //place islands in the sulphuric depths layer
             //start placing islands at the world surface so the abyss hole isnt completely empty

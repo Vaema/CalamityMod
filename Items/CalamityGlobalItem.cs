@@ -20,6 +20,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.World;
@@ -1205,10 +1206,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.MoonStone)
                 modPlayer.reducedNightwitherDamage = true;
             if (item.type == ItemID.SunStone)
-                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedDaybrokenDamage = true;
             if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
-                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedDaybrokenDamage = true;
                 modPlayer.reducedNightwitherDamage = true;
             }
 
@@ -1417,10 +1418,9 @@ namespace CalamityMod.Items
                 player.noFallDmg = true;
                 if (player.head == ArmorIDs.Head.FrostHelmet && player.body == ArmorIDs.Body.FrostBreastplate && player.legs == ArmorIDs.Legs.FrostLeggings)
                 {
-                    player.GetDamage<MeleeDamageClass>() += 0.02f;
-                    player.GetDamage<RangedDamageClass>() += 0.02f;
-                    player.GetCritChance<MeleeDamageClass>() += 1;
-                    player.GetCritChance<RangedDamageClass>() += 1;
+                    player.GetDamage<MeleeDamageClass>() += 0.04f;
+                    player.GetDamage<RangedDamageClass>() += 0.04f;
+                    player.Calamity().frozenWingsCold = true;
                 }
             }
             else if (item.type == ItemID.FlameWings) // Bonus to melee stats
@@ -1629,9 +1629,10 @@ namespace CalamityMod.Items
             if (grabRangeMultiplier > 1f)
                 grabRange = (int)(grabRangeMultiplier * grabRange);
 
-            // Then, if wearing the appropriate Reaver armor, add 20 flat item grab range.
+            // Then, if wearing the appropriate Reaver armor, add 246 flat item grab range. (2.625 + 15.375 = 18 tiles)
+            // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
             if (player.Calamity().reaverExplore)
-                grabRange += 20;
+                grabRange += 246;
         }
         #endregion
 
@@ -1766,10 +1767,19 @@ namespace CalamityMod.Items
         #endregion
 
         #region On Create
+        private static int cachedForgeID = -1;
         public override void OnCreated(Item item, ItemCreationContext context)
         {
             // ChoosePrefix also happens on craft so go reset it here too
             storedPrefix = -1;
+
+            // 05JUL2024: Ozzatron: Register the usage of Draedon's Forge for the purposes of his dialogue.
+            // This was moved out of an On edit in the DraedonsForge item for Magic Storage compatibility.
+            Player p = Main.LocalPlayer;
+            if (cachedForgeID < 0)
+                cachedForgeID = ModContent.TileType<DraedonsForge>();
+            if (context is RecipeItemCreationContext && p.adjTile[cachedForgeID])
+                p.Calamity().HasCraftedDraedonsForge = true;
         }
         #endregion
 

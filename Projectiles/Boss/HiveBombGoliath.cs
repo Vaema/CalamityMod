@@ -1,7 +1,9 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,6 +14,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HiveBombGoliath : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -83,13 +86,20 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Projectile.DrawBackglow(PlaguebringerGoliath.BackglowColor, 4f);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
-            return false;
-        }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(50, 250, 50, Projectile.alpha);
+            Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HiveBombGoliathGlow").Value;
+            Vector2 textureArea = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Projectile.type] / 2);
+            Vector2 drawArea = Projectile.Center - Main.screenPosition;
+            drawArea -= new Vector2(glow.Width, glow.Height / Main.projFrames[Projectile.type]) / 2f;
+            drawArea += textureArea + new Vector2(0f, Projectile.gfxOffY);
+            Color whiteColor = Color.White;
+            int height = glow.Height / Main.projFrames[Projectile.type];
+            int drawStart = height * Projectile.frame;
+            Main.spriteBatch.Draw(glow, drawArea, new Rectangle(0, drawStart, glow.Width, height), whiteColor, Projectile.rotation, textureArea, Projectile.scale, SpriteEffects.None, 0);
+
+            return false;
         }
 
         public override void OnKill(int timeLeft)

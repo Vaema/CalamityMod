@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -48,16 +49,15 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Electric);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            var source = Projectile.GetSource_FromThis();
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => SpawnSparks(target);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => SpawnSparks(target);
+
+        public void SpawnSparks(Entity target)
         {
             var source = Projectile.GetSource_FromThis();
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
+            Projectile spark = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<GenericElectricSpark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
+            spark.DamageType = DamageClass.Melee;
         }
     }
 }

@@ -115,7 +115,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 CalamityUtils.CalamityTargeting(NPC, options);
             }
 
-            float enrageScale = bossRush ? 0.5f : 0.4f;
+            float enrageScale = bossRush ? 0.5f : 0.3f;
             if (Main.IsItDay() || bossRush)
             {
                 NPC.Calamity().CurrentlyEnraged = !bossRush;

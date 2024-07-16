@@ -18,9 +18,9 @@ namespace CalamityMod.Items.Tools
             Item.damage = 6;
             Item.ArmorPenetration = 10;
             Item.knockBack = 0f;
-            Item.useTime = 7;
+            Item.useTime = 4;
             Item.useAnimation = 25;
-            Item.hammer = 40;
+            Item.hammer = 59;
 
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Item.channel = true;

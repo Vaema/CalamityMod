@@ -5,7 +5,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class GravistarSabaton : ModItem, ILocalizedModType
+    [LegacyName("GravistarSabaton")]
+    public class InterstellarStompers : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -27,6 +28,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.noFallDmg = true;
+            player.moveSpeed += 0.06f;
             player.jumpSpeedBoost += 1f;
             player.Calamity().gSabaton = true;
         }

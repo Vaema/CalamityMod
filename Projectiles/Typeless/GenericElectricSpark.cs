@@ -4,26 +4,23 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Summon
-{
-    public class StormjawSpark : ModProjectile, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        // Clone of Typeless/GenericElectricSpark but specfically benefits from whips
-        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Projectile.type] = true;
+namespace CalamityMod.Projectiles.Typeless
+{
+    public class GenericElectricSpark : ModProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Typeless";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetDefaults()
         {
             Projectile.width = 6;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 5;
             Projectile.timeLeft = 60;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
-            Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 15;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);

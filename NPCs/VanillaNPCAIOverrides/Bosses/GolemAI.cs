@@ -350,7 +350,72 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
                         }
                         else
-                            NormalJump();
+                        {
+                            if (npc.ai[3] == 0f)
+                                npc.ai[3] = !headAlive ? Main.rand.Next(2) + 1f : 1f;
+
+                            switch ((int)npc.ai[3])
+                            {
+                                default:
+                                case 0:
+                                case 1:
+                                    NormalJump();
+                                    break;
+
+                                // Jump directly above the target's head and slam down
+                                case 2:
+
+                                    npc.noTileCollide = true;
+
+                                    npc.ai[2] += 1f;
+                                    float jumpVelocity = death ? 23f : 21f;
+                                    if (enrage)
+                                        jumpVelocity *= 1.25f;
+                                    if (turboEnrage)
+                                        jumpVelocity *= 1.5f;
+
+                                    float minJumpTime = 15f;
+                                    float maxJumpTime = 45f;
+                                    if ((npc.ai[2] >= minJumpTime && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= jumpVelocity) || npc.ai[2] >= maxJumpTime)
+                                    {
+                                        npc.ai[0] = 1f;
+                                        npc.ai[1] = 0f;
+                                        npc.ai[2] = 1f;
+                                        npc.velocity.Y = -3f;
+                                        npc.netUpdate = true;
+                                    }
+
+                                    Vector2 center = npc.Center;
+                                    if (!Main.player[npc.target].dead && Main.player[npc.target].active && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= despawnDistance)
+                                        center = Main.player[npc.target].Center;
+
+                                    center.Y -= 480f;
+                                    if (npc.velocity.Y == 0f)
+                                    {
+                                        npc.velocity = center - npc.Center;
+                                        npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero);
+                                        npc.velocity *= jumpVelocity;
+
+                                        float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
+                                        float speedMult = 1f;
+
+                                        float multiplier = turboEnrage ? 0.0025f : enrage ? 0.002f : 0.0015f;
+                                        if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
+                                            speedMult += distanceBelowTarget * multiplier;
+
+                                        float speedMultLimit = turboEnrage ? 3.5f : enrage ? 3f : 2.5f;
+                                        if (speedMult > speedMultLimit)
+                                            speedMult = speedMultLimit;
+
+                                        if (Main.player[npc.target].position.Y < npc.Bottom.Y)
+                                            npc.velocity.Y *= speedMult;
+                                    }
+                                    else
+                                        npc.velocity.Y *= 0.95f;
+
+                                    break;
+                            }
+                        }
 
                         void NormalJump()
                         {
@@ -1328,21 +1393,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             npc.ai[3] -= 1f +
-                ((phase2 || turboEnrage) ? 1f : 0f) +
-                ((phase3 || turboEnrage) ? 1f : 0f) +
-                ((phase4 || turboEnrage) ? 2f : 0f);
+                (turboEnrage ? 1f : phase2 ? 0.5f : 0f) +
+                (turboEnrage ? 1f : phase3 ? 0.5f : 0f) +
+                (turboEnrage ? 2f : phase4 ? 1f : 0f);
 
             float offsetX = calamityGlobalNPC.newAI[0];
             float offsetY = calamityGlobalNPC.newAI[1];
             Vector2 destination = Main.player[npc.target].Center + new Vector2(offsetX, offsetY);
 
             // Velocity and acceleration
-            float velocity = 16f +
-                ((phase2 || turboEnrage) ? 8f : 0f) +
-                ((phase3 || turboEnrage) ? 8f : 0f);
+            float velocity = (turboEnrage ? 15f : 10f) +
+                (turboEnrage ? 7.5f : phase2 ? 5f : 0f) +
+                (turboEnrage ? 7.5f : phase3 ? 5f : 0f);
 
             if (enrage)
-                velocity = (phase3 || turboEnrage) ? 40f : 32f;
+                velocity = (phase3 || turboEnrage) ? 35f : 25f;
 
             float acceleration = phase3 ? 0f : turboEnrage ? 6f : enrage ? 4.8f : phase2 ? 1.2f : 0.8f;
 
