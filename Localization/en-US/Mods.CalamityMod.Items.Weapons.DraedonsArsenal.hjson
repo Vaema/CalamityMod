@@ -50,7 +50,13 @@ GaussPistol: {
 
 GaussRifle: {
 	DisplayName: Gauss Rifle
-	Tooltip: Fires a devastating powerful high-velocity blast with absurd knockback
+	Tooltip:
+'''
+A magnet powered energy rifle that fires piercing shots, creating magnetic implosions that pull in weak enemies on hit
+Implosions only spawn on the first enemy hit by the beam
+[c/1FFBFF:'Many soldiers underestimate the destructive capabilities of magnetism.]
+[c/1FFBFF:This rifle has reliably pulled in skeptics of its crushing efficiency.']
+'''
 }
 
 HeavyLaserRifle: {

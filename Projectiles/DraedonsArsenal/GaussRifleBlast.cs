@@ -26,9 +26,16 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-
         public override void AI()
         {
+            if (Projectile.timeLeft == 600)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Particle Square = new GlowSquareParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(1f, 3f), false, 15, Main.rand.NextFloat(0.5f, 1.2f), Color.Goldenrod, false, Main.rand.NextFloat(-3, 3));
+                    GeneralParticleHandler.SpawnParticle(Square);
+                }
+            }
             if (Projectile.extraUpdates < 30 && Projectile.timeLeft % 3 == 0)
                 Projectile.extraUpdates++;
             Player Owner = Main.player[Projectile.owner];
@@ -74,6 +81,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<GaussRifleExplosion>(), Projectile.damage / 3, 0, Projectile.owner);
+            }
+            for (int i = 0; i < MathHelper.Clamp(5 - Projectile.numHits, 1, 5); i++)
+            {
+                Particle Square = new GlowSquareParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(1f, 3f), false, 18, Main.rand.NextFloat(0.8f, 1.8f), Color.Goldenrod, false, Main.rand.NextFloat(-3, 3));
+                GeneralParticleHandler.SpawnParticle(Square);
             }
 
             if (Projectile.numHits > 0)
