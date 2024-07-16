@@ -63,6 +63,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
                 ModContent.BuffType<Shadowflame>(),
                 ModContent.BuffType<BrimstoneFlames>(),
                 ModContent.BuffType<HolyFlames>(),
+                ModContent.BuffType<Voidfrost>(),
                 ModContent.BuffType<GodSlayerInferno>(),
                 BuffID.Chilled,
                 BuffID.Frozen,
