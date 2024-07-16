@@ -1414,6 +1414,8 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
+            if (arsenalCooldown > 0)
+                arsenalCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (DragonsBreathAudioCooldown > 0)

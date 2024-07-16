@@ -179,6 +179,7 @@ namespace CalamityMod.CalPlayer
 
         #region Timer and Counter
         public int gaelSwipes = 0;
+        public int arsenalCooldown = 0;
         public int dragoonDrizzlefishGelBoost = 1;
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
@@ -2334,6 +2335,7 @@ namespace CalamityMod.CalPlayer
             #region Debuffs
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
+            arsenalCooldown = 0;
             andromedaState = AndromedaPlayerState.Inactive;
             planarSpeedBoost = 0;
             galileoCooldown = 0;
