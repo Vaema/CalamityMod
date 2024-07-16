@@ -58,6 +58,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             Lighting.AddLight(NPC.Center, 0.03f, 0.2f, 0f);
 
+            NPC.rotation = NPC.velocity.X * 0.04f;
+
             Player player = Main.player[NPC.target];
             if (!player.active || player.dead)
             {
