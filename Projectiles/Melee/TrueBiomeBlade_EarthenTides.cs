@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -16,10 +17,10 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class MercurialTides : ModProjectile, ILocalizedModType
+    public class EarthenTides : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTides";
+        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTides";
         private bool initialized = false;
         Vector2 direction = Vector2.Zero;
         public Player Owner => Main.player[Projectile.owner];
@@ -111,7 +112,13 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = 2;
                 if ((Charge / MaxCharge >= 0.25f && CurrentIndicator == 0f) || (Charge / MaxCharge >= 0.5f && CurrentIndicator == 1f) || (Charge / MaxCharge >= 0.75f && CurrentIndicator == 2f) && Owner.whoAmI == Main.myPlayer)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ProjectileType<MercurialTidesBlast>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_BlastDamageReduction), 10f, Owner.whoAmI, 1f + CurrentIndicator * 0.15f);
+                    int swordAmt = 3 + (int)CurrentIndicator;
+                    for (int s = 0; s < swordAmt; s++)
+                    {
+                        Vector2 swordVel = (Vector2.UnitX.RotatedBy(Projectile.rotation) * 10f).RotatedByRandom(MathHelper.Pi / 8);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, swordVel, ProjectileType<EarthenTidesBeam>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_BeamDamageMult), 10f, Owner.whoAmI);
+                    }
+
                     SoundEngine.PlaySound(DeusRitualDrama.PulseSound with { Pitch = DeusRitualDrama.PulseSound.Pitch - 0.2f + 0.1f * CurrentIndicator }, Projectile.Center);
 
                     CurrentIndicator++;
@@ -123,7 +130,11 @@ namespace CalamityMod.Projectiles.Melee
                     Charge = MaxCharge;
                     if (Owner.whoAmI == Main.myPlayer && CurrentIndicator < 4f)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ProjectileType<MercurialTidesBlast>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_BlastDamageReduction), 10f, Owner.whoAmI, 1f + CurrentIndicator * 0.15f);
+                        for (int s = 0; s < 6; s++)
+                        {
+                            Vector2 swordVel = (Vector2.UnitX.RotatedBy(Projectile.rotation) * 10f).RotatedByRandom(MathHelper.Pi / 8);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, swordVel, ProjectileType<EarthenTidesBeam>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_BeamDamageMult), 10f, Owner.whoAmI);
+                        }
                         OverCharge = 20f;
                         SoundEngine.PlaySound(AstralBeacon.UseSound, Projectile.Center);
                         CurrentIndicator++;
@@ -188,7 +199,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 15)
                 Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15;
 
-            Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + (direction * 120 * Projectile.scale), -direction, ProjectileType<MercurialTidesMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), 1f);
+            Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + (direction * 120 * Projectile.scale), -direction, ProjectileType<EarthenTidesMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), 1f);
             proj.timeLeft = 81;
 
 
@@ -220,8 +231,8 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 projPosition = Owner.Center + (direction * 120 * Projectile.scale) + direction.RotatedBy((widestSurfaceAngle * MathHelper.PiOver2 + MathHelper.PiOver4) * facing) * distance;
                 Vector2 monolithRotation = direction.RotatedBy(Utils.AngleLerp(widestSurfaceAngle * -facing, 0f, projSize));
-                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projPosition, -monolithRotation, ProjectileType<MercurialTidesMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), projSize);
-                if (proj.ModProjectile is MercurialTidesMonolith monolith)
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projPosition, -monolithRotation, ProjectileType<EarthenTidesMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), projSize);
+                if (proj.ModProjectile is EarthenTidesMonolith monolith)
                 {
                     monolith.WaitTimer = (1 - projSize) * 34f;
                     monolith.OriginDirection = direction;
@@ -237,6 +248,9 @@ namespace CalamityMod.Projectiles.Melee
             // 17APR2024: Ozzatron: True Biome Blade's shockwave slam gives iframes when striking enemies in a similar manner to a ram dash.
             // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
             Owner.GiveUniversalIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
+
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
+                WhirlwindAttunement.RealPassiveEffect(target);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -245,12 +259,25 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_SwordProc)
                 sword.OnHitProc = true;
+
+            foreach (Projectile proj in Main.projectile)
+            {
+                if (proj.active && proj.type == ProjectileType<PurityProjectionSigil>() && proj.owner == Owner.whoAmI)
+                {
+                    //Reset the timeLeft on the sigil & set its new target (or same target, doesn't matter)
+                    proj.ai[0] = target.whoAmI;
+                    proj.timeLeft = OmegaBiomeBlade.ShockwaveAttunement_SigilTime;
+                    return;
+                }
+            }
+            Projectile sigil = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<PurityProjectionSigil>(), 0, 0, Owner.whoAmI, target.whoAmI, 1f);
+            sigil.timeLeft = OmegaBiomeBlade.ShockwaveAttunement_SigilTime;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D handle = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OmegaBiomeBlade").Value;
-            Texture2D blade = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTides").Value;
+            Texture2D blade = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTides").Value;
 
             float drawAngle = direction.ToRotation();
             float drawRotation = drawAngle + MathHelper.PiOver4;

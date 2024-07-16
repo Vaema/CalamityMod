@@ -99,6 +99,10 @@ DragonPowFlail.DisplayName: Dragon Pow
 DragonRageFireball.DisplayName: Dragon Rage Fireball
 EarthBoom.DisplayName: Earth's Judgement
 EarthMeteor.DisplayName: Gaia Meteor
+EarthenTides.DisplayName: Earthen Tides
+EarthenTidesBeam.DisplayName: Swordsmith's Projection
+EarthenTidesBlast.DisplayName: Earthen Tides Blast
+EarthenTidesMonolith.DisplayName: Earthen Tides Monolith
 ElementalGlassStar.DisplayName: Glass Star
 ElementBall.DisplayName: Elemental Ball
 EmpyreanKnife.DisplayName: Empyrean Knife
@@ -168,9 +172,6 @@ LifeScythe.DisplayName: Lifehunt Scythe
 LightBeam.DisplayName: Light Beam
 LightningThing.DisplayName: Lightning
 LuxorsGiftMelee.DisplayName: Luxor's Melee
-MercurialTides.DisplayName: Mercurial Tides
-MercurialTidesBlast.DisplayName: Mercurial Blast
-MercurialTidesMonolith.DisplayName: Mercurial Monolith
 MicrowaveAura.DisplayName: Microwave Radiation
 MirrorBlast.DisplayName: Mirror Blade
 MonstrousKnife.DisplayName: Monstrous Knife
@@ -249,7 +250,8 @@ StygianShieldThrown.DisplayName: Shield of Chaos
 SulphurousGrabberBubble.DisplayName: Grabber Bubble
 SulphurousGrabberBubble2.DisplayName: Grabber Bubble
 SwordsmithsPride.DisplayName: Swordsmith's Pride
-SwordsmithsPrideBeam.DisplayName: Swordsmith's Projection
+SwordsmithsPrideAstralEnergy.DisplayName: Swordsmith's Astral Energy
+SwordsmithsPrideMonolith.DisplayName: Swordsmiths Pride Monolith
 SwordsplosionBlue.DisplayName: Blue Sword
 SwordsplosionGreen.DisplayName: Green Sword
 SwordsplosionPurple.DisplayName: Purple Sword

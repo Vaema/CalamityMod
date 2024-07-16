@@ -824,7 +824,7 @@ namespace CalamityMod
                 ProjectileType<ChainedMeatHook>(),
                 ProjectileType<SwordsmithsPride>(),
                 ProjectileType<SanguineFury>(),
-                ProjectileType<MercurialTides>(),
+                ProjectileType<EarthenTides>(),
                 ProjectileType<GalaxiaHoldout>(),
                 ProjectileType<PhoenixsPride>(),
                 ProjectileType<PolarisGaze>(),

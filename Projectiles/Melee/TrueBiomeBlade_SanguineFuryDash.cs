@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -43,8 +44,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_DashProc)
-                sword.OnHitProc = true;
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword)
+            {
+                if (Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_DashProc)
+                    sword.OnHitProc = true;
+
+                if (sword.secondaryAttunement.id == AttunementID.Whirlwind)
+                    WhirlwindAttunement.RealPassiveEffect(target);
+            }
 
             Particle bloom = new StrongBloom(target.Center, target.velocity, Color.Crimson * 0.5f, 1f, 30);
             GeneralParticleHandler.SpawnParticle(bloom);

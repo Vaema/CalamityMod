@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -11,10 +12,10 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class MercurialTidesBlast : ModProjectile, ILocalizedModType
+    public class EarthenTidesBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTidesShockwave";
+        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesShockwave";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => (60f - Projectile.timeLeft) / 100f;
         public ref float Variant => ref Projectile.ai[0]; //Yes
@@ -33,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 60;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 12;
         }
 
         public override bool? CanDamage() => Projectile.timeLeft < 40;
@@ -85,6 +88,12 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
+                WhirlwindAttunement.RealPassiveEffect(target);
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_BlastProc)
@@ -93,7 +102,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTidesShockwave").Value;
+            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesShockwave").Value;
 
             float drawAngle = Projectile.rotation;
             int animFrame = 6 - (int)Math.Ceiling(Projectile.timeLeft / 10f);

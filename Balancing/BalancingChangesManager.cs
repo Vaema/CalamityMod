@@ -281,8 +281,8 @@ namespace CalamityMod.Balancing
             // 20% resist to The Hive's nuke.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<HiveNuke>()))));
 
-            // 20% resist to Mercurial Tides (True Biome Blade).
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<MercurialTides>(), ProjectileType<MercurialTidesMonolith>(), ProjectileType<MercurialTidesBlast>()))));
+            // 20% resist to Earthen Tides (True Biome Blade).
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<EarthenTides>(), ProjectileType<EarthenTidesMonolith>(), ProjectileType<EarthenTidesBlast>()))));
             #endregion
 
             #region Profaned Guardians

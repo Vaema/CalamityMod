@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -14,15 +15,15 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class MercurialTidesMonolith : ModProjectile, ILocalizedModType
+    public class EarthenTidesMonolith : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTidesMonolith";
+        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesMonolith";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => (100f - Projectile.timeLeft) / 100f;
         public ref float Variant => ref Projectile.ai[0]; //Yes
         public ref float Size => ref Projectile.ai[1]; //Yes
-        public float WaitTimer; //How long until the monoliths appears
+        public float WaitTimer; //How long until the monolith appears
         public Vector2 OriginDirection; //The direction of the original strike
         public float Facing; //The direction of the original strike
         public const float BaseWidth = 90f;
@@ -162,8 +163,8 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 projPosition = Projectile.Center + OriginDirection.RotatedBy((widestSurfaceAngle * MathHelper.PiOver2 + MathHelper.PiOver4) * facing) * distance;
                 Vector2 monolithRotation = OriginDirection.RotatedBy(Utils.AngleLerp(widestSurfaceAngle * -facing, 0f, projSize));
-                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projPosition, -monolithRotation, ProjectileType<MercurialTidesMonolith>(), Projectile.damage, 10f, Owner.whoAmI, Main.rand.Next(4), projSize);
-                if (proj.ModProjectile is MercurialTidesMonolith monolith)
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projPosition, -monolithRotation, ProjectileType<EarthenTidesMonolith>(), Projectile.damage, 10f, Owner.whoAmI, Main.rand.Next(4), projSize);
+                if (proj.ModProjectile is EarthenTidesMonolith monolith)
                 {
                     monolith.WaitTimer = (float)Math.Sqrt(1.0 - Math.Pow(projSize - 1.0, 2)) * 3f;
                     monolith.OriginDirection = OriginDirection;
@@ -172,6 +173,12 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             return validPositionFound;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
+                WhirlwindAttunement.RealPassiveEffect(target);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -188,7 +195,7 @@ namespace CalamityMod.Projectiles.Melee
             if (WaitTimer > 0)
                 return false;
 
-            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_MercurialTidesMonolith").Value;
+            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesMonolith").Value;
 
             Vector2 Shake = Projectile.timeLeft < 70 ? Vector2.Zero : Vector2.One.RotatedByRandom(MathHelper.TwoPi) * (70 - Projectile.timeLeft / 30f) * 0.05f;
 
@@ -210,7 +217,7 @@ namespace CalamityMod.Projectiles.Melee
             if (WaitTimer > 0)
                 return;
 
-            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/MendedBiomeBlade_ExtantAbhorrenceMonolith_Glow").Value;
+            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/MendedBiomeBlade_HeavensMonolith_Glow").Value;
 
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);

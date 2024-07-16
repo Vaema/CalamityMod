@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
@@ -241,7 +242,12 @@ namespace CalamityMod.Projectiles.Melee
             modifiers.SourceDamage *= damageMultiplier * damageReduction;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShredTarget();
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            ShredTarget();
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
+                WhirlwindAttunement.RealPassiveEffect(target);
+        }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShredTarget();
 
         private void ShredTarget()

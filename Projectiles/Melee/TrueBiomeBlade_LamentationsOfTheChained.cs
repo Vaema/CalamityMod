@@ -117,6 +117,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
+                WhirlwindAttunement.RealPassiveEffect(target);
+
             if (hit.Crit)
             {
                 SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound, Projectile.Center);

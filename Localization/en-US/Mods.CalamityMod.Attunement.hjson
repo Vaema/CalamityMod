@@ -99,10 +99,12 @@ WhirlwindAttunement: {
 	Name: Swordsmith's Pride
 	Function:
 		'''
-		Hold <left> to swing the sword around you, accelerating over time. Sword beams are fired wildly while swinging
-		Releasing hurls the sword towards your cursor. Sword beams home onto enemies struck by the thrown sword
+		Hold <left> to swing the sword around you, accelerating and dealing more damage over time
+		Homing astral energies are wildly fired around you while swinging
+		Once swung for long enough, releasing hurls the sword towards your cursor
+		Once pulled back, the hurled sword erupts into astral monoliths
 		'''
-	PassiveDesc: All attacks have a chance to fire sword beams
+	PassiveDesc: All attacks inflict the Astral Infection debuff
 }
 
 FlailBladeAttunement: {
@@ -122,20 +124,21 @@ SuperPogoAttunement: {
 		Hold <left> to conjure molten blades in front of you that get larger and stronger the more you hit enemies
 		The blades can also be used to bounce off tiles when in the air
 		Releasing sends the charged blades hurtling forwards like a wheel
-		Attacking again immediately thereafter dashes to the wheel, shredding anything in the way
+		Attacking again immediately thereafter dashes to the wheel, shredding anything in the way and healing you
 		'''
 	PassiveDesc: Striking enemies rarely steals a small amount of life
 }
 
 ShockwaveAttunement: {
-	Name: Mercurial Tides
+	Name: Earthen Tides
 	Function:
 		'''
 		Hold <left> to charge a heaven-shattering lunge, release to unleash the devastating blow
-		Shock waves are emitted as the sword charges up
-		Striking the earth with the lunge will cause a massive shock wave on impact which raises a flood of monoliths
+		Homing sword beams are emitted as the sword charges up
+		Striking an enemy with the lunge marks them with an armor crunching sigil that sword beam homing will prioritize
+		Striking the earth with the lunge will cause a massive shock wave on impact which raises a flood of stalagmites
 		'''
-	PassiveDesc: Periodically emit shock waves while attacking
+	PassiveDesc: Periodically emit large shock waves while attacking
 }
 
 // Galaxia

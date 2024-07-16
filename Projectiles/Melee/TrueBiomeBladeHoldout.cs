@@ -134,23 +134,22 @@ namespace CalamityMod.Projectiles.Melee
             bool desert = Owner.ZoneDesert;
             bool hell = Owner.ZoneUnderworldHeight;
             bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
-            bool hallow = Owner.ZoneHallow;
-            bool astral = Owner.Calamity().ZoneAstral;
+            bool heavenly = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
             bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind];
+            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
             if (desert || hell)
                 attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
             if (jungle || ocean || snow) //Check put after the desert check so ocean doesnt get overriden as desert
                 attunement = Attunement.attunementArray[(int)AttunementID.FlailBlade];
             if (evil) //Evil check separated so that it overrides corrupted beach & snow biomes
                 attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
-            if (astral || marine)
+            if (marine)
                 attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
-            if (hallow)
-                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind]; //Putting holy check  at the end so it may override hallowed variants of biomes
+            if (heavenly)
+                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind]; //Putting holy check at the end so it may override hallowed variants of biomes
 
-            //If the owner already had the attunement , break out of it (And unswap)
+            //If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
             {
                 SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Projectile.Center);

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -441,7 +442,7 @@ namespace CalamityMod.DataStructures
         {
             id = AttunementID.Whirlwind;
             tooltipColor = new Color(220, 105, 197);
-            tooltipColor2 = new Color(171, 239, 113);
+            tooltipColor2 = new Color(132, 70, 232);
         }
 
         public override float DamageMultiplier => OmegaBiomeBlade.WhirlwindAttunement_BaseDamage / (float)OmegaBiomeBlade.BaseDamage;
@@ -459,15 +460,12 @@ namespace CalamityMod.DataStructures
 
         public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
         {
-            if (UseTimer % 30 == 29 && Main.rand.NextBool(2))
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.WhirlwindAttunement_PassiveBaseDamage);
-                Projectile beamSword = Projectile.NewProjectileDirect(source, player.Center, player.SafeDirectionTo(Main.MouseWorld, Vector2.One) * 15f, ProjectileType<SwordsmithsPrideBeam>(), damage, 10f, player.whoAmI, 1f);
-                beamSword.timeLeft = 50;
-                UseTimer++;
-            }
+            // CIT 15JUL2024: Swordsmith's Pride no longer applies its passive effect using this function, since it requires an NPC argument.
+            // It is now applied using the RealPassiveEffect function below.
+            // This implentation is admittedly kinda clunky, but oh well.
         }
+
+        public static void RealPassiveEffect(NPC target) => target.AddBuff(BuffType<AstralInfectionDebuff>(), 90);
     }
 
     public class FlailBladeAttunement : Attunement
@@ -546,7 +544,7 @@ namespace CalamityMod.DataStructures
         public ShockwaveAttunement()
         {
             id = AttunementID.Shockwave;
-            tooltipColor = new Color(132, 109, 233);
+            tooltipColor = new Color(71, 191, 71);
             tooltipColor2 = new Color(122, 213, 233);
         }
 
@@ -557,7 +555,7 @@ namespace CalamityMod.DataStructures
             item.channel = true;
             item.noUseGraphic = true;
             item.useStyle = ItemUseStyleID.Shoot;
-            item.shoot = ProjectileType<MercurialTides>();
+            item.shoot = ProjectileType<EarthenTides>();
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
@@ -568,7 +566,7 @@ namespace CalamityMod.DataStructures
             if (UseTimer % 120 == 119)
             {
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.ShockwaveAttunement_PassiveBaseDamage);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<MercurialTidesBlast>(), damage, 10f, player.whoAmI, 1f);
+                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<EarthenTidesBlast>(), damage, 10f, player.whoAmI, 2.25f);
                 UseTimer++;
             }
         }
