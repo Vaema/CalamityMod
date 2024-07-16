@@ -399,7 +399,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<GravistarSabaton>()));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<InterstellarStompers>()));
 
                 // Other
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AureusCell>(), 1, 9, 12));

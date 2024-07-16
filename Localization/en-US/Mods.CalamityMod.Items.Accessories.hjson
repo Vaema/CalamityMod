@@ -877,20 +877,6 @@ GrandGelatin: {
 		'''
 }
 
-GravistarSabaton: {
-	DisplayName: Gravistar Sabaton
-	Tooltip:
-		'''
-		20% increased jump speed and negates fall damage
-		Hold DOWN to increase your maximum fall speed
-		Hold [KEY] for 1 second while midair to charge up a superspeed slam
-		While falling, you ram through enemies and don't take contact damage
-		Once you hit the ground, you create an explosion at your feet 
-		The explosion scales in both damage and size the longer you slam for
-		Temporary 40% increased jump speed after slamming into the ground
-		'''
-}
-
 HallowedRune: {
 	DisplayName: Hallowed Rune
 	Tooltip:
@@ -978,6 +964,20 @@ InkBomb: {
 		Throws several ink bombs when hit that explode into ink
 		Gain a lot of stealth and confuse enemies when struck
 		This effect has a 20 second cooldown before it can occur again
+		'''
+}
+
+InterstellarStompers: {
+	DisplayName: Interstellar Stompers
+	Tooltip:
+		'''
+		6% increased movement speed, 20% increased jump speed, and negates fall damage
+		Hold DOWN to increase your maximum fall speed
+		Hold [KEY] for 0.5 seconds while midair to charge up a superspeed slam
+		While falling, you ram through enemies and don't take contact damage
+		Once you hit the ground, you create an explosion at your feet 
+		The explosion scales in both damage and size the longer you slam for
+		Temporary 40% increased jump speed after slamming into the ground
 		'''
 }
 

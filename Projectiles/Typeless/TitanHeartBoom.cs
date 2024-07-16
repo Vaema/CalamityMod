@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class SabatonBoom : ModProjectile, ILocalizedModType
+    public class TitanHeartBoom : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";

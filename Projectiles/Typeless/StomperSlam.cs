@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class SabatonSlam : ModProjectile, ILocalizedModType
+    public class StomperSlam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             if (Projectile.localAI[0] == 0)
             {
-                scaleFromFall = (Projectile.ai[0] / 22) + 0.5f;
+                scaleFromFall = (Projectile.ai[0] / 20) + 0.5f;
                 damageScaleFromFall = Projectile.ai[0] / 40;
                 Projectile.damage = (int)(300f * damageScaleFromFall + 300f);
 

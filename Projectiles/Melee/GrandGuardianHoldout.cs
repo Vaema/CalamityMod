@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/GrandGuardian";
         public override float HitboxOutset => 105;
 
-        public override Vector2 HitboxSize => new Vector2(150, 150);
+        public override Vector2 HitboxSize => new Vector2(175, 175);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
         public override Vector2 SpriteOrigin => new(0, 124);
@@ -159,10 +159,10 @@ namespace CalamityMod.Projectiles.Melee
                         for (int i = 0; i < 3; i++)
                         {
                             bool color = Main.rand.NextBool();
-                            GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, color ? Color.Cyan : Color.DarkOrchid, color ? Color.DarkOrchid : Color.Cyan, Main.rand.NextFloat(0.4f, 0.6f), 10, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
+                            GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, color ? Color.Cyan : Color.DarkOrchid, color ? Color.DarkOrchid : Color.Cyan, Main.rand.NextFloat(0.4f, 0.6f), 10, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
                             dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool() ? Color.Cyan : Color.DarkOrchid;

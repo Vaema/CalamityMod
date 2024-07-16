@@ -1756,33 +1756,31 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             float velocity = bossRush ? 12f : masterMode ? 8.4f : 7.2f;
             float acceleration = bossRush ? 0.1f : masterMode ? 0.07f : 0.06f;
+            float deceleration = 1f - acceleration;
 
-            Vector2 probeCenter = npc.Center;
-            float probeTargetX = targetData.Center.X;
-            float probeTargetY = targetData.Center.Y;
-            probeTargetX = (int)(probeTargetX / 8f) * 8;
-            probeTargetY = (int)(probeTargetY / 8f) * 8;
-            probeCenter.X = (int)(probeCenter.X / 8f) * 8;
-            probeCenter.Y = (int)(probeCenter.Y / 8f) * 8;
-            probeTargetX -= probeCenter.X;
-            probeTargetY -= probeCenter.Y;
-            float distanceFromTarget = (float)Math.Sqrt(probeTargetX * probeTargetX + probeTargetY * probeTargetY);
-            float distance2 = distanceFromTarget;
-
-            bool farAwayFromTarget = false;
-            if (distanceFromTarget > 600f)
-                farAwayFromTarget = true;
-
-            if (distanceFromTarget == 0f)
+            if (targetDead)
             {
-                probeTargetX = npc.velocity.X;
-                probeTargetY = npc.velocity.Y;
+                Vector2 destination = npc.Center - Vector2.UnitY;
+                Vector2 idealVelocity = npc.SafeDirectionTo(destination) * velocity * 0.5f;
+                idealVelocity.X *= npc.direction;
+                idealVelocity.Y *= 2.5f;
+                npc.SimpleFlyMovement(idealVelocity, acceleration);
+                npc.EncourageDespawn(10);
+            }
+            else if (npc.Distance(targetData.Center) > 400f)
+            {
+                Vector2 idealVelocity = npc.SafeDirectionTo(targetData.Center) * velocity;
+                npc.SimpleFlyMovement(idealVelocity, acceleration);
             }
             else
             {
-                distanceFromTarget = velocity / distanceFromTarget;
-                probeTargetX *= distanceFromTarget;
-                probeTargetY *= distanceFromTarget;
+                if (npc.Distance(targetData.Center) < 160f)
+                {
+                    Vector2 idealVelocity = npc.SafeDirectionTo(targetData.Center) * velocity;
+                    npc.SimpleFlyMovement(-idealVelocity, acceleration);
+                }
+                else
+                    npc.velocity *= deceleration;
             }
 
             for (int i = 0; i < Main.maxNPCs; i++)
@@ -1804,29 +1802,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[i].velocity -= otherProbeDist;
                     }
                 }
-            }
-
-            if (distance2 > 100f)
-            {
-                npc.ai[0] += 1f;
-                if (npc.ai[0] > 0f)
-                    npc.velocity.Y += 0.023f;
-                else
-                    npc.velocity.Y -= 0.023f;
-
-                if (npc.ai[0] < -100f || npc.ai[0] > 100f)
-                    npc.velocity.X += 0.023f;
-                else
-                    npc.velocity.X -= 0.023f;
-
-                if (npc.ai[0] > 200f)
-                    npc.ai[0] = -200f;
-            }
-
-            if (targetDead)
-            {
-                probeTargetX = npc.direction * velocity / 2f;
-                probeTargetY = -velocity / 2f;
             }
 
             if (npc.ai[3] != 0f)
@@ -1882,22 +1857,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
             else
-            {
                 npc.dontTakeDamage = false;
 
-                if (npc.velocity.X < probeTargetX)
-                    npc.velocity.X += acceleration;
-                else if (npc.velocity.X > probeTargetX)
-                    npc.velocity.X -= acceleration;
-
-                if (npc.velocity.Y < probeTargetY)
-                    npc.velocity.Y += acceleration;
-                else if (npc.velocity.Y > probeTargetY)
-                    npc.velocity.Y -= acceleration;
-            }
-
             npc.localAI[0] += 1f;
-            if (npc.justHit && !masterMode)
+            if ((npc.justHit && !masterMode) || targetDead)
                 npc.localAI[0] = 0f;
 
             float laserGateValue = NPC.IsMechQueenUp ? ProbeLaserGateValue_Mechdusa : bossRush ? ProbeLaserGateValue_BossRush : ProbeLaserGateValue_Rev;
@@ -1921,12 +1884,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     int totalProjectiles = oblivionAlive ? 2 : (CalamityWorld.death || bossRush) ? 3 : 1;
-                    Vector2 npcCenter = new Vector2(probeTargetX, probeTargetY);
+                    Vector2 projectileVelocity = (targetData.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                     if (NPC.IsMechQueenUp)
                     {
                         Vector2 v = targetData.Center - npc.Center - targetData.Velocity * 20f;
-                        float projectileVelocity = 8f;
-                        npcCenter = v.SafeNormalize(Vector2.UnitY) * projectileVelocity;
+                        projectileVelocity = v.SafeNormalize(Vector2.UnitY) * 8f;
                     }
                     for (int i = 0; i < totalProjectiles; i++)
                     {
@@ -1936,14 +1898,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             case 0:
                                 break;
                             case 1:
-                                velocityMultiplier = 0.9f;
+                                velocityMultiplier = 0.95f;
                                 break;
                             case 2:
-                                velocityMultiplier = 0.8f;
+                                velocityMultiplier = 0.9f;
                                 break;
                         }
-                        Vector2 laserVelocity = npcCenter * velocityMultiplier;
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), probeCenter + laserVelocity.SafeNormalize(Vector2.UnitY) * 50f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                        Vector2 laserVelocity = projectileVelocity * velocityMultiplier;
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 50f, laserVelocity, type, damage, 0f, Main.myPlayer);
                     }
 
                     npc.netUpdate = true;
@@ -1955,47 +1917,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (WorldGen.InWorld(x, y) && !WorldGen.SolidTile(x, y))
                 Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 0.3f, 0.1f, 0.05f);
 
-            if (probeTargetX > 0f)
+            if (targetData.Center.X - npc.Center.X > 0f)
             {
                 npc.spriteDirection = -1;
-                npc.rotation = (float)Math.Atan2(probeTargetY, probeTargetX);
+                npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X);
             }
-            if (probeTargetX < 0f)
+            else
             {
                 npc.spriteDirection = 1;
-                npc.rotation = (float)Math.Atan2(probeTargetY, probeTargetX) + MathHelper.Pi;
-            }
-
-            float tilePosX = -0.7f;
-            if (npc.collideX)
-            {
-                npc.netUpdate = true;
-                npc.velocity.X = npc.oldVelocity.X * tilePosX;
-                if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                    npc.velocity.X = 2f;
-                if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
-                    npc.velocity.X = -2f;
-            }
-
-            if (npc.collideY)
-            {
-                npc.netUpdate = true;
-                npc.velocity.Y = npc.oldVelocity.Y * tilePosX;
-                if (npc.velocity.Y > 0f && npc.velocity.Y < 1.5)
-                    npc.velocity.Y = 2f;
-                if (npc.velocity.Y < 0f && npc.velocity.Y > -1.5)
-                    npc.velocity.Y = -2f;
-            }
-
-            if (farAwayFromTarget)
-            {
-                if ((npc.velocity.X > 0f && probeTargetX > 0f) || (npc.velocity.X < 0f && probeTargetX < 0f))
-                {
-                    if (Math.Abs(npc.velocity.X) < (NPC.IsMechQueenUp ? 5f : 12f))
-                        npc.velocity.X *= 1.05f;
-                }
-                else
-                    npc.velocity.X *= 0.9f;
+                npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X) + MathHelper.Pi;
             }
 
             if (NPC.IsMechQueenUp && npc.ai[2] == 0f)
@@ -2004,13 +1934,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 Vector2 v2 = center - npc.Center;
                 if (v2.Length() < 120f)
                     npc.Center = center - v2.SafeNormalize(Vector2.UnitY) * 120;
-            }
-
-            if (targetDead)
-            {
-                npc.velocity.Y -= acceleration * 2f;
-                if (npc.timeLeft > 10)
-                    npc.timeLeft = 10;
             }
 
             if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
@@ -2025,61 +1948,37 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 CalamityUtils.CalamityTargeting(npc, default);
 
             NPCAimedTarget targetData = npc.GetTargetData();
-            bool flag = false;
+            bool targetDead = false;
             if (targetData.Type == NPCTargetType.Player)
-                flag = Main.player[npc.target].dead;
+                targetDead = Main.player[npc.target].dead;
 
-            float num = Main.zenithWorld ? 3f : Main.expertMode ? 7.2f : 6f;
-            float num2 = Main.expertMode ? 0.06f : 0.05f;
+            float velocity = Main.zenithWorld ? 3f : Main.expertMode ? 7.2f : 6f;
+            float acceleration = Main.expertMode ? 0.06f : 0.05f;
+            float deceleration = 1f - acceleration;
 
-            Vector2 vector = npc.Center;
-            float num4 = targetData.Center.X;
-            float num5 = targetData.Center.Y;
-            num4 = (int)(num4 / 8f) * 8;
-            num5 = (int)(num5 / 8f) * 8;
-            vector.X = (int)(vector.X / 8f) * 8;
-            vector.Y = (int)(vector.Y / 8f) * 8;
-            num4 -= vector.X;
-            num5 -= vector.Y;
-            float num6 = (float)Math.Sqrt(num4 * num4 + num5 * num5);
-            float num7 = num6;
-            bool flag2 = false;
-            if (num6 > 600f)
-                flag2 = true;
-
-            if (num6 == 0f)
+            if (targetDead || Main.IsItDay())
             {
-                num4 = npc.velocity.X;
-                num5 = npc.velocity.Y;
+                Vector2 destination = npc.Center - Vector2.UnitY;
+                Vector2 idealVelocity = npc.SafeDirectionTo(destination) * velocity * 0.5f;
+                idealVelocity.X *= npc.direction;
+                idealVelocity.Y *= 2.5f;
+                npc.SimpleFlyMovement(idealVelocity, acceleration);
+                npc.EncourageDespawn(10);
+            }
+            else if (npc.Distance(targetData.Center) > 400f)
+            {
+                Vector2 idealVelocity = npc.SafeDirectionTo(targetData.Center) * velocity;
+                npc.SimpleFlyMovement(idealVelocity, acceleration);
             }
             else
             {
-                num6 = num / num6;
-                num4 *= num6;
-                num5 *= num6;
-            }
-
-            if (num7 > 100f)
-            {
-                npc.ai[0] += 1f;
-                if (npc.ai[0] > 0f)
-                    npc.velocity.Y += 0.023f;
+                if (npc.Distance(targetData.Center) < 160f)
+                {
+                    Vector2 idealVelocity = npc.SafeDirectionTo(targetData.Center) * velocity;
+                    npc.SimpleFlyMovement(-idealVelocity, acceleration);
+                }
                 else
-                    npc.velocity.Y -= 0.023f;
-
-                if (npc.ai[0] < -100f || npc.ai[0] > 100f)
-                    npc.velocity.X += 0.023f;
-                else
-                    npc.velocity.X -= 0.023f;
-
-                if (npc.ai[0] > 200f)
-                    npc.ai[0] = -200f;
-            }
-
-            if (flag)
-            {
-                num4 = (float)npc.direction * num / 2f;
-                num5 = (0f - num) / 2f;
+                    npc.velocity *= deceleration;
             }
 
             if (npc.ai[3] != 0f)
@@ -2135,25 +2034,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
             else
-            {
                 npc.dontTakeDamage = false;
-
-                if (npc.velocity.X < num4)
-                    npc.velocity.X += num2;
-                else if (npc.velocity.X > num4)
-                    npc.velocity.X -= num2;
-
-                if (npc.velocity.Y < num5)
-                    npc.velocity.Y += num2;
-                else if (npc.velocity.Y > num5)
-                    npc.velocity.Y -= num2;
-            }
 
             npc.localAI[0] += 1f;
             if (npc.ai[3] != 0f)
                 npc.localAI[0] += 2f;
 
-            if (npc.justHit && !Main.masterMode)
+            if ((npc.justHit && !Main.masterMode) || targetDead)
                 npc.localAI[0] = 0f;
 
             float num10 = ProbeLaserGateValue;
@@ -2179,15 +2066,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             damage = (int)(damage * secondMechMultiplier);
                     }
 
-                    Vector2 vector3 = new Vector2(num4, num5);
+                    Vector2 projectileVelocity = (targetData.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                     if (NPC.IsMechQueenUp)
                     {
                         Vector2 v = targetData.Center - npc.Center - targetData.Velocity * 20f;
-                        float num12 = 8f;
-                        vector3 = v.SafeNormalize(Vector2.UnitY) * num12;
+                        projectileVelocity = v.SafeNormalize(Vector2.UnitY) * 8f;
                     }
 
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector + vector3.SafeNormalize(Vector2.UnitY) * 50f, vector3, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f, projectileVelocity, type, damage, 0f, Main.myPlayer);
                 }
             }
 
@@ -2198,54 +2084,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (WorldGen.InWorld(num13, num14) && !WorldGen.SolidTile(num13, num14))
                 Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 0.3f, 0.1f, 0.05f);
 
-            if (num4 > 0f)
+            if (targetData.Center.X - npc.Center.X > 0f)
             {
                 npc.spriteDirection = -1;
-                npc.rotation = (float)Math.Atan2(num5, num4);
+                npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X);
             }
-
-            if (num4 < 0f)
+            else
             {
                 npc.spriteDirection = 1;
-                npc.rotation = (float)Math.Atan2(num5, num4) + MathHelper.Pi;
-            }
-
-            float num15 = 0.7f;
-            if (npc.collideX)
-            {
-                npc.netUpdate = true;
-                npc.velocity.X = npc.oldVelocity.X * (0f - num15);
-                if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                    npc.velocity.X = 2f;
-
-                if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
-                    npc.velocity.X = -2f;
-            }
-
-            if (npc.collideY)
-            {
-                npc.netUpdate = true;
-                npc.velocity.Y = npc.oldVelocity.Y * (0f - num15);
-                if (npc.velocity.Y > 0f && (double)npc.velocity.Y < 1.5)
-                    npc.velocity.Y = 2f;
-
-                if (npc.velocity.Y < 0f && (double)npc.velocity.Y > -1.5)
-                    npc.velocity.Y = -2f;
-            }
-
-            if (flag2)
-            {
-                if ((npc.velocity.X > 0f && num4 > 0f) || (npc.velocity.X < 0f && num4 < 0f))
-                {
-                    int num27 = 12;
-                    if (NPC.IsMechQueenUp)
-                        num27 = 5;
-
-                    if (Math.Abs(npc.velocity.X) < (float)num27)
-                        npc.velocity.X *= 1.05f;
-                }
-                else
-                    npc.velocity.X *= 0.9f;
+                npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X) + MathHelper.Pi;
             }
 
             if (NPC.IsMechQueenUp && npc.ai[2] == 0f)
@@ -2255,12 +2102,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 int num28 = 120;
                 if (v2.Length() < (float)num28)
                     npc.Center = center - v2.SafeNormalize(Vector2.UnitY) * num28;
-            }
-
-            if (Main.IsItDay() || flag)
-            {
-                npc.velocity.Y -= num2 * 2f;
-                npc.EncourageDespawn(10);
             }
 
             if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)

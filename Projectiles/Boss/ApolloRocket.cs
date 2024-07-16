@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Boss
             int height = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ApolloRocketGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ApolloRocketGlow").Value, Projectile.Center - Main.screenPosition, new Rectangle(0, drawStart, texture.Width, height), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
         public override void OnKill(int timeLeft)

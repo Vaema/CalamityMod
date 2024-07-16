@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 0;
+            Item.defense = 1;
         }
 
         private void ActivateLift(Terraria.On_Player.orig_QuickMount orig, Player self)
@@ -155,12 +155,13 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 1;
+            Item.defense = 2;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.tileSpeed += 0.5f;
+            player.wallSpeed += 0.5f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => MarniteArchitectHeadgear.ModifySetTooltips(this, tooltips);
