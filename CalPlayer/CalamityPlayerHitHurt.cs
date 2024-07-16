@@ -498,7 +498,7 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaBurn").Format(Player.name));
                 }
-                if (bloodyMary || everclear || evergreenGin || fireball || margarita || moonshine || moscowMule || redWine || screwdriver || starBeamRye || tequila || tequilaSunrise || vodka || whiteWine || Player.tipsy)
+                if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AlcoholSmall").Format(Player.name));
                 }
@@ -1558,14 +1558,14 @@ namespace CalamityMod.CalPlayer
                         Rectangle npcHitbox = n.getRect();
                         if ((Player.getRect()).Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
                         {
-                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(GravistarSabaton.PassthroughDamage));
+                            int damage = Player.ApplyArmorAccDamageBonusesTo(Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage));
 
                             Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
                             // 17APR2024: Ozzatron: Gravistar Sabaton gives iframes when passing through enemies for projectile safety.
                             // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
                             n.Calamity().dashImmunityTime[Player.whoAmI] = 4;
-                            Player.GiveUniversalIFrames(GravistarSabaton.PassthroughIFrames, false);
+                            Player.GiveUniversalIFrames(InterstellarStompers.PassthroughIFrames, false);
 
                             return true;
                         }

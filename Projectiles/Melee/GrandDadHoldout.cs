@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/GrandDad";
         public override float HitboxOutset => 125;
 
-        public override Vector2 HitboxSize => new Vector2(170, 170);
+        public override Vector2 HitboxSize => new Vector2(190, 190);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
         public override Vector2 SpriteOrigin => new(0, 124);
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (time == (int)(timeMax * 0.4f))
                     {
                         SoundStyle fire = new("CalamityMod/Sounds/Item/HeavySwing");
-                        SoundEngine.PlaySound(fire with { Volume = 0.8f, Pitch = 0.3f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.8f, Pitch = Main.rand.NextFloat(0.2f, 0.32f) }, Projectile.Center);
                     }
                     if ( time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.7f))
                     {
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Melee
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
-                            Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 170), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
+                            Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 165), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
                             GeneralParticleHandler.SpawnParticle(new LineParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, false, 19, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue));
                             GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, Main.rand.NextBool(4) ? Color.Black : Color.DarkBlue, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f));
                         }

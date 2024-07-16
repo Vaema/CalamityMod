@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 distanceFromTarget = targetPosition - npcPosition;
 
             float halfAverageScreenWidth = 960f;
-            float distanceBeforeSlowingDown = 480f;
+            float distanceBeforeSlowingDown = 640f;
             float timeBeforeEnrage = (masterMode ? 150f : 600f) - (death ? (masterMode ? 130f : 390f) * (1f - lifeRatio) : 0f);
             float speedMult = 1f;
 
@@ -311,8 +311,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float masterModeVelocityBoost = 0f;
             if (masterMode)
             {
-                float velocityBoostStartDistance = 480f;
-                float velocityBoostMaxDistance = velocityBoostStartDistance * 2f;
+                float velocityBoostStartDistance = distanceBeforeSlowingDown;
+                float velocityBoostMaxDistance = velocityBoostStartDistance * 1.5f;
                 float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
                 float lerpAmount = MathHelper.Clamp((distanceFromTargetX - velocityBoostStartDistance) / velocityBoostMaxDistance, 0f, 1f);
                 masterModeVelocityBoost = MathHelper.Lerp(0f, 8f, lerpAmount);
@@ -450,7 +450,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Main.rand.NextBool(chance))
                 {
-                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(2f, 8f, npc.life / (float)npc.lifeMax));
+                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(masterMode ? 2f : 1f, masterMode ? 8f : 4f, npc.life / (float)npc.lifeMax));
                     if (NPC.CountNPCS(NPCID.TheHungry) < maxHungriesBasedOnHP)
                     {
                         int hungryAmt = 0;
@@ -526,11 +526,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 mouthYPosition = (Main.wofDrawAreaBottom + Main.wofDrawAreaTop) / 2;
                 mouthYPosition = (mouthYPosition + Main.wofDrawAreaBottom) / 2f;
 
-                int maxHungries = masterMode ? 15 : 11;
+                int maxHungries = masterMode ? 16 : 11;
+                float maxOffset = masterMode ? (0.2f / 3f) : 0.1f;
                 for (int j = 0; j < maxHungries; j++)
                 {
                     int hungrySpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)mouthYPosition, NPCID.TheHungry, npc.whoAmI);
-                    Main.npc[hungrySpawn].ai[0] = j * 0.1f - 0.05f;
+                    Main.npc[hungrySpawn].ai[0] = j * maxOffset - 0.05f;
                 }
             }
 
@@ -1125,7 +1126,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
                 distanceFromTarget = targetPosition - npcPosition;
 
-            float distanceBeforeSlowingDown = 480f;
+            float distanceBeforeSlowingDown = 640f;
             float speedMult = 1f;
 
             if (distanceFromTarget < distanceBeforeSlowingDown)
@@ -1136,8 +1137,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float masterModeVelocityBoost = 0f;
             if (Main.masterMode)
             {
-                float velocityBoostStartDistance = 480f;
-                float velocityBoostMaxDistance = velocityBoostStartDistance * 2f;
+                float velocityBoostStartDistance = distanceBeforeSlowingDown;
+                float velocityBoostMaxDistance = velocityBoostStartDistance * 1.5f;
                 float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
                 float lerpAmount = MathHelper.Clamp((distanceFromTargetX - velocityBoostStartDistance) / velocityBoostMaxDistance, 0f, 1f);
                 masterModeVelocityBoost = MathHelper.Lerp(0f, 8f, lerpAmount);
@@ -1296,7 +1297,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Main.rand.NextBool(chanceToSpawnHungry))
                 {
-                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(2f, 8f, npc.life / (float)npc.lifeMax));
+                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(Main.masterMode ? 2f : 1f, Main.masterMode ? 8f : 4f, npc.life / (float)npc.lifeMax));
                     if (NPC.CountNPCS(NPCID.TheHungry) < maxHungriesBasedOnHP)
                     {
                         int hungryCount = 0;
@@ -1356,9 +1357,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float num388 = (npc.Center.Y + (float)Main.wofDrawAreaBottom) / 2f;
                 num387 = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)num388, NPCID.WallofFleshEye, npc.whoAmI, -1f);
                 float num389 = (npc.Center.Y + (float)Main.wofDrawAreaBottom) / 2f;
-                int maxHungries = Main.masterMode ? 17 : 11;
-                for (int num390 = 0; num390 < maxHungries; num390++)
-                    num387 = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)num389, NPCID.TheHungry, npc.whoAmI, (float)num390 * 0.1f - 0.05f);
+                int maxHungries = Main.masterMode ? 16 : 11;
+                float maxOffset = Main.masterMode ? (0.2f / 3f) : 0.1f;
+                for (int i = 0; i < maxHungries; i++)
+                    num387 = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)num389, NPCID.TheHungry, npc.whoAmI, i * maxOffset - 0.05f);
             }
 
             return false;

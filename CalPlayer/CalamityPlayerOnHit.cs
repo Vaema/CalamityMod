@@ -1099,7 +1099,7 @@ namespace CalamityMod.CalPlayer
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
                 damage = Player.ApplyArmorAccDamageBonusesTo(damage);
 
-                Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<SabatonBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
+                Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
                 for (int dustexplode = 0; dustexplode < 360; dustexplode++)
                 {
