@@ -104,7 +104,6 @@ ArkoftheElements: {
 		'''
 		[COMBO]
 		[PARRY]
-		[BLAST]
 		A heavenly pair of blades infused with the essence of Terraria, powerful enough to cut through the fabric of reality
 		'''
 	ComboInfo:
@@ -117,9 +116,8 @@ ArkoftheElements: {
 		<right> to snip out the scissor blades in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
 		You can parry projectiles to make them deal 100 less damage for a short period
-		Parrying will empower the next 10 swings of the sword, letting you use both blades at once
+		Parrying an enemy or projectile will empower the next 10 swings of the sword, letting you use both blades at once
 		'''
-	BlastInfo: Pressing <right> while holding UP with empowered charges will provoke a Big Rip in spacetime and use all charges
 }
 
 AstralBlade: {
