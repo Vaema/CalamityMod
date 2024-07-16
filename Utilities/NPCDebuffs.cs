@@ -146,7 +146,7 @@ namespace CalamityMod
         private static readonly int[] cragEnemyImmunities = new int[3] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>() };
         private static readonly int[] astralEnemyImmunities = new int[2] { BuffID.Poisoned, ModContent.BuffType<AstralInfectionDebuff>() };
         private static readonly int[] plagueEnemyImmunities = new int[3] { BuffID.Poisoned, BuffID.Venom, ModContent.BuffType<Plague>() };
-        private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), ModContent.BuffType<Nightwither>() };
+        private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), BuffID.Daybreak };
         #endregion
 
         #region Load/Unload
@@ -269,7 +269,7 @@ namespace CalamityMod
                 { ModContent.NPCType<CosmicLantern>(), immuneToEverything },
                 { ModContent.NPCType<CosmicMine>(), immuneToEverything },
 
-                { ModContent.NPCType<Polterghast>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<Nightwither>(), ModContent.BuffType<WhisperingDeath>() }) },
+                { ModContent.NPCType<Polterghast>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<Nightwither>(), ModContent.BuffType<Voidfrost>(), ModContent.BuffType<WhisperingDeath>() }) },
                 { ModContent.NPCType<PolterPhantom>(), immuneToEverything },
                 { ModContent.NPCType<PhantomFuckYou>(), immuneToEverything },
                 { ModContent.NPCType<PolterghastHook>(), immuneToEverything },
