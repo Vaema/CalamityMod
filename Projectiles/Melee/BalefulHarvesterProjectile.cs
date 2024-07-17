@@ -14,13 +14,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            Main.projFrames[Projectile.type] = 5;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 46;
-            Projectile.height = 36;
+            Projectile.width = Projectile.height = 24;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 1;
@@ -45,15 +43,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.alpha = 0;
             }
-
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame > 4)
-                Projectile.frame = 0;
 
             if (Projectile.ai[0] >= 0f && Projectile.ai[0] < 200f)
             {

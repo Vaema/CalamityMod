@@ -1178,7 +1178,7 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformation;
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
-        public bool redBow;
+        public bool ghostBracelet;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -2232,7 +2232,7 @@ namespace CalamityMod.CalPlayer
             omegaBlueTransformationPrevious = omegaBlueTransformation;
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
 
-            redBow = false;
+            ghostBracelet = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -4290,11 +4290,11 @@ namespace CalamityMod.CalPlayer
                     profanedCrystalAnimCounter = new KeyValuePair<int, int>(0, 10);
             }
 
-            if (redBow)
+            if (ghostBracelet)
             {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "RedBow", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "RedBow", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "RedBow", EquipType.Head);
+                Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
+                Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
+                Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
             }
 
             if (snowRuffianSet)
