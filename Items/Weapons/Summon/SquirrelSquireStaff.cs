@@ -11,8 +11,8 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public static float MinProjectileVelocity = 15f;
-        public static float MaxProjectileVelocity = 32f;
+        public static float ProjectileVelocity = 20f;
+        public static int TimeBeforeFalling = 30;
         public static float DistanceToMortarShoot = 240f;
         public static int ProjectileTimeAlive = 180;
         public static float ProjectileGravity = 0.5f;

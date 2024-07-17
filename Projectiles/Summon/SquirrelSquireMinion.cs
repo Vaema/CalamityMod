@@ -126,13 +126,10 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
-            if (Projectile.frame == 5 && Projectile.frameCounter == 0 && Main.myPlayer == Projectile.owner)
+            if (Projectile.frame == 0 && Projectile.frameCounter == 0 && Main.myPlayer == Projectile.owner)
             {
-                float acornShootSpeed = MathHelper.Lerp(MinProjectileVelocity, MaxProjectileVelocity, Projectile.Distance(Target.Center) / 800f);
                 Vector2 spawnPosition = Projectile.spriteDirection == -1 ? Projectile.Left : Projectile.Right;
-                Vector2 shootVelocity = Projectile.Distance(Target.Top) < DistanceToMortarShoot ?
-                    (Target.Top - spawnPosition).SafeNormalize(-Vector2.UnitY) * acornShootSpeed :
-                    CalamityUtils.GetProjectilePhysicsFiringVelocity(spawnPosition, Target.Top, ProjectileGravity, acornShootSpeed);
+                Vector2 shootVelocity = CalamityUtils.CalculatePredictiveAimToTarget(spawnPosition, Target, ProjectileVelocity);
                 Projectile.NewProjectileDirect(
                     Projectile.GetSource_FromThis(),
                     spawnPosition,

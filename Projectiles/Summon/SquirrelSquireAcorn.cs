@@ -13,7 +13,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults() => ProjectileID.Sets.SentryShot[Type] = true;
 
-        public int time = 0;
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Summon;
@@ -27,16 +26,23 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            Projectile.velocity.Y += ProjectileGravity;
+            if (Projectile.timeLeft < ProjectileTimeAlive - TimeBeforeFalling)
+                Projectile.velocity.Y += ProjectileGravity;
+
             Projectile.rotation += MathHelper.ToRadians(Projectile.velocity.X * 3f);
-            if (Main.rand.NextBool())
+
+            if (!Main.dedServ)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 7 : 79);
-                dust.noGravity = true;
-                dust.scale = 0.85f;
-                dust.velocity = Projectile.velocity * 0.4f;
+                if (Main.rand.NextBool())
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 7 : 79);
+                    dust.noGravity = true;
+                    dust.scale = 0.85f;
+                    dust.velocity = Projectile.velocity * 0.4f;
+                    dust.noLight = true;
+                    dust.noLightEmittence = true;
+                }
             }
-            time++;
         }
 
         public override void OnKill(int timeLeft)
