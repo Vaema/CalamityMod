@@ -13,8 +13,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
-    [LegacyName("LaserRifle")]
-    public class HeavyLaserRifle : ModItem, ILocalizedModType
+    [LegacyName("HeavyLaserRifle")]
+    public class ScattershotSkewer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/LaserRifleFire");
