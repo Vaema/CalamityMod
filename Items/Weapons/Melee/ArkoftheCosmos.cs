@@ -29,14 +29,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
         public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
-
-        public static int DashIframes = 10;
-        public static float SlashBoltsDamageMultiplier = 0.2f;
         public static float SnapBoltsDamageMultiplier = 0.1f;
 
         public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
-        public static float blastFalloffSpeed = 0.1f; //How much the blast damage falls off as you hit more and more targets
-        public static float blastFalloffStrenght = 0.75f; //Value between 0 and 1 that determines how much falloff increases affect the damage : Closer to 0 = damage falls off less intensely, closer to 1 : damage falls off way harder
+        public static float BlastBoltsDamageMultiplier = 0.2f;
 
         public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during hte swirl attack
         public static float SwirlBoltDamageMultiplier = 0.7f; //This is the damage multiplier for ALL THE BOLTS: Aka, said damage multiplier is divided by the amount of bolts in a swirl and the full damage multiplier is gotten if you hit all the bolts
@@ -116,13 +112,14 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
-                if (Charge > 0 && player.controlUp)
+                bool onParryCooldown = false;
+                if (Main.projectile.Any(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>()))
+                    onParryCooldown = true;
+
+                if (Charge > 0 && onParryCooldown)
                 {
                     float angle = velocity.ToRotation();
                     Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * Charge * chargeDamageMultiplier * blastDamageMultiplier), 0, player.whoAmI, Charge);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
 
                     Charge = 0;
                 }
