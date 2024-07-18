@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Accessories.Vanity
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Silk, 5).
+                AddIngredient(ItemID.Silk, 20).
                 AddTile(TileID.Loom).
                 Register();
         }
