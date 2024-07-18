@@ -1566,6 +1566,7 @@ namespace CalamityMod
                 TileType<LivingGodSlayerFireBlockTile>(),
                 TileType<LivingHolyFireBlockTile>(),
                 TileType<LivingBrimstoneFireBlockTile>(),
+                TileType<LivingPlagueFireBlockTile>(),
                 TileID.LivingFire,
                 TileID.LivingCursedFire,
                 TileID.LivingDemonFire,

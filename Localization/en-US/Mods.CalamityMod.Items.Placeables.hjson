@@ -3095,6 +3095,11 @@ LivingHolyFireBlock: {
 	Tooltip: ""
 }
 
+LivingPlagueFireBlock: {
+	DisplayName: Living Plague Fire Block
+	Tooltip: ""
+}
+
 DraedonExoSelectMusicBox: {
 	DisplayName: Music Box (Exo Mech Selection)
 	Tooltip: Plays 'Signal Received' by CDMusic
