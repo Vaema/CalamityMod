@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
         public static float SuperHammerDamageMult = 4f;
         public static float SmashHomingRange = 400f; // 25 tiles
         public static float WindUpTime = 216f;
-        public static float ConvergeTime = 64f;
+        public static float ConvergeTime = 36f;
 
         public ref float AirTime => ref Projectile.ai[0];
         public ref float HammerState => ref Projectile.ai[1]; // R, G, B, Center
