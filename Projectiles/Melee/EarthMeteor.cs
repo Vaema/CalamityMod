@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.extraUpdates = 15;
 
-                NPC target = Projectile.Center.ClosestNPCAt(2000);
+                NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(2000);
                 if (target != null)
                     Projectile.velocity = (target.Center - Projectile.Center + target.velocity * 8).SafeNormalize(Vector2.UnitX) * 8;
                 else
