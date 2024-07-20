@@ -13,8 +13,6 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
-        public int FlareCount = 0;
-
         public override void SetDefaults()
         {
             Item.width = 168;
@@ -34,13 +32,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
-        }
-
-        public override void UpdateInventory(Player player)
-        {
-            // Reset flares if switched to a different instance of the same weapon (switching to other weapons/tools is fair game)
-            if (player.ActiveItem() != Item && player.ActiveItem().type == Type)
-                FlareCount = 0;
         }
 
         public override void AddRecipes()

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -59,8 +58,18 @@ namespace CalamityMod.Projectiles.Melee
             // Transform into smashy hammers
             if (Target == -2f)
             {
+                for (int i = 0; i < 6; i++)
+                {
+                    Vector2 velocity = Vector2.UnitX.RotatedBy(rotation).RotatedByRandom(MathHelper.ToRadians(36f)) * Main.rand.NextFloat(10f, 30f);
+                    float scale = Main.rand.NextFloat(0.8f, 1.5f);
+                    Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, GetColor(FlareType), 1f * scale, 24, 0.1f, 2.5f * scale);
+                    GeneralParticleHandler.SpawnParticle(sparkle);
+                }
+                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, GetColor(FlareType), Vector2.One, 0f, 0.1f, 0.8f, 10);
+                GeneralParticleHandler.SpawnParticle(pulse);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TriactisHammerProj>(), Projectile.damage, 0f, Projectile.owner, 0f, FlareType, OrbitRadius);
                 Projectile.Kill();
+                return;
             }
             // Orbit around the player
             else if (!Main.npc.IndexInRange((int)Target))
@@ -73,17 +82,24 @@ namespace CalamityMod.Projectiles.Melee
                 if (enemy is null || enemy.life <= 0 || !enemy.active || enemy.dontTakeDamage || enemy.immortal)
                 {
                     Target = -1f;
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 0; i < 5; i++)
                     {
                         Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 10f);
-                        Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, GetColor(FlareType), 1.2f, 30, 0.1f, 3f, Main.rand.NextFloat(0f, 0.01f));
+                        Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, GetColor(FlareType), 1.2f, 30, 0.1f, 3f);
                         GeneralParticleHandler.SpawnParticle(sparkle);
                     }
                     return;
                 }
 
-                OrbitRadius = MathHelper.Clamp(MathF.Max(enemy.width, enemy.height) + 64f, 64f, 480f);
+                OrbitRadius = MathHelper.Clamp(MathF.Max(enemy.width, enemy.height) + 64f, 64f, 400f);
                 Projectile.Center = enemy.Center + Vector2.UnitX.RotatedBy(rotation) * OrbitRadius;
+            }
+
+            // Dust trail
+            if (Main.rand.NextBool(3))
+            {
+                Dust trail = Dust.QuickDust(Projectile.Center, GetColor(FlareType));
+                trail.position += Main.rand.NextVector2Unit() * Main.rand.NextFloat(0f, 8f);
             }
         }
 
@@ -113,15 +129,15 @@ namespace CalamityMod.Projectiles.Melee
             Texture2D sparkleTex = Sparkle.Value;
             Texture2D bloomTex = Bloom.Value;
             float bloomScale = (float)sparkleTex.Height / (float)bloomTex.Height;
-            float sparkleScale = 0.75f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.15f;
+            float sparkleScale = 0.7f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.2f;
 
             Color color = Projectile.GetAlpha(lightColor);
             float rotation = Main.GlobalTimeWrappedHourly * 8f;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
 
-            Main.EntitySpriteDraw(bloomTex, drawPos, null, color * 0.6f, 0, bloomTex.Size() * 0.5f, 5f * bloomScale, SpriteEffects.None);
-            Main.EntitySpriteDraw(sparkleTex, drawPos, null, Color.Lerp(color, Color.White, 0.5f), rotation, sparkleTex.Size() * 0.5f, 2f * sparkleScale, SpriteEffects.None);
-            Main.EntitySpriteDraw(sparkleTex, drawPos, null, color, rotation + MathHelper.PiOver4, sparkleTex.Size() * 0.5f, 1.5f * sparkleScale, SpriteEffects.None);
+            Main.EntitySpriteDraw(bloomTex, drawPos, null, color * 0.5f, 0, bloomTex.Size() * 0.5f, 5f * bloomScale, SpriteEffects.None);
+            Main.EntitySpriteDraw(sparkleTex, drawPos, null, Color.Lerp(color, Color.White, 0.7f), rotation, sparkleTex.Size() * 0.5f, 2.2f * sparkleScale, SpriteEffects.None);
+            Main.EntitySpriteDraw(sparkleTex, drawPos, null, color, rotation + MathHelper.PiOver4, sparkleTex.Size() * 0.5f, 1.6f * sparkleScale, SpriteEffects.None);
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)

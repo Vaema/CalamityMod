@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public static float ExplosionDamageKBMult = 2f;
         public static float SuperHammerDamageMult = 4f;
-        public static float SmashHomingRange = 400f; // 25 tiles
-        public static float WindUpTime = 216f;
-        public static float ConvergeTime = 36f;
+        public static float SmashHomingRange = 800f; // 50 tiles
+        public static float WindUpTime = 216f; // 1.2 seconds
+        public static float ConvergeTime = 18f; // 0.1 seconds
 
         public ref float AirTime => ref Projectile.ai[0];
         public ref float HammerState => ref Projectile.ai[1]; // R, G, B, Center
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            // Smash animation
+            // Smashing hammers
             if (HammerState > 0f)
             {
                 // Central spot (invisible)
@@ -67,7 +67,10 @@ namespace CalamityMod.Projectiles.Melee
                     // Target should already be set -- if not, retarget
                     NPC target = Main.npc[(int)SmashTarget];
                     if (target is null || target.life <= 0 || !target.active || target.dontTakeDamage || target.immortal)
+                    {
                         target = Projectile.Center.ClosestNPCAt(SmashHomingRange, bossPriority: true);
+                        SmashTarget = target.whoAmI;
+                    }                        
 
                     // Strongly locks onto the target center
                     // If there is no target, it would just rest there
@@ -75,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.Center = target.Center;
 
                     // Explode when told to
-                    if (AirTime == 1f)
+                    if (AirTime == -1f)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TriactisHammerExplosion>(), (int)(Projectile.damage * ExplosionDamageKBMult), Projectile.knockBack * ExplosionDamageKBMult, Projectile.owner);
                         SoundEngine.PlaySound(Main.zenithWorld ? SmashSoundGFB : SmashSound, Projectile.Center);
@@ -83,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
                         return;
                     }
                 }
-                // Orbital hammers
+                // Orbital RGB hammers
                 else
                 {
                     // Need the central spot to exist or they explode immediately
@@ -106,17 +109,19 @@ namespace CalamityMod.Projectiles.Melee
                     // Move outwards for a bit
                     if (AirTime < WindUpTime)
                     {
-                        OrbitRadius = MathHelper.Lerp(OrbitRadius, 720f, 0.05f);
+                        OrbitRadius = MathHelper.Lerp(OrbitRadius, 800f, 0.04f);
                         Projectile.Center = target.Center + Vector2.UnitX.RotatedBy(rotation) * OrbitRadius;
                         Projectile.rotation = Projectile.AngleFrom(target.Center) + MathHelper.PiOver4;                        
+                        // Scales up to full size after a short portion of the animation time
+                        Projectile.scale = Utils.GetLerpValue(0f, WindUpTime * 0.2f, AirTime, true);
 
-                        if (OrbitRadius > 712f)
+                        if (OrbitRadius > 792f)
                         {
                             Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(0.6f, 1f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(160f, 320f), 0f, TriactisHammerFlare.GetColor(HammerState), Projectile.GetAlpha(Color.White), Main.rand.Next(10, 20), Projectile.Center);
                             GeneralParticleHandler.SpawnParticle(streak);
                             if (AirTime % 18f == 0f)
                             {
-                                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, TriactisHammerFlare.GetColor(HammerState), Vector2.One, 0f, 0.2f, 2.5f, 12);
+                                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Projectile.GetAlpha(Color.White), Vector2.One, 0f, 0.2f, 2.5f, 12);
                                 GeneralParticleHandler.SpawnParticle(pulse);
                             }
                         }
@@ -124,25 +129,36 @@ namespace CalamityMod.Projectiles.Melee
                     // Then converge at the middle where the central spot is
                     else
                     {
-                        OrbitRadius = MathHelper.Lerp(720f, 0f, (AirTime - WindUpTime) / ConvergeTime);
+                        OrbitRadius = MathHelper.Lerp(800f, 0f, (AirTime - WindUpTime) / ConvergeTime);
                         Projectile.Center = target.Center + Vector2.UnitX.RotatedBy(rotation) * OrbitRadius;
                         Projectile.rotation = Projectile.AngleTo(target.Center) + MathHelper.PiOver4;
 
                         // Trigger the central spot to explode which then causes these hammers to explode too
-                        if (Projectile.Hitbox.Intersects(target.Hitbox))
-                            target.ai[0] = 1f;
+                        if (Projectile.Hitbox.Intersects(target.Hitbox) || AirTime > WindUpTime + ConvergeTime)
+                            target.ai[0] = -1f;
                     }
                 }
             }
             // Normal hammers
             else if (HammerState == 0f)
             {
-                Projectile.rotation += Projectile.direction * MathHelper.ToRadians(2f);
+                AirTime++;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4 + Projectile.direction * MathHelper.ToRadians(2f) * AirTime;
                 Projectile.velocity.X *= 0.99f;
 
                 if (Projectile.velocity.Y < 20f)
                     Projectile.velocity.Y += 0.2f;
+
+                // Dust trail
+                Dust trail = Dust.NewDustPerfect(Projectile.Center, DustID.GoldFlame, Projectile.velocity * 0.3f);
+                trail.position += Main.rand.NextVector2Unit() * Main.rand.NextFloat(0f, 64f);
+                trail.noGravity = true;
+
+                // Prevent the projectile from wreacking too much havoc off-screen
+                if (Vector2.Distance(Projectile.Center, Owner.MountedCenter) >= 2000f)
+                    Projectile.Kill();
             }
+            // Returning hammers
             else
             {
                 // Slows down a little
@@ -158,14 +174,18 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Projectile.rotation = Projectile.AngleTo(Owner.MountedCenter) + MathHelper.PiOver4;
                     Projectile.velocity = Projectile.SafeDirectionTo(Owner.MountedCenter) * 25f;
-                    if (Projectile.Hitbox.Intersects(Owner.Hitbox))
+                    if (Projectile.Hitbox.Intersects(Owner.Hitbox) || Vector2.Distance(Projectile.Center, Owner.MountedCenter) >= 2000f)
                         Projectile.Kill();
                 }
-            }
 
-            // Prevent the projectile from wreacking too much havoc off-screen
-            if (Vector2.Distance(Projectile.Center, Owner.MountedCenter) >= 2000f)
-                Projectile.Kill();
+                // (Slightly less) dust trail
+                if (!Main.rand.NextBool(4))
+                {
+                    Dust trail = Dust.NewDustPerfect(Projectile.Center, DustID.GoldFlame, Projectile.velocity * 0.2f);
+                    trail.position += Main.rand.NextVector2Unit() * Main.rand.NextFloat(0f, 64f);
+                    trail.noGravity = true;
+                }
+            }
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -179,7 +199,7 @@ namespace CalamityMod.Projectiles.Melee
                 case 3f:
                     return new Color(117, 170, 239);
             }
-            return base.GetAlpha(lightColor);
+            return Color.White;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -187,59 +207,68 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.numHits > 0 || HammerState > 0f)
                 return;
 
-            TriactisTruePaladinianMageHammerofMight MainItem = (Owner.HeldItem.ModItem as TriactisTruePaladinianMageHammerofMight);
-            if (MainItem != null)
+            int FlareCount = Owner.ownedProjectileCounts[ModContent.ProjectileType<TriactisHammerFlare>()] + 1;
+
+            if (Main.zenithWorld)
+                SoundEngine.PlaySound(HitSoundGFB with { Pitch = FlareCount * 0.15f - 0.15f }, Projectile.Center);
+            else
+                SoundEngine.PlaySound(HitSound with { Pitch = FlareCount * 0.15f - 0.15f }, Projectile.Center);
+
+            // Simple on-hit dust ring on all normal hits
+            for (int i = 0; i < 32; i++)
             {
-                MainItem.FlareCount++;
+                Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * i / 32f) * (9f + 1f * FlareCount) * (i % 2 == 0 ? 1.2f : 1f);
+                Dust ring = Dust.NewDustPerfect(Projectile.Center, DustID.GoldFlame, velocity);
+                ring.noGravity = true;
+                ring.noLight = true;
+                ring.scale = (i % 2 == 0 ? 1.6f : 2.4f) * (0.8f + 0.2f * FlareCount);
+            }
 
-                if (Main.zenithWorld)
-                    SoundEngine.PlaySound(HitSoundGFB with { Pitch = MainItem.FlareCount * 0.15f - 0.15f }, Projectile.Center);
-                else
-                    SoundEngine.PlaySound(HitSound with { Pitch = MainItem.FlareCount * 0.15f - 0.15f }, Projectile.Center);
-
-                foreach (Projectile p in Main.ActiveProjectiles)
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type == ModContent.ProjectileType<TriactisHammerFlare>() && p.owner == Owner.whoAmI)
                 {
-                    if (p.type == ModContent.ProjectileType<TriactisHammerFlare>() && p.owner == Owner.whoAmI)
+                    // Update target of orbit to the most recently hit one
+                    // Create telporting particles if this happens to be a different target
+                    if (p.ai[1] != target.whoAmI)
                     {
-                        // Update target of orbit to the most recently hit one
-                        // Create telporting particles if this happens to be a different target
-                        if (p.ai[1] != target.whoAmI)
+                        p.ai[1] = target.whoAmI;
+                        for (int i = 0; i < 5; i++)
                         {
-                            p.ai[1] = target.whoAmI;
-                            for (int i = 0; i < 6; i++)
-                            {
-                                Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 10f);
-                                Particle sparkle = new CritSpark(p.Center, velocity, Color.White, TriactisHammerFlare.GetColor(p.ai[0]), 1.2f, 30, 0.1f, 3f, Main.rand.NextFloat(0f, 0.01f));
-                                GeneralParticleHandler.SpawnParticle(sparkle);
-                            }
+                            Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 10f);
+                            Particle sparkle = new CritSpark(p.Center, velocity, Color.White, TriactisHammerFlare.GetColor(p.ai[0]), 1.2f, 30, 0.1f, 3f);
+                            GeneralParticleHandler.SpawnParticle(sparkle);
                         }
-
-                        // Set the flares up to transform themselves if ready
-                        if (MainItem.FlareCount > 3)
-                        {
-                            p.ai[1] = -2f;
-                            p.ai[2] = Projectile.whoAmI;
-                        }
-                        p.netUpdate = true;
                     }
-                }
 
-                if (MainItem.FlareCount > 3)
-                {
-                    SoundEngine.PlaySound(WindUpSound, Projectile.Center);
-                    HammerState = 4f;
-                    SmashTarget = target.whoAmI;
-                    Projectile.velocity = Vector2.Zero;
-                    Projectile.ExpandHitboxBy(4);
-                    Projectile.netUpdate = true;
-                    MainItem.FlareCount = 0;
+                    // Set the flares up to transform themselves if ready
+                    if (FlareCount > 3)
+                    {
+                        p.ai[1] = -2f;
+                        p.ai[2] = Projectile.whoAmI;
+                    }
+                    p.netUpdate = true;
                 }
-                else
-                {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<TriactisHammerFlare>(), (int)(Projectile.damage * SuperHammerDamageMult), 0f, Projectile.owner, MainItem.FlareCount, target.whoAmI);
-                    HammerState = -1f;
-                    Projectile.netUpdate = true;
-                }
+            }
+
+            // Change state and turn invisible
+            if (FlareCount > 3)
+            {
+                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Gold, Color.White, 0.5f), Vector2.One, 0f, 0.2f, 2.5f, 24);
+                GeneralParticleHandler.SpawnParticle(pulse);
+                SoundEngine.PlaySound(WindUpSound, Projectile.Center);
+                HammerState = 4f;
+                SmashTarget = target.whoAmI;
+                Projectile.velocity = Vector2.Zero;
+                Projectile.ExpandHitboxBy(4);
+                Projectile.netUpdate = true;
+            }
+            else
+            {
+                // Spawn flares and set to return to player
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<TriactisHammerFlare>(), (int)(Projectile.damage * SuperHammerDamageMult), 0f, Projectile.owner, FlareCount, target.whoAmI);
+                HammerState = -1f;
+                Projectile.netUpdate = true;
             }
         }
 
@@ -261,7 +290,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        // Echo Hammers can only hit after animation finishes
+        // Echo Hammers can only hit when they converge
         public override bool? CanDamage()
         {
             if (HammerState == 4f)

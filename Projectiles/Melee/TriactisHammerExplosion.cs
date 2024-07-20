@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int l = 0; l < 3; l++)
             {
-                Particle spark = new GlowSparkParticle(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(15.5f, 35.5f), true, 15, Main.rand.NextFloat(0.02f, 0.06f), TriactisHammerFlare.GetColor(1f + Main.rand.Next(3)), new Vector2(2.5f, 0.7f), true);
+                Particle spark = new GlowSparkParticle(Projectile.Center, Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(18f, 60f), true, 15, Main.rand.NextFloat(0.02f, 0.05f), TriactisHammerFlare.GetColor(1f + Main.rand.Next(3)), new Vector2(3f, 1f), true);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
         }
