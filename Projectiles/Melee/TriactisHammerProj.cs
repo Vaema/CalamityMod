@@ -69,7 +69,8 @@ namespace CalamityMod.Projectiles.Melee
                     if (target is null || target.life <= 0 || !target.active || target.dontTakeDamage || target.immortal)
                     {
                         target = Projectile.Center.ClosestNPCAt(SmashHomingRange, bossPriority: true);
-                        SmashTarget = target.whoAmI;
+                        if (target != null)
+                            SmashTarget = target.whoAmI;
                     }                        
 
                     // Strongly locks onto the target center
