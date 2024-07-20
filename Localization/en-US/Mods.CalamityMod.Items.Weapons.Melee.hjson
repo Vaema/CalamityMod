@@ -179,7 +179,11 @@ BansheeHook: {
 
 Basher: {
 	DisplayName: Basher
-	Tooltip: Swings a rotten club that poisons and irradiates enemies on hit
+	Tooltip:
+'''
+Swings a rotten club that poisons and irradiates enemies on hit
+Holding <right> while swinging will increase the club's damage, but will also knock you back on hit
+'''
 }
 
 BladecrestOathsword: {
