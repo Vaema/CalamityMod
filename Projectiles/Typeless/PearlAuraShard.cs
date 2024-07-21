@@ -6,25 +6,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class PendantProjectile2 : ModProjectile, ILocalizedModType
+    public class PearlAuraShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = 14;
+            Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 220;
-            Projectile.penetrate = 1;
             Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            if (Projectile.timeLeft < 210)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 10f, 20f);
+
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.2f / 255f, (255 - Projectile.alpha) * 0.2f / 255f);
             Projectile.rotation += Projectile.velocity.X * 1.25f;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 4; i++)
             {
                 int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 0.6f);
                 Main.dust[dust].noGravity = true;
@@ -32,9 +34,5 @@ namespace CalamityMod.Projectiles.Typeless
                 Main.dust[dust].velocity += Projectile.velocity * 0.1f;
             }
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Eutrophication>(), 30);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Eutrophication>(), 30);
     }
 }

@@ -2914,7 +2914,7 @@ namespace CalamityMod.CalPlayer
 
             if (giantPearl)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient && !areThereAnyDamnBosses)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     foreach (NPC npc in Main.ActiveNPCs)
                     {

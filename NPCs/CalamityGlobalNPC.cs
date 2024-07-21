@@ -246,6 +246,7 @@ namespace CalamityMod.NPCs
         public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
+        public int pearlAuraCounter = 0;
         public int bBlood = 0;
         public int brainRot = 0;
         public int laceration = 0;
@@ -470,6 +471,7 @@ namespace CalamityMod.NPCs
             myClone.slowed = slowed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
+            myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.bBlood = bBlood;
             myClone.brainRot = brainRot;
             myClone.laceration = laceration;
@@ -5133,6 +5135,9 @@ namespace CalamityMod.NPCs
                     npc.ai[3] = 0f;
             }
 
+            // Incremement Giant Pearl's pearl shard counter
+            pearlAuraCounter++;
+
             // Debuff decrements
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
@@ -5252,11 +5257,9 @@ namespace CalamityMod.NPCs
                     Particle sparks = new LineParticle(npc.Center, new Vector2(Main.rand.NextFloat(-9f, 9f), Main.rand.NextFloat(-9f, 9f)), false, 45, 0.9f, Main.rand.NextBool() ? Color.Cyan : Color.SkyBlue);
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
-                //Particle boop = new CustomPulse(npc.Center, Vector2.Zero, new Color(233, 95, 212), "CalamityMod/Particles/Sparkle2", Vector2.One, Main.rand.NextFloat(-5f, 5f), 0.8f + (float)(0.04 * veriumDoomStacks), 1.6f + (float)(0.08 * veriumDoomStacks), 40);
-                //GeneralParticleHandler.SpawnParticle(boop);
 
                 SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
-                Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, 200f);
+                Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, 200f);
 
                 veriumDoomMarked = false;
                 veriumDoomStacks = 0;
@@ -5312,10 +5315,19 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (!CalamityPlayer.areThereAnyDamnBosses && !CalamityLists.enemyImmunityList.Contains(npc.type))
+            if (pearlAura > 0)
             {
-                if (pearlAura > 0)
-                    npc.velocity *= 0.9f;
+                // Slow the enemy
+                npc.velocity *= 0.9f;
+
+                // Spawn pearl shards on a counter
+                if (pearlAuraCounter % 12 == 0)
+                {
+                    SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
+                    Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
+                    int damage = 20;
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+                }
             }
 
             // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
@@ -6530,6 +6542,9 @@ namespace CalamityMod.NPCs
             if (nightwither > 0)
                 Nightwither.DrawEffects(npc, ref drawColor);
 
+            if (pearlAura > 0)
+                PearlAura.DrawEffects(npc, ref drawColor);
+
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
@@ -6678,7 +6693,7 @@ namespace CalamityMod.NPCs
                 drawColor = Color.Fuchsia;
 
             else if (pearlAura > 0)
-                drawColor = Color.White;
+                drawColor = new Color(185, 185, 255);
 
             else if (timeSlow > 0 || tesla > 0)
                 drawColor = Color.Aquamarine;

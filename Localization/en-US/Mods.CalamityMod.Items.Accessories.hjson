@@ -129,11 +129,6 @@ AmbrosialAmpoule: {
 		'''
 }
 
-AmidiasPendant: {
-	DisplayName: Amidias' Pendant
-	Tooltip: Periodically rains down prism shards that briefly stun enemies
-}
-
 AmidiasSpark: {
 	DisplayName: Amidias' Spark
 	Tooltip: Taking damage releases a blast of sparks
@@ -819,7 +814,7 @@ GiantPearl: {
 		'''
 		You have a light aura around you
 		Enemies within the aura are slowed down
-		Does not work while a boss is alive
+		You release homing prism shards while an enemy is slowed
 		Provides a small amount of light in the abyss
 		'''
 }
