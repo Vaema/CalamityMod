@@ -64,7 +64,12 @@ namespace CalamityMod.Particles
         }
 
         /// <summary>
-        /// A constructor that spawns a particle that follows a specific <see cref="Vector2"/>.
+        /// A constructor that spawns a particle that follows a specific <see cref="Vector2"/>.<br/>
+        /// For simple one-line positions, you can just write in the argument, for example:<br/>
+        /// <br/>
+        /// <code>() => Projectile.Center</code>
+        /// For more complicated logic to decide which <see cref="Vector2"/> it should follow,<br/>
+        /// you'd just make your own function which returns a <see cref="Vector2"/> and give it as an argument.
         /// </summary>
         public ThunderBoltVFX(Func<Vector2> followFunction, float rotation, float scale, Color color, int lifeTime, float shakePower, float opacity = 1f, Vector2? squish = null)
         {
@@ -85,7 +90,7 @@ namespace CalamityMod.Particles
             float fadeFactor = 1f - 0.05f * MathHelper.Clamp((Time - 10) / 10f, 0f, 1f);
             Opacity *= fadeFactor;
             Squish.X *= fadeFactor;
-            if (FollowFunction is not null) Position = (Vector2)(FollowFunction?.Invoke());
+            if (FollowFunction is not null) Position = FollowFunction.Invoke();
         }
 
         public override void CustomDraw(SpriteBatch spriteBatch)
