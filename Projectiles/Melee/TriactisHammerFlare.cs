@@ -58,16 +58,8 @@ namespace CalamityMod.Projectiles.Melee
             // Transform into smashy hammers
             if (Target == -2f)
             {
-                for (int i = 0; i < 6; i++)
-                {
-                    Vector2 velocity = Vector2.UnitX.RotatedBy(rotation).RotatedByRandom(MathHelper.ToRadians(36f)) * Main.rand.NextFloat(10f, 30f);
-                    float scale = Main.rand.NextFloat(0.8f, 1.5f);
-                    Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, GetColor(FlareType), 1f * scale, 24, 0.1f, 2.5f * scale);
-                    GeneralParticleHandler.SpawnParticle(sparkle);
-                }
-                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, GetColor(FlareType), Vector2.One, 0f, 0.1f, 0.8f, 10);
-                GeneralParticleHandler.SpawnParticle(pulse);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TriactisHammerProj>(), Projectile.damage, 0f, Projectile.owner, 0f, FlareType, OrbitRadius);
+                Projectile hammer = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TriactisHammerProj>(), Projectile.damage, 0f, Projectile.owner, 0f, FlareType, OrbitRadius);
+                hammer.scale = 0f;
                 Projectile.Kill();
                 return;
             }
@@ -82,10 +74,11 @@ namespace CalamityMod.Projectiles.Melee
                 if (enemy is null || enemy.life <= 0 || !enemy.active || enemy.dontTakeDamage || enemy.immortal)
                 {
                     Target = -1f;
+                    Projectile.netUpdate = true;
                     for (int i = 0; i < 5; i++)
                     {
                         Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 10f);
-                        Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, GetColor(FlareType), 1.2f, 30, 0.1f, 3f);
+                        Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, GetColor(FlareType), 1f, 24, 0.1f, 2.4f);
                         GeneralParticleHandler.SpawnParticle(sparkle);
                     }
                     return;

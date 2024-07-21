@@ -91,10 +91,12 @@ namespace CalamityMod.Projectiles.Melee
                 else
                 {
                     // Need the central spot to exist or they explode immediately
+                    float rotation = Main.GlobalTimeWrappedHourly * 2f + MathHelper.ToRadians(120f) * HammerState;
+                    Color currentColor = TriactisHammerFlare.GetColor(HammerState);
                     Projectile target = Main.projectile[(int)SmashTarget];
                     if (target is null || !target.active)
                     {
-                        Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, TriactisHammerFlare.GetColor(HammerState), Vector2.One, 0f, 0.2f, 4f, 20);
+                        Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, currentColor, Vector2.One, 0f, 0.2f, 4f, 20);
                         GeneralParticleHandler.SpawnParticle(pulse);
                         Projectile.Kill();
                         return;
@@ -102,23 +104,34 @@ namespace CalamityMod.Projectiles.Melee
 
                     // Initialize orbit radius
                     if (AirTime == 0f)
-                        OrbitRadius = Vector2.Distance(Projectile.Center, target.Center);
-
-                    AirTime++;
-                    float rotation = Main.GlobalTimeWrappedHourly * 2f + MathHelper.ToRadians(120f) * HammerState;
+                        OrbitRadius = MathHelper.Clamp(Vector2.Distance(Projectile.Center, target.Center), 64f, 400f);
 
                     // Move outwards for a bit
+                    AirTime++;
                     if (AirTime < WindUpTime)
                     {
                         OrbitRadius = MathHelper.Lerp(OrbitRadius, 800f, 0.04f);
                         Projectile.Center = target.Center + Vector2.UnitX.RotatedBy(rotation) * OrbitRadius;
                         Projectile.rotation = Projectile.AngleFrom(target.Center) + MathHelper.PiOver4;                        
                         // Scales up to full size after a short portion of the animation time
-                        Projectile.scale = Utils.GetLerpValue(0f, WindUpTime * 0.2f, AirTime, true);
+                        Projectile.scale = Utils.GetLerpValue(0f, WindUpTime * 0.1f, AirTime, true);
+
+                        if (AirTime == 1f)
+                        {
+                            for (int i = 0; i < 6; i++)
+                            {
+                                Vector2 velocity = Vector2.UnitX.RotatedBy(rotation).RotatedByRandom(MathHelper.ToRadians(36f)) * Main.rand.NextFloat(10f, 30f);
+                                float scale = Main.rand.NextFloat(0.8f, 1.5f);
+                                Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, currentColor, 1f * scale, 24, 0.1f, 2.5f * scale);
+                                GeneralParticleHandler.SpawnParticle(sparkle);
+                            }
+                            Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, currentColor, Vector2.One, 0f, 0.1f, 0.8f, 10);
+                            GeneralParticleHandler.SpawnParticle(pulse);                            
+                        }
 
                         if (OrbitRadius > 792f)
                         {
-                            Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(0.6f, 1f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(160f, 320f), 0f, TriactisHammerFlare.GetColor(HammerState), Projectile.GetAlpha(Color.White), Main.rand.Next(10, 20), Projectile.Center);
+                            Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(0.6f, 1f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(160f, 320f), 0f, currentColor, Projectile.GetAlpha(Color.White), Main.rand.Next(10, 20), Projectile.Center);
                             GeneralParticleHandler.SpawnParticle(streak);
                             if (AirTime % 18f == 0f)
                             {
@@ -218,11 +231,11 @@ namespace CalamityMod.Projectiles.Melee
             // Simple on-hit dust ring on all normal hits
             for (int i = 0; i < 32; i++)
             {
-                Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * i / 32f) * (9f + 1f * FlareCount) * (i % 2 == 0 ? 1.2f : 1f);
+                Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * i / 32f) * (8f + 2f * FlareCount) * (i % 2 == 0 ? 1.2f : 1f);
                 Dust ring = Dust.NewDustPerfect(Projectile.Center, DustID.GoldFlame, velocity);
                 ring.noGravity = true;
                 ring.noLight = true;
-                ring.scale = (i % 2 == 0 ? 1.6f : 2.4f) * (0.8f + 0.2f * FlareCount);
+                ring.scale = (i % 2 == 0 ? 1.6f : 2.4f) * (0.7f + 0.3f * FlareCount);
             }
 
             foreach (Projectile p in Main.ActiveProjectiles)
@@ -237,7 +250,7 @@ namespace CalamityMod.Projectiles.Melee
                         for (int i = 0; i < 5; i++)
                         {
                             Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 10f);
-                            Particle sparkle = new CritSpark(p.Center, velocity, Color.White, TriactisHammerFlare.GetColor(p.ai[0]), 1.2f, 30, 0.1f, 3f);
+                            Particle sparkle = new CritSpark(p.Center, velocity, Color.White, TriactisHammerFlare.GetColor(p.ai[0]), 1f, 24, 0.1f, 2.4f);
                             GeneralParticleHandler.SpawnParticle(sparkle);
                         }
                     }
