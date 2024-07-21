@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().tesla = true;
+            player.Calamity().teslaVisuals = !hideVisual;
         }
 
         public override void AddRecipes()

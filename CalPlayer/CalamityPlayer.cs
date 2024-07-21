@@ -508,6 +508,8 @@ namespace CalamityMod.CalPlayer
         public bool evasionScarf = false;
         public bool badgeOfBravery = false;
         public bool warbannerOfTheSun = false;
+        public bool tesla = false;
+        public bool teslaVisuals = true;
         public bool cryogenSoul = false;
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
@@ -969,7 +971,6 @@ namespace CalamityMod.CalPlayer
         public bool astralInjection = false;
         public bool gravityNormalizer = false;
         public bool flaskHoly = false;
-        public bool tesla = false;
         public bool galvanicCorrosion = false;
         public bool sulphurskin = false;
         public bool baguette = false;
@@ -1737,6 +1738,8 @@ namespace CalamityMod.CalPlayer
             evolution = false;
             nanotech = false;
             deadshotBrooch = false;
+            tesla = false;
+            teslaVisuals = true;
             cryogenSoul = false;
             ascendantInsignia = false;
             ascendantTrail = false;
@@ -2033,7 +2036,6 @@ namespace CalamityMod.CalPlayer
             astralInjection = false;
             gravityNormalizer = false;
             flaskHoly = false;
-            tesla = false;
             galvanicCorrosion = false;
             sulphurskin = false;
             baguette = false;
@@ -2503,7 +2505,6 @@ namespace CalamityMod.CalPlayer
             astralInjection = false;
             gravityNormalizer = false;
             flaskHoly = false;
-            tesla = false;
             galvanicCorrosion = false;
             sulphurskin = false;
             baguette = false;

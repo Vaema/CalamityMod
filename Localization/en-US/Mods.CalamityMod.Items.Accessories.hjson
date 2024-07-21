@@ -1759,6 +1759,7 @@ TeslasAmulet: {
 	Tooltip:
 		'''
 		Generates an electrifying field that slows enemies
+		The field has reduced opacity if visibility is disabled
 		Reduces the duration of the Static Discharge debuff
 		'''
 }
