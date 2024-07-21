@@ -723,7 +723,7 @@ SanguineFlare: {
 
 SeethingDischarge: {
 	DisplayName: Seething Discharge
-	Tooltip: 
+	Tooltip:
 		'''
 		Fires an accelerating arc of brimstone hellblasts
 		Every third attack spawns a brimstone dart ring which chases after foes

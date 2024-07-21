@@ -597,11 +597,6 @@ SulphurskinBuff: {
 	Description: The sulphuric waters have a lesser effect on you
 }
 
-TeslaBuff: {
-	DisplayName: Tesla's Electricity
-	Description: Summons an aura of electricity
-}
-
 WeaponImbueBrimstone: {
 	DisplayName: Weapon Imbue: Brimstone
 	Description: Melee, Whip, and Rogue attacks ignite enemies with brimstone flames

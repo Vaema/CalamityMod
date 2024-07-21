@@ -1754,6 +1754,15 @@ SupremeBaitTackleBoxFishingStation: {
 		'''
 }
 
+TeslasAmulet: {
+	DisplayName: Tesla's Amulet
+	Tooltip:
+		'''
+		Generates an electrifying field that slows enemies
+		Reduces the duration of the Static Discharge debuff
+		'''
+}
+
 TheAbsorber: {
 	DisplayName: The Absorber
 	Tooltip:

@@ -60,12 +60,6 @@ namespace CalamityMod.Projectiles.Typeless
 
             Player player = Main.player[Projectile.owner];
             Projectile.Center = player.Center;
-            if (player is null || player.dead)
-            {
-                player.ClearBuff(ModContent.BuffType<TeslaBuff>());
-                player.Calamity().tesla = false;
-                Projectile.Kill();
-            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

@@ -46,7 +46,7 @@ UrsaSergeant: {
 		Attacks maul enemies with astral claw swipes
 		Taking damage reduces the cooldown, but inflicts you with Astral Infection
 		Enemy kills also reduce the cooldown
-		Swipes will be opaque and produce no sound if visibility is disabled
+		Swipes will be opaque and silent if visibility is disabled
 		'''
 }
 

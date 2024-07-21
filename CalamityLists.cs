@@ -1590,7 +1590,6 @@ namespace CalamityMod
                 BuffType<ShadowBuff>(),
                 BuffType<Soaring>(),
                 BuffType<SulphurskinBuff>(),
-                BuffType<TeslaBuff>(),
                 BuffType<WeaponImbueBrimstone>(),
                 BuffType<WeaponImbueCrumbling>(),
                 BuffType<WeaponImbueHolyFlames>(),
