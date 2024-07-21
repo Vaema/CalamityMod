@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public override Vector2 HitboxSize => new Vector2(130, 130);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
-        public override Vector2 SpriteOrigin => new(-5, 118);
+        public override Vector2 SpriteOrigin => new(0, 118);
         public Vector2 mousePos;
         public Vector2 aimVel;
         public bool doSwing = true;
@@ -180,7 +180,9 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            {
                 Projectile.numHits -= 1;
+            }
 
             SoundStyle fire = new("CalamityMod/Sounds/Item/CursedDaggerThrow");
             SoundEngine.PlaySound(fire with { Volume = 0.65f, Pitch = 0.7f }, Projectile.Center);

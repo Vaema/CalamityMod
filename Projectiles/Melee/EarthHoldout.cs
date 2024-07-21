@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Melee
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Earth>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Earth";
         public override float HitboxOutset => 135;
-
         public override Vector2 HitboxSize => new Vector2(255, 255);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
@@ -155,7 +154,14 @@ namespace CalamityMod.Projectiles.Melee
                             };
                             Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                             Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 240), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                            GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, 0, true));
+                            if (Main.rand.NextBool(3))
+                            {
+                                Particle orb = new CustomPulse(particlePos, -particleVel * Main.rand.NextFloat(0.8f, 1.2f), mainColor, "CalamityMod/Particles/Sparkle", new Vector2(1f, 1f), Main.rand.NextFloat(-2, 2), Main.rand.NextFloat(0.8f, 1.4f), 0.5f, 36);
+                                GeneralParticleHandler.SpawnParticle(orb);
+
+                            }
+                            else
+                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, Main.rand.NextFloat(-0.1f, 0.1f), true));
                         }
                     }
                     else
@@ -183,8 +189,10 @@ namespace CalamityMod.Projectiles.Melee
                             GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(240, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, Color.White, mainColor, Main.rand.NextFloat(0.5f, 0.7f), 11, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(240, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
-                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
+                            float randRot = Main.rand.NextFloat(-30, -60);
+                            Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(240, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel);
+                            dust2.scale = Main.rand.NextFloat(0.65f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);
                         }
