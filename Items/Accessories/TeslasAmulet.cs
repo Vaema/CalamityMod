@@ -38,7 +38,6 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<SeaPrism>(8).
                 AddIngredient<StormlionMandible>(4).
                 AddTile(TileID.Anvils).
-                AddDecraftCondition(CalamityConditions.DownedHiveMindOrPerforator).
                 Register();
         }
     }
