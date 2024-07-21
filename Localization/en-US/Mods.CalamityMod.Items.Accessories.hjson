@@ -359,7 +359,7 @@ BlunderBooster: {
 		12% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
 		Summons a red lightning aura around the player that electrifies nearby enemies
-		The aura's appearance can be toggled with visibility
+		The aura has reduced opacity if visibility is disabled
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
 		This dash leaves a trail of red lightning bolts
 		This effect has a 1 second cooldown before it can be used again
