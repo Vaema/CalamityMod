@@ -170,6 +170,7 @@ namespace CalamityMod.NPCs
             "Cap'n Deek", // "Alex N" on Patreon (No discord account)
             "Captain Billy Bones", // <@!699589229507772416> (djackv)
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
+            "Gol D. Roger", // <@!256228859110752257> (xtra3678)
         };
         private static readonly string[] PrincessNames =
         {

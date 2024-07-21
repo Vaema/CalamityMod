@@ -4,6 +4,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -154,9 +155,21 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (CanHit)
                     {
-                        for (int i = 0; i < 5; i++)
+                        for (int i = 0; i < 6; i++)
                         {
-                            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, false, 19, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.Gold : Color.Goldenrod));
+                            if (Main.rand.NextBool(4))
+                                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, false, 23, Main.rand.NextFloat(0.5f, 1f), Color.Black, false, false, false));
+                            else
+                                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, false, 23, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue));
+                        }
+                        for (int i = 0; i < 3; i++)
+                        {
+                            float randRot = Main.rand.NextFloat(-30, -60);
+                            Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
+                            dust2.scale = Main.rand.NextFloat(0.45f, 0.95f);
+                            dust2.noGravity = true;
+                            dust2.color = Main.rand.NextBool(3) ? Color.Goldenrod : Color.Gold;
                         }
                     }   
                 }
@@ -252,9 +265,9 @@ namespace CalamityMod.Projectiles.Melee
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Color auraColor = Color.Lerp(Color.DarkGoldenrod, Color.Gold, Utils.GetLerpValue(0, 5, i)) * 0.5f * fadeIn;
+                    Color auraColor = Color.Lerp(Color.Goldenrod, Color.Gold, Utils.GetLerpValue(0, 5, i)) * 0.5f * fadeIn;
                     Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/GrandDadGhost").Value;
                     Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
                     rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 1.5f);

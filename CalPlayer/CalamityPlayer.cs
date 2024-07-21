@@ -179,6 +179,7 @@ namespace CalamityMod.CalPlayer
 
         #region Timer and Counter
         public int gaelSwipes = 0;
+        public int arsenalCooldown = 0;
         public int dragoonDrizzlefishGelBoost = 1;
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
@@ -507,6 +508,8 @@ namespace CalamityMod.CalPlayer
         public bool evasionScarf = false;
         public bool badgeOfBravery = false;
         public bool warbannerOfTheSun = false;
+        public bool tesla = false;
+        public bool teslaVisuals = true;
         public bool cryogenSoul = false;
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
@@ -968,7 +971,6 @@ namespace CalamityMod.CalPlayer
         public bool astralInjection = false;
         public bool gravityNormalizer = false;
         public bool flaskHoly = false;
-        public bool tesla = false;
         public bool galvanicCorrosion = false;
         public bool sulphurskin = false;
         public bool baguette = false;
@@ -1177,7 +1179,7 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformation;
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
-        public bool redBow;
+        public bool ghostBracelet;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -1736,6 +1738,8 @@ namespace CalamityMod.CalPlayer
             evolution = false;
             nanotech = false;
             deadshotBrooch = false;
+            tesla = false;
+            teslaVisuals = true;
             cryogenSoul = false;
             ascendantInsignia = false;
             ascendantTrail = false;
@@ -2032,7 +2036,6 @@ namespace CalamityMod.CalPlayer
             astralInjection = false;
             gravityNormalizer = false;
             flaskHoly = false;
-            tesla = false;
             galvanicCorrosion = false;
             sulphurskin = false;
             baguette = false;
@@ -2231,7 +2234,7 @@ namespace CalamityMod.CalPlayer
             omegaBlueTransformationPrevious = omegaBlueTransformation;
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
 
-            redBow = false;
+            ghostBracelet = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -2334,6 +2337,7 @@ namespace CalamityMod.CalPlayer
             #region Debuffs
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
+            arsenalCooldown = 0;
             andromedaState = AndromedaPlayerState.Inactive;
             planarSpeedBoost = 0;
             galileoCooldown = 0;
@@ -2501,7 +2505,6 @@ namespace CalamityMod.CalPlayer
             astralInjection = false;
             gravityNormalizer = false;
             flaskHoly = false;
-            tesla = false;
             galvanicCorrosion = false;
             sulphurskin = false;
             baguette = false;
@@ -4288,11 +4291,11 @@ namespace CalamityMod.CalPlayer
                     profanedCrystalAnimCounter = new KeyValuePair<int, int>(0, 10);
             }
 
-            if (redBow)
+            if (ghostBracelet)
             {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "RedBow", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "RedBow", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "RedBow", EquipType.Head);
+                Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
+                Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
+                Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
             }
 
             if (snowRuffianSet)

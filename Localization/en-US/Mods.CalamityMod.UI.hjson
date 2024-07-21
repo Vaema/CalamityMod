@@ -80,6 +80,7 @@ ExtensionName: {
 // Cooldowns
 Cooldowns: {
 	AquaticHeartIceShield: Ice Shield Cooldown
+	ArsenalPower: Arsenal Cooldown
 	AscendEffect: Ascension Cooldown
 	BloodflareFrenzy: Blood Frenzy Cooldown
 	BloodflareRangedSet: Bloodflare Soul Cooldown

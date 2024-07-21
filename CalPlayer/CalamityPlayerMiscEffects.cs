@@ -1414,6 +1414,8 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
+            if (arsenalCooldown > 0)
+                arsenalCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (DragonsBreathAudioCooldown > 0)
@@ -3533,10 +3535,23 @@ namespace CalamityMod.CalPlayer
                     if (check)
                     {
                         // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
-                        var source = Player.GetSource_Buff(Player.FindBuffIndex(ModContent.BuffType<TeslaBuff>()));
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(10);
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<TeslasAmulet>()));
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(12);
                         if (Player.ownedProjectileCounts[ModContent.ProjectileType<TeslaAura>()] < 1)
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<TeslaAura>(), damage, 0f, Player.whoAmI);
+                    }
+
+                    // Reduce duration of Static Discharge
+                    for (int l = 0; l < Player.MaxBuffs; l++)
+                    {
+                        if (Player.buffType[l] == ModContent.BuffType<StaticDischarge>())
+                        {
+                            if (Player.buffTime[l] > 2)
+                            {
+                                Player.buffTime[l]--;
+                                break;
+                            }
+                        }
                     }
                 }
             }

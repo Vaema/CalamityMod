@@ -103,10 +103,10 @@ AmalgamatedBrain: {
 	DisplayName: Amalgamated Brain
 	Tooltip:
 		'''
-		10% increased damage
-		Shade rains down and enemies are confused when hit,
-		and summon damage and crit chance are boosted by 10%
+		5% increased damage
+		Shade rains down and enemies are confused when hit
 		Grants the ability to dodge attacks
+		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip:
 		'''
@@ -359,7 +359,7 @@ BlunderBooster: {
 		12% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
 		Summons a red lightning aura around the player that electrifies nearby enemies
-		The aura's appearance can be toggled with visibility
+		The aura has reduced opacity if visibility is disabled
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
 		This dash leaves a trail of red lightning bolts
 		This effect has a 1 second cooldown before it can be used again
@@ -1754,6 +1754,16 @@ SupremeBaitTackleBoxFishingStation: {
 		'''
 }
 
+TeslasAmulet: {
+	DisplayName: Tesla's Amulet
+	Tooltip:
+		'''
+		Generates an electrifying field that slows enemies
+		The field has reduced opacity if visibility is disabled
+		Reduces the duration of the Static Discharge debuff
+		'''
+}
+
 TheAbsorber: {
 	DisplayName: The Absorber
 	Tooltip:
@@ -2027,9 +2037,9 @@ CrystalHeartVodka: {
 	Tooltip: "'Tastes like strawberry cream liqueur (and estrogen)'"
 }
 
-CocosFeather: {
-	DisplayName: Coco's Feather
-	Tooltip: ""
+GhostBracelet: {
+	DisplayName: Ghost Bracelet
+	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
 HapuFruit: {
@@ -2049,9 +2059,4 @@ Popo: {
 		Transforms the holder into a snowman
 		'Don't let the demons steal your nose'
 		'''
-}
-
-RedBow: {
-	DisplayName: Red Bow
-	Tooltip: "'Pelusa's favorite bow'"
 }
