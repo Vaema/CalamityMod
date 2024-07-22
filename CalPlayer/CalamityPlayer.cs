@@ -3886,9 +3886,6 @@ namespace CalamityMod.CalPlayer
         #region Get Weapon Damage And KB
         public override void ModifyWeaponDamage(Item item, ref StatModifier damage)
         {
-            if (fungalSymbiote && CalamityLists.MushroomWeaponIDs.Contains(item.type))
-                damage += 0.1f;
-
             if (item.CountsAsClass<RogueDamageClass>())
             {
                 // Apply weapon modifier stealth strike damage bonus
@@ -3976,7 +3973,7 @@ namespace CalamityMod.CalPlayer
             if (item.CountsAsClass<MeleeDamageClass>())
             {
                 var source = Player.GetSource_ItemUse(item);
-                if (fungalSymbiote && CalamityLists.MushroomWeaponIDs.Contains(item.type) && Player.whoAmI == Main.myPlayer)
+                if (fungalSymbiote && Player.HasBuff(ModContent.BuffType<Mushy>()) && Player.whoAmI == Main.myPlayer)
                 {
                     if (Player.itemAnimation == (int)(Player.itemAnimationMax * 0.1) ||
                         Player.itemAnimation == (int)(Player.itemAnimationMax * 0.3) ||

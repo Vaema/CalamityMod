@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
@@ -3639,7 +3640,7 @@ namespace CalamityMod.Projectiles
 
             if (!projectile.npcProj && !projectile.trap && projectile.friendly && projectile.damage > 0)
             {
-                if (modPlayer.fungalSymbiote && CalamityLists.MushroomProjectileIDs.Contains(projectile.type))
+                if (modPlayer.fungalSymbiote && player.HasBuff(BuffType<Mushy>()))
                 {
                     if (Main.player[projectile.owner].miscCounter % 6 == 0 && projectile.FinalExtraUpdate())
                     {

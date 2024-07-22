@@ -106,8 +106,6 @@ namespace CalamityMod
         public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
         public static List<int> MagicGunIDs;
-        public static List<int> MushroomWeaponIDs;
-        public static List<int> MushroomProjectileIDs;
         public static List<int> BlacklistedWeaponsWithToolPower;
 
         // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
@@ -1727,34 +1725,6 @@ namespace CalamityMod
                 ItemID.ZapinatorOrange
             };
 
-            MushroomWeaponIDs = new List<int>()
-            {
-                ItemType<Mycoroot>(),
-                ItemType<InfestedClawmerang>(),
-                ItemType<PuffShroom>(),
-                ItemType<HyphaeRod>(),
-                ItemType<Fungicide>(),
-                ItemType<MycelialClaws>(),
-                ItemType<Shroomer>(),
-                ItemID.Hammush,
-                ItemID.MushroomSpear,
-                ItemID.Shroomerang
-            };
-
-            MushroomProjectileIDs = new List<int>()
-            {
-                ProjectileType<MycorootProj>(),
-                ProjectileType<ShroomerangSpore>(),
-                ProjectileType<InfestedClawmerangProj>(),
-                ProjectileType<PuffCloud>(),
-                ProjectileType<FungiOrb2>(),
-                ProjectileType<FungiOrb>(),
-                ProjectileType<Shroom>(),
-                ProjectileID.TruffleSpore,
-                ProjectileID.MushroomSpear,
-                ProjectileID.Shroomerang
-            };
-
             // This list intentionally does not contain Grax.
             BlacklistedWeaponsWithToolPower = new List<int>()
             {
@@ -2764,8 +2734,6 @@ namespace CalamityMod
             amalgamBuffList = null;
             persistentBuffList = null;
             MagicGunIDs = null;
-            MushroomWeaponIDs = null;
-            MushroomProjectileIDs = null;
             BlacklistedWeaponsWithToolPower = null;
 
             zombieList = null;
