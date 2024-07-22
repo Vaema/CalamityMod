@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
         private const int horizontalFrames = 5;
         private const int verticalFrames = 4;
         public int time = 0;
-        public int currentFrame = 1;
+        public int currentFrame = 0;
         private const int frameLength = 2;
         public bool damageFrame = false;
 
@@ -44,45 +44,63 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter % frameLength == frameLength - 1)
-            {
-                currentFrame++;
-
-                frameY++;
-                if (frameY >= verticalFrames)
-                {
-                    frameX++;
-                    frameY = 0;
-                }
-                if (frameX >= horizontalFrames)
-                {
-                    Projectile.Kill();
-                }
-            }
-            if (currentFrame == 15)
+            if (currentFrame == 19)
                 damageFrame = true;
             else
                 damageFrame = false;
-            if (currentFrame <= 8)
+            if (currentFrame == 0)
             {
+                /*
                 float rotation = Main.rand.NextBool() ? 1f : -1f;
                 float orbScale = MathHelper.Clamp(Utils.GetLerpValue(15, 0, time), 0, 1);
                 Particle orb = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Red, Color.OrangeRed, 8f * orbScale, 8, rotation, 3);
                 GeneralParticleHandler.SpawnParticle(orb);
                 Particle orb2 = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Color.AntiqueWhite, 7f * orbScale, 8, rotation, 3);
                 GeneralParticleHandler.SpawnParticle(orb2);
+                */
+                for (int i = 0; i < 6; i++)
+                { 
+                    Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 3f, 1f, 35, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1.5f, 0.5f, 35, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                }
+                Particle p = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orange * 0.5f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-5, 5), 5.5f, 0f, 20);
+                GeneralParticleHandler.SpawnParticle(p);
             }
-            if (currentFrame == 9)
+            if (currentFrame == 5)
             {
-                float rotation = Main.rand.NextBool() ? 2.5f : -2.5f;
-                Particle sparkle = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Coral, Color.Orange, 3f, 9, rotation, 2);
-                GeneralParticleHandler.SpawnParticle(sparkle);
+                Particle p = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orange * 0.5f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-5, 5), 4.5f, 0f, 15);
+                GeneralParticleHandler.SpawnParticle(p);
             }
-            if (currentFrame == 15)
+            if (currentFrame == 17)
+            {
+                float extraRot = Main.rand.NextFloat(-0.9f, 0.9f);
+                for (int i = 0; i < 4; i++)
+                {
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(extraRot) * 8f;
+
+                    Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 5, 0.12f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 2);
+                    GeneralParticleHandler.SpawnParticle(pulse);
+                }
+            }
+            if (currentFrame == 19)
             {
                 Owner.Calamity().GeneralScreenShakePower = 8f;
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HeliumFlashExplodeNoMetal") { Volume = 1.2f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HeliumFlashExplodeNoMetal") { Volume = 1f }, Projectile.Center);
+                for (int i = 0; i < 12; i++)
+                {
+                    Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Red, Color.Orange, Utils.GetLerpValue(0, 12, i, true)), "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0006f + 0.08f + 0.04f * i, (int)(30 - i * 1.3f));
+                    GeneralParticleHandler.SpawnParticle(explosion);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Red, Color.OrangeRed, Utils.GetLerpValue(0, 3, i, true)), "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0006f + 0.093f + 0.04f * i * 4, (int)(30 - i * 2f));
+                    GeneralParticleHandler.SpawnParticle(explosion);
+                }
+
+                /*
                 Particle explosion = new PlasmaExplosion(Projectile.Center, Vector2.Zero, Color.OrangeRed, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0006f + 0.1f, 22);
                 GeneralParticleHandler.SpawnParticle(explosion);
                 Particle explosion2 = new PlasmaExplosion(Projectile.Center, Vector2.Zero, Color.DarkOrange, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0004f + 0.1f, Main.rand.Next(15, 21));
@@ -97,15 +115,35 @@ namespace CalamityMod.Projectiles.Magic
                 GeneralParticleHandler.SpawnParticle(explosion6);
                 Particle explosion7 = new FlameExplosion(Projectile.Center, Vector2.Zero, Color.Red, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0021f + 0.1f, 25, 1f);
                 GeneralParticleHandler.SpawnParticle(explosion7);
-                Vector2 randVel = new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, new Color(57, 46, 115) * 0.9f, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.4f);
-                GeneralParticleHandler.SpawnParticle(smoke);
+                */
+                for (int i = 0; i < 35; i++)
+                {
+                    Vector2 randVel = new Vector2(50, 50).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.SlateGray, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.8f, 1.3f), 0.5f);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                }
+                for (int i = 0; i < 60; i++)
+                {
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    chargefull.velocity = new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 2f);
+                    chargefull.scale = Main.rand.NextFloat(0.65f, 1.25f);
+                    chargefull.noGravity = true;
+                    chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed, 0.7f);
+                }
             }
+            currentFrame++;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Daybreak, 300);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.88f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
