@@ -1074,8 +1074,8 @@ namespace CalamityMod
             double Damage(DamageClass damageClass) => Math.Round(Main.LocalPlayer.GetTotalDamage(damageClass).Additive * Main.LocalPlayer.GetTotalDamage(damageClass).Multiplicative * 100 - 100);
             int Crit(DamageClass damageClass) => (int)Main.LocalPlayer.GetTotalCritChance(damageClass);
 
-            int rogueItem = ModContent.ItemType<WulfrumKnife>();
-            DamageClass rogueDamageClass = ModContent.GetInstance<RogueDamageClass>();
+            int rogueItem = ItemType<WulfrumKnife>();
+            DamageClass rogueDamageClass = GetInstance<RogueDamageClass>();
             Func<string> rogueDamage = () => $"Rogue Damage: {Damage(rogueDamageClass)}%";
             Func<string> rogueCrit = () => $"Rogue Critical: {Crit(rogueDamageClass)}%";
             fargos.Call("AddStat", rogueItem, rogueDamage);

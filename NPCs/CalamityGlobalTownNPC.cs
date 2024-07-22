@@ -1001,7 +1001,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Wizard:
-                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ModContent.ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
+                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.MentionRoD");
                     if (Main.rand.NextBool(10) && Main.hardMode)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.Hardmode");
@@ -1071,7 +1071,7 @@ namespace CalamityMod.NPCs
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
             //Not an axe but close enough
-            if (npc.type == NPCID.TaxCollector && projectile.type == ModContent.ProjectileType<SlickCaneProjectile>())
+            if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
                 return true;
             return base.CanBeHitByProjectile(npc, projectile);
         }
@@ -1116,7 +1116,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Demolitionist)
             {
-                shop.Add(ModContent.ItemType<DeepcoreGK2>(), Condition.DownedMechBossAny);
+                shop.Add(ItemType<DeepcoreGK2>(), Condition.DownedMechBossAny);
             }
 
             if (type == NPCID.ArmsDealer)
