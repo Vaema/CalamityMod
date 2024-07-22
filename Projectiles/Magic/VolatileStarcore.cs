@@ -1,6 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -37,11 +40,10 @@ namespace CalamityMod.Projectiles.Magic
             DrawOriginOffsetY = -10;
             DrawOriginOffsetX = 0;
 
-            // Play sound and set rotation on frame 1
+            // Set rotation on frame 1
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.localAI[0] = 1f;
-                SoundEngine.PlaySound(SoundID.NPCDeath56, Projectile.Center);
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             }
 
@@ -51,7 +53,6 @@ namespace CalamityMod.Projectiles.Magic
 
             // Lighting and spin
             Lighting.AddLight(Projectile.Center, 1.8f, 1.6f, 0.5f);
-            Projectile.rotation += 0.11f;
 
             // Increment frame counter
             Projectile.localAI[0] += 1f;
@@ -65,22 +66,29 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.frame >= NumAnimationFrames)
                 Projectile.frame = 0;
+            if (Projectile.timeLeft == 239)
+            {
+                for (int i = 0; i <= 3; i++)
+                {
+                    Particle lightning = new ThunderBoltVFX(() => Projectile.Center, (Projectile.velocity).ToRotation() - MathHelper.PiOver2, 0.4f, Color.Red, 50, 0);
+                    GeneralParticleHandler.SpawnParticle(lightning);
+                }
+            }
+            if (Projectile.timeLeft <= 231)
+            {
+                SparkParticle trail = new SparkParticle(Projectile.Center - Projectile.velocity * 1.8f, -Projectile.velocity * 0.01f, false, 11, 4f, Color.OrangeRed * 0.5f);
+                GeneralParticleHandler.SpawnParticle(trail);
+            }
+            if (Projectile.timeLeft <= 220)
+            {
+                SparkParticle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(15, 15) - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity * Main.rand.NextFloat(0.5f, 1.5f), false, 45, 0.9f, Color.Red);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+
         }
 
         private void SpawnDust()
         {
-            int coreDustCount = 2; //3
-            int coreDustType = 262;
-            for (int i = 0; i < coreDustCount; ++i)
-            {
-                float scale = Main.rand.NextFloat(1.0f, 1.4f);
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, coreDustType);
-                Main.dust[idx].velocity *= 0.7f;
-                Main.dust[idx].velocity += Projectile.velocity * 1.4f;
-                Main.dust[idx].scale = scale;
-                Main.dust[idx].noGravity = true;
-            }
-
             int trailDustCount = 4; //5
             int trailDustType = 264;
             for (int i = 0; i < trailDustCount; ++i)
