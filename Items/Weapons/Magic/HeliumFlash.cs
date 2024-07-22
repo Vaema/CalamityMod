@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
     public class HeliumFlash : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        internal const float ExplosionDamageMultiplier = 2f;
+        internal const float ExplosionDamageMultiplier = 1.5f;
         public static readonly SoundStyle Charge = new("CalamityMod/Sounds/Item/HeliumFlashCharge");
         public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/HeliumFlashFullChargeLoop");
         internal static readonly int ChargeLoopSoundFrames = 120;
@@ -31,9 +31,9 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.width = 112;
             Item.height = 112;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 3200;
+            Item.damage = 5000;
             Item.knockBack = 9.5f;
-            Item.mana = 40;
+            Item.mana = 80;
             Item.useTime = Item.useAnimation = AftershotCooldownFrames;
             Item.autoReuse = true;
             Item.noMelee = true;

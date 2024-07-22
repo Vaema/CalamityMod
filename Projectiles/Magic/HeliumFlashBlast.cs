@@ -1,12 +1,9 @@
-﻿using System;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -26,6 +23,7 @@ namespace CalamityMod.Projectiles.Magic
         public int currentFrame = 0;
         private const int frameLength = 2;
         public bool damageFrame = false;
+        public float starAngle = 0;
 
 
         public override void SetDefaults()
@@ -39,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -73,15 +71,15 @@ namespace CalamityMod.Projectiles.Magic
                 Particle p = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orange * 0.5f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-5, 5), 4.5f, 0f, 15);
                 GeneralParticleHandler.SpawnParticle(p);
             }
-            if (currentFrame == 17)
+            if (currentFrame == 10)
             {
-                float extraRot = Main.rand.NextFloat(-0.9f, 0.9f);
+                starAngle = Main.rand.NextFloat(-0.9f, 0.9f);
                 for (int i = 0; i < 4; i++)
                 {
                     Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
-                    Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(extraRot) * 8f;
+                    Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
 
-                    Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 5, 0.12f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 2);
+                    Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 6, 0.12f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 2);
                     GeneralParticleHandler.SpawnParticle(pulse);
                 }
             }
@@ -98,6 +96,22 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Red, Color.OrangeRed, Utils.GetLerpValue(0, 3, i, true)), "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0006f + 0.093f + 0.04f * i * 4, (int)(30 - i * 2f));
                     GeneralParticleHandler.SpawnParticle(explosion);
+                }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 5f, 35, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.5f, 2f, 35, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
+
+                    Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 10, 0.22f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 1);
+                    GeneralParticleHandler.SpawnParticle(pulse);
                 }
 
                 /*
@@ -141,7 +155,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.88f);
+                Projectile.damage = (int)(Projectile.damage * 0.85f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

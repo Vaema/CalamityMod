@@ -1,18 +1,11 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 namespace CalamityMod.Projectiles.Magic
 {
     public class VolatileStarcore : ModProjectile, ILocalizedModType
@@ -36,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.extraUpdates = 5;
+            Projectile.extraUpdates = 6;
             Projectile.timeLeft = Lifetime;
         }
 
@@ -136,7 +129,7 @@ namespace CalamityMod.Projectiles.Magic
             float kb = 9.5f;
             if (explode)
             {
-                SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashPreExplode");
+                SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
                 SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, type, damage, kb, Projectile.owner, 0f, 0f);
             }
@@ -147,10 +140,19 @@ namespace CalamityMod.Projectiles.Magic
             Rectangle frame = orbTexture.Frame(1, NumAnimationFrames, 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
 
+            Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            // Glow Orb
+            float randSize = Main.rand.NextFloat(0.8f, 1.2f);
+            Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.OrangeRed with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.6f * randSize, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 } * 0.75f, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.35f * randSize, SpriteEffects.None, 0);
+
+
+
             // Starcore
             Main.EntitySpriteDraw(orbTexture, Projectile.Center - Main.screenPosition, frame, Color.White, 0, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.height / 2, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
     }
 }

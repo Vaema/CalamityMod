@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.ModLoader;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using CalamityMod.Projectiles.Ranged;
-using System.Reflection.Metadata;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -30,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
         private bool FullyCharged => CurrentChargingFrames >= HeliumFlash.FullChargeFrames;
         public SlotId HeliumChargeSlot;
-        public static float BulletSpeed = 20f;
+        public static float BulletSpeed = 15f;
         public int time = 0;
         public int starcoreFrameCounter = 0;
         public int starcoreFrame = 0;
@@ -48,7 +41,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Starcore animation
             starcoreFrameCounter++;
-            if (starcoreFrameCounter > 1)
+            if (starcoreFrameCounter > (FullyCharged  ? 0 : 1))
             {
                 starcoreFrame++;
                 starcoreFrameCounter = 0;
@@ -169,18 +162,28 @@ namespace CalamityMod.Projectiles.Magic
                 // Full charge effects
                 if (CurrentChargingFrames == HeliumFlash.FullChargeFrames)
                 {
-                    SoundEngine.PlaySound(HeliumFlash.FullCharge, Projectile.Center);
+                    //SoundEngine.PlaySound(HeliumFlash.FullCharge, Projectile.Center);
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
+                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0f }, Projectile.Center);
+                    for (int i = 0; i < 18; i++)
+                    {
+                        Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1, 5);
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.7f);
+                        dust2.scale = Main.rand.NextFloat(0.45f, 0.9f);
+                        dust2.noGravity = true;
+                        dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed, 0.7f);
+                    }
                 }
             }
             if (Projectile.ai[1] == 1f)
             {
-                if (Projectile.ai[2] == 1 && Projectile.timeLeft == (int)(HeliumFlash.AftershotCooldownFrames * 1.8f))
+                if (Projectile.ai[2] == 1 && Projectile.timeLeft == (int)(HeliumFlash.AftershotCooldownFrames * 1.4f))
                 {
                     OffsetLengthFromArm += 8;
                 }
-                if (Projectile.ai[2] == 1 && Projectile.timeLeft == (int)(HeliumFlash.AftershotCooldownFrames * 1.5f))
+                if (Projectile.ai[2] == 1 && Projectile.timeLeft == (int)(HeliumFlash.AftershotCooldownFrames * 1.1f))
                 {
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/SteamVent");
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashSteamRelease");
                     SoundEngine.PlaySound(fire with { Volume = 0.6f, Pitch = 0f }, Projectile.Center);
                     for (int b = 0; b < 12; b++)
                     {
@@ -234,6 +237,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (time < 2)
                 return false;
+
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
