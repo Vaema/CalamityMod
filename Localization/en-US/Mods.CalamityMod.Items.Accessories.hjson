@@ -131,7 +131,12 @@ AmbrosialAmpoule: {
 
 AmidiasSpark: {
 	DisplayName: Amidias' Spark
-	Tooltip: Taking damage releases a blast of sparks
+	Tooltip:
+		'''
+		Attacks inflict Static Discharge while underwater
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
+		'''
 }
 
 AncientFossil: {
@@ -1868,10 +1873,11 @@ TheTransformer: {
 	DisplayName: The Transformer
 	Tooltip:
 		'''
-		Multiplies all electric debuff damage by 1.5
-		Taking damage releases a blast of sparks
-		Complete immunity to Electrified and all electric attacks
-		You take halved damage from enemy bullets and reflect them for 800% damage
+		Multiplies all electricity debuff damage by 1.5x
+		Attacks inflict Static Discharge while underwater
+		Reduces the damage of all electricity debuffs by 50%
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
 		'''
 }
 

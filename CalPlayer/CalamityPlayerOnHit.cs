@@ -7,9 +7,7 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
-using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -27,7 +25,6 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -1303,6 +1300,11 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<CrushDepth>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
+            if (aSpark && Player.IsUnderwater())
+            {
+                int duration = transformer ? 120 : 60;
+                target.AddBuff(BuffType<StaticDischarge>(), duration);
+            }
             if (abyssalAmulet)
             {
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());

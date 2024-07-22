@@ -283,6 +283,8 @@ namespace CalamityMod.NPCs
         public int astralInfection = 0;
         public int wDeath = 0;
         public int nightwither = 0;
+        public int shocked = 0;
+        public int transformerShocked = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
         public int sulphurPoison = 0;
@@ -504,6 +506,8 @@ namespace CalamityMod.NPCs
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
+            myClone.shocked = shocked;
+            myClone.transformerShocked = transformerShocked;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
             myClone.sulphurPoison = sulphurPoison;
@@ -5216,6 +5220,10 @@ namespace CalamityMod.NPCs
                 wDeath--;
             if (nightwither > 0)
                 nightwither--;
+            if (shocked > 0)
+                shocked--;
+            if (transformerShocked > 0)
+                transformerShocked--;
             if (shellfishVore > 0)
                 shellfishVore--;
             if (clamDebuff > 0)
@@ -5330,6 +5338,30 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            if (shocked > 0 || transformerShocked > 0)
+            {
+                var player = Main.LocalPlayer;
+                bool strongerShock = transformerShocked > 0;
+
+                int frequency = strongerShock ? 10 : 12;
+
+                // Spawn sparks from the enemy
+                if (player.miscCounter % frequency == 0)
+                {
+                    int sDamage = strongerShock ? 50 : 10;
+                    Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
+                    Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
+                    spark.timeLeft = 120;
+                    spark.penetrate = 3;
+                    if (strongerShock)
+                    {
+                        spark.timeLeft = 240;
+                        spark.extraUpdates = 1;
+                        spark.penetrate = 10;
+                    }
+                }
+            }
+
             // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
             if ((NPCID.Sets.ActsLikeTownNPC[npc.type] || npc.townNPC) && !npc.dontTakeDamage || npc.type == NPCType<SuperDummyNPC>())
             {
@@ -5431,6 +5463,14 @@ namespace CalamityMod.NPCs
 
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
+
+            if (target.Calamity().aSpark)
+            {
+                if (target.Calamity().transformer)
+                    transformerShocked = 120;
+                else
+                    shocked = 120;
+            }
 
             if (target.Calamity().snowman)
             {

@@ -41,12 +41,10 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.UI;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.GameContent.Events;
 using Terraria.Graphics.Renderers;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -1288,20 +1286,36 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= proj.Calamity().DealsDefenseDamage;
 
-            if (sulphurSet && !proj.friendly && hurtInfo.Damage > 0)
+            // CIT 22JUL2024: This entire code segment is bugged, so I'm disabling it.
+            // Very likely because it's trying to index into Main.npc using Projectile.owner.
+            /*if (!proj.friendly && hurtInfo.Damage > 0)
             {
                 if (Main.player[proj.owner] is null)
                 {
                     if (!Main.npc[proj.owner].friendly)
-                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
+                    {
+                        if (sulphurSet)
+                            Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
+                        if (aSpark)
+                        {
+                            if (transformer)
+                                Main.npc[proj.owner].Calamity().transformerShocked = 120;
+                            else
+                                Main.npc[proj.owner].Calamity().shocked = 120;
+                        }
+                    } 
                 }
                 else
                 {
                     Player p = Main.player[proj.owner];
                     if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
-                        p.AddBuff(BuffID.Poisoned, 60);
+                    {
+                        if (sulphurSet)
+                            p.AddBuff(BuffID.Poisoned, 60);
+                    }
+                        
                 }
-            }
+            }*/
 
             // Apply The Bee cooldown, must be applied here so that it does not apply on dodges
             if (theBee && shouldTriggerBeeCooldown)
@@ -2523,33 +2537,23 @@ namespace CalamityMod.CalPlayer
                 }
                 if (aSpark)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<HideofAstrumDeus>()));
-                    if (hurtInfo.Damage > 0)
+                    SoundEngine.PlaySound(SoundID.Item93, Player.Center);
+
+                    // Only visual effects are done here
+                    // The actual spark spawning is now handled with the shocked variable in CalamityGlobalNPC
+
+                    SeaFoamParticle boom = new(Player.Center, Vector2.Zero, new Color(89, 239, 247), new Color(56, 158, 209), 1f, 200f, Main.rand.NextBool() ? -1f : 1f);
+                    GeneralParticleHandler.SpawnParticle(boom);
+
+                    for (int e = 0; e < 6; e++)
                     {
-                        SoundEngine.PlaySound(SoundID.Item93, Player.Center);
-
-                        // Start with base damage, then apply the best damage class you can
-                        int sDamage = 6;
+                        Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(4.5f, 5.25f);
+                        Dust electric = Dust.NewDustPerfect(Player.Center, DustID.Electric, dustVel, Scale: 0.75f);
+                        electric.noGravity = true;
                         if (transformer)
-                            sDamage += 42;
-                        sDamage = (int)Player.GetBestClassDamage().ApplyTo(sDamage);
-                        sDamage = Player.ApplyArmorAccDamageBonusesTo(sDamage);
-
-                        if (Player.whoAmI == Main.myPlayer)
                         {
-                            float sparkCount = transformer ? 10f : 8f;
-                            for (float i = 0f; i < sparkCount; i++)
-                            {
-                                Vector2 velocity = (MathHelper.TwoPi * i / sparkCount).ToRotationVector2() * 5f;
-                                Projectile spark = Projectile.NewProjectileDirect(source, Player.Center, velocity, ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI);
-                                spark.timeLeft = 120;
-                                if (transformer)
-                                {
-                                    spark.timeLeft = 240;
-                                    spark.extraUpdates = 1;
-                                    spark.penetrate = 10;
-                                }
-                            }
+                            NanoParticle nano = new(Player.Center, dustVel, new Color(0, 186, 242), 1f, 20, true, true);
+                            GeneralParticleHandler.SpawnParticle(nano);
                         }
                     }
                 }
