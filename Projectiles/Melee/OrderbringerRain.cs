@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 800);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 80);
         }
     }
 }
