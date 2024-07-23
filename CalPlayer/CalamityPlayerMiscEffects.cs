@@ -3036,7 +3036,7 @@ namespace CalamityMod.CalPlayer
 
             if (mushy)
             {
-                Player.statDefense += 6;
+                Player.statDefense += 8;
                 if (fungalSymbiote)
                     Player.GetDamage<GenericDamageClass>() += 0.1f;
             }  
