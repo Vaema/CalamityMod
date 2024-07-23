@@ -144,8 +144,8 @@ namespace CalamityMod.Projectiles.Boss
 
             // Draw the bottom endpoint segment
             Rectangle? sourceRectangle2 = endpointTex.Frame(1, 3, 0, endpointFrame);
-            Vector2 vector2 = Projectile.Center - Main.screenPosition - new Vector2(0f, 22f); // Of course it's 22, this stupid fucking accursed number
-            Main.EntitySpriteDraw(endpointTex, vector2, sourceRectangle2, grayColor, Projectile.rotation, endpointTex.Frame(1, 1, 0, 0).Top(), Projectile.scale, SpriteEffects.None, 0);
+            Vector2 endPosition = Projectile.Center - Main.screenPosition - new Vector2(0f, 22f); // Of course it's 22, this stupid fucking accursed number
+            Main.EntitySpriteDraw(endpointTex, endPosition, sourceRectangle2, grayColor, Projectile.rotation, endpointTex.Frame(1, 1, 0, 0).Top(), Projectile.scale, SpriteEffects.None, 0);
 
             // Draw the middle segments
             auraDrawLength -= (endpointTex.Height / 2 + endpointTex.Height) * Projectile.scale;
