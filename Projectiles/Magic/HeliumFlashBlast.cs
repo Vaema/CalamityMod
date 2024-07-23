@@ -48,14 +48,6 @@ namespace CalamityMod.Projectiles.Magic
                 damageFrame = false;
             if (currentFrame == 0)
             {
-                /*
-                float rotation = Main.rand.NextBool() ? 1f : -1f;
-                float orbScale = MathHelper.Clamp(Utils.GetLerpValue(15, 0, time), 0, 1);
-                Particle orb = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Red, Color.OrangeRed, 8f * orbScale, 8, rotation, 3);
-                GeneralParticleHandler.SpawnParticle(orb);
-                Particle orb2 = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Color.AntiqueWhite, 7f * orbScale, 8, rotation, 3);
-                GeneralParticleHandler.SpawnParticle(orb2);
-                */
                 for (int i = 0; i < 6; i++)
                 { 
                     Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 3f, 1f, 35, true);
@@ -113,23 +105,6 @@ namespace CalamityMod.Projectiles.Magic
                     Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 10, 0.22f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 1);
                     GeneralParticleHandler.SpawnParticle(pulse);
                 }
-
-                /*
-                Particle explosion = new PlasmaExplosion(Projectile.Center, Vector2.Zero, Color.OrangeRed, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0006f + 0.1f, 22);
-                GeneralParticleHandler.SpawnParticle(explosion);
-                Particle explosion2 = new PlasmaExplosion(Projectile.Center, Vector2.Zero, Color.DarkOrange, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0004f + 0.1f, Main.rand.Next(15, 21));
-                GeneralParticleHandler.SpawnParticle(explosion2);
-                Particle explosion3 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.Red, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0030f + 0.1f, Main.rand.Next(18), false);
-                GeneralParticleHandler.SpawnParticle(explosion3);
-                Particle explosion4 = new PlasmaExplosion(Projectile.Center, Vector2.Zero, Color.Red, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0006f + 0.1f, 25);
-                GeneralParticleHandler.SpawnParticle(explosion4);
-                Particle explosion5 = new FlameExplosion(Projectile.Center, Vector2.Zero, Color.OrangeRed, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0015f + 0.1f, 25, 1f);
-                GeneralParticleHandler.SpawnParticle(explosion5);
-                Particle explosion6 = new FlameExplosion(Projectile.Center, Vector2.Zero, Color.DarkOrange, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0018f + 0.1f, 25, 1f);
-                GeneralParticleHandler.SpawnParticle(explosion6);
-                Particle explosion7 = new FlameExplosion(Projectile.Center, Vector2.Zero, Color.Red, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ParticleRadius * 0.0021f + 0.1f, 25, 1f);
-                GeneralParticleHandler.SpawnParticle(explosion7);
-                */
                 for (int i = 0; i < 35; i++)
                 {
                     Vector2 randVel = new Vector2(50, 50).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -15,13 +14,11 @@ namespace CalamityMod.Items.Weapons.Magic
     public class HeliumFlash : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        internal const float ExplosionDamageMultiplier = 1.5f;
+        internal const float ExplosionDamageMultiplier = 1.4f;
         public static readonly SoundStyle Charge = new("CalamityMod/Sounds/Item/HeliumFlashCharge");
         public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/HeliumFlashFullChargeLoop");
         internal static readonly int ChargeLoopSoundFrames = 120;
-        public static readonly SoundStyle FullCharge = new("CalamityMod/Sounds/Item/HeliumFlashReady");
-        public static readonly SoundStyle CancelCharge = new("CalamityMod/Sounds/Item/VividClarityBeamAppear") { Volume = 0.5f };
-        public static readonly SoundStyle ChargeFire = new("CalamityMod/Sounds/Item/HeliumFlashFire") { Volume = 1.2f};
+        public static readonly SoundStyle ChargeFire = new("CalamityMod/Sounds/Item/HeliumFlashFire") { Volume = 1f };
 
         public static int AftershotCooldownFrames = 17;
         public static int FullChargeFrames = 88;
@@ -58,15 +55,12 @@ namespace CalamityMod.Items.Weapons.Magic
             Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<HeliumFlashHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
-
-
         public override void AddRecipes()
         {
             Recipe r = CreateRecipe();
             r.AddIngredient<VenusianTrident>();
-            r.AddIngredient<LashesofChaos>();
             r.AddIngredient<ForbiddenSun>();
-            r.AddIngredient(ItemID.FragmentSolar, 20);
+            r.AddIngredient(ItemID.FragmentSolar, 10);
             r.AddIngredient(ItemID.FragmentNebula, 5);
             r.AddIngredient<AuricBar>(5);
             r.AddTile<CosmicAnvil>();

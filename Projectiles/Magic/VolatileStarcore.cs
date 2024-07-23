@@ -69,15 +69,6 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame = 0;
             if (targetDist < 1400)
             {
-                if (time > 1)
-                {
-                    for (int i = 0; i <= 3; i++)
-                    {
-                        //Particle lightning = new ThunderBoltVFX(() => Projectile.Center, (Projectile.velocity).ToRotation() - MathHelper.PiOver2, 0.4f, Color.Red, 50, 0);
-                        //GeneralParticleHandler.SpawnParticle(lightning);
-                    }
-                }
-
                 if (time > 8 && time % 2 == 0)
                 {
                     SparkParticle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(15, 15) - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), false, 35, 0.9f, Color.Lerp(Color.Orange, Color.OrangeRed, Main.rand.NextFloat(0, 1)));

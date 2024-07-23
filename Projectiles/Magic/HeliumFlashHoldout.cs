@@ -69,9 +69,9 @@ namespace CalamityMod.Projectiles.Magic
 
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<VolatileStarcore>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
                         
-                        Particle pulse = new CustomPulse(GunTipPosition, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.05f, 22);
+                        Particle pulse = new CustomPulse(GunTipPosition, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.05f, 14);
                         GeneralParticleHandler.SpawnParticle(pulse);
-                        Particle pulse2 = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Red, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.08f, 22);
+                        Particle pulse2 = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Red, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.08f, 14);
                         GeneralParticleHandler.SpawnParticle(pulse2);
 
                         for (int i = 0; i < 17; i++)
@@ -126,11 +126,6 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if ((CurrentChargingFrames - HeliumFlash.FullChargeFrames) % HeliumFlash.ChargeLoopSoundFrames == 0)
                         HeliumChargeSlot = SoundEngine.PlaySound(HeliumFlash.ChargeLoop, Projectile.Center);
-                    if (Main.rand.NextBool(10))
-                    {
-                        //Particle lightning = new ThunderBoltVFX(() => GunTipPosition, Main.rand.NextFloat(MathHelper.TwoPi), 0.10f, Color.Red, 30, 0);
-                        //GeneralParticleHandler.SpawnParticle(lightning);
-                    }
 
                     if (Main.rand.NextBool())
                     {
@@ -151,18 +146,12 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(0.06f + (CurrentChargingFrames / 180), 0.08f + (CurrentChargingFrames / 180)), Main.rand.NextVector2CircularEdge(2.5f, 2.5f) * Main.rand.NextFloat(0.3f * CurrentChargingFrames, 0.3f * CurrentChargingFrames), 0f, Color.Red, Color.Orange, 7, GunTipPosition);
                         GeneralParticleHandler.SpawnParticle(streak);
-                        if (Main.rand.NextBool(5))
-                        {
-                            //Particle lightning = new ThunderBoltVFX(() => GunTipPosition, Main.rand.NextFloat(MathHelper.TwoPi), Main.rand.NextFloat(0.01f + (CurrentChargingFrames / 1200), 0.08f + (CurrentChargingFrames / 1200)), Color.Red, 30, 0);
-                            //GeneralParticleHandler.SpawnParticle(lightning);
-                        }
                     }
                 }
 
                 // Full charge effects
                 if (CurrentChargingFrames == HeliumFlash.FullChargeFrames)
                 {
-                    //SoundEngine.PlaySound(HeliumFlash.FullCharge, Projectile.Center);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                     for (int i = 0; i < 18; i++)
