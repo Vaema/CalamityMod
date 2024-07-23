@@ -7,9 +7,7 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
-using CalamityMod.EntitySources;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -27,7 +25,6 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -202,11 +199,11 @@ namespace CalamityMod.CalPlayer
                 GemTechState.MeleeOnHitEffects(target);
 
             // Handle on-hit ranged effects for the gem tech armor set.
-            if (proj.CountsAsClass<RangedDamageClass>() && proj.type != ModContent.ProjectileType<GemTechGreenFlechette>())
+            if (proj.CountsAsClass<RangedDamageClass>() && proj.type != ProjectileType<GemTechGreenFlechette>())
                 GemTechState.RangedOnHitEffects(target, proj.damage);
 
             // Handle on-hit projectiles effects for the mythril armor set.
-            if (proj.type != ModContent.ProjectileType<MythrilFlare>())
+            if (proj.type != ProjectileType<MythrilFlare>())
                 MythrilArmorSetChange.OnHitEffects(target, damageDone, Player);
 
             if (witheringWeaponEnchant)
@@ -501,7 +498,7 @@ namespace CalamityMod.CalPlayer
                     if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                         return;
 
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Main.player[proj.owner], heal, ModContent.ProjectileType<AltTransfusionTrail>(), BalancingConstants.LifeStealRange);
+                    CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Main.player[proj.owner], heal, ProjectileType<AltTransfusionTrail>(), BalancingConstants.LifeStealRange);
                 }
 
                 if ((cgp.betterLifeBullet1 || cgp.betterLifeBullet2) && proj.numHits == 0)
@@ -523,7 +520,7 @@ namespace CalamityMod.CalPlayer
 
                     for (int i = 0; i <= 2; i++)
                     {
-                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Main.player[proj.owner], heal, ModContent.ProjectileType<AltTransfusionTrail>(), BalancingConstants.LifeStealRange);
+                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Main.player[proj.owner], heal, ProjectileType<AltTransfusionTrail>(), BalancingConstants.LifeStealRange);
                     }
                 }
 
@@ -629,13 +626,13 @@ namespace CalamityMod.CalPlayer
             if (!proj.CountsAsClass<MeleeDamageClass>() && !proj.CountsAsClass<SummonMeleeSpeedDamageClass>() && Player.meleeEnchant == 7)
                 Projectile.NewProjectile(source, position, proj.velocity, ProjectileID.ConfettiMelee, 0, 0f, proj.owner);
 
-            if (alchFlask && AlchFlaskCooldown == 0 && proj.type != ModContent.ProjectileType<BasicPlagueBee>())
+            if (alchFlask && AlchFlaskCooldown == 0 && proj.type != ProjectileType<BasicPlagueBee>())
             {
                 int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(10);
                 seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
                 Vector2 seekerVelocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f);
 
-                Projectile bee = Projectile.NewProjectileDirect(source, position, seekerVelocity, ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
+                Projectile bee = Projectile.NewProjectileDirect(source, position, seekerVelocity, ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
                 bee.ArmorPenetration = 20;
                 bee.penetrate = 2;
                 bee.extraUpdates = 1;
@@ -678,7 +675,7 @@ namespace CalamityMod.CalPlayer
             {
                 AbaddonCooldown = 15;
                 int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.03f, 25);
-                Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
+                Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
             }
 
             if (ursaSergeant && ursaSergeantCooldown <= 0)
@@ -688,7 +685,7 @@ namespace CalamityMod.CalPlayer
                 int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(333);
                 ursaSlashdamage = Player.ApplyArmorAccDamageBonusesTo(ursaSlashdamage);
 
-                Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
+                Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
             }
 
             if (proj.CountsAsClass<MeleeDamageClass>())
@@ -811,7 +808,7 @@ namespace CalamityMod.CalPlayer
                     // Bloodflare Mage Explosion: 50%, softcap starts at 500 base damage to not overly punish slow weapons
                     int bloodflareFireballDamage = Player.ApplyArmorAccDamageBonusesTo(CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250));
 
-                    int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
+                    int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
                     if (fire.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[fire].DamageType = DamageClass.Generic;
@@ -1206,7 +1203,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (eGauntlet)
                 {
-                    CalamityUtils.Inflict246DebuffsNPC(target, ModContent.BuffType<ElementalMix>());
+                    CalamityUtils.Inflict246DebuffsNPC(target, BuffType<ElementalMix>());
                 }
                 if (ataxiaFire)
                 {
@@ -1287,7 +1284,7 @@ namespace CalamityMod.CalPlayer
                     //20% chance for Voltaic Jelly
                     if (Main.rand.NextBool(starTaintedGenerator ? 1 : 5))
                     {
-                        target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
+                        target.AddBuff(BuffType<StaticDischarge>(), 60);
                     }
                 }
 
@@ -1305,6 +1302,11 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<CrushDepth>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
+            if (aSpark && Player.IsUnderwater())
+            {
+                int duration = transformer ? 120 : 60;
+                target.AddBuff(BuffType<StaticDischarge>(), duration);
+            }
             if (abyssalAmulet)
             {
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());
@@ -1346,7 +1348,7 @@ namespace CalamityMod.CalPlayer
             if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
                 target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ModContent.ProjectileType<GladiatorHealOrb>(), 0, 0f);
+                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ProjectileType<GladiatorHealOrb>(), 0, 0f);
             }
 
             if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
@@ -1512,7 +1514,7 @@ namespace CalamityMod.CalPlayer
             if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
                 target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ModContent.ProjectileType<GladiatorHealOrb>(), 0, 0f);
+                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0f);
             }
 
             if (reaverDefense)

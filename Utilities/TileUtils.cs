@@ -696,10 +696,10 @@ namespace CalamityMod
 
             if (ignoreAbyss)
             {
-                tileExcludeList.Add(ModContent.TileType<AbyssGravel>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantle>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantleMolten>());
-                tileExcludeList.Add(ModContent.TileType<Voidstone>());
+                tileExcludeList.Add(TileType<AbyssGravel>());
+                tileExcludeList.Add(TileType<PyreMantle>());
+                tileExcludeList.Add(TileType<PyreMantleMolten>());
+                tileExcludeList.Add(TileType<Voidstone>());
             }
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);

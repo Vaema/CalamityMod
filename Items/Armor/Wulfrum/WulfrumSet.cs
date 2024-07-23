@@ -82,9 +82,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     }
                 }
 
-                else if (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()))
+                else if (player.HasItem(ItemType<WulfrumMetalScrap>()))
                 {
-                    player.ConsumeItem(ModContent.ItemType<WulfrumMetalScrap>());
+                    player.ConsumeItem(ItemType<WulfrumMetalScrap>());
                     //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right.
                     player.AddCooldown(WulfrumBastion.ID, BastionCooldown + BastionTime);
                     //Though do i need to sync that or is the player inventory auto synced?
@@ -234,7 +234,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     setBonus1.OverrideColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
                     tooltips.Insert(setBonusIndex + 1, setBonus1);
 
-                    int AmmoItem = ModContent.ItemType<WulfrumMetalScrap>();
+                    int AmmoItem = ItemType<WulfrumMetalScrap>();
                     string AmmoDisplay = $"[i:{AmmoItem}] {CalamityUtils.GetItemName(AmmoItem)}";
                     TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", CalamityUtils.GetTextFromModItem<WulfrumHat>("AbilityDescription").Format(AmmoDisplay));
                     setBonus2.OverrideColor = new Color(110, 192, 93);

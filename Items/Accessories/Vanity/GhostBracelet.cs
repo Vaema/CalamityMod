@@ -4,23 +4,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class RedBow : ModItem, ILocalizedModType
+    [LegacyName("RedBow")]
+    public class GhostBracelet : ModItem, ILocalizedModType
     {
-
         public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
             {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Apelusa_Head", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Apelusa_Body", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Apelusa_Legs", EquipType.Legs, this);
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Dandy_Head", EquipType.Head, this);
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Dandy_Body", EquipType.Body, this);
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Dandy_Legs", EquipType.Legs, this);
             }
         }
 
         public override void SetStaticDefaults()
         {
-
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -37,8 +36,8 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetDefaults()
         {
-            Item.width = 22;
-            Item.height = 30;
+            Item.width = 42;
+            Item.height = 38;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
@@ -48,21 +47,21 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.Calamity().redBow = true;
+            player.Calamity().ghostBracelet = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.Calamity().redBow = true;
+                player.Calamity().ghostBracelet = true;
             }
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Silk, 5).
+                AddIngredient(ItemID.Silk, 20).
                 AddTile(TileID.Loom).
                 Register();
         }

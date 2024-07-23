@@ -1,12 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Rogue
 {
     public class DestructionExplosion : ModProjectile, ILocalizedModType
     {

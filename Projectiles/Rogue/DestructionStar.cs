@@ -1,16 +1,11 @@
 ﻿using System;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.Projectiles.Rogue
 {

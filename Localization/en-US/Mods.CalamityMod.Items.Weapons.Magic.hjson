@@ -723,7 +723,11 @@ SanguineFlare: {
 
 SeethingDischarge: {
 	DisplayName: Seething Discharge
-	Tooltip: Fires a barrage of brimstone blasts
+	Tooltip:
+		'''
+		Fires an accelerating arc of brimstone hellblasts
+		Every third attack spawns a brimstone dart ring which chases after foes
+		'''
 }
 
 Serpentine: {

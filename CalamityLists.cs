@@ -106,8 +106,6 @@ namespace CalamityMod
         public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
         public static List<int> MagicGunIDs;
-        public static List<int> MushroomWeaponIDs;
-        public static List<int> MushroomProjectileIDs;
         public static List<int> BlacklistedWeaponsWithToolPower;
 
         // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
@@ -913,17 +911,17 @@ namespace CalamityMod
                 NPCType<KingSlimeJewelRuby>(),
                 NPCType<KingSlimeJewelSapphire>(),
                 NPCType<KingSlimeJewelEmerald>(),
+                NPCID.EyeofCthulhu,
+                NPCType<BloodlettingServant>(),
                 NPCID.EaterofWorldsHead,
                 NPCID.EaterofWorldsBody,
                 NPCID.EaterofWorldsTail,
                 NPCID.BrainofCthulhu,
                 NPCID.Creeper,
-                NPCID.EyeofCthulhu,
-                NPCType<BloodlettingServant>(),
                 NPCID.QueenBee,
+                NPCID.Deerclops,
                 NPCID.SkeletronHead,
                 NPCID.SkeletronHand,
-                NPCID.Deerclops,
                 NPCID.WallofFlesh,
                 NPCID.WallofFleshEye,
                 NPCID.PirateShipCannon,
@@ -941,7 +939,6 @@ namespace CalamityMod
                 NPCID.Plantera,
                 NPCID.PlanterasTentacle,
                 NPCType<PlanterasFreeTentacle>(),
-                NPCID.HallowBoss,
                 NPCID.Everscream,
                 NPCID.SantaNK1,
                 NPCID.IceQueen,
@@ -959,6 +956,7 @@ namespace CalamityMod
                 NPCID.DukeFishron,
                 NPCID.Sharkron,
                 NPCID.Sharkron2,
+                NPCID.HallowBoss,
                 NPCID.CultistBoss,
                 NPCID.CultistDragonHead,
                 NPCID.CultistDragonBody1,
@@ -1566,6 +1564,7 @@ namespace CalamityMod
                 TileType<LivingGodSlayerFireBlockTile>(),
                 TileType<LivingHolyFireBlockTile>(),
                 TileType<LivingBrimstoneFireBlockTile>(),
+                TileType<LivingPlagueFireBlockTile>(),
                 TileID.LivingFire,
                 TileID.LivingCursedFire,
                 TileID.LivingDemonFire,
@@ -1589,7 +1588,6 @@ namespace CalamityMod
                 BuffType<ShadowBuff>(),
                 BuffType<Soaring>(),
                 BuffType<SulphurskinBuff>(),
-                BuffType<TeslaBuff>(),
                 BuffType<WeaponImbueBrimstone>(),
                 BuffType<WeaponImbueCrumbling>(),
                 BuffType<WeaponImbueHolyFlames>(),
@@ -1725,34 +1723,6 @@ namespace CalamityMod
                 ItemID.WaspGun,
                 ItemID.ZapinatorGray,
                 ItemID.ZapinatorOrange
-            };
-
-            MushroomWeaponIDs = new List<int>()
-            {
-                ItemType<Mycoroot>(),
-                ItemType<InfestedClawmerang>(),
-                ItemType<PuffShroom>(),
-                ItemType<HyphaeRod>(),
-                ItemType<Fungicide>(),
-                ItemType<MycelialClaws>(),
-                ItemType<Shroomer>(),
-                ItemID.Hammush,
-                ItemID.MushroomSpear,
-                ItemID.Shroomerang
-            };
-
-            MushroomProjectileIDs = new List<int>()
-            {
-                ProjectileType<MycorootProj>(),
-                ProjectileType<ShroomerangSpore>(),
-                ProjectileType<InfestedClawmerangProj>(),
-                ProjectileType<PuffCloud>(),
-                ProjectileType<FungiOrb2>(),
-                ProjectileType<FungiOrb>(),
-                ProjectileType<Shroom>(),
-                ProjectileID.TruffleSpore,
-                ProjectileID.MushroomSpear,
-                ProjectileID.Shroomerang
             };
 
             // This list intentionally does not contain Grax.
@@ -2764,8 +2734,6 @@ namespace CalamityMod
             amalgamBuffList = null;
             persistentBuffList = null;
             MagicGunIDs = null;
-            MushroomWeaponIDs = null;
-            MushroomProjectileIDs = null;
             BlacklistedWeaponsWithToolPower = null;
 
             zombieList = null;

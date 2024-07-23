@@ -103,10 +103,10 @@ AmalgamatedBrain: {
 	DisplayName: Amalgamated Brain
 	Tooltip:
 		'''
-		10% increased damage
-		Shade rains down and enemies are confused when hit,
-		and summon damage and crit chance are boosted by 10%
+		5% increased damage
+		Shade rains down and enemies are confused when hit
 		Grants the ability to dodge attacks
+		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip:
 		'''
@@ -129,14 +129,14 @@ AmbrosialAmpoule: {
 		'''
 }
 
-AmidiasPendant: {
-	DisplayName: Amidias' Pendant
-	Tooltip: Periodically rains down prism shards that briefly stun enemies
-}
-
 AmidiasSpark: {
 	DisplayName: Amidias' Spark
-	Tooltip: Taking damage releases a blast of sparks
+	Tooltip:
+		'''
+		Attacks inflict Static Discharge while underwater
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
+		'''
 }
 
 AncientFossil: {
@@ -359,7 +359,7 @@ BlunderBooster: {
 		12% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
 		Summons a red lightning aura around the player that electrifies nearby enemies
-		The aura's appearance can be toggled with visibility
+		The aura has reduced opacity if visibility is disabled
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
 		This dash leaves a trail of red lightning bolts
 		This effect has a 1 second cooldown before it can be used again
@@ -808,8 +808,8 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides the Mushy buff, granting 6 defense and +1 HP/s life regen
-		All mushroom-based weapons deal 10% more damage and emit harmless mushrooms
+		Consuming mushrooms provides the Mushy buff, granting 8 defense and +1 HP/s life regen
+		10% increased damage while you have the Mushy buff
 		'''
 }
 
@@ -819,7 +819,7 @@ GiantPearl: {
 		'''
 		You have a light aura around you
 		Enemies within the aura are slowed down
-		Does not work while a boss is alive
+		You release homing prism shards while an enemy is slowed
 		Provides a small amount of light in the abyss
 		'''
 }
@@ -1754,6 +1754,16 @@ SupremeBaitTackleBoxFishingStation: {
 		'''
 }
 
+TeslasAmulet: {
+	DisplayName: Tesla's Amulet
+	Tooltip:
+		'''
+		Generates an electrifying field that slows enemies
+		The field has reduced opacity if visibility is disabled
+		Reduces the duration of the Static Discharge debuff
+		'''
+}
+
 TheAbsorber: {
 	DisplayName: The Absorber
 	Tooltip:
@@ -1863,10 +1873,11 @@ TheTransformer: {
 	DisplayName: The Transformer
 	Tooltip:
 		'''
-		Multiplies all electric debuff damage by 1.5
-		Taking damage releases a blast of sparks
-		Complete immunity to Electrified and all electric attacks
-		You take halved damage from enemy bullets and reflect them for 800% damage
+		Multiplies all electricity debuff damage by 1.5x
+		Attacks inflict Static Discharge while underwater
+		Reduces the damage of all electricity debuffs by 50%
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
 		'''
 }
 
@@ -2027,9 +2038,9 @@ CrystalHeartVodka: {
 	Tooltip: "'Tastes like strawberry cream liqueur (and estrogen)'"
 }
 
-CocosFeather: {
-	DisplayName: Coco's Feather
-	Tooltip: ""
+GhostBracelet: {
+	DisplayName: Ghost Bracelet
+	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
 HapuFruit: {
@@ -2049,9 +2060,4 @@ Popo: {
 		Transforms the holder into a snowman
 		'Don't let the demons steal your nose'
 		'''
-}
-
-RedBow: {
-	DisplayName: Red Bow
-	Tooltip: "'Pelusa's favorite bow'"
 }
