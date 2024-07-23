@@ -1035,12 +1035,6 @@ namespace CalamityMod.CalPlayer
                     projectileDamageReduction += 0.15;
             }
 
-            if (transformer)
-            {
-                if (proj.type == ProjectileID.BulletSnowman || proj.type == ProjectileID.BulletDeadeye || proj.type == ProjectileID.SniperBullet)
-                    projectileDamageReduction += 0.5;
-            }
-
             if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
             {
                 // Daedalus Reflect counts as a reflect but doesn't actually stop you from taking damage
@@ -1479,23 +1473,6 @@ namespace CalamityMod.CalPlayer
             // As these reflects do not cancel damage, they need to be in OnHit rather than ModifyHit
             if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
             {
-                // The Transformer can reflect bullets
-                if (transformer)
-                {
-                    if (proj.type == ProjectileID.BulletSnowman || proj.type == ProjectileID.BulletDeadeye || proj.type == ProjectileID.SniperBullet || proj.type == ProjectileID.VortexLaser)
-                    {
-                        proj.hostile = false;
-                        proj.friendly = true;
-                        proj.velocity *= -1f;
-                        proj.damage = (int)Player.GetBestClassDamage().ApplyTo(proj.damage * 8);
-                        proj.penetrate = 1;
-
-                        // 17APR2024: Ozzatron: The Transformer is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                        int transformerIFrames = Player.ComputeReflectIFrames();
-                        Player.GiveUniversalIFrames(transformerIFrames, true);
-                    }
-                }
-
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
 
