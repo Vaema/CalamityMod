@@ -2847,16 +2847,15 @@ namespace CalamityMod.CalPlayer
                         Player.statLife = Player.statLifeMax2;
                 }
             }
-            if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.1f &&
-                wearingRogueArmor && rogueStealthMax > 0 && !Player.HasCooldown(Cooldowns.SandCloak.ID))
+            if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Cooldowns.SandCloak.ID))
             {
-                Player.AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(30));
+                Player.AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(20));
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.SandCloak>()));
-                rogueStealth -= rogueStealthMax * 0.1f;
-                int damage = Player.ApplyArmorAccDamageBonusesTo(7);
+                int damage = Player.ApplyArmorAccDamageBonusesTo(12);
+                float knockback = 2.5f;
 
-                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), damage, 8, Player.whoAmI);
+                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), damage, knockback, Player.whoAmI);
                 Main.projectile[veil].Center = Player.Center;
                 SoundEngine.PlaySound(SoundID.Item45, Player.Center);
             }
