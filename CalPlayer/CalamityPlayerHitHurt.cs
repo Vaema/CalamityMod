@@ -928,6 +928,7 @@ namespace CalamityMod.CalPlayer
                     {
                         proj.hostile = false;
                         proj.friendly = true;
+                        proj.damage *= 10;
                         proj.velocity *= -2f;
                         proj.extraUpdates += 1;
                         proj.penetrate = 1;
@@ -1032,7 +1033,7 @@ namespace CalamityMod.CalPlayer
             if (evolution)
             {
                 if (proj.type == projTypeJustHitBy)
-                    projectileDamageReduction += 0.15;
+                    projectileDamageReduction += 0.25;
             }
 
             if (CalamityLists.projectileDestroyExceptionList.TrueForAll(x => proj.type != x) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)

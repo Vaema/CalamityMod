@@ -3538,6 +3538,10 @@ namespace CalamityMod.CalPlayer
                 gSabatonFall = 0;
                 gSabatonFalling = false;
             }
+
+            // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
+            if (!evolution || !Player.HasCooldown(GlobalDodge.ID))
+                projTypeJustHitBy = -1;
         }
         #endregion
 

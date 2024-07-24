@@ -1834,12 +1834,12 @@ TheEvolution: {
 	DisplayName: The Evolution
 	Tooltip:
 		'''
-		Reflects projectiles that hit you, making them harmless to you but 10x more harmful to enemies
+		Reflects projectiles that hit you, reducing their damage to 1 and dealing 10x damage to enemies
 		Projectiles that deal less than 5% of your max life in damage will not be reflected
 		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
 		This cooldown is shared with all other dodges and reflects
-		Reflecting a projectile grants +1 HP/s life regen and accelerated life regen for 5 seconds
-		If the same enemy projectile type hits you again you will resist its damage by 15%
+		Reflecting a projectile grants +6 HP/s life regen for 5 seconds and grants maximum natural life regen
+		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
 
