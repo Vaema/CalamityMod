@@ -595,7 +595,7 @@ ParasiticSceptor: {
 
 PhantasmalFury: {
 	DisplayName: Phantasmal Fury
-	Tooltip: Casts a phantasmal bolt that explodes into more bolts
+	Tooltip: Casts a vortex of homing souls around you that repels enemies and will fly towards your cursor after a few seconds
 }
 
 PhoenixFlameBarrage: {
