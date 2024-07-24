@@ -42,7 +42,7 @@ AbyssalDivingSuit: {
 		Grants the ability to swim, extends underwater breathing, emits light underwater, and improves mobility on ice
 		Provides a moderate amount of light and reduces breath loss in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
-		Grants immunity to the sulphurous waters
+		Grants immunity to the sulphurous waters and Crush Depth's increased breath loss
 		'''
 }
 
@@ -573,6 +573,7 @@ DepthCharm: {
 		'''
 		Reduces the damage caused by drowning in the abyss
 		Removes the bleed effect caused by the upper layers of the abyss
+		Removes the increased breath loss of Crush Depth
 		'''
 }
 
@@ -1101,8 +1102,7 @@ Nanotech: {
 		Stealth strikes summon nanobeams and sparks on enemy hits
 		Stealth strikes have +15 armor penetration, deal 5% more damage, and heal for 2 HP
 		15% increased rogue damage and 15% increased rogue velocity
-		Landing a stealth strike grants a 12% crit bonus to non-stealth strikes
-		This crit bonus slowly decays
+		Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
 		'''
 }
 
@@ -1356,11 +1356,7 @@ RadiantOoze: {
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip:
-		'''
-		Stealth strikes grant 12% crit bonus to non-stealth strikes
-		This crit bonus slowly decays
-		'''
+	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
 }
 
 RampartofDeities: {

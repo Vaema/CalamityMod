@@ -1151,7 +1151,7 @@ namespace CalamityMod.CalPlayer
 
             if (raiderTalisman && modProj.stealthStrike)
             {
-                raiderCritBonus = RaidersTalisman.RaiderBonus;
+                raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
