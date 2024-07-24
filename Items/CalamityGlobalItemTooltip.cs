@@ -826,7 +826,7 @@ namespace CalamityMod.Items
             //Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
             {
-                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25\n" +
+                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25x\n" +
                 "All attacks light enemies on fire\n" +
                 "'Never get cold feet again'");
             }
@@ -835,7 +835,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HellfireTreads)
             {
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("fire blocks", "the Burning and On Fire! debuffs"));
-                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5, does not stack with downgrades\n" +
+                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5x, does not stack with downgrades\n" +
                 "All attacks inflict Hellfire");
             }
 

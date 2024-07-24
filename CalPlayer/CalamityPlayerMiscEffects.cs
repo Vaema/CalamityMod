@@ -1448,8 +1448,8 @@ namespace CalamityMod.CalPlayer
                 soundCooldown--;
             if (shadowPotCooldown > 0)
                 shadowPotCooldown--;
-            if (raiderCritBonus > 0f)
-                raiderCritBonus -= RaidersTalisman.RaiderBonus / (float)CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+            if (raiderCritLifespan > 0f)
+                raiderCritLifespan--;
             if (raiderSoundCooldown > 0)
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
@@ -1830,8 +1830,8 @@ namespace CalamityMod.CalPlayer
             }
 
             // Raider Talisman bonus
-            if (raiderTalisman && !StealthStrikeAvailable())
-                Player.GetCritChance<ThrowingDamageClass>() += raiderCritBonus;
+            if (raiderTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+                Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
 
             if (kamiBoost)
                 Player.GetDamage<GenericDamageClass>() += 0.15f;
@@ -2361,7 +2361,7 @@ namespace CalamityMod.CalPlayer
 
                         // Reduce breath
                         if (Player.breath > 0)
-                            Player.breath -= (int)(cDepth ? breathLoss + 1D : breathLoss);
+                            Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
                     }
 
                     // If breath is greater than 0 and player has gills or is merfolk, balance out the effects by reducing breath
@@ -2914,7 +2914,7 @@ namespace CalamityMod.CalPlayer
 
             if (giantPearl)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient && !areThereAnyDamnBosses)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     foreach (NPC npc in Main.ActiveNPCs)
                     {
@@ -3035,7 +3035,11 @@ namespace CalamityMod.CalPlayer
             }
 
             if (mushy)
-                Player.statDefense += 6;
+            {
+                Player.statDefense += 8;
+                if (fungalSymbiote)
+                    Player.GetDamage<GenericDamageClass>() += 0.1f;
+            }  
 
             if (omniscience)
             {
