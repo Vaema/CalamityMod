@@ -1265,11 +1265,9 @@ namespace CalamityMod.CalPlayer
                 if (pSoulArtifact && !profanedCrystal)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
 
-                if (profanedCrystalBuffs)
+                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
                 {
-                    bool empowered = pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
-                    if (empowered)
-                        target.AddBuff(BuffType<HolyFlames>(), 600);
+                   target.AddBuff(BuffType<HolyFlames>(), 600);
                 }
 
                 if (divineBless)
