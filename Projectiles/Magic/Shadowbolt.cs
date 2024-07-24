@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
-            if (spawnPlat)
+            if (spawnPlat && hasSetPlatSpawn)
             {
                 chosenTarget = Projectile.Center.ClosestNPCAt(2000);
 
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Magic
                     targetCenter = chosenTarget.Center;
 
                 platPosCenter = Projectile.Center + Projectile.velocity * Main.rand.Next(70, 120 + 1);
-                platRot = (targetCenter - platPosCenter).SafeNormalize(Vector2.UnitX).ToRotation();
+                platRot = (Projectile.Center - platPosCenter).SafeNormalize(Vector2.UnitX).ToRotation();
                 platPosWall = platPosCenter + new Vector2(0, 8).RotatedBy(platRot);
                 spawnPlat = false;
             }
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Magic
                 else
                     targetCenter = chosenTarget.Center;
 
-                platRot = platRot.AngleLerp((targetCenter - platPosCenter).SafeNormalize(Vector2.UnitX).ToRotation(), 0.2f);
+                platRot = platRot.AngleLerp((targetCenter - platPosCenter).SafeNormalize(Vector2.UnitX).ToRotation(), 0.1f);
                 platPosWall = platPosCenter + new Vector2(0, -30).RotatedBy(platRot + MathHelper.ToRadians(90f));
             }
             if (!spawnPlat && !hasReboundOffPlat && targetCenter != Vector2.Zero)
