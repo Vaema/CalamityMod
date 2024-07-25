@@ -193,13 +193,12 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<RangedDamageClass>() = -spiritOriginConvertedCrit;
             }
 
-            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
-                heldGaelsLastFrame = true;
-
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
             // De-equipping Gael's Greatsword deletes all rage.
+            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
+                heldGaelsLastFrame = true;
             else if (heldGaelsLastFrame)
             {
                 heldGaelsLastFrame = false;
@@ -1571,6 +1570,9 @@ namespace CalamityMod.CalPlayer
             {
                 FlameLickedShell.HandleParryCountdown(Player);
             }
+
+            if (!flameLickedShell && flameLickedShellParry > 0)
+                flameLickedShellParry--;
 
             // Silver Armor "Medkit" effect
             if (silverMedkitTimer > 0)
@@ -3238,7 +3240,7 @@ namespace CalamityMod.CalPlayer
 
                     var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 600;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
 

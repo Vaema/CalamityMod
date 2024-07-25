@@ -39,6 +39,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.useTurn = false;
             Item.knockBack = 7f;
 
+            Item.noMelee = true;
             Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
