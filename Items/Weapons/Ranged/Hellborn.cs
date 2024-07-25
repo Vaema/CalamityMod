@@ -17,11 +17,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 62;
             Item.height = 34;
-            Item.damage = 500;
+            Item.damage = 475;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 35;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 2f;
+            Item.knockBack = 2.5f;
 
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;

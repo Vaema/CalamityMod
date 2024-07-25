@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 5;
+            Projectile.localNPCHitCooldown = 4;
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 25;
         }
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
                             hasPlayedSound = true;
                         }
 
-                        Particle Smear = new CircularSmearVFX(Projectile.Center, Color.Red * Main.rand.NextFloat(0.38f, 0.55f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(1f, 1.1f) * fade);
+                        Particle Smear = new CircularSmearVFX(Projectile.Center, Color.Red * Main.rand.NextFloat(0.38f, 0.55f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(1.13f, 1.25f) * fade);
                         GeneralParticleHandler.SpawnParticle(Smear);
 
                         Particle Smear2 = new CircularSmearVFX(Projectile.Center, Color.OrangeRed * Main.rand.NextFloat(0.58f, 0.7f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(0.5f, 0.6f) * fade);
@@ -148,10 +148,10 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 7;
 
-                        Owner.velocity += shootVelocity * -0.85f;
+                        Owner.velocity += shootVelocity * -0.68f;
 
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HellbornProj>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shootVelocity.RotatedBy(0.75f * Projectile.direction) * 1f, ModContent.ProjectileType<HellbornShell>(), 1, 0, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HellbornProj>(), Projectile.damage, 0, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shootVelocity.RotatedBy(0.75f * Projectile.direction) * 1f, ModContent.ProjectileType<HellbornShell>(), 0, 0, Projectile.owner);
 
                         for (int i = 0; i <= 13; i++)
                         {
@@ -212,7 +212,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.SourceDamage *= 0.08f;
-            if (Owner.Calamity().hellbornShots < 6)
+            if (Owner.Calamity().hellbornShots < 8)
             {
                 Owner.Calamity().hellbornShots++;
             }
@@ -232,6 +232,6 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
         public override bool? CanDamage() => Spinning ? null : false;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 90, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 100, targetHitbox);
     }
 }
