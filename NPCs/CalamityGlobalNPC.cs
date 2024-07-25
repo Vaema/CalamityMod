@@ -1452,8 +1452,7 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
-                npc.scale = 1.2f;
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.55);
             }
             else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism || npc.type == NPCType<Foveanator>())
             {
