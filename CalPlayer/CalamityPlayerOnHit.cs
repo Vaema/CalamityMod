@@ -56,9 +56,10 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // Handle on-hit melee effects for the gem tech armor set.
-            GemTechState.MeleeOnHitEffects(target);
+            if (item.CountsAsClass<MeleeDamageClass>())
+                GemTechState.MeleeOnHitEffects(target);
 
-            // Handle on-hit melee effects for the mythril armor set.
+            // Handle on-hit melee effects for the mythril armor set. (all class inclusive)
             MythrilArmorSetChange.OnHitEffects(target, damageDone, Player);
 
             if (witheringWeaponEnchant)
