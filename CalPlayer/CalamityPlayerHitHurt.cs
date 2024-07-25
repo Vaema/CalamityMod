@@ -2217,7 +2217,7 @@ namespace CalamityMod.CalPlayer
                 if (evilSmasherBoost > 0)
                     evilSmasherBoost -= 1;
 
-                hellbornBoost = 0;
+                hellbornShots = 0;
 
                 if (trinketOfChi)
                     chiBuffTimer = 0;

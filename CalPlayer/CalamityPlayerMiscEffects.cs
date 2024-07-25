@@ -1516,8 +1516,6 @@ namespace CalamityMod.CalPlayer
                 hideOfDeusTimer--;
             if (murasamaHitCooldown > 0)
                 murasamaHitCooldown--;
-            if (hellbornBoost > 0)
-                hellbornBoost--;
             if (persecutedEnchantSummonTimer < 1800)
                 persecutedEnchantSummonTimer++;
             else
