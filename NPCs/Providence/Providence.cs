@@ -161,6 +161,11 @@ namespace CalamityMod.NPCs.Providence
         public static Asset<Texture2D> TextureNight_Glow_2;
         #endregion
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, -1);
+        }
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 3;
