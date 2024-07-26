@@ -22,6 +22,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
@@ -30,6 +31,7 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
@@ -41,6 +43,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
 using Filters = Terraria.Graphics.Effects.Filters;
 
 namespace CalamityMod.NPCs.Providence
@@ -79,6 +82,9 @@ namespace CalamityMod.NPCs.Providence
             Violet = 6
         }
         public int colorShiftTimer = -1;
+
+        Color HighFireColor = new Color(255, 191, 73);
+        Color LowFireColor = new Color(116, 45, 23);
 
         private bool text = false;
         private bool useDefenseFrames = false;
@@ -220,6 +226,20 @@ namespace CalamityMod.NPCs.Providence
             #endregion
         }
 
+        public override void ModifyHoverBoundingBox(ref Rectangle boundingBox)
+        {
+            // Is in spawning animation
+            float spawnAnimationTime = 180f;
+            bool spawnAnimation = NPC.Calamity().newAI[3] < spawnAnimationTime;
+
+            if (spawnAnimation)
+            {
+                boundingBox = new Rectangle(0, 0, 0, 0);
+            }
+
+            base.ModifyHoverBoundingBox(ref boundingBox);
+        }
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 36f;
@@ -322,6 +342,9 @@ namespace CalamityMod.NPCs.Providence
 
         public override void AI()
         {
+            // Local helper variable to get the current boss mode without having to use the magic number version
+            int currentMode = (int)NPC.localAI[1];
+
             // Set the border drawing to true if it isn't set to true
             // Can happen when another mod sets to false for a difficulty and that difficulty is then toggled off.
             shouldDrawInfernoBorder = true;
@@ -332,7 +355,7 @@ namespace CalamityMod.NPCs.Providence
             CalamityGlobalNPC.holyBoss = NPC.whoAmI;
 
             // Rotation
-            NPC.rotation = NPC.velocity.X * 0.004f;
+            NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.velocity.X * 0.006f, 0.1f);
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -390,6 +413,11 @@ namespace CalamityMod.NPCs.Providence
             // Is in spawning animation
             float spawnAnimationTime = 180f;
             bool spawnAnimation = calamityGlobalNPC.newAI[3] < spawnAnimationTime;
+
+            if (!spawnAnimation)
+            {
+                NPC.Opacity = 1f;
+            }
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -469,6 +497,11 @@ namespace CalamityMod.NPCs.Providence
 
             // Inflict Holy Inferno if target is too far away
             float burnIntensity = CalculateBurnIntensity(attackDelayAfterCocoon);
+
+            // Color determination
+            Color hiColor = ProvUtils.GetProjectileColor(currentMode, 0);
+            Color medColor = ProvUtils.GetProjectileColor(currentMode, 255);
+            Color loColor = ProvUtils.GetProjectileColor(currentMode, 255, true);
 
             if (!player.dead && player.active && !player.creativeGodMode && !Dying)
             {
@@ -811,10 +844,7 @@ namespace CalamityMod.NPCs.Providence
                 if (spawnAnimation)
                 {
                     colorShiftTimer++; // Also double the shift speed in the mean time :)
-                    float minSpawnVelocity = 0.4f;
-                    float maxSpawnVelocity = 4f;
-                    float velocityY = maxSpawnVelocity - MathHelper.Lerp(minSpawnVelocity, maxSpawnVelocity, calamityGlobalNPC.newAI[3] / spawnAnimationTime);
-                    NPC.velocity = new Vector2(0f, velocityY);
+                    NPC.velocity = new Vector2(0f, 0f);
                 }
                 else
                 {
@@ -1063,54 +1093,47 @@ namespace CalamityMod.NPCs.Providence
 
                     if (spawnAnimation)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient && calamityGlobalNPC.newAI[3] == 0f)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0f, -80f), Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, Main.myPlayer, biomeType, 0f);
+                        NPC.dontTakeDamage = true;
 
-                        if (calamityGlobalNPC.newAI[3] == 10f)
+                        if (calamityGlobalNPC.newAI[3] == spawnAnimationTime - 1)
+                        {
+                            NPC.dontTakeDamage = false;
+
                             SoundEngine.PlaySound(HolyRaySound, NPC.Center);
 
-                        if (calamityGlobalNPC.newAI[3] > 10f && calamityGlobalNPC.newAI[3] < 150f)
-                        {
-                            int dustAmt = (int)MathHelper.Lerp(4f, 8f, calamityGlobalNPC.newAI[3] / spawnAnimationTime);
-                            for (int m = 0; m < dustAmt; m++)
+                            for (int i = 0; i < 30; i++)
                             {
-                                float fade = MathHelper.Lerp(1.3f, 0.7f, NPC.Opacity) * Utils.GetLerpValue(0f, 120f, calamityGlobalNPC.newAI[3], clamped: true);
-                                Color newColor = Main.hslToRgb(calamityGlobalNPC.newAI[3] / 180f, 1f, 0.5f);
-
-                                if (!nightAI)
-                                {
-                                    newColor.R = 255;
-                                    if (biomeType == 2)
-                                        newColor.B = 0;
-                                }
-                                else
-                                {
-                                    newColor.B = 255;
-                                    if (biomeType == 2)
-                                        newColor.G = 0;
-                                    else
-                                        newColor.R = 0;
-                                }
-
-                                int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RainbowMk2, 0f, 0f, 0, newColor);
-                                Main.dust[dust].position = NPC.Center + Main.rand.NextVector2Circular(NPC.width * 2f, NPC.height * 2f) + new Vector2(0f, -150f);
-                                Main.dust[dust].velocity *= Main.rand.NextFloat() * 0.8f;
-                                Main.dust[dust].noGravity = true;
-                                Main.dust[dust].fadeIn = 0.6f + Main.rand.NextFloat() * 0.7f * fade;
-                                Main.dust[dust].velocity += Vector2.UnitY * 3f;
-                                Main.dust[dust].scale = 1.2f;
-
-                                if (dust != 6000)
-                                {
-                                    Dust dust2 = Dust.CloneDust(dust);
-                                    dust2.scale /= 2f;
-                                    dust2.fadeIn *= 0.85f;
-                                    dust2.color = new Color(255, 255, 0, 255);
-                                }
+                                Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(1f, 1.6f), Main.rand.NextFloat(2f, 5f), hiColor, loColor);
+                                p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
+                                GeneralParticleHandler.SpawnParticle(p);
+                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(2.5f, 5.5f), 2f, Main.rand.NextFloat(-0.05f, 0.05f), true));
                             }
+
+                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, medColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0f, 15));
+
+                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, loColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 1.2f, 35));
+                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, medColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.65f, 25));
                         }
 
-                        NPC.Opacity = MathHelper.Clamp(calamityGlobalNPC.newAI[3] / spawnAnimationTime, 0f, 1f);
+                        float sc = calamityGlobalNPC.newAI[3] / spawnAnimationTime;
+
+                        if (calamityGlobalNPC.newAI[3] > 10f && calamityGlobalNPC.newAI[3] < spawnAnimationTime)
+                        {
+                            if (calamityGlobalNPC.newAI[3] % 10f == 0)
+                            {
+                                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, Color.Lerp(new Color(25, 25, 25, 0), medColor, sc), "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1.5f, 1f), Main.rand.NextBool(2) ? 0f : MathHelper.Pi, sc * 0.5f, sc * 0.1f, 20));
+
+                                SoundStyle SpawnFlareSound = SoundID.Item74;
+
+                                SpawnFlareSound.MaxInstances = 10;
+
+                                SoundEngine.PlaySound(SpawnFlareSound.WithVolumeScale(calamityGlobalNPC.newAI[3] / spawnAnimationTime).WithPitchOffset(-1 + (calamityGlobalNPC.newAI[3] / spawnAnimationTime)), NPC.Center);
+                            }
+
+                            Vector2 startPos = NPC.Center + (new Vector2(Main.rand.NextFloat(80, 300) * (sc * 1.6f), 0).RotatedByRandom(Main.rand.NextFloat(MathHelper.TwoPi)) * new Vector2(1.5f, 1f));
+
+                            GeneralParticleHandler.SpawnParticle(new SparkParticle(startPos, startPos.DirectionTo(NPC.Center) * (startPos.Distance(NPC.Center) / 10), false, 10, Main.rand.NextFloat(0.2f, 0.5f) * (sc * 2), medColor));
+                        }
 
                         calamityGlobalNPC.newAI[3] += 1f;
 
@@ -2159,151 +2182,176 @@ namespace CalamityMod.NPCs.Providence
                 Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
                 Texture2D textureGlow2 = offColor ? TextureNight_Glow_2.Value : Texture_Glow_2.Value;
 
-                if (AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon)
+
+                float spawnAnimationTime = 180f;
+                bool spawnAnimation = NPC.Calamity().newAI[3] < spawnAnimationTime;
+
+                if (spawnAnimation)
                 {
-                    if (!useDefenseFrames)
+                    Asset<Texture2D> orbTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+
+                    Asset<Texture2D> flareTex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlast");
+
+                    float sc = CalamityUtils.CircInEasing((float)NPC.Calamity().newAI[3] / (float)spawnAnimationTime, 1);
+
+                    for (int i = 0; i < 3; i++)
                     {
-                        texture = offColor ? TextureDefenseNight.Value : TextureDefense.Value;
-                        textureGlow = offColor ? TextureDefenseNight_Glow.Value : TextureDefense_Glow.Value;
-                        textureGlow2 = offColor ? TextureDefenseNight_Glow_2.Value : TextureDefense_Glow_2.Value;
+                        int frameY = (int)(NPC.Calamity().newAI[3] / 4) % 4;
+                        float sc1 = MathHelper.Lerp(1, 0, sc);
+                        Main.EntitySpriteDraw(orbTex.Value, NPC.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(MathHelper.Lerp(0f, 10f, sc)), 0).RotatedByRandom(MathHelper.TwoPi), orbTex.Frame(), ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, false).MultiplyRGBA(new Color(sc * 45f, sc * 11f, sc * 22f, 0f)), 0f, orbTex.Frame().Center(), (sc * 4.4f) + (float)(Math.Cos((float)NPC.Calamity().newAI[3] / 10) * sc), SpriteEffects.None);
+                    }
+                }
+
+                {
+                    if (AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon)
+                    {
+                        if (!useDefenseFrames)
+                        {
+                            texture = offColor ? TextureDefenseNight.Value : TextureDefense.Value;
+                            textureGlow = offColor ? TextureDefenseNight_Glow.Value : TextureDefense_Glow.Value;
+                            textureGlow2 = offColor ? TextureDefenseNight_Glow_2.Value : TextureDefense_Glow_2.Value;
+                        }
+                        else
+                        {
+                            texture = offColor ? TextureDefenseAltNight.Value : TextureDefenseAlt.Value;
+                            textureGlow = offColor ? TextureDefenseAltNight_Glow.Value : TextureDefenseAlt_Glow.Value;
+                            textureGlow2 = offColor ? TextureDefenseAltNight_Glow_2.Value : TextureDefenseAlt_Glow_2.Value;
+                        }
                     }
                     else
                     {
-                        texture = offColor ? TextureDefenseAltNight.Value : TextureDefenseAlt.Value;
-                        textureGlow = offColor ? TextureDefenseAltNight_Glow.Value : TextureDefenseAlt_Glow.Value;
-                        textureGlow2 = offColor ? TextureDefenseAltNight_Glow_2.Value : TextureDefenseAlt_Glow_2.Value;
+                        switch (frameUsed)
+                        {
+                            case 1:
+                                texture = offColor ? TextureAltNight.Value : TextureAlt.Value;
+                                textureGlow = offColor ? TextureAltNight_Glow.Value : TextureAlt_Glow.Value;
+                                textureGlow2 = offColor ? TextureAltNight_Glow_2.Value : TextureAlt_Glow_2.Value;
+                                break;
+
+                            case 2:
+                                texture = offColor ? TextureAttackNight.Value : TextureAttack.Value;
+                                textureGlow = offColor ? TextureAttackNight_Glow.Value : TextureAttack_Glow.Value;
+                                textureGlow2 = offColor ? TextureAttackNight_Glow_2.Value : TextureAttack_Glow_2.Value;
+                                break;
+
+                            case 3:
+                                texture = offColor ? TextureAttackAltNight.Value : TextureAttackAlt.Value;
+                                textureGlow = offColor ? TextureAttackAltNight_Glow.Value : TextureAttackAlt_Glow.Value;
+                                textureGlow2 = offColor ? TextureAttackAltNight_Glow_2.Value : TextureAttackAlt_Glow_2.Value;
+                                break;
+
+                            default:
+                                break;
+                        }
                     }
-                }
-                else
-                {
-                    switch (frameUsed)
+
+                    SpriteEffects spriteEffects = SpriteEffects.None;
+                    if (NPC.spriteDirection == 1)
+                        spriteEffects = SpriteEffects.FlipHorizontally;
+
+                    // Draw the main boss texture + its afterimages
+                    Vector2 RotationCenter = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+                    Color BaseColor = Color.White;
+                    float Brightness = 0.5f; // Ranges from 0 (full vibrance) to 1 (pure white)
+                    int maxAfterimages = 5;
+
+                    if (CalamityConfig.Instance.Afterimages)
                     {
-                        case 1:
-                            texture = offColor ? TextureAltNight.Value : TextureAlt.Value;
-                            textureGlow = offColor ? TextureAltNight_Glow.Value : TextureAlt_Glow.Value;
-                            textureGlow2 = offColor ? TextureAltNight_Glow_2.Value : TextureAlt_Glow_2.Value;
-                            break;
+                        for (int i = 1; i < maxAfterimages; i += 2)
+                        {
+                            Color AfterimageColor = drawColor;
+                            AfterimageColor = Color.Lerp(AfterimageColor, BaseColor, Brightness);
+                            AfterimageColor = NPC.GetAlpha(AfterimageColor);
+                            AfterimageColor *= (maxAfterimages - i) / 15f;
+                            if (colorOverride != null)
+                                AfterimageColor = colorOverride.Value;
 
-                        case 2:
-                            texture = offColor ? TextureAttackNight.Value : TextureAttack.Value;
-                            textureGlow = offColor ? TextureAttackNight_Glow.Value : TextureAttack_Glow.Value;
-                            textureGlow2 = offColor ? TextureAttackNight_Glow_2.Value : TextureAttack_Glow_2.Value;
-                            break;
+                            Vector2 AfterimageBodyPosition = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                            AfterimageBodyPosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                            AfterimageBodyPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
+                            spriteBatch.Draw(texture, AfterimageBodyPosition, NPC.frame, AfterimageColor.MultiplyRGBA(Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)), NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                        }
+                    }
 
-                        case 3:
-                            texture = offColor ? TextureAttackAltNight.Value : TextureAttackAlt.Value;
-                            textureGlow = offColor ? TextureAttackAltNight_Glow.Value : TextureAttackAlt_Glow.Value;
-                            textureGlow2 = offColor ? TextureAttackAltNight_Glow_2.Value : TextureAttackAlt_Glow_2.Value;
-                            break;
+                    Vector2 BasePosition = NPC.Center - screenPos;
+                    BasePosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    BasePosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
+                    spriteBatch.Draw(texture, BasePosition, NPC.frame, (colorOverride ?? Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)) * NPC.Opacity, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
 
+                    // Draw the glowmask textures + their afterimages
+                    // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.
+                    Color WingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0); //Default to day
+                    Color CrystalColor = Color.Violet;
+                    switch (NPC.localAI[1])
+                    {
+                        case (float)BossMode.Red:
+                            WingColor = Color.Red;
+                            CrystalColor = Color.BlueViolet;
+                            break;
+                        case (float)BossMode.Orange:
+                            WingColor = Color.Orange;
+                            CrystalColor = Color.HotPink;
+                            break;
+                        case (float)BossMode.Yellow: // Same as day
+                            break;
+                        case (float)BossMode.Green:
+                            WingColor = Color.Green;
+                            CrystalColor = Color.Gold;
+                            break;
+                        case (float)BossMode.Blue: // Same as night
+                        case (float)BossMode.Night:
+                            WingColor = Color.Cyan;
+                            CrystalColor = Color.BlueViolet;
+                            break;
+                        case (float)BossMode.Violet:
+                            WingColor = Color.Magenta;
+                            CrystalColor = Color.GreenYellow;
+                            break;
                         default:
                             break;
                     }
-                }
 
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (NPC.spriteDirection == 1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-
-                // Draw the main boss texture + its afterimages
-                Vector2 RotationCenter = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
-                Color BaseColor = Color.White;
-                float Brightness = 0.5f; // Ranges from 0 (full vibrance) to 1 (pure white)
-                int maxAfterimages = 5;
-
-                if (CalamityConfig.Instance.Afterimages)
-                {
-                    for (int i = 1; i < maxAfterimages; i += 2)
+                    Color BaseWingColor = Color.Lerp(WingColor, BaseColor, Brightness) * NPC.Opacity;
+                    Color BaseCrystalColor = Color.Lerp(CrystalColor, BaseColor, Brightness) * NPC.Opacity;
+                    if (colorOverride != null)
                     {
-                        Color AfterimageColor = drawColor;
-                        AfterimageColor = Color.Lerp(AfterimageColor, BaseColor, Brightness);
-                        AfterimageColor = NPC.GetAlpha(AfterimageColor);
-                        AfterimageColor *= (maxAfterimages - i) / 15f;
-                        if (colorOverride != null)
-                            AfterimageColor = colorOverride.Value;
-
-                        Vector2 AfterimageBodyPosition = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        AfterimageBodyPosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                        AfterimageBodyPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
-                        spriteBatch.Draw(texture, AfterimageBodyPosition, NPC.frame, AfterimageColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                        BaseWingColor = colorOverride.Value;
+                        BaseCrystalColor = colorOverride.Value;
                     }
-                }
 
-                Vector2 BasePosition = NPC.Center - screenPos;
-                BasePosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                BasePosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
-                spriteBatch.Draw(texture, BasePosition, NPC.frame, colorOverride ?? NPC.GetAlpha(drawColor), NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                    Color GlowWingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], NPC.GetAlpha(drawColor), true);
 
-                // Draw the glowmask textures + their afterimages
-                // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.
-                Color WingColor = Color.Yellow; //Default to day
-                Color CrystalColor = Color.Violet;
-                switch (NPC.localAI[1])
-                {
-                    case (float)BossMode.Red:
-                        WingColor = Color.Red;
-                        CrystalColor = Color.BlueViolet;
-                        break;
-                    case (float)BossMode.Orange:
-                        WingColor = Color.Orange;
-                        CrystalColor = Color.HotPink;
-                        break;
-                    case (float)BossMode.Yellow: // Same as day
-                        break;
-                    case (float)BossMode.Green:
-                        WingColor = Color.Green;
-                        CrystalColor = Color.Gold;
-                        break;
-                    case (float)BossMode.Blue: // Same as night
-                    case (float)BossMode.Night:
-                        WingColor = Color.Cyan;
-                        CrystalColor = Color.BlueViolet;
-                        break;
-                    case (float)BossMode.Violet:
-                        WingColor = Color.Magenta;
-                        CrystalColor = Color.GreenYellow;
-                        break;
-                    default:
-                        break;
-                }
-
-                Color BaseWingColor = Color.Lerp(WingColor, BaseColor, Brightness) * NPC.Opacity;
-                Color BaseCrystalColor = Color.Lerp(CrystalColor, BaseColor, Brightness) * NPC.Opacity;
-                if (colorOverride != null)
-                {
-                    BaseWingColor = colorOverride.Value;
-                    BaseCrystalColor = colorOverride.Value;
-                }
-
-                if (CalamityConfig.Instance.Afterimages)
-                {
-                    for (int j = 1; j < maxAfterimages; j++)
+                    if (CalamityConfig.Instance.Afterimages)
                     {
-                        Color AfterimageWingColor = BaseWingColor;
-                        AfterimageWingColor = Color.Lerp(AfterimageWingColor, BaseColor, Brightness);
-                        AfterimageWingColor = NPC.GetAlpha(AfterimageWingColor);
-                        AfterimageWingColor *= (maxAfterimages - j) / 15f;
-                        if (colorOverride != null)
-                            AfterimageWingColor = colorOverride.Value;
+                        for (int j = 1; j < maxAfterimages; j++)
+                        {
+                            Color AfterimageWingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+                            AfterimageWingColor = Color.Lerp(AfterimageWingColor, BaseColor, Brightness);
+                            AfterimageWingColor = NPC.GetAlpha(AfterimageWingColor);
+                            AfterimageWingColor *= (maxAfterimages - j) / 15f;
+                            if (colorOverride != null)
+                                AfterimageWingColor = colorOverride.Value;
+                            Vector2 AfterimageGlowPosition = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                            AfterimageGlowPosition -= new Vector2(textureGlow.Width, textureGlow.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                            AfterimageGlowPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
+                            spriteBatch.Draw(textureGlow, AfterimageGlowPosition, NPC.frame, AfterimageWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
 
-                        Vector2 AfterimageGlowPosition = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        AfterimageGlowPosition -= new Vector2(textureGlow.Width, textureGlow.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
-                        AfterimageGlowPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
-                        spriteBatch.Draw(textureGlow, AfterimageGlowPosition, NPC.frame, AfterimageWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
-
-                        Color AfterimageCrystalColor = BaseCrystalColor;
-                        AfterimageCrystalColor = Color.Lerp(AfterimageCrystalColor, BaseColor, Brightness);
-                        AfterimageCrystalColor = NPC.GetAlpha(AfterimageCrystalColor);
-                        AfterimageCrystalColor *= (maxAfterimages - j) / 15f;
-                        if (colorOverride != null)
-                            AfterimageCrystalColor = colorOverride.Value;
-                        spriteBatch.Draw(textureGlow2, AfterimageGlowPosition, NPC.frame, AfterimageCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                            Color AfterimageCrystalColor = BaseCrystalColor;
+                            AfterimageCrystalColor = Color.Lerp(AfterimageCrystalColor, BaseColor, Brightness);
+                            AfterimageCrystalColor = NPC.GetAlpha(AfterimageCrystalColor);
+                            AfterimageCrystalColor *= (maxAfterimages - j) / 15f;
+                            if (colorOverride != null)
+                                AfterimageCrystalColor = colorOverride.Value;
+                            spriteBatch.Draw(textureGlow2, AfterimageGlowPosition, NPC.frame, AfterimageCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                        }
                     }
+
+                    NPC.DrawBackglow(GlowWingColor, 4f, SpriteEffects.None, NPC.frame, Main.screenPosition, textureGlow);
+
+                    spriteBatch.Draw(textureGlow, BasePosition, NPC.frame, BaseWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+
+                    spriteBatch.Draw(textureGlow2, BasePosition, NPC.frame, BaseCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
                 }
-
-                spriteBatch.Draw(textureGlow, BasePosition, NPC.frame, BaseWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
-
-                spriteBatch.Draw(textureGlow2, BasePosition, NPC.frame, BaseCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
             }
 
             float burnIntensity = Utils.GetLerpValue(0f, 45f, DeathAnimationTimer, true);
@@ -2433,6 +2481,11 @@ namespace CalamityMod.NPCs.Providence
                 Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
             }
             return false;
+        }
+
+        public override Color? GetAlpha(Color drawColor)
+        {
+            return ProvUtils.GetProjectileColor((int)NPC.localAI[1], drawColor) * NPC.Opacity;
         }
 
         public override void FindFrame(int frameHeight)
@@ -2658,9 +2711,54 @@ namespace CalamityMod.NPCs.Providence
     //These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
+        public static Color GetProjectileColor(int Mode, Color givenLightColor, bool Outline = false)
+        {
+            int alpha = 0;
+
+            if (!Outline && Mode == (int)Providence.BossMode.Yellow)
+            {
+                float colorBrightness = (givenLightColor.R + givenLightColor.G + givenLightColor.B / 3) / 255f;
+                alpha = (int)MathHelper.Lerp(0f, 155f, colorBrightness);
+            }
+            else
+            {
+                alpha = 100;
+            }
+
+            Color FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha); //Default to day
+            switch (Mode)
+            {
+                case (int)Providence.BossMode.Red:
+                    FinalColor = new Color(250, 100, Outline ? 200 : 100, alpha);
+                    break;
+                case (int)Providence.BossMode.Orange:
+                    FinalColor = new Color(250, 150, Outline ? 150 : 100, alpha);
+                    break;
+                case (int)Providence.BossMode.Yellow: //Same as day
+                    break;
+                case (int)Providence.BossMode.Green:
+                    FinalColor = new Color(Outline ? 200 : 100, 250, 100, alpha);
+                    break;
+                case (int)Providence.BossMode.Blue: //Same as night
+                case (int)Providence.BossMode.Night:
+                    FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, alpha);
+                    break;
+                case (int)Providence.BossMode.Violet:
+                    FinalColor = new Color(Outline ? 100 : 150, Outline ? 150 : 100, 250, alpha);
+                    break;
+                default:
+                    break;
+            }
+
+            if (Outline)
+                FinalColor *= 0.1f;
+
+            return FinalColor;
+        }
+       
         public static Color GetProjectileColor(int Mode, int Alpha, bool Outline = false)
         {
-            Color FinalColor = new Color(250, Outline ? 0 : 150, 0, Alpha); //Default to day
+            Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); //Default to day
             switch (Mode)
             {
                 case (int)Providence.BossMode.Red:
