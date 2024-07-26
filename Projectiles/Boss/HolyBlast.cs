@@ -127,6 +127,8 @@ namespace CalamityMod.Projectiles.Boss
             if (Math.Abs(Projectile.velocity.X) > 0.2)
                 Projectile.spriteDirection = -Projectile.direction;
 
+            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(35), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 1.6f, false, 10, Main.rand.NextFloat(1f, 2f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255)));
+
             if (Projectile.velocity.X < 0f)
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X);
             else
