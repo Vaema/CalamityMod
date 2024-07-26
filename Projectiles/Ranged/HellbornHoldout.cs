@@ -1,4 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -7,11 +7,8 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Buffs.StatDebuffs;
-using System;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -26,7 +23,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public ref float time => ref Projectile.ai[0];
         public float cooldownTimer = 0;
-        public ref float shootingTimer => ref Projectile.ai[1];
         public bool onCooldown => cooldownTimer > 0;
         public SlotId SoundSlot;
 
@@ -54,12 +50,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 25;
         }
-        public override void KillHoldoutLogic()
-        {
-            //if ( !onCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type))
-                //Projectile.Kill();
-        }
-
         public override void HoldoutAI()
         {
             fade = Utils.GetLerpValue(0, 40, time, true);
@@ -233,5 +223,8 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool? CanDamage() => Spinning ? null : false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 100, targetHitbox);
+        public override void KillHoldoutLogic()
+        {
+        }
     }
 }
