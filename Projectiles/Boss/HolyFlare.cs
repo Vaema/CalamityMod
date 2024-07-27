@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,6 +37,8 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.35f, 0.275f, 0f);
+
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
@@ -89,7 +93,16 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity.X > velocityXCap || Projectile.velocity.X < -velocityXCap)
                 Projectile.velocity.X *= 0.97f;
 
-            Projectile.rotation = Projectile.velocity.X * 0.025f;
+            float vel = Math.Clamp(((Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) / 2), 0f, 1f);
+
+            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.5f, false, 10, Main.rand.NextFloat(0.8f, 1.2f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255)));
+
+            if (Main.rand.NextBool())
+            {
+                GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, Main.rand.NextFloat(vel), 150, MathHelper.ToRadians(Main.rand.NextFloat(-1f, 1f))));
+            }
+
+            Projectile.rotation = MathHelper.Lerp(0f, MathHelper.WrapAngle(Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.ToRadians(-90f)), Math.Clamp(vel, 0f, 1f));
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -109,31 +122,24 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (Projectile.height / 2);
-            Projectile.width = 30;
-            Projectile.height = 60;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-            for (int i = 0; i < 5; i++)
+            Color hiColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false);
+            Color loColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+
+            for (int i = 0; i < 25; i++)
             {
-                int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holyDust].scale = 0.5f;
-                    Main.dust[holyDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
+                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.8f, 1.2f), hiColor));
             }
-            for (int j = 0; j < 10; j++)
+
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
+
+            for (float i = 0; i < 1; i += 0.25f)
             {
-                int holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
-                Main.dust[holyDust2].noGravity = true;
-                holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust2].noGravity = true;
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.075f * i, 24));
             }
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 16));
+
+            SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact.WithPitchOffset(0.6f), Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item100.WithPitchOffset(0.4f), Projectile.Center);
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)

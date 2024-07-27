@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 origin = texture.Size() / 2f;
             float time = Main.GlobalTimeWrappedHourly % 10f / 10f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            int drawnAmt = 30;
+            int drawnAmt = 45;
             float[] posX = new float[drawnAmt];
             float[] posY = new float[drawnAmt];
             float[] hue = new float[drawnAmt];
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Boss
             float sizeScalar = (1f - sizeScale) / drawnAmt;
             float yPosOffset = 60f;
             float xPosOffset = 400f;
-            Vector2 scale = new Vector2(6f, 6f);
+            Vector2 scale = new Vector2(12f, 12f);
 
             float amount2 = CalamityUtils.SineBumpEasing((float)Projectile.timeLeft / (float)totalTime, 1);
 
@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Boss
                     color.A = (byte)MathHelper.Lerp(0, color.A, amount2);
                 }
 
-                float rotation = MathHelper.PiOver2 + timeScalar * MathHelper.PiOver4 * -0.3f + (float)Math.PI * i;
+                float rotation = MathHelper.PiOver2 + timeScalar * MathHelper.PiOver4 * -0.3f;
 
                 Main.EntitySpriteDraw(texture, drawPosition + new Vector2(posX[i], posY[i]), null, color, rotation, origin, new Vector2(size[i], size[i]) * scale, SpriteEffects.None, 0);
             }

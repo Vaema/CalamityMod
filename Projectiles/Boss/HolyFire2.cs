@@ -37,6 +37,8 @@ namespace CalamityMod.Projectiles.Boss
         {
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
 
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
             {

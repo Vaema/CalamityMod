@@ -37,6 +37,8 @@ namespace CalamityMod.Projectiles.Boss
         {
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
 
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
             {
@@ -104,7 +106,10 @@ namespace CalamityMod.Projectiles.Boss
 
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
 
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.075f, 8));
+            for (float i = 0; i < 1; i += 0.25f)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.125f * i, 8));
+            }
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 5));
 
             if (Main.rand.NextBool())
@@ -140,30 +145,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (Projectile.height / 2);
-            Projectile.width = 40;
-            Projectile.height = 40;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-            for (int i = 0; i < 5; i++)
-            {
-                int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holyDust].scale = 0.5f;
-                    Main.dust[holyDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
-            }
-            for (int j = 0; j < 10; j++)
-            {
-                int holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
-                Main.dust[holyDust2].noGravity = true;
-                holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust2].noGravity = true;
-            }
+            SoundEngine.PlaySound(SoundID.Item100.WithPitchOffset(0.4f), Projectile.Center);
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)

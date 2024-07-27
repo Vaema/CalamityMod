@@ -1,8 +1,11 @@
 ﻿using System;
+using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,6 +18,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
+            Projectile.localAI[1] = Main.rand.NextFloat(30f);
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.hostile = true;
@@ -23,6 +27,11 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 200;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+
         }
 
         public override void AI()
@@ -58,16 +67,26 @@ namespace CalamityMod.Projectiles.Boss
                 NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, index, healAmt);
                 Projectile.Kill();
             }
+
+            Color col = new Color(54, 209, 54, 255);
+
+            GlowOrbParticle p = new GlowOrbParticle(Projectile.Center, Projectile.velocity, false, 25, 1f, col);
+
+            GeneralParticleHandler.SpawnParticle(p);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
+            float vel = Projectile.velocity.Length() / 8;
+            Projectile.localAI[1] += vel;
+
             Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color brightGreen = new Color(54, 209, 54, 0);
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;
             Color halfBrightGreen = brightGreen * 0.5f;
-            float timeLeftColorScale = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * ((float)Math.PI * 2f) * 3f)) * 0.8f;
+            float timeLeftColorScale = MathHelper.Lerp(0.5f, 1.5f, Math.Abs((float)Math.Sin(Projectile.localAI[1] / 10f)));
+            Projectile.rotation += MathHelper.ToRadians(timeLeftColorScale * 2f);
             Vector2 timeLeftDrawEffect = new Vector2(0.5f, 1f) * timeLeftColorScale;
             Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
             brightGreen *= timeLeftColorScale;
@@ -79,15 +98,15 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, (float)Math.PI / 2f, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, (float)Math.PI / 2f, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, 0f, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, (float)Math.PI / 2f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, (float)Math.PI / 2f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
 
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 * 3f, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 * 3f, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
 
             return false;
         }

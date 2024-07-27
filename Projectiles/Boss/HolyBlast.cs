@@ -189,6 +189,7 @@ namespace CalamityMod.Projectiles.Boss
 
             SoundEngine.PlaySound(ImpactSound, Projectile.Center);
 
+            SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, Projectile.Center);
 
             int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
             for (int j = 0; j < 4; j++)
