@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Hellborn : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
 
         public override void SetDefaults()
         {

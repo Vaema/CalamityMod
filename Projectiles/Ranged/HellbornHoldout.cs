@@ -94,18 +94,18 @@ namespace CalamityMod.Projectiles.Ranged
                             hasPlayedSound = true;
                         }
 
-                        Particle Smear = new CircularSmearVFX(Projectile.Center, Color.Red * Main.rand.NextFloat(0.38f, 0.55f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(1.13f, 1.25f) * fade);
+                        Particle Smear = new CircularSmearVFX(Projectile.Center, Color.Red * Main.rand.NextFloat(0.45f, 0.6f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(1.13f, 1.25f) * fade);
                         GeneralParticleHandler.SpawnParticle(Smear);
 
-                        Particle Smear2 = new CircularSmearVFX(Projectile.Center, Color.OrangeRed * Main.rand.NextFloat(0.58f, 0.7f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(0.5f, 0.6f) * fade);
+                        Particle Smear2 = new CircularSmearVFX(Projectile.Center, Color.OrangeRed * Main.rand.NextFloat(0.45f, 0.6f), Main.rand.NextFloat(-8, 8), Main.rand.NextFloat(0.65f, 0.72f) * fade);
                         GeneralParticleHandler.SpawnParticle(Smear2);
 
                         if (Main.rand.NextBool() && fade > 0.2f)
                         {
                             for (int i = 0; i < 2; i++)
                             {
-                                Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + drawRot * 0.25f + MathHelper.PiOver2).ToRotationVector2() * 35f * fade;
-                                Dust dust = Dust.NewDustPerfect(dustPos, 278, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.25f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -5f * Main.rand.NextFloat(0.5f, 1f) * fade);
+                                Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + drawRot * 0.25f + MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * 35f * fade;
+                                Dust dust = Dust.NewDustPerfect(dustPos, 278, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.25f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -3f * Main.rand.NextFloat(0.5f, 1f) * fade);
                                 dust.noGravity = true;
                                 dust.scale = Main.rand.NextFloat(0.42f, 0.62f);
                                 dust.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 1f));
@@ -114,9 +114,9 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                         else if (fade > 0.2f)
                         {
-                            for (int i = 0; i < 2; i++)
+                            for (int i = 0; i < 3; i++)
                             {
-                                Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + drawRot * 0.5f + MathHelper.PiOver2).ToRotationVector2() * 80f * fade;
+                                Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + drawRot * 0.5f + MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * 87f * fade;
                                 Dust dust = Dust.NewDustPerfect(dustPos, 267, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.5f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -7f * Main.rand.NextFloat(0.5f, 1f) * fade);
                                 dust.noGravity = true;
                                 dust.scale = Main.rand.NextFloat(0.62f, 0.82f);
@@ -221,7 +221,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.EntitySpriteDraw(texture, drawPosition + (Spinning ? new Vector2(0, -8).RotatedBy(drawRot * 0.6f) : Vector2.Zero), null, Projectile.GetAlpha(lightColor), drawRotation + drawRot, rotationPoint, Projectile.scale, flipSprite);
             return false;
         }
-        public override bool? CanDamage() => Spinning ? null : false;
+        public override bool? CanDamage() => Spinning && time > 5 ? null : false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 100, targetHitbox);
         public override void KillHoldoutLogic()
         {
