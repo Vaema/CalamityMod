@@ -2407,15 +2407,15 @@ namespace CalamityMod.CalPlayer
 
                         if (npcDist < range)
                         {
-                            float duration = Main.rand.Next(300 + (int)hurtInfo.Damage / 3, 480 + (int)hurtInfo.Damage / 2);
-                            npc.AddBuff(BuffID.Confused, (int)duration, false);
+                            int duration = Main.rand.Next(300 + hurtInfo.Damage / 3, 480 + hurtInfo.Damage / 2);
+                            npc.AddBuff(BuffID.Confused, duration, false);
                             if (amalgam)
                             {
-                                npc.AddBuff(BuffID.Venom, (int)duration);
-                                npc.AddBuff(ModContent.BuffType<Plague>(), (int)duration);
-                                npc.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), (int)duration);
-                                npc.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), (int)duration);
-                                npc.AddBuff(ModContent.BuffType<Irradiated>(), (int)duration);
+                                npc.AddBuff(BuffID.Venom, duration);
+                                npc.AddBuff(ModContent.BuffType<Plague>(), duration);
+                                npc.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), duration);
+                                npc.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), duration);
+                                npc.AddBuff(ModContent.BuffType<Irradiated>(), duration);
                             }
                         }
                     }
@@ -2548,6 +2548,20 @@ namespace CalamityMod.CalPlayer
                             NanoParticle nano = new(Player.Center, dustVel, new Color(0, 186, 242), 1f, 20, true, true);
                             GeneralParticleHandler.SpawnParticle(nano);
                         }
+                    }
+                }
+                if (rBrain)
+                {
+                    if (!CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbus>()))
+                    {
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
+                        int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
+                        int effectDamage = amalgam ? 300 : aBrain ? 50 : 15;
+                        effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
+                        effectDamage = Player.ApplyArmorAccDamageBonusesTo(effectDamage);
+
+                        Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;
+                        Projectile.NewProjectile(source, Player.Center, spawnerVelocity, ModContent.ProjectileType<ShadeNimbusSpawner>(), effectDamage, 0f, Player.whoAmI, 0f, 0f, effectStrength);
                     }
                 }
                 if (inkBomb && !abyssalMirror && !eclipseMirror)

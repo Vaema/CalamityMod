@@ -20,28 +20,9 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.immune)
-            {
-                var source = player.GetSource_Accessory(Item);
-                if (player.miscCounter % 6 == 0)
-                {
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        int damage = (int)player.GetBestClassDamage().ApplyTo(18);
-                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
-
-                        Projectile rain = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<AuraRain>(), damage, 2f, player.whoAmI);
-                        if (rain.whoAmI.WithinBounds(Main.maxProjectiles))
-                        {
-                            rain.DamageType = DamageClass.Generic;
-                            rain.tileCollide = false;
-                            rain.penetrate = 1;
-                        }
-                    }
-                }
-            }
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.rBrain = true;
+            player.GetDamage<GenericDamageClass>() += 0.06f;
         }
 
         public override void AddRecipes()

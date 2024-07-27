@@ -3126,14 +3126,6 @@ namespace CalamityMod.CalPlayer
             if (manaOverloader)
                 Player.GetDamage<MagicDamageClass>() += 0.06f;
 
-            if (rBrain)
-            {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.75))
-                    Player.GetDamage<GenericDamageClass>() += 0.1f;
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.moveSpeed -= 0.05f;
-            }
-
             if (bloodyWormTooth)
             {
                 Player.GetDamage<MeleeDamageClass>() += 0.1f;
