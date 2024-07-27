@@ -588,7 +588,11 @@ Hypothermia: {
 
 Icebreaker: {
 	DisplayName: Icebreaker
-	Tooltip: Stealth strikes spawn a cosmic explosion and freeze nearby enemies on enemy hits
+	Tooltip: 
+		'''
+		Throws an icy hammer that magically returns to the player
+		Stealth strikes spawn a cosmic explosion and freeze nearby enemies on hit
+		'''
 }
 
 IceStar: {

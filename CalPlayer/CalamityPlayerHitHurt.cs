@@ -1320,6 +1320,21 @@ namespace CalamityMod.CalPlayer
                     theBeeCooldown = TheBee.CooldownLength;
             }
 
+            if (ursaSergeant)
+            {
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+                Player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 150);
+                for (int i = 0; i < 9; i++)
+                {
+                    Particle spark2 = new LineParticle(Player.Center, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 20, Main.rand.NextFloat(0.5f, 1.1f), Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                    Dust dust2 = Dust.NewDustPerfect(Player.Center, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
+                    dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
+                }
+            }
+
             if (proj.hostile && hurtInfo.Damage > 0)
             {
                 if (proj.type == ProjectileID.TorchGod)
