@@ -3495,6 +3495,7 @@ namespace CalamityMod.CalPlayer
                     if (gSabatonHotkeyHoldTime == 30)
                     {
                         gSabatonFalling = true;
+                        Player.velocity.Y = 0.01f;
                     }
                     // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
                     // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
