@@ -1295,25 +1295,6 @@ namespace CalamityMod.NPCs.Providence
                                 }
                                 else if (Main.netMode != NetmodeID.MultiplayerClient)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, vector2, projectileType, dmgAmt, 0f, Main.myPlayer);
-
-                                Color dustColor = Main.hslToRgb(Main.rgbToHsl(nightAI ? new Color(100, 200, 250) : (projectileType == ModContent.ProjectileType<HolyBurnOrb>() ? Color.Orange : Color.Green)).X, 1f, 0.5f);
-                                dustColor.A = 255;
-                                int maxDust = 3;
-                                for (int j = 0; j < maxDust; j++)
-                                {
-                                    int dust = Dust.NewDust(fireFrom, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, dustColor, 1f);
-                                    Main.dust[dust].position = fireFrom;
-                                    Main.dust[dust].velocity = vector2 * cocoonProjVelocity * (j * 0.5f + 1f);
-                                    Main.dust[dust].noGravity = true;
-                                    Main.dust[dust].scale = 1f + j;
-                                    Main.dust[dust].fadeIn = Main.rand.NextFloat() * 2f;
-                                    Dust dust2 = Dust.CloneDust(dust);
-                                    Dust dust3 = dust2;
-                                    dust3.scale /= 2f;
-                                    dust3 = dust2;
-                                    dust3.fadeIn /= 2f;
-                                    dust2.color = new Color(255, 255, 255, 255);
-                                }
                             }
 
                             // Radial offset

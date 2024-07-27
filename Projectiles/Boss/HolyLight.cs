@@ -31,7 +31,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnSpawn(IEntitySource source)
         {
+            SoundStyle soundStyle = SoundID.DD2_WitherBeastCrystalImpact;
+            soundStyle.MaxInstances = 10;
+            SoundEngine.PlaySound(soundStyle, Projectile.Center);
 
+            Color col = new Color(54, 209, 54);
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, col, "CalamityMod/Particles/BlastCone", new Vector2(Main.rand.NextFloat(4f, 7f), 1.5f), Vector2.Zero.AngleTo(Projectile.velocity), 1f, 0f, 30));
         }
 
         public override void AI()
@@ -68,7 +73,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Kill();
             }
 
-            Color col = new Color(54, 209, 54, 255);
+            Color col = new Color(54, 209, 54);
 
             GlowOrbParticle p = new GlowOrbParticle(Projectile.Center, Projectile.velocity, false, 25, 1f, col);
 

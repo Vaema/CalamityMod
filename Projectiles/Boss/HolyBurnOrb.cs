@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class HolyBurnOrb : ModProjectile, ILocalizedModType
     {
+        bool started = false;
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/StarProj";
 
@@ -36,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnSpawn(IEntitySource source)
         {
-
+            
         }
 
         public override void AI()
@@ -64,6 +65,13 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.ai[0] == 0f && BossRushEvent.BossRushActive)
                 Projectile.velocity *= 1.25f;
+
+            if (!started)
+            {
+                Color cl = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255);
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, cl, "CalamityMod/Particles/BlastCone", new Vector2(Main.rand.NextFloat(4f, 7f), 1.5f), Vector2.Zero.AngleTo(Projectile.velocity), 1f, 0f, 30));
+                started = true;
+            }
 
             if (Projectile.ai[0] < 240f)
             {
