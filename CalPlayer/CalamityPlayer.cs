@@ -3549,9 +3549,6 @@ namespace CalamityMod.CalPlayer
         #region PreUpdate
         public override void PreUpdate()
         {
-            if (Player.canFloatInWater)
-                Main.NewText(Player.velocity.Y);
-
             //Infinite flight granted by some boss attacks
             if (infiniteFlight)
                 Player.wingTime = Player.wingTimeMax;
