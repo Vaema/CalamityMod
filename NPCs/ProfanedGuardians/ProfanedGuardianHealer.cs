@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -510,7 +511,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedDrawColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                Providence.Providence.BossMode mode = Providence.Providence.BossMode.Day;
+                if (!Main.dayTime) mode = Providence.Providence.BossMode.Night;
+
+                NPC.DrawBackglow(ProvUtils.GetProjectileColor((int)mode, 0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetProjectileColor((int)mode, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
                 spriteBatch.Draw(texture2D16, drawLocation, NPC.frame, overrideColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }

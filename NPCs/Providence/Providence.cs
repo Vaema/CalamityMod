@@ -1856,17 +1856,19 @@ namespace CalamityMod.NPCs.Providence
                     Vector2 sparkleVelocity = Main.rand.NextVector2Circular(23f, 23f);
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, sparkleVelocity, ModContent.ProjectileType<MajesticSparkle>(), 0, 0f);
                 }
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<DyingSun>(), 0, 0f, 255);
             }
 
             // Idly release harmless cindiers.
-            int shootRate = (int)MathHelper.Lerp(12f, 5f, Utils.GetLerpValue(0f, 250f, DeathAnimationTimer, true));
-            if (DeathAnimationTimer % shootRate == shootRate - 1f)
+            if (DeathAnimationTimer >= 92f)
             {
-                for (int i = 0; i < 3; i++)
+                int shootRate = (int)MathHelper.Lerp(12f, 5f, Utils.GetLerpValue(0f, 250f, DeathAnimationTimer, true));
+                if (DeathAnimationTimer % shootRate == shootRate - 1f)
                 {
-                    Vector2 shootVelocity = Main.rand.NextVector2CircularEdge(13f, 13f) * Main.rand.NextFloat(0.7f, 1.3f);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity, ModContent.ProjectileType<SwirlingFire>(), 0, 0f, 255);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Vector2 shootVelocity = Main.rand.NextVector2CircularEdge(13f, 13f) * Main.rand.NextFloat(0.7f, 1.3f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity, ModContent.ProjectileType<SwirlingFire>(), 0, 0f, 255, ai1: (int)NPC.localAI[1]);
+                    }
                 }
             }
 
@@ -1991,6 +1993,25 @@ namespace CalamityMod.NPCs.Providence
 
         public override void OnKill()
         {
+            Color hiColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
+            Color loColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+
+            for (int i = 0; i < 30; i++)
+            {
+                Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(0.5f, 0.75f), Main.rand.NextFloat(1f, 2.5f), hiColor, loColor);
+                p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
+                GeneralParticleHandler.SpawnParticle(p);
+                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(0.75f, 1.75f), 1f, Main.rand.NextFloat(-0.05f, 0.05f), true));
+            }
+
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.1f, 15));
+
+            for (float i = 0; i < 3; i += 0.25f)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.25f, 35));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.175f, 25));
+            }
+
             // Don't bother running any of this in Boss Rush.
             if (BossRushEvent.BossRushActive)
                 return;

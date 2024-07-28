@@ -12,6 +12,7 @@ using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
@@ -1072,7 +1073,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedColorLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                Providence.Providence.BossMode mode = Providence.Providence.BossMode.Day;
+                if (!Main.dayTime) mode = Providence.Providence.BossMode.Night;
+
+                NPC.DrawBackglow(ProvUtils.GetProjectileColor((int)mode, 0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetProjectileColor((int)mode, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             // Draw laser effects
