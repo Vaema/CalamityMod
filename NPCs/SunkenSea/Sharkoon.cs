@@ -22,6 +22,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public static float MaxIdleSpeed = 3f;
         public static float IdleMovementMaxRange = 800f;
         public static int ExplosionRadius = 80;
+        public static float TimeToRecover = 600f;
+        public static float TimeRecovering = 120f;
 
         #region Fields & Properties
 
@@ -42,7 +44,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <summary>
         /// The different AI states this enemy can have.
         /// </summary>
-        private enum AIState { OutsideWater, Normal, Exploding }
+        private enum AIState { OutsideWater, Normal, Exploding, Recovering }
 
         /// <summary>
         /// The current AI state of this enemy.
@@ -59,6 +61,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 // When outside of water, it'll gravitate down, can't swim.
                 NPC.noGravity = value != AIState.OutsideWater;
+
+                // We remove that taken path when it changes state,
+                // unless it just came out of the water accidentally.
+                if (value != AIState.OutsideWater)
+                    PathPositions = null;
 
                 NetUpdate();
             }
@@ -77,8 +84,6 @@ namespace CalamityMod.NPCs.SunkenSea
             get => (AnimationState)NPC.ai[1];
             set
             {
-                NPC.ai[1] = (float)value;
-
                 // In case an animation is being set constantly,
                 // so we don't have it reset to the first frame every time,
                 // it'll only reset the current frame when actually changing animations.
@@ -87,6 +92,8 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.frame.Y = 0;
                     NPC.frameCounter = 0;
                 }
+
+                NPC.ai[1] = (float)value;
 
                 switch (value)
                 {
@@ -137,7 +144,9 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        private ref float Timer => ref NPC.ai[3];
+        private ref float PathTimer => ref NPC.ai[3];
+
+        private ref float RecoverTimer => ref NPC.Calamity().newAI[0];
 
         /// <summary>
         /// A list of <see cref="Vector2"/> which makes a path for the <see cref="NPC"/> to follow.
@@ -228,15 +237,30 @@ namespace CalamityMod.NPCs.SunkenSea
 
             switch (State)
             {
+                case AIState.OutsideWater:
+                    OutsideWaterState();
+                    return;
                 case AIState.Normal:
                     NormalState();
                     break;
                 case AIState.Exploding:
                     ExplodingState();
                     break;
-                case AIState.OutsideWater:
-                    OutsideWaterState();
-                    return;
+                case AIState.Recovering:
+                    RecoveringState();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// The behavior of this NPC when it's outside of water.
+        /// </summary>
+        private void OutsideWaterState()
+        {
+            if (NPC.wet)
+            {
+                State = AIState.Normal;
+                return;
             }
         }
 
@@ -259,6 +283,17 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            if (Animation == AnimationState.Shrunk)
+            {
+                RecoverTimer++;
+                if (RecoverTimer >= TimeToRecover)
+                {
+                    RecoverTimer = 0f;
+                    State = AIState.Recovering;
+                    return;
+                }
+            }
+
             if (PathPositions == null)
             {
                 // When there's no path, it'll deacclerate and eventually stay still.
@@ -270,7 +305,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     var grid = GetPathGrid();
                     AStar pathfinding = new AStar(grid, new(NPC.Center.ToSafeTileCoordinates()), new(grid[Main.rand.Next(grid.Count)]));
                     PathPositions = pathfinding.FindPath();
-                    Timer = 0f;
+                    PathTimer = 0f;
                     NetUpdate();
                 }
             }
@@ -278,13 +313,13 @@ namespace CalamityMod.NPCs.SunkenSea
             else
             {
                 // Iterates through all the vectors in the path as time goes on.
-                Vector2 followedPathPoint = PathPositions[(int)Math.Floor(Timer)];
+                Vector2 followedPathPoint = PathPositions[(int)Math.Floor(PathTimer)];
 
                 // Accelerates towards the followed point.
                 NPC.velocity += NPC.Center.DirectionTo(followedPathPoint) * 0.03f;
 
-                Timer += 0.07f;
-                Timer = MathF.Min(Timer, PathPositions.Count - 1);
+                PathTimer += 0.07f;
+                PathTimer = MathF.Min(PathTimer, PathPositions.Count - 1);
 
                 // If very near the end point or too far from the followed path, reset the path.
                 if (NPC.Center.DistanceSQ(PathPositions[^1]) < 14400f || NPC.Center.DistanceSQ(followedPathPoint) > 102400f)
@@ -320,15 +355,29 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         /// <summary>
-        /// The behavior of this NPC when it's outside of water.
+        /// The behavior of this NPC when it is recovering its ability to kaboom.
         /// </summary>
-        private void OutsideWaterState()
+        private void RecoveringState()
         {
-            if (NPC.wet)
+            if (RecoverTimer >= TimeRecovering)
             {
+                Animation = AnimationState.Normal;
+                RecoverTimer = 0f;
                 State = AIState.Normal;
                 return;
             }
+
+            // Deaccelerates to stay still.
+            NPC.velocity *= 0.95f;
+            
+            // VFX and sound effects go here,
+            // a dedicated server doesn't need to load these.
+            if (!Main.dedServ)
+            {
+                // HI XYK!
+            }
+            
+            RecoverTimer++;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs.SunkenSea;
+using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Enemy
@@ -15,5 +16,8 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.width = Projectile.height = Sharkoon.ExplosionRadius * 2;
             Projectile.timeLeft = 2;
         }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) 
+            => CalamityUtils.CircularHitboxCollision(Projectile.Center, Sharkoon.ExplosionRadius, targetHitbox);
     }
 }
