@@ -18,9 +18,10 @@ namespace CalamityMod.NPCs.SunkenSea
     public class Sharkoon : ModNPC
     {
         public static float TargetDistanceDetection = 160f;
-        public static int IdleMovementUnlikeliness = 150;
+        public static int IdleMovementUnlikeliness = 250;
         public static float MaxIdleSpeed = 3f;
-        public static float IdleMovementMaxRange = 1600f;
+        public static float IdleMovementMaxRange = 800f;
+        public static int ExplosionRadius = 80;
 
         #region Fields & Properties
 
@@ -208,6 +209,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
         }
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         #endregion
 

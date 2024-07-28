@@ -444,7 +444,7 @@ namespace CalamityMod
                 return path;
             }
 
-            private IEnumerable<Node> GetNeighbors(Node node)
+            private List<Node> GetNeighbors(Node node)
             {
                 var neighbors = new List<Node>();
 

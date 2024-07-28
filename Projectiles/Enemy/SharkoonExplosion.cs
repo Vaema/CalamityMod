@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using CalamityMod.NPCs.SunkenSea;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -11,7 +12,7 @@ namespace CalamityMod.Projectiles.Enemy
         public override void SetDefaults()
         {
             Projectile.hostile = true;
-            Projectile.width = Projectile.height = 160;
+            Projectile.width = Projectile.height = Sharkoon.ExplosionRadius * 2;
             Projectile.timeLeft = 2;
         }
     }
