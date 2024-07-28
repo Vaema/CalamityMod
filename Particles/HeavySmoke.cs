@@ -66,7 +66,7 @@ namespace CalamityMod.Particles
 
             if (AffectedByLight)
             {
-                col = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGBA(col);
+                col = col.MultiplyRGBA(Lighting.GetColor((Position / 16).ToPoint()));
             }
 
             spriteBatch.Draw(tex, Position - Main.screenPosition, frame, col, Rotation, frame.Size() / 2f, Scale, SpriteEffects.None, 0);

@@ -5,6 +5,7 @@ using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -95,10 +96,10 @@ namespace CalamityMod.Projectiles.Boss
 
             if (!started)
             {
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < 13; i++)
                 {
-                    GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-30f, 30f))) * Main.rand.NextFloat(2.4f, 4.2f), false, 30, Main.rand.NextFloat(3f, 6f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false)));
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-50f, 50f))) * Main.rand.NextFloat(2.4f, 4.2f), false, 30, Main.rand.NextFloat(2f, 5f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false)));
+                    GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-30f, 30f))) * Main.rand.NextFloat(2.4f, 4.2f), false, 15, Main.rand.NextFloat(3f, 6f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false)));
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-50f, 50f))) * Main.rand.NextFloat(2.4f, 4.2f), false, 15, Main.rand.NextFloat(2f, 5f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false)));
                 }
                 started = true;
             }
@@ -120,14 +121,11 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.localAI[0] = 1f;
                 SoundEngine.PlaySound(ShootSound, Projectile.Center);
             }
-           
-            if (Main.rand.NextBool(3))
-                GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + Projectile.velocity + new Vector2(Main.rand.NextFloat(-40, 40), 0).RotatedBy(Vector2.Zero.AngleTo(Projectile.velocity.RotatedBy(MathHelper.PiOver2))), Projectile.velocity * Main.rand.NextFloat(-3f, -1f), false, 10, Main.rand.NextFloat(1f, 1.5f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false)));
-
             if (Math.Abs(Projectile.velocity.X) > 0.2)
                 Projectile.spriteDirection = -Projectile.direction;
 
-            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(35), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 1.6f, false, 10, Main.rand.NextFloat(1f, 2f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255)));
+            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(50), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.6f, false, 20, Main.rand.NextFloat(1f, 2f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255)));
+            GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center + new Vector2(40, 0).RotatedBy(Vector2.Zero.AngleTo(-Projectile.velocity)) + new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.6f, Color.LightSlateGray, Color.DarkSlateGray, Main.rand.NextFloat(1f, 3f), 150f));
 
             if (Projectile.velocity.X < 0f)
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X);

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,10 +12,15 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class MoltenBlob : ModProjectile, ILocalizedModType
     {
+        float Landing = 1f;
+        bool colliding = false;
+
+        bool inLava = false;
+
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Projectile.type] = 3;
         }
 
         public override void SetDefaults()
@@ -33,6 +39,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
 
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
             {
@@ -52,22 +59,40 @@ namespace CalamityMod.Projectiles.Boss
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
+            Landing += 0.1f;
+
+            Landing = MathHelper.Clamp(Landing, 0f, 1f);
+
+            colliding = Projectile.velocity.Y == 0f;
+
+            if (colliding)
+            {
+                Landing = 0f;
+                Projectile.localAI[2] = 5;
+
+                Projectile.velocity.X *= 0.8f;
+            }
+
             Projectile.velocity.X *= 0.95f;
 
             if (Projectile.wet || Projectile.lavaWet)
             {
-                Projectile.velocity.Y -= 0.2f;
-                if (Projectile.velocity.Y < -10f)
-                    Projectile.velocity.Y = -10f;
+                if (!inLava)
+                {
+                    Projectile.position.Y -= Projectile.velocity.Y;
+                    Projectile.velocity.Y = 0f;
+                    inLava = true;
+                }
             }
             else
             {
-                if (Projectile.velocity.Y < 0f)
-                    Projectile.velocity.Y = 0f;
+                if (!inLava)
+                {
+                    if (Projectile.velocity.Y < 0f)
+                        Projectile.velocity.Y = 0f;
 
-                Projectile.velocity.Y += 0.1f;
-                if (Projectile.velocity.Y > 5f)
-                    Projectile.velocity.Y = 5f;
+                    Projectile.velocity.Y += 0.15f;
+                }
             }
 
             Projectile.frameCounter++;
@@ -90,46 +115,45 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha);
+            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = (Projectile.maxPenetrate == (int)Providence.BossMode.Day) ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/MoltenBlobNight").Value;
             int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
-            int y6 = framing * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha, true), 4f, texture);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), Projectile.scale, SpriteEffects.None, 0);
+            int y6 = framing * (1 + Projectile.frame);
+            float squish = CalamityUtils.SineBumpEasing(Landing, 1) * 0.5f;
+            Projectile.rotation = 0f;
+            if (!colliding)
+            { 
+                y6 = 0;
+                squish = -MathHelper.Clamp(Projectile.velocity.Length() / 15, 0, 0.5f);
+                Projectile.rotation = Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.PiOver2;
+            }
+            Vector2 vec = new Vector2(0, framing * squish);
+            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha, true), 4f, new Vector2(1 + squish, 1 - squish), texture, offset: vec);
+            Main.spriteBatch.Draw(texture, Projectile.Center + vec - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), new Vector2(1 + squish, 1 - squish), SpriteEffects.None, 0);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (Projectile.height / 2);
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-            for (int i = 0; i < 3; i++)
+            Color hiColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false);
+            Color loColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+
+            for (int i = 0; i < 25; i++)
             {
-                int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holyDust].scale = 0.5f;
-                    Main.dust[holyDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
+                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(3), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.1f, 0.4f), hiColor));
             }
-            for (int j = 0; j < 5; j++)
+
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
+
+            for (float i = 0; i < 1; i += 0.25f)
             {
-                int holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
-                Main.dust[holyDust2].noGravity = true;
-                holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust2].noGravity = true;
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.002f * i, 0.0125f * i, 8));
             }
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.002f, 0.015f, 5));
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)

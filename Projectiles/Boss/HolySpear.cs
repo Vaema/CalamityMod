@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,11 +17,12 @@ namespace CalamityMod.Projectiles.Boss
     public class HolySpear : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         Vector2 velocity = Vector2.Zero;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
@@ -141,6 +143,51 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.Opacity = MathHelper.Lerp(240f, 220f, Projectile.timeLeft);
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            bool aimedSpear = Projectile.ai[0] > 0f;
+
+            int red = 255;
+            int green = 255;
+            int blue = 0;
+            switch (Projectile.maxPenetrate)
+            {
+                case (int)Providence.BossMode.Red:
+                    red = 255;
+                    green = aimedSpear ? 0 : 125;
+                    blue = aimedSpear ? 0 : 255;
+                    break;
+                case (int)Providence.BossMode.Orange:
+                    red = 255;
+                    green = 125;
+                    blue = aimedSpear ? 0 : 175;
+                    break;
+                case (int)Providence.BossMode.Yellow: //Same as day
+                case (int)Providence.BossMode.Day:
+                    red = 255;
+                    green = aimedSpear ? 255 : 125;
+                    blue = aimedSpear ? 25 : 125;
+                    break;
+                case (int)Providence.BossMode.Green:
+                    red = 0;
+                    green = 255;
+                    blue = aimedSpear ? 0 : 175;
+                    break;
+                case (int)Providence.BossMode.Blue: //Same as night
+                case (int)Providence.BossMode.Night:
+                    red = aimedSpear ? 100 : 175;
+                    green = aimedSpear ? 255 : 175;
+                    blue = 255;
+                    break;
+                case (int)Providence.BossMode.Violet:
+                    red = aimedSpear ? 125 : 255;
+                    green = aimedSpear ? 0 : 255;
+                    blue = 125;
+                    break;
+                default:
+                    break;
+            }
+            Color baseColor = new Color(red, green, blue, 0);
+
+            GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity, false, 15, Main.rand.NextFloat(0.5f, 1.5f) * MathHelper.Clamp(Projectile.velocity.Length() / 15, 0f, 2f), aimedSpear ? baseColor : ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false)));
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -189,16 +236,21 @@ namespace CalamityMod.Projectiles.Boss
                     break;
             }
             Color baseColor = new Color(red, green, blue, 0);
+            Color baseColor2 = new Color(15, 35, 50, 0);
 
-            Color baseColor2 = baseColor;
-            Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            if (!aimedSpear)
+            {
+                baseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
+                baseColor2 = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+            }
+
+            Vector2 projDirection = Main.screenPosition - new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;
             Color halfOfHalfBaseColor = baseColor2 * 0.5f;
-            float timeLeftColorScale = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * ((float)Math.PI * 2f) * 3f)) * 0.8f;
-            Vector2 timeLeftDrawEffect = new Vector2(1f, 1.5f) * timeLeftColorScale;
-            Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
-            baseColor2 *= timeLeftColorScale;
-            halfOfHalfBaseColor *= timeLeftColorScale;
+
+            float squish = MathHelper.Clamp(Projectile.velocity.Length() / 20, -0.3f, 0.3f);
+
+            Vector2 sc = new Vector2(1 - squish, 1 + squish);
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
@@ -208,21 +260,16 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {
-                    Vector2 drawPos = Projectile.oldPos[i] + projDirection;
-                    Color baseColorAlpha = Projectile.GetAlpha(baseColor2) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
-                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, SpriteEffects.None, 0);
-                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, SpriteEffects.None, 0);
-
-                    baseColorAlpha = Projectile.GetAlpha(halfOfHalfBaseColor) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
-                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, SpriteEffects.None, 0);
-                    Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(drawTexture, Projectile.oldPos[i] - projDirection + (Projectile.Size / 2), null, Color.Lerp(baseColor, baseColor2, MathHelper.Lerp((float)i / (float)Projectile.oldPos.Length, 1f, 0.5f)), Projectile.rotation, halfTextureSize, sc * MathHelper.Lerp(1, 0, (float)((float)i / Projectile.oldPos.Length)), spriteEffects, 0);
                 }
             }
 
-            Main.EntitySpriteDraw(drawTexture, projDirection, null, baseColor2, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, projDirection, null, baseColor2, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, projDirection, null, halfOfHalfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, projDirection, null, halfOfHalfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            for (float i = 0; i < 360; i += 90)
+            {
+                Main.EntitySpriteDraw(drawTexture, Projectile.Center + new Vector2(4, 0).RotatedBy(MathHelper.ToRadians(i)) - projDirection, null, Color.Lerp(baseColor, baseColor2, 0.75f), Projectile.rotation, halfTextureSize, sc, spriteEffects, 0);
+            }
+
+            Main.EntitySpriteDraw(drawTexture, Projectile.Center - projDirection, null, baseColor, Projectile.rotation, halfTextureSize, sc, spriteEffects, 0);
 
             return false;
         }
@@ -241,6 +288,11 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 120, 20);
+        }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, false);
         }
     }
 }

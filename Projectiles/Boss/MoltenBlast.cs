@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -52,6 +53,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.Hitbox.Intersects(new Rectangle((int)Projectile.ai[0], (int)Projectile.ai[1], Player.defaultWidth, Player.defaultHeight)))
                 Projectile.tileCollide = true;
 
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
             {
@@ -117,11 +119,20 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+
+            float vel = Math.Clamp(((Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) / 2), 0f, 1f);
+
+            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.5f, false, 10, Main.rand.NextFloat(0.8f, 1.2f), ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255)));
+
+            if (Main.rand.NextBool())
+            {
+                GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, Main.rand.NextFloat(vel), 150, MathHelper.ToRadians(Main.rand.NextFloat(-1f, 1f))));
+            }
         }
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha);
+            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -136,6 +147,22 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
+            Color hiColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false);
+            Color loColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+
+            for (int i = 0; i < 25; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.8f, 1.2f), hiColor));
+            }
+
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
+
+            for (float i = 0; i < 1; i += 0.25f)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.125f * i, 8));
+            }
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 5));
+
             int blobAmt = (Projectile.maxPenetrate != (int)Providence.BossMode.Day) ? 9 : 6;
             if (Projectile.owner == Main.myPlayer)
             {
@@ -149,22 +176,6 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
-
-            int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-            for (int i = 0; i < 4; i++)
-            {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1.5f);
-                Main.dust[dust].noGravity = true;
-            }
-            for (int j = 0; j < 40; j++)
-            {
-                int killHolyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 2.5f);
-                Main.dust[killHolyDust].noGravity = true;
-                Main.dust[killHolyDust].velocity *= 3f;
-                killHolyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1.5f);
-                Main.dust[killHolyDust].velocity *= 2f;
-                Main.dust[killHolyDust].noGravity = true;
-            }
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 18f, targetHitbox);
