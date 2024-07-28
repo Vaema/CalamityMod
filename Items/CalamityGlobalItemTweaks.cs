@@ -61,7 +61,7 @@ namespace CalamityMod.Items
                 { ItemID.Boomstick, Do(PointBlank, DamageExact(11)) },
                 { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, DamageExact(97)) },
                 { ItemID.CandyCornRifle, Do(PointBlank, DamageExact(66)) },
-                { ItemID.Cascade, Do(AutoReuse, DamageExact(30)) },
+                { ItemID.Cascade, Do(AutoReuse, DamageExact(31)) },
                 { ItemID.ChainGuillotines, Do(DamageExact(100)) },
                 { ItemID.ChainGun, Do(PointBlank, DamageExact(35)) },
                 { ItemID.ChainKnife, Do(AutoReuse, DamageRatio(1.34f)) },  // Uses ratios due to remix seed
@@ -107,7 +107,7 @@ namespace CalamityMod.Items
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(15)) },
                 // For now, I think I will balance Celebration like a serious weapon. -CIT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
-                { ItemID.Flairon, Do(DamageExact(73)) },
+                { ItemID.Flairon, Do(DamageExact(65)) },
                 { ItemID.Flamarang, Do(DamageExact(40)) },
                 { ItemID.Flamelash, Do(DamageExact(40)) },
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) },
@@ -248,7 +248,7 @@ namespace CalamityMod.Items
                 { ItemID.TerraBlade, Do(DamageExact(122)) },
                 // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
                 // Terrarian is extremely overpowered and requires a heavy nerf.
-                { ItemID.Terrarian, Do(AutoReuse, DamageExact(86)) },
+                { ItemID.Terrarian, Do(AutoReuse, DamageExact(90)) },
                 { ItemID.TheEyeOfCthulhu, Do(AutoReuse, DamageExact(90)) },
                 { ItemID.TheRottedFork, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.TheUndertaker, Do(PointBlank, AutoReuse, DamageExact(15)) },
@@ -258,7 +258,7 @@ namespace CalamityMod.Items
                 { ItemID.TitaniumSword, Do(UseTurn, DamageExact(77)) },
                 { ItemID.TitaniumTrident, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(72), ShootSpeedRatio(1.25f)) },
                 { ItemID.TopazStaff, Do(ManaExact(2)) },
-                { ItemID.Toxikarp, Do(UseTimeExact(7), UseAnimationExact(14)) },
+                { ItemID.Toxikarp, Do(UseExact(9)) },
                 { ItemID.Trident, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.Trimarang, Do(DamageExact(24)) },
                 { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(107)) },

@@ -209,8 +209,11 @@ namespace CalamityMod.ILEditing
 
             // Adjust the Y position of the dungeon to accomodate for the X shift, so that if the clamp shoves the dungeon into the air it has an
             // opportunity to ground itself again.
-            WorldUtils.Find(new Point(x, y), Searches.Chain(new Searches.Down(9001), new Conditions.IsSolid()), out Point result);
-            y = result.Y - 10;
+            //
+            // 26JUN2024: Ozzatron: fix bug where this search fails for god-unknown reasons on XL worlds and the dungeon doesn't place
+            bool betterPointFound = WorldUtils.Find(new Point(x, y), Searches.Chain(new Searches.Down(9001), new Conditions.IsSolid()), out Point result);
+            if (betterPointFound)
+                y = result.Y - 10;
 
             orig(x, y);
         }

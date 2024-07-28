@@ -707,7 +707,7 @@ namespace CalamityMod
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
         {
-            Texture2D aura = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
+            Texture2D aura = Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
             Vector2 offsets = new Vector2(0f, projectile.gfxOffY) - Main.screenPosition;
             Rectangle auraRec = aura.Frame();
             float auraRotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;

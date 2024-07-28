@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 500;
+            Item.rare = ItemRarityID.Blue;
             Item.createTile = ModContent.TileType<Tiles.Furniture.TranquilityCandle>();
             Item.flame = true;
             Item.holdStyle = 1;

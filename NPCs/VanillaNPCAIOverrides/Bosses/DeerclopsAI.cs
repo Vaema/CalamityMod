@@ -16,11 +16,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         public static bool shouldDrawEnrageBorder = true;
         public static bool hasTargetBeenInRange = true;
-        public const float increaseDRTriggerDistance = 450f;
-        public const float maxDRIncreaseDistance = 900f;
+        public const float increaseDRTriggerDistance = 750f;
+        public const float maxDRIncreaseDistance = 1200f;
         public static float borderDelay = 10f * 60f;
-        public static float innerBorder = 450f;
-        public static float outerBorder = 900f;
+        public static float innerBorder = 750f;
+        public static float outerBorder = 1200f;
         public static float borderScalar = 0f;
         public static Vector2 lastDeerclopsPosition;
 

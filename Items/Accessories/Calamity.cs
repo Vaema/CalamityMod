@@ -50,9 +50,10 @@ namespace CalamityMod.Items.Accessories
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            Texture2D texture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Calamity_GFB").Value : TextureAssets.Item[Type].Value;
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
+                texture,
                 position,
                 frame,
                 drawColor,
@@ -63,6 +64,18 @@ namespace CalamityMod.Items.Accessories
                 drawOffset: new(0f, -4f)
             );
             return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            if (Main.zenithWorld)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Calamity_GFB").Value;
+                spriteBatch.Draw(texture, Item.position - Main.screenPosition, Main.itemAnimations[Item.type].GetFrame(texture), lightColor, 0f, Vector2.Zero, 1f, 0, 0);
+                return false;
+            }
+            else
+                return true;
         }
     }
 }

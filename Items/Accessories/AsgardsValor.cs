@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
-            Item.width = 38;
-            Item.height = 44;
+            Item.width = 50;
+            Item.height = 48;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.defense = 8; // we buff Ankh Shield to 8

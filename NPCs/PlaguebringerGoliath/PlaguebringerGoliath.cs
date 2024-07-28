@@ -36,6 +36,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
     [AutoloadBossHead]
     public class PlaguebringerGoliath : ModNPC
     {
+        // Use for all projectiles and spawned enemies.
+        public static Color BackglowColor => new Color(255, 100, 24, 80);
+
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private const float MissileAngleSpread = 60;
         private const int MissileProjectiles = 8;
@@ -464,8 +467,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.rotation = NPC.velocity.X * 0.02f;
                     charging = false;
 
-                    float maxLineUpSpeed = revenge ? 25f : 20f;
-                    float lineUpAccel = revenge ? 0.75f : 0.6f;
+                    float maxLineUpSpeed = revenge ? 20f : 16f;
+                    float lineUpAccel = revenge ? 0.4f : 0.3f;
                     if (phase2)
                     {
                         maxLineUpSpeed += 3f;
@@ -628,9 +631,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 // Move closer
                 bool canHitTarget = Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height);
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -711,9 +714,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                 // Move closer
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -800,9 +803,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                 // Move closer
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -892,9 +895,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
                 // Move closer
                 float distanceAboveTarget = !canHitTarget ? 0f : 400f;
-                float distanceAwayFromTargetX = !canHitTarget ? 36f : 144f;
+                float distanceAwayFromTargetX = !canHitTarget ? 80f : 240f;
                 float distanceAwayFromTargetY = player.Center.Y - NPC.Center.Y;
-                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 48f;
+                float distanceAwayFromTargetYLeeway = !canHitTarget ? 16f : 80f;
                 bool tooFarX = Math.Abs(player.Center.X - NPC.Center.X) > distanceAwayFromTargetX;
                 bool tooFarY = distanceAwayFromTargetY > distanceAboveTarget + distanceAwayFromTargetYLeeway || distanceAwayFromTargetY < distanceAboveTarget - distanceAwayFromTargetYLeeway;
                 bool tooFar = tooFarX || tooFarY;
@@ -1039,8 +1042,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     NPC.rotation = NPC.velocity.X * 0.02f;
                     charging = false;
 
-                    float maxLineUpSpeed = revenge ? 31f : 26f;
-                    float lineUpAccel = revenge ? 1.05f : 0.9f;
+                    float maxLineUpSpeed = revenge ? 26f : 22f;
+                    float lineUpAccel = revenge ? 0.7f : 0.6f;
                     maxLineUpSpeed += 7f * enrageScale;
                     lineUpAccel += 0.35f * enrageScale;
 
@@ -1164,8 +1167,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         private void Movement(float distanceAboveTarget, Player player, float enrageScale)
         {
-            float acceleration = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 0.24f : 0.48f; // Reduce acceleration while spawning minions
-            float velocity = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 12f : (NPC.ai[0] == 2f ? 18f : 24f); // Reduce velocity while preparing to spawn minions and spawning minions
+            float acceleration = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 0.12f : (NPC.ai[0] == 2f ? 0.15f : 0.18f); // Reduce acceleration while spawning minions
+            float velocity = (NPC.ai[0] == 1f || NPC.ai[0] == 5f) ? 12f : (NPC.ai[0] == 2f ? 15f : 18f); // Reduce velocity while preparing to spawn minions and spawning minions
             acceleration *= 0.5f * enrageScale + 1f;
             velocity *= 1f + enrageScale * 0.5f;
             Vector2 hoverDestination = player.Center - Vector2.UnitY * distanceAboveTarget;
@@ -1262,22 +1265,23 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             Rectangle rectangle = new Rectangle(NPC.frame.X, NPC.frame.Y, texture.Width / 2, texture.Height / frameCount);
             Vector2 halfSizeTexture = rectangle.Size() / 2f;
             Vector2 posOffset = new Vector2(charging ? 175 : 125, 0);
-            int afterimageAmt = 10;
-            if (NPC.ai[0] != 0f && NPC.ai[0] != 4f)
-                afterimageAmt = 7;
+            int chargeAfterimageAmount = 10;
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int j = 1; j < afterimageAmt; j += 2)
+                if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
-                    Color afterimageColor = drawColor;
-                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
-                    afterimageColor = NPC.GetAlpha(afterimageColor);
-                    afterimageColor *= (afterimageAmt - j) / 15f;
-                    Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture.Width, texture.Height / frameCount) * NPC.scale / 2f;
-                    afterimagePos += halfSizeTexture * NPC.scale + posOffset;
-                    spriteBatch.Draw(texture, afterimagePos, new Rectangle?(rectangle), afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    for (int j = 1; j < chargeAfterimageAmount; j += 2)
+                    {
+                        Color afterimageColor = drawColor;
+                        afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                        afterimageColor = NPC.GetAlpha(afterimageColor);
+                        afterimageColor *= (chargeAfterimageAmount - j) / 15f;
+                        Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                        afterimagePos -= new Vector2(texture.Width, texture.Height / frameCount) * NPC.scale / 2f;
+                        afterimagePos += halfSizeTexture * NPC.scale + posOffset;
+                        spriteBatch.Draw(texture, afterimagePos, new Rectangle?(rectangle), afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    }
                 }
             }
 
@@ -1290,15 +1294,18 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             if (CalamityConfig.Instance.Afterimages)
             {
-                for (int k = 1; k < afterimageAmt; k++)
+                if ((NPC.ai[0] == 0f || NPC.ai[0] == 4f) && charging)
                 {
-                    Color otherAfterimageColor = redLerpColor;
-                    otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
-                    otherAfterimageColor *= (afterimageAmt - k) / 15f;
-                    Vector2 otherAfterimagePos = NPC.oldPos[k] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    otherAfterimagePos -= new Vector2(glowTexture.Width, glowTexture.Height / frameCount) * NPC.scale / 2f;
-                    otherAfterimagePos += halfSizeTexture * NPC.scale + posOffset;
-                    spriteBatch.Draw(glowTexture, otherAfterimagePos, new Rectangle?(rectangle), otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    for (int k = 1; k < chargeAfterimageAmount; k++)
+                    {
+                        Color otherAfterimageColor = redLerpColor;
+                        otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
+                        otherAfterimageColor *= (chargeAfterimageAmount - k) / 15f;
+                        Vector2 otherAfterimagePos = NPC.oldPos[k] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                        otherAfterimagePos -= new Vector2(glowTexture.Width, glowTexture.Height / frameCount) * NPC.scale / 2f;
+                        otherAfterimagePos += halfSizeTexture * NPC.scale + posOffset;
+                        spriteBatch.Draw(glowTexture, otherAfterimagePos, new Rectangle?(rectangle), otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    }
                 }
             }
 
@@ -1357,9 +1364,6 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 {
                     ModContent.ItemType<Virulence>(),
                     ModContent.ItemType<DiseasedPike>(),
-                    ModContent.ItemType<Pandemic>(),
-                    ModContent.ItemType<Malevolence>(),
-                    ModContent.ItemType<PestilentDefiler>(),
                     ModContent.ItemType<TheHive>(),
                     ModContent.ItemType<BlightSpewer>(),
                     ModContent.ItemType<PlagueStaff>(),

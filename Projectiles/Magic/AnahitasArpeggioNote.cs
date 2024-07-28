@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
@@ -14,9 +15,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public ref float Timer => ref Projectile.ai[0];
         public ref float AIState => ref Projectile.ai[1];
+        public ref float NoteSequence => ref Projectile.localAI[1];
         public int LingeringTime = 300;
         public int FadeOutTime = 20;
         public bool HasSetFadeOutVelocity = false;
+
+        public Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
@@ -39,7 +43,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Player Owner = Main.player[Projectile.owner];
             Timer++;
 
             // Slight size oscillation
@@ -57,10 +60,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             if (Timer == 1f)
-            {
-                Main.musicPitch = (0.1f * AnahitasArpeggio.MusicNoteAmt) - 0.1f;
-                SoundEngine.PlaySound(SoundID.Item26, Owner.Center);
-            }
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/HarpLV" + Math.Clamp((int)NoteSequence + 1, 1, 6)), Owner.Center);
 
             if (Main.zenithWorld)
                 Lighting.AddLight(Projectile.Center, 1.25f, 1.25f, 1.25f);
@@ -107,16 +107,15 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.alpha = 255;
 
                     float degreesAmt = Main.zenithWorld ? 51.428f : 60f;
-                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * Projectile.localAI[1]) + Projectile.ai[2]);
+                    Vector2 musicNoteRotationOffset = Vector2.UnitY.RotatedBy(MathHelper.ToRadians(degreesAmt * NoteSequence) + Projectile.ai[2]);
 
-                    Projectile.Center = Main.MouseWorld + musicNoteRotationOffset * 220f;
-                    playerDirection = Projectile.Center - Main.MouseWorld;
+                    Projectile.Center = Owner.Calamity().mouseWorld + musicNoteRotationOffset * 220f;
+                    playerDirection = Projectile.Center - Owner.Calamity().mouseWorld;
                     playerDirection.Normalize();
                     playerDirection *= -9.2f;
                     Projectile.velocity = playerDirection;
 
-                    Main.musicPitch = 0f;
-                    SoundEngine.PlaySound(SoundID.Item26, Projectile.Center);
+                    SoundEngine.PlaySound(AnahitasArpeggio.EndSound, Projectile.Center);
                     AIState = 2f;
                 }
             }
@@ -150,7 +149,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.zenithWorld)
             {
                 Color stupidEasterEggColor = default;
-                switch (Projectile.localAI[1])
+                switch (NoteSequence)
                 {
                     case 0:
                         stupidEasterEggColor = new Color(255, 0, 0);
@@ -194,6 +193,8 @@ namespace CalamityMod.Projectiles.Magic
         {
             target.AddBuff(BuffID.Wet, 900);
             target.AddBuff(BuffID.Confused, 300);
+            if (!SoundEngine.TryGetActiveSound(SingularSoundInstanceSystem.SoundSlot, out var activeSound))
+                SingularSoundInstanceSystem.PlaySingleInstance(AnahitasArpeggio.HitSound, 60, 60, Owner);
         }
     }
 }

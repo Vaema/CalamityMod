@@ -1,11 +1,7 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -13,8 +9,6 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.Graphics.Renderers;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -47,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public bool chargedSwing = false; // True if you have a charged swing fully charged
         public int chargeTimer = 0; // Timer for charging the blade with right click
-        public int chargeTimerMax = 240;
+        public int chargeTimerMax = 240; // This is set to be base don use time on spawn
 
         public SlotId AudSlot;
         public override void SetDefaults()
@@ -67,7 +61,8 @@ namespace CalamityMod.Projectiles.Melee
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = Owner.itemAnimationMax;
             storedUseAnim = useAnim;
-            chargeTimerMax = useAnim * 5;
+
+            chargeTimerMax = useAnim * 5; // Max charge time is set here
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -329,7 +324,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits (which uses Projectile.numHits)
-            if ((damageDone <= 2 || target.life <= 0) && pierceReduction > 0)
+            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && pierceReduction > 0)
             {
                 pierceReduction -= 1;
             }
@@ -401,7 +396,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.25f;
             int hitsToMinMult = 4;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? 3.5f * (GFBMulti) : 1) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? 4f * (GFBMulti) : 1) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

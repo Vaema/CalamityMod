@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 0;
+            Item.defense = 1;
         }
 
         private void ActivateLift(Terraria.On_Player.orig_QuickMount orig, Player self)
@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                 orig(self);
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<MarniteArchitectToga>();
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<MarniteArchitectToga>();
         public static bool HasArmorSet(Player player) => player.armor[0].type == ItemType<MarniteArchitectHeadgear>() && player.armor[1].type == ItemType<MarniteArchitectToga>();
         public bool IsPartOfSet(Item item) => item.type == ItemType<MarniteArchitectHeadgear>() ||
                 item.type == ItemType<MarniteArchitectToga>();
@@ -155,12 +155,13 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 1;
+            Item.defense = 2;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.tileSpeed += 0.5f;
+            player.wallSpeed += 0.5f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => MarniteArchitectHeadgear.ModifySetTooltips(this, tooltips);
@@ -204,7 +205,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void PostUpdateMiscEffects()
         {
-            if (!setEquipped && Player.mount.Type == ModContent.MountType<MarniteLift>() && Player.mount.Active)
+            if (!setEquipped && Player.mount.Type == MountType<MarniteLift>() && Player.mount.Active)
                 Player.mount.Dismount(Player);
 
             if (mounted)
@@ -367,7 +368,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             //Sprites
             if (Main.netMode != NetmodeID.Server)
             {
-                MountData.frontTextureGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Armor/MarniteArchitect/MarniteLiftFire");
+                MountData.frontTextureGlow = Request<Texture2D>("CalamityMod/Items/Armor/MarniteArchitect/MarniteLiftFire");
             }
         }
 

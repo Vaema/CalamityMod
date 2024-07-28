@@ -108,6 +108,9 @@ namespace CalamityMod
         // Destroyer glowmasks
         public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
 
+        // Probe glowmask
+        public static Asset<Texture2D> ProbeGlowmask;
+
         // Wall of Flesh glowmasks
         public static Asset<Texture2D> WallOfFleshEyeGlowmask;
         public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
@@ -285,6 +288,9 @@ namespace CalamityMod
             DestroyerGlowmasks[0] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
             DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
             DestroyerGlowmasks[2] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
+
+            // Probe glowmask
+            ProbeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/ProbeGlow", AssetRequestMode.AsyncLoad);
 
             // Wall of Flesh glowmasks
             WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);

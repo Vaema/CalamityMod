@@ -165,8 +165,14 @@ namespace CalamityMod.Particles
                         particle.CustomDraw(sb);
                     else
                     {
+                        Color lightColor = particle.Color;
+                        if (particle.AffectedByLight)
+                        {
+                            lightColor = particle.Color.MultiplyRGB(Lighting.GetColor((particle.Position / 16).ToPoint()));
+                        }
+
                         Rectangle frame = particleTextures[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f,
+                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f,
                             particle.Scale, SpriteEffects.None, 0f);
                     }
                 }

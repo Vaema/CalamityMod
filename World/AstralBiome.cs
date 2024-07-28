@@ -723,6 +723,7 @@ namespace CalamityMod.World
                                 case TileID.Lead:
                                 case TileID.Tungsten:
                                 case TileID.Platinum:
+                                case TileID.Meteorite:
                                     if (convertOre)
                                     {
                                         Main.tile[x, y].TileType = (ushort)ModContent.TileType<AstralOre>();

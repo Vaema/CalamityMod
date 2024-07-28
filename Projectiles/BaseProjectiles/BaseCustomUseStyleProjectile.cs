@@ -166,6 +166,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+            bool ItemAnimationActive = Owner.ItemAnimationActive;
+
             if (Owner.HeldItem.type != AssignedItemID)
             {
                 Projectile.Kill();
@@ -174,7 +176,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.Calamity().mouseWorldListener = true;
             Owner.Calamity().rightClickListener = true;
 
-            if (Owner.ItemAnimationActive)
+            if (ItemAnimationActive)
             {
                 Animation++;
 
@@ -210,18 +212,19 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 Projectile.position = AbsolutePosition - (Projectile.Size / 2) + Offset;
             }
 
-            if (Owner.itemAnimation == 1)
+            if (AnimationProgress == Owner.itemAnimationMax - 1)
             {
                 OnEndUse();
                 NumberOfAnimations++;
             }
 
-            if (Owner.ItemAnimationJustStarted)
+            if (Owner.itemAnimation == Owner.itemAnimationMax - 1)
             {
                 Projectile.timeLeft = Owner.HeldItem.useAnimation + 1;
-                if (DrawUnconditionally) Projectile.timeLeft = 100;
                 OnBeginUse();
             }
+
+            if (DrawUnconditionally) Projectile.timeLeft = Math.Max(Projectile.timeLeft, 2);
         }
 
         public override bool? CanHitNPC(NPC target)

@@ -13,6 +13,7 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
@@ -63,6 +64,7 @@ using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
@@ -104,8 +106,7 @@ namespace CalamityMod
         public static List<int> amalgamBuffList;
         public static List<int> persistentBuffList;
         public static List<int> MagicGunIDs;
-        public static List<int> MushroomWeaponIDs;
-        public static List<int> MushroomProjectileIDs;
+        public static List<int> BlacklistedWeaponsWithToolPower;
 
         // Some of these lists of enemies are unused, but were difficult to create. Many of these common enemy types have a ton of variants.
         public static List<int> zombieList;
@@ -910,17 +911,17 @@ namespace CalamityMod
                 NPCType<KingSlimeJewelRuby>(),
                 NPCType<KingSlimeJewelSapphire>(),
                 NPCType<KingSlimeJewelEmerald>(),
+                NPCID.EyeofCthulhu,
+                NPCType<BloodlettingServant>(),
                 NPCID.EaterofWorldsHead,
                 NPCID.EaterofWorldsBody,
                 NPCID.EaterofWorldsTail,
                 NPCID.BrainofCthulhu,
                 NPCID.Creeper,
-                NPCID.EyeofCthulhu,
-                NPCType<BloodlettingServant>(),
                 NPCID.QueenBee,
+                NPCID.Deerclops,
                 NPCID.SkeletronHead,
                 NPCID.SkeletronHand,
-                NPCID.Deerclops,
                 NPCID.WallofFlesh,
                 NPCID.WallofFleshEye,
                 NPCID.PirateShipCannon,
@@ -928,6 +929,7 @@ namespace CalamityMod
                 NPCID.Probe,
                 NPCID.Retinazer,
                 NPCID.Spazmatism,
+                NPCType<Foveanator>(),
                 NPCID.SkeletronPrime,
                 NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,
@@ -937,7 +939,6 @@ namespace CalamityMod
                 NPCID.Plantera,
                 NPCID.PlanterasTentacle,
                 NPCType<PlanterasFreeTentacle>(),
-                NPCID.HallowBoss,
                 NPCID.Everscream,
                 NPCID.SantaNK1,
                 NPCID.IceQueen,
@@ -955,6 +956,7 @@ namespace CalamityMod
                 NPCID.DukeFishron,
                 NPCID.Sharkron,
                 NPCID.Sharkron2,
+                NPCID.HallowBoss,
                 NPCID.CultistBoss,
                 NPCID.CultistDragonHead,
                 NPCID.CultistDragonBody1,
@@ -1562,6 +1564,7 @@ namespace CalamityMod
                 TileType<LivingGodSlayerFireBlockTile>(),
                 TileType<LivingHolyFireBlockTile>(),
                 TileType<LivingBrimstoneFireBlockTile>(),
+                TileType<LivingPlagueFireBlockTile>(),
                 TileID.LivingFire,
                 TileID.LivingCursedFire,
                 TileID.LivingDemonFire,
@@ -1585,7 +1588,6 @@ namespace CalamityMod
                 BuffType<ShadowBuff>(),
                 BuffType<Soaring>(),
                 BuffType<SulphurskinBuff>(),
-                BuffType<TeslaBuff>(),
                 BuffType<WeaponImbueBrimstone>(),
                 BuffType<WeaponImbueCrumbling>(),
                 BuffType<WeaponImbueHolyFlames>(),
@@ -1723,32 +1725,17 @@ namespace CalamityMod
                 ItemID.ZapinatorOrange
             };
 
-            MushroomWeaponIDs = new List<int>()
+            // This list intentionally does not contain Grax.
+            BlacklistedWeaponsWithToolPower = new List<int>()
             {
-                ItemType<Mycoroot>(),
-                ItemType<InfestedClawmerang>(),
-                ItemType<PuffShroom>(),
-                ItemType<HyphaeRod>(),
-                ItemType<Fungicide>(),
-                ItemType<MycelialClaws>(),
-                ItemType<Shroomer>(),
-                ItemID.Hammush,
-                ItemID.MushroomSpear,
-                ItemID.Shroomerang
-            };
-
-            MushroomProjectileIDs = new List<int>()
-            {
-                ProjectileType<MycorootProj>(),
-                ProjectileType<ShroomerangSpore>(),
-                ProjectileType<InfestedClawmerangProj>(),
-                ProjectileType<PuffCloud>(),
-                ProjectileType<FungiOrb2>(),
-                ProjectileType<FungiOrb>(),
-                ProjectileType<Shroom>(),
-                ProjectileID.TruffleSpore,
-                ProjectileID.MushroomSpear,
-                ProjectileID.Shroomerang
+                ItemID.ButchersChainsaw,
+                ItemID.LucyTheAxe,
+                ItemID.Rockfish,
+                ItemType<AxeofPurity>(),
+                ItemType<HydraulicVoltCrasher>(),
+                ItemType<InfernaCutter>(),
+                ItemType<PhotonRipper>(),
+                ItemType<Respiteblock>()
             };
 
             zombieList = new List<int>()
@@ -2037,13 +2024,11 @@ namespace CalamityMod
                 ProjectileType<TaserHook>(),
                 ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
-                ProjectileType<UrchinBall>(),
-                ProjectileType<UrchinBallSpike>(),
                 ProjectileType<UrchinMaceProjectile>(),
                 ProjectileType<UrchinStingerProj>(),
                 ProjectileType<ViolenceThrownProjectile>(),
                 ProjectileType<WaterLeechProj>(),
-                ProjectileType<YateveoBloomProj>(),
+                ProjectileType<YateveoBloomMace>(),
                 ProjectileType<YharimsCrystalBeam>(),
             };
 
@@ -2556,6 +2541,7 @@ namespace CalamityMod
 
                 { NPCID.Spazmatism, 150000 }, // 30 seconds
                 { NPCID.Retinazer, 125000 },
+                { NPCType<Foveanator>(), 137500 },
 
                 { NPCID.TheDestroyer, 250000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 250000 },
@@ -2603,20 +2589,20 @@ namespace CalamityMod
 
             BossValues = new SortedDictionary<int, int>
             {
-                { NPCID.KingSlime, Item.buyPrice(0, 5)},
-                { NPCID.EyeofCthulhu, Item.buyPrice(0, 10)},
-                { NPCID.QueenBee, Item.buyPrice(0, 15)},
+                { NPCID.KingSlime, Item.buyPrice(0, 5) },
+                { NPCID.EyeofCthulhu, Item.buyPrice(0, 10) },
+                { NPCID.QueenBee, Item.buyPrice(0, 15) },
                 { NPCID.SkeletronHead, Item.buyPrice(0, 20) },
                 { NPCID.Deerclops, Item.buyPrice(0, 20) },
-                { NPCID.WallofFlesh, Item.buyPrice(0, 25)},
-                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 30)},
-                { NPCID.Spazmatism, Item.buyPrice(0, 40)},
-                { NPCID.Retinazer, Item.buyPrice(0, 40)},
-                { NPCID.TheDestroyer, Item.buyPrice(0, 40)},
-                { NPCID.SkeletronPrime, Item.buyPrice(0, 40)},
-                { NPCID.Plantera, Item.buyPrice(0, 50)},
-                { NPCID.HallowBoss, Item.buyPrice(0, 60)},
-                { NPCID.Golem, Item.buyPrice(0, 60)},
+                { NPCID.WallofFlesh, Item.buyPrice(0, 25) },
+                { NPCID.QueenSlimeBoss, Item.buyPrice(0, 30) },
+                { NPCID.Spazmatism, Item.buyPrice(0, 40) },
+                { NPCID.Retinazer, Item.buyPrice(0, 40) },
+                { NPCID.TheDestroyer, Item.buyPrice(0, 40) },
+                { NPCID.SkeletronPrime, Item.buyPrice(0, 40) },
+                { NPCID.Plantera, Item.buyPrice(0, 50) },
+                { NPCID.HallowBoss, Item.buyPrice(0, 60) },
+                { NPCID.Golem, Item.buyPrice(0, 60) },
                 { NPCID.DukeFishron, Item.buyPrice(0, 75) },
                 { NPCID.CultistBoss, Item.buyPrice(1) },
                 { NPCID.MoonLordCore, Item.buyPrice(1, 50) }
@@ -2748,8 +2734,7 @@ namespace CalamityMod
             amalgamBuffList = null;
             persistentBuffList = null;
             MagicGunIDs = null;
-            MushroomWeaponIDs = null;
-            MushroomProjectileIDs = null;
+            BlacklistedWeaponsWithToolPower = null;
 
             zombieList = null;
             demonEyeList = null;

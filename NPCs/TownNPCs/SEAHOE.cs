@@ -206,7 +206,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ModContent.ItemType<SandDollar>())
                 .Add(ModContent.ItemType<Waywasher>())
                 .Add(ModContent.ItemType<CoralCannon>())
-                .Add(ModContent.ItemType<UrchinFlail>())
                 .Add(ModContent.ItemType<AmidiasTrident>())
                 .Add(ModContent.ItemType<EnchantedConch>())
                 .Add(ModContent.ItemType<PolypLauncher>())

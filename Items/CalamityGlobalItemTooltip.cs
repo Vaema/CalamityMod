@@ -826,7 +826,7 @@ namespace CalamityMod.Items
             //Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
             {
-                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25\n" +
+                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25x\n" +
                 "All attacks light enemies on fire\n" +
                 "'Never get cold feet again'");
             }
@@ -835,7 +835,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HellfireTreads)
             {
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("fire blocks", "the Burning and On Fire! debuffs"));
-                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5, does not stack with downgrades\n" +
+                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5x, does not stack with downgrades\n" +
                 "All attacks inflict Hellfire");
             }
 
@@ -845,7 +845,7 @@ namespace CalamityMod.Items
                 "Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed\n" +
                 "Fairies are immune to damage and will no longer flee");
 
-            // Reduced Nightwither and Holy Flames damage, and melee speed removal.
+            // Reduced Nightwither and Daybroken damage, and melee speed removal.
             if (item.type == ItemID.MoonStone)
             {
                 EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither debuff");
@@ -853,17 +853,17 @@ namespace CalamityMod.Items
             }
             if (item.type == ItemID.SunStone)
             {
-                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Holy Flames debuff");
+                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Daybroken debuff");
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("melee speed, ", ""));
             }
             if (item.type == ItemID.CelestialStone)
             {
-                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither and Holy Flames debuffs");
+                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither and Daybroken debuffs");
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" melee speed,", ""));
             }
             if (item.type == ItemID.CelestialShell)
             {
-                EditTooltipByNum(4, (line) => line.Text += "\nReduces the damage of the Nightwither and Holy Flames debuffs");
+                EditTooltipByNum(4, (line) => line.Text += "\nReduces the damage of the Nightwither and Daybroken debuffs");
                 EditTooltipByNum(2, (line) => line.Text = line.Text.Replace(" melee speed,", ""));
             }
 
@@ -1301,9 +1301,8 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 160, "5% increased melee damage and critical strike chance");
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(6.75f, 1f, 1, 130, "2% increased melee and ranged damage\n" +
-                    "and 1% increased melee and ranged critical strike chance\n" +
-                    "while wearing the Frost Armor");
+                AddWingStats(6.75f, 1f, 1, 130, "4% increased melee and ranged damage\n" +
+                    "and multiplies all cold debuff damage by 1.25x while wearing Frost armor");
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(7.5f, 1f, 1, 170, "+10 defense and 5% increased damage reduction while wearing the Spectre Hood set\n" +

@@ -85,9 +85,6 @@ namespace CalamityMod.Tiles
             }
         }
 
-        // This function has two purposes:
-        // 1 - Shatters adjacent Lumenyl or Sea Prism crystals when a neighboring solid tile is destroyed
-        // 2 - Gives the player breath back when breaking blocks with Reaver set bonus
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             Tile tile = Main.tile[i, j];
@@ -308,13 +305,6 @@ namespace CalamityMod.Tiles
             Player player = Main.LocalPlayer;
             if (player is null || !player.active)
                 return;
-
-            if (player.Calamity().reaverExplore && !fail)
-            {
-                player.breath += 20;
-                if (player.breath > player.breathMax)
-                    player.breath = player.breathMax;
-            }
 
             // Mining set gives a chance for additional ore. This can be abused for infinite ore but it has a cooldown to prevent too much abuse
             if (player.Calamity().miningSet && player.Calamity().miningSetCooldown <= 0 && !fail && TileID.Sets.Ore[tile.TileType])

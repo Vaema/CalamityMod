@@ -53,21 +53,6 @@ namespace CalamityMod.Items.Armor.Auric
             player.crimsonRegen = true;
             player.GetDamage<SummonDamageClass>() += 0.75f;
             player.maxMinions += 6;
-            if (player.whoAmI == Main.myPlayer)
-            {
-                var source = player.GetSource_ItemUse(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<SilvaCrystalBuff>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<SilvaCrystalBuff>(), 3600, true);
-                }
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
-                {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(750);
-                    var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 750;
-                }
-            }
         }
 
         public override void UpdateEquip(Player player)

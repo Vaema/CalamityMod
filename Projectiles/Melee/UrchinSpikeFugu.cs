@@ -1,6 +1,9 @@
-﻿using System;
+﻿using CalamityMod.Graphics.Primitives;
+using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,10 +12,18 @@ namespace CalamityMod.Projectiles.Melee
     public class UrchinSpikeFugu : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
+        public ref float Time => ref Projectile.ai[0];
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
+
         public override void SetDefaults()
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
+            Projectile.width = Projectile.height = 6;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.ignoreWater = true;
@@ -24,55 +35,30 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Projectile.ai[0] == 0f)
+            Time++;
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            Projectile.alpha = (int)Utils.Remap(Time, 0f, 12f, 255f, 0f);
+
+            NPC potentialTarget = Projectile.Center.ClosestNPCAt(256f);
+            if (potentialTarget != null && Time >= 12f)
             {
-                float maxRange = Projectile.ai[1] == 1f ? 256f : 100f; // Increased homing range for Lionfish
-                int npcIndex = -1;
-                foreach (NPC npc in Main.ActiveNPCs)
-                {
-                    if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
-                    {
-                        float targetDist = (npc.Center - Projectile.Center).Length();
-                        if (targetDist < maxRange)
-                        {
-                            npcIndex = npc.whoAmI;
-                            maxRange = targetDist;
-                        }
-                    }
-                }
-                Projectile.ai[0] = (float)(npcIndex + 1);
-                if (Projectile.ai[0] == 0f)
-                {
-                    Projectile.ai[0] = -15f;
-                }
-                if (Projectile.ai[0] > 0f)
-                {
-                    float scaleFactor5 = (float)Main.rand.Next(35, 75) / 30f;
-                    Projectile.velocity = (Projectile.velocity * 20f + Vector2.Normalize(Main.npc[(int)Projectile.ai[0] - 1].Center - Projectile.Center + new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101))) * scaleFactor5) / 21f;
-                    Projectile.netUpdate = true;
-                }
-            }
-            else if (Projectile.ai[0] > 0f)
-            {
-                Vector2 value16 = Vector2.Normalize(Main.npc[(int)Projectile.ai[0] - 1].Center - Projectile.Center);
-                Projectile.velocity = (Projectile.velocity * 40f + value16 * 12f) / 41f;
-            }
-            else
-            {
-                Projectile.ai[0] += 1f;
-                Projectile.alpha -= 25;
-                if (Projectile.alpha < 0)
-                {
-                    Projectile.alpha = 0;
-                }
-                Projectile.velocity.Y = Projectile.velocity.Y + 0.015f;
+                Vector2 idealVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 12f;
+                Projectile.velocity = (Projectile.velocity * 20f + idealVelocity) / 21f;
+                Projectile.velocity = Projectile.velocity.MoveTowards(idealVelocity, 2f);
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Poisoned, 120);
+
+        public override bool? CanDamage() => Time < 12f ? false : base.CanDamage();
+
+        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 4f;
+        internal Color ColorFunction(float completionRatio) => new Color(91, 62, 153) * Projectile.Opacity;
+        public override bool PreDraw(ref Color lightColor)
         {
-            target.AddBuff(BuffID.Poisoned, 120);
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 8);
+            return true;
         }
     }
 }

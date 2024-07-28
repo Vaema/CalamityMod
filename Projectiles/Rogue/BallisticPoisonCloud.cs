@@ -7,7 +7,7 @@ namespace CalamityMod.Projectiles.Rogue
 {
     public class BallisticPoisonCloud : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
+        public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 10;

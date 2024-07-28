@@ -164,7 +164,12 @@ BalefulHarvester: {
 
 BallOFugu: {
 	DisplayName: Ball O' Fugu
-	Tooltip: Throws a fish that spews homing spikes
+	Tooltip:
+		'''
+		Throws a flailing abyssal pufferfish
+		Builds up poisonous spikes as it spins
+		Spikes blow out of the fish as it retracts
+		'''
 }
 
 BansheeHook: {
@@ -434,11 +439,6 @@ ElementalLance: {
 		'''
 }
 
-ElementalShiv: {
-	DisplayName: Elemental Shiv
-	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
-}
-
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
 	Tooltip: Throws a flurry of bouncing knives that can heal the user
@@ -446,7 +446,12 @@ EmpyreanKnives: {
 
 EntropicClaymore: {
 	DisplayName: Entropic Claymore
-	Tooltip: Fires a spread of homing plasma balls
+	Tooltip:
+		'''
+		Fires a spread of living plasma that swims though the air
+		Plasma will track your cursor or enemies near it, prioritizing which is closest
+		The plasma pierces, but will stop tracking after hitting the first enemy
+		'''
 }
 
 EssenceFlayer: {
@@ -789,7 +794,9 @@ MantisClaws: {
 	DisplayName: Mantis Claws
 	Tooltip:
 		'''
-		Explodes on enemy hits
+		Rapidly swing a mantis claw which slashes foes in short range
+		Press <right> to form a pressurized bubble in front of you
+		Once fully formed, the bubble is instantly snapped down on, blasting foes with a water jet
 		'It's just that shrimple'
 		'''
 }
@@ -1008,7 +1015,7 @@ RemsRevenge: {
 	Tooltip:
 		'''
 		Summons blood explosions and lowers enemy defense on hit
-		Wielded by the most powerful fighter
+		'A deadly morning star befitting its demonic owner'
 		'''
 }
 
@@ -1115,6 +1122,11 @@ SpineOfThanatos: {
 		Once all three collide, a prism of light is shot outward
 		If an enemy is within the line of sight of the whips on collision, the light will fire towards it
 		'''
+}
+
+StarburstShiv: {
+	DisplayName: Starburst Shiv
+	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
 }
 
 StarnightLance: {
@@ -1384,7 +1396,12 @@ TrueCausticEdge: {
 
 Tumbleweed: {
 	DisplayName: Tumbleweed
-	Tooltip: Releases a rolling tumbleweed on hit
+	Tooltip:
+		'''
+		Throws a tumbleweed flail
+		Spinning tumbleweeds brew a localized dust storm
+		Launched tumbleweeds detach from their chain upon striking an enemy and roll forwards
+		'''
 }
 
 TyphonsGreed: {

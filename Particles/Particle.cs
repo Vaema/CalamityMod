@@ -49,6 +49,11 @@ namespace CalamityMod.Particles
         public float Rotation;
         public float Scale;
 
+        /// <summary>
+        /// Whether your particle is affected by light levels.
+        /// </summary>
+        public bool AffectedByLight = false;
+
         public virtual int FrameVariants => 1;
         public int Variant = 0;
         public virtual string Texture => "";
@@ -77,6 +82,7 @@ namespace CalamityMod.Particles
         /// Set this to true to make your particles work with semi transparent pixels. Is overriden if UseAdditiveBlend is set to true.
         /// </summary>
         public virtual bool UseHalfTransparency => false;
+
 
         /// <summary>
         /// Removes the particle from the handler

@@ -31,7 +31,7 @@ namespace CalamityMod.Systems
             // Reset this int because it causes bugs with other mods if you delete Dr. Draedon through abnormal means.
             if (CalamityGlobalNPC.draedon != -1)
             {
-                if (!NPC.AnyNPCs(ModContent.NPCType<Draedon>()))
+                if (!NPC.AnyNPCs(NPCType<Draedon>()))
                     CalamityGlobalNPC.draedon = -1;
             }
 
@@ -132,13 +132,13 @@ namespace CalamityMod.Systems
             if (DraedonSummonCountdown == DraedonSummonCountdownMax - 45)
             {
                 IEntitySource source = new EntitySource_WorldEvent();
-                Projectile.NewProjectile(source, DraedonSummonPosition + Vector2.UnitY * 80f, Vector2.Zero, ModContent.ProjectileType<DraedonSummonLaser>(), 0, 0f);
+                Projectile.NewProjectile(source, DraedonSummonPosition + Vector2.UnitY * 80f, Vector2.Zero, ProjectileType<DraedonSummonLaser>(), 0, 0f);
             }
 
             if (DraedonSummonCountdown == 0)
             {
                 IEntitySource source = new EntitySource_WorldEvent();
-                NPC.NewNPC(source, (int)DraedonSummonPosition.X, (int)DraedonSummonPosition.Y, ModContent.NPCType<Draedon>());
+                NPC.NewNPC(source, (int)DraedonSummonPosition.X, (int)DraedonSummonPosition.Y, NPCType<Draedon>());
             }
         }
         #endregion Handle Draedon Summoning
@@ -242,7 +242,7 @@ namespace CalamityMod.Systems
                         if (CalamityGlobalTile.GrowthTiles.Contains(tileType) && growthTile.Slope == SlopeType.Solid && !growthTile.IsHalfBlock)
                         {
                             int growthChance = 2;
-                            if (tileType == ModContent.TileType<Navystone>())
+                            if (tileType == TileType<Navystone>())
                                 growthChance *= 5;
 
                             if (Main.rand.NextBool(growthChance))
@@ -269,18 +269,18 @@ namespace CalamityMod.Systems
                                 {
                                     Tile tile = Main.tile[x, y];
                                     bool growTile = !tile.HasTile && tile.LiquidAmount >= 128;
-                                    bool isSunkenSeaTile = tileType == ModContent.TileType<Navystone>() || tileType == ModContent.TileType<SeaPrism>();
+                                    bool isSunkenSeaTile = tileType == TileType<Navystone>() || tileType == TileType<SeaPrism>();
                                     bool meetsAdditionalGrowConditions = tile.Slope == SlopeType.Solid && !tile.IsHalfBlock && tile.LiquidType != LiquidID.Lava;
 
                                     if (growTile && meetsAdditionalGrowConditions)
                                     {
-                                        int tileType2 = ModContent.TileType<SeaPrismCrystals>();
+                                        int tileType2 = TileType<SeaPrismCrystals>();
 
-                                        if (tileType == ModContent.TileType<Voidstone>())
-                                            tileType2 = ModContent.TileType<LumenylCrystals>();
+                                        if (tileType == TileType<Voidstone>())
+                                            tileType2 = TileType<LumenylCrystals>();
 
                                         bool canPlaceBasedOnAttached = true;
-                                        if (tileType2 == ModContent.TileType<SeaPrismCrystals>() && !isSunkenSeaTile)
+                                        if (tileType2 == TileType<SeaPrismCrystals>() && !isSunkenSeaTile)
                                             canPlaceBasedOnAttached = false;
 
                                         if (canPlaceBasedOnAttached && CanPlaceBasedOnProximity(x, y, tileType2))
@@ -395,7 +395,7 @@ namespace CalamityMod.Systems
 
         public static bool CanPlaceBasedOnProximity(int x, int y, int tileType)
         {
-            if (tileType == ModContent.TileType<LumenylCrystals>() && !DownedBossSystem.downedLeviathan)
+            if (tileType == TileType<LumenylCrystals>() && !DownedBossSystem.downedLeviathan)
                 return false;
 
             int minDistanceFromOtherTiles = 10;
@@ -458,10 +458,10 @@ namespace CalamityMod.Systems
                     int chance = (int)spawnRate;
                     if (Main.rand.NextBool(chance))
                     {
-                        if (!NPC.AnyNPCs(ModContent.NPCType<ArmoredDiggerHead>()) && Main.netMode != NetmodeID.MultiplayerClient &&
+                        if (!NPC.AnyNPCs(NPCType<ArmoredDiggerHead>()) && Main.netMode != NetmodeID.MultiplayerClient &&
                         ArmoredDiggerSpawnCooldown <= 0)
                         {
-                            NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<ArmoredDiggerHead>());
+                            NPC.SpawnOnPlayer(player.whoAmI, NPCType<ArmoredDiggerHead>());
                             ArmoredDiggerSpawnCooldown = 36000;
                         }
                     }
@@ -507,7 +507,7 @@ namespace CalamityMod.Systems
 
             bool adultWyrmAlive = CalamityGlobalNPC.adultEidolonWyrmHead != -1 && Main.npc[CalamityGlobalNPC.adultEidolonWyrmHead].active;
             if (!adultWyrmAlive)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<PrimordialWyrmHead>());
+                NPC.SpawnOnPlayer(player.whoAmI, NPCType<PrimordialWyrmHead>());
         }
         #endregion
     }

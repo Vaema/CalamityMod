@@ -87,6 +87,7 @@ namespace CalamityMod.ILEditing
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
             Terraria.On_Player.Teleport += TPOverride;
+            On_NPC.SpawnBoss += TripletsSpawnTextOverride;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;

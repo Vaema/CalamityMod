@@ -29,7 +29,6 @@ AtaraxiaMain.DisplayName: Not Exoblade
 AtaraxiaSide.DisplayName: Also Not Exoblade
 AtaraxiaSplit.DisplayName: Still Not Exoblade
 BalefulHarvesterProjectile.DisplayName: Pumpkin Skull
-BallOFuguProj.DisplayName: Ball O Fugu
 BansheeHookBoom.DisplayName: Banshee Boom
 BansheeHookScythe.DisplayName: Banshee Scythe
 BiomeBladeHoldout.DisplayName: Mended Biome Blade
@@ -39,7 +38,6 @@ BlazingPhantomBlade.DisplayName: Blazing Phantom Blade
 Blood.DisplayName: Carnage Blood
 Blood2.DisplayName: Blood
 BloodBall.DisplayName: Blood Ball
-BloodExplosion.DisplayName: Blood
 BloodScythe.DisplayName: Blood Scythe
 BonebreakerFragment1.DisplayName: Bone Crunching Shrapnel
 BonebreakerProjectile.DisplayName: Bonebreaker
@@ -103,16 +101,12 @@ EarthBoom.DisplayName: Earth's Judgement
 EarthMeteor.DisplayName: Gaia Meteor
 ElementalGlassStar.DisplayName: Glass Star
 ElementBall.DisplayName: Elemental Ball
-ElementBallShiv.DisplayName: Shiv
 EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
-EntropicFlechetteLarge.DisplayName: Entropic Flechette
-EntropicFlechetteSmall.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceFlame2.DisplayName: Essence Flame
 EssenceScythe.DisplayName: Essence Scythe
 EutrophicScimitarProj.DisplayName: Scimitar Zap
-EutrophicSpark.DisplayName: Eutrophic Spark
 ExcelsusBlue.DisplayName: Excelsus
 ExcelsusMain.DisplayName: Excelsus
 ExcelsusPink.DisplayName: Excelsus
@@ -120,7 +114,6 @@ Exobeam.DisplayName: Exobeam
 ExobeamSlash.DisplayName: Exobeam Slash
 ExobeamSlashCreator.DisplayName: Anime Sword Effect
 Exoboom.DisplayName: Exoplasma Explosion
-Exocomet.DisplayName: Comet
 ExtantAbhorrence.DisplayName: Extant Abhorrence
 ExtantAbhorrenceMonolith.DisplayName: Abhorrent Monolith
 FallenBlast.DisplayName: Fallen Paladin's Wrath
@@ -144,7 +137,6 @@ GalaxySmasherBlast.DisplayName: Galactic Blast
 GalaxySmasherEcho.DisplayName: Galaxy Smasher Echo
 GalaxySmasherHammer.DisplayName: Galaxy Smasher
 GalaxySmasherMini.DisplayName: Galaxy Smasher
-GalaxyStar.DisplayName: Galaxy Star
 GalileosMoon.DisplayName: Crescent Moon
 GalileosPlanet.DisplayName: Planet
 GayBeam.DisplayName: Iridescent Beam
@@ -162,13 +154,13 @@ GrovetendersEntanglingVines.DisplayName: Entangling Growth
 GrovetendersTouch.DisplayName: Grovetender's Touch
 HeavensMight.DisplayName: Heaven's Might
 HellionSpike.DisplayName: Hellion Spike
-IridescentExcaliburSlash.DisplayName: Iridescent Excalibur Slash
-IridescentExcaliburSlash2.DisplayName: Iridescent Excalibur Slash
-IridescentExcaliburSlash3.DisplayName: Iridescent Excalibur Slash
 HolyColliderHolyFire.DisplayName: Holy Collider Fire
 IceBombFriendly.DisplayName: Ice Bomb
 IllustriousKnife.DisplayName: Illustrious Knife
 InsidiousHarpoon.DisplayName: Insidious Harpoon
+IridescentExcaliburSlash.DisplayName: Iridescent Excalibur Slash
+IridescentExcaliburSlash2.DisplayName: Iridescent Excalibur Slash
+IridescentExcaliburSlash3.DisplayName: Iridescent Excalibur Slash
 JudgementProj.DisplayName: JUDGEMENT
 LamentationsOfTheChained.DisplayName: Lamentations of the Chained
 LaserFountain.DisplayName: Laser Fountain
@@ -211,17 +203,16 @@ PrismTooth.DisplayName: Photon Ripper
 PurityProjection.DisplayName: Purity Projection
 PurityProjectionSigil.DisplayName: Purity Sigil
 PwnagehammerEcho.DisplayName: Pwnagehammer Echo
-PwnagehammerExplosionSmall.DisplayName: Pwnage Blast
 PwnagehammerExplosionBig.DisplayName: Pwnage Blast
+PwnagehammerExplosionSmall.DisplayName: Pwnage Blast
 PwnagehammerProj.DisplayName: Pwnagehammer
-PwnagehammerSmallExplosion.DisplayName: Pwnage Blast
 RainbowBoom.DisplayName: Boom
 Razorwind.DisplayName: Razorwind
 RedtideWhirlpool.DisplayName: Whirlpool
-RemsRevengeProj.DisplayName: Rem's Revenge
+RemsRevengeExplosion.DisplayName: Blood Explosion
 RendingNeedle.DisplayName: Rending Needle
-RespiteblockHoldout.DisplayName: Respiteblock
 RespiteblockBlood.DisplayName: Respiteblock Blood
+RespiteblockHoldout.DisplayName: Respiteblock
 Rox1.DisplayName: Rock
 RoxcaliburProj.DisplayName: Roxcalibur
 RSSolarFlare.DisplayName: Flare
@@ -234,17 +225,17 @@ SanguineFuryWheel.DisplayName: Sanguine Bladewheel
 ScourgeoftheCosmosMini.DisplayName: Miniature Cosmic Scourge
 ScourgeoftheCosmosProj.DisplayName: Cosmic Scourge
 SeashineSwordProj.DisplayName: Seashine Beam
-SHIV.DisplayName: Shiv
 SolarNeedle.DisplayName: Solar Needle
 SolsticeBeam.DisplayName: Solstice Beam
 SoulScythe.DisplayName: Soul Scythe
 SoulScytheExplosion.DisplayName: Soul Explosion
-Spark.DisplayName: Spark
 SpatialSpear.DisplayName: Elemental Spear
 SpatialSpear2.DisplayName: Elemental Spear
 SpatialSpear3.DisplayName: Elemental Spear
 SpatialSpear4.DisplayName: Elemental Spear
 SpineOfThanatosProjectile.DisplayName: Spine of Thanatos
+StarburstBeam.DisplayName: Star Shiv
+StarburstSHIV.DisplayName: SHIV
 StarnightBeam.DisplayName: Starnight Beam
 StellarContemptBlast.DisplayName: Stellar Blast
 StellarContemptEcho.DisplayName: Echoes of Contempt
@@ -267,12 +258,12 @@ TaintedBladeSlasher.DisplayName: Tainted Blade
 TenebreusTidesWaterProjectile.DisplayName: Water Spear
 TenebreusTidesWaterSpear.DisplayName: Tenebreus Tides Water Spear
 TenebreusTidesWaterSword.DisplayName: Tenebreus Tides Water Sword
-TerratomereMeleeSlash.DisplayName: Terratomere Slash
-TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerratomereExplosion.DisplayName: Terratomere Explosion
 TerratomereHoldoutProj.DisplayName: Terratomere
+TerratomereMeleeSlash.DisplayName: Terratomere Slash
 TerratomereSlash.DisplayName: Terratomere Slash
 TerratomereSlashCreator.DisplayName: Anime Sword Effect
+TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerrorBeam.DisplayName: Terror Beam
 TerrorBlast.DisplayName: Terror Blast
 ThanatosBoom.DisplayName: Thanos Boom
@@ -292,12 +283,9 @@ TrueBitingEmbrace.DisplayName: Biting Embrace
 TrueDecaysRetort.DisplayName: Decay's Retort
 TrueGrovetendersTouch.DisplayName: Grovetender's Touch
 TruePurityProjection.DisplayName: Purity Projection
-TumbleweedFlail.DisplayName: Tumbleweed
-TumbleweedRolling.DisplayName: Tumbleweed
+TumbleweedRolling.DisplayName: Rolling Tumbleweed
 TyphonsGreedBubble.DisplayName: Typhon's Greed
 UltimusCleaverDust.DisplayName: Ultimus Flame
-UrchinBall.DisplayName: Urchin Ball
-UrchinBallSpike.DisplayName: Urchin Ball Spike
 UrchinMaceProjectile.DisplayName: Urchin Mace
 UrchinSpikeFugu.DisplayName: Urchin Spike
 VirulentBeeWave.DisplayName: Virulent Bee Wave
@@ -312,6 +300,8 @@ WhiteOrb.DisplayName: White Orb
 Whiterain.DisplayName: White Rain
 WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
-YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+MantisClawHoldout.DisplayName: Mantis Claw
+MantisClawSlash.DisplayName: Mantis Claw Slash
+MantisClawJet.DisplayName: Mantis Claw Jet

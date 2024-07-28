@@ -93,7 +93,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalEruption>().
+                AddIngredient<ChromaticEruption>().
                 AddIngredient<HalleysInferno>().
                 AddIngredient<DeadSunsWind>().
                 AddIngredient<MiracleMatter>().

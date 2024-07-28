@@ -248,6 +248,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (Main.rand.NextBool(3))
                         target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
                     if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                    if (Main.rand.NextBool(3))
                         target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
                     if (Main.rand.NextBool(3))
                         target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
