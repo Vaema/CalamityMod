@@ -357,9 +357,6 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region Exo Mechs: Ares
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(ResistTrueMelee(0.5f))));
-
             // 30% resist to Dynamic Pursuer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AresIDs, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<DynamicPursuerProjectile>(), ProjectileType<DynamicPursuerLaser>(), ProjectileType<DynamicPursuerElectricity>()))));
 
