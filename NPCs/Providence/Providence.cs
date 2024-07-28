@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
@@ -1098,11 +1099,15 @@ namespace CalamityMod.NPCs.Providence
 
                     if (spawnAnimation)
                     {
+                        CalamityUtils.AddScreenshakeAt(NPC.Center, MathHelper.Lerp(0f, 0.25f, calamityGlobalNPC.newAI[3] / spawnAnimationTime), 2000);
+
                         NPC.dontTakeDamage = true;
 
                         if (calamityGlobalNPC.newAI[3] == spawnAnimationTime - 1)
                         {
                             NPC.dontTakeDamage = false;
+
+                            CalamityUtils.AddScreenshakeAt(NPC.Center, 8, 2000);
 
                             SoundEngine.PlaySound(HolyRaySound, NPC.Center);
 
@@ -1843,6 +1848,8 @@ namespace CalamityMod.NPCs.Providence
             // above defeat scene sound.
             if (DeathAnimationTimer == 92f)
             {
+                CalamityUtils.AddScreenshakeAt(NPC.Center, 5, 2000);
+
                 Color hiColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
                 Color loColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
 
@@ -1878,13 +1885,16 @@ namespace CalamityMod.NPCs.Providence
             // Idly release harmless cindiers.
             if (DeathAnimationTimer >= 92f)
             {
+                CalamityUtils.AddScreenshakeAt(NPC.Center, MathHelper.Lerp(0, 0.6f, ((float)DeathAnimationTimer - 92f) / 300f), 1000);
+
                 int shootRate = (int)MathHelper.Lerp(12f, 5f, Utils.GetLerpValue(0f, 250f, DeathAnimationTimer, true));
                 if (DeathAnimationTimer % shootRate == shootRate - 1f)
                 {
                     for (int i = 0; i < 3; i++)
                     {
-                        Vector2 shootVelocity = Main.rand.NextVector2CircularEdge(13f, 13f) * Main.rand.NextFloat(0.7f, 1.3f);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity, ModContent.ProjectileType<SwirlingFire>(), 0, 0f, 255, ai1: (int)NPC.localAI[1]);
+                        Vector2 shootVelocity = Main.rand.NextVector2CircularEdge(13f, 13f) * Main.rand.NextFloat(1.4f, 2.3f);
+                        Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, shootVelocity, ModContent.ProjectileType<SwirlingFire>(), 0, 0f, 255, ai1: (int)NPC.localAI[1]);
+                        proj.ai[2] = MathHelper.Lerp(0.5f, 2.5f, (float)DeathAnimationTimer / 300f);
                     }
                 }
             }
@@ -2010,6 +2020,8 @@ namespace CalamityMod.NPCs.Providence
 
         public override void OnKill()
         {
+            CalamityUtils.AddScreenshakeAt(NPC.Center, 10, 2000);
+
             Color hiColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
             Color loColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
 
