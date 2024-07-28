@@ -33,14 +33,13 @@ namespace CalamityMod.Projectiles.Boss
             GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, Projectile.velocity / 2f, false, 10, 0.5f * Projectile.ai[2], ProvUtils.GetProjectileColor((int)Projectile.ai[1], 255)));
             GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, 0.5f * Projectile.ai[2], 150, Main.rand.NextFloat(-0.01f, 0.01f)));
 
-            if (NPC.CountNPCS(ModContent.NPCType<Providence>()) < 1)
-            {
-                Projectile.ai[2] *= 0.9f;
+            Projectile.ai[2] *= 0.99f;
 
-                if (Projectile.ai[2] < 0.2f)
-                {
-                    Projectile.Kill();
-                }
+            Projectile.velocity *= 0.99f;
+
+            if (Projectile.ai[2] < 0.2f)
+            {
+                Projectile.Kill();
             }
 
             Projectile.velocity = Projectile.velocity.RotatedBy(AngularTurnSpeed);

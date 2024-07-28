@@ -1843,9 +1843,26 @@ namespace CalamityMod.NPCs.Providence
             // above defeat scene sound.
             if (DeathAnimationTimer == 92f)
             {
+                Color hiColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
+                Color loColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+
+                for (int i = 0; i < 30; i++)
+                {
+                    Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(0.5f, 0.75f), Main.rand.NextFloat(1f, 2.5f), hiColor, loColor);
+                    p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
+                    GeneralParticleHandler.SpawnParticle(p);
+                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(0.75f, 1.75f), 1f, Main.rand.NextFloat(-0.05f, 0.05f), true));
+                }
+
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.1f, 15));
+
+                for (float i = 0; i < 3; i += 0.25f)
+                {
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.25f, 35));
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.175f, 25));
+                }
+
                 SoundEngine.PlaySound(HolyBlast.ImpactSound, NPC.Center);
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyExplosionBoom>(), 0, 0f);
             }
 
             // Explode as an enormous holy star before dying and dropping loot.
@@ -2008,8 +2025,8 @@ namespace CalamityMod.NPCs.Providence
 
             for (float i = 0; i < 3; i += 0.25f)
             {
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.25f, 35));
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.175f, 25));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.35f, 35));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.275f, 25));
             }
 
             // Don't bother running any of this in Boss Rush.
