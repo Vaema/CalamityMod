@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +10,6 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -189,9 +188,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.netSpam = 0;
         }
 
-        public PrimitiveTrail GutTrail;
-
-        public PrimitiveTrail GutBGTrail;
         internal float WidthFunction(float completionRatio)
         {
             return MathHelper.Clamp(((float)Math.Cos(completionRatio * 60)) + 2, 1, 2) / 2;
@@ -249,20 +245,14 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            // Draw the chain's flesh
-            if (GutTrail is null)
-                GutTrail = new PrimitiveTrail(WidthFunction, ColorFunction);
-            if (GutBGTrail is null)
-                GutBGTrail = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction);
-
             List<Vector2> points = new List<Vector2>();
             for (int i = 0; i < Segments.Count; i++)
             {
                 points.Add(Segments[i].position);
             }
 
-            GutBGTrail.Draw(points, -Main.screenPosition, 75);
-            GutTrail.Draw(points, -Main.screenPosition, 75);
+            PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction, (_) => -Main.screenPosition), 75);
+            PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction, (_) => -Main.screenPosition), 75);
 
             NPC body = Main.npc[(int)NPC.ai[3]];
             // Draw a chain of bones
@@ -308,7 +298,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Draw the chum itself and its jaw, rotated by localai[0]
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
-            Vector2 jawOrigin = new Vector2(NPC.spriteDirection == 1? jawTexture.Width - 22 : 22, 4);
+            Vector2 jawOrigin = new Vector2(NPC.spriteDirection == 1 ? jawTexture.Width - 22 : 22, 4);
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);

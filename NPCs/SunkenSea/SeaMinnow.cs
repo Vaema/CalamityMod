@@ -50,12 +50,13 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override void AI()
+        {
             NPC owner = Main.npc[(int)NPC.ai[2]];
             if (NPC.wet)
             {
                 if (owner == null || !owner.active || (owner.type != ModContent.NPCType<AlphaSeaMinnow>() && owner.type != ModContent.NPCType<AlphaSeaMinnowGold>()))
                 {
-                    CalamityAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
+                    CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
                     NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
                     NPC.noGravity = true;
                     bool shouldSwimAway = false;
@@ -281,54 +282,55 @@ namespace CalamityMod.NPCs.SunkenSea
             else
             {
 
-            {
-                if (NPC.velocity.Y == 0f)
                 {
-                    NPC.velocity.X = NPC.velocity.X * 0.94f;
-                    if ((double)NPC.velocity.X > -0.2 && (double)NPC.velocity.X < 0.2)
+                    if (NPC.velocity.Y == 0f)
                     {
-                        NPC.velocity.X = 0f;
+                        NPC.velocity.X = NPC.velocity.X * 0.94f;
+                        if ((double)NPC.velocity.X > -0.2 && (double)NPC.velocity.X < 0.2)
+                        {
+                            NPC.velocity.X = 0f;
+                        }
                     }
+                    NPC.velocity.Y = NPC.velocity.Y + 0.3f;
+                    if (NPC.velocity.Y > 10f)
+                    {
+                        NPC.velocity.Y = 10f;
+                    }
+                    NPC.ai[0] = 1f;
                 }
-                NPC.velocity.Y = NPC.velocity.Y + 0.3f;
-                if (NPC.velocity.Y > 10f)
+                NPC.rotation = NPC.velocity.X * 0.05f;
+                if ((double)NPC.rotation < -0.1)
                 {
-                    NPC.velocity.Y = 10f;
+                    NPC.rotation = -0.1f;
                 }
-                NPC.ai[0] = 1f;
-            }
-            NPC.rotation = NPC.velocity.X * 0.05f;
-            if ((double)NPC.rotation < -0.1)
-            {
-                NPC.rotation = -0.1f;
-            }
-            if ((double)NPC.rotation > 0.1)
-            {
-                NPC.rotation = 0.1f;
-            }
-            if (NPC.type == ModContent.NPCType<SeaMinnowGold>())
-            {
-                NPC.position += NPC.netOffset;
-                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
-                if (color.R > 20 || color.B > 20 || color.G > 20)
+                if ((double)NPC.rotation > 0.1)
                 {
-                    int colorVal = color.R;
-                    if (color.G > colorVal)
-                    {
-                        colorVal = color.G;
-                    }
-                    if (color.B > colorVal)
-                    {
-                        colorVal = color.B;
-                    }
-                    colorVal /= 30;
-                    if (Main.rand.Next(300) < colorVal)
-                    {
-                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
-                        Main.dust[golddust].velocity *= 0f;
-                    }
+                    NPC.rotation = 0.1f;
                 }
-                NPC.position -= NPC.netOffset;
+                if (NPC.type == ModContent.NPCType<SeaMinnowGold>())
+                {
+                    NPC.position += NPC.netOffset;
+                    Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                    if (color.R > 20 || color.B > 20 || color.G > 20)
+                    {
+                        int colorVal = color.R;
+                        if (color.G > colorVal)
+                        {
+                            colorVal = color.G;
+                        }
+                        if (color.B > colorVal)
+                        {
+                            colorVal = color.B;
+                        }
+                        colorVal /= 30;
+                        if (Main.rand.Next(300) < colorVal)
+                        {
+                            int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                            Main.dust[golddust].velocity *= 0f;
+                        }
+                    }
+                    NPC.position -= NPC.netOffset;
+                }
             }
         }
 

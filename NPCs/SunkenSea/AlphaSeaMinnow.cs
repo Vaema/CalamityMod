@@ -8,6 +8,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.DataStructures;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -68,7 +69,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 2, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 2, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
             NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
             NPC.noGravity = true;
             if (NPC.direction == 0)
