@@ -254,22 +254,21 @@ namespace CalamityMod
             // 0.6f is the minimum for vanilla but Calamity changes it to 0.2f
             // Windy days occur when wind speed is at least 0.5f (0.4f in vanilla) so this should never cause a windy day
             float windSpeed = 0f;
-            if (Main.windSpeedCurrent < 0.2f && Main.windSpeedCurrent > 0f)
-                if (Main.windSpeedCurrent == 0f)
-                {
-                    windSpeed = Main.rand.NextFloat(0.2f, 0.4f) * (Main.rand.Next(0, 2) * 2 - 1);
-                }
-                else if (Main.windSpeedCurrent < 0.2f && Main.windSpeedCurrent > 0f)
-                {
-                    windSpeed = Main.rand.NextFloat(0.2f, 0.4f);
-                }
-                else if (Main.windSpeedCurrent > -0.2f && Main.windSpeedCurrent < 0f)
-                {
-                    windSpeed = Main.rand.NextFloat(-0.4f, -0.2f);
-                }
+            if (Main.windSpeedCurrent == 0f)
+            {
+                windSpeed = Main.rand.NextFloat(0.3f, 0.4f) * (Main.rand.Next(0, 2) * 2 - 1);
+            }
+            else if (Main.windSpeedCurrent < 0.3f && Main.windSpeedCurrent > 0f)
+            {
+                windSpeed = Main.rand.NextFloat(0.3f, 0.4f);
+            }
+            else if (Main.windSpeedCurrent > -0.3f && Main.windSpeedCurrent < 0f)
+            {
+                windSpeed = Main.rand.NextFloat(-0.4f, -0.3f);
+            }
             if (windSpeed != 0f)
             {
-                Main.windSpeedCurrent = windSpeed < 0f ? -0.2f : 0.2f;
+                Main.windSpeedCurrent = windSpeed < 0f ? -0.3f : 0.3f;
                 Main.windSpeedTarget = windSpeed;
             }
             Sandstorm.StartSandstorm();
