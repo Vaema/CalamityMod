@@ -42,7 +42,7 @@ AbyssalDivingSuit: {
 		Grants the ability to swim, extends underwater breathing, emits light underwater, and improves mobility on ice
 		Provides a moderate amount of light and reduces breath loss in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
-		Grants immunity to the sulphurous waters
+		Grants immunity to the sulphurous waters and Crush Depth's increased breath loss
 		'''
 }
 
@@ -103,10 +103,11 @@ AmalgamatedBrain: {
 	DisplayName: Amalgamated Brain
 	Tooltip:
 		'''
-		10% increased damage
-		Shade rains down and enemies are confused when hit,
-		and summon damage and crit chance are boosted by 10%
+		5% increased damage
+		Taking damage confuses nearby enemies and spawns a dank creeper
+		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
+		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip:
 		'''
@@ -129,14 +130,14 @@ AmbrosialAmpoule: {
 		'''
 }
 
-AmidiasPendant: {
-	DisplayName: Amidias' Pendant
-	Tooltip: Periodically rains down prism shards that briefly stun enemies
-}
-
 AmidiasSpark: {
 	DisplayName: Amidias' Spark
-	Tooltip: Taking damage releases a blast of sparks
+	Tooltip:
+		'''
+		Attacks inflict Static Discharge while underwater
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
+		'''
 }
 
 AncientFossil: {
@@ -359,7 +360,7 @@ BlunderBooster: {
 		12% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
 		Summons a red lightning aura around the player that electrifies nearby enemies
-		The aura's appearance can be toggled with visibility
+		The aura has reduced opacity if visibility is disabled
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
 		This dash leaves a trail of red lightning bolts
 		This effect has a 1 second cooldown before it can be used again
@@ -573,6 +574,7 @@ DepthCharm: {
 		'''
 		Reduces the damage caused by drowning in the abyss
 		Removes the bleed effect caused by the upper layers of the abyss
+		Removes the increased breath loss of Crush Depth
 		'''
 }
 
@@ -808,8 +810,8 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides the Mushy buff, granting 6 defense and +1 HP/s life regen
-		All mushroom-based weapons deal 10% more damage and emit harmless mushrooms
+		Consuming mushrooms provides the Mushy buff, granting 8 defense and +1 HP/s life regen
+		10% increased damage while you have the Mushy buff
 		'''
 }
 
@@ -819,7 +821,7 @@ GiantPearl: {
 		'''
 		You have a light aura around you
 		Enemies within the aura are slowed down
-		Does not work while a boss is alive
+		You release homing prism shards while an enemy is slowed
 		Provides a small amount of light in the abyss
 		'''
 }
@@ -1101,8 +1103,7 @@ Nanotech: {
 		Stealth strikes summon nanobeams and sparks on enemy hits
 		Stealth strikes have +15 armor penetration, deal 5% more damage, and heal for 2 HP
 		15% increased rogue damage and 15% increased rogue velocity
-		Landing a stealth strike grants a 12% crit bonus to non-stealth strikes
-		This crit bonus slowly decays
+		Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
 		'''
 }
 
@@ -1356,11 +1357,7 @@ RadiantOoze: {
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip:
-		'''
-		Stealth strikes grant 12% crit bonus to non-stealth strikes
-		This crit bonus slowly decays
-		'''
+	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
 }
 
 RampartofDeities: {
@@ -1410,9 +1407,9 @@ RottenBrain: {
 	DisplayName: Rotten Brain
 	Tooltip:
 		'''
-		10% increased damage when below 75% life
-		5% decreased movement speed when below 50% life
-		Shade rains down when you are hit
+		6% increased damage
+		Taking damage spawns a dank creeper
+		The dank creeper flies above you, exploding into several shaderain clouds
 		'''
 }
 
@@ -1458,9 +1455,9 @@ SandCloak: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		Press [KEY] to consume 10% of your maximum stealth to create a protective dust veil
-		While inside the veil, you gain 6 defense and +1 HP/s life regen
-		This effect has a 30 second cooldown before it can be used again
+		Press [KEY] to create a protective sand veil which damages enemies inside it
+		While inside the veil, you gain 6 defense and 3% critical strike chance
+		This effect has a 20 second cooldown before it can be used again
 		'''
 }
 
@@ -1754,6 +1751,16 @@ SupremeBaitTackleBoxFishingStation: {
 		'''
 }
 
+TeslasAmulet: {
+	DisplayName: Tesla's Amulet
+	Tooltip:
+		'''
+		Generates an electrifying field that slows enemies
+		The field has reduced opacity if visibility is disabled
+		Reduces the duration of the Static Discharge debuff
+		'''
+}
+
 TheAbsorber: {
 	DisplayName: The Absorber
 	Tooltip:
@@ -1772,8 +1779,11 @@ TheAmalgam: {
 	Tooltip:
 		'''
 		15% increased damage
-		Shade rains down when you are hit
+		Most buffs last twice as long, and persist after dying
+		Taking damage inflicts several debuffs on nearby enemies and spawns a dank creeper
+		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
+		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip:
 		'''
@@ -1828,12 +1838,12 @@ TheEvolution: {
 	DisplayName: The Evolution
 	Tooltip:
 		'''
-		Reflects projectiles that hit you, making them harmless to you but 10x more harmful to enemies
+		Reflects projectiles that hit you, reducing their damage to 1 and dealing 10x damage to enemies
 		Projectiles that deal less than 5% of your max life in damage will not be reflected
 		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
 		This cooldown is shared with all other dodges and reflects
-		Reflecting a projectile grants +1 HP/s life regen and accelerated life regen for 5 seconds
-		If the same enemy projectile type hits you again you will resist its damage by 15%
+		Reflecting a projectile grants +6 HP/s life regen for 5 seconds and grants maximum natural life regen
+		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
 
@@ -1863,10 +1873,11 @@ TheTransformer: {
 	DisplayName: The Transformer
 	Tooltip:
 		'''
-		Multiplies all electric debuff damage by 1.5
-		Taking damage releases a blast of sparks
-		Complete immunity to Electrified and all electric attacks
-		You take halved damage from enemy bullets and reflect them for 800% damage
+		Multiplies all electricity debuff damage by 1.5x
+		Attacks inflict Static Discharge while underwater
+		Reduces the damage of all electricity debuffs by 50%
+		Taking damage causes the enemy to be shocked
+		Shocked enemies constantly release sparks
 		'''
 }
 
@@ -2027,9 +2038,9 @@ CrystalHeartVodka: {
 	Tooltip: "'Tastes like strawberry cream liqueur (and estrogen)'"
 }
 
-CocosFeather: {
-	DisplayName: Coco's Feather
-	Tooltip: ""
+GhostBracelet: {
+	DisplayName: Ghost Bracelet
+	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
 HapuFruit: {
@@ -2049,9 +2060,4 @@ Popo: {
 		Transforms the holder into a snowman
 		'Don't let the demons steal your nose'
 		'''
-}
-
-RedBow: {
-	DisplayName: Red Bow
-	Tooltip: "'Pelusa's favorite bow'"
 }

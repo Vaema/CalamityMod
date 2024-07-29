@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.dedServ)
                 return;
 
-            for (int i = 0; i < 70; i++)
+            for (int i = 0; i < 50; i++)
             {
                 // The exponent being greater than 1 gives the randomness a bias towards 0. This means that more dust will spawn
                 // closer to the center than the edge.

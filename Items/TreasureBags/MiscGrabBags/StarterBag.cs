@@ -90,15 +90,15 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             };
             itemLoot.AddIf(getsHapuFruit, ModContent.ItemType<HapuFruit>());
 
-            // Apelusa dev item
-            // Name specific: "Pelusa"
-            static bool getsRedBow(DropAttemptInfo info)
+            // Dandy dev item
+            // Name specific: "Dandy"
+            static bool getsGhostBracelet(DropAttemptInfo info)
             {
                 string playerName = info.player.name;
-                return playerName == "Pelusa";
+                return playerName == "Dandy";
             }
 
-            itemLoot.AddIf(getsRedBow, ModContent.ItemType<RedBow>());
+            itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
 
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"

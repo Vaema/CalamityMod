@@ -193,13 +193,12 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<RangedDamageClass>() = -spiritOriginConvertedCrit;
             }
 
-            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
-                heldGaelsLastFrame = true;
-
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
             // De-equipping Gael's Greatsword deletes all rage.
+            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
+                heldGaelsLastFrame = true;
             else if (heldGaelsLastFrame)
             {
                 heldGaelsLastFrame = false;
@@ -1414,6 +1413,8 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
+            if (arsenalCooldown > 0)
+                arsenalCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (DragonsBreathAudioCooldown > 0)
@@ -1446,8 +1447,8 @@ namespace CalamityMod.CalPlayer
                 soundCooldown--;
             if (shadowPotCooldown > 0)
                 shadowPotCooldown--;
-            if (raiderCritBonus > 0f)
-                raiderCritBonus -= RaidersTalisman.RaiderBonus / (float)CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+            if (raiderCritLifespan > 0f)
+                raiderCritLifespan--;
             if (raiderSoundCooldown > 0)
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
@@ -1569,6 +1570,9 @@ namespace CalamityMod.CalPlayer
             {
                 FlameLickedShell.HandleParryCountdown(Player);
             }
+
+            if (!flameLickedShell && flameLickedShellParry > 0)
+                flameLickedShellParry--;
 
             // Silver Armor "Medkit" effect
             if (silverMedkitTimer > 0)
@@ -1828,8 +1832,8 @@ namespace CalamityMod.CalPlayer
             }
 
             // Raider Talisman bonus
-            if (raiderTalisman && !StealthStrikeAvailable())
-                Player.GetCritChance<ThrowingDamageClass>() += raiderCritBonus;
+            if (raiderTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+                Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
 
             if (kamiBoost)
                 Player.GetDamage<GenericDamageClass>() += 0.15f;
@@ -2266,11 +2270,12 @@ namespace CalamityMod.CalPlayer
                     double breathLossMult = 1D -
                         (Player.gills ? 0.2 : 0D) - // 0.8
                         (oceanCrest ? 0.2 : 0D) - // 0.8
+                        (victideSet ? 0.2 : 0D) - // 0.8
                         (Player.accDivingHelm ? 0.25 : 0D) - // 0.75
                         (Player.arcticDivingGear ? 0.25 : 0D) - // 0.75
                         (aquaticEmblem ? 0.25 : 0D) - // 0.75
                         (Player.accMerman ? 0.3 : 0D) - // 0.7
-                        (victideSet ? 0.2 : 0D) - // 0.85
+                        (reaverExplore ? 0.3 : 0D) - // 0.7
                         ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) - // 0.7
                         (abyssalDivingSuit ? 0.3 : 0D); // 0.7
 
@@ -2358,7 +2363,7 @@ namespace CalamityMod.CalPlayer
 
                         // Reduce breath
                         if (Player.breath > 0)
-                            Player.breath -= (int)(cDepth ? breathLoss + 1D : breathLoss);
+                            Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
                     }
 
                     // If breath is greater than 0 and player has gills or is merfolk, balance out the effects by reducing breath
@@ -2911,7 +2916,7 @@ namespace CalamityMod.CalPlayer
 
             if (giantPearl)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient && !areThereAnyDamnBosses)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     foreach (NPC npc in Main.ActiveNPCs)
                     {
@@ -3032,7 +3037,11 @@ namespace CalamityMod.CalPlayer
             }
 
             if (mushy)
-                Player.statDefense += 6;
+            {
+                Player.statDefense += 8;
+                if (fungalSymbiote)
+                    Player.GetDamage<GenericDamageClass>() += 0.1f;
+            }  
 
             if (omniscience)
             {
@@ -3116,14 +3125,6 @@ namespace CalamityMod.CalPlayer
 
             if (manaOverloader)
                 Player.GetDamage<MagicDamageClass>() += 0.06f;
-
-            if (rBrain)
-            {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.75))
-                    Player.GetDamage<GenericDamageClass>() += 0.1f;
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.moveSpeed -= 0.05f;
-            }
 
             if (bloodyWormTooth)
             {
@@ -3231,7 +3232,7 @@ namespace CalamityMod.CalPlayer
 
                     var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 600;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
 
@@ -3532,10 +3533,23 @@ namespace CalamityMod.CalPlayer
                     if (check)
                     {
                         // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
-                        var source = Player.GetSource_Buff(Player.FindBuffIndex(ModContent.BuffType<TeslaBuff>()));
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(10);
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<TeslasAmulet>()));
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(12);
                         if (Player.ownedProjectileCounts[ModContent.ProjectileType<TeslaAura>()] < 1)
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<TeslaAura>(), damage, 0f, Player.whoAmI);
+                    }
+
+                    // Reduce duration of Static Discharge
+                    for (int l = 0; l < Player.MaxBuffs; l++)
+                    {
+                        if (Player.buffType[l] == ModContent.BuffType<StaticDischarge>())
+                        {
+                            if (Player.buffTime[l] > 2)
+                            {
+                                Player.buffTime[l]--;
+                                break;
+                            }
+                        }
                     }
                 }
             }

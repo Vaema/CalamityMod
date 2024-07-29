@@ -76,6 +76,7 @@ DeepWounderWater.DisplayName: Water Droplet
 DesecratedBubble.DisplayName: Desecrated Bubble
 DesecratedWaterProj.DisplayName: Desecrated Water
 DestructionBolt.DisplayName: Destruction Bolt
+DestructionExplosion.DisplayName: Destruction Explosion
 DestructionStar.DisplayName: Star of Destruction
 DragonScalesInfernado.DisplayName: Infernado
 DragonShit.DisplayName: Fire
@@ -328,4 +329,3 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
-DestructionExplosion.DisplayName: Destruction Explosion

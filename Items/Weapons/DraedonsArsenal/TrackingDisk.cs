@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
+            Item.noMelee = true;
             Item.noUseGraphic = true;
 
             Item.UseSound = SoundID.Item1;

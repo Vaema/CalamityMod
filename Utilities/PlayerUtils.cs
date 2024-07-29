@@ -224,6 +224,8 @@ namespace CalamityMod
                 light += 1;
             if (mp.jellyfishNecklace && underwater) // inherited by jellyfish diving gear and higher
                 light += 1;
+            if (mp.reaverExplore)
+                light += 2;
             if (mp.lumenousAmulet && underwater)
                 light += 2;
             if (mp.shine)

@@ -89,9 +89,7 @@ OmegaBlueTentacle.DisplayName: Omega Blue Tentacle
 OnyxLabSeeker.DisplayName: Seeking Mechanism
 PauldronDash.DisplayName: Pauldron Dash
 PauldronExplosion.DisplayName: Pauldron Explosion
-PendantProjectile1.DisplayName: Prism Shard
-PendantProjectile2.DisplayName: Prism Shard
-PendantProjectile3.DisplayName: Prism Shard
+PearlAuraShard.DisplayName: Prism Shard
 PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
 PscTransformAnimation.DisplayName: Psc Transform Animation
@@ -105,6 +103,9 @@ SandExplosion.DisplayName: Sand
 Seashell.DisplayName: Seashell
 SepulcherSoul.DisplayName: Tormented Soul
 SerpentsBiteHook.DisplayName: Serpent's Bite
+ShadeNimbus.DisplayName: Shade Nimbus
+ShadeNimbusRain.DisplayName: Shade Rain
+ShadeNimbusSpawner.DisplayName: Dank Creeper
 ShadowflameExplosion.DisplayName: Shadowflame Explosion
 ShadowflameExplosionBig.DisplayName: Shadowflame Explosion
 SkyFlareFriendly.DisplayName: Flare

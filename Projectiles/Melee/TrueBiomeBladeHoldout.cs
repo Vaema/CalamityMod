@@ -160,7 +160,13 @@ namespace CalamityMod.Projectiles.Melee
             //Chunger
             var Sound = SoundEngine.PlaySound(CommonCalamitySounds.LightningSound with { Volume = CommonCalamitySounds.LightningSound.Volume * 0.4f }, Projectile.Center);
 
-            Particle thunder = new ThunderBoltVFX(Projectile.Center + Vector2.UnitY * 20f, Main.rand.NextBool() ? Main.rand.NextBool() ? Color.Goldenrod : Color.GreenYellow : Main.rand.NextBool() ? Color.Cyan : Color.Magenta, 0f, 1.5f, Vector2.One, 1f, 15f, Projectile, 20f);
+            Particle thunder = new ThunderBoltVFX(
+                () => Projectile.Center + Vector2.UnitY * 20f,
+                0f,
+                1.5f,
+                Main.rand.NextBool() ? Main.rand.NextBool() ? Color.Goldenrod : Color.GreenYellow : Main.rand.NextBool() ? Color.Cyan : Color.Magenta,
+                30,
+                15f);
             GeneralParticleHandler.SpawnParticle(thunder);
 
             if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5)

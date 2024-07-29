@@ -204,6 +204,10 @@ namespace CalamityMod.Items
                     break;
             }
 
+            // Increase how much health Mushrooms heal.
+            if (item.type == ItemID.Mushroom && item.healLife == 15)
+                item.healLife = 25;
+
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
             if (item.type == ItemID.BeamSword)
                 item.ChangePlayerDirectionOnShoot = true;
@@ -1629,9 +1633,10 @@ namespace CalamityMod.Items
             if (grabRangeMultiplier > 1f)
                 grabRange = (int)(grabRangeMultiplier * grabRange);
 
-            // Then, if wearing the appropriate Reaver armor, add 20 flat item grab range.
+            // Then, if wearing the appropriate Reaver armor, add 246 flat item grab range. (2.625 + 15.375 = 18 tiles)
+            // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
             if (player.Calamity().reaverExplore)
-                grabRange += 20;
+                grabRange += 246;
         }
         #endregion
 
