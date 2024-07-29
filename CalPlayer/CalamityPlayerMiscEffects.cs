@@ -663,7 +663,7 @@ namespace CalamityMod.CalPlayer
 
                 // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
-                if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph)) || tile.TileType == auricRepulserID)
+                if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph || Player.creativeGodMode)) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
                     Player.RemoveAllGrapplingHooks();
