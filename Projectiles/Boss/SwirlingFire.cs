@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.Providence;
+﻿using CalamityMod.NPCs;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -30,7 +31,27 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
 
-            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, Projectile.velocity / 2f, false, 10, 0.5f * Projectile.ai[2], ProvUtils.GetProjectileColor((int)Projectile.ai[1], 255)));
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+
+            if (CalamityGlobalNPC.holyBoss != -1)
+            {
+                Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
+            }
+
+            if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
+            }
+
+            Color c = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255);
+
+            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, Projectile.velocity / 2f, false, 10, 0.5f * Projectile.ai[2], c));
             GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, 0.5f * Projectile.ai[2], 150, Main.rand.NextFloat(-0.01f, 0.01f)));
 
             Projectile.ai[2] *= 0.98f;

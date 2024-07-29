@@ -6,6 +6,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Vanity;
@@ -33,6 +34,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
+using rail;
 using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
@@ -41,6 +43,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -2200,17 +2203,18 @@ namespace CalamityMod.NPCs.Providence
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            bool offColor = NPC.localAI[1] != (float)BossMode.Day;
+
+            Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
+            Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
+            Texture2D textureGlow2 = offColor ? TextureNight_Glow_2.Value : Texture_Glow_2.Value;
+
             void drawProvidenceInstance(Vector2 drawOffset, Color? colorOverride)
             {
                 // This night bool is used for any off-color activity
-                bool offColor = NPC.localAI[1] != (float)BossMode.Day;
 
                 string baseTextureString = "CalamityMod/NPCs/Providence/";
                 string baseGlowTextureString = baseTextureString + "Glowmasks/";
-
-                Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
-                Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
-                Texture2D textureGlow2 = offColor ? TextureNight_Glow_2.Value : Texture_Glow_2.Value;
 
 
                 float spawnAnimationTime = 180f;
@@ -2376,11 +2380,14 @@ namespace CalamityMod.NPCs.Providence
                         }
                     }
 
-                    NPC.DrawBackglow(GlowWingColor, 4f, SpriteEffects.None, NPC.frame, Main.screenPosition, textureGlow);
+                    if (!Dying)
+                    {
+                        NPC.DrawBackglow(GlowWingColor, 4f, SpriteEffects.None, NPC.frame, Main.screenPosition, textureGlow);
 
-                    spriteBatch.Draw(textureGlow, BasePosition, NPC.frame, BaseWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                        spriteBatch.Draw(textureGlow, BasePosition, NPC.frame, BaseWingColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
 
-                    spriteBatch.Draw(textureGlow2, BasePosition, NPC.frame, BaseCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                        spriteBatch.Draw(textureGlow2, BasePosition, NPC.frame, BaseCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                    }
                 }
             }
 
@@ -2407,7 +2414,7 @@ namespace CalamityMod.NPCs.Providence
             if (NPC.localAI[0] > 0f && NPC.localAI[0] < TimeForStarDespawn)
             {
                 float lerpMult = MathHelper.Lerp(0.5f, 1.5f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi) / 2f + 1f);
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
+                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
                 float drawOffsetAmt = (AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon) ? 20f : 64f;
                 Vector2 drawPos = NPC.Center + Vector2.UnitY * drawOffsetAmt * NPC.scale - Main.screenPosition;
                 Color baseColor = Color.Lerp(Color.Yellow, Color.OrangeRed, (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 1f);
@@ -2421,20 +2428,20 @@ namespace CalamityMod.NPCs.Providence
                 float colorScale = MathHelper.Lerp(0f, lerpMult, opacityScaleDuringStarDespawn);
                 colorA *= colorScale;
                 colorB *= colorScale;
-                Vector2 origin = texture.Size() / 2f;
+                Vector2 origin = tex.Size() / 2f;
                 Vector2 scale = new Vector2(1.5f + scaleDuringStarDespawn, 2.5f + scaleDuringStarDespawn) * lerpMult;
                 float upRight = MathHelper.PiOver4 + NPC.rotation;
                 float up = MathHelper.PiOver2 + NPC.rotation;
                 float upLeft = 3f * MathHelper.PiOver4 + NPC.rotation;
                 float left = MathHelper.Pi + NPC.rotation;
-                Main.EntitySpriteDraw(texture, drawPos, null, colorA, upLeft, origin, scale, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorA, upRight, origin, scale, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorB, upLeft, origin, scale * 0.6f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorB, upRight, origin, scale * 0.6f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorA, up, origin, scale * 0.6f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorA, left, origin, scale * 0.6f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorB, up, origin, scale * 0.36f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texture, drawPos, null, colorB, left, origin, scale * 0.36f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorA, upLeft, origin, scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorA, upRight, origin, scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorB, upLeft, origin, scale * 0.6f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorB, upRight, origin, scale * 0.6f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorA, up, origin, scale * 0.6f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorA, left, origin, scale * 0.6f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorB, up, origin, scale * 0.36f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, drawPos, null, colorB, left, origin, scale * 0.36f, SpriteEffects.None, 0);
             }
 
             // Draw shields while defender is alive
@@ -2516,6 +2523,33 @@ namespace CalamityMod.NPCs.Providence
         public override Color? GetAlpha(Color drawColor)
         {
             return ProvUtils.GetProjectileColor((int)NPC.localAI[1], drawColor) * NPC.Opacity;
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Providence/Providence_DeathSilhouette").Value;
+
+            if (Dying)
+            {
+                if (DeathAnimationTimer > 91f)
+                {
+                    Vector2 vec = new Vector2(Main.rand.NextFloat(-2, 2), Main.rand.NextFloat(-2, 2));
+
+                    float progress = MathHelper.Clamp(((float)DeathAnimationTimer - 200f) / 300f, 0f, 1f);
+
+                    for (int i = 0; i < NPC.frame.Height / 2; i++)
+                    {
+                        int outset = ((i - NPC.frame.Height / 4) * 2);
+
+                        int pr = (int)(progress * 30f);
+
+                        Color col = ProvUtils.GetProjectileColor((int)NPC.localAI[1], Color.DarkGray, true);
+                        col.A = 255;
+
+                        Main.EntitySpriteDraw(tex, NPC.Center + vec + new Vector2(0, 310) - Main.screenPosition + new Vector2(Main.rand.Next(-pr, pr) * 2, outset), new Rectangle(0, i * 2, tex.Width, 2), Color.Lerp(col, Color.White, progress).MultiplyRGBA(new Color(255, 255, 255, 0.5f)), 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
+                    }
+                }
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -2755,7 +2789,7 @@ namespace CalamityMod.NPCs.Providence
 
         private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
-            if (npc.type == ModContent.NPCType<Providence>() && Main.netMode != NetmodeID.MultiplayerClient && npc.Top.Y >= (Main.maxTilesY - 240f) * 16f)
+            if (npc.type == ModContent.NPCType<Providence>())
             {
                 Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
             }
@@ -2784,10 +2818,15 @@ namespace CalamityMod.NPCs.Providence
             HolyFlame *= 0.9975f;
             HolyFlame = MathHelper.Clamp(HolyFlame, 0f, 2f);
 
-            if (!item.active)
+            if (item.beingGrabbed)
             {
                 HolyFlame = 0f;
             }
+        }
+
+        public override void UpdateInventory(Item item, Player player)
+        {
+            HolyFlame = 0f;
         }
 
         public override bool PreDrawInWorld(Item item, SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
@@ -2801,6 +2840,14 @@ namespace CalamityMod.NPCs.Providence
 
                 Color alph = new Color(255f * (HolyFlame / 2f), 255f * (HolyFlame / 2f), 0f, 0f);
                 Color alph2 = new Color(155f * (HolyFlame / 2f), 0f, 0f, 0f);
+
+                if (!Main.dayTime)
+                {
+                    lColor.B = 255;
+
+                    alph = new Color(0f, 255f * (HolyFlame / 2f), 255f * (HolyFlame / 2f), 0f);
+                    alph2 = new Color(0f, 0f, 155f * (HolyFlame / 2f), 0f);
+                }
 
                 Rectangle frame = Item.GetDrawHitbox(item.type, Main.LocalPlayer);
 
