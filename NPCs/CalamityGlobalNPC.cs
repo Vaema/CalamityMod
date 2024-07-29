@@ -5670,6 +5670,27 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Modify Hit
+        public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
+        {
+            // Kaguya hair boom GIF
+            if (npc.type == NPCID.Shark && target.name == "Rebecca" && Main.zenithWorld)
+            {
+                SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 12f;
+
+                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Rebecca").Format(target.name)), 1000.0, 0);
+                modifiers.SourceDamage *= target.statLifeMax2 * Main.rand.NextFloat(3f, 6f);
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Projectile explosion = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<ScorpioLargeRocket>(), 9999, 0f, Main.myPlayer, ItemID.MiniNukeII, 0.01f);
+                    explosion.friendly = false;
+                    explosion.hostile = true;
+                    explosion.timeLeft = 5;
+                }
+            }
+        }
+
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             CalamityPlayer modPlayer = player.Calamity();
