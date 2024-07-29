@@ -1695,7 +1695,10 @@ namespace CalamityMod.CalPlayer
                     Player.statLife = upperHealthLimit;
 
                 if (necroReviveCounter >= NecroArmorSetChange.PostMortemDuration * 60)
+                {
                     Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.NecroRevive").Format(Player.name)), 1000, -1);
+                    necroReviveCounter = -1;
+                }
                 else if (necroReviveCounter % 60 == 59)
                     SoundEngine.PlaySound(NecroArmorSetChange.TimerSound, Player.Center);
             }
