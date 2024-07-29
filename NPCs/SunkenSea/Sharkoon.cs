@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -342,6 +344,9 @@ namespace CalamityMod.NPCs.SunkenSea
             // Deaccelerate.
             NPC.velocity *= 0.95f;
 
+            if (Animation != AnimationState.Shrunk)
+                Lighting.AddLight(NPC.Center, Color.Orange.ToVector3() * Utils.GetLerpValue(NPC.height, NPC.height * 9, NPC.frame.Y, true));
+
             // On the exact frame that the NPC explodes, it'll will, indeed, explode.
             if (NPC.frame.Y == NPC.height * 9 && NPC.frameCounter == 0)
                 Kaboom();
@@ -402,6 +407,28 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!Main.dedServ)
             {
                 // HI XYK!
+                // HI MEMES!
+
+                for (int i = 0; i < 10; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, 278, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
+                    dust.noGravity = false;
+                    dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Orange;
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, 267, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
+                    dust.noGravity = true;
+                    dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Orange;
+                }
+                for (int i = 0; i < 8; i++)
+                {
+                    Vector2 randVel = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
+                    Particle smoke = new HeavySmokeParticle(NPC.Center + randVel, randVel, Color.Lerp(Color.SlateGray, Color.Black, Main.rand.NextFloat(0.2f, 0.45f)), Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.4f);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                }
+                SoundStyle boom = new("CalamityMod/Sounds/Custom/SharkoonBoom");
+                SoundEngine.PlaySound(boom with { Volume = 0.7f, PitchVariance = 0.15f }, NPC.Center);
             }
 
             NetUpdate();
