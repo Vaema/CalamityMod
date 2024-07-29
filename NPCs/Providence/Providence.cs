@@ -1118,11 +1118,26 @@ namespace CalamityMod.NPCs.Providence
                                 GeneralParticleHandler.SpawnParticle(p);
                                 GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(2.5f, 5.5f), 2f, Main.rand.NextFloat(-0.05f, 0.05f), true));
                             }
+                            CalamityUtils.AddScreenshakeAt(NPC.Center, 10, 2000);
 
-                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, medColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0f, 15));
+                            Color hColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
+                            Color lColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
 
-                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, loColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 1.2f, 35));
-                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, medColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.65f, 25));
+                            for (int i = 0; i < 30; i++)
+                            {
+                                Particle p = new FlameParticle(NPC.Center + new Vector2(Main.rand.NextFloat(150), 0).RotatedByRandom(MathHelper.TwoPi), 40, Main.rand.NextFloat(0.5f, 0.75f), Main.rand.NextFloat(1f, 2.5f), hColor, lColor);
+                                p.Velocity = new Vector2(Main.rand.NextFloat(3f, 19f), 0).RotatedByRandom(MathHelper.TwoPi);
+                                GeneralParticleHandler.SpawnParticle(p);
+                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(NPC.Center, new Vector2(Main.rand.NextFloat(12f, 40f), 0).RotatedByRandom(MathHelper.TwoPi), loColor, 60, Main.rand.NextFloat(0.75f, 1.75f), 1f, Main.rand.NextFloat(-0.05f, 0.05f), true));
+                            }
+
+                            GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.1f, 15));
+
+                            for (float i = 0; i < 3; i += 0.25f)
+                            {
+                                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.35f, 35));
+                                GeneralParticleHandler.SpawnParticle(new CustomPulse(NPC.Center, Vector2.Zero, hColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One * i, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.475f, 25));
+                            }
                         }
 
                         float sc = calamityGlobalNPC.newAI[3] / spawnAnimationTime;
@@ -2047,9 +2062,6 @@ namespace CalamityMod.NPCs.Providence
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && NPC.Top.Y >= (Main.maxTilesY - 240f) * 16f)
-                SpawnLootBox();
-
             // If Providence has not been killed, notify players of Uelibloom Ore
             if (!DownedBossSystem.downedProvidence)
             {
@@ -2723,6 +2735,96 @@ namespace CalamityMod.NPCs.Providence
                     Main.dust[fire].noGravity = true;
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Handles the holy flame effect on items just dropped by Providence in Hell.
+    /// </summary>
+    public class ProvItemFloating : GlobalItem
+    {
+        public override void Load()
+        {
+            On_CommonCode.ModifyItemDropFromNPC += On_CommonCode_ModifyItemDropFromNPC;
+        }
+
+        public override void Unload()
+        {
+            On_CommonCode.ModifyItemDropFromNPC -= On_CommonCode_ModifyItemDropFromNPC;
+        }
+
+        private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
+        {
+            if (npc.type == ModContent.NPCType<Providence>() && Main.netMode != NetmodeID.MultiplayerClient && npc.Top.Y >= (Main.maxTilesY - 240f) * 16f)
+            {
+                Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
+            }
+            else
+            {
+                orig(npc, itemIndex);
+            }
+        }
+
+        public override bool InstancePerEntity => true;
+
+        public float HolyFlame = 0f;
+        public float FlameTimer = 0f;
+
+        public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
+        {
+            float clp = MathHelper.Clamp(HolyFlame, 0f, 1f);
+
+            maxFallSpeed *= MathHelper.Lerp(1, 0f, clp);
+
+            if (maxFallSpeed > 0.3f)
+            {
+                HolyFlame *= 0.95f;
+            }
+
+            HolyFlame *= 0.9975f;
+            HolyFlame = MathHelper.Clamp(HolyFlame, 0f, 2f);
+
+            if (!item.active)
+            {
+                HolyFlame = 0f;
+            }
+        }
+
+        public override bool PreDrawInWorld(Item item, SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            FlameTimer++;
+
+            if (HolyFlame > 0f)
+            {
+                Color lColor = lightColor * MathHelper.Lerp(1f, 0f, MathHelper.Clamp(HolyFlame - 1f, 0f, 1f));
+                lColor.A = 255;
+
+                Color alph = new Color(255f * (HolyFlame / 2f), 255f * (HolyFlame / 2f), 0f, 0f);
+                Color alph2 = new Color(155f * (HolyFlame / 2f), 0f, 0f, 0f);
+
+                Rectangle frame = Item.GetDrawHitbox(item.type, Main.LocalPlayer);
+
+                if (HolyFlame > 0)
+                {
+                    for (float i = 0f; i < 360f; i += 90f)
+                    {
+                        Main.EntitySpriteDraw(TextureAssets.Item[item.type].Value, item.Center - Main.screenPosition + new Vector2(4 * MathHelper.Clamp(HolyFlame, 0f, 1f), 0).RotatedBy(MathHelper.ToRadians(i)), frame, alph, rotation, frame.Size() / 2, scale, SpriteEffects.None);
+                    }
+                }
+
+                float maxIterations = 20;
+
+                for (float i = 0; i < maxIterations; i++)
+                {
+                    Main.EntitySpriteDraw(TextureAssets.Item[item.type].Value, item.Center - Main.screenPosition + (new Vector2((float)Math.Sin((FlameTimer / 20) + (item.whoAmI * 13098.125f) - (i / 5)) * i, -i * 1.5f) * (HolyFlame)), frame, Color.Lerp(alph, alph2, i / maxIterations), rotation, frame.Size() / 2, MathHelper.Lerp(scale, 0f, (float)(i / maxIterations) * (HolyFlame / 2)), SpriteEffects.None);
+                }
+
+                Main.EntitySpriteDraw(TextureAssets.Item[item.type].Value, item.Center - Main.screenPosition, frame, lColor, rotation, frame.Size() / 2, scale, SpriteEffects.None);
+
+                return false;
+            }
+
+            return base.PreDrawInWorld(item, spriteBatch, lightColor, alphaColor, ref rotation, ref scale, whoAmI);
         }
     }
 
