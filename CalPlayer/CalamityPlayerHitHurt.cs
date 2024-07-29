@@ -26,6 +26,7 @@ using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Abyss;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.ProfanedGuardians;
@@ -587,11 +588,45 @@ namespace CalamityMod.CalPlayer
                 {
                     float meleeBoost = MathHelper.Lerp(0f, FrostArmorSetChange.ProximityBoost, 1 - DistanceInterpolant);
                     modifiers.SourceDamage += meleeBoost;
+
+                    if (meleeBoost >= FrostArmorSetChange.ProximityBoost * 0.5f)
+                    {
+                        float intensity = meleeBoost / FrostArmorSetChange.ProximityBoost;
+                        SoundEngine.PlaySound(Cryogen.HitSound with { Volume = intensity - 0.2f }, Player.Center);
+                    }
+                    if (meleeBoost > 0f)
+                    {
+                        int count = (int)(30f * meleeBoost);
+                        for (int i = 0; i < count; i++)
+                        {
+                            Vector2 velocity = Main.rand.NextVector2Unit() * (5f + 100f * meleeBoost);
+                            float scale = Main.rand.NextFloat(0.5f, 1f) + 0.5f * meleeBoost / FrostArmorSetChange.ProximityBoost;
+                            Particle sparkle = new CritSpark(target.Center, velocity, Color.White, Color.DodgerBlue, scale, 15, 0.1f, scale * 2f);
+                            GeneralParticleHandler.SpawnParticle(sparkle);
+                        }
+                    }
                 }
                 else if (item.CountsAsClass<RangedDamageClass>())
                 {
                     float rangedBoost = MathHelper.Lerp(0f, FrostArmorSetChange.ProximityBoost, DistanceInterpolant);
                     modifiers.SourceDamage += rangedBoost;
+
+                    if (rangedBoost >= FrostArmorSetChange.ProximityBoost * 0.5f)
+                    {
+                        float intensity = rangedBoost / FrostArmorSetChange.ProximityBoost;
+                        SoundEngine.PlaySound(Cryogen.HitSound with { Volume = intensity - 0.2f }, Player.Center);
+                    }
+                    if (rangedBoost > 0f)
+                    {
+                        int count = (int)(30f * rangedBoost);
+                        for (int i = 0; i < count; i++)
+                        {
+                            Vector2 velocity = Main.rand.NextVector2Unit() * (5f + 100f * rangedBoost);
+                            float scale = Main.rand.NextFloat(0.5f, 1f) + 0.5f * rangedBoost / FrostArmorSetChange.ProximityBoost;
+                            Particle sparkle = new CritSpark(target.Center, velocity, Color.White, Color.DodgerBlue, scale, 15, 0.1f, scale * 2f);
+                            GeneralParticleHandler.SpawnParticle(sparkle);
+                        }
+                    }
                 }
             }
         }
@@ -673,11 +708,45 @@ namespace CalamityMod.CalPlayer
                 {
                     float meleeBoost = MathHelper.Lerp(0f, FrostArmorSetChange.ProximityBoost, 1 - DistanceInterpolant);
                     modifiers.SourceDamage += meleeBoost;
+
+                    if (meleeBoost >= FrostArmorSetChange.ProximityBoost * 0.5f)
+                    {
+                        float intensity = meleeBoost / FrostArmorSetChange.ProximityBoost;
+                        SoundEngine.PlaySound(Cryogen.HitSound with { Volume = intensity - 0.2f }, Player.Center);
+                    }
+                    if (meleeBoost > 0f)
+                    {
+                        int count = (int)(30f * meleeBoost);
+                        for (int i = 0; i < count; i++)
+                        {
+                            Vector2 velocity = Main.rand.NextVector2Unit() * (5f + 100f * meleeBoost);
+                            float scale = Main.rand.NextFloat(0.5f, 1f) + 0.5f * meleeBoost / FrostArmorSetChange.ProximityBoost;
+                            Particle sparkle = new CritSpark(target.Center, velocity, Color.White, Color.DodgerBlue, scale, 15, 0.1f, scale * 2f);
+                            GeneralParticleHandler.SpawnParticle(sparkle);
+                        }
+                    }
                 }
                 else if (proj.CountsAsClass<RangedDamageClass>())
                 {
                     float rangedBoost = MathHelper.Lerp(0f, FrostArmorSetChange.ProximityBoost, DistanceInterpolant);
                     modifiers.SourceDamage += rangedBoost;
+
+                    if (rangedBoost >= FrostArmorSetChange.ProximityBoost * 0.5f)
+                    {
+                        float intensity = rangedBoost / FrostArmorSetChange.ProximityBoost;
+                        SoundEngine.PlaySound(Cryogen.HitSound with { Volume = intensity - 0.2f }, Player.Center);
+                    }
+                    if (rangedBoost > 0f)
+                    {
+                        int count = (int)(30f * rangedBoost);
+                        for (int i = 0; i < count; i++)
+                        {
+                            Vector2 velocity = Main.rand.NextVector2Unit() * (5f + 100f * rangedBoost);
+                            float scale = Main.rand.NextFloat(0.5f, 1f) + 0.5f * rangedBoost / FrostArmorSetChange.ProximityBoost;
+                            Particle sparkle = new CritSpark(target.Center, velocity, Color.White, Color.DodgerBlue, scale, 15, 0.1f, scale * 2f);
+                            GeneralParticleHandler.SpawnParticle(sparkle);
+                        }
+                    }
                 }
             }
 
