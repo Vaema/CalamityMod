@@ -254,8 +254,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
-            PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction, (_) => -Main.screenPosition), 75);
-            PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction, (_) => -Main.screenPosition), 75);
+            PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction), 75);
+            PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction), 75);
 
             NPC body = Main.npc[(int)NPC.ai[3]];
             // Draw a chain of bones
