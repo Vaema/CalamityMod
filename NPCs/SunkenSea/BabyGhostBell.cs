@@ -177,11 +177,9 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.wet)
             {
                 NPC.height = (int)(36 * NPC.scale);
-                if (NPC.velocity.Length() < 0.25f)
+                if (NPC.velocity.Length() < 1f)
                 {
-                    Vector2 direction = Main.rand.NextVector2Circular(30, 30);
-                    direction.Normalize();
-                    NPC.velocity = direction * 4;
+                    NPC.velocity = Main.rand.NextVector2CircularEdge(8, 8);
                 }
                 NPC.velocity *= 0.95f;
                 NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.5f);
