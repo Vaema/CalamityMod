@@ -14,11 +14,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Projectile.type] = 3;
         }
 
         public override void SetDefaults()
         {
+            Projectile.frame = 1;
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
@@ -48,9 +49,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame > 1)
+            if (Projectile.frame > 2)
             {
-                Projectile.frame = 0;
+                Projectile.frame = 1;
             }
         }
 

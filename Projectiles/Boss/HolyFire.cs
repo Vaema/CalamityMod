@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,6 +36,8 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
+
+            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
@@ -77,21 +80,38 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha);
+            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, lightColor);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Projectile.scale = 1.5f;
             Texture2D texture = (Projectile.maxPenetrate == (int)Providence.BossMode.Day) ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFireNight").Value;
             int framing = texture.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha, true), 4f, texture);
+            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, lightColor, true), 4f, new Vector2(Projectile.scale));
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
+            Color hiColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false);
+            Color loColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+
+            for (int i = 0; i < 25; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.8f, 1.2f), hiColor));
+            }
+
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
+
+            for (float i = 0; i < 1; i += 0.25f)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.125f * i, 8));
+            }
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 5));
+
             if (Main.rand.NextBool())
             {
                 if (Projectile.owner == Main.myPlayer)
@@ -125,30 +145,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (Projectile.height / 2);
-            Projectile.width = 40;
-            Projectile.height = 40;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            int dustType = ProvUtils.GetDustID(Projectile.maxPenetrate);
-            for (int i = 0; i < 5; i++)
-            {
-                int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holyDust].scale = 0.5f;
-                    Main.dust[holyDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
-            }
-            for (int j = 0; j < 10; j++)
-            {
-                int holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 3f);
-                Main.dust[holyDust2].noGravity = true;
-                holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-                Main.dust[holyDust2].noGravity = true;
-            }
+            SoundEngine.PlaySound(SoundID.Item100.WithPitchOffset(0.4f), Projectile.Center);
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)

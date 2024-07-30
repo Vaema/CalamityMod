@@ -3,11 +3,13 @@ using System.IO;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +18,11 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class ProvidenceHolyRay : ModProjectile, ILocalizedModType
     {
+        // ExtraWidth is a buffer variable to make this file more readable, which Projectile.ai[2] is then fed into on projectile spawn.
+        // When spawning the projectile, use Projectile.ai[2] in place of this.
+        // Also, this value is multiplicative, e.g. ExtraWidth of 1f will make the width the same as the sprite.
+        // 2f will make it doubly wide without affecting length, etc etc.
+        float ExtraWidth = 1f;
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
@@ -49,6 +56,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            ExtraWidth = Projectile.ai[2];
+
             // Day mode by default but syncs with the boss
             if (CalamityGlobalNPC.holyBoss != -1)
             {
@@ -146,12 +155,24 @@ namespace CalamityMod.Projectiles.Boss
 
             DelegateMethods.v3_1 = new Vector3(0.3f, 0.65f, 0.7f);
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.localAI[1], Projectile.width * Projectile.scale, DelegateMethods.CastLight);
+
+            for (float i = 0; i < Projectile.localAI[1]; i += Main.rand.NextFloat(15, 30))
+            {
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(30 * ExtraWidth), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)) + (Projectile.velocity * i), Projectile.velocity * 5, false, 5, Main.rand.NextFloat(0.5f, 1.5f), ProvUtils.GetProjectileColor((int)Projectile.maxPenetrate, 255), false));
+            }
+        }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, lightColor);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             if (Projectile.velocity == Vector2.Zero)
                 return false;
+
+            Vector2 scale = new Vector2(Projectile.scale * ExtraWidth, Projectile.scale);
 
             bool dayTime = Projectile.maxPenetrate == (int)Providence.BossMode.Day;
             Texture2D texture2D19 = dayTime ? ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value :
@@ -162,13 +183,23 @@ namespace CalamityMod.Projectiles.Boss
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEndNight", AssetRequestMode.ImmediateLoad).Value;
 
             float rayDrawLength = Projectile.localAI[1]; //length of laser
-            Color baseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0) * 0.9f;
+            Color baseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, lightColor);
             Vector2 vector = Projectile.Center - Main.screenPosition;
             Rectangle? sourceRectangle2 = null;
-            Main.spriteBatch.Draw(texture2D19, vector, sourceRectangle2, baseColor, Projectile.rotation, texture2D19.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(texture2D19, vector, sourceRectangle2, baseColor, Projectile.rotation, texture2D19.Size() / 2f, scale, SpriteEffects.None, 0);
             rayDrawLength -= (texture2D19.Height / 2 + texture2D21.Height) * Projectile.scale;
             Vector2 projCenter = Projectile.Center;
             projCenter += Projectile.velocity * Projectile.scale * texture2D19.Height / 2f;
+
+            Texture2D GlowBallTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D GlowRingTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
+
+            Projectile.localAI[2]++;
+
+            Color glowColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
+
+            Main.EntitySpriteDraw(GlowBallTexture, Projectile.Center - Main.screenPosition, GlowBallTexture.Frame(), glowColor, 0f, GlowBallTexture.Frame().Center(), Projectile.scale / 1.5f * ExtraWidth, SpriteEffects.None);
+            Main.EntitySpriteDraw(GlowRingTexture, Projectile.Center - Main.screenPosition, GlowRingTexture.Frame(), glowColor, 0f, GlowRingTexture.Frame().Center(), Projectile.scale / MathHelper.Lerp(1.5f, 1f, (float)Math.Sin(Projectile.localAI[2] / 20f) * 0.5f) * ExtraWidth, SpriteEffects.None);
 
             if (rayDrawLength > 0f)
             {
@@ -179,7 +210,7 @@ namespace CalamityMod.Projectiles.Boss
                     if (rayDrawLength - raySegment < drawRectangle.Height)
                         drawRectangle.Height = (int)(rayDrawLength - raySegment);
 
-                    Main.spriteBatch.Draw(texture2D20, projCenter - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), baseColor, Projectile.rotation, new Vector2(drawRectangle.Width / 2, 0f), Projectile.scale, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(texture2D20, projCenter - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), baseColor, Projectile.rotation, new Vector2(drawRectangle.Width / 2, 0f), scale, SpriteEffects.None, 0);
                     raySegment += drawRectangle.Height * Projectile.scale;
                     projCenter += Projectile.velocity * drawRectangle.Height * Projectile.scale;
                     drawRectangle.Y += 36;
@@ -192,7 +223,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 vector2 = projCenter - Main.screenPosition;
             sourceRectangle2 = null;
 
-            Main.spriteBatch.Draw(texture2D21, vector2, sourceRectangle2, baseColor, Projectile.rotation, texture2D21.Frame(1, 1, 0, 0).Top(), Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(texture2D21, vector2, sourceRectangle2, baseColor, Projectile.rotation, texture2D21.Frame(1, 1, 0, 0).Top(), scale, SpriteEffects.None, 0);
 
             return false;
         }
@@ -206,6 +237,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            targetHitbox.Width = (int)((float)targetHitbox.Width * ExtraWidth);
+            targetHitbox.Height = (int)((float)targetHitbox.Height * ExtraWidth);
+
             if (projHitbox.Intersects(targetHitbox))
                 return true;
 
