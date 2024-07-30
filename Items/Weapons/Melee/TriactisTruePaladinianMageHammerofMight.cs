@@ -2,26 +2,28 @@
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TriactisTruePaladinianMageHammerofMightMelee : ModItem, ILocalizedModType
+    [LegacyName("TriactisTruePaladinianMageHammerofMightMelee")]
+    public class TriactisTruePaladinianMageHammerofMight : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
         public override void SetDefaults()
         {
-            Item.width = 160;
-            Item.height = 160;
-            Item.damage = 2000;
+            Item.width = 168;
+            Item.height = 168;
+            Item.damage = 5000;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
-            Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 10;
-            Item.knockBack = 50f;
+            Item.knockBack = 14f;
             Item.UseSound = SoundID.Item1;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.shoot = ModContent.ProjectileType<TriactisHammerProj>();
