@@ -7,6 +7,7 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
@@ -21,6 +22,8 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class KelpieSeadragon : ModNPC
     {
+        public ref float SquishX => ref NPC.localAI[0];
+        public ref float SquishY => ref NPC.localAI[1];
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 13;
@@ -98,6 +101,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         NPC.ai[0] = 1;
                         NPC.ai[1] = 0;
                         NPC.ai[2] = 0;
+                        SquishX = 0.9f;
+                        SquishY = 1.05f;
                         NPC.TargetClosest();
                     }
                     if (NPC.velocity.Length() < 0.1f)
@@ -127,6 +132,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         NPC.ai[0] = 0;
                         NPC.ai[1] = 0;
                         NPC.ai[2] = 0;
+                        SquishX = 0;
+                        SquishY = 0;
                     }
                     NPC.chaseable = true;
                     // If the target is too far from its shooting range or a tile is in the way, move closer
@@ -142,6 +149,8 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.ai[0] = 0;
                             NPC.ai[1] = 0;
                             NPC.ai[2] = 0;
+                            SquishX = 0;
+                            SquishY = 0;
                         }
                     }
                     else
@@ -149,15 +158,31 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Otherwise sit at a distance and fire projectiles
                         NPC.velocity *= 0.9f;
                         NPC.ai[1]++;
-                        if (NPC.ai[1] % 36 == 30)
+                        int fireRate = 30; // Do not change this without adjusting the frame rate as well
+                        float currentTime = NPC.ai[1] % 36;
+                        if (currentTime == fireRate)
                         {
                             SoundEngine.PlaySound(Sounds.CommonCalamitySounds.ExoPlasmaShootSound with { Volume = 0.2f, Pitch = 1.8f }, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 projSpeed = NPC.DirectionTo(target.Center).SafeNormalize(Vector2.Zero) * 6;
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(NPC.Center.X, NPC.position.Y + 38), projSpeed, ModContent.ProjectileType<HorsPoisonBlast>(), NPC.damage, 0f);
+                                Vector2 spawnPos = new Vector2(NPC.Center.X + NPC.direction * 18, NPC.position.Y + 22);
+                                Vector2 projSpeed = spawnPos.DirectionTo(target.Center).SafeNormalize(Vector2.Zero) * 6;
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, projSpeed, ModContent.ProjectileType<HorsPoisonBlast>(), NPC.damage, 0f);
                             }
                         }
+                        // Squash and stretch
+                        int shotTime = 24; // When to squash 
+                        if (currentTime < 24)
+                        {
+                            SquishX = MathHelper.Lerp(SquishX, 0.9f, currentTime / shotTime);
+                            SquishY = MathHelper.Lerp(SquishY, 1.05f, currentTime / shotTime);
+                        }
+                        else
+                        {
+                            SquishX = MathHelper.Lerp(SquishX, 1.35f, (currentTime - shotTime) / (fireRate - shotTime));
+                            SquishY = MathHelper.Lerp(SquishY, 0.85f, (currentTime - shotTime) / (fireRate - shotTime));
+                        }
+
                         NPC.rotation = MathHelper.Lerp(NPC.rotation, 0, 0.1f);
                     }
                     if (Math.Abs(NPC.velocity.X) > 0)
@@ -228,6 +253,15 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Asset<Texture2D> tex = TextureAssets.Npc[Type];
+            SpriteEffects fx = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Vector2 stretch = NPC.ai[0] == 1 && NPC.ai[1] > 0 ? new Vector2(SquishX, SquishY): Vector2.One;
+            spriteBatch.Draw(tex.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColor, NPC.rotation, new Vector2(tex.Width() / 2, tex.Height() / 2 / Main.npcFrameCount[Type]), NPC.scale * stretch, fx, 0); 
+            return false;
         }
     }
 }
