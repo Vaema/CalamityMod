@@ -1029,6 +1029,8 @@ namespace CalamityMod.NPCs
                 modifiers.SourceDamage *= 2f;
         }
 
+        // Does not affect Dryad's Bane
+        // See CalamityGlobalNPC: UpdateLifeRegen
         public override void BuffTownNPC(ref float damageMult, ref int defense)
         {
             if (NPC.downedMoonlord)

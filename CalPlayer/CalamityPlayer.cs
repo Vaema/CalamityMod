@@ -554,7 +554,7 @@ namespace CalamityMod.CalPlayer
         public bool aBrain = false;
         public bool amalgam = false;
         public bool raiderTalisman = false;
-        public float raiderCritBonus = RaidersTalisman.RaiderBonus;
+        public float raiderCritLifespan = 0f;
         public int raiderSoundCooldown = 0;
         public bool gSabaton = false;
         public int gSabatonHotkeyHoldTime = 0;
@@ -2359,7 +2359,7 @@ namespace CalamityMod.CalPlayer
             spiritOriginConvertedCrit = 0;
             rage = 0f;
             adrenaline = 0f;
-            raiderCritBonus = 0f;
+            raiderCritLifespan = 0f;
             raiderSoundCooldown = 0;
             gSabatonHotkeyHoldTime = 0;
             gSabatonFall = 0;
@@ -2850,16 +2850,15 @@ namespace CalamityMod.CalPlayer
                         Player.statLife = Player.statLifeMax2;
                 }
             }
-            if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.1f &&
-                wearingRogueArmor && rogueStealthMax > 0 && !Player.HasCooldown(Cooldowns.SandCloak.ID))
+            if (CalamityKeybinds.SandCloakHotkey.JustPressed && sandCloak && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Cooldowns.SandCloak.ID))
             {
-                Player.AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(30));
+                Player.AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(20));
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.SandCloak>()));
-                rogueStealth -= rogueStealthMax * 0.1f;
-                int damage = Player.ApplyArmorAccDamageBonusesTo(7);
+                int damage = Player.ApplyArmorAccDamageBonusesTo(12);
+                float knockback = 2.5f;
 
-                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), damage, 8, Player.whoAmI);
+                int veil = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), damage, knockback, Player.whoAmI);
                 Main.projectile[veil].Center = Player.Center;
                 SoundEngine.PlaySound(SoundID.Item45, Player.Center);
             }
@@ -3485,12 +3484,12 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    //While holding hotkey, but before slam, bring Y velocity closer to 0
+                    // While holding hotkey, but before slam, bring Y velocity closer to 0
                     if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime != 0 && !gSabatonFalling)
                     {
                         Player.velocity.Y *= (60 - (gSabatonHotkeyHoldTime / 2f)) / 60f;
                     }
-                    //Play sound a bit early so it goes in time with the fall
+                    // Play sound a bit early so it goes in time with the fall
                     if (gSabatonHotkeyHoldTime == 15 && !gSabatonFalling)
                     {
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
@@ -3499,9 +3498,11 @@ namespace CalamityMod.CalPlayer
                     if (gSabatonHotkeyHoldTime == 30)
                     {
                         gSabatonFalling = true;
+                        Player.velocity.Y = 0.01f;
                     }
-                    //Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
-                    if (Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
+                    // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
+                    // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
+                    if (Player.velocity.Y < 0f || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
@@ -3510,16 +3511,16 @@ namespace CalamityMod.CalPlayer
                     {
                         SpawnGravistarParticle();
 
-                        //Cap time converted to damage at 2 seconds
+                        // Cap time converted to damage at 2 seconds
                         if (gSabatonFall < 120)
                             gSabatonFall++;
 
                         Player.maxFallSpeed = 40f;
                         Player.gravity = 1.3f;
-                        //If the player can fly during the fall, the physics gets a bit funky
+                        // If the player can fly during the fall, the physics gets a bit funky
                         Player.controlJump = false;
 
-                        //Check if player hit some form of solid resistance (the ground)
+                        // Check if player hit some form of solid resistance (the ground)
                         if (Player.oldVelocity.Y == Player.velocity.Y)
                         {
                             var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<InterstellarStompers>()));
@@ -3530,7 +3531,7 @@ namespace CalamityMod.CalPlayer
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
                             gSabatonFalling = false;
-                            //Temporary jump speed is granted for 40 frames
+                            // Temporary jump speed is granted for 40 frames
                             gSabatonTempJumpSpeed = 40;
                         }
                     }
@@ -3541,6 +3542,10 @@ namespace CalamityMod.CalPlayer
                 gSabatonFall = 0;
                 gSabatonFalling = false;
             }
+
+            // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
+            if (!evolution || !Player.HasCooldown(GlobalDodge.ID))
+                projTypeJustHitBy = -1;
         }
         #endregion
 

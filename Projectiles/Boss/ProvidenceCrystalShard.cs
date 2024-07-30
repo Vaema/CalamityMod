@@ -4,6 +4,8 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -14,6 +16,13 @@ namespace CalamityMod.Projectiles.Boss
     public class ProvidenceCrystalShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 3;
+        }
+
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -207,7 +216,22 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity, 0);
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Asset<Texture2D> texture = ModContent.Request<Texture2D>(Texture);
+
+            for (int i = 1; i < Projectile.oldPos.Length; i++)
+            {
+                Main.EntitySpriteDraw(texture.Value, Projectile.oldPos[i] + (Projectile.Size / 2) - Main.screenPosition, texture.Frame(), Color.Lerp(Color.Violet, new Color(42, 25, 60), (float)i / (float)Projectile.oldPos.Length).MultiplyRGBA(new Color(1f, 1f, 1f, 0f)), Projectile.oldRot[i], texture.Frame().Center(), Projectile.scale * MathHelper.Lerp(1.3f, 0.4f, (float)i / (float)Projectile.oldPos.Length), SpriteEffects.None);
+            }
+
+            Projectile.DrawBackglow(Color.Violet.MultiplyRGBA(new Color(1f, 1f, 1f, 0f)), 4f);
+            Main.EntitySpriteDraw(texture.Value, Projectile.Center - Main.screenPosition, texture.Frame(), Projectile.GetAlpha(lightColor), Projectile.rotation, texture.Frame().Center(), Projectile.scale, SpriteEffects.None);
+
+            return false;
+        }
+
+        public override Color? GetAlpha(Color lightColor) => new Color(255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity);
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {

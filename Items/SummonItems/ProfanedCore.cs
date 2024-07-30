@@ -43,7 +43,7 @@ namespace CalamityMod.Items.SummonItems
             SoundEngine.PlaySound(Providence.SpawnSound, player.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-500, 501)), (int)(player.position.Y - 250f), ModContent.NPCType<Providence>(), 1);
+                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)player.position.X, (int)(player.position.Y - 100f), ModContent.NPCType<Providence>(), 1);
                 Main.npc[npc].timeLeft *= 20;
                 CalamityUtils.BossAwakenMessage(npc);
             }

@@ -193,13 +193,12 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<RangedDamageClass>() = -spiritOriginConvertedCrit;
             }
 
-            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
-                heldGaelsLastFrame = true;
-
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
             // De-equipping Gael's Greatsword deletes all rage.
+            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
+                heldGaelsLastFrame = true;
             else if (heldGaelsLastFrame)
             {
                 heldGaelsLastFrame = false;
@@ -664,7 +663,7 @@ namespace CalamityMod.CalPlayer
 
                 // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
-                if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph)) || tile.TileType == auricRepulserID)
+                if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph || Player.creativeGodMode)) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
                     Player.RemoveAllGrapplingHooks();
@@ -1448,8 +1447,8 @@ namespace CalamityMod.CalPlayer
                 soundCooldown--;
             if (shadowPotCooldown > 0)
                 shadowPotCooldown--;
-            if (raiderCritBonus > 0f)
-                raiderCritBonus -= RaidersTalisman.RaiderBonus / (float)CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+            if (raiderCritLifespan > 0f)
+                raiderCritLifespan--;
             if (raiderSoundCooldown > 0)
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
@@ -1572,6 +1571,9 @@ namespace CalamityMod.CalPlayer
                 FlameLickedShell.HandleParryCountdown(Player);
             }
 
+            if (!flameLickedShell && flameLickedShellParry > 0)
+                flameLickedShellParry--;
+
             // Silver Armor "Medkit" effect
             if (silverMedkitTimer > 0)
             {
@@ -1693,7 +1695,10 @@ namespace CalamityMod.CalPlayer
                     Player.statLife = upperHealthLimit;
 
                 if (necroReviveCounter >= NecroArmorSetChange.PostMortemDuration * 60)
+                {
                     Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.NecroRevive").Format(Player.name)), 1000, -1);
+                    necroReviveCounter = -1;
+                }
                 else if (necroReviveCounter % 60 == 59)
                     SoundEngine.PlaySound(NecroArmorSetChange.TimerSound, Player.Center);
             }
@@ -1830,8 +1835,8 @@ namespace CalamityMod.CalPlayer
             }
 
             // Raider Talisman bonus
-            if (raiderTalisman && !StealthStrikeAvailable())
-                Player.GetCritChance<ThrowingDamageClass>() += raiderCritBonus;
+            if (raiderTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+                Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
 
             if (kamiBoost)
                 Player.GetDamage<GenericDamageClass>() += 0.15f;
@@ -2361,7 +2366,7 @@ namespace CalamityMod.CalPlayer
 
                         // Reduce breath
                         if (Player.breath > 0)
-                            Player.breath -= (int)(cDepth ? breathLoss + 1D : breathLoss);
+                            Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
                     }
 
                     // If breath is greater than 0 and player has gills or is merfolk, balance out the effects by reducing breath
@@ -3124,14 +3129,6 @@ namespace CalamityMod.CalPlayer
             if (manaOverloader)
                 Player.GetDamage<MagicDamageClass>() += 0.06f;
 
-            if (rBrain)
-            {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.75))
-                    Player.GetDamage<GenericDamageClass>() += 0.1f;
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.moveSpeed -= 0.05f;
-            }
-
             if (bloodyWormTooth)
             {
                 Player.GetDamage<MeleeDamageClass>() += 0.1f;
@@ -3238,7 +3235,7 @@ namespace CalamityMod.CalPlayer
 
                     var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 600;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
 

@@ -326,7 +326,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             if (shouldSpinAround)
                             {
-                                npc.localAI[3] = 120f;
+                                npc.localAI[3] = 300f;
                                 npc.SyncVanillaLocalAI();
                             }
 
@@ -346,22 +346,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
-                    acceleration += 0.01f;
-                    accelerationMult += 0.5f;
+                    acceleration += 0.0125f;
+                    accelerationMult += 0.25f;
                 }
                 if (!laserAlive)
                 {
-                    acceleration += 0.01f;
-                    accelerationMult += 0.5f;
+                    acceleration += 0.0125f;
+                    accelerationMult += 0.25f;
                 }
                 if (!viceAlive)
-                    acceleration += 0.01f;
+                    acceleration += 0.0125f;
                 if (!sawAlive)
-                    acceleration += 0.01f;
+                    acceleration += 0.0125f;
                 if (masterMode)
                     acceleration *= accelerationMult;
 
-                float topVelocity = acceleration * 90f;
+                float topVelocity = acceleration * 100f;
                 float deceleration = masterMode ? 0.7f : 0.85f;
 
                 float headDecelerationUpDist = 0f;
@@ -651,7 +651,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Spin for about 3 seconds
                     // Decreasing this number will INCREASE how fast he moves while spinning
-                    float spinVelocity = 20f;
+                    float spinVelocity = 30f;
                     if (npc.ai[2] == 2f)
                     {
                         // Play angry noise
@@ -756,8 +756,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.rotation = npc.velocity.X / 15f;
 
-                    float flightVelocity = bossRush ? 21f : death ? 18f : 15f;
-                    float flightAcceleration = bossRush ? 1f : death ? 0.65f : 0.4f;
+                    float flightVelocity = bossRush ? 24f : death ? 21f : 18f;
+                    float flightAcceleration = bossRush ? 1f : death ? 0.8f : 0.6f;
 
                     if (masterMode)
                     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 origin = texture.Size() / 2f;
             float time = Main.GlobalTimeWrappedHourly % 10f / 10f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            int drawnAmt = 30;
+            int drawnAmt = 45;
             float[] posX = new float[drawnAmt];
             float[] posY = new float[drawnAmt];
             float[] hue = new float[drawnAmt];
@@ -49,15 +50,17 @@ namespace CalamityMod.Projectiles.Boss
             float sizeScalar = (1f - sizeScale) / drawnAmt;
             float yPosOffset = 60f;
             float xPosOffset = 400f;
-            Vector2 scale = new Vector2(6f, 6f);
+            Vector2 scale = new Vector2(12f, 12f);
+
+            float amount2 = CalamityUtils.SineBumpEasing((float)Projectile.timeLeft / (float)totalTime, 1);
 
             for (int i = 0; i < drawnAmt; i++)
             {
                 float timeScalar = (float)Math.Sin(time * MathHelper.TwoPi + (float)Math.PI / 2f + i / 2f);
 
-                posX[i] = timeScalar * (xPosOffset - i * 3f);
+                posX[i] = timeScalar * (xPosOffset - i * 3f) * amount2;
 
-                posY[i] = (float)Math.Sin(time * MathHelper.TwoPi * 2f + (float)Math.PI / 3f + i) * yPosOffset;
+                posY[i] = (float)Math.Sin(time * MathHelper.TwoPi * 4f + (float)Math.PI / 3f + i) * yPosOffset * 2;
                 posY[i] -= i * 3f;
 
                 hue[i] = i / (float)drawnAmt * 2f + time;
@@ -66,7 +69,11 @@ namespace CalamityMod.Projectiles.Boss
                 size[i] = sizeScale + (i + 1) * sizeScalar;
                 size[i] *= 0.3f;
 
-                Color color = Main.hslToRgb(hue[i] % 1f, 1f, 0.5f) * colorChangeAmt * colorChangeAmt2;
+                float a = (float)Math.Sin(amount2 / 20) + 1;
+
+                int mode = (int)Providence.BossMode.Yellow;
+
+                Color color = Color.Lerp(ProvUtils.GetProjectileColor(mode, 0, true), ProvUtils.GetProjectileColor(mode, 0, false), a);
 
                 bool underworld = Projectile.ai[0] == 2f;
                 if (!Main.zenithWorld)
@@ -87,12 +94,9 @@ namespace CalamityMod.Projectiles.Boss
                     }
                 }
 
-                color.A /= 4;
+                color.A = 0;
 
-                int fadeTime = 30;
-                if (Projectile.timeLeft < fadeTime)
                 {
-                    float amount2 = Projectile.timeLeft / (float)fadeTime;
 
                     if (color.R > 0)
                         color.R = (byte)MathHelper.Lerp(0, color.R, amount2);
@@ -104,7 +108,7 @@ namespace CalamityMod.Projectiles.Boss
                     color.A = (byte)MathHelper.Lerp(0, color.A, amount2);
                 }
 
-                float rotation = MathHelper.PiOver2 + timeScalar * MathHelper.PiOver4 * -0.3f + (float)Math.PI * i;
+                float rotation = MathHelper.PiOver2 + timeScalar * MathHelper.PiOver4 * -0.3f;
 
                 Main.EntitySpriteDraw(texture, drawPosition + new Vector2(posX[i], posY[i]), null, color, rotation, origin, new Vector2(size[i], size[i]) * scale, SpriteEffects.None, 0);
             }

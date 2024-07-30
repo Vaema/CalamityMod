@@ -1345,9 +1345,15 @@ TitanArm: {
 		'''
 }
 
-TriactisTruePaladinianMageHammerofMightMelee: {
+TriactisTruePaladinianMageHammerofMight: {
 	DisplayName: Triactis' True Paladinian Mage-Hammer of Might
-	Tooltip: Explodes on enemy hits
+	Tooltip:
+		'''
+		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
+		Enemy hits release prismatic light flares which orbit around the struck foe
+		Instead of returning, the fourth hit transforms flares into hardlight hammers
+		These hammers converge and form a universe-collapsing explosion
+		'''
 }
 
 TrueArkoftheAncients: {

@@ -37,6 +37,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<AnomalysNanogunHoldout>();
             Item.UseSound = null;
+            Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();

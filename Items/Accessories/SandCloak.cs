@@ -7,8 +7,6 @@ namespace CalamityMod.Items.Accessories
 {
     public class SandCloak : ModItem, ILocalizedModType
     {
-        public static float KnockbackStrength = 0.3f;
-
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
@@ -17,7 +15,6 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
-            Item.defense = 2;
         }
 
         public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.SandCloakHotkey);

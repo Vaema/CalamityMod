@@ -76,7 +76,6 @@ JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
 LunicBeam.DisplayName: Beam
-MageHammerBoom.DisplayName: Explosion
 MagnusBeam.DisplayName: Beam
 MythrilFlare.DisplayName: Mythril Flare
 NanoFlare.DisplayName: Nano Flare
@@ -103,6 +102,9 @@ SandExplosion.DisplayName: Sand
 Seashell.DisplayName: Seashell
 SepulcherSoul.DisplayName: Tormented Soul
 SerpentsBiteHook.DisplayName: Serpent's Bite
+ShadeNimbus.DisplayName: Shade Nimbus
+ShadeNimbusRain.DisplayName: Shade Rain
+ShadeNimbusSpawner.DisplayName: Dank Creeper
 ShadowflameExplosion.DisplayName: Shadowflame Explosion
 ShadowflameExplosionBig.DisplayName: Shadowflame Explosion
 SkyFlareFriendly.DisplayName: Flare

@@ -972,27 +972,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Vermillion Flux
-            if (vermillionFlux > 0)
-            {
-                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
-                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
-            }
-
-            // Auric Rebuke
-            if (auricRebuke > 0)
-            {
-                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
-                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
-            }
-
-            // Static Discharge
-            if (staticDischarge > 0)
-            {
-                int baseStaticDischargeDoTValue = (int)(6 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
-                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
-            }
-
             // Banishing Fire
             if (banishingFire > 0)
             {
@@ -1128,6 +1107,27 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
             }
 
+            // Vermillion Flux
+            if (vermillionFlux > 0)
+            {
+                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+            }
+
+            // Auric Rebuke
+            if (auricRebuke > 0)
+            {
+                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
+                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
+            }
+
+            // Static Discharge
+            if (staticDischarge > 0)
+            {
+                int baseStaticDischargeDoTValue = (int)(6 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
+            }
+
             // Crush Depth
             if (cDepth > 0)
             {
@@ -1140,6 +1140,43 @@ namespace CalamityMod.NPCs
             {
                 int baseRiptideDoTValue = (int)(30 * waterDamageMult);
                 ApplyDPSDebuff(baseRiptideDoTValue, baseRiptideDoTValue / 3, ref npc.lifeRegen, ref damage);
+            }
+
+            if (npc.dryadBane)
+            {
+                // Buffs match 1:1 with Town NPC buffs
+                // See CalamityGlobalTownNPC: BuffTownNPC
+                float buffedDryadsBaneMult = 0f +
+                    (NPC.downedMoonlord ? 0.6f : 0f) +
+                    (DownedBossSystem.downedProvidence ? 0.2f : 0f) +
+                    (DownedBossSystem.downedPolterghast ? 0.2f : 0f) +
+                    (DownedBossSystem.downedDoG ? 0.2f : 0f) +
+                    (DownedBossSystem.downedYharon ? 0.2f : 0f) +
+                    (DownedBossSystem.downedExoMechs ? 0.6f : 0f) +
+                    (DownedBossSystem.downedCalamitas ? 0.6f : 0f);
+                if (Main.expertMode)
+                    buffedDryadsBaneMult *= Main.GameModeInfo.TownNPCDamageMultiplier;
+                int buffedDryadsBaneDoTValue = 2 * (int)(4 * buffedDryadsBaneMult);
+                npc.lifeRegen -= buffedDryadsBaneDoTValue;
+
+                // Scales damage tick if greater than the vanilla amount
+                float vanillaDryadsBaneMult = 1f +
+                    (NPC.downedBoss1 ? 0.1f : 0f) +
+                    (NPC.downedBoss2 ? 0.1f : 0f) +
+                    (NPC.downedBoss3 ? 0.1f : 0f) +
+                    (NPC.downedQueenBee ? 0.1f : 0f) +
+                    (Main.hardMode ? 0.4f : 0f) +
+                    (NPC.downedMechBoss1 ? 0.15f : 0f) +
+                    (NPC.downedMechBoss1 ? 0.15f : 0f) +
+                    (NPC.downedMechBoss1 ? 0.15f : 0f) +
+                    (NPC.downedPlantBoss ? 0.15f : 0f) +
+                    (NPC.downedGolemBoss ? 0.15f : 0f) +
+                    (NPC.downedAncientCultist ? 0.15f : 0f);
+                if (Main.expertMode)
+                    vanillaDryadsBaneMult *= Main.GameModeInfo.TownNPCDamageMultiplier;
+                int totalDryadsBaneDoTValue = 2 * (int)(4 * vanillaDryadsBaneMult) + buffedDryadsBaneDoTValue;
+                if (damage < totalDryadsBaneDoTValue / 6)
+                    damage = totalDryadsBaneDoTValue / 6;
             }
 
             // Debuffs that aren't affected by weaknesses or resistances.
@@ -1461,8 +1498,7 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
-                npc.scale = 1.2f;
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.55);
             }
             else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism || npc.type == NPCType<Foveanator>())
             {
@@ -5251,8 +5287,6 @@ namespace CalamityMod.NPCs
                 GaussFluxTimer--;
             if (ladHearts > 0)
                 ladHearts--;
-            if (vulnerabilityHex > 0)
-                vulnerabilityHex--;
             if (banishingFire > 0)
                 banishingFire--;
             if (wither > 0)
@@ -5645,6 +5679,27 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Modify Hit
+        public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
+        {
+            // Kaguya hair boom GIF
+            if (npc.type == NPCID.Shark && target.name == "Rebecca" && Main.zenithWorld)
+            {
+                SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 12f;
+
+                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Rebecca").Format(target.name)), 1000.0, 0);
+                modifiers.SourceDamage *= target.statLifeMax2 * Main.rand.NextFloat(3f, 6f);
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Projectile explosion = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<ScorpioLargeRocket>(), 9999, 0f, Main.myPlayer, ItemID.MiniNukeII, 0.01f);
+                    explosion.friendly = false;
+                    explosion.hostile = true;
+                    explosion.timeLeft = 5;
+                }
+            }
+        }
+
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             CalamityPlayer modPlayer = player.Calamity();
@@ -6720,22 +6775,20 @@ namespace CalamityMod.NPCs
             if (gState > 0)
                 drawColor = Color.Cyan;
 
-            else if (electrified > 0)
+            else if (auricRebuke > 0)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
-                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkBlue, Color.White, Utils.Remap(npc.width, 30, 400, 0.4f, 0.7f, true)) : Color.White;
             }
-
             else if (vermillionFlux > 0)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkRed, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
-
-            else if (auricRebuke > 0)
+            else if (electrified > 0)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
-                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkBlue, Color.White, Utils.Remap(npc.width, 30, 400, 0.4f, 0.7f, true)) : Color.White;
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
 
             else if (absorberAffliction > 0)
