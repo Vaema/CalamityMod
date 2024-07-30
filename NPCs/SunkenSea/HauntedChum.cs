@@ -281,21 +281,19 @@ namespace CalamityMod.NPCs.SunkenSea
                         rot = seg.position.DirectionTo(Segments[i - 1].position).ToRotation();
                     SpriteEffects dir = NPC.Center.X > body.Center.X ? SpriteEffects.FlipVertically : SpriteEffects.None;
                     Texture2D bone = i < Segments.Count / 2 ? ModContent.Request<Texture2D>(ChumBone.Texture2).Value : ModContent.Request<Texture2D>("CalamityMod/Particles/ChumBone1").Value;
-                    Main.EntitySpriteDraw(bone, seg.position - Main.screenPosition, null, Lighting.GetColor((int)(seg.position.X / 16), (int)(seg.position.Y / 16)) * NPC.Opacity, rot, bone.Size() / 2, 1f, dir, 0);
+                    spriteBatch.Draw(bone, seg.position - Main.screenPosition, null, Lighting.GetColor((int)(seg.position.X / 16), (int)(seg.position.Y / 16)) * NPC.Opacity, rot, bone.Size() / 2, 1f, dir, 0);
                 }
             }
 
             // Spooky glowey aura effect
             if (NPC.ai[0] == 2 && NPC.ai[1] < 50)
             {
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.EnterShaderRegion(BlendState.Additive);
                 Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 Color glowColor = Color.Red;
                 int xOffset = NPC.spriteDirection == 1 ? 16 : 22;
                 spriteBatch.Draw(bloom, NPC.position - Main.screenPosition + new Vector2(xOffset, 28), null, glowColor * NPC.localAI[1], 0f, bloom.Size() / 2f, 0.8f, SpriteEffects.None, 0);
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.ExitShaderRegion();
             }
 
             // Draw the chum itself and its jaw, rotated by localai[0]
