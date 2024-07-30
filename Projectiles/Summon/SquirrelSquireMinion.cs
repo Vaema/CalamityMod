@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -138,6 +139,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.damage,
                     Projectile.knockBack,
                     Projectile.owner);
+                SoundEngine.PlaySound(SoundID.Item1 with { Volume = 0.5f, Pitch = 0.8f, PitchVariance = 0.1f }, spawnPosition);
                 NetUpdate();
             }
 
