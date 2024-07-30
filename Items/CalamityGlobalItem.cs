@@ -204,6 +204,10 @@ namespace CalamityMod.Items
                     break;
             }
 
+            // Increase how much health Mushrooms heal.
+            if (item.type == ItemID.Mushroom && item.healLife == 15)
+                item.healLife = 25;
+
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
             if (item.type == ItemID.BeamSword)
                 item.ChangePlayerDirectionOnShoot = true;
