@@ -1234,31 +1234,8 @@ namespace CalamityMod.CalPlayer
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
                 Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, "default");
 
-            // Same thing with The Bee
-            if (theBee && shouldTriggerBeeCooldown)
-            {
-                shouldTriggerBeeCooldown = false;
-                if (hurtInfo.Damage > 0)
-                    theBeeCooldown = TheBee.CooldownLength;
-            } 
-
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
-
-            if (ursaSergeant)
-            {
-                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
-                Player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 150);
-                for (int i = 0; i < 9; i++)
-                {
-                    Particle spark2 = new LineParticle(Player.Center, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 20, Main.rand.NextFloat(0.5f, 1.1f), Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust2 = Dust.NewDustPerfect(Player.Center, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
-                    dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
-                    dust2.noGravity = true;
-                    dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
-                }
-            }
 
             if (crawCarapace)
             {
@@ -1320,21 +1297,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (alchFlask)
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
-                    seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
-
-                    Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
-                    bee.ArmorPenetration = 35;
-                    bee.penetrate = 6;
-                    bee.extraUpdates = 2;
-                    bee.timeLeft = 600;
-                }
-                Player.AddBuff(BuffID.Honey, 900);
-            }
+            OnHitByCombat(hurtInfo);
         }
 
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
@@ -1380,29 +1343,6 @@ namespace CalamityMod.CalPlayer
                         
                 }
             }*/
-
-            // Apply The Bee cooldown, must be applied here so that it does not apply on dodges
-            if (theBee && shouldTriggerBeeCooldown)
-            {
-                shouldTriggerBeeCooldown = false;
-                if (hurtInfo.Damage > 0)
-                    theBeeCooldown = TheBee.CooldownLength;
-            }
-
-            if (ursaSergeant)
-            {
-                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
-                Player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 150);
-                for (int i = 0; i < 9; i++)
-                {
-                    Particle spark2 = new LineParticle(Player.Center, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 20, Main.rand.NextFloat(0.5f, 1.1f), Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust2 = Dust.NewDustPerfect(Player.Center, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
-                    dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
-                    dust2.noGravity = true;
-                    dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
-                }
-            }
 
             if (proj.hostile && hurtInfo.Damage > 0)
             {
@@ -1592,6 +1532,52 @@ namespace CalamityMod.CalPlayer
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
             {
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
+            }
+
+            OnHitByCombat(hurtInfo);
+        }
+
+        // Shortcut for applying hit effects when hit by either an NPC or projectile
+        // Reminder that external sources ie. forcefully called hurt functions, hazards (thorns, spikes, lava) are not valid
+        public void OnHitByCombat(Player.HurtInfo hurtInfo)
+        {
+            // Apply The Bee cooldown, must be applied here so that it does not apply on dodges
+            if (theBee && shouldTriggerBeeCooldown)
+            {
+                shouldTriggerBeeCooldown = false;
+                if (hurtInfo.Damage > 0)
+                    theBeeCooldown = TheBee.CooldownLength;
+            }
+
+            if (alchFlask)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
+                    seekerDamage = Player.ApplyArmorAccDamageBonusesTo(seekerDamage);
+
+                    Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
+                    bee.ArmorPenetration = 35;
+                    bee.penetrate = 6;
+                    bee.extraUpdates = 2;
+                    bee.timeLeft = 600;
+                }
+                Player.AddBuff(BuffID.Honey, 900);
+            }
+
+            if (ursaSergeant)
+            {
+                ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+                Player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 150);
+                for (int i = 0; i < 9; i++)
+                {
+                    Particle spark2 = new LineParticle(Player.Center, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 20, Main.rand.NextFloat(0.5f, 1.1f), Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                    Dust dust2 = Dust.NewDustPerfect(Player.Center, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
+                    dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
+                }
             }
         }
         #endregion
@@ -2549,6 +2535,10 @@ namespace CalamityMod.CalPlayer
                     Player.hurtCooldowns[hurtInfo.CooldownCounter] += iFramesToAdd;
                 else
                     Player.immuneTime += iFramesToAdd;
+
+                // Similar handle to 1.4 Star Cloak: these hits ie. spikes or lava cannot activate hit effects
+                if (hurtInfo.CooldownCounter != -1 && hurtInfo.CooldownCounter != 1)
+                    return;
 
                 if (aeroSet && hurtInfo.Damage > 25)
                 {
