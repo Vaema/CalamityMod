@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Laser spread variables
         private const int shotSpacingMax = 1440;
         private int shotSpacing = shotSpacingMax;
-        private const int totalShots = 12;
+        private const int totalShots = 10;
         private const int spacingVar = shotSpacingMax / totalShots * 2;
         private int laserWallType = 0;
         private const float laserWallSpacingOffset = 16f;
