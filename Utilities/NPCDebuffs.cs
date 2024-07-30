@@ -144,6 +144,7 @@ namespace CalamityMod
         private static readonly int[] sunkenSeaEnemyImmunities = new int[2] { ModContent.BuffType<Eutrophication>(), ModContent.BuffType<PearlAura>() };
         private static readonly int[] abyssEnemyImmunities = new int[2] { ModContent.BuffType<CrushDepth>(), ModContent.BuffType<RiptideDebuff>() };
         private static readonly int[] cragEnemyImmunities = new int[3] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>() };
+        private static readonly int[] scalImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<VulnerabilityHex>() };
         private static readonly int[] astralEnemyImmunities = new int[2] { BuffID.Poisoned, ModContent.BuffType<AstralInfectionDebuff>() };
         private static readonly int[] plagueEnemyImmunities = new int[3] { BuffID.Poisoned, BuffID.Venom, ModContent.BuffType<Plague>() };
         private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), ModContent.BuffType<Nightwither>() };
@@ -164,6 +165,7 @@ namespace CalamityMod
             Tuple<GeneralImmunityStatus, int[]> sunkenSea = new(GeneralImmunityStatus.None, sunkenSeaEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> abyss = new(GeneralImmunityStatus.None, abyssEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> crags = new(GeneralImmunityStatus.None, cragEnemyImmunities);
+            Tuple<GeneralImmunityStatus, int[]> scal = new(GeneralImmunityStatus.None, scalImmunities);
             Tuple<GeneralImmunityStatus, int[]> astral = new(GeneralImmunityStatus.None, astralEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> plague = new(GeneralImmunityStatus.None, plagueEnemyImmunities);
             Tuple<GeneralImmunityStatus, int[]> holy = new(GeneralImmunityStatus.None, holyEnemyImmunities);
@@ -292,11 +294,11 @@ namespace CalamityMod
                 { ModContent.NPCType<ThanatosBody2>(), immuneToEverything },
                 { ModContent.NPCType<ThanatosTail>(), immuneToEverything },
 
-                { ModContent.NPCType<SupremeCalamitas>(), crags },
-                { ModContent.NPCType<SupremeCatastrophe>(), crags },
-                { ModContent.NPCType<SupremeCataclysm>(), crags },
-                { ModContent.NPCType<SoulSeekerSupreme>(), crags },
-                { ModContent.NPCType<BrimstoneHeart>(), crags },
+                { ModContent.NPCType<SupremeCalamitas>(), scal },
+                { ModContent.NPCType<SupremeCatastrophe>(), scal },
+                { ModContent.NPCType<SupremeCataclysm>(), scal },
+                { ModContent.NPCType<SoulSeekerSupreme>(), scal },
+                { ModContent.NPCType<BrimstoneHeart>(), scal },
                 { ModContent.NPCType<SepulcherHead>(), immuneToEverything },
                 { ModContent.NPCType<SepulcherBody>(), immuneToEverything },
                 { ModContent.NPCType<SepulcherBodyEnergyBall>(), immuneToEverything },
