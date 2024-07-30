@@ -6,11 +6,11 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using System.IO;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -41,34 +41,46 @@ namespace CalamityMod.NPCs.SunkenSea
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HauntedChum")
             });
         }
-        public override void OnSpawn(IEntitySource source)
+
+        public override void SendExtraAI(BinaryWriter writer)
         {
-            // Spawn some bones around the remains
-            int boneCount = Main.rand.Next(5, 8);
-            for (int i = 0; i < boneCount; i++)
-            {
-                int extraDistX = 120;
-                int extraDistY = 40;
-                Vector2 bonePos = NPC.Center + new Vector2(Main.rand.Next(-extraDistX, extraDistX + 1), Main.rand.Next(-extraDistY, extraDistY + 1));
-                // If the bone spawns inside a tile, try to make it not spawn in a tile
-                for (int j = 0; j < 50; j++)
-                {
-                    Tile tilePos = CalamityUtils.ParanoidTileRetrieval((int)bonePos.X / 16, (int)bonePos.Y / 16);
-                    if (tilePos.HasTile)
-                    {
-                        bonePos = NPC.Center + new Vector2(Main.rand.Next(-extraDistX, extraDistX + 1), Main.rand.Next(-extraDistY, extraDistY + 1));
-                    }
-                }
-                Particle bone = new ChumBone(bonePos, Vector2.Zero, NPC.GetAlpha(Color.White), Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4), Main.rand.NextFloat(0.8f, 1.6f), 4, Main.rand.NextBool(), Main.rand.NextBool());
-                GeneralParticleHandler.SpawnParticle(bone);
-                // Add to a list of bones
-                bones.Add(bone);
-            }
-            NPC.TargetClosest();
+            writer.Write(NPC.localAI[0]);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.localAI[0] = reader.ReadSingle();
         }
 
         public override void AI()
         {
+            // Spawn some bones around the remains
+            if (NPC.localAI[0] == 0)
+            {
+                int boneCount = Main.rand.Next(5, 8);
+                for (int i = 0; i < boneCount; i++)
+                {
+                    int extraDistX = 120;
+                    int extraDistY = 40;
+                    Vector2 bonePos = NPC.Center + new Vector2(Main.rand.Next(-extraDistX, extraDistX + 1), Main.rand.Next(-extraDistY, extraDistY + 1));
+                    // If the bone spawns inside a tile, try to make it not spawn in a tile
+                    for (int j = 0; j < 50; j++)
+                    {
+                        Tile tilePos = CalamityUtils.ParanoidTileRetrieval((int)bonePos.X / 16, (int)bonePos.Y / 16);
+                        if (tilePos.HasTile)
+                        {
+                            bonePos = NPC.Center + new Vector2(Main.rand.Next(-extraDistX, extraDistX + 1), Main.rand.Next(-extraDistY, extraDistY + 1));
+                        }
+                    }
+                    Particle bone = new ChumBone(bonePos, Vector2.Zero, NPC.GetAlpha(Color.White), Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4), Main.rand.NextFloat(0.8f, 1.6f), 4, Main.rand.NextBool(), Main.rand.NextBool());
+                    GeneralParticleHandler.SpawnParticle(bone);
+                    // Add to a list of bones
+                    bones.Add(bone);
+                }
+                NPC.TargetClosest();
+                NPC.localAI[0] = 1;
+            }
+
             // Enables expert scaling 
             NPC.damage = 0;
             NPC.TargetClosest();
