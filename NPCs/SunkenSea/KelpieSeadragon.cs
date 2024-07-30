@@ -149,13 +149,13 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Otherwise sit at a distance and fire projectiles
                         NPC.velocity *= 0.9f;
                         NPC.ai[1]++;
-                        if (NPC.ai[1] % 45 == 0)
+                        if (NPC.ai[1] % 36 == 30)
                         {
                             SoundEngine.PlaySound(Sounds.CommonCalamitySounds.ExoPlasmaShootSound with { Volume = 0.2f, Pitch = 1.8f }, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Vector2 projSpeed = NPC.DirectionTo(target.Center).SafeNormalize(Vector2.Zero) * 6;
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(NPC.Center.X, NPC.position.Y + 20), projSpeed, ModContent.ProjectileType<KelpDonut>(), NPC.damage, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(NPC.Center.X, NPC.position.Y + 38), projSpeed, ModContent.ProjectileType<HorsPoisonBlast>(), NPC.damage, 0f);
                             }
                         }
                         NPC.rotation = MathHelper.Lerp(NPC.rotation, 0, 0.1f);
@@ -178,7 +178,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.wet && !NPC.IsABestiaryIconDummy)
                 return;
             NPC.frameCounter++;
-            if (NPC.frameCounter > 6)
+            if (NPC.frameCounter > 5)
             {
                 NPC.frame.Y += frameHeight;
                 NPC.frameCounter = 0;
