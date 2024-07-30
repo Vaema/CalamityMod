@@ -1794,20 +1794,20 @@ namespace CalamityMod.NPCs.Providence
 
                                 // 60 degrees offset
                                 velocity = velocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 6f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, velocity.X, velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, velocity.X, velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI, ai2: 2f);
 
                                 // -60 degrees offset
                                 if (revenge)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, -velocity.X, -velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, -velocity.X, -velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI, ai2: 2f);
 
                                 if (nightAI && lifeRatio < 0.5f)
                                 {
                                     rotation *= 0.33f;
                                     velocity = velocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 2f);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, velocity.X, velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, velocity.X, velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI, ai2: 2f);
 
                                     if (revenge)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, -velocity.X, -velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 64f * NPC.scale, -velocity.X, -velocity.Y, ModContent.ProjectileType<ProvidenceHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI, ai2: 2f);
                                 }
 
                                 NPC.netUpdate = true;
@@ -2533,6 +2533,12 @@ namespace CalamityMod.NPCs.Providence
             {
                 if (DeathAnimationTimer > 91f)
                 {
+                    // Without these four lines there is this weird overlap in the center over darker backgrounds
+                    Main.EntitySpriteDraw(tex, NPC.Center + new Vector2(0, 10) - Main.screenPosition, new Rectangle(0, 0, tex.Width, tex.Height), Color.White, 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
+                    Main.EntitySpriteDraw(tex, NPC.Center + new Vector2(0, 15) - Main.screenPosition, new Rectangle(0, 0, tex.Width, tex.Height), Color.White, 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
+                    Main.EntitySpriteDraw(tex, NPC.Center + new Vector2(0, 20) - Main.screenPosition, new Rectangle(0, 0, tex.Width, tex.Height), Color.White, 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
+                    Main.EntitySpriteDraw(tex, NPC.Center + new Vector2(0, 25) - Main.screenPosition, new Rectangle(0, 0, tex.Width, tex.Height), Color.White, 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
+
                     Vector2 vec = new Vector2(Main.rand.NextFloat(-2, 2), Main.rand.NextFloat(-2, 2));
 
                     float progress = MathHelper.Clamp(((float)DeathAnimationTimer - 200f) / 300f, 0f, 1f);
@@ -2546,7 +2552,7 @@ namespace CalamityMod.NPCs.Providence
                         Color col = ProvUtils.GetProjectileColor((int)NPC.localAI[1], Color.DarkGray, true);
                         col.A = 255;
 
-                        Main.EntitySpriteDraw(tex, NPC.Center + vec + new Vector2(0, 310) - Main.screenPosition + new Vector2(Main.rand.Next(-pr, pr) * 2, outset), new Rectangle(0, i * 2, tex.Width, 2), Color.Lerp(col, Color.White, progress).MultiplyRGBA(new Color(255, 255, 255, 0.5f)), 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
+                        Main.EntitySpriteDraw(tex, NPC.Center + vec + new Vector2(0, 310) - Main.screenPosition + new Vector2(Main.rand.Next(-pr, pr) * 2, outset), new Rectangle(0, i * 2, tex.Width, 2), Color.Lerp(col, Color.White, progress * 2f).MultiplyRGBA(new Color(255, 255, 255, MathHelper.Lerp(progress, 1f, 0.2f) * 2f)), 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
                     }
                 }
             }
