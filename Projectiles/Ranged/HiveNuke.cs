@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Rotates towards its velocity.
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-                if (Projectile.wet && RocketID == ItemID.DryRocket && RocketID == ItemID.WetRocket && RocketID == ItemID.LavaRocket && RocketID == ItemID.HoneyRocket)
+                if (Projectile.wet && (RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket))
                     Projectile.Kill();
 
                 Time++;
