@@ -85,6 +85,7 @@ namespace CalamityMod.NPCs.Providence
             Blue = 5,
             Violet = 6
         }
+
         public int colorShiftTimer = -1;
 
         Color HighFireColor = new Color(255, 191, 73);
@@ -98,25 +99,27 @@ namespace CalamityMod.NPCs.Providence
         private int phaseChange = 0;
         private int frameUsed = 0;
         private int healTimer = 0;
-        internal bool challenge = Main.expertMode; //Used to determine if Profaned Soul Crystal should drop, couldn't figure out mp mems always dropping it so challenge is singleplayer only.
+        internal bool challenge = Main.expertMode; // Used to determine if Profaned Soul Crystal should drop, couldn't figure out mp mems always dropping it so challenge is singleplayer only.
         internal bool hasTakenDaytimeDamage = false;
-        public static bool shouldDrawInfernoBorder = true; //This is only here for other mods to disable it if they don't want it drawing.
+        public static bool shouldDrawInfernoBorder = true; // This is only here for other mods to disable it if they don't want it drawing.
         public bool Dying = false;
         public int DeathAnimationTimer;
         public static float borderRadius = 3000f;
 
-        //Sounds
+        // Sounds
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceSpawn") { Volume = 1.2f };
-        public static readonly SoundStyle HolyRaySound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyRay") { Volume = 1.25f }; //note : Volume gets clamped between 0 and 1. I don't think this does anything, but it was in the original ModSound so im keeping it just in case
+        public static readonly SoundStyle HolyRaySound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyRay") { Volume = 1.25f }; // NOTE : Volume gets clamped between 0 and 1. I don't think this does anything, but it was in the original ModSound so im keeping it just in case
         public static readonly SoundStyle HurtSound = new("CalamityMod/Sounds/NPCHit/ProvidenceHurt");
         public static readonly SoundStyle DeathAnimationSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceDeathAnimation");
 
         public static readonly SoundStyle NearBurnSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceSizzle");
         public static readonly SoundStyle BurnStartSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
         public static readonly SoundStyle BurnLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop") with { IsLooped = true };
-        //Sound slot for the burning damage over time effect
+
+        // Sound slot for the burning damage over time effect
         public SlotId BurningSoundSlot;
-        //Level of sound playing
+
+        // Level of sound playing
         public float SoundWarningLevel = -1f;
 
         public static float normalDR = 0.3f;
@@ -399,12 +402,12 @@ namespace CalamityMod.NPCs.Providence
                     colorShiftTimer = 0;
                 }
             }
-            else if ((!Main.dayTime && !Main.remixWorld) || bossRush) //Normal Night time activity
+            else if ((!Main.dayTime && !Main.remixWorld) || bossRush) // Normal Night time activity
                 NPC.localAI[1] = (float)BossMode.Night;
             else
                 NPC.localAI[1] = (float)BossMode.Day;
 
-            //Has Night AI if it's any color except day
+            // Has Night AI if it's any color except day
             bool nightAI = NPC.localAI[1] != (float)BossMode.Day;
 
             // Difficulty bools
@@ -514,38 +517,38 @@ namespace CalamityMod.NPCs.Providence
 
             if (!player.dead && player.active && !player.creativeGodMode && !Dying)
             {
-                //The debuff applies
+                // The debuff applies
                 if (burnIntensity >= 1f)
                 {
                     if (SoundWarningLevel < 2f)
                     {
-                        //Initialize sound
+                        // Initialize sound
                         SoundEngine.PlaySound(BurnStartSound, player.Center);
                         BurningSoundSlot = SoundEngine.PlaySound(BurnLoopSound, player.Center);
                         SoundWarningLevel = 2f;
                     }
                     player.AddBuff(ModContent.BuffType<HolyInferno>(), 2);
                 }
-                //If the sound is still playing, make it go slowly kinda
+                // If the sound is still playing, make it go slowly kinda
                 else if (SoundWarningLevel > 1f)
                 {
                     SoundWarningLevel -= 1 / 100f;
                     if (SoundWarningLevel < 1f)
                         SoundWarningLevel = 1f;
                 }
-                //The player starts to get fire particles
+                // The player starts to get fire particles
                 else if (burnIntensity > 0.45f)
                 {
-                    //If the player goes from 0 to 1, then play the sound. Doesn't play when descending.
+                    // If the player goes from 0 to 1, then play the sound. Doesn't play when descending.
                     if (SoundWarningLevel < 1f)
                         SoundEngine.PlaySound(NearBurnSound, player.Center);
 
                     SoundWarningLevel = 1f;
                 }
-                //The player has sparks if intensity is above 0, otherwise nothing happens
+                // The player has sparks if intensity is above 0, otherwise nothing happens
                 else if (burnIntensity <= 0f)
                 {
-                    //Reset the sound
+                    // Reset the sound
                     SoundWarningLevel = 0f;
                 }
             }
@@ -853,7 +856,7 @@ namespace CalamityMod.NPCs.Providence
                 if (spawnAnimation)
                 {
                     colorShiftTimer++; // Also double the shift speed in the mean time :)
-                    NPC.velocity = new Vector2(0f, 0f);
+                    NPC.velocity = Vector2.Zero;
                 }
                 else
                 {
@@ -1973,7 +1976,7 @@ namespace CalamityMod.NPCs.Providence
             // This shave-off does not happen when guardians are present.
             float shorterDistanceFade = Utils.GetLerpValue(0f, 120f, aiTimer, true);
 
-            //Distance does not get shorter if in GFB / Guardians are alive
+            // Distance does not get shorter if in GFB / Guardians are alive
             if (!guardianAlive && NPC.localAI[1] < (float)BossMode.Red)
             {
                 maxDistance = baseDistance;
@@ -1986,6 +1989,7 @@ namespace CalamityMod.NPCs.Providence
             float drawFireDistanceStart = maxDistance - 800f;
             float previousBorderEnd = borderRadius;
             float clampedDistance = MathHelper.Clamp(maxDistance, previousBorderEnd - 10, previousBorderEnd + 10);
+
             // Only set the border distance if it's not called from playermisceffects, that way it has mod compatability
             borderRadius = clampedDistance;
             return Utils.GetLerpValue(drawFireDistanceStart, clampedDistance, distanceToTarget, true);
@@ -2104,21 +2108,25 @@ namespace CalamityMod.NPCs.Providence
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.biomeType != 2 || !prov.hasTakenDaytimeDamage;
             }, ModContent.ItemType<ElysianWings>(), desc: DropHelper.ProvidenceHallowText);
+
             npcLoot.AddConditionalPerPlayer(info =>
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.biomeType == 2 || !prov.hasTakenDaytimeDamage;
             }, ModContent.ItemType<ElysianAegis>(), desc: DropHelper.ProvidenceUnderworldText);
+
             npcLoot.DefineConditionalDropSet(DropHelper.If((info) =>
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.challenge;
             }, () => Main.expertMode, DropHelper.ProvidenceChallengeText)).Add(ModContent.ItemType<ProfanedSoulCrystal>());
+
             npcLoot.AddIf(info =>
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return !prov.hasTakenDaytimeDamage;
             }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceNightText);
+
             npcLoot.AddIf(info =>
             {
                 Providence prov = info.npc.ModNPC<Providence>();
@@ -2163,7 +2171,7 @@ namespace CalamityMod.NPCs.Providence
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
                 GFBOnly.Add(ModContent.ItemType<AscendantSpiritEssence>(), 1, 1, 99, true);
-                GFBOnly.Add(ModContent.ItemType<BlasphemousDonut>(), 1, 1117, 2201, true); // reference to the versions the guards were added and got their latest resprites
+                GFBOnly.Add(ModContent.ItemType<BlasphemousDonut>(), 1, 1117, 2201, true); // Reference to the versions the guards were added and got their latest resprites
             }
 
             // Lore
@@ -2179,12 +2187,12 @@ namespace CalamityMod.NPCs.Providence
             {
                 for (int y = tileCenterY - halfBox; y <= tileCenterY + halfBox; y++)
                 {
-                    if ((x == tileCenterX - halfBox || x == tileCenterX + halfBox || y == tileCenterY - halfBox || y == tileCenterY + halfBox)
-                        && !Main.tile[x, y].HasTile)
+                    if ((x == tileCenterX - halfBox || x == tileCenterX + halfBox || y == tileCenterY - halfBox || y == tileCenterY + halfBox) && !Main.tile[x, y].HasTile)
                     {
                         Main.tile[x, y].TileType = (ushort)ModContent.TileType<ProfanedRock>();
                         Main.tile[x, y].Get<TileWallWireStateData>().HasTile = true;
                     }
+
                     Main.tile[x, y].Get<LiquidData>().LiquidType = LiquidID.Water;
                     Main.tile[x, y].LiquidAmount = 0;
 
@@ -2314,7 +2322,7 @@ namespace CalamityMod.NPCs.Providence
 
                     // Draw the glowmask textures + their afterimages
                     // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.
-                    Color WingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0); //Default to day
+                    Color WingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0); // Default to day
                     Color CrystalColor = Color.Violet;
                     switch (NPC.localAI[1])
                     {
@@ -2322,25 +2330,31 @@ namespace CalamityMod.NPCs.Providence
                             WingColor = Color.Red;
                             CrystalColor = Color.BlueViolet;
                             break;
+
                         case (float)BossMode.Orange:
                             WingColor = Color.Orange;
                             CrystalColor = Color.HotPink;
                             break;
+
                         case (float)BossMode.Yellow: // Same as day
                             break;
+
                         case (float)BossMode.Green:
                             WingColor = Color.Green;
                             CrystalColor = Color.Gold;
                             break;
+
                         case (float)BossMode.Blue: // Same as night
                         case (float)BossMode.Night:
                             WingColor = Color.Cyan;
                             CrystalColor = Color.BlueViolet;
                             break;
+
                         case (float)BossMode.Violet:
                             WingColor = Color.Magenta;
                             CrystalColor = Color.GreenYellow;
                             break;
+
                         default:
                             break;
                     }
@@ -2363,8 +2377,10 @@ namespace CalamityMod.NPCs.Providence
                             AfterimageWingColor = Color.Lerp(AfterimageWingColor, BaseColor, Brightness);
                             AfterimageWingColor = NPC.GetAlpha(AfterimageWingColor);
                             AfterimageWingColor *= (maxAfterimages - j) / 15f;
+
                             if (colorOverride != null)
                                 AfterimageWingColor = colorOverride.Value;
+
                             Vector2 AfterimageGlowPosition = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
                             AfterimageGlowPosition -= new Vector2(textureGlow.Width, textureGlow.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
                             AfterimageGlowPosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
@@ -2374,8 +2390,10 @@ namespace CalamityMod.NPCs.Providence
                             AfterimageCrystalColor = Color.Lerp(AfterimageCrystalColor, BaseColor, Brightness);
                             AfterimageCrystalColor = NPC.GetAlpha(AfterimageCrystalColor);
                             AfterimageCrystalColor *= (maxAfterimages - j) / 15f;
+
                             if (colorOverride != null)
                                 AfterimageCrystalColor = colorOverride.Value;
+
                             spriteBatch.Draw(textureGlow2, AfterimageGlowPosition, NPC.frame, AfterimageCrystalColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
                         }
                     }
@@ -2668,8 +2686,10 @@ namespace CalamityMod.NPCs.Providence
 
                 bool allowedClass = projectile.CountsAsClass<SummonDamageClass>() || (!projectile.CountsAsClass<MeleeDamageClass>() && !projectile.CountsAsClass<RangedDamageClass>() &&
                     !projectile.CountsAsClass<MagicDamageClass>() && !projectile.CountsAsClass<ThrowingDamageClass>() && !projectile.CountsAsClass<SummonMeleeSpeedDamageClass>());
-                bool allowedDamage = allowedClass && hit.Damage <= 75; //Flat 75 regardless of difficulty.
-                //Absorber on-hit effects likely won't proc this but Deific Amulet and Astral Bulwark stars will proc this.
+
+                bool allowedDamage = allowedClass && hit.Damage <= 75; // Flat 75 regardless of difficulty.
+
+                // Absorber on-hit effects likely won't proc this but Deific Amulet and Astral Bulwark stars will proc this.
                 bool allowedBabs = Main.player[projectile.owner].Calamity().pSoulArtifact && !Main.player[projectile.owner].Calamity().profanedCrystalBuffs;
 
                 if ((exceptionList.TrueForAll(x => projectile.type != x) && !allowedDamage) || !allowedBabs)
@@ -2750,10 +2770,12 @@ namespace CalamityMod.NPCs.Providence
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("Providence3").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("Providence4").Type, NPC.scale);
                 }
+
                 NPC.position = NPC.Center;
                 NPC.width = (int)(400 * NPC.scale);
                 NPC.height = (int)(350 * NPC.scale);
                 NPC.position -= NPC.Size * 0.5f;
+
                 for (int d = 0; d < 60; d++)
                 {
                     int fire = Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, 0f, 0f, 100, default, 2f);
@@ -2881,7 +2903,7 @@ namespace CalamityMod.NPCs.Providence
         }
     }
 
-    //These will be used for almost every single one of her projectiles, so it's useful to have.
+    // These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
         public static Color GetProjectileColor(int Mode, Color givenLightColor, bool Outline = false)
@@ -2898,27 +2920,33 @@ namespace CalamityMod.NPCs.Providence
                 alpha = 100;
             }
 
-            Color FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha); //Default to day
+            Color FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha); // Default to day
             switch (Mode)
             {
                 case (int)Providence.BossMode.Red:
                     FinalColor = new Color(250, 100, Outline ? 200 : 100, alpha);
                     break;
+
                 case (int)Providence.BossMode.Orange:
                     FinalColor = new Color(250, 150, Outline ? 150 : 100, alpha);
                     break;
-                case (int)Providence.BossMode.Yellow: //Same as day
+
+                case (int)Providence.BossMode.Yellow: // Same as day
                     break;
+
                 case (int)Providence.BossMode.Green:
                     FinalColor = new Color(Outline ? 200 : 100, 250, 100, alpha);
                     break;
-                case (int)Providence.BossMode.Blue: //Same as night
+
+                case (int)Providence.BossMode.Blue: // Same as night
                 case (int)Providence.BossMode.Night:
                     FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, alpha);
                     break;
+
                 case (int)Providence.BossMode.Violet:
                     FinalColor = new Color(Outline ? 100 : 150, Outline ? 150 : 100, 250, alpha);
                     break;
+
                 default:
                     break;
             }
@@ -2931,27 +2959,33 @@ namespace CalamityMod.NPCs.Providence
        
         public static Color GetProjectileColor(int Mode, int Alpha, bool Outline = false)
         {
-            Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); //Default to day
+            Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to day
             switch (Mode)
             {
                 case (int)Providence.BossMode.Red:
                     FinalColor = new Color(250, 100, Outline ? 200 : 100, Alpha);
                     break;
+
                 case (int)Providence.BossMode.Orange:
                     FinalColor = new Color(250, 150, Outline ? 150 : 100, Alpha);
                     break;
-                case (int)Providence.BossMode.Yellow: //Same as day
+
+                case (int)Providence.BossMode.Yellow: // Same as day
                     break;
+
                 case (int)Providence.BossMode.Green:
                     FinalColor = new Color(Outline ? 200 : 100, 250, 100, Alpha);
                     break;
-                case (int)Providence.BossMode.Blue: //Same as night
+
+                case (int)Providence.BossMode.Blue: // Same as night
                 case (int)Providence.BossMode.Night:
                     FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, Alpha);
                     break;
+
                 case (int)Providence.BossMode.Violet:
                     FinalColor = new Color(Outline ? 100 : 150, Outline ? 150 : 100, 250, Alpha);
                     break;
+
                 default:
                     break;
             }
@@ -2964,75 +2998,88 @@ namespace CalamityMod.NPCs.Providence
 
         public static int GetDustID(float Mode)
         {
-            int DustType = (int)CalamityDusts.ProfanedFire; //Default to day
+            int DustType = (int)CalamityDusts.ProfanedFire; // Default to day
             switch (Mode)
             {
                 case (float)Providence.BossMode.Red:
                     DustType = DustID.RedTorch;
                     break;
+
                 case (float)Providence.BossMode.Orange:
                     DustType = DustID.OrangeTorch;
                     break;
-                case (float)Providence.BossMode.Yellow: //Same as day
+
+                case (float)Providence.BossMode.Yellow: // Same as day
                     break;
+
                 case (float)Providence.BossMode.Green:
                     DustType = DustID.GreenTorch;
                     break;
-                case (float)Providence.BossMode.Blue: //Same as night
+
+                case (float)Providence.BossMode.Blue: // Same as night
                 case (float)Providence.BossMode.Night:
                     DustType = (int)CalamityDusts.Nightwither;
                     break;
+
                 case (float)Providence.BossMode.Violet:
                     DustType = DustID.PurpleTorch;
                     break;
+
                 default:
                     break;
             }
             return DustType;
         }
 
-        //Include debuffs inflicted by Providence's projectiles for all her forms
-        //In the GFB seed, also includes negative healing
+        // Include debuffs inflicted by Providence's projectiles for all her forms
+        // In the GFB seed, also includes negative healing
         public static void ApplyHitEffects(Player Target, int Mode, int BaseDuration, int NegativeHealValue)
         {
-            int BuffType = ModContent.BuffType<HolyFlames>(); //Default to day
-            float Multiplier = 1f; //Used to counterbalance Cursed Inferno and Shadowflame
+            int BuffType = ModContent.BuffType<HolyFlames>(); // Default to day
+            float Multiplier = 1f; // Used to counterbalance Cursed Inferno and Shadowflame
 
-            //Day and Night Providence inflicts 16-80 damage of debuffs depending on attacks
-            //GFB Providence inflicts 24-120 damage (+50%) for half the colors, 26-130 (+62.5%) for another half
+            // Day and Night Providence inflicts 16-80 damage of debuffs depending on attacks
+            // GFB Providence inflicts 24-120 damage (+50%) for half the colors, 26-130 (+62.5%) for another half
             switch (Mode)
             {
                 case (int)Providence.BossMode.Red:
                     BuffType = ModContent.BuffType<BrimstoneFlames>();
                     break;
+
                 case (int)Providence.BossMode.Orange:
                     BuffType = ModContent.BuffType<Dragonfire>();
                     Multiplier = 0.5f;
                     break;
-                case (int)Providence.BossMode.Yellow: //Same as day
+
+                case (int)Providence.BossMode.Yellow: // Same as day
                     break;
+
                 case (int)Providence.BossMode.Green:
                     BuffType = BuffID.CursedInferno;
                     Multiplier = 0.75f;
                     break;
-                case (int)Providence.BossMode.Blue: //Same as night
+
+                case (int)Providence.BossMode.Blue: // Same as night
                 case (int)Providence.BossMode.Night:
                     BuffType = ModContent.BuffType<Nightwither>();
                     break;
+
                 case (int)Providence.BossMode.Violet:
                     BuffType = ModContent.BuffType<Shadowflame>();
                     Multiplier = 0.60f;
                     break;
+
                 default:
                     break;
             }
+
             Target.AddBuff(BuffType, (int)(BaseDuration * Multiplier));
 
-            //A. Specifically inflicts Vaporfied in quirky RGB Mode because it's a colorful debuff
-            //B. Apply the negative healing
+            // A. Specifically inflicts Vaporfied in quirky RGB Mode because it's a colorful debuff
+            // B. Apply the negative healing
             if (Mode >= (int)Providence.BossMode.Red)
             {
-                //Obligatory offensive guardian boosting negative heals
+                // Obligatory offensive guardian boosting negative heals
                 if (CalamityGlobalNPC.holyBossAttacker != -1)
                 {
                     if (Main.npc[CalamityGlobalNPC.holyBossAttacker].active)
@@ -3046,6 +3093,7 @@ namespace CalamityMod.NPCs.Providence
                     PlayerDeathReason CustomSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProvidenceAntiHealing").Format(Target.name));
                     Target.KillMe(CustomSource, NegativeHealValue, 0);
                 }
+
                 NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, Target.whoAmI, NegativeHealValue);
 
                 Target.AddBuff(ModContent.BuffType<Vaporfied>(), (int)(BaseDuration * Multiplier));
