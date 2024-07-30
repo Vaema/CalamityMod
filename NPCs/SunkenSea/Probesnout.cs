@@ -131,8 +131,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (Main.rand.NextBool(125))
                 {
                     var grid = DecidePathGrid();
-                    var pathfinding = new AStar(grid, new(NPC.Center.ToSafeTileCoordinates()), new(grid[Main.rand.Next(grid.Count)]));
-                    PathPositions = pathfinding.FindPath();
+                    PathPositions = AStar.GetPath(grid, NPC.Center.ToSafeTileCoordinates(), grid[Main.rand.Next(grid.Count)]);
                     Timer = 0f;
                     NetUpdate();
                 }

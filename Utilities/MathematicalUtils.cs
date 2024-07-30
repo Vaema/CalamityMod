@@ -388,14 +388,20 @@ namespace CalamityMod
             public override int GetHashCode() => Position.X.GetHashCode() ^ Position.Y.GetHashCode();
         }
 
-        public class AStar(List<Point> grid, Node start, Node goal)
+        public class AStar(List<Point> grid, Point start, Point goal)
         {
             private List<Point> grid = grid;
-            private Node goal = goal;
-            private List<Node> openList = new() { start };
+            private Node goal = new(goal);
+            private List<Node> openList = new() { new(start) };
             private HashSet<Node> closedList = new();
 
-            public List<Vector2> FindPath()
+            public static List<Vector2> GetPath(List<Point> grid, Point start, Point goal)
+            {
+                var pathfinding = new AStar(grid, start, goal);
+                return pathfinding.FindPath();
+            }
+
+            private List<Vector2> FindPath()
             {
                 while (openList.Count > 0)
                 {

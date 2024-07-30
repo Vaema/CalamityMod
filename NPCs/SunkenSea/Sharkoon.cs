@@ -305,8 +305,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (Main.rand.NextBool(IdleMovementUnlikeliness))
                 {
                     var grid = GetPathGrid();
-                    AStar pathfinding = new AStar(grid, new(NPC.Center.ToSafeTileCoordinates()), new(grid[Main.rand.Next(grid.Count)]));
-                    PathPositions = pathfinding.FindPath();
+                    PathPositions = AStar.GetPath(grid, NPC.Center.ToSafeTileCoordinates(), grid[Main.rand.Next(grid.Count)]);
                     PathTimer = 0f;
                     NetUpdate();
                 }
