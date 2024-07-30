@@ -142,7 +142,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
-            // Assure it cant be caught hen collecting panacea
+            // Assure it cant be caught when collecting panacea
             if (NPC.ai[2] <= 60 && NPC.ai[2] > 0)
             {
                 NPC.ai[2]--;

@@ -246,9 +246,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             List<Vector2> points = new List<Vector2>();
-            for (int i = 0; i < Segments.Count; i++)
+            if (Segments != null && Segments.Count > 0)
             {
-                points.Add(Segments[i].position);
+                for (int i = 0; i < Segments.Count; i++)
+                {
+                    points.Add(Segments[i].position);
+                }
             }
 
             PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction, (_) => -Main.screenPosition), 75);

@@ -80,6 +80,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ai[0] = 0;
                 NPC.ai[1] = 0;
+                NPC.ai[2] = 0;
                 NPC.velocity.X *= 0.98f;
                 NPC.noGravity = false;
                 NPC.rotation = MathHelper.Lerp(NPC.rotation, MathHelper.PiOver2, 0.1f);
@@ -96,6 +97,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         NPC.ai[0] = 1;
                         NPC.ai[1] = 0;
+                        NPC.ai[2] = 0;
                         NPC.TargetClosest();
                     }
                     if (NPC.velocity.Length() < 0.1f)
@@ -124,14 +126,23 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         NPC.ai[0] = 0;
                         NPC.ai[1] = 0;
+                        NPC.ai[2] = 0;
                     }
                     NPC.chaseable = true;
-                    // If the target is too far from its shooting range, move closer
-                    if (target.Distance(NPC.Center) > 300)
+                    // If the target is too far from its shooting range or a tile is in the way, move closer
+                    if (target.Distance(NPC.Center) > 300 || !Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1))
                     {
                         NPC.ai[1] = 0;
+                        NPC.ai[2]++;
                         NPC.velocity = NPC.DirectionTo(target.Center).SafeNormalize(Vector2.Zero) * 3f;
                         NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.direction * MathHelper.PiOver4 / 2, 0.05f);
+                        // Loose interest if it can't reach the player for a few seconds
+                        if (!Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1) && NPC.ai[2] > 180)
+                        {
+                            NPC.ai[0] = 0;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
+                        }
                     }
                     else
                     {
