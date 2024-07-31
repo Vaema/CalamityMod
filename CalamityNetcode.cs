@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Items;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Providence;
@@ -141,6 +142,23 @@ namespace CalamityMod
                             int phase = reader.ReadInt32();
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 AndroombaFriendly.ChangeAI(idx, phase);
+                        }
+                        break;
+
+                    case CalamityModMessageType.PlaceAltCritter:
+                        {
+                            int placerplayer = reader.ReadInt32();
+                            int posX = reader.ReadInt32();
+                            int posY = reader.ReadInt32();
+                            int type = reader.ReadInt32();
+                            int itemType = reader.ReadInt32();
+                            float color = reader.ReadInt32();
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int n = NPC.NewNPC(Main.player[placerplayer].GetSource_ReleaseEntity(), posX, posY, type, ai1: color);
+                                Main.npc[n].catchItem = itemType;
+                                Main.npc[n].releaseOwner = (short)placerplayer;
+                            }
                         }
                         break;
 
@@ -392,6 +410,7 @@ namespace CalamityMod
         SyncAndroombaSolution,
         SyncAndroombaAI,
         SyncSlabCrabAI,
+        PlaceAltCritter,
         ServersideSpawnOldDuke,
         ArmoredDiggerCountdownSync, // TODO -- remove this mechanic entirely
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.

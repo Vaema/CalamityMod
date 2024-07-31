@@ -150,6 +150,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Variant == (int)FishColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
+                NPC.rarity = 3;
             }
         }
 

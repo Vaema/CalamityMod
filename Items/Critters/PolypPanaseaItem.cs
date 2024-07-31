@@ -64,13 +64,25 @@ namespace CalamityMod.Items.Critters
                         colorType = (int)PolypPanasea.FishColor.Gold;
                     }
                     player.ApplyItemTime(item);
-                    int n = NPC.ReleaseNPC(mouseX, mouseY, item.makeNPC, item.placeStyle, player.whoAmI);
-                    Main.npc[n].ai[1] = colorType;
-                    Main.npc[n].ai[2] = 0;
-                    Main.npc[n].catchItem = item.type;
-                    if (item.type == ModContent.ItemType<PolypPanaseaGoldItem>())
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
                     {
-                        Main.npc[n].rarity = 3;
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        var netMessage = item.ModItem.Mod.GetPacket();
+                        netMessage.Write((byte)CalamityModMessageType.PlaceAltCritter);
+                        netMessage.Write(player.whoAmI);
+                        netMessage.Write(mouseX);
+                        netMessage.Write(mouseY);
+                        netMessage.Write(item.makeNPC);
+                        netMessage.Write(item.type);
+                        netMessage.Write(colorType);
+                        netMessage.Send();
                     }
                 }
             }
