@@ -63,13 +63,13 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
             SpawnMeteor(Main.player[Projectile.owner]);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
             SpawnMeteor(Main.player[Projectile.owner]);
         }
 

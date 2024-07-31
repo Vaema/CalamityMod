@@ -83,6 +83,7 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[BuffID.Daybreak] = true;
             player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
             player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+            player.buffImmune[ModContent.BuffType<Voidfrost>()] = true;
 
             // Immune to God Slayer Inferno itself
             player.buffImmune[ModContent.BuffType<GodSlayerInferno>()] = true;

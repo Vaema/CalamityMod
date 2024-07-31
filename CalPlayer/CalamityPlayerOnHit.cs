@@ -290,6 +290,10 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
+                case ProjectileID.LunarFlare:
+                    target.AddBuff(BuffType<Nightwither>(), 180);
+                    break;
+
                 case ProjectileID.Cascade:
                     target.AddBuff(BuffID.OnFire, 60);
                     break;
@@ -1262,13 +1266,9 @@ namespace CalamityMod.CalPlayer
                 if (pSoulArtifact && !profanedCrystal)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
 
-                if (profanedCrystalBuffs)
+                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
                 {
-                    bool empowered = pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
-                    if (empowered || Main.dayTime)
-                        target.AddBuff(BuffType<HolyFlames>(), 600);
-                    if (empowered || !Main.dayTime)
-                        target.AddBuff(BuffType<Nightwither>(), 600);
+                   target.AddBuff(BuffType<HolyFlames>(), 600);
                 }
 
                 if (divineBless)

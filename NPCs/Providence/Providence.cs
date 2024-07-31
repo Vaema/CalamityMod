@@ -3059,11 +3059,11 @@ namespace CalamityMod.NPCs.Providence
                     Multiplier = 0.75f;
                     break;
 
-                case (int)Providence.BossMode.Blue: // Same as night
-                case (int)Providence.BossMode.Night:
+                case (int)Providence.BossMode.Blue: // Night Providence no longer inflicts a different debuff, but Blue GFB Providence does
                     BuffType = ModContent.BuffType<Nightwither>();
                     break;
-
+                case (int)Providence.BossMode.Night: //Same as Day, will inflict Holy Flames
+                    break;
                 case (int)Providence.BossMode.Violet:
                     BuffType = ModContent.BuffType<Shadowflame>();
                     Multiplier = 0.60f;

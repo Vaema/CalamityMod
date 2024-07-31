@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -43,6 +44,10 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 20f);
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 80);
         }
     }
 }
