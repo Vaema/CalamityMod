@@ -31,6 +31,23 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D TailSprite;
         #endregion
 
+        public enum AnimType
+        {
+            None = 0,
+            Blink = 1,
+            Bite = 2
+        }
+
+        public bool IsHead => NPC.ai[3] == 0;
+
+        public bool IsTail => NPC.ai[3] == 8;
+
+        public ref float CurrentAnimation => ref NPC.localAI[1];
+
+        public ref float CurrentFrame => ref NPC.localAI[0];
+
+        public ref float BlinkTimer => ref NPC.localAI[2];
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
@@ -55,7 +72,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 BodySprite7 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler8", AssetRequestMode.ImmediateLoad).Value;
                 TailSprite = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler9", AssetRequestMode.ImmediateLoad).Value;
             }
-            Main.npcFrameCount[Type] = 2;
+            Main.npcFrameCount[Type] = 11;
         }
 
         public override void SetDefaults()
@@ -96,13 +113,13 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
         {
             // only the head gets a healthbar
-            return NPC.ai[3] == 0;
+            return IsHead;
         }
 
 
         public override void AI()
         {
-            if (NPC.ai[3] == 0)
+            if (IsHead)
                 HeadAI();
             else
                 SegmentAI();
@@ -249,6 +266,13 @@ namespace CalamityMod.NPCs.SunkenSea
                         targetXDist = Main.player[NPC.target].Center.X - 300f;
                     }
                 }
+
+                // Blink every so often
+                if (Main.rand.NextBool(600) && CurrentAnimation == (int)AnimType.None && BlinkTimer <= 0)
+                {
+                    CurrentAnimation = (int)AnimType.Blink;
+                    BlinkTimer = 48;
+                }
             }
             else
             {
@@ -283,13 +307,22 @@ namespace CalamityMod.NPCs.SunkenSea
             float timeToReachTarget = currentSpeed / targetDistance;
             targetXDist *= timeToReachTarget;
             targetYDist *= timeToReachTarget;
-            if (targetDistance < 64)
+            if (targetDistance < 128 && (NPC.life <= NPC.lifeMax * 0.99 || coinTarget))
             {
-                NPC.localAI[0] = 1;
+                CurrentAnimation = (int)AnimType.Bite;
             }
-            else
+            else if (CurrentAnimation != (int)AnimType.Blink)
             {
-                NPC.localAI[0] = 0;
+                CurrentAnimation = (int)AnimType.None;
+            }
+            BlinkTimer--;
+            if (BlinkTimer <= 0)
+            {
+                BlinkTimer = 0;
+                if (CurrentAnimation == (int)AnimType.Blink)
+                {
+                    CurrentAnimation = (int)AnimType.None;
+                }
             }
             if ((NPC.velocity.X > 0f && targetXDist > 0f) || (NPC.velocity.X < 0f && targetXDist < 0f) || (NPC.velocity.Y > 0f && targetYDist > 0f) || (NPC.velocity.Y < 0f && targetYDist < 0f))
             {
@@ -464,6 +497,50 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public override void FindFrame(int frameHeight)
+        {
+            if (IsTail)
+            {
+                NPC.frameCounter++;
+                if (NPC.frameCounter > 6)
+                {
+                    NPC.localAI[0]++;
+                    NPC.frameCounter = 0;
+                }
+                if (NPC.localAI[0] > 7)
+                {
+                    NPC.localAI[0] = 0;
+                }
+            }
+            if (IsHead)
+            {
+                NPC.frameCounter++;
+                if (NPC.frameCounter > 6)
+                {
+                    NPC.frame.Y += frameHeight;
+                    NPC.frameCounter = 0;
+                }
+                switch (CurrentAnimation)
+                {
+                    case (int)AnimType.None:
+                            NPC.frame.Y = 0;
+                        break;
+                    case (int)AnimType.Bite:
+                        if (NPC.frame.Y < frameHeight * 5 || NPC.frame.Y > frameHeight * 10)
+                        {
+                            NPC.frame.Y = frameHeight * 5;
+                        }
+                        break;
+                    case (int)AnimType.Blink:
+                        if (NPC.frame.Y < frameHeight || NPC.frame.Y >  frameHeight * 4)
+                        {
+                            NPC.frame.Y = frameHeight;
+                        }
+                        break;
+                }
+            }
+        }
+
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (Main.hardMode && spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water &&
@@ -474,7 +551,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override bool CheckActive()
         {
-            return NPC.ai[3] == 0;
+            return IsHead;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<Serpentine>(), 4);
@@ -527,16 +604,20 @@ namespace CalamityMod.NPCs.SunkenSea
                     segmentSprite = TailSprite;
                     break;
             }
-            float headFrameDivisor = NPC.ai[3] == 0 ? 2 : 1;
-            Vector2 origin = new Vector2(segmentSprite.Width / 2, segmentSprite.Height / 2 / headFrameDivisor);
+            float frameDivisor = IsTail ? 8 : IsHead ? Main.npcFrameCount[Type] : 1;
+            Vector2 origin = new Vector2(segmentSprite.Width / 2, segmentSprite.Height / 2 / frameDivisor);
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2(segmentSprite.Width, segmentSprite.Height / headFrameDivisor) * NPC.scale / 2f;
+            npcOffset -= new Vector2(segmentSprite.Width, segmentSprite.Height / frameDivisor) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             SpriteEffects fx = NPC.oldPos[1].X < NPC.position.X ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Rectangle frame = segmentSprite.Frame(1, 1, 0, 0);
-            if (NPC.ai[3] == 0)
+            if (IsHead)
             {
-                frame = TextureAssets.Npc[Type].Frame(1, 2, 0, (int)NPC.localAI[0]);
+                frame = NPC.frame;
+            }
+            else if (IsTail)
+            {
+                frame = segmentSprite.Frame(1, 8, 0, (int)NPC.localAI[0]);
             }
             spriteBatch.Draw(segmentSprite, npcOffset, frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, fx, 0f);
             return false;
