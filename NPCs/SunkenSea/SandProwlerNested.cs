@@ -233,7 +233,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (InHidingSpot)
             {
                 Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, 261);
-                sparkle.color = Color.Cyan;
+                sparkle.color = Color.Orange;
                 sparkle.velocity = Main.rand.NextVector2Circular(4f, 4f);
                 sparkle.noGravity = true;
             }
@@ -470,13 +470,13 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0 && Main.netMode != NetmodeID.Server)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, NPC.scale);
             }
