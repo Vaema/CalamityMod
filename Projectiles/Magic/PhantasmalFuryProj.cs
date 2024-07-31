@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 900;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20 * Projectile.extraUpdates;
+            Projectile.localNPCHitCooldown = 16 * Projectile.MaxUpdates;
             Projectile.ArmorPenetration = 15;
         }
 
