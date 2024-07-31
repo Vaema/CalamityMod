@@ -68,7 +68,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCID.Sets.TrailCacheLength[NPC.type] = 60;
             NPCID.Sets.UsesNewTargetting[NPC.type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
-            Main.npcFrameCount[Type] = 2;
+            Main.npcFrameCount[Type] = 11;
         }
 
         public override void SetDefaults()
@@ -215,12 +215,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
-            // Open mouth when near target
-            if (target != null && NPC.Distance(target.Center) < 64 && !RetreatingToHidingSpot)
+            // Open mouth when launching towards a target
+            if (SnapTimer > 0 && target != null && !PeekingOut)
             {
                 NPC.Calamity().newAI[1] = 1;
             }
-            else
+            else if (RetreatingToHidingSpot || InHidingSpot)
             {
                 NPC.Calamity().newAI[1] = 0;
             }
@@ -349,6 +349,28 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public override void FindFrame(int frameHeight)
+        {
+            if (NPC.Calamity().newAI[1] == 1)
+            {
+                NPC.frameCounter++;
+                if (NPC.frameCounter > 3)
+                {
+                    NPC.frameCounter = 0;
+                    NPC.frame.Y += frameHeight;
+                }
+                if (NPC.frame.Y < frameHeight * 5 || NPC.frame.Y > frameHeight * 10)
+                {
+                    NPC.frame.Y = frameHeight * 5;
+                }
+            }
+            else
+            {
+                NPC.frameCounter = 0;
+                NPC.frame.Y = 0;
+            }
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (InHidingSpot)
@@ -417,8 +439,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 float angle = (bezierCurve.Evaluate(i / (float)totalChains + 1f / totalChains) - drawPosition).ToRotation() + MathHelper.PiOver2;
                 Rectangle frame = textureToUse.Frame(1, 1, 0, 0);
                 if (textureToUse == headTexture)
-                    frame = textureToUse.Frame(1, 2, 0, (int)NPC.Calamity().newAI[1]);
-                Vector2 origin = new Vector2(textureToUse.Width / 2, textureToUse.Height / (textureToUse == headTexture ? 4 : 2));
+                {
+                    frame = NPC.frame;
+                }
+                Vector2 origin = new Vector2(textureToUse.Width / 2, textureToUse.Height / (textureToUse == headTexture ? 22 : 2));
                 spriteBatch.Draw(textureToUse, drawPosition - Main.screenPosition, frame, lightColor, angle, origin, NPC.scale, SpriteEffects.None, 0f);
             }
             return false;
