@@ -849,6 +849,9 @@ namespace CalamityMod.NPCs.Providence
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon || AIState == (int)Phase.Laser || spawnAnimation;
 
+            // Providence fires predictive holy/molten blasts if she is ahead of her target's movement
+            bool predictiveShots = false;
+
             // Movement
             if (getFuckedAI || (AIState != (int)Phase.FlameCocoon && AIState != (int)Phase.SpearCocoon))
             {
@@ -895,6 +898,10 @@ namespace CalamityMod.NPCs.Providence
                         flightPath = 0;
                     if (NPC.Center.X > player.Center.X && flightPath > 0 && distanceX > changeDirectionThreshold)
                         flightPath = 0;
+
+                    // Predictive shot checks
+                    if ((NPC.velocity.X > 0f && (NPC.Center.X - player.Center.X) > 0f && player.velocity.X > 0f) || (NPC.velocity.X < 0f && (NPC.Center.X - player.Center.X) < 0f && player.velocity.X < 0f))
+                        predictiveShots = true;
 
                     // Velocity and acceleration
                     float speedIncreaseTimer = nightAI ? 75f : death ? 120f : 150f;
@@ -1195,23 +1202,11 @@ namespace CalamityMod.NPCs.Providence
 
                         if (NPC.ai[3] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Vector2 npcCenter = NPC.Center;
-                            npcCenter.X += NPC.velocity.X * 7f;
-                            float playerXDist = player.position.X + player.width * 0.5f - npcCenter.X;
-                            float playerYDist = player.Center.Y - npcCenter.Y;
-                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
+                            Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
-                            float projSpeed = (expertMode ? 10.25f : 9f) + velocityBoost;
-
-                            if (revenge)
-                                projSpeed *= 1.15f;
-
-                            playerDistance = projSpeed / playerDistance;
-                            playerXDist *= playerDistance;
-                            playerYDist *= playerDistance;
-
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), npcCenter.X, npcCenter.Y, playerXDist, playerYDist, ModContent.ProjectileType<HolyBlast>(), holyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                            float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition) * projSpeed;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), holyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -1494,25 +1489,12 @@ namespace CalamityMod.NPCs.Providence
 
                         if (NPC.ai[3] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Vector2 npcCenter = NPC.Center;
-                            npcCenter.X += NPC.velocity.X * 7f;
-                            float playerXDist = player.position.X + player.width * 0.5f - npcCenter.X;
-                            float playerYDist = player.Center.Y - npcCenter.Y;
-                            float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
-
-                            float shootBoost2 = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
-                            float projSpeed = (expertMode ? 10.25f : 9f) + shootBoost2;
-                            if (bossRush)
-                                projSpeed = 12.75f;
-
-                            if (revenge)
-                                projSpeed *= 1.15f;
-
-                            playerDistance = projSpeed / playerDistance;
-                            playerXDist *= playerDistance;
-                            playerYDist *= playerDistance;
-
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), npcCenter.X, npcCenter.Y, playerXDist * 0.1f, playerYDist, ModContent.ProjectileType<MoltenBlast>(), moltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                            Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
+                            float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
+                            float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition) * projSpeed;
+                            projectileVelocity.X *= 0.1f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), moltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -1752,7 +1734,7 @@ namespace CalamityMod.NPCs.Providence
 
                     Vector2 dustPosOffset = new Vector2(27f, 59f);
 
-                    float rotation = (nightAI ? 435f : 450f) + (guardianAmt * 5);
+                    float rotation = (nightAI ? 445f : 460f) + (guardianAmt * 5);
 
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] < 120f)
