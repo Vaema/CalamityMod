@@ -22,6 +22,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D BlueTexture;
         public static Texture2D GoldTexture;
 
+        public float RandomOpacityOffset;
         public ref float Variant => ref NPC.ai[1];
         public ref float Leader => ref NPC.ai[2];
         public ref float Role => ref NPC.ai[3];
@@ -87,6 +88,9 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)ShoalColor.Gold;
             }
+
+            RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);
+            NPC.frameCounter = Main.rand.NextFloat(Main.npcFrameCount[Type]);
         }
 
         public override void AI()
@@ -209,23 +213,32 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             Lighting.AddLight(NPC.Center, glowColor.R * intensity, glowColor.G * intensity, glowColor.B * intensity);
             // Sprinkle down ash particles
+            // Trail glowing dust as they move
             if (Main.rand.NextBool(120))
             {
-                Color ashColor = new(40, 48, 41);
+                //Color ashColor = new(40, 48, 41);
+                int dustid = DustID.CoralTorch;
                 switch (Variant)
                 {
                     case (int)ShoalColor.Blue:
-                        ashColor = new(44, 63, 66);
+                        //ashColor = new(44, 63, 66);
+                        dustid = DustID.BoneTorch;
                         break;
                     case (int)ShoalColor.Red:
-                        ashColor = new(79, 41, 42);
+                        //ashColor = new(79, 41, 42);
+                        dustid = DustID.CrimsonTorch;
                         break;
                     case (int)ShoalColor.Gold:
-                        ashColor = Color.Yellow;
+                        //ashColor = Color.Yellow;
+                        dustid = DustID.IchorTorch;
                         break;
                 }
-                Particle ash = new SquareAshParticle(NPC.Center, new Vector2(0, 4), 150, Main.rand.NextFloat(0.85f, 1f), ashColor);
-                GeneralParticleHandler.SpawnParticle(ash);
+                //Particle ash = new SquareAshParticle(NPC.Center, new Vector2(0, 4), 150, Main.rand.NextFloat(0.85f, 1f), ashColor);
+                //GeneralParticleHandler.SpawnParticle(ash);
+
+                Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, dustid, Scale: 1.5f);
+                dust.noGravity = true;
+                dust.velocity = Vector2.Zero;
             }
             if (Variant == (int)ShoalColor.Gold)
             {
@@ -305,7 +318,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void FindFrame(int frameHeight)
         {
-            NPC.frameCounter += 0.075f;
+            NPC.frameCounter += 0.2f;
             NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
@@ -338,7 +351,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Spooky glowey aura effect
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
             Color glowColor = Color.SeaGreen;
             switch (Variant)
             {
@@ -352,7 +365,8 @@ namespace CalamityMod.NPCs.SunkenSea
                     glowColor = Color.Yellow;
                     break;
             }
-            spriteBatch.Draw(bloom, NPC.position - Main.screenPosition + new Vector2(20, 5), null, glowColor * 0.4f, 0f, bloom.Size() / 2f, 0.5f, SpriteEffects.None, 0);
+
+            spriteBatch.Draw(bloom, NPC.Center - Main.screenPosition, null, glowColor * 0.45f, 0f, bloom.Size() / 2f, 0.3f, SpriteEffects.None, 0);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
@@ -390,10 +404,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
+            float sine = MathF.Sin(Main.GlobalTimeWrappedHourly * 3f + RandomOpacityOffset) / 2f + 0.5f;
+
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, drawColor * MathHelper.Lerp(0.4f, 0.8f, sine), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
