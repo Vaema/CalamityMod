@@ -2085,17 +2085,9 @@ namespace CalamityMod.NPCs.Providence
             // Drops Mark of Providence on first kill
             npcLoot.AddIf(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<MarkofProvidence>(), desc: DropHelper.FirstKillText);
 
-            npcLoot.AddConditionalPerPlayer(info =>
-            {
-                Providence prov = info.npc.ModNPC<Providence>();
-                return prov.biomeType != 2 || !prov.hasTakenDaytimeDamage;
-            }, ModContent.ItemType<ElysianWings>(), desc: DropHelper.ProvidenceHallowText);
-
-            npcLoot.AddConditionalPerPlayer(info =>
-            {
-                Providence prov = info.npc.ModNPC<Providence>();
-                return prov.biomeType == 2 || !prov.hasTakenDaytimeDamage;
-            }, ModContent.ItemType<ElysianAegis>(), desc: DropHelper.ProvidenceUnderworldText);
+            // Elysian Wings and Elysian Aegis drop outside of the Treasure Bag, for all players
+            npcLoot.Add(DropHelper.PerPlayer(ModContent.ItemType<ElysianWings>()));
+            npcLoot.Add(DropHelper.PerPlayer(ModContent.ItemType<ElysianAegis>()));
 
             npcLoot.DefineConditionalDropSet(DropHelper.If((info) =>
             {
@@ -2158,32 +2150,6 @@ namespace CalamityMod.NPCs.Providence
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<LoreProvidence>(), desc: DropHelper.FirstKillText);
-        }
-
-        private void SpawnLootBox()
-        {
-            int tileCenterX = (int)NPC.Center.X / 16;
-            int tileCenterY = (int)NPC.Center.Y / 16;
-            int halfBox = 5;
-            for (int x = tileCenterX - halfBox; x <= tileCenterX + halfBox; x++)
-            {
-                for (int y = tileCenterY - halfBox; y <= tileCenterY + halfBox; y++)
-                {
-                    if ((x == tileCenterX - halfBox || x == tileCenterX + halfBox || y == tileCenterY - halfBox || y == tileCenterY + halfBox) && !Main.tile[x, y].HasTile)
-                    {
-                        Main.tile[x, y].TileType = (ushort)ModContent.TileType<ProfanedRock>();
-                        Main.tile[x, y].Get<TileWallWireStateData>().HasTile = true;
-                    }
-
-                    Main.tile[x, y].Get<LiquidData>().LiquidType = LiquidID.Water;
-                    Main.tile[x, y].LiquidAmount = 0;
-
-                    if (Main.netMode == NetmodeID.Server)
-                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
-                    else
-                        WorldGen.SquareTileFrame(x, y, true);
-                }
-            }
         }
 
         public override void BossLoot(ref string name, ref int potionType)
@@ -3041,11 +3007,11 @@ namespace CalamityMod.NPCs.Providence
                     Multiplier = 0.75f;
                     break;
 
-                case (int)Providence.BossMode.Blue: // Same as night
-                case (int)Providence.BossMode.Night:
+                case (int)Providence.BossMode.Blue: // Night Providence no longer inflicts a different debuff, but Blue GFB Providence does
                     BuffType = ModContent.BuffType<Nightwither>();
                     break;
-
+                case (int)Providence.BossMode.Night: //Same as Day, will inflict Holy Flames
+                    break;
                 case (int)Providence.BossMode.Violet:
                     BuffType = ModContent.BuffType<Shadowflame>();
                     Multiplier = 0.60f;

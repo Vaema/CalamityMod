@@ -168,6 +168,9 @@ LifeScythe.DisplayName: Lifehunt Scythe
 LightBeam.DisplayName: Light Beam
 LightningThing.DisplayName: Lightning
 LuxorsGiftMelee.DisplayName: Luxor's Melee
+MantisClawHoldout.DisplayName: Mantis Claw
+MantisClawJet.DisplayName: Mantis Claw Jet
+MantisClawSlash.DisplayName: Mantis Claw Slash
 MercurialTides.DisplayName: Mercurial Tides
 MercurialTidesBlast.DisplayName: Mercurial Blast
 MercurialTidesMonolith.DisplayName: Mercurial Monolith
@@ -304,6 +307,3 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-MantisClawHoldout.DisplayName: Mantis Claw
-MantisClawSlash.DisplayName: Mantis Claw Slash
-MantisClawJet.DisplayName: Mantis Claw Jet

@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class EndoRay : ModProjectile, ILocalizedModType
+    public class EndoHydraRay : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -44,6 +45,10 @@ namespace CalamityMod.Projectiles.Summon
                     Main.dust[idx].noGravity = true;
                 }
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
     }
 }

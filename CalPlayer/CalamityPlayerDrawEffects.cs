@@ -269,6 +269,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
                 Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
 
+            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
+                Voidfrost.DrawEffects(drawInfo);
+
             if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
 

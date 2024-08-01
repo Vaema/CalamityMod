@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -63,6 +64,11 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 10f, 20f);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
         }
 
         public override void OnKill(int timeLeft)
