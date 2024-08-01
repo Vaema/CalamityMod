@@ -172,7 +172,10 @@ namespace CalamityMod.NPCs.SunkenSea
             for (int i = 0; i < 2; i++)
             {
                 int dustPos = NPC.spriteDirection == 1 ? -10 : 0;
+                if (ChildSafety.Disabled)
+                {
                 Dust.NewDust(new Vector2(NPC.Center.X + dustPos, NPC.position.Y + NPC.height / 4), 0, NPC.height / 2, DustID.Blood, -NPC.spriteDirection * Main.rand.NextFloat(4f, 5f), Main.rand.NextFloat(-3, 3), Scale: Main.rand.NextFloat(0.6f, 1f));
+                }
             }
 
             // Update the chain

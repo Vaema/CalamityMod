@@ -167,7 +167,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.frameCounter = 0.0;
                 return;
             }
-            NPC.frameCounter += 0.075f;
+            NPC.frameCounter += 0.1f;
             NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
