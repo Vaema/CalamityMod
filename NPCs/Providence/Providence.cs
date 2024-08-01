@@ -1205,7 +1205,7 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition) * projSpeed;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), holyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
@@ -1492,8 +1492,7 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition) * projSpeed;
-                            projectileVelocity.X *= 0.1f;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), moltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
