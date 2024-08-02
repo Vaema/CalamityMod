@@ -274,7 +274,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (SnapTimer > 0f)
             {
                 int snapTime = PeekingOut ? 45 : 32;
-                float idealSpeed = PeekingOut ? 1.75f : 17f;
+                float idealSpeed = PeekingOut ? 1.75f : 8f;
                 float newSpeed = MathHelper.Lerp(NPC.velocity.Length(), idealSpeed, 0.08f);
                 NPC.velocity = CurrentSnapDirection.ToRotationVector2() * newSpeed;
 
@@ -377,10 +377,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 return false;
 
             Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D body1Texture = SandProwler.BodySprite1;
-            Texture2D body2Texture = SandProwler.BodySprite2;
-            Texture2D body3Texture = SandProwler.BodySprite3;
-            Texture2D body4Texture = SandProwler.BodySprite4;
+            Texture2D body1Texture = SandProwler.BodySprite1.Value;
+            Texture2D body2Texture = SandProwler.BodySprite2.Value;
+            Texture2D body3Texture = SandProwler.BodySprite3.Value;
+            Texture2D body4Texture = SandProwler.BodySprite4.Value;
 
             Vector2 idealDrawPosition = SpotToHideIn;
             Vector2 backOffset = (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * -18f;
