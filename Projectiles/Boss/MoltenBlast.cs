@@ -16,7 +16,12 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class MoltenBlast : ModProjectile, ILocalizedModType
     {
+        private const int TimeLeft = 90;
+        private const int AccelerationTime = 60;
+        private const float Acceleration = 1.05f;
+
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -30,7 +35,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.hostile = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 90;
+            Projectile.timeLeft = TimeLeft;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -49,6 +54,9 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.45f, 0.35f, 0f);
+
+            if (Projectile.timeLeft > TimeLeft - AccelerationTime)
+                Projectile.velocity *= Acceleration;
 
             if (Projectile.Hitbox.Intersects(new Rectangle((int)Projectile.ai[0], (int)Projectile.ai[1], Player.defaultWidth, Player.defaultHeight)))
                 Projectile.tileCollide = true;
@@ -107,8 +115,8 @@ namespace CalamityMod.Projectiles.Boss
                 for (int l = 0; l < 12; l++)
                 {
                     Vector2 dustRotate = Vector2.UnitX * -Projectile.width / 2f;
-                    dustRotate += -Vector2.UnitY.RotatedBy(l * 3.14159274f / 6f, default) * new Vector2(8f, 16f);
-                    dustRotate = dustRotate.RotatedBy(Projectile.rotation - 1.57079637f, default);
+                    dustRotate += -Vector2.UnitY.RotatedBy(l * MathHelper.Pi / 6f, default) * new Vector2(8f, 16f);
+                    dustRotate = dustRotate.RotatedBy(Projectile.rotation - MathHelper.PiOver2, default);
                     int profaned = Dust.NewDust(Projectile.Center, 0, 0, dustType, 0f, 0f, 160, default, 1f);
                     Main.dust[profaned].scale = 1.1f;
                     Main.dust[profaned].noGravity = true;
@@ -166,13 +174,14 @@ namespace CalamityMod.Projectiles.Boss
             int blobAmt = (Projectile.maxPenetrate != (int)Providence.BossMode.Day) ? 9 : 6;
             if (Projectile.owner == Main.myPlayer)
             {
+                Vector2 additionalBlobVelocity = new Vector2(Projectile.velocity.X * 0.1f, Projectile.velocity.Y);
                 for (int b = 0; b < blobAmt; b++)
                 {
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f) + Projectile.velocity;
+                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f) + additionalBlobVelocity;
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= 2f;
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MoltenBlob>(), (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MoltenBlob>(), (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
                 }
             }
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);

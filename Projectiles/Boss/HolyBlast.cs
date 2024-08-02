@@ -23,6 +23,10 @@ namespace CalamityMod.Projectiles.Boss
     {
         public bool started = false;
 
+        private const int TimeLeft = 120;
+        private const int AccelerationTime = 60;
+        private const float Acceleration = 1.05f;
+
         public new string LocalizationCategory => "Projectiles.Boss";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
         public static readonly SoundStyle ImpactSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
@@ -44,7 +48,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.hostile = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = TimeLeft;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -61,6 +65,9 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.9f, 0.7f, 0f);
+
+            if (Projectile.timeLeft > TimeLeft - AccelerationTime)
+                Projectile.velocity *= Acceleration;
 
             if (Projectile.Hitbox.Intersects(new Rectangle((int)Projectile.ai[0], (int)Projectile.ai[1], Player.defaultWidth, Player.defaultHeight)))
                 Projectile.tileCollide = true;
