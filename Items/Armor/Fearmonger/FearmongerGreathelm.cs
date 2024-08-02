@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
                 BuffID.Frostburn,
                 BuffID.CursedInferno,
                 BuffID.ShadowFlame, //doesn't do anything
-                BuffID.Daybreak, //doesn't do anything
+                ModContent.BuffType<Daybroken>(),
                 BuffID.Burning,
                 ModContent.BuffType<Shadowflame>(),
                 ModContent.BuffType<BrimstoneFlames>(),
