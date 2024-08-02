@@ -5,12 +5,12 @@ using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Tools;
@@ -299,7 +299,7 @@ namespace CalamityMod.NPCs
         public int vulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
-        public int RancorBurnTime = 0;
+        public int ashesOnDeath = 0;
 
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
@@ -523,7 +523,7 @@ namespace CalamityMod.NPCs
             myClone.vulnerabilityHex = vulnerabilityHex;
             myClone.banishingFire = banishingFire;
             myClone.wither = wither;
-            myClone.RancorBurnTime = RancorBurnTime;
+            myClone.ashesOnDeath = ashesOnDeath;
 
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
@@ -5291,8 +5291,8 @@ namespace CalamityMod.NPCs
                 banishingFire--;
             if (wither > 0)
                 wither--;
-            if (RancorBurnTime > 0)
-                RancorBurnTime--;
+            if (ashesOnDeath > 0)
+                ashesOnDeath--;
 
             if (cobaltNerfTimer > 0)
                 cobaltNerfTimer--;
@@ -6020,7 +6020,7 @@ namespace CalamityMod.NPCs
         #region Hit Effect
         public override void HitEffect(NPC npc, NPC.HitInfo hit)
         {
-            if (npc.life <= 0 && npc.Organic() && RancorBurnTime > 0)
+            if (npc.life <= 0 && npc.Organic() && ashesOnDeath > 0)
                 DeathAshParticle.CreateAshesFromNPC(npc);
 
             // Cultist shield flicker
@@ -6594,6 +6594,20 @@ namespace CalamityMod.NPCs
             if (absorberAffliction > 0)
                 AbsorberAffliction.DrawEffects(npc, ref drawColor);
 
+            // Rancor's burn effect
+            if (ashesOnDeath > 0)
+            {
+                if (Main.rand.NextBool(4))
+                {
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), ProjectileType<RancorFog>(), 0, 0f, Main.myPlayer, 0f, 0.475f);
+                }
+                if (Main.rand.NextBool(6))
+                {
+                    Vector2 randomPosition = new(npc.position.X + Main.rand.NextFloat(-10f, npc.width + 10f), npc.position.Y + Main.rand.NextFloat(-10f, npc.height + 10f));
+                    RancorLavaMetaball.SpawnParticle(randomPosition, Main.rand.NextFloat(30f, 37f));
+                }
+            }
+
             if (astralInfection > 0)
                 AstralInfectionDebuff.DrawEffects(npc, ref drawColor);
 
@@ -6858,7 +6872,6 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/RancorBurn", NPC => NPC.Calamity().RancorBurnTime > 0),
             ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().rTide > 0),
             ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoisonTime > 0),
             ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishVore > 0),

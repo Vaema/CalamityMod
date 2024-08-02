@@ -391,9 +391,8 @@ GruesomeEminence: {
 	DisplayName: Gruesome Eminence
 	Tooltip:
 		'''
-		Summons a gaseous conglomeration of spirits near the cursor
-		At first, the spirits will fly wildly. This can hurt enemies and players
-		However, over time they will begin to accumulate to create a single, controllable monstrosity
+		Summons a gaseous conglomeration of spirits near the cursor that fly around wildly
+		Over time, the spirits accumulate to create a single, controllable monstrosity
 		[c/C61B40:'The spirits of the amalgam could never pass on to their desired afterlife,]
 		[c/C61B40:Tainted and melded by rage as they were.']
 		'''
@@ -682,7 +681,7 @@ Rancor: {
 	Tooltip:
 		'''
 		Casts a magic circle that charges energy and eventually releases a powerful laser burst of controlled maleficent magic
-		The laser causes arms and searing lava to appear on surfaces it touches which harm both you and enemies
+		The laser causes arms and searing lava to appear on surfaces it touches
 		[c/C61B40:'Forgiveness can only heal so much,]
 		[c/C61B40:If the recipient has not yet forgiven themselves.']
 		'''
