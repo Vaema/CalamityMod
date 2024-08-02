@@ -21,14 +21,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public float turnSpeed = 0.0625f;
         bool TailSpawned = false;
         #region Textures
-        public static Texture2D BodySprite1;
-        public static Texture2D BodySprite2;
-        public static Texture2D BodySprite3;
-        public static Texture2D BodySprite4;
-        public static Texture2D BodySprite5;
-        public static Texture2D BodySprite6;
-        public static Texture2D BodySprite7;
-        public static Texture2D TailSprite;
+        public static Asset<Texture2D> BodySprite1;
+        public static Asset<Texture2D> BodySprite2;
+        public static Asset<Texture2D> BodySprite3;
+        public static Asset<Texture2D> BodySprite4;
+        public static Asset<Texture2D> BodySprite5;
+        public static Asset<Texture2D> BodySprite6;
+        public static Asset<Texture2D> BodySprite7;
+        public static Asset<Texture2D> TailSprite;
         #endregion
 
         public enum AnimType
@@ -63,14 +63,14 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCID.Sets.CantTakeLunchMoney[Type] = true; // It will only eat coins that the AI says it can, and when it does, you aren't getting them back
             if (!Main.dedServ)
             {
-                BodySprite1 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler2", AssetRequestMode.ImmediateLoad).Value;
-                BodySprite2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler3", AssetRequestMode.ImmediateLoad).Value;
-                BodySprite3 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler4", AssetRequestMode.ImmediateLoad).Value;
-                BodySprite4 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler5", AssetRequestMode.ImmediateLoad).Value;
-                BodySprite5 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler6", AssetRequestMode.ImmediateLoad).Value;
-                BodySprite6 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler7", AssetRequestMode.ImmediateLoad).Value;
-                BodySprite7 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler8", AssetRequestMode.ImmediateLoad).Value;
-                TailSprite = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler9", AssetRequestMode.ImmediateLoad).Value;
+                BodySprite1 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler2", AssetRequestMode.AsyncLoad);
+                BodySprite2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler3", AssetRequestMode.AsyncLoad);
+                BodySprite3 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler4", AssetRequestMode.AsyncLoad);
+                BodySprite4 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler5", AssetRequestMode.AsyncLoad);
+                BodySprite5 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler6", AssetRequestMode.AsyncLoad);
+                BodySprite6 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler7", AssetRequestMode.AsyncLoad);
+                BodySprite7 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler8", AssetRequestMode.AsyncLoad);
+                TailSprite = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler9", AssetRequestMode.AsyncLoad);
             }
             Main.npcFrameCount[Type] = 11;
         }
@@ -271,7 +271,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (Main.rand.NextBool(600) && CurrentAnimation == (int)AnimType.None && BlinkTimer <= 0)
                 {
                     CurrentAnimation = (int)AnimType.Blink;
-                    BlinkTimer = 48;
+                    BlinkTimer = Main.rand.NextBool(4) ? 48 : 24;
                 }
             }
             else
@@ -579,29 +579,34 @@ namespace CalamityMod.NPCs.SunkenSea
             Texture2D segmentSprite = TextureAssets.Npc[Type].Value;
             switch (NPC.ai[3])
             {
+                case 0:
+                    break;
                 case 1:
-                    segmentSprite = BodySprite1;
+                    segmentSprite = BodySprite1.Value;
                     break;
                 case 2:
-                    segmentSprite = BodySprite2;
+                    segmentSprite = BodySprite2.Value;
                     break;
                 case 3:
-                    segmentSprite = BodySprite3;
+                    segmentSprite = BodySprite3.Value;
                     break;
                 case 4:
-                    segmentSprite = BodySprite4;
+                    segmentSprite = BodySprite4.Value;
                     break;
                 case 5:
-                    segmentSprite = BodySprite5;
+                    segmentSprite = BodySprite5.Value;
                     break;
                 case 6:
-                    segmentSprite = BodySprite6;
+                    segmentSprite = BodySprite6.Value;
                     break;
                 case 7:
-                    segmentSprite = BodySprite7;
+                    segmentSprite = BodySprite7.Value;
                     break;
                 case 8:
-                    segmentSprite = TailSprite;
+                    segmentSprite = TailSprite.Value;
+                    break;
+                default:
+                    segmentSprite = NPC.ai[3] % 2 == 0 ? BodySprite4.Value : BodySprite3.Value;
                     break;
             }
             float frameDivisor = IsTail ? 8 : IsHead ? Main.npcFrameCount[Type] : 1;
