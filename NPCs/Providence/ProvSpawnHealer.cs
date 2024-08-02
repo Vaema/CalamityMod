@@ -163,12 +163,9 @@ namespace CalamityMod.NPCs.Providence
                 }
             }
 
-            Providence.BossMode mode = Providence.BossMode.Day;
-            if (!Main.dayTime) mode = Providence.BossMode.Night;
+            NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
 
-            NPC.DrawBackglow(ProvUtils.GetProjectileColor((int)mode, 0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
-
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetProjectileColor((int)mode, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             spriteBatch.Draw(texture2D16, drawLocation, NPC.frame, violetLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 

@@ -71,14 +71,12 @@ namespace CalamityMod.Projectiles.Boss
 
                 float a = (float)Math.Sin(amount2 / 20) + 1;
 
-                int mode = (int)Providence.BossMode.Yellow;
-
-                Color color = Color.Lerp(ProvUtils.GetProjectileColor(mode, 0, true), ProvUtils.GetProjectileColor(mode, 0, false), a);
+                Color color = Color.Lerp(ProvUtils.GetProjectileColor(0, true), ProvUtils.GetProjectileColor(0, false), a);
 
                 bool underworld = Projectile.ai[0] == 2f;
                 if (!Main.zenithWorld)
                 {
-                    if (Main.IsItDay())
+                    if (Main.IsItDay() || Main.remixWorld)
                     {
                         color.R = 255;
                         if (underworld)

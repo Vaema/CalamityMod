@@ -5954,7 +5954,7 @@ namespace CalamityMod.NPCs
                 modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    var color = ProvUtils.GetProjectileColor((int)(Main.dayTime ? Providence.Providence.BossMode.Day : Providence.Providence.BossMode.Night), 0);
+                    var color = ProvUtils.GetDayNightColor(!Main.dayTime, 0);
                     float power = Math.Min(npc.height / 100f, 3f);
                     var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
                     var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
