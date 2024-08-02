@@ -2324,7 +2324,7 @@ namespace CalamityMod.NPCs
             }
             if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityLists.bossHPScaleList.Contains(npc.type))
             {
-                double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+                double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);
             }
 
@@ -2527,7 +2527,7 @@ namespace CalamityMod.NPCs
             }
 
             // Reduce mech boss HP and damage depending on the new ore progression changes
-            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
             {
                 if (!NPC.downedMechBossAny)
                 {
@@ -3227,7 +3227,7 @@ namespace CalamityMod.NPCs
             Texture2D npcTexture = texture ?? TextureAssets.Npc[npc.type].Value;
             Vector2 screenOffset = npc.IsABestiaryIconDummy ? Vector2.Zero : Main.screenPosition;
             int afterimageCounter = 1;
-            while (afterimageCounter < NPCID.Sets.TrailCacheLength[npc.type] && CalamityConfig.Instance.Afterimages)
+            while (afterimageCounter < NPCID.Sets.TrailCacheLength[npc.type] && CalamityClientConfig.Instance.Afterimages)
             {
                 Color colorToDraw = Color.Lerp(drawColor, endingColor, afterimageCounter / (float)NPCID.Sets.TrailCacheLength[npc.type]);
                 colorToDraw *= afterimageCounter / (float)NPCID.Sets.TrailCacheLength[npc.type];
@@ -6301,12 +6301,12 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 1.4);
                 maxSpawns = (int)(maxSpawns * 0.4f);
             }
-            if (player.Calamity().zen || (CalamityConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
+            if (player.Calamity().zen || (CalamityServerConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
             {
                 spawnRate = (int)(spawnRate * 2.5);
                 maxSpawns = (int)(maxSpawns * 0.3f);
             }
-            if (player.Calamity().isNearbyBoss && CalamityConfig.Instance.BossZen)
+            if (player.Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
             {
                 spawnRate *= 5;
                 maxSpawns = (int)(maxSpawns * 0.001f);
@@ -6424,7 +6424,7 @@ namespace CalamityMod.NPCs
             }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
-            if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
+            if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
             {
                 pool.Add(NPCType<LavaSlimeNoLavaDrop>(), SpawnCondition.Underworld.Chance);
                 pool.Remove(NPCID.LavaSlime);
@@ -6943,7 +6943,7 @@ namespace CalamityMod.NPCs
         {
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
-                if (CalamityConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityLists.needsDebuffIconDisplayList.Contains(npc.type)))
+                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityLists.needsDebuffIconDisplayList.Contains(npc.type)))
                 {
                     List<Texture2D> currentDebuffs = new List<Texture2D>() { };
 
@@ -7459,7 +7459,7 @@ namespace CalamityMod.NPCs
                         }
                     }
 
-                    Texture2D glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[0].Value : TextureAssets.Dest[0].Value;
+                    Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[0].Value : TextureAssets.Dest[0].Value;
                     switch (npc.type)
                     {
                         default:
@@ -7467,11 +7467,11 @@ namespace CalamityMod.NPCs
                             break;
 
                         case NPCID.TheDestroyerBody:
-                            glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[1].Value : TextureAssets.Dest[1].Value;
+                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[1].Value : TextureAssets.Dest[1].Value;
                             break;
 
                         case NPCID.TheDestroyerTail:
-                            glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[2].Value : TextureAssets.Dest[2].Value;
+                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[2].Value : TextureAssets.Dest[2].Value;
                             break;
                     }
 
@@ -7481,7 +7481,7 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe && CalamityConfig.Instance.NewVanillaTextures)
+            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.NewVanillaTextures)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
                 Texture2D glowTexture = CalamityMod.ProbeGlowmask.Value;
@@ -7795,7 +7795,7 @@ namespace CalamityMod.NPCs
                     float eyeTelegraphGateValue = WallOfFleshAI.LaserShootGateValue - WallOfFleshAI.LaserShootTelegraphTime;
                     if (npc.localAI[1] > eyeTelegraphGateValue || npc.localAI[2] > 0f || enraged)
                     {
-                        Texture2D glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
+                        Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
                         Vector2 halfSize = npc.frame.Size() / 2;
                         SpriteEffects spriteEffects = SpriteEffects.None;
                         if (npc.spriteDirection == 1)
@@ -7947,7 +7947,7 @@ namespace CalamityMod.NPCs
                             float telegraphScalar = MathHelper.Clamp((Math.Abs(PlanteraAI.StopChargeGateValue) - telegraphTimer) / Math.Abs(PlanteraAI.StopChargeGateValue), 0f, 1f);
                             Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
 
-                            if (CalamityConfig.Instance.Afterimages)
+                            if (CalamityClientConfig.Instance.Afterimages)
                             {
                                 int afterimageAmount = 10;
                                 int afterImageIncrement = 2;

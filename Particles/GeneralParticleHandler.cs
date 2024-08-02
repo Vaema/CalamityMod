@@ -90,7 +90,7 @@ namespace CalamityMod.Particles
             if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
                 return;
 
-            if (particles.Count >= CalamityConfig.Instance.ParticleLimit && !particle.Important)
+            if (particles.Count >= CalamityClientConfig.Instance.ParticleLimit && !particle.Important)
                 return;
 
             particles.Add(particle);
@@ -239,7 +239,7 @@ namespace CalamityMod.Particles
             if (Main.dedServ || particles == null)
                 return 0;
 
-            return CalamityConfig.Instance.ParticleLimit - particles.Count();
+            return CalamityClientConfig.Instance.ParticleLimit - particles.Count();
         }
 
         /// <summary>

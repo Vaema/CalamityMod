@@ -263,7 +263,7 @@ namespace CalamityMod.NPCs.Cryogen
                 NPC.ai[2] = 0f;
             }
 
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
             else if (!Main.raining && !BossRushEvent.BossRushActive)
                 CalamityUtils.StartRain();

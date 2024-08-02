@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                                 {
                                     double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                     double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -513,7 +513,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             int damage = NPC.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             {
                                 double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                 double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -702,7 +702,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                                 {
                                     double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                     double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
