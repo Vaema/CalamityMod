@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -30,6 +32,7 @@ namespace CalamityMod.Projectiles.Magic
         public static float BulletSpeed = 15f;
         public int time = 0;
         public float chargePower = 0;
+        public float overchargePower = 0;
         public Color bColor = Color.Chartreuse; // Base color
 
         public float vortexRotation = 0;
@@ -46,6 +49,10 @@ namespace CalamityMod.Projectiles.Magic
                 ChargeSound.Position = Projectile.Center;
 
             chargePower = Utils.GetLerpValue(0, FirstChargeFrames, CurrentChargingFrames, true) * (FullCharge ? 1.3f : 1);
+            if (CurrentOverchargeFrames < FullyChargedFrames)
+                overchargePower = MathHelper.Clamp(Utils.GetLerpValue(FullyChargedFrames * 2, 0, CurrentOverchargeFrames, true), 0.5f, 1);
+            else
+                overchargePower = MathHelper.Lerp(overchargePower, 1, 0.09f);
 
             vortexRotation += 0.4f * chargePower;
 
@@ -64,7 +71,10 @@ namespace CalamityMod.Projectiles.Magic
                     if (FullCharge)
                     {
                         OffsetLengthFromArm -= 25;
-                        SoundEngine.PlaySound(HeliumFlash.ChargeFire, Projectile.Center);
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/ViperSpit");
+                        SoundEngine.PlaySound(fire with { Pitch = -0.3f + Main.rand.NextFloat(-0.1f, 0.1f) + (FirstCharge ? 0.2f : 0) }, Projectile.Center);
+                        SoundStyle fire2 = new("CalamityMod/Sounds/Item/MeldShoot");
+                        SoundEngine.PlaySound(fire2 with { Pitch = -0.3f, Volume = 0.5f }, Projectile.Center);
 
                         // Vipers can apparently have 33 teeth or something like that
                         for (int i = 0; i < 33; i++)
@@ -79,7 +89,7 @@ namespace CalamityMod.Projectiles.Magic
                         {
                             Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
-                            chargefull.scale = Main.rand.NextFloat(0.65f, 0.95f);
+                            chargefull.scale = Main.rand.NextFloat(0.45f, 0.75f);
                             chargefull.noGravity = true;
                             chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);
                         }
@@ -103,15 +113,16 @@ namespace CalamityMod.Projectiles.Magic
                     else
                     {
                         OffsetLengthFromArm -= 15;
-                        SoundEngine.PlaySound(HeliumFlash.ChargeFire with { Pitch = (chargePower * 0.5f) }, Projectile.Center);
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/ViperSpit");
+                        SoundEngine.PlaySound(fire with { Pitch = (chargePower * 0.3f) + Main.rand.NextFloat(-0.1f, 0.1f), Volume = 0.5f }, Projectile.Center);
 
                         Projectile hiss = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * MathHelper.Clamp(chargePower, 0.3f, 1), ModContent.ProjectileType<VitriolicViperSpit>(), (int)(Projectile.damage * MathHelper.Clamp(chargePower, 0.3f, 1)), Projectile.knockBack, Projectile.owner, 0, 0, chargePower);
-                        hiss.extraUpdates = (int)(Utils.Remap(chargePower, 0, 1, 2, 20, true));
+                        hiss.extraUpdates = (int)(Utils.Remap(chargePower, 0, 1, 2, 13, true));
                         for (int i = 0; i < 17; i++)
                         {
                             Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
-                            chargefull.scale = Main.rand.NextFloat(0.75f, 1.15f) * chargePower + 0.1f;
+                            chargefull.scale = Main.rand.NextFloat(0.55f, 0.75f) * chargePower + 0.1f;
                             chargefull.noGravity = true;
                             chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);
                         }
@@ -138,19 +149,27 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (FirstCharge)
                     {
-
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Vector2 dustPos = GunTipPosition + (i * MathHelper.Pi + vortexRotation * 0.35f + MathHelper.PiOver2).ToRotationVector2() * 20f * chargePower * overchargePower;
+                            Dust dust = Dust.NewDustPerfect(dustPos, (int)CalamityDusts.SulphurousSeaAcid, (i * MathHelper.Pi + vortexRotation * 0.35f * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 4);
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(0.85f, 0.9f);
+                        }
                     }
                     else
                     {
-
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition, (int)CalamityDusts.SulphurousSeaAcid, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f) * chargePower * overchargePower);
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.6f, 0.7f);
                     }
                 }
 
                 // Full charge effects
                 if (CurrentChargingFrames == FirstChargeFrames && CurrentOverchargeFrames == 0)
                 {
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
-                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0f }, Projectile.Center);
+                    SoundStyle fire = new("CalamityMod/Sounds/NPCHit/NuclearTerrorHit");
+                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
                     for (int i = 0; i < 18; i++)
                     {
                         Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1, 5);
@@ -162,8 +181,8 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 if (CurrentOverchargeFrames == FullyChargedFrames)
                 {
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
-                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.4f }, Projectile.Center);
+                    SoundStyle fire = new("CalamityMod/Sounds/NPCHit/NuclearTerrorHit");
+                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.2f }, Projectile.Center);
                     for (int i = 0; i < 12; i++)
                     {
                         Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5.5f));
@@ -205,9 +224,9 @@ namespace CalamityMod.Projectiles.Magic
 
             // Glow Orb
             for (int i = 0; i < 3; i++)
-                Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.Chartreuse with { A = 0 } * 0.4f, vortexRotation * (i * 0.3f), rechargeTexture.Size() * 0.5f, (0.5f * 0.14f + i * 0.015f) * chargePower, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.Chartreuse with { A = 0 } * 0.4f, vortexRotation * (i * 0.3f), rechargeTexture.Size() * 0.5f, (0.5f * 0.14f + i * 0.015f) * chargePower * overchargePower, SpriteEffects.None, 0);
 
-            Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.White with { A = 0 } * chargePower, vortexRotation, rechargeTexture.Size() * 0.5f, 0.25f * chargePower * 0.14f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture, GunTipPosition - Main.screenPosition, null, Color.White with { A = 0 } * chargePower, vortexRotation, rechargeTexture.Size() * 0.5f, 0.25f * chargePower * 0.14f * overchargePower, SpriteEffects.None, 0);
 
             // Main staff
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation + (MathHelper.ToRadians(45f * (Projectile.spriteDirection))), rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);

@@ -960,7 +960,12 @@ Viscera: {
 
 VitriolicViper: {
 	DisplayName: Vitriolic Viper
-	Tooltip: Releases a volley of venomous fangs and spit
+	Tooltip:
+		'''
+		Charge to fire either a slithering beam of caustic energy or a spread of powerful fangs
+		The first charging stage fires a piercing beam
+		The second charging stage shoots a spread of short range fangs that quickly dissipate
+		'''
 }
 
 VividClarity: {

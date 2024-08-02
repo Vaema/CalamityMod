@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item46;
+            Item.UseSound = null;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VitriolicViperHoldout>();
             Item.shootSpeed = 20f;

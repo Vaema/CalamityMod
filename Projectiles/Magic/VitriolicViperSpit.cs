@@ -4,6 +4,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,9 +25,9 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 900;
-            Projectile.extraUpdates = 20;
+            Projectile.extraUpdates = 13;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.timeLeft = 300 * Projectile.MaxUpdates;
             Projectile.localNPCHitCooldown = -1;
         }
 
@@ -49,22 +50,32 @@ namespace CalamityMod.Projectiles.Magic
 
             if (time > 3 && targetDist < 1400)
             {
-                Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.3f, false, 13, 0.07f * MathHelper.Clamp(Projectile.ai[2], 0.25f, 1f), Color.Chartreuse, new Vector2(1, 0.7f), true, false, 0.2f);
+                Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.3f, false, (int)(15 * MathHelper.Clamp(Projectile.ai[2], 0.5f, 1f)), 0.07f * MathHelper.Clamp(Projectile.ai[2], 0.25f, 1f), Color.Chartreuse, new Vector2(1, 0.7f), false, true);
                 GeneralParticleHandler.SpawnParticle(spark);
 
                 if (Main.rand.NextBool((int)(MathHelper.Clamp((1 - Projectile.ai[2]) * 5, 1, 15))))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(25, 25), (int)CalamityDusts.SulphurousSeaAcid);
+                    int area = (int)(25 * MathHelper.Clamp(Projectile.ai[2], 0.5f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(area, area), (int)CalamityDusts.SulphurousSeaAcid);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.9f, 1.3f);
-                    dust.velocity = Projectile.velocity * Main.rand.NextFloat(0.2f, 0.7f);
+                    dust.velocity = Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.7f);
                 }
             }
             time++;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 230);
+
+            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/NuclearTerrorHit");
+            SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.7f }, Projectile.Center);
+
+            for (int i = 0; i < (MathHelper.Clamp(6 - Projectile.numHits * 2, 1, 10)); i++)
+            {
+                DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1), Main.rand.NextBool() ? Color.Chartreuse : Color.GreenYellow, new Vector2(1f, 1), 0, Main.rand.NextFloat(0.28f, 0.44f) * MathHelper.Clamp(Projectile.ai[2], 0.5f, 1f), 0f, 50);
+                GeneralParticleHandler.SpawnParticle(pulse);
+            }
 
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.9f);
