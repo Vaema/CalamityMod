@@ -622,11 +622,6 @@ Zerg: {
 	Description: Spawn rates are greatly boosted
 }
 
-RancorBurn: {
-	DisplayName: Rancor Burn
-	Description: Burning
-}
-
 AbyssalDivingSuitBuff: {
 	DisplayName: Abyssal Diving Suit
 	Description: You are made of metal
