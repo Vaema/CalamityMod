@@ -91,8 +91,6 @@ namespace CalamityMod.Projectiles.Boss
 
             Player proviTarget = Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target];
 
-            Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
-
             Projectile.position.X = proviTarget.Center.X - (Projectile.width / 2);
             Projectile.position.Y = proviTarget.Center.Y - (Projectile.height / 2) + proviTarget.gfxOffY - 360f;
             if (proviTarget.gravDir == -1f)
@@ -113,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.alpha == 0 && Main.rand.NextBool(15))
             {
-                Color BaseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
+                Color BaseColor = ProvUtils.GetProjectileColor(0);
                 float Brightness = 0.8f;
                 Color DustColor = Color.Lerp(BaseColor, Color.White, Brightness);
                 Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, DustID.RainbowMk2, 0f, 0f, 100, DustColor, 1f)];
@@ -132,7 +130,7 @@ namespace CalamityMod.Projectiles.Boss
             // At day, fires every 300 frames but lasts 1500-3600 frames.
             // At night, fires every 30 framges but lasts 210 frames.
             // In GFB, fires at night rate for the first 210 frames, then at day rate for the next 1500.
-            bool dayAI = Projectile.maxPenetrate == (int)Providence.BossMode.Day || (Projectile.maxPenetrate >= (int)Providence.BossMode.Red && Projectile.timeLeft < 1500);
+            bool dayAI = ProvUtils.DayAI() || (Main.zenithWorld && Projectile.timeLeft < 1500);
 
             if (Projectile.localAI[0] >= (dayAI ? 300f : 30f))
             {

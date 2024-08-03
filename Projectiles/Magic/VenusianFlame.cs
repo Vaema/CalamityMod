@@ -23,10 +23,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 120;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -105,7 +106,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             //Dust
-            if (Main.rand.NextBool(4))
+            if (Main.rand.NextBool(6))
             {
                 int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[venusDust];
@@ -114,16 +115,18 @@ namespace CalamityMod.Projectiles.Magic
                 dust.scale += (float)Main.rand.Next(50) * 0.01f;
                 dust.noGravity = true;
                 dust.velocity.Y -= 2f;
+                dust.velocity += Projectile.velocity * 0.5f;
             }
-            if (Main.rand.NextBool(10))
+            if (Main.rand.NextBool(14))
             {
-                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
+                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 278, 0f, 0f, 0, default, Main.rand.NextFloat(0.3f, 0.5f));
                 Dust dust2 = Main.dust[venusDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
-                dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
                 dust2.noGravity = true;
                 dust2.velocity *= 0.1f;
+                dust2.velocity += Projectile.velocity * 0.5f;
+                dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.Coral, 0.7f);
             }
         }
 

@@ -87,8 +87,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(50);
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dustType = ProvUtils.GetDustID(pscState);
+            int dustType = ProvUtils.GetDustID(!Main.dayTime);
             for (int d = 0; d < 5; d++)
             {
                 int holy = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, Main.dayTime ? 2f : 0.5f);
@@ -118,9 +117,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
-                return;
-
             Projectile.Kill();
         }
     }

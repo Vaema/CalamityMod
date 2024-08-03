@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class SandProwler : ModNPC
     {
-        public const int maxLength = 9;
+        public const int maxLength = 14;
         public float speed = 3f;
         public float turnSpeed = 0.0625f;
         bool TailSpawned = false;
@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SeaSerpent_Bestiary",
                 PortraitPositionXOverride = 40,
@@ -549,12 +549,18 @@ namespace CalamityMod.NPCs.SunkenSea
 
             return 0f;
         }
+
         public override bool CheckActive()
         {
             return IsHead;
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<Serpentine>(), 4);
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => DefineSandProwlerLoot(npcLoot);
+
+        public static void DefineSandProwlerLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ModContent.ItemType<Serpentine>(), 4);
+        }
 
         public override void HitEffect(NPC.HitInfo hit)
         {

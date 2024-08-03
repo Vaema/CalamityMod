@@ -391,9 +391,8 @@ GruesomeEminence: {
 	DisplayName: Gruesome Eminence
 	Tooltip:
 		'''
-		Summons a gaseous conglomeration of spirits near the cursor
-		At first, the spirits will fly wildly. This can hurt enemies and players
-		However, over time they will begin to accumulate to create a single, controllable monstrosity
+		Summons a gaseous conglomeration of spirits near the cursor that fly around wildly
+		Over time, the spirits accumulate to create a single, controllable monstrosity
 		[c/C61B40:'The spirits of the amalgam could never pass on to their desired afterlife,]
 		[c/C61B40:Tainted and melded by rage as they were.']
 		'''
@@ -596,7 +595,7 @@ ParasiticSceptor: {
 
 PhantasmalFury: {
 	DisplayName: Phantasmal Fury
-	Tooltip: Casts a phantasmal bolt that explodes into more bolts
+	Tooltip: Casts a vortex of homing souls around you that repels enemies and will fly towards your cursor after a few seconds
 }
 
 PhoenixFlameBarrage: {
@@ -682,7 +681,7 @@ Rancor: {
 	Tooltip:
 		'''
 		Casts a magic circle that charges energy and eventually releases a powerful laser burst of controlled maleficent magic
-		The laser causes arms and searing lava to appear on surfaces it touches which harm both you and enemies
+		The laser causes arms and searing lava to appear on surfaces it touches
 		[c/C61B40:'Forgiveness can only heal so much,]
 		[c/C61B40:If the recipient has not yet forgiven themselves.']
 		'''
@@ -751,7 +750,7 @@ ShaderainStaff: {
 
 ShadowboltStaff: {
 	DisplayName: Shadowbolt Staff
-	Tooltip: The more tiles and enemies the beam bounces off of or travels through the more damage the beam does
+	Tooltip: Fires a shadow beam that creates a platform to redirect itself back at enemies for increased damage
 }
 
 ShiftingSands: {
