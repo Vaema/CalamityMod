@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -374,6 +376,28 @@ namespace CalamityMod.NPCs.SunkenSea
             => NPC.DistanceSQ(PathfindingPoints[^1]) < 80f * 80f ||
             NPC.DistanceSQ(CurrentlyFollowedPathPoint) > 240f * 240f ||
             PathfindingPoints[^1] == CurrentlyFollowedPathPoint && NPC.velocity == Vector2.Zero;
+
+        /// <summary>
+        /// Spawns an emote particle.
+        /// </summary>
+        protected void React(Color emoteColor, EmoteExpressionParticle.EmoteType emoteImage, SoundStyle? sound = null)
+        {
+            if (!Main.dedServ)
+            {
+                var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
+                Particle emote = new EmoteExpressionParticle(
+                    NPC.Center + emoteDirection * 2f,
+                    emoteDirection,
+                    2.2f,
+                    emoteColor,
+                    Main.rand.Next(30, 46),
+                    emoteImage);
+                GeneralParticleHandler.SpawnParticle(emote);
+
+                if (sound is not null)
+                    SoundEngine.PlaySound(sound, NPC.Center);
+            }
+        }
 
         #endregion
 

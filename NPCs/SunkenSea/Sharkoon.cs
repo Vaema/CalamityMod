@@ -212,7 +212,17 @@ namespace CalamityMod.NPCs.SunkenSea
             return true;
         }
 
-        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone) => CurrentBehavior = ExplodingBehavior;
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            if (IsBig)
+                CurrentBehavior = ExplodingBehavior;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit)
+        {
+            if (IsBig)
+                CurrentBehavior = ExplodingBehavior;
+        }
 
         #endregion
 
@@ -253,7 +263,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.velocity.HasNaNs())
                 ConeDetectionDirection = (NPC.rotation * MathF.Sign(NPC.velocity.Y) + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0f)).ToRotationVector2();
 
-            NPC.rotation = MathHelper.ToRadians(NPC.velocity.LengthSquared()) * MathF.Sign(NPC.velocity.X);
+            NPC.rotation = MathHelper.ToRadians(NPC.velocity.Length() * 3f) * MathF.Sign(NPC.velocity.X);
 
             if (MathF.Abs(NPC.velocity.X) > 2f)
                 NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
@@ -297,9 +307,6 @@ namespace CalamityMod.NPCs.SunkenSea
             if (PreviousBehavior == RecoveringBehavior)
                 RecoverTimer = 0f;
 
-            if (newBehavior == HuntBehavior || newBehavior == AvoidBehavior)
-                ScaleSquish.Y += 0.4f;
-
             NPC.noGravity = newBehavior != OutsideWaterBehavior;
         }
 
@@ -307,20 +314,39 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             // If it's not a small fish and it's not being chased by a predator, the Sharkoon may hunt.
             if (IsBig && CurrentPredator is null)
+            {
                 CurrentBehavior = HuntBehavior;
+                React(Color.Orange * 0.6f, EmoteExpressionParticle.EmoteType.Exclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+            }
+
+            ScaleSquish.Y += 1.4f;
         }
 
         protected override void OnPredatorDetection(NPC predator)
         {
             // Regardless of anything, if it detects a predator, time to run.
             CurrentBehavior = AvoidBehavior;
+
+            MaximumSpeed *= 1.2f;
+
+            React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+
+            ScaleSquish.Y += 1.4f;
         }
 
         protected override void OnPlayerDetection(Player player)
         {
             // If the Sharkoon is shy, it'll run away from the player.
             if (Personality == PersonalityType.Shy)
+            {
                 CurrentBehavior = AvoidBehavior;
+                React(Color.Orange, EmoteExpressionParticle.EmoteType.QuestionExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+            }
+
+            if (Personality == PersonalityType.Curious)
+                React(Color.Green, EmoteExpressionParticle.EmoteType.Question, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+
+            ScaleSquish.Y += 0.4f;
         }
 
         private void IdlingBehavior()
@@ -379,24 +405,27 @@ namespace CalamityMod.NPCs.SunkenSea
             if (entityToAvoid is null)
             {
                 CurrentBehavior = IdlingBehavior;
+                MaximumSpeed /= MaximumSpeed % 1.2f == 0f ? 1.2f : 1f;
                 return;
             }
 
+            bool isAvoidingPredator = entityToAvoid is NPC && (entityToAvoid as NPC).whoAmI == CurrentPredator.whoAmI;
+
             if (PathfindingPoints is null)
             {
-                Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(300f, 400f)).ToSafeTileCoordinates();
+                float fleeingDistance = isAvoidingPredator ? 600f : 300f;
 
-                var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, 300f);
+                Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
+
+                var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, fleeingDistance);
 
                 while (!grid.Contains(randomEscapePoint))
-                {
-                    randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(300f, 400f)).ToSafeTileCoordinates();
-                }
+                    randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
 
                 MakePath(randomEscapePoint.ToWorldCoordinates(), grid);
             }
             else
-                GenericPathFollowing(acceleration: 0.14f, pathFollowingSpeed: 0.07f, conditionToFinishFollowing: FinishedPathfinding());
+                GenericPathFollowing(acceleration: 0.14f * (isAvoidingPredator ? 2f : 1f), pathFollowingSpeed: 0.07f * (isAvoidingPredator ? 2.2f : 1f), conditionToFinishFollowing: FinishedPathfinding());
 
             // If it's capable of exploding and the predator's within distance, kaboom.
             if (IsBig && NPC.DistanceSQ(entityToAvoid.Center) < DistanceToKaboom * DistanceToKaboom && entityToAvoid is NPC && AvoidNPCs.Contains((entityToAvoid as NPC).type))
