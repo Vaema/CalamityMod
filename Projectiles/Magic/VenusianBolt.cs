@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
                 float explosionKB = 6f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VenusianExplosion>(), explosionDamage, explosionKB, Projectile.owner);
 
-                int cinderDamage = (int)(Projectile.damage * 0.01);
+                int cinderDamage = (int)(Projectile.damage * 0.02);
                 float cinderKB = 0f;
                 Vector2 cinderPos = Projectile.Center;
                 int numCinders = 10;
