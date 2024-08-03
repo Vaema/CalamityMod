@@ -290,7 +290,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.ai[2] += phase3 ? 1.2f : 0.8f;
                 if (NPC.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
                 {
-                    bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 400f &&
+                    bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - 320f &&
                         Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[Main.npc[(int)NPC.ai[0]].target].Center, NPC.Center) > 400f;
 
                     bool shouldCharge = !phase2 && !allArmsDead && !CalamityWorld.LegendaryMode;
@@ -319,22 +319,22 @@ namespace CalamityMod.NPCs.NormalNPCs
                 else
                     NPC.rotation = NPC.velocity.X / 15f;
 
-                float acceleration = (bossRush ? 0.2f : 0.125f) + (death ? 0.05f * (1f - lifeRatio) : 0f);
+                float acceleration = (bossRush ? 0.16f : 0.12f) + (death ? 0.05f * (1f - lifeRatio) : 0f);
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
-                    acceleration += 0.025f;
-                    accelerationMult += 0.5f;
+                    acceleration += 0.0125f;
+                    accelerationMult += 0.25f;
                 }
                 if (!laserAlive)
                 {
-                    acceleration += 0.025f;
-                    accelerationMult += 0.5f;
+                    acceleration += 0.0125f;
+                    accelerationMult += 0.25f;
                 }
                 if (!viceAlive)
-                    acceleration += 0.025f;
+                    acceleration += 0.0125f;
                 if (!sawAlive)
-                    acceleration += 0.025f;
+                    acceleration += 0.0125f;
                 acceleration *= accelerationMult;
 
                 float topVelocity = acceleration * 100f;
@@ -351,7 +351,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     headDecelerationDownDist = 50f;
                 }
 
-                if (NPC.position.Y > Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (400f + headDecelerationUpDist))
+                if (NPC.position.Y > Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (320f + headDecelerationUpDist))
                 {
                     if (NPC.velocity.Y > 0f)
                         NPC.velocity.Y *= deceleration;
@@ -361,7 +361,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.velocity.Y > topVelocity)
                         NPC.velocity.Y = topVelocity;
                 }
-                else if (NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (450f + headDecelerationDownDist))
+                else if (NPC.position.Y < Main.player[Main.npc[(int)NPC.ai[0]].target].position.Y - (360f + headDecelerationDownDist))
                 {
                     if (NPC.velocity.Y < 0f)
                         NPC.velocity.Y *= deceleration;
@@ -725,10 +725,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.rotation = NPC.velocity.X / 15f;
 
-                    float flightVelocity = bossRush ? 32f : death ? 28f : 24f;
-                    float flightAcceleration = bossRush ? 1.28f : death ? 1.12f : 0.96f;
+                    float flightVelocity = bossRush ? 28f : death ? 25f : 22f;
+                    float flightAcceleration = bossRush ? 1.16f : death ? 0.96f : 0.76f;
 
-                    Vector2 destination = new Vector2(Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X, Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - 500f);
+                    Vector2 destination = new Vector2(Main.player[Main.npc[(int)NPC.ai[0]].target].Center.X, Main.player[Main.npc[(int)NPC.ai[0]].target].Center.Y - 420f);
                     NPC.SimpleFlyMovement((destination - NPC.Center).SafeNormalize(Vector2.UnitY) * flightVelocity, flightAcceleration);
 
                     // Spit bombs and then go to floating phase
