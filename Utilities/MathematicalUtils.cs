@@ -401,6 +401,12 @@ namespace CalamityMod
                 return pathfinding.FindPath();
             }
 
+            public static List<Vector2> GetPath(List<Point> grid, Vector2 start, Vector2 goal)
+            {
+                var pathfinding = new AStar(grid, start.ToTileCoordinates(), goal.ToTileCoordinates());
+                return pathfinding.FindPath();
+            }
+
             private List<Vector2> FindPath()
             {
                 while (openList.Count > 0)
@@ -463,6 +469,50 @@ namespace CalamityMod
                 }
 
                 return neighbors;
+            }
+
+            public static List<Point> MakeGenericGrid(Vector2 position, float size, Func<Point, bool> adjacentTileValidation = null)
+            {
+                adjacentTileValidation ??= GenericAdjacentTileValidation;
+                
+                List<Point> grid = new();
+
+                Point topLeftCorner = ToSafeTileCoordinates(position + new Vector2(-size, -size));
+                Point bottomRightCorner = ToSafeTileCoordinates(position + new Vector2(size, size));
+
+                for (int coordY = topLeftCorner.Y; coordY <= bottomRightCorner.Y; coordY++)
+                {
+                    for (int coordX = topLeftCorner.X; coordX <= bottomRightCorner.X; coordX++)
+                    {
+                        Point point = new(coordX, coordY);
+
+                        if (Main.tile[point].IsTileSolid() || Main.tile[point].LiquidAmount != 255 || !adjacentTileValidation.Invoke(point))
+                            continue;
+
+                        grid.Add(point);
+                    }
+                }
+
+                return grid;
+            }
+
+            private static bool GenericAdjacentTileValidation(Point point)
+            {
+                Vector2[] adjacents = new Vector2[12]
+                {
+                Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY,
+                new(1f, 1f), new(1f, -1f), new(-1f, -1f), new(-1f, 1f),
+                Vector2.UnitX * 2f, -Vector2.UnitX * 2f, Vector2.UnitY * 2f, -Vector2.UnitY * 2f
+                };
+
+                foreach (var adjacent in adjacents)
+                {
+                    Point adjacentPoint = new(point.X + (int)adjacent.X, point.Y + (int)adjacent.Y);
+                    if (Main.tile[adjacentPoint].IsTileSolid())
+                        return false;
+                }
+
+                return true;
             }
         }
 
