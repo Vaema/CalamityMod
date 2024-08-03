@@ -95,8 +95,8 @@ namespace CalamityMod.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SulphuricScale>(20).
                 AddRecipeGroup("IronBar", 10).
+                AddIngredient<SulphuricScale>().
                 AddTile(TileID.Anvils).
                 Register();
         }
