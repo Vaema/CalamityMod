@@ -519,9 +519,10 @@ Metastasis: {
 	Tooltip:
 		'''
 		Summons a Sepulcher to fight for you
-		While the Sepulcher is active brimstone hearts will begin to appear and orbit you
-		It will attempt to attack you more and more frequently depending on how many hearts are present
-		It takes up 4 minion slots and it can only be summoned once
+		While the Sepulcher is active, brimstone hearts will begin to appear and orbit you
+		When too many hearts are present, it will interrupt attacking to attack the hearts instead
+		This happens more frequently depending on how many hearts are present
+		Requires 4 minion slots to use and can only be summoned once
 		[c/C61B40:A contemplated possible future of the cosmic serpent,]
 		[c/C61B40:A gruesome warning for those blinded by the hunger for power.]
 		'''
