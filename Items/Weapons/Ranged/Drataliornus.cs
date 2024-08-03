@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<DrataliornusBow>(), 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DrataliornusBow>(), 0, 0f, player.whoAmI);
             }
 
             return false;

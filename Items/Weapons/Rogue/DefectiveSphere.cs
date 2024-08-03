@@ -86,13 +86,9 @@ namespace CalamityMod.Items.Weapons.Rogue
                     if (stealth.WithinBounds(Main.maxProjectiles))
                         Main.projectile[stealth].Calamity().stealthStrike = true;
                 }
+                return false;
             }
-            else
-            {
-                //Does this even need to exist? Can't you just return true for this?
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            }
-            return false;
+            return true;
         }
     }
 }

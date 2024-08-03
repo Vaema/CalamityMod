@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -41,12 +40,6 @@ namespace CalamityMod.Items.Weapons.Magic
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DarkSparkPrism>(), damage, knockback, player.whoAmI, 0.0f, 0.0f);
-            return false;
-        }
 
         public override void AddRecipes()
         {

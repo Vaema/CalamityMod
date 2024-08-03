@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (fireShot)
-                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.03f), ModContent.ProjectileType<P90Round>(), damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.03f), ModContent.ProjectileType<P90Round>(), damage, knockback, player.whoAmI);
             fireShot = !fireShot;
             return false;
         }
