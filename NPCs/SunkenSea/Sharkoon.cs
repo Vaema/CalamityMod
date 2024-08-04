@@ -209,6 +209,8 @@ namespace CalamityMod.NPCs.SunkenSea
             if (attacker.whoAmI == NPC.whoAmI)
                 return false;
 
+            CurrentBehavior = ExplodingBehavior;
+
             return true;
         }
 
@@ -307,6 +309,12 @@ namespace CalamityMod.NPCs.SunkenSea
             if (PreviousBehavior == RecoveringBehavior)
                 RecoverTimer = 0f;
 
+            if (newBehavior == AvoidBehavior)
+                MaximumSpeed *= 1.2f;
+
+            if (PreviousBehavior == AvoidBehavior)
+                MaximumSpeed /= 1.2f;
+
             NPC.noGravity = newBehavior != OutsideWaterBehavior;
         }
 
@@ -316,10 +324,9 @@ namespace CalamityMod.NPCs.SunkenSea
             if (IsBig && CurrentPredator is null)
             {
                 CurrentBehavior = HuntBehavior;
+                ScaleSquish.Y += 0.4f;
                 React(Color.Orange * 0.6f, EmoteExpressionParticle.EmoteType.Exclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
             }
-
-            ScaleSquish.Y += 1.4f;
         }
 
         protected override void OnPredatorDetection(NPC predator)
@@ -327,15 +334,16 @@ namespace CalamityMod.NPCs.SunkenSea
             // Regardless of anything, if it detects a predator, time to run.
             CurrentBehavior = AvoidBehavior;
 
-            MaximumSpeed *= 1.2f;
-
             React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
 
-            ScaleSquish.Y += 1.4f;
+            ScaleSquish.Y += 0.4f;
         }
 
         protected override void OnPlayerDetection(Player player)
         {
+            if (CurrentPredator is not null)
+                return;
+
             // If the Sharkoon is shy, it'll run away from the player.
             if (Personality == PersonalityType.Shy)
             {
@@ -405,27 +413,31 @@ namespace CalamityMod.NPCs.SunkenSea
             if (entityToAvoid is null)
             {
                 CurrentBehavior = IdlingBehavior;
-                MaximumSpeed /= MaximumSpeed % 1.2f == 0f ? 1.2f : 1f;
                 return;
             }
 
             bool isAvoidingPredator = entityToAvoid is NPC && (entityToAvoid as NPC).whoAmI == CurrentPredator.whoAmI;
 
-            if (PathfindingPoints is null)
+            if (Main.tile[(NPC.Center + NPC.DirectionFrom(entityToAvoid.Center) * 80f).ToTileCoordinates()].IsTileSolid())
             {
-                float fleeingDistance = isAvoidingPredator ? 600f : 300f;
+                if (PathfindingPoints is null)
+                {
+                    float fleeingDistance = isAvoidingPredator ? 600f : 400f;
 
-                Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
+                    Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
 
-                var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, fleeingDistance);
+                    var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, fleeingDistance);
 
-                while (!grid.Contains(randomEscapePoint))
-                    randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
+                    while (!grid.Contains(randomEscapePoint))
+                        randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
 
-                MakePath(randomEscapePoint.ToWorldCoordinates(), grid);
+                    MakePath(randomEscapePoint.ToWorldCoordinates(), grid);
+                }
+                else
+                    GenericPathFollowing(acceleration: 0.14f * (isAvoidingPredator ? 2f : 1f), pathFollowingSpeed: 0.07f * (isAvoidingPredator ? 2.2f : 1f), conditionToFinishFollowing: FinishedPathfinding());
             }
             else
-                GenericPathFollowing(acceleration: 0.14f * (isAvoidingPredator ? 2f : 1f), pathFollowingSpeed: 0.07f * (isAvoidingPredator ? 2.2f : 1f), conditionToFinishFollowing: FinishedPathfinding());
+                NPC.velocity += NPC.DirectionFrom(entityToAvoid.Center) * 0.14f;
 
             // If it's capable of exploding and the predator's within distance, kaboom.
             if (IsBig && NPC.DistanceSQ(entityToAvoid.Center) < DistanceToKaboom * DistanceToKaboom && entityToAvoid is NPC && AvoidNPCs.Contains((entityToAvoid as NPC).type))
