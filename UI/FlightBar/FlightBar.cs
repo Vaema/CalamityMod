@@ -35,7 +35,7 @@ namespace CalamityMod.UI
                 return disabledBarTexture;
             if ((modPlayer.infiniteFlight || RidingInfiniteFlightMount(modPlayer.Player)) && completedAnimation)
                 return infiniteBarTexture;
-            if (modPlayer.weakPetrification || modPlayer.vHex || modPlayer.icarusFolly || modPlayer.DoGExtremeGravity)
+            if (modPlayer.weakPetrification || modPlayer.icarusFolly || modPlayer.DoGExtremeGravity)
                 return limitedBarTexture;
             return borderTexture;
         }
