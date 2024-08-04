@@ -65,6 +65,10 @@ namespace CalamityMod.Buffs
                 player.pickSpeed += 0.05f;
                 player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
+            else if (type == BuffID.Weak)
+            {
+                player.GetAttackSpeed<MeleeDamageClass>() += 0.051f;
+            }
             else if (type == BuffID.Shine)
             {
                 player.Calamity().shine = true;

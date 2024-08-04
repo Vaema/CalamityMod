@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.timeLeft % 14 == 0)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TurbulanceWindSlash>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner, 1f, 1f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TurbulanceWindSlash>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack / 2, Projectile.owner, 1f, 1f);
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            OnHitEffects(hit.Crit);
+            OnHitEffects(hit.Crit || Main.rand.NextBool(3));
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int w = 0; w < 4; w++)
+                for (int w = 0; w < 3; w++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TurbulanceWindSlash>(), Projectile.damage / 3, Projectile.knockBack / 3, Main.myPlayer, 0f, homeIn ? 1f : 0f);

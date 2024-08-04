@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
@@ -104,6 +105,9 @@ namespace CalamityMod
                         Wiring.SkipWire(x + k, y + l);
                 }
             }
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendTileSquare(-1, x, y, tileX, tileY);
         }
 
         public static void DrawFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
@@ -276,10 +280,45 @@ namespace CalamityMod
             }
             return true;
         }
+        public static bool IsTileExposedToAir(int x, int y) => IsTileExposedToAir(x, y, out _);
+
+        public static bool IsTileExposedToAir(int x, int y, out float? angleToOpenAir)
+        {
+            angleToOpenAir = null;
+            if (!ParanoidTileRetrieval(x - 1, y).HasTile)
+            {
+                angleToOpenAir = MathHelper.Pi;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x + 1, y).HasTile)
+            {
+                angleToOpenAir = 0f;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y - 1).HasTile)
+            {
+                angleToOpenAir = MathHelper.PiOver2;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y + 1).HasTile)
+            {
+                angleToOpenAir = -MathHelper.PiOver2;
+                return true;
+            }
+
+            return false;
+        }
 
         public static bool TileActiveAndOfType(int x, int y, int type)
         {
             return ParanoidTileRetrieval(x, y).HasTile && ParanoidTileRetrieval(x, y).TileType == type;
+        }
+
+        // Extension shorthand for the Tile Framing System Universal Merges.
+        // As this must be defined in a static class, it's out here in CalamityUtils.
+        public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
+        {
+            TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
         }
 
         /// <summary>
@@ -685,10 +724,10 @@ namespace CalamityMod
 
             if (ignoreAbyss)
             {
-                tileExcludeList.Add(ModContent.TileType<AbyssGravel>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantle>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantleMolten>());
-                tileExcludeList.Add(ModContent.TileType<Voidstone>());
+                tileExcludeList.Add(TileType<AbyssGravel>());
+                tileExcludeList.Add(TileType<PyreMantle>());
+                tileExcludeList.Add(TileType<PyreMantleMolten>());
+                tileExcludeList.Add(TileType<Voidstone>());
             }
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);

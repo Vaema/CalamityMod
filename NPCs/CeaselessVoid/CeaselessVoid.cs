@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Dusts;
+using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -67,8 +68,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
             global.DR = 0.5f;
             NPC.LifeMaxNERB(65000, 78000, 72000);
             NPC.value = Item.buyPrice(2, 0, 0, 0);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -78,6 +77,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.BossBar = ModContent.GetInstance<CeaselessVoidBossBar>();
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -92,11 +94,11 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(NPC.dontTakeDamage);
+            writer.Write(playedbuildsound);
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
             writer.Write(NPC.localAI[2]);
             writer.Write(NPC.localAI[3]);
-            writer.Write(playedbuildsound);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -206,6 +208,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
             DownedBossSystem.downedCeaselessVoid = true;
             CalamityNetcode.SyncWorld();

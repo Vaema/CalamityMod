@@ -158,6 +158,15 @@ CalamityConfig: {
 			'''
 	}
 
+	FasterRopeClimbSpeed: {
+		Label: "[i:Rope] Increase Rope Climb Speed"
+		Tooltip:
+			'''
+			Increases the player's rope climb speed substantially by increasing acceleration and deceleration while on a rope.
+			Calamity is balanced around this setting being enabled.
+			'''
+	}
+
 	FasterFallHotkey: {
 		Label: "[i:CalamityMod/BallAndChain] Enable Fast Falling"
 		Tooltip:
@@ -476,6 +485,11 @@ CalamityConfig: {
 			Adds the vanilla debuffs Potion Sickness and Chaos State to the Cooldown Rack.
 			The debuffs will still appear in the buffs array, but this may help make them more visible.
 			'''
+	}
+
+	VCMMStatusMessage: {
+		Label: "[i:MusicBoxMartians] VCMM Status Message"
+		Tooltip: Enable or disable the status message promoting the Vanilla Calamity Music Mod that plays on world entry.
 	}
 
 	WikiStatusMessage: {

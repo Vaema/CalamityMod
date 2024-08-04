@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -47,6 +48,16 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
             }
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.BeesKnees).
+                AddIngredient<PlagueCellCanister>(10).
+                AddIngredient<InfectedArmorPlating>(5).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

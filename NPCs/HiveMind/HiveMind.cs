@@ -121,8 +121,6 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.height = 122;
             NPC.defense = 8;
             NPC.LifeMaxNERB(7700, 9200, 350000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -198,6 +196,9 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -838,8 +839,8 @@ namespace CalamityMod.NPCs.HiveMind
                     phase2timer--;
 
                     // Use an attack sooner if being hit
-                    if (NPC.justHit)
-                        phase2timer -= masterMode ? 7 : expertMode ? 5 : 3;
+                    if (NPC.justHit && masterMode)
+                        phase2timer -= 4;
 
                     // Use an attack sooner if target is close
                     if (NPC.Distance(player.Center) < 160f)
@@ -1296,6 +1297,10 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If neither The Hive Mind nor The Perforator Hive have been killed yet, notify players of Aerialite Ore

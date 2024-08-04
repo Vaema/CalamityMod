@@ -21,7 +21,8 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item122;
             Item.consumable = true;
-            Item.rare = ItemRarityID.Purple;  // Not researchable, only drops one time.
+            Item.rare = ItemRarityID.Purple;
+            Item.SetRevExclusive();
         }
 
         public override bool CanUseItem(Player player) => !player.Calamity().rageBoostThree;

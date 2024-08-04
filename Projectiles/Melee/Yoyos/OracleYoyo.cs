@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         private const float MinDischargeRate = 0.05f;
         private const float MaxDischargeRate = 0.53f;
         private const float DischargeRateScaleFactor = 0.003f;
-        private const float ChargePerHit = 6f;
+        private const float ChargePerHit = 4f;
         private float rotationAngle = 0;
         private bool rotDirection = false;
         private const int HitsPerOrbVolley = 2;
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.MaxUpdates = UpdatesPerFrame;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8 * UpdatesPerFrame;
+            Projectile.localNPCHitCooldown = 5 * UpdatesPerFrame;
         }
 
         public override void AI()
@@ -339,7 +339,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         {
             int numOrbs = 3;
             int orbID = ModContent.ProjectileType<Orbacle>();
-            int orbDamage = Projectile.damage * 2;
+            int orbDamage = Projectile.damage;
             float orbKB = 8f;
             float angleVariance = MathHelper.TwoPi / numOrbs;
             float spinOffsetAngle = MathHelper.Pi / (2f * numOrbs);

@@ -72,9 +72,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.defense = 15;
             NPC.value = Item.buyPrice(0, 40, 0, 0);
             NPC.LifeMaxNERB(41000, 49200, 780000);
-            NPC.DR_NERD(0.15f);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -88,6 +86,9 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -111,8 +112,8 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            NPC.chaseable = reader.ReadBoolean();
             currentMode = reader.ReadInt32();
+            NPC.chaseable = reader.ReadBoolean();
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
             NPC.localAI[3] = reader.ReadSingle();
@@ -240,6 +241,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Wizard }, DownedBossSystem.downedBrimstoneElemental);

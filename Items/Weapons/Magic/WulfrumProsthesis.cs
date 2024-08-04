@@ -136,7 +136,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
             Texture2D properSprite = RealSprite.Value;
 
-            spriteBatch.Draw(properSprite, Item.position - Main.screenPosition, null, lightColor, rotation, properSprite.Size() / 2f, scale, 0, 0);
+            spriteBatch.Draw(properSprite, Item.Center - Main.screenPosition, null, lightColor, rotation, properSprite.Size() / 2f, scale, 0, 0);
 
             return false;
         }

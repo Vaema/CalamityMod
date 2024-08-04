@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.OnFire3, 240);
+            target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.ShadowFlame, 240);
             int slashCreatorID = ModContent.ProjectileType<DarklightGreatswordSlashCreator>();
             int slashDamage = (int)(player.CalcIntDamage<MeleeDamageClass>(Item.damage) * TrueMeleeSlashProjectileDamageMultiplier);
             float slashKnockback = Item.knockBack * TrueMeleeSlashProjectileDamageMultiplier;
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.OnFire3, 240);
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.ShadowFlame, 240);
 
         public override void AddRecipes()
         {

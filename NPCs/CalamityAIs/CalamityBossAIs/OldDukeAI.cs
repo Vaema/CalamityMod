@@ -47,11 +47,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            float exhaustionGateValue = 300f;
+            float exhaustionGateValue = 360f;
             if (Main.getGoodWorld)
                 exhaustionGateValue *= 0.5f;
 
-            float exhaustionIncreasePerAttack = exhaustionGateValue * 0.1f;
+            float numberOfAttacksBeforeExhaustion = 12f;
+            float exhaustionIncreasePerAttack = exhaustionGateValue * (1f / numberOfAttacksBeforeExhaustion);
             bool exhausted = calamityGlobalNPC.newAI[1] == 1f;
             bool phase2 = lifeRatio <= (death ? 0.8f : revenge ? 0.7f : 0.5f);
             bool phase3 = lifeRatio <= (death ? 0.5f : (revenge ? 0.35f : 0.2f)) && expertMode;
@@ -70,7 +71,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
-            else if (!Main.raining)
+            else if (!Main.raining && !BossRushEvent.BossRushActive)
                 CalamityUtils.StartRain();
 
             // Adjust stats

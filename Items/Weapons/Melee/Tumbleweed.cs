@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,11 +9,12 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Tumbleweed : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults() => ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 36;
-            Item.damage = 125;
+            Item.damage = 63;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 20;
             Item.useAnimation = 20;

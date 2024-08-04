@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.color = InnerColor;
 
-                CalamityUtils.HomeInOnNPC(Projectile, false, 600f, 12f, 20f);
+                CalamityUtils.HomeInOnNPC(Projectile, false, 600f, 12f, 15f);
             }
         }
 
@@ -95,16 +95,13 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Projectile.timeLeft = 27 * Projectile.MaxUpdates;
-            float numberOflines = 5;
-            float rotFactorlines = 360f / numberOflines;
-            for (int i = 0; i < numberOflines; i++)
+
+            for (int i = 0; i < 2; i++)
             {
-                float rot = MathHelper.ToRadians(i * rotFactorlines);
-                Vector2 offset = new Vector2(Main.rand.NextFloat(1, 3.1f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
-                Vector2 velOffset = new Vector2(Main.rand.NextFloat(1, 3.1f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
-                AltSparkParticle spark = new AltSparkParticle(Projectile.Center + offset, velOffset, false, 20, Main.rand.NextFloat(1.9f, 2.3f), Color.Black);
-                GeneralParticleHandler.SpawnParticle(spark);
+                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.3f, 0.6f, 25, false);
+                GeneralParticleHandler.SpawnParticle(blastRing);
             }
+
             float numberOfDusts = 12;
             float rotFactor = 360f / numberOfDusts;
             for (int i = 0; i < numberOfDusts; i++)

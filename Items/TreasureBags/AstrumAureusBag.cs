@@ -80,7 +80,7 @@ namespace CalamityMod.Items.TreasureBags
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<SuspiciousLookingJellyBean>());
-            itemLoot.Add(ModContent.ItemType<GravistarSabaton>());
+            itemLoot.Add(ModContent.ItemType<InterstellarStompers>());
             itemLoot.AddRevBagAccessories();
 
             // Vanity

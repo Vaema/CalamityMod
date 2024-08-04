@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalRay>().
+                AddIngredient<Nucleosynthesis>().
                 AddIngredient<PhantasmalFury>().
                 AddIngredient<ShadowboltStaff>().
                 AddIngredient<UltraLiquidator>().

@@ -87,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 xVec *= speedMult;
                 yVec *= speedMult;
                 directionToShoot = new Vector2(xVec, yVec);
-                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

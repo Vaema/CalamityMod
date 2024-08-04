@@ -34,11 +34,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 22;
             NPC.defense = 15;
             NPC.DR_NERD(0.15f);
-
             NPC.lifeMax = 240;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-
             NPC.knockBackResist = 0.7f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -222,9 +218,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override Color? GetAlpha(Color drawColor)
         {
-            Color initialColor = new Color(0, 150, 0);
+            Color initialColor = new Color(100, 175, 100);
             Color newColor = initialColor;
-            Color finalColor = new Color(125, 255, 125);
+            Color finalColor = new Color(150, 255, 150);
             float colorTelegraphGateValue = (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue) - LightTelegraphDuration;
             if (NPC.ai[1] > colorTelegraphGateValue)
                 newColor = Color.Lerp(initialColor, finalColor, (NPC.ai[1] - colorTelegraphGateValue) / LightTelegraphDuration);

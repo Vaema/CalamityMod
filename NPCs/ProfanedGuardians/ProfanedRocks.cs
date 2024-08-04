@@ -50,8 +50,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.height = 50;
             NPC.defense = 100;
             NPC.lifeMax = BossRushEvent.BossRushActive ? MaxBossRushHP : MaxHP;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.Opacity = 0f;
             NPC.noGravity = true;
@@ -327,8 +325,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Rectangle frame = new Rectangle(0, 0, texture.Width, texture.Height);
 
+            Color col = Color.Orange;
+
+            if (!Main.dayTime) col = Color.LightBlue;
+
             if (!NPC.dontTakeDamage)
-                NPC.DrawBackglow(Color.Orange, 4f, SpriteEffects.None, frame, screenPos, texture);
+                NPC.DrawBackglow(col.MultiplyRGBA(new Color(255, 255, 255, 0)), 4f, SpriteEffects.None, frame, screenPos, texture);
 
             spriteBatch.Draw(texture, drawPos, frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0f);
 

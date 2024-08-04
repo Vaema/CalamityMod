@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
@@ -10,6 +11,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Particles;
@@ -52,7 +54,7 @@ namespace CalamityMod.Projectiles
         public bool CreatedByPlayerDash = false;
 
         // Speed cap for accelerating boss laser projectiles with 2 extraUpdates.
-        public const float AcceleratingBossLaserVelocityCap = 10f;
+        public const float AcceleratingBossLaserVelocityCap = 8f;
 
         // Damage Adjusters
         public const float PierceResistHarshness = 0.12f;
@@ -236,8 +238,6 @@ namespace CalamityMod.Projectiles
 
             if (pointBlankShotDuration > 0)
                 pointBlankShotDuration--;
-            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
-                pointBlankShotDistanceTravelled += projectile.velocity.Length() * projectile.MaxUpdates;
 
             // Reduce secondary yoyo damage if the player has Yoyo Glove
             // Brief behavior documentation of yoyo AI: ai[0, 1] are the x, y co-ords and localAI[0] is the airtime in frames
@@ -267,6 +267,15 @@ namespace CalamityMod.Projectiles
                     projectile.damage = (int)(projectile.ai[2] * 0.5f);
                 else
                     projectile.damage = (int)projectile.ai[2];
+            }
+
+            // This code fixes the wacky close-up burst damage bug which occurs with double yoyos and local iframes.
+            // Oh my good friends, do not ask me how or why this works, for I do not know!
+            // That being said, PLEASE DON'T REMOVE THIS, unless you think The Microwave killing Provi in 2 seconds with no effort is okay.
+            if (projectile.aiStyle == ProjAIStyleID.Yoyo)
+            {
+                if (projectile.ai[0] == -1)
+                    projectile.Kill();
             }
 
             // Chlorophyte Crystal AI rework.
@@ -379,7 +388,7 @@ namespace CalamityMod.Projectiles
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
                     float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
-                        homingEndTime += 90f;
+                        homingEndTime += 60f;
 
                     // Stop homing when within a certain distance of the target
                     if (Vector2.Distance(projectile.Center, Main.player[num133].Center) < ((revSkeletronPrimeHomingSkull && ((Main.masterMode && CalamityWorld.revenge) || BossRushEvent.BossRushActive)) ? 192f : 96f) && projectile.ai[1] < homingEndTime)
@@ -2506,12 +2515,12 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.RocketSkeleton && projectile.ai[1] == 1f)
+                else if (projectile.type == ProjectileID.RocketSkeleton && projectile.ai[1] >= 1f)
                 {
                     bool primeCannonProjectile = projectile.ai[1] == 2f;
                     bool homeIn = false;
-                    float homingTime = masterMode ? 90f : 180f;
-                    float spreadOutCutoffTime = 555f;
+                    float homingTime = masterMode ? 80f : 140f;
+                    float spreadOutCutoffTime = 510f;
                     float homeInCutoffTime = spreadOutCutoffTime - homingTime;
                     float minAcceleration = masterMode ? 0.072f : 0.08f;
                     float maxAcceleration = masterMode ? 0.108f : 0.12f;
@@ -2662,7 +2671,7 @@ namespace CalamityMod.Projectiles
                             {
                                 int totalProjectiles = masterMode ? 12 : 8;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
-                                int type = ModContent.ProjectileType<ThornBallSpike>();
+                                int type = ProjectileType<ThornBallSpike>();
                                 float velocity = 1f;
                                 Vector2 spinningPoint = new Vector2(0f, -velocity);
                                 for (int k = 0; k < totalProjectiles; k++)
@@ -3631,7 +3640,7 @@ namespace CalamityMod.Projectiles
 
             if (!projectile.npcProj && !projectile.trap && projectile.friendly && projectile.damage > 0)
             {
-                if (modPlayer.fungalSymbiote && CalamityLists.MushroomProjectileIDs.Contains(projectile.type))
+                if (modPlayer.fungalSymbiote && player.HasBuff(BuffType<Mushy>()))
                 {
                     if (Main.player[projectile.owner].miscCounter % 6 == 0 && projectile.FinalExtraUpdate())
                     {
@@ -3802,7 +3811,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case CalamityGlobalBuff.ModdedFlaskEnchant:
-                                int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
+                                int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
                                 if (Main.rand.NextBool(4))
                                 {
                                     Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
@@ -3822,7 +3831,7 @@ namespace CalamityMod.Projectiles
                 {
                     if ((player.Calamity().flaskBrimstone || player.Calamity().flaskCrumbling || player.Calamity().flaskHoly) && !projectile.noEnchantments && !projectile.noEnchantmentVisuals)
                     {
-                        int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
+                        int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
                         if (Main.rand.NextBool(player.Calamity().flaskCrumbling ? 5 : 4))
                         {
                             Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
@@ -3841,6 +3850,16 @@ namespace CalamityMod.Projectiles
                     {
                         Dust dust = Dust.NewDustDirect(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.GemDiamond, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 0, default, 0.5f);
                         dust.noGravity = true;
+                    }
+                }
+
+                // Adds Elemental Gauntlet dust to melee projectiles to mirror Fire Gauntlet's behavior.
+                if (modPlayer.eGauntlet && modPlayer.eGauntletVisuals && projectile.CountsAsClass<MeleeDamageClass>() )
+                {
+                    if (Main.rand.NextBool(3))
+                    {
+                        int element = Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.RainbowTorch, projectile.oldVelocity.X * 0.5f, projectile.oldVelocity.Y * 0.5f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.25f);
+                        Main.dust[element].noGravity = true;
                     }
                 }
 
@@ -3879,7 +3898,7 @@ namespace CalamityMod.Projectiles
                     PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f, Color.Crimson * 0.7f);
                     GeneralParticleHandler.SpawnParticle(spark);
 
-                    Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : ModContent.DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
+                    Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.5f, 1f);
                 }
@@ -4034,6 +4053,12 @@ namespace CalamityMod.Projectiles
                 if (flatDRTimer <= 0)
                     flatDR = 0;
             }
+
+            // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
+            // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
+            // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
+            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
+                pointBlankShotDistanceTravelled += projectile.velocity.Length();
 
             // optimization to remove conversion X/Y loop for irrelevant projectiles
             bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
@@ -4197,13 +4222,13 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
-            // damageScale = 0.1f + player.velocity.Length() / 7f * 0.9f
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
+                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
+                float vanillaVelocityDamageMultiplier = 0.1f + player.velocity.Length() / 7f * 0.9f;
                 float baseVelocityDamageMultiplier = 0.01f + player.velocity.Length() * 0.002f;
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
-                modifiers.SourceDamage *= calamityVelocityDamageMultiplier;
+                modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
             // If applicable, use ricoshot bonus damage.
@@ -4370,7 +4395,10 @@ namespace CalamityMod.Projectiles
             if (Main.LocalPlayer.Calamity().omniscience && projectile.hostile && projectile.damage > 0 && projectile.alpha < 255)
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
-                    return Color.Coral;
+                {
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
+                    return mainColor;
+                }
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)
@@ -4778,7 +4806,7 @@ namespace CalamityMod.Projectiles
                             int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
                             if (Main.zenithWorld)
                             {
-                                beeType = Main.rand.NextBool(3) ? ModContent.NPCType<PlagueChargerLarge>() : ModContent.NPCType<PlagueCharger>();
+                                beeType = Main.rand.NextBool(3) ? NPCType<PlagueChargerLarge>() : NPCType<PlagueCharger>();
                             }
                             else if (Main.masterMode || BossRushEvent.BossRushActive)
                             {

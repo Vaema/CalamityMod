@@ -59,7 +59,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
         private const int OpenMouthStopFrame = 4;
 
-        public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/DesertScourgeRoar");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/DesertScourgeHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/DesertScourgeDeath");
+        public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeRoar");
+        public static readonly SoundStyle SandBlastSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeSandBlast");
 
         public override void SetStaticDefaults()
         {
@@ -92,9 +95,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.LifeMaxNERB(4200, 5000, 1650000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
-
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -104,8 +104,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
 
             if (Main.getGoodWorld)
@@ -117,6 +117,9 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -565,7 +568,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (lungeUpward && NPC.Center.Y <= NPC.Calamity().newAI[3] + LungeUpwardDistanceOffset - LungeUpwardCutoffDistance && Math.Abs(NPC.Center.X - player.Center.X) < 480f && !quickFall)
             {
                 // Spit a huge spread of sand upwards that falls down
-                SoundEngine.PlaySound(SoundID.NPCDeath13, NPC.Center);
+                SoundEngine.PlaySound(SandBlastSound, NPC.Center);
                 float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 16f : bossRush ? 10f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
                 int type = ModContent.ProjectileType<DesertScourgeSpit>();
                 int damage = NPC.GetProjectileDamage(type);
@@ -921,6 +924,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If Desert Scourge has not been killed yet, notify players that the Sunken Sea is open and Sandstorms can happen.

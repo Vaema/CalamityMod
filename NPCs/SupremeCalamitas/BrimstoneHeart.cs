@@ -19,18 +19,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             Main.npcFrameCount[NPC.type] = 6;
         }
 
         public override void SetDefaults()
         {
-            NPC.damage = 50;
+            NPC.damage = 0;
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 0;
             NPC.lifeMax = 15000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -61,9 +60,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (CalamityGlobalNPC.SCal < 0 || !Main.npc[CalamityGlobalNPC.SCal].active)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)

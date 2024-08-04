@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -62,12 +63,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.height = 40;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.defense = 60;
             NPC.DR_NERD(NormalDR);
             NPC.lifeMax = 28000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
@@ -105,9 +104,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             // Die if SCal is no longer present.
             if (CalamityGlobalNPC.SCal < 0 || !SCal.active)
             {
@@ -210,6 +206,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             float distanceFromSCal = Main.getGoodWorld ? 300f : 225f;
             NPC.position = SCal.Center - MathHelper.ToRadians(RotationalDegreeOffset).ToRotationVector2() * distanceFromSCal - NPC.Size * 0.5f;
+            NPC.velocity = Vector2.Zero;
             RotationalDegreeOffset += 0.5f;
         }
 

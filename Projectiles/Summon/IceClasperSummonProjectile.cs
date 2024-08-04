@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 120);
 
         public override bool PreDraw(ref Color lightColor)
         {

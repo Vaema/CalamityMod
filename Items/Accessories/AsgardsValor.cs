@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,17 +10,20 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class AsgardsValor : ModItem, ILocalizedModType
+    public class AsgardsValor : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public Color? TooltipExtensionColor => new(195, 223, 255);
+
         public const int ShieldSlamDamage = 200;
         public const float ShieldSlamKnockback = 9f;
         public const int ShieldSlamIFrames = 12;
 
         public override void SetDefaults()
         {
-            Item.width = 38;
-            Item.height = 44;
+            Item.width = 50;
+            Item.height = 48;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.defense = 8; // we buff Ankh Shield to 8

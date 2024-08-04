@@ -82,9 +82,9 @@ namespace CalamityMod.NPCs.DevourerofGods
         }
 
         // Laser spread variables
-        private const int shotSpacingMax = 1470;
+        private const int shotSpacingMax = 1440;
         private int shotSpacing = shotSpacingMax;
-        private const int totalShots = 14;
+        private const int totalShots = 10;
         private const int spacingVar = shotSpacingMax / totalShots * 2;
         private int laserWallType = 0;
         private const float laserWallSpacingOffset = 16f;
@@ -125,11 +125,11 @@ namespace CalamityMod.NPCs.DevourerofGods
         }
 
         // Laser wall variables
-        private const int shotSpacingMax_Phase2 = 1470;
+        private const int shotSpacingMax_Phase2 = 1440;
         private int[] shotSpacing_Phase2 = new int[4] { shotSpacingMax_Phase2, shotSpacingMax_Phase2, shotSpacingMax_Phase2, shotSpacingMax_Phase2 };
-        private const int spacingVar_Phase2 = 105;
-        private const int totalShots_Phase2 = 28;
-        private const int totalDiagonalShots = 8;
+        private const int spacingVar_Phase2 = 120;
+        private const int totalShots_Phase2 = 24;
+        private const int totalDiagonalShots = 6;
         private const int diagonalSpacingVar = shotSpacingMax_Phase2 / totalDiagonalShots * 2;
         private int laserWallType_Phase2 = 0;
         public int laserWallPhase = 0;
@@ -202,8 +202,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.height = 104;
             NPC.defense = 50;
             NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.takenDamageMultiplier = 1.1f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -219,6 +217,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -949,7 +950,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[3], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
                                         }
 
-                                        shotSpacing_Phase2[3] -= Main.rand.NextBool() ? 180 : 200;
+                                        shotSpacing_Phase2[3] -= Main.rand.NextBool() ? 215 : 235;
                                     }
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -2664,6 +2665,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedDoG);

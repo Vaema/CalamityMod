@@ -148,11 +148,11 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // All further tasks occur after vanilla worldgen is completed
+            // All further tasks occur right before vanilla worldgen is completed (which includes The Dirtiest Block and final secret seed adjustments)
             int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (FinalIndex != -1)
             {
-                int currentFinalIndex = FinalIndex;
+                int currentFinalIndex = FinalIndex - 1;
 
                 // Reallocate gems so rarity corresponds to depth
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Gem Depth Adjustment", (progress, config) =>
@@ -306,6 +306,16 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
                     MiscWorldgenRoutines.PlaceRoxShrine();
                 }));
+
+                // No Traps/GFB Auric Land Mines
+                if (Main.noTrapsWorld)
+                {
+                    tasks.Insert(++currentFinalIndex, new PassLegacy("Auric Land Mines", (progress, config) =>
+                    {
+                        progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AuricLandMines").Value;
+                        MiscWorldgenRoutines.GenerateAuricLandMines();
+                    }));
+                }
             }
         }
 

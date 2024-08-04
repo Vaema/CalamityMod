@@ -41,8 +41,9 @@ namespace CalamityMod.Items.Armor.Reaver
             modPlayer.reaverExplore = true;
             modPlayer.wearingRogueArmor = true;
             player.findTreasure = true;
-            player.blockRange += 4;
             player.aggro -= 200;
+            if (player.IsUnderwater())
+                player.gills = true;
 
             if (player.whoAmI == Main.myPlayer)
             {
@@ -55,6 +56,10 @@ namespace CalamityMod.Items.Armor.Reaver
                 {
                     Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<ReaverOrb>(), 0, 0f, player.whoAmI);
                 }
+
+                // These are static variables. Awesome
+                Player.tileRangeX += 7;
+                Player.tileRangeY += 7;
             }
         }
 
@@ -63,8 +68,8 @@ namespace CalamityMod.Items.Armor.Reaver
             player.ignoreWater = true;
             player.lavaImmune = true;
             player.pickSpeed -= 0.2f;
-            player.tileSpeed += 0.4f;
-            player.wallSpeed += 0.4f;
+            player.tileSpeed += 0.5f;
+            player.wallSpeed += 0.5f;
         }
 
         public override void AddRecipes()

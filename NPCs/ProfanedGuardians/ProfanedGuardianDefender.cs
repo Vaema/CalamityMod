@@ -5,6 +5,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -65,8 +66,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.defense = 50;
             NPC.DR_NERD(0.4f);
             NPC.LifeMaxNERB(40000, 48000, 35000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -794,7 +793,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedGlowColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                Providence.Providence.BossMode mode = Providence.Providence.BossMode.Day;
+                if (!Main.dayTime) mode = Providence.Providence.BossMode.Night;
+
+                NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             // Draw laser effects

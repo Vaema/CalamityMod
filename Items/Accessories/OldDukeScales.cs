@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("DukeScales")]
-    public class OldDukeScales : ModItem, ILocalizedModType
+    public class OldDukeScales : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
 

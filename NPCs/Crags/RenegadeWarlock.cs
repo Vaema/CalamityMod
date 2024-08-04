@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -99,6 +100,9 @@ namespace CalamityMod.NPCs.Crags
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2);
+
+            npcLoot.AddIf(() => (NPC.downedPlantBoss), ModContent.ItemType<Hellkite>(), 8);
+
             LeadingConditionRule postProv = npcLoot.DefineConditionalDropSet(DropHelper.PostProv());
             postProv.Add(ModContent.ItemType<Bloodstone>(), 4);
         }

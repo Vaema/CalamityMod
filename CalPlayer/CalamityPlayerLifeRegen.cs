@@ -75,7 +75,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //
-            // Calamity debuffs (Vanilla Shadowflame is added here)
+            // Calamity debuffs (Vanilla Shadowflame and Daybroken are added here)
             //
             void ApplyDoTDebuff(bool hasDebuff, int negativeLifeRegenToApply, bool immuneCondition = false)
             {
@@ -104,8 +104,10 @@ namespace CalamityMod.CalPlayer
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
+            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(hFlames, 40, purity);
+            ApplyDoTDebuff(voidfrost, 40, purity);
             ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
@@ -118,12 +120,13 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
-            ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 60) / (dynamoStemCells ? 2 : 1);
+            ApplyDoTDebuff(dragonFire, dragonfireDoT);
             int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
             ApplyDoTDebuff(miracleBlight, 80);
 
-            // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player starts taking damage over time.
+            // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;
             if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
             {
@@ -142,7 +145,7 @@ namespace CalamityMod.CalPlayer
             }
 
             bool ASPoisoning = ASPoisonLevel > 0f;
-            if (ASPoisoning || ((ZoneSulphur || Player.Calamity().ZoneAbyssLayer1) && !Player.creativeGodMode && Player.IsUnderwater() && !decayEffigy && !abyssalDivingSuit && !Player.lavaWet && !Player.honeyWet && !nearSafeZone))
+            if (ASPoisoning || ((ZoneSulphur || ZoneAbyssLayer1) && !Player.creativeGodMode && Player.IsUnderwater() && !decayEffigy && !abyssalDivingSuit && !Player.lavaWet && !Player.honeyWet && !nearSafeZone))
             {
                 float increment = 1f / SulphSeaWaterSafetyTime;
                 //No way to mitigate AS Poisoning
@@ -152,6 +155,8 @@ namespace CalamityMod.CalPlayer
                     increment *= 0.5f;
                 if (sulphurSet && !ASPoisoning)
                     increment *= 0.5f;
+                if (ZoneAbyssLayer1 && !ASPoisoning)
+                    increment *= 0.33f;
 
                 SulphWaterPoisoningLevel = MathHelper.Clamp(SulphWaterPoisoningLevel + increment, 0f, 1f);
                 if (SulphWaterPoisoningLevel >= 1f)
@@ -650,29 +655,12 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-            if (ursaSergeant)
-            {
-                if (Player.statLife <= (int)(actualMaxLife * 0.15))
-                {
-                    Player.lifeRegen += 3;
-                    Player.lifeRegenTime += 3;
-                }
-                else if (Player.statLife <= (int)(actualMaxLife * 0.25))
-                {
-                    Player.lifeRegen += 2;
-                    Player.lifeRegenTime += 2;
-                }
-                else if (Player.statLife <= (int)(actualMaxLife * 0.5))
-                {
-                    Player.lifeRegen += 1;
-                    Player.lifeRegenTime += 1;
-                }
-            }
-
+            // Remember this is for 5 seconds after triggering a reflect with a long cooldown
             if (evolutionLifeRegenCounter > 0)
             {
-                Player.lifeRegenTime += 2;
-                Player.lifeRegen += 2;
+                Player.lifeRegen += 12;
+                if (Player.lifeRegenTime < 3600f)
+                    Player.lifeRegenTime = 3600f;
             }
 
             if (darkSunRing)

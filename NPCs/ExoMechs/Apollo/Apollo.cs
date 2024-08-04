@@ -154,8 +154,6 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.defense = 100;
             NPC.DR_NERD(0.25f);
             NPC.LifeMaxNERB(1250000, 1495000, 650000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
@@ -169,6 +167,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

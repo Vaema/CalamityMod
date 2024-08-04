@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs;
 using Microsoft.Xna.Framework;
@@ -29,6 +30,8 @@ namespace CalamityMod.Skies
         {
             get
             {
+                if (BossRushEvent.BossRushActive)
+                    return false;
                 int draedon = CalamityGlobalNPC.draedon;
                 if (draedon == -1 || !Main.npc[draedon].active)
                     return Draedon.ExoMechIsPresent;

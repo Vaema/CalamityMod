@@ -23,6 +23,7 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             if (!Main.dedServ)
             {
@@ -35,7 +36,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.npcSlots = 1f;
-            NPC.damage = 30;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 30;
@@ -80,9 +81,6 @@ namespace CalamityMod.NPCs.Crags
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             bool provy = DownedBossSystem.downedProvidence;
             Player target = Main.player[NPC.target];
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || target.dead)

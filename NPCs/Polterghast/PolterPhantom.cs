@@ -47,8 +47,6 @@ namespace CalamityMod.NPCs.Polterghast
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax *= 4;
 
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -59,6 +57,9 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadRotation(ref float rotation)

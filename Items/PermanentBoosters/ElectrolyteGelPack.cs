@@ -18,6 +18,7 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item122;
             Item.consumable = true;
+            Item.SetRevExclusive();
         }
 
         public override bool CanUseItem(Player player)

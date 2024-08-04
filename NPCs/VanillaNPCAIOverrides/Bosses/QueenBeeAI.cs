@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool masterMode = Main.masterMode || bossRush;
@@ -213,7 +213,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (phase == 4)
                         phase = 5;
 
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     npc.ai[0] = phase;
                     npc.ai[1] = 0f;
 
@@ -856,7 +856,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Fire stingers
                 bool canFireStingers = stingerSpawnLocation.Y < Main.player[npc.target].Top.Y - maxDistance * 0.8f || !canHitTarget;
-                if (canFireStingers)
+                if (canFireStingers && npc.ai[1] < phaseLimit)
                 {
                     npc.ai[1] += 1f;
                     if (npc.ai[1] % stingerAttackTimer == 0f && npc.ai[1] != 0f && npc.ai[1] != phaseLimit)
@@ -897,17 +897,30 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                // Movement calculations
-                npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
-
-                // Go to a random phase
+                // Go to a random phase after pausing for a bit
                 if (npc.ai[1] >= phaseLimit)
                 {
-                    npc.ai[0] = -1f;
-                    npc.ai[1] = 4f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
+                    npc.ai[1] += 1f;
+
+                    if (npc.Distance(Main.player[npc.target].Center) > 400f || !canHitTarget)
+                    {
+                        idealVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * stingerAttackSpeed;
+                        npc.SimpleFlyMovement(idealVelocity * 0.5f, stingerAttackAccel * 0.5f);
+                    }
+                    else
+                        npc.velocity *= 0.8f;
+
+                    float idleTime = masterMode ? 120f : 180f;
+                    if (npc.ai[1] >= phaseLimit + idleTime)
+                    {
+                        npc.ai[0] = -1f;
+                        npc.ai[1] = 4f;
+                        npc.ai[2] = 0f;
+                        npc.netUpdate = true;
+                    }
                 }
+                else
+                    npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
             }
 
             if (Main.netMode == NetmodeID.Server)
@@ -927,7 +940,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             bool enrage = true;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
@@ -1024,7 +1037,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 while ((float)num647 == num646);
 
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 npc.ai[0] = num647;
                 npc.ai[1] = 0f;
                 npc.ai[2] = 0f;

@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             // Spawn hands
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -131,7 +131,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 int despawnDistanceInTiles = 500;
                 if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistanceInTiles)
                 {
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     if (Main.player[npc.target].dead || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistanceInTiles)
                         npc.ai[1] = 3f;
                 }
@@ -158,38 +158,38 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool handsDead = numHandsAlive == 0;
             int numProj = Main.getGoodWorld ? 22 : death ? 5 : 3;
             float spread = MathHelper.ToRadians(Main.getGoodWorld ? 180 : 60);
-            float headSpinVelocityMult = bossRush ? (phase3 ? 18f : 9f) : (phase3 ? 13.5f : 4.5f);
+            float headSpinVelocityMult = bossRush ? (phase3 ? 18f : 9f) : (phase3 ? 12f : 4.5f);
 
             switch (numHandsAlive)
             {
                 case 0:
                     numProj = Main.getGoodWorld ? 36 : death ? 9 : 7;
                     spread = MathHelper.ToRadians(Main.getGoodWorld ? 180 : death ? 90 : 82);
-                    headSpinVelocityMult = bossRush ? (phase3 ? 18f : 12f) : (phase3 ? 13.5f : 6f);
+                    headSpinVelocityMult = bossRush ? (phase3 ? 18f : 12f) : (phase3 ? 12f : 6f);
                     break;
 
                 case 1:
                     numProj = Main.getGoodWorld ? 27 : death ? 7 : 5;
                     spread = MathHelper.ToRadians(Main.getGoodWorld ? 150 : death ? 76 : 68);
-                    headSpinVelocityMult = bossRush ? (phase3 ? 15f : 10f) : (phase3 ? 12.75f : 5f);
+                    headSpinVelocityMult = bossRush ? (phase3 ? 15f : 10f) : (phase3 ? 11.5f : 5f);
                     break;
 
                 case 2:
                     numProj = Main.getGoodWorld ? 18 : death ? 6 : 4;
                     spread = MathHelper.ToRadians(Main.getGoodWorld ? 140 : death ? 70 : 62);
-                    headSpinVelocityMult = bossRush ? (phase3 ? 13.5f : 9f) : (phase3 ? 12f : 4.5f);
+                    headSpinVelocityMult = bossRush ? (phase3 ? 13.5f : 9f) : (phase3 ? 11f : 4.5f);
                     break;
 
                 case 3:
                     numProj = Main.getGoodWorld ? 15 : death ? 5 : 3;
                     spread = MathHelper.ToRadians(Main.getGoodWorld ? 130 : death ? 64 : 56);
-                    headSpinVelocityMult = bossRush ? (phase3 ? 12f : 8f) : (phase3 ? 11.25f : 4f);
+                    headSpinVelocityMult = bossRush ? (phase3 ? 12f : 8f) : (phase3 ? 10.5f : 4f);
                     break;
 
                 case 4:
                     numProj = Main.getGoodWorld ? 12 : death ? 4 : 3;
                     spread = MathHelper.ToRadians(Main.getGoodWorld ? 120 : 56);
-                    headSpinVelocityMult = bossRush ? (phase3 ? 10.5f : 7f) : (phase3 ? 10.5f : 3.5f);
+                    headSpinVelocityMult = bossRush ? (phase3 ? 10f : 7f) : (phase3 ? 10f : 3.5f);
                     break;
             }
 
@@ -363,7 +363,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Teleport
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[3] >= teleportGateValue + 120)
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[3] >= teleportGateValue + 120 && (!(npc.ai[1] == 1f && phase3) || masterMode))
                 {
                     // Teleport dust
                     for (int m = 0; m < 30; m++)
@@ -449,7 +449,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (masterMode)
                     forcedMoveAwayTime *= 0.5f;
 
-                float canChargeDistance = phase3 ? 640f : 320f; // 20 tile distance, 40 tile distance in phase 3
+                float canChargeDistance = phase3 ? 480f : 320f; // 20 tile distance, 30 tile distance in phase 3
                 bool hasMovedForcedDistance = npc.localAI[2] >= forcedMoveAwayTime;
                 bool canCharge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= canChargeDistance;
                 bool charge = npc.ai[2] >= chargePhaseGateValue && canCharge;
@@ -489,7 +489,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (!canCharge || !hasMovedForcedDistance)
                     {
-                        float phase5Multiplier = 1.5f;
+                        float phase5Multiplier = 1.33f;
                         float maxVelocity = (npc.ai[2] - moveAwayGateValue) * (moveAwayVelocity * 0.008f);
                         if (phase5)
                             maxVelocity *= phase5Multiplier;
@@ -501,6 +501,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             maxVelocity = maxVelocityCap;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * -maxVelocity;
+
+                        npc.SyncMotionToServer();
                     }
 
                     // New charge attack
@@ -727,7 +729,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[1] = 0f;
                     calamityGlobalNPC.newAI[1] = 0f;
 
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     npc.SyncVanillaLocalAI();
                     npc.SyncExtraAI();
                     npc.netUpdate = true;
@@ -860,7 +862,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             float yMultiplier = 1f;
             if (calamityGlobalNPC.newAI[0] != 0f)
@@ -1244,7 +1246,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -1270,7 +1272,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (Main.player[npc.target].dead || Math.Abs(npc.position.X - Main.player[npc.target].position.X) > 2000f || Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
             {
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 if (Main.player[npc.target].dead || Math.Abs(npc.position.X - Main.player[npc.target].position.X) > 2000f || Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
                     npc.ai[1] = 3f;
             }
@@ -1441,7 +1443,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[2] = 0f;
                     npc.ai[1] = 0f;
-                    npc.TargetClosest();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 }
 
                 npc.rotation += (float)npc.direction * 0.3f;
@@ -1568,7 +1570,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                npc.TargetClosest();
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
             if (npc.ai[2] == 0f || npc.ai[2] == 3f)
             {

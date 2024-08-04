@@ -80,6 +80,7 @@ ExtensionName: {
 // Cooldowns
 Cooldowns: {
 	AquaticHeartIceShield: Ice Shield Cooldown
+	ArsenalPower: Arsenal Cooldown
 	AscendEffect: Ascension Cooldown
 	BloodflareFrenzy: Blood Frenzy Cooldown
 	BloodflareRangedSet: Bloodflare Soul Cooldown
@@ -615,5 +616,10 @@ DraedonFacility: Other minor research projects
 Abyss: Disposing of Silva's remains
 SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
+AuricLandMines: Setting god killing traps
 // Hold Shift tooltip default
 HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more
+HoldShiftTooltipReplacementIndicator: Hold "Left Shift" for details
+// Dev and Donor Items
+DevItemTooltip: - Dev Item -
+DonorItemTooltip: - Donor Item -

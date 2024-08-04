@@ -3,7 +3,6 @@ using System.Reflection;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
-using CalamityMod.Walls;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -65,6 +64,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
             On_NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
+            On_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
             IL_Projectile.Damage += RemoveLunaticCultistHomingResist;
 
@@ -86,6 +86,8 @@ namespace CalamityMod.ILEditing
             On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
+            Terraria.On_Player.Teleport += TPOverride;
+            On_NPC.SpawnBoss += TripletsSpawnTextOverride;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
@@ -142,6 +144,8 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.UpdateBuffs += RemoveFeralBiteRandomDebuffs;
+            IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
+            IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
@@ -171,14 +175,6 @@ namespace CalamityMod.ILEditing
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
             //Wulfrum armor hooks on Player.KeyDoubleTap and DrawPendingMouseText to activate its set bonus and spoof the mouse text to display the stats of the activated weapon if shift is held
             //HeldOnlyItem detours Player.dropItemCheck, ItemSlot.Draw (Sb, itemarray, int, int, vector2, color) and ItemSlot.LeftClick_ItemArray to make its stuff work
-        }
-
-        /// <summary>
-        /// Loads things which need to be instantiated later in the load order.
-        /// </summary>
-        public override void AddRecipes()
-        {
-            WallVisibleThroughWater.InitializeWaterMapEntryLookups();
         }
 
         /// <summary>

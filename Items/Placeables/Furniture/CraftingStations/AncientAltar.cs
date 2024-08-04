@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Ores;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
@@ -31,7 +32,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             CreateRecipe().
                 AddIngredient<BrimstoneSlag>(10).
-                AddIngredient<InfernalSuevite>(10).
+                AddIngredient<DemonicBoneAsh>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

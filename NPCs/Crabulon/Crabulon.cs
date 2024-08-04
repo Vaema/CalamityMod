@@ -24,6 +24,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -74,8 +75,6 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.height = 196;
             NPC.defense = 8;
             NPC.LifeMaxNERB(3700, 4400, 680000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;
@@ -94,6 +93,9 @@ namespace CalamityMod.NPCs.Crabulon
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
             }
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -872,7 +874,15 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
+
+            // Start the Goblin Invasion if the player hasn't gotten one yet (this also gives players more of a reason to fight this boss)
+            if (!NPC.downedGoblins && Main.netMode != NetmodeID.MultiplayerClient && !Main.snowMoon && !Main.pumpkinMoon && !DD2Event.Ongoing && !Main.ShouldNormalEventsBeAbleToStart() && Main.invasionType != 1)
+                Main.StartInvasion();
 
             // Mark Crabulon as dead
             DownedBossSystem.downedCrabulon = true;

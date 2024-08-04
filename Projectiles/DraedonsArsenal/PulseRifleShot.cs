@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            bool onKill = target.life <= 0;
+            bool onKill = (target.life <= 0 && target.realLife == -1);
             if (notSplit)
             {
                 Projectile.Kill();

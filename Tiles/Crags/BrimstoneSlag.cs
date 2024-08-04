@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -48,7 +49,7 @@ namespace CalamityMod.Tiles.Crags
         }
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
         }
 
         /*public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

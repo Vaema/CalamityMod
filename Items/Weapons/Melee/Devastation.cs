@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 default:
                     break;
             }
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, Main.myPlayer);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, Main.myPlayer);
             float projSpeed = Item.shootSpeed;
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
@@ -113,15 +113,15 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Ichor, 60);
-            target.AddBuff(BuffID.OnFire, 180);
-            target.AddBuff(BuffID.Frostburn, 120);
+            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddBuff(BuffID.Frostburn2, 120);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(BuffID.Ichor, 60);
-            target.AddBuff(BuffID.OnFire, 180);
-            target.AddBuff(BuffID.Frostburn, 120);
+            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddBuff(BuffID.Frostburn2, 120);
         }
 
         public override void AddRecipes()

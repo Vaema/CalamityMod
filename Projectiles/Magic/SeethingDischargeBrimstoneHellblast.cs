@@ -30,9 +30,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = 255;
             Projectile.alpha = 0;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -41,7 +43,6 @@ namespace CalamityMod.Projectiles.Magic
             {
                 if (Projectile.npcProj)
                 {
-                    Projectile.usesLocalNPCImmunity = true;
                     Projectile.localNPCHitCooldown = 5;
                     Projectile.penetrate = 10;
                 }
@@ -64,8 +65,8 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
-            Projectile.velocity.X *= 1.03f;
-            Projectile.velocity.Y *= 1.03f;
+            Projectile.velocity.X *= 1.045f;
+            Projectile.velocity.Y *= 1.045f;
             if (Projectile.velocity.X < 0f)
             {
                 Projectile.spriteDirection = -1;

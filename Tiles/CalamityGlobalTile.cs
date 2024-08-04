@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using CalamityMod.Events;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
-using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
-using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -28,28 +23,6 @@ namespace CalamityMod.Tiles
 {
     public class CalamityGlobalTile : GlobalTile
     {
-        public static ushort[] PlantTypes = new ushort[]
-        {
-            TileID.Plants,
-            TileID.CorruptPlants,
-            TileID.JunglePlants,
-            TileID.MushroomPlants,
-            TileID.Plants2,
-            TileID.JunglePlants2,
-            TileID.HallowedPlants,
-            TileID.HallowedPlants2,
-            TileID.CrimsonPlants,
-            (ushort)ModContent.TileType<AstralShortPlants>(),
-            (ushort)ModContent.TileType<AstralTallPlants>(),
-            (ushort)ModContent.TileType<LavaPistil>(),
-            (ushort)ModContent.TileType<CinderBlossomTallPlants>(),
-            (ushort)ModContent.TileType<SulphurTentacleCorals>(),
-            (ushort)ModContent.TileType<AbyssKelp>(),
-            (ushort)ModContent.TileType<TenebrisRemnant>(),
-            (ushort)ModContent.TileType<PhoviamareHalm>(),
-            (ushort)ModContent.TileType<SmallCorals>(),
-
-        };
 
         public static List<int> GrowthTiles = new List<int>()
         {
@@ -64,25 +37,6 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
-        }
-
-        public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
-        {
-            // Custom plant framing
-            for (int k = 0; k < PlantTypes.Length; k++)
-            {
-                if (type == PlantTypes[k])
-                {
-                    TileFraming.PlantFrame(i, j);
-                    return false;
-                }
-            }
-
-            // Custom vine framing
-            if (type == TileID.Vines || type == TileID.CrimsonVines || type == TileID.HallowedVines || type == ModContent.TileType<AstralVines>())
-                TileFraming.VineFrame(i, j);
-
-            return base.TileFrame(i, j, type, ref resetFrame, ref noBreak);
         }
 
         public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
@@ -131,9 +85,6 @@ namespace CalamityMod.Tiles
             }
         }
 
-        // This function has two purposes:
-        // 1 - Shatters adjacent Lumenyl or Sea Prism crystals when a neighboring solid tile is destroyed
-        // 2 - Gives the player breath back when breaking blocks with Reaver set bonus
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             Tile tile = Main.tile[i, j];
@@ -355,13 +306,6 @@ namespace CalamityMod.Tiles
             if (player is null || !player.active)
                 return;
 
-            if (player.Calamity().reaverExplore && !fail)
-            {
-                player.breath += 20;
-                if (player.breath > player.breathMax)
-                    player.breath = player.breathMax;
-            }
-
             // Mining set gives a chance for additional ore. This can be abused for infinite ore but it has a cooldown to prevent too much abuse
             if (player.Calamity().miningSet && player.Calamity().miningSetCooldown <= 0 && !fail && TileID.Sets.Ore[tile.TileType])
             {
@@ -398,25 +342,47 @@ namespace CalamityMod.Tiles
 
         public override void Drop(int i, int j, int type)/* tModPorter Suggestion: Use CanDrop to decide if items can drop, use this method to drop additional items. See documentation. */
         {
-            Tile tileAtPosition = CalamityUtils.ParanoidTileRetrieval(i, j);
-            if (tileAtPosition.TileFrameX % 36 == 0 && tileAtPosition.TileFrameY % 36 == 0)
+            // Handle for Demon Altar Drops
+            // Drop:
+            // - Soul of Night (x4) (Only if Early Hardmode Progression Rework is on)
+            // - Evil Smasher (x1) (Every 12th altar)
+            if (type == TileID.DemonAltar && Main.hardMode)
             {
-                if (type == TileID.DemonAltar && Main.hardMode)
+                Vector2 spreadMinMax = new Vector2(-32.0f, 32.0f);
+
+                // Drop 4 Soul of Night
+                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
                 {
-                    Vector2 pos = new Vector2(i, j) * 16;
-                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
-                    {
-                        WorldGen.altarCount++;
-                        int quantity = 4;
-                        for (int k = 0; k < quantity; k += 1)
-                        {
-                            pos.X += Main.rand.NextFloat(-32f, 32f);
-                            pos.Y += Main.rand.NextFloat(-32f, 32f);
-                            Item.NewItem(new EntitySource_TileBreak(i, j), pos, ItemID.SoulofNight);
-                        }
-                    }
-                    if (WorldGen.altarCount % 12 == 0 && WorldGen.altarCount > 1)
-                        Item.NewItem(new EntitySource_TileBreak(i, j), pos, ModContent.ItemType<EvilSmasher>());
+                    DropItem(i, j, ItemID.SoulofNight, quantity: 4, asStack: false, spreadMinMax);
+                    WorldGen.altarCount++; // altarCount does not update automatically if ProgressionRework is enabled!
+                }
+
+                // Drop Evil Smasher on every 12 alter smashed
+                if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
+                {
+                    DropItem(i, j, ModContent.ItemType<EvilSmasher>(), quantity: 1, asStack: true);
+                }
+            }
+        }
+
+        private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default)
+        {
+            // Multiplayer Client should not spawn item themselves
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            Vector2 worldPos = new Vector2(i, j) * 16.0f;
+            if (asStack)
+            {
+                Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
+                Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: quantity);
+            }
+            else
+            {
+                for (int k = 0; k < quantity; k += 1)
+                {
+                    Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
+                    Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: 1);
                 }
             }
         }

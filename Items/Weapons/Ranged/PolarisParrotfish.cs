@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.NPCs.NormalNPCs;
+﻿using System.Collections.Generic;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -37,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 38;
             Item.height = 34;
-            Item.damage = 35;
+            Item.damage = 41;
             Item.DamageType = DamageClass.Ranged;
 
             Item.useTime = SetUseTime;
@@ -91,19 +85,19 @@ namespace CalamityMod.Items.Weapons.Ranged
                     switch (Main.rand.Next(1, 5 + 1))
                     {
                         case 5:
-                            Main.NewText("You give Polaris belly rubs", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris1"), 72, 209, 204);
                             break;
                         case 4:
-                            Main.NewText("You give Polaris a small treat", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris2"), 72, 209, 204);
                             break;
                         case 3:
-                            Main.NewText("You tell Polaris she's a good girl", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris3"), 72, 209, 204);
                             break;
                         case 2:
-                            Main.NewText("You let Polaris cuddle your arm", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris4"), 72, 209, 204);
                             break;
                         default:
-                            Main.NewText("You pet Polaris", 72, 209, 204);
+                            Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris5"), 72, 209, 204);
                             break;
                     }
 

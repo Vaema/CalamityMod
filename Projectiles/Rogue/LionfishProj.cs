@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
                         Vector2 velocity = Projectile.DirectionFrom(Main.player[Projectile.owner].Center);
                         velocity *= Main.rand.NextFloat(4.5f, 6.5f);
                         velocity = velocity.RotatedBy((Main.rand.NextDouble() - 0.5) * Math.PI * 0.5, default);
-                        int spike = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, -10f, 1f);
+                        int spike = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner);
                         if (spike.WithinBounds(Main.maxProjectiles))
                             Main.projectile[spike].DamageType = RogueDamageClass.Instance;
                     }

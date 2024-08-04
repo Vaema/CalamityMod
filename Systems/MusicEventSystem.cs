@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using CalamityMod.Events;
 using CalamityMod.NPCs;
 using Terraria;
 using Terraria.ID;
@@ -81,6 +82,25 @@ namespace CalamityMod.Systems
 
         public override void PostUpdateTime()
         {
+            // If the Boss Rush is active, any would-be music events should be cancelled out and marked as played
+            if (BossRushEvent.BossRushActive)
+            {
+                foreach (MusicEventEntry entry in EventCollection)
+                {
+                    if (entry.ShouldPlay())
+                        PlayedEvents.Add(entry.Id);
+                }
+
+                TrackStart = null;
+                LastPlayedEvent = -1;
+                OutroSilence = null;
+
+                TrackEnd = null;
+                CurrentEvent = null;
+
+                return;
+            }
+
             // If the player has already completed conditions to trigger certain music events, we don't
             // want to queue a bunch of tracks to play as soon as they enter the world, so instead just mark them as played
             if (oldWorld)

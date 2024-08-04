@@ -76,8 +76,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.chaseable = false;
             }
             NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -94,6 +92,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
+
+            // Scale HP in Master
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -258,14 +259,14 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     else
                     {
-                        // Fire lasers from every 15th (20th in normal mode) body segment if not in laser barrage phase
+                        // Fire lasers from every 20th (25th in normal mode) body segment if not in laser barrage phase
                         float laserBarrageGateValue = bossRush ? 780f : death ? 900f : 960f;
                         float laserBarrageShootGateValue = bossRush ? 160f : 240f;
                         float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue * 1.5f;
                         if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[1] < laserBarragePhaseGateValue)
                         {
                             NPC.localAI[0] += 1f;
-                            if (NPC.localAI[0] >= laserBarrageGateValue * (Main.getGoodWorld ? 0.1f : 0.2f) && NPC.ai[0] % (expertMode ? 15f : 20f) == 0f)
+                            if (NPC.localAI[0] >= laserBarrageGateValue * (Main.getGoodWorld ? 0.1f : 0.2f) && NPC.ai[0] % (expertMode ? 20f : 25f) == 0f)
                             {
                                 NPC.TargetClosest();
                                 SoundEngine.PlaySound(SoundID.Item12, player.Center);

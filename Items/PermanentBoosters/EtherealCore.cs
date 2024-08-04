@@ -49,7 +49,7 @@ namespace CalamityMod.Items.PermanentBoosters
                     string key = "Mods.CalamityMod.Misc.EtherealCoreText";
                     Color messageColor = Color.MediumVioletRed;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseManaMaxIncreasingItem(ManaBoost);

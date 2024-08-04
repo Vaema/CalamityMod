@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Rotates towards its velocity.
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-                if (Projectile.wet && RocketID == ItemID.DryRocket && RocketID == ItemID.WetRocket && RocketID == ItemID.LavaRocket && RocketID == ItemID.HoneyRocket)
+                if (Projectile.wet && (RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket))
                     Projectile.Kill();
 
                 Time++;
@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.zenithWorld)
                 {
-                    SoundStyle bees = new("CalamityMod/Sounds/Custom/BEES/bees", 11);
+                    SoundStyle bees = new("CalamityMod/Sounds/Custom/BEES/bees", 12);
                     SoundEngine.PlaySound(bees with { Volume = 1.5f }, Projectile.Center);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/TheHiveNuke");
                     SoundEngine.PlaySound(fire with { Volume = 0.35f }, Projectile.Center);

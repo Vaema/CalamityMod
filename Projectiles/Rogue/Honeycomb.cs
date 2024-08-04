@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 shardVelocity = CalamityUtils.RandomVelocity(100f, 35f, 55f);
 
                 //Spawn the projectile
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<HoneycombFragment>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<HoneycombFragment>(), (int)(Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
             }
             if (Projectile.Calamity().stealthStrike)
             {
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int j = 0; j < beeAmt; j++)
                 {
                     Vector2 beeVelocity = CalamityUtils.RandomVelocity(100f, 35f, 55f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, beeVelocity, player.beeType(), player.beeDamage(Projectile.damage), player.beeKB(0.25f), player.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, beeVelocity, player.beeType(), player.beeDamage((int)(Projectile.damage * 0.8f)), player.beeKB(0.25f), player.whoAmI);
                 }
             }
         }

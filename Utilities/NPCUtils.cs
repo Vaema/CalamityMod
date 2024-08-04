@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -247,7 +248,7 @@ namespace CalamityMod
         //
         // TODO -- Use this function EVERYWHERE that target validity is checked, not just for Proximity Rage.
         // The easiest way to find locations this should be used is checks for whether something is statue spawned.
-        public static bool IsAnEnemy(this NPC npc, bool allowStatues = true, bool checkDead = true)
+        public static bool IsAnEnemy(this NPC npc, bool allowStatues = true, bool checkDead = true, bool checkDamage = true)
         {
             // Null, inactive, town NPCs, and friendlies are right out.
             if (npc is null || (!npc.active && (!checkDead || npc.life > 0)) || npc.townNPC || npc.friendly)
@@ -260,7 +261,7 @@ namespace CalamityMod
             // "Non-enemies" (e.g. butterflies or projectile enemies) with near zero max health,
             // or anything but the strongest enemies with no contact damage (e.g. Celestial Pillars, Providence)
             // do not generate rage.
-            if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || (npc.defDamage <= BalancingConstants.TinyDamageThreshold && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
+            if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || ((npc.defDamage <= BalancingConstants.TinyDamageThreshold && checkDamage) && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
                 return false;
             // Also explicitly exclude dummies and anything with a ridiculous health pool (dummies from Fargo's for example).
             if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>() || npc.lifeMax > BalancingConstants.UnreasonableHealthThreshold)
@@ -737,6 +738,23 @@ namespace CalamityMod
             return false;
         }
 
+        /// <summary>
+        /// Check if an NPC can be moved
+        /// </summary>
+        /// <param name="target">The NPC attacked.</param>
+        /// <returns>Whether or not the NPC can be moved around.</returns>
+        public static bool CanBeMoved(this NPC target, bool ignoreKBImmune = false)
+        {
+            // Ideally we can replace [!CalamityPlayer.areThereAnyDamnBosses] with a check for problematic boss minions so that you can knock back regular ones in bossfights.
+            // For now at least, when a boss is alive it will always fail to knockback enemies with 100% kb resist.
+            if (CalamityPlayer.areThereAnyDamnBosses)
+                ignoreKBImmune = false;
+            bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
+            if (!isAPillar && !target.boss && target.IsAnEnemy(true, true, false) && (ignoreKBImmune ? true : target.knockBackResist > 0))
+                return true;
+            return false;
+        }
+
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
             if (Main.rand.NextBool(4))
@@ -751,6 +769,31 @@ namespace CalamityMod
             {
                 target.AddBuff(buff, SecondsToFrames(timeBase), false);
             }
+        }
+
+        public static void ProduceGoldCritterDust(this NPC npc)
+        {
+            npc.position += npc.netOffset;
+            Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
+            if (color.R > 20 || color.B > 20 || color.G > 20)
+            {
+                int colorVal = color.R;
+                if (color.G > colorVal)
+                {
+                    colorVal = color.G;
+                }
+                if (color.B > colorVal)
+                {
+                    colorVal = color.B;
+                }
+                colorVal /= 30;
+                if (Main.rand.Next(300) < colorVal)
+                {
+                    int golddust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.TintableDustLighted, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                    Main.dust[golddust].velocity *= 0f;
+                }
+            }
+            npc.position -= npc.netOffset;
         }
 
         public static NPCShop AddWithCustomValue(this NPCShop shop, int itemType, int customValue, params Condition[] conditions)

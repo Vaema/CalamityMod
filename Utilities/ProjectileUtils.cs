@@ -292,8 +292,8 @@ namespace CalamityMod
             return orb;
         }
 
-        // TODO -- This overused method should NOT have hardcoded projectile type checks in it.
-        public static void MagnetSphereHitscan(Projectile projectile, float distanceRequired, float homingVelocity, float projectileTimer, int maxTargets, int spawnedProjectile, double damageMult = 1D, bool attackMultiple = false)
+        // TODO -- This method is very overused.
+        public static void MagnetSphereHitscan(Projectile projectile, float distanceRequired, float homingVelocity, float projectileTimer, int maxTargets, int spawnedProjectile, double damageMult = 1D, bool attackMultiple = false, DamageClass damageType = null)
         {
             // Only shoot once every N frames.
             projectile.localAI[1] += 1f;
@@ -351,28 +351,22 @@ namespace CalamityMod
                             {
                                 int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                                if (projectile.type == ProjectileType<EradicatorProjectile>())
+                                if (damageType != null)
                                     if (projectile2.WithinBounds(Main.maxProjectiles))
-                                        Main.projectile[projectile2].DamageType = RogueDamageClass.Instance;
+                                        Main.projectile[projectile2].DamageType = damageType;
                             }
                         }
 
                         return;
                     }
 
-                    if (projectile.type == ProjectileType<GodsGambitYoyo>())
-                    {
-                        velocity.Y += Main.rand.Next(-30, 31) * 0.05f;
-                        velocity.X += Main.rand.Next(-30, 31) * 0.05f;
-                    }
-
                     if (projectile.owner == Main.myPlayer)
                     {
                         int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                        if (projectile.type == ProjectileType<GodsGambitYoyo>() || projectile.type == ProjectileType<ShimmersparkYoyo>())
+                        if (damageType != null)
                             if (projectile2.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile2].DamageType = DamageClass.MeleeNoSpeed;
+                                Main.projectile[projectile2].DamageType = damageType;
                     }
                 }
             }
@@ -697,6 +691,25 @@ namespace CalamityMod
             }
         }
 
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Vector2 scale, Texture2D? texture = null, Rectangle? frame = null, Vector2? offset = null)
+        {
+            texture ??= TextureAssets.Projectile[projectile.type].Value;
+
+            // Use a fallback for the frame.
+            frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+
+            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 origin = frame.Value.Size() * 0.5f;
+            Color backAfterimageColor = backglowColor * projectile.Opacity;
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 off = Vector2.Zero;
+                if (offset != null) off += offset.Value;
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, 0, 0f);
+            }
+        }
+
         public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
@@ -713,7 +726,7 @@ namespace CalamityMod
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
         {
-            Texture2D aura = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
+            Texture2D aura = Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
             Vector2 offsets = new Vector2(0f, projectile.gfxOffY) - Main.screenPosition;
             Rectangle auraRec = aura.Frame();
             float auraRotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;

@@ -6,6 +6,7 @@ using CalamityMod.Balancing;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
@@ -13,6 +14,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Prefixes;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,7 +36,7 @@ namespace CalamityMod.Items
         /// When this line is not present, Calamity needs to insert tooltips in an <i>equivalent</i> position.<br />
         /// The best way to do this is to iterate backwards through all possible vanilla tooltip lines and pick the first one that is present.
         /// </summary>
-        private static string[] BackupTooltipInsertionLineNames =
+        private static string[] MainTooltipBackupInsertionPositions =
         {
             "Material",
             "Consumable",
@@ -58,7 +60,38 @@ namespace CalamityMod.Items
             "Knockback",
             "NoTransfer",
             "FavoriteDesc",
-            "ItemName"
+            "ItemName",
+        };
+
+        /// <summary>
+        /// This array contains (almost) every single vanilla tooltip in reverse order starting at "Expert" and ending at "Tooltip0".<br />
+        /// Because "Tooltip0" is the first typical tooltip line, this is the earliest conceivable place where a "Revengeance" marker can be inserted.<br />
+        /// Since none of these tooltip lines are guaranteed to exist, Calamity needs to iterate through all of them to find a suitable insertion point.<br />
+        /// The best way to do this is to iterate backwards through all possible vanilla tooltip lines and pick the first one that is present.
+        /// </summary>
+        private static string[] RevTooltipInsertionPositions =
+        {
+            "Expert",
+            "SetBonus",
+            RogueAccessoryPrefix.StealthTooltipID,
+            "PrefixAccMeleeSpeed",
+            "PrefixAccMoveSpeed",
+            "PrefixAccDamage",
+            "PrefixAccCritChance",
+            "PrefixAccMaxMana",
+            "PrefixAccDefense",
+            RogueWeaponPrefix.StealthTooltipID,
+            "PrefixKnockback",
+            "PrefixShootSpeed",
+            "PrefixSize",
+            "PrefixUseMana",
+            "PrefixCritChance",
+            "PrefixSpeed",
+            "PrefixDamage",
+            "OneDropLogo",
+            "BuffTime",
+            "WellFedExpert",
+            "EtherianManaWarning",
         };
         #endregion
 
@@ -90,7 +123,7 @@ namespace CalamityMod.Items
             if (firstTooltipIndex == -1)
             {
                 noStandardTooltips = true;
-                foreach (string lineName in BackupTooltipInsertionLineNames)
+                foreach (string lineName in MainTooltipBackupInsertionPositions)
                 {
                     int idx = tooltips.FindIndex((line) => line.Name == lineName);
                     if (idx != -1)
@@ -112,7 +145,7 @@ namespace CalamityMod.Items
             // Adds "Does extra damage to enemies shot at point-blank range" to weapons capable of it.
             if (canFirePointBlankShots)
             {
-                var lineText = CalamityUtils.GetText("Misc.PointBlank");
+                LocalizedText lineText = CalamityUtils.GetText("Misc.PointBlank");
                 TooltipLine line = new TooltipLine(Mod, "CalamityMod:PointBlankTooltip", lineText.Value);
                 tooltips.Insert(++lastTooltipIndex, line);
             }
@@ -141,25 +174,22 @@ namespace CalamityMod.Items
                 tooltips.Insert(++lastTooltipIndex, line);
             }
 
-            // Generic support for any and all Hold SHIFT tooltips.
+            // Generic mechanical implementation of any and all Hold SHIFT tooltips.
             // For more information, see IHoldShiftTooltipItem.
+            //
+            // Original code lifted from Iban's extended armor tooltips.
             if (item.ModItem is IHoldShiftTooltipItem holdShiftItem)
             {
-                string dynamicKey = $"{Mod.Name}:{item.ModItem.Name}_HoldShift";
-                string lineText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
-                var line = new TooltipLine(Mod, dynamicKey, lineText);
-                if (holdShiftItem.TooltipExtensionColor is not null)
-                    line.OverrideColor = holdShiftItem.TooltipExtensionColor;
-                TooltipLine[] lines = { line };
-
-                //
-                // Original code lifted from Iban's extended armor tooltips.
-                //
                 bool holdingShift = Main.keyState.IsKeyDown(Keys.LeftShift);
 
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
                 {
+                    string holdShiftText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
+                    TooltipLine holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
+                    if (holdShiftItem.TooltipExtensionColor is not null)
+                        holdShiftLine.OverrideColor = holdShiftItem.TooltipExtensionColor;
+
                     // If asked to, remove all standard tooltip lines. This moves the last tooltip index.
                     // This only occurs if the standard tooltip lines are ACTUALLY standard tooltips. Otherwise, don't remove anything!
                     if (holdShiftItem.HidesNormalTooltip && !noStandardTooltips)
@@ -168,32 +198,82 @@ namespace CalamityMod.Items
                         lastTooltipIndex -= standardTooltipCount;
                     }
 
-                    // Append every "Hold SHIFT" tooltip at the end of standard tooltips.
-                    tooltips.InsertRange(++lastTooltipIndex, lines);
+                    // Append the "Hold SHIFT" tooltip at the end of standard tooltips.
+                    tooltips.Insert(++lastTooltipIndex, holdShiftLine);
                 }
 
                 // If not holding SHIFT, display the extension indicator if appropriate.
                 if (!holdingShift && holdShiftItem.ShowExtensionIndicator)
                 {
                     LocalizedText indicatorText = CalamityUtils.GetText(holdShiftItem.ExtensionIndicatorKey);
-                    var indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
+                    TooltipLine indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
                     if (holdShiftItem.ExtensionIndicatorColor is not null)
                         indicator.OverrideColor = holdShiftItem.ExtensionIndicatorColor;
+
+                    // Append the extension indicator tooltip at the end of standard tooltips.
                     tooltips.Insert(++lastTooltipIndex, indicator);
                 }
+
+                // Generic support for flavor tooltips.
+                // This is only necessary on items with Hold SHIFT tooltips.
+                // The extended tooltip and tooltip extension indicator are placed above flavor tooltips for vanilla consistency.
+                //
+                // Flavor tooltips display unconditionally if defined. They are visible both when holding SHIFT and when not.
+                if (holdShiftItem.HasFlavorTooltip && holdShiftItem.FlavorTooltipKey is not null)
+                {
+                    string flavorText = item.ModItem.GetLocalizedValue(holdShiftItem.FlavorTooltipKey);
+                    TooltipLine flavorLine = new TooltipLine(Mod, IHoldShiftTooltipItem.FlavorTooltipID, flavorText);
+                    if (holdShiftItem.FlavorTooltipColor is not null)
+                        flavorLine.OverrideColor = holdShiftItem.FlavorTooltipColor;
+
+                    // Append the flavor tooltip at the end of standard tooltips, after all Hold SHIFT tooltips and reminders.
+                    tooltips.Insert(++lastTooltipIndex, flavorLine);
+                }
+            }
+
+            //
+            // "Late" tooltips are all inserted after vanilla's "Expert" and "Master" markers.
+            //
+
+            // The best possible position is identified using a separate backwards search.
+            int difficultyTooltipIndex = -1;
+            foreach (string lineName in RevTooltipInsertionPositions)
+            {
+                int idx = tooltips.FindIndex((line) => line.Name == lineName);
+                if (idx != -1)
+                {
+                    difficultyTooltipIndex = idx;
+                    break;
+                }
+            }
+
+            // If the backwards search fails, it defaults to the last known tooltip index from the previous search.
+            if (difficultyTooltipIndex == -1)
+                difficultyTooltipIndex = lastTooltipIndex;
+
+            // Adds "Revengeance" to all items which are Revengeance exclusive, like how vanilla does it for Expert and Master items.
+            if (revengeanceItem)
+            {
+                LocalizedText revText = CalamityUtils.GetText("UI.Revengeance");
+                TooltipLine revLine = new TooltipLine(Mod, "CalamityMod:RevengeanceItem", revText.Value);
+                tooltips.Insert(++difficultyTooltipIndex, revLine);
             }
 
             // Adds "Donor Item" and "Developer Item" to donor items and developer items respectively.
             // This is intentionally at the bottom, below everything else.
             if (devItem)
             {
-                TooltipLine line = new TooltipLine(Mod, "CalamityDev", CalamityUtils.ColorMessage("- Developer Item -", CalamityUtils.DevItemColor));
-                tooltips.Add(line);
+                LocalizedText devText = CalamityUtils.GetText("UI.DevItemTooltip");
+                string coloredText = CalamityUtils.ColorMessage(devText.Value, CalamityUtils.DevItemColor);
+                TooltipLine devLine = new TooltipLine(Mod, "CalamityMod:DevItem", coloredText);
+                tooltips.Insert(++difficultyTooltipIndex, devLine);
             }
             else if (donorItem)
             {
-                TooltipLine line = new TooltipLine(Mod, "CalamityDonor", CalamityUtils.ColorMessage("- Donor Item -", CalamityUtils.DonatorItemColor));
-                tooltips.Add(line);
+                LocalizedText donorText = CalamityUtils.GetText("UI.DonorItemTooltip");
+                string coloredText = CalamityUtils.ColorMessage(donorText.Value, CalamityUtils.DonatorItemColor);
+                TooltipLine donorLine = new TooltipLine(Mod, "CalamityMod:DonorItem", coloredText);
+                tooltips.Insert(++difficultyTooltipIndex, donorLine);
             }
         }
         #endregion
@@ -217,6 +297,8 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
             if (item.type == ModContent.ItemType<ShatteredCommunity>())
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
+            if (item.type == ModContent.ItemType<NimbleBounder>())
+                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(132, 37, 147), new Color(0, 255, 0), 5f); //alternates purple and neon green
             if (item.type == ModContent.ItemType<ProfanedSoulCrystal>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
             if (item.type == ModContent.ItemType<TemporalUmbrella>())
@@ -237,7 +319,7 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(220, 20, 60);
             if (item.type == ModContent.ItemType<Contagion>())
                 nameLine.OverrideColor = new Color(207, 17, 117);
-            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMightMelee>())
+            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMight>())
                 nameLine.OverrideColor = new Color(227, 226, 180);
             if (item.type == ModContent.ItemType<IllustriousKnives>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(154, 255, 151), new Color(228, 151, 255), 4f);
@@ -295,9 +377,9 @@ namespace CalamityMod.Items
             {
                 List<Color> earthColors = new List<Color>()
                 {
-                    new Color(255, 99, 146),
-                    new Color(255, 228, 94),
-                    new Color(127, 200, 248)
+                    Color.OrangeRed,
+                    Color.MediumTurquoise,
+                    Color.LimeGreen
                 };
                 if (nameLine != null)
                 {
@@ -716,9 +798,15 @@ namespace CalamityMod.Items
             // Rebalances to vanilla item stats
             #region Vanilla Item Rebalance Tooltips
 
-            // Ancient Chisel rebalance.
+            // Various mining speed nerfs
+            if (item.type == ItemID.MiningPotion)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25", "15"));
+
             if (item.type == ItemID.AncientChisel)
-                EditTooltipByNum(0, (line) => line.Text = "Increases mining speed by 15%");
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25", "15"));
+
+            if (item.type == ItemID.HandOfCreation)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25", "15"));
 
             // Frozen Turtle Shell rebalance.
             if (item.type == ItemID.FrozenTurtleShell)
@@ -738,7 +826,7 @@ namespace CalamityMod.Items
             //Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
             {
-                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25\n" +
+                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25x\n" +
                 "All attacks light enemies on fire\n" +
                 "'Never get cold feet again'");
             }
@@ -747,17 +835,17 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HellfireTreads)
             {
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("fire blocks", "the Burning and On Fire! debuffs"));
-                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5, does not stack with downgrades\n" +
+                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5x, does not stack with downgrades\n" +
                 "All attacks inflict Hellfire");
             }
 
             // Fairy Boots buff.
             if (item.type == ItemID.FairyBoots)
                 EditTooltipByNum(2, (line) => line.Text += "\nFairies can spawn at any time on the surface and spawn far more frequently\n" +
-                "Nearby fairies grant +2 HP/s life regen, 10 defense and  10% movement speed\n" +
+                "Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed\n" +
                 "Fairies are immune to damage and will no longer flee");
 
-            // Reduced Nightwither and Holy Flames damage, and melee speed removal.
+            // Reduced Nightwither and Daybroken damage, and melee speed removal.
             if (item.type == ItemID.MoonStone)
             {
                 EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither debuff");
@@ -765,17 +853,17 @@ namespace CalamityMod.Items
             }
             if (item.type == ItemID.SunStone)
             {
-                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Holy Flames debuff");
+                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Daybroken debuff");
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("melee speed, ", ""));
             }
             if (item.type == ItemID.CelestialStone)
             {
-                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither and Holy Flames debuffs");
+                EditTooltipByNum(2, (line) => line.Text += "\nReduces the damage of the Nightwither and Daybroken debuffs");
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace(" melee speed,", ""));
             }
             if (item.type == ItemID.CelestialShell)
             {
-                EditTooltipByNum(4, (line) => line.Text += "\nReduces the damage of the Nightwither and Holy Flames debuffs");
+                EditTooltipByNum(4, (line) => line.Text += "\nReduces the damage of the Nightwither and Daybroken debuffs");
                 EditTooltipByNum(2, (line) => line.Text = line.Text.Replace(" melee speed,", ""));
             }
 
@@ -1213,9 +1301,8 @@ namespace CalamityMod.Items
                 AddWingStats(7.5f, 1f, 1, 160, "5% increased melee damage and critical strike chance");
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(6.75f, 1f, 1, 130, "2% increased melee and ranged damage\n" +
-                    "and 1% increased melee and ranged critical strike chance\n" +
-                    "while wearing the Frost Armor");
+                AddWingStats(6.75f, 1f, 1, 130, "4% increased melee and ranged damage\n" +
+                    "and multiplies all cold debuff damage by 1.25x while wearing Frost armor");
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(7.5f, 1f, 1, 170, "+10 defense and 5% increased damage reduction while wearing the Spectre Hood set\n" +

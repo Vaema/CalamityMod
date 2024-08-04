@@ -18,12 +18,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
+            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.npcSlots = 3f;
-            NPC.damage = 30;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 64;
             NPC.height = 38;
             NPC.defense = 15;
@@ -58,9 +59,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (NPC.justHit)
                 NPC.localAI[0] = 0f;
 

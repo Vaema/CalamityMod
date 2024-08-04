@@ -231,8 +231,6 @@ namespace CalamityMod
             void EnemyRedirect(int item, string pageName) => wiki.Call(2, item, pageName);
 
             // Items
-            ItemRedirect(ItemType<BloodOrange>(), "Blood Orange (calamity)");
-            ItemRedirect(ItemType<Elderberry>(), "Elderberry (calamity)");
             ItemRedirect(ItemType<PineapplePet>(), "Pineapple (calamity)");
             ItemRedirect(ItemType<TrashmanTrashcan>(), "Trash Can (pet)");
             ItemRedirect(ItemType<SandstormGun>(), "Sandstorm (weapon)");
@@ -294,7 +292,6 @@ namespace CalamityMod
             ItemRedirect(ItemType<LoreYharon>(), loreItemPage);
 
             // Enemies
-            EnemyRedirect(NPCType<HiveEnemy>(), "Hive (enemy)");
             EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
             EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
             EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
@@ -743,7 +740,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection
                 });
             }
@@ -765,7 +762,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection,
                     ["customPortrait"] = portrait,
                     ["overrideHeadTextures"] = "CalamityMod/NPCs/StormWeaver/StormWeaverHead_Head_Boss"
@@ -783,7 +780,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
-                    ["spawnItems"] = ItemType<RuneofKos>(),
+                    ["spawnItems"] = ItemType<MarkofProvidence>(),
                     ["collectibles"] = collection
                 });
             }
@@ -1077,8 +1074,8 @@ namespace CalamityMod
             double Damage(DamageClass damageClass) => Math.Round(Main.LocalPlayer.GetTotalDamage(damageClass).Additive * Main.LocalPlayer.GetTotalDamage(damageClass).Multiplicative * 100 - 100);
             int Crit(DamageClass damageClass) => (int)Main.LocalPlayer.GetTotalCritChance(damageClass);
 
-            int rogueItem = ModContent.ItemType<WulfrumKnife>();
-            DamageClass rogueDamageClass = ModContent.GetInstance<RogueDamageClass>();
+            int rogueItem = ItemType<WulfrumKnife>();
+            DamageClass rogueDamageClass = GetInstance<RogueDamageClass>();
             Func<string> rogueDamage = () => $"Rogue Damage: {Damage(rogueDamageClass)}%";
             Func<string> rogueCrit = () => $"Rogue Critical: {Crit(rogueDamageClass)}%";
             fargos.Call("AddStat", rogueItem, rogueDamage);
@@ -1159,7 +1156,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<WitherBlossomsStaff>(), BuffType<WitherBlossomsBuff>(), ProjectileType<WitherBlossom>());
             RegisterSummon(ItemType<StarspawnHelixStaff>(), BuffType<AstralProbeBuff>(), ProjectileType<AstralProbeSummon>());
             RegisterSummon(ItemType<TacticalPlagueEngine>(), BuffType<TacticalPlagueEngineBuff>(), ProjectileType<TacticalPlagueJet>());
-            RegisterSummon(ItemType<ElementalAxe>(), BuffType<ElementalAxeBuff>(), ProjectileType<ElementalAxeMinion>());
+            RegisterSummon(ItemType<LegionofCelestia>(), BuffType<LegionofCelestiaBuff>(), ProjectileType<CelestialAxeMinion>());
             RegisterSummon(ItemType<FlowersOfMortality>(), BuffType<FlowersOfMortalityBuff>(), ProjectileType<FlowersOfMortalityPetal>());
             RegisterSummon(ItemType<SnakeEyes>(), BuffType<SnakeEyesBuff>(), ProjectileType<SnakeEyesSummon>());
             RegisterSummon(ItemType<DazzlingStabberStaff>(), BuffType<DazzlingStabberBuff>(), ProjectileType<DazzlingStabber>());
@@ -1239,6 +1236,10 @@ namespace CalamityMod
         private static Color MeleeDamageColor = new(254, 121, 2);
         private static Color MeleeCritColor = new(253, 62, 3);
 
+        private static Color MeleeRangedTooltipColor = new(144, 171, 76);
+        private static Color MeleeRangedDamageColor = new(144, 171, 76);
+        private static Color MeleeRangedCritColor = new(86, 102, 46);
+
         private static Color RogueTooltipColor = new(206, 132, 227);
         private static Color RogueDamageColor = new(206, 132, 227);
         private static Color RogueCritColor = new(194, 38, 212);
@@ -1258,6 +1259,9 @@ namespace CalamityMod
             // True melee uses the same colorations as regular Melee.
             coloredDamageTypes.Call("AddDamageType", TrueMeleeDamageClass.Instance, MeleeTooltipColor, MeleeDamageColor, MeleeCritColor);
             coloredDamageTypes.Call("AddDamageType", TrueMeleeNoSpeedDamageClass.Instance, MeleeTooltipColor, MeleeDamageColor, MeleeCritColor);
+
+            // Melee-ranged hybrid damage uses a 50% blend between Melee and Ranged, turning into Olive green
+            coloredDamageTypes.Call("AddDamageType", MeleeRangedHybridDamageClass.Instance, MeleeRangedTooltipColor, MeleeRangedDamageColor, MeleeRangedCritColor);
 
             // Rogue has its own lavender color. Stealth strikes are hued towards violet so they stick out more.
             // They would be hued towards magenta, but that would make them collide with Nebula-colored Magic in Colored Damage Types config.

@@ -15,7 +15,9 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class NanoblackReaper : RogueWeapon, IHoldShiftTooltipItem
     {
         public bool ShowExtensionIndicator => false;
+        public bool HasFlavorTooltip => true;
         public Color? TooltipExtensionColor => new Color(31, 223, 128); // #1FDF80
+        public Color? FlavorTooltipColor => TooltipExtensionColor;
 
         public static float Knockback = 9f;
         public static float Speed = 16f;

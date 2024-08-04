@@ -8,7 +8,6 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -63,13 +62,11 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Register();
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            player.velocity += -velocity * 0.3f;
+            player.velocity += velocity.SafeNormalize(Vector2.UnitX) * -7f;
             if (type == ProjectileID.Bullet)
                 type = ModContent.ProjectileType<NitroShot>();
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f);
-            return false;
         }
 
         public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
