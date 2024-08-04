@@ -2,8 +2,11 @@
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ModLoader;
+using static CalamityMod.Projectiles.Ranged.TauCannonHoldout;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -30,6 +33,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         private Player Owner { get; set; }
 
+        private SlotId BigBeamSoundSlot;
+
         public override void SetDefaults()
         {
             Projectile.penetrate = -1;
@@ -54,6 +59,11 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Owner == null || !Owner.active || Owner.dead || Owner.CCed || Owner.noItems || Owner.ownedProjectileCounts[ProjectileType<TauCannonHoldout>()] == 0) return;
             Projectile.Center = Holdout.ModProjectile<TauCannonHoldout>().GunTipPosition + Holdout.velocity * (IsStage3Laser ? 20f : 5f);
+
+            if (!SoundEngine.TryGetActiveSound(BigBeamSoundSlot, out var sound))
+                BigBeamSoundSlot = SoundEngine.PlaySound(BigBeamSound with { Volume = 0.5f }, Projectile.Center);
+            else
+                sound.Position = Projectile.Center;
         }
 
         public override void ExtraBehavior()

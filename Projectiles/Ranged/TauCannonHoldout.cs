@@ -56,15 +56,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         #region SoundStyles & SlotsIDs
 
-        private readonly SoundStyle ChargeLV1Sound = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1") { Volume = 0.6f };
-        private readonly SoundStyle ChargeLV2Sound = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2") { Volume = 0.6f };
-        private readonly SoundStyle OrbSound = new();
-        private readonly SoundStyle BoltShootSound = new("CalamityMod/Sounds/Custom/ExoMechs/ExoLaserShoot") { Volume = 0.1f, PitchVariance = 0.3f };
-        private readonly SoundStyle SmallBeamSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusMine") { Volume = 0.2f, PitchVariance = 0.1f };
-        private readonly SoundStyle BigBeamSound = new();
-        private readonly SoundStyle CoolingDownSound = new("CalamityMod/Sounds/Custom/ExoMechs/ThanatosVent") { Volume = 0.025f };
+        public static readonly SoundStyle ChargeLV1Sound = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1") { Volume = 0.6f };
+        public static readonly SoundStyle ChargeLV2Sound = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2") { Volume = 0.6f };
+        public static readonly SoundStyle OrbSound = new();
+        public static readonly SoundStyle BoltShootSound = new("CalamityMod/Sounds/Custom/ExoMechs/ExoLaserShoot") { Volume = 0.1f, PitchVariance = 0.3f };
+        public static readonly SoundStyle SmallBeamSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusMine") { Volume = 0.2f, PitchVariance = 0.1f };
+        public static readonly SoundStyle BigBeamSound = new();
+        public static readonly SoundStyle CoolingDownSound = new("CalamityMod/Sounds/Custom/ExoMechs/ThanatosVent") { Volume = 0.025f };
         private SlotId OrbSoundSlot;
-        private SlotId BigBeamSoundSlot;
         private SlotId CoolingDownSoundSlot;
 
         #endregion 
@@ -234,6 +233,11 @@ namespace CalamityMod.Projectiles.Ranged
                 float sizeIncrease = Utils.Remap(Timer, 0f, TimePerCharge * 3f, 0.05f, 0.4f);
                 Particle lineCharge = new ManaDrainStreak(Owner, sizeIncrease, Main.rand.NextVector2Circular(distanceFromTip, distanceFromTip), Main.rand.NextFloat(5f, 10f), Color.White, Color.Fuchsia, Main.rand.Next(10, 21), GunTipPosition);
                 GeneralParticleHandler.SpawnParticle(lineCharge);
+
+                if (!SoundEngine.TryGetActiveSound(OrbSoundSlot, out var sound))
+                    OrbSoundSlot = SoundEngine.PlaySound(OrbSound with { Volume = 0.5f }, GunTipPosition);
+                else
+                    sound.Position = Projectile.Center;
             }
 
             if (KeepRefreshingLifetime == true)
