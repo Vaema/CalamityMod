@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Rancor : ModItem, ILocalizedModType
+    public class Rancor : ExhumedItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()

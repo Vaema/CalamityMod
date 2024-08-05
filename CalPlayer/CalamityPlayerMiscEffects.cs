@@ -3001,14 +3001,7 @@ namespace CalamityMod.CalPlayer
                 Player.wingTimeMax = (int)(Player.wingTimeMax * flightTimeMult);
 
             if (vHex)
-            {
                 Player.statDefense -= 20;
-
-                if (Player.wingTimeMax < 0)
-                    Player.wingTimeMax = 0;
-
-                Player.wingTimeMax = (int)(Player.wingTimeMax * 0.75);
-            }
 
             if (icarusFolly)
             {

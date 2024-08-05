@@ -1427,7 +1427,6 @@ RoverDrive: {
 		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
-
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
 }

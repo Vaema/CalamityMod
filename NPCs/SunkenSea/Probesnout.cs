@@ -2,28 +2,43 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
+using Terraria.Utilities;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Probesnout : ModNPC
+    public class Probesnout : SunkenSeaNPC
     {
         public static float PathDetectionSize = 300f;
 
         #region Members
 
-        private enum AIState { OutsideWater, Idle }
-
-        private AIState State
+        protected override List<int> HuntNPCs => new()
         {
-            get => (AIState)NPC.ai[0];
+            // NPCType<Slugbun>(),
+        };
+
+        protected override List<int> AvoidNPCs => new()
+        {
+            // NPCType<IlmerianAxolotl>(),
+            NPCType<Sharkoon>(),
+            // NPCType<Polyperil>(),
+            // NPCType<CrestedStalker>(),
+            // NPCType<Hermititan>(),
+        };
+
+        private enum PersonalityType { Curious, Shy, Paranoid }
+
+        private PersonalityType Personality
+        {
+            get => (PersonalityType)NPC.ai[0];
             set
             {
                 NPC.ai[0] = (float)value;
@@ -65,145 +80,176 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private int TimePerAnimationFrame = 5;
 
-        private bool HasSpawned
-        {
-            get => NPC.ai[2] == 1f;
-            set
-            {
-                NPC.ai[2] = value.ToInt();
-                NetUpdate();
-            }
-        }
+        private float MaximumSpeed = 6f;
 
-        private ref float Timer => ref NPC.ai[3];
-
-        private List<Vector2> PathPositions;
+        private Vector2 ScaleSquish = Vector2.One;
 
         #endregion
 
         #region AI
 
-        public override void AI()
+        protected override void CreatureOnSpawn()
         {
-            if (!HasSpawned)
-            {
-                NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-                NPC.GravityMultiplier *= 2f;
-                NPC.MaxFallSpeedMultiplier *= 2f;
-                HasSpawned = true;
-            }
+            CurrentBehavior = IdleBehavior;
 
-            switch (State)
-            {
-                case AIState.OutsideWater:
-                    OutsideWaterState();
-                    break;
-                case AIState.Idle:
-                    IdleState();
-                    break;
-            }
+            WeightedRandom<PersonalityType> randomPersonality = new();
+            randomPersonality.Add(PersonalityType.Curious, 0.6f);
+            randomPersonality.Add(PersonalityType.Shy, 0.3f);
+            randomPersonality.Add(PersonalityType.Paranoid, 0.1f);
+            Personality = randomPersonality.Get();
+
+            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
+            NPC.GravityMultiplier *= 2f;
+            NPC.MaxFallSpeedMultiplier *= 2f;
+        }
+
+        protected override void CreatureAI()
+        {
+            CurrentBehavior.Invoke();
+
+            if (!NPC.velocity.HasNaNs())
+                ConeDetectionDirection = (NPC.rotation * MathF.Sign(NPC.velocity.Y) + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0f)).ToRotationVector2();
 
             NPC.rotation = MathHelper.ToRadians(NPC.velocity.Length() * 3f) * MathF.Sign(NPC.velocity.X);
-            NPC.spriteDirection = -MathF.Sign(NPC.velocity.X);
-        }
 
-        private void OutsideWaterState()
-        {
-            if (NPC.wet)
-            {
-                State = AIState.Idle;
-                return;
-            }
-        }
+            if (MathF.Abs(NPC.velocity.X) > 2f)
+                NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
 
-        private void IdleState()
-        {
             if (!NPC.wet)
+                CurrentBehavior = OutsideWaterBehavior;
+
+            if (NPC.velocity.LengthSquared() > MaximumSpeed * MaximumSpeed)
+                NPC.velocity = NPC.velocity.SafeNormalize(-Vector2.UnitY) * MaximumSpeed;
+
+            if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y -= 0.025f;
+
+            if (ScaleSquish.Y < 1f)
+                ScaleSquish.Y = 1f;
+        }
+
+        protected override void OnBehaviorChange(Action newBehavior) => NPC.noGravity = newBehavior != OutsideWaterBehavior;
+
+        protected override void OnPreyDetection(NPC prey)
+        {
+            // If it's not a small fish and it's not being chased by a predator, the Probesnout may hunt.
+            if (CurrentPredator is null)
             {
-                State = AIState.OutsideWater;
-                return;
+                CurrentBehavior = HuntBehavior;
+                React(Color.Orange * 0.6f, EmoteExpressionParticle.EmoteType.Exclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
             }
 
-            if (PathPositions is null)
+            ScaleSquish.Y += 1.4f;
+        }
+
+        protected override void OnPredatorDetection(NPC predator)
+        {
+            // Regardless of anything, if it detects a predator, time to run.
+            CurrentBehavior = AvoidBehavior;
+
+            MaximumSpeed *= 1.2f;
+
+            React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+
+            ScaleSquish.Y += 1.4f;
+        }
+
+        protected override void OnPlayerDetection(Player player)
+        {
+            // If the Probesnout is shy, it'll run away from the player.
+            if (Personality == PersonalityType.Shy)
+            {
+                CurrentBehavior = AvoidBehavior;
+                React(Color.Orange, EmoteExpressionParticle.EmoteType.QuestionExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+            }
+
+            if (Personality == PersonalityType.Curious)
+                React(Color.Green, EmoteExpressionParticle.EmoteType.Question, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+
+            ScaleSquish.Y += 0.4f;
+        }
+
+        private void IdleBehavior()
+        {
+            if (PathfindingPoints is null)
             {
                 NPC.velocity *= 0.95f;
 
                 if (Main.rand.NextBool(125))
-                {
-                    var grid = DecidePathGrid();
-                    PathPositions = AStar.GetPath(grid, NPC.Center.ToSafeTileCoordinates(), grid[Main.rand.Next(grid.Count)]);
-                    Timer = 0f;
-                    NetUpdate();
-                }
+                    MakePath(NPC.Center + Main.rand.NextVector2CircularEdge(PathDetectionSize, PathDetectionSize) * Main.rand.NextFloat(0.75f, 1f));
             }
-
-            else if (PathPositions is not null)
-            {
-                // Iterates through all the vectors in the path as time goes on.
-                Vector2 followedPathPoint = PathPositions[(int)Math.Floor(Timer)];
-
-                // Accelerates towards the followed point.
-                NPC.velocity += NPC.Center.DirectionTo(followedPathPoint) * 0.03f;
-
-                Timer += 0.07f;
-                Timer = MathF.Min(Timer, PathPositions.Count - 1);
-
-                // If very near the end point or too far from the followed path, reset the path.
-                if (NPC.Center.DistanceSQ(PathPositions[^1]) < 14400f || NPC.Center.DistanceSQ(followedPathPoint) > 102400f)
-                {
-                    PathPositions = null;
-                    NetUpdate();
-                }
-            }
-
-            NPC.velocity = Vector2.Clamp(NPC.velocity, -Vector2.One * 3f, Vector2.One * 3f);
+            else
+                GenericPathFollowing(acceleration: 0.03f, pathFollowingSpeed: 0.07f, conditionToFinishFollowing: FinishedPathfinding());
         }
 
-        private List<Point> DecidePathGrid()
+        private void AvoidBehavior()
         {
-            List<Point> grid = new();
-            Point topLeftCorner = (NPC.Center + new Vector2(-PathDetectionSize, -PathDetectionSize)).ToSafeTileCoordinates();
-            Point bottomRightCorner = (NPC.Center + new Vector2(PathDetectionSize, PathDetectionSize)).ToSafeTileCoordinates();
-
-            for (int coordY = topLeftCorner.Y; coordY <= bottomRightCorner.Y; coordY++)
+            // Depending on the personality, the Sharkoon will choose who to avoid.
+            Entity entityToAvoid = null;
+            switch (Personality)
             {
-                for (int coordX = topLeftCorner.X; coordX <= bottomRightCorner.X; coordX++)
-                {
-                    Point point = new(coordX, coordY);
-
-                    if (Main.tile[point].IsTileSolid() || Main.tile[point].LiquidAmount != 255 || !AreAdjacentTilesValid(point))
-                        continue;
-
-                    grid.Add(point);
-                }
+                case PersonalityType.Shy:
+                    entityToAvoid = (NearestEntity is NPC && HuntNPCs.Contains((NearestEntity as NPC).type)) ? null : NearestEntity;
+                    break;
+                case PersonalityType.Curious:
+                    entityToAvoid = CurrentPredator;
+                    break;
+                case PersonalityType.Paranoid:
+                    entityToAvoid = CurrentPredator;
+                    break;
             }
 
-            return grid;
-        }
-
-        private bool AreAdjacentTilesValid(Point point)
-        {
-            Vector2[] adjacents = new Vector2[12]
+            // If there aren't any more targets detected, go back to idling.
+            if (entityToAvoid is null)
             {
-                Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY,
-                new(1f, 1f), new(1f, -1f), new(-1f, -1f), new(-1f, 1f),
-                Vector2.UnitX * 2f, -Vector2.UnitX * 2f, Vector2.UnitY * 2f, -Vector2.UnitY * 2f
-            };
-
-            foreach (var adjacent in adjacents)
-            {
-                Point adjacentPoint = new(point.X + (int)adjacent.X, point.Y + (int)adjacent.Y);
-                if (Main.tile[adjacentPoint].IsTileSolid())
-                    return false;
+                CurrentBehavior = IdleBehavior;
+                MaximumSpeed /= MaximumSpeed % 1.2f == 0f ? 1.2f : 1f;
+                return;
             }
 
-            return true;
+            bool isAvoidingPredator = entityToAvoid is NPC && (entityToAvoid as NPC).whoAmI == CurrentPredator.whoAmI;
+
+            if (PathfindingPoints is null)
+            {
+                float fleeingDistance = isAvoidingPredator ? 600f : 300f;
+
+                Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
+
+                var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, fleeingDistance);
+
+                while (!grid.Contains(randomEscapePoint))
+                    randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
+
+                MakePath(randomEscapePoint.ToWorldCoordinates(), grid);
+            }
+            else
+                GenericPathFollowing(acceleration: 0.14f * (isAvoidingPredator ? 2f : 1f), pathFollowingSpeed: 0.07f * (isAvoidingPredator ? 2.2f : 1f), conditionToFinishFollowing: FinishedPathfinding());
         }
 
-        private void NetUpdate()
+        private void HuntBehavior()
         {
-            NPC.netUpdate = true;
-            NPC.netSpam = 0;
+            // If there's no more prey, go back to idling.
+            if (CurrentPrey is null)
+            {
+                CurrentBehavior = IdleBehavior;
+                return;
+            }
+
+            if (!HasLineOfSight(CurrentPrey.Center))
+            {
+                if (PathfindingPoints is not null)
+                    GenericPathFollowing(acceleration: 0.14f, pathFollowingSpeed: 0.1f, conditionToFinishFollowing: FinishedPathfinding());
+                else
+                    MakePath(CurrentPrey.Center, CalamityUtils.ManhattanDistance(NPC.Center, CurrentPrey.Center));
+            }
+            else
+                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * 0.14f;
+        }
+
+        private void OutsideWaterBehavior()
+        {
+            if (NPC.wet)
+                CurrentBehavior = PreviousBehavior;
         }
 
         #endregion
@@ -228,9 +274,9 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 drawPosition = NPC.Center - screenPos;
             Rectangle frame = texture.Frame(horizontalFrames: 2, verticalFrames: 12, frameX: (int)Animation, frameY: NPC.frame.Y / NPC.height);
             Vector2 anchorPoint = frame.Size() * 0.5f;
-            SpriteEffects flip = NPC.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects flip = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, NPC.scale, flip, 0f);
+            spriteBatch.Draw(texture, drawPosition, frame, NPC.GetAlpha(drawColor), NPC.rotation, anchorPoint, ScaleSquish, flip, 0f);
 
             return false;
         }
@@ -239,7 +285,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Other ModNPC Overrides
 
-        public override void SetStaticDefaults()
+        protected override void ExtraSetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 15;
             Main.npcCatchable[Type] = true;
@@ -249,7 +295,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetDefaults()
         {
             NPC.lifeMax = 5;
-            
+
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.npcSlots = 0.1f;
@@ -262,25 +308,17 @@ namespace CalamityMod.NPCs.SunkenSea
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
-            {
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Probesnaut")
-            });
-        }
-
         #endregion
 
         #region Syncing
 
-        public override void SendExtraAI(BinaryWriter writer)
+        protected override void SendMoreExtraAI(BinaryWriter writer)
         {
             writer.Write7BitEncodedInt(AnimationFrames);
             writer.Write7BitEncodedInt(TimePerAnimationFrame);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
+        protected override void ReceiveMoreExtraAI(BinaryReader reader)
         {
             AnimationFrames = reader.Read7BitEncodedInt();
             TimePerAnimationFrame = reader.Read7BitEncodedInt();
@@ -291,9 +329,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
     public class ProbesnoutGold : Probesnout
     {
-        public override void SetStaticDefaults()
+        protected override void ExtraSetStaticDefaults()
         {
-            base.SetStaticDefaults();
+            base.ExtraSetStaticDefaults();
             this.HideFromBestiary();
         }
 

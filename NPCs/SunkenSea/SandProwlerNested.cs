@@ -16,6 +16,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.GameContent.Bestiary;
+using CalamityMod.NPCs.Crags;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -54,16 +55,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SeaSerpent_Bestiary",
-                PortraitPositionXOverride = 40,
-                PortraitPositionYOverride = 20
-            };
-            value.Position.Y += 20;
-            value.Position.X += 40;
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-
+            this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 0;
             NPCID.Sets.TrailCacheLength[NPC.type] = 60;
             NPCID.Sets.UsesNewTargetting[NPC.type] = true;
@@ -274,7 +266,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (SnapTimer > 0f)
             {
                 int snapTime = PeekingOut ? 45 : 32;
-                float idealSpeed = PeekingOut ? 1.75f : 17f;
+                float idealSpeed = PeekingOut ? 1.75f : 10f;
                 float newSpeed = MathHelper.Lerp(NPC.velocity.Length(), idealSpeed, 0.08f);
                 NPC.velocity = CurrentSnapDirection.ToRotationVector2() * newSpeed;
 
@@ -377,10 +369,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 return false;
 
             Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D body1Texture = SandProwler.BodySprite1;
-            Texture2D body2Texture = SandProwler.BodySprite2;
-            Texture2D body3Texture = SandProwler.BodySprite3;
-            Texture2D body4Texture = SandProwler.BodySprite4;
+            Texture2D body1Texture = SandProwler.BodySprite1.Value;
+            Texture2D body2Texture = SandProwler.BodySprite2.Value;
+            Texture2D body3Texture = SandProwler.BodySprite3.Value;
+            Texture2D body4Texture = SandProwler.BodySprite4.Value;
 
             Vector2 idealDrawPosition = SpotToHideIn;
             Vector2 backOffset = (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * -18f;
@@ -461,10 +453,7 @@ namespace CalamityMod.NPCs.SunkenSea
             return 0f;
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
-            npcLoot.Add(ModContent.ItemType<Serpentine>(), 4);
-        }
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => SandProwler.DefineSandProwlerLoot(npcLoot);
 
         public override void HitEffect(NPC.HitInfo hit)
         {
@@ -479,6 +468,16 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, NPC.scale);
+            }
+        }
+        public override void OnKill()
+        {
+            // Increase the kill count of Sand Prowlers for the Bestiary
+            if (NPC.GetWereThereAnyInteractions())
+            {
+                NPC nPC = new NPC();
+                nPC.SetDefaults(ModContent.NPCType<SandProwler>());
+                Main.BestiaryTracker.Kills.RegisterKill(nPC);
             }
         }
     }

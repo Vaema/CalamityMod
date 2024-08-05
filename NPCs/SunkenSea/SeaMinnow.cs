@@ -5,6 +5,7 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,8 +27,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.npcSlots = 0.1f;
             NPC.noGravity = true;
             NPC.damage = 0;
-            NPC.width = 36;
-            NPC.height = 22;
+            NPC.width = 32;
+            NPC.height = 26;
             NPC.defense = 0;
             NPC.lifeMax = 5;
             NPC.aiStyle = -1;
@@ -49,6 +50,10 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            NPC.frameCounter = Main.rand.NextFloat(Main.npcFrameCount[Type]);
+        }
         public override void AI()
         {
             NPC owner = Main.npc[(int)NPC.ai[2]];
@@ -321,7 +326,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.frameCounter = 0.0;
                 return;
             }
-            NPC.frameCounter += 0.075f;
+            NPC.frameCounter += 0.15f;
             NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;

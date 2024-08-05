@@ -37,18 +37,6 @@ namespace CalamityMod.Projectiles.Boss
         {
             Lighting.AddLight(Projectile.Center, 0.45f, 0.35f, 0f);
 
-            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-            if (CalamityGlobalNPC.doughnutBoss != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
-                {
-                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
-                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
-                    else
-                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-                }
-            }
-
             if (Projectile.timeLeft < 510)
                 Projectile.tileCollide = true;
 
@@ -73,13 +61,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha);
+            return ProvUtils.GetDayNightColor(Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = (Projectile.maxPenetrate == (int)Providence.BossMode.Day) ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProfanedSpearNight").Value;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, Projectile.alpha, true), 4f, texture);
+            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProfanedSpearNight").Value;
+            Projectile.DrawBackglow(ProvUtils.GetDayNightColor(Projectile.alpha, true), 4f, texture);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
@@ -87,8 +75,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            Color hiColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false);
-            Color loColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+            Color hiColor = ProvUtils.GetDayNightColor(255, false);
+            Color loColor = ProvUtils.GetDayNightColor(0, true);
 
             for (int i = 0; i < 25; i++)
             {

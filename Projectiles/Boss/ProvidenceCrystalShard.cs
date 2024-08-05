@@ -51,23 +51,16 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            ProvUtils.ApplyGFBDamage(Projectile, 0, 10);
+
             bool healerGuardianAlive = true;
             if (CalamityGlobalNPC.doughnutBossHealer < 0 || !Main.npc[CalamityGlobalNPC.doughnutBossHealer].active)
                 healerGuardianAlive = false;
 
             Lighting.AddLight(Projectile.Center, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity);
 
-            // Day mode by default but syncs with the boss
-            if (CalamityGlobalNPC.holyBoss != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.holyBoss].active)
-                    Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
-            }
-            else
-                Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-
             // Night AI or Guardian Healer
-            if (Projectile.maxPenetrate != (int)Providence.BossMode.Day || healerGuardianAlive)
+            if (!ProvUtils.DayAI() || healerGuardianAlive)
                 Projectile.extraUpdates = 1;
 
             if (Projectile.timeLeft < 300)
@@ -232,21 +225,5 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity);
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            // In GFB, "real damage" is replaced with negative healing
-            if (Projectile.maxPenetrate >= (int)Providence.BossMode.Red)
-                modifiers.SourceDamage *= 0f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            // If the player is dodging, don't apply debuffs
-            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
-                return;
-
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 0, 10);
-        }
     }
 }

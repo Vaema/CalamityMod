@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Enemy
         public override void SetDefaults()
         {
             Projectile.hostile = true;
+            Projectile.friendly = true;
             Projectile.width = Projectile.height = Sharkoon.ExplosionRadius * 2;
             Projectile.timeLeft = 2;
         }

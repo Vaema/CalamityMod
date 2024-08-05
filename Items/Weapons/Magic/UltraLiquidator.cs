@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Vector2 upperVelocityLimit = new Vector2(xVec, yVec).SafeNormalize(Vector2.UnitY) * speed;
             velocityReal = velocityReal.SafeNormalize(upperVelocityLimit) * speed;
             velocityReal = Vector2.Lerp(velocityReal, upperVelocityLimit, 0.25f);
-            Projectile.NewProjectile(projSource, source, velocityReal, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(projSource, source, velocityReal, type, damage, knockback, player.whoAmI);
             return false;
         }
 

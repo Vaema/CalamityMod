@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             else
             {
-                int pIndex = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 1f);
+                int pIndex = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
                 int pID = Main.projectile[pIndex].identity;
 
                 CreateOrbs(source, position, orbDamage, knockback, pID, player, false);
