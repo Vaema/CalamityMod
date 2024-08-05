@@ -2,9 +2,12 @@
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -167,6 +170,15 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void OnKill()
         {
+            for (int i = 0; i < 15; i++)
+            {
+                float sc = Main.rand.NextFloat(1f, 3f);
+                Vector2 vel = new Vector2(Main.rand.NextFloat(10, 25), 0).RotatedByRandom(MathHelper.TwoPi);
+
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(NPC.Center, vel, "CalamityMod/Projectiles/Boss/OldDukeToothBallSpike", true, 40, sc + 0.5f, OldDuke.GlowColor, Vector2.One));
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(NPC.Center, vel, "CalamityMod/Projectiles/Boss/OldDukeToothBallSpike", true, 40, sc, Color.White, Vector2.One, false, affectedByLight: true));
+            }
+
             int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
@@ -218,6 +230,32 @@ namespace CalamityMod.NPCs.OldDuke
         {
             cooldownSlot = ImmunityCooldownID.Bosses;
             return true;
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            float velDist = NPC.velocity.Length();
+
+            Vector2 vel = NPC.velocity;
+            vel.Normalize();
+
+            if (velDist > 5)
+            {
+                float sc = velDist - 5;
+                if (Main.rand.NextBool(3))
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(NPC.Center + new Vector2(Main.rand.NextFloat(5, 30), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), NPC.velocity, false, 20, Main.rand.NextFloat(0.5f, 1.5f), OldDuke.GlowColor, true));
+            }
+
+            if (Main.rand.NextBool(3))
+                GeneralParticleHandler.SpawnParticle(new MediumMistParticle(NPC.Center, -(vel * 4f).RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4)), OldDuke.GlowColor, Color.DarkSlateGray, Main.rand.NextFloat(0.5f, 1.5f), 150f));
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            for (int i = 0; i < 360; i += 90)
+            {
+                Main.EntitySpriteDraw(tex.Value, NPC.Center + new Vector2(0, 4) - Main.screenPosition + new Vector2(4,0).RotatedBy(MathHelper.ToRadians(i)), tex.Frame(), OldDuke.GlowColor, NPC.rotation, tex.Frame().Center(), NPC.scale, SpriteEffects.None);
+            }
+
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

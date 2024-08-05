@@ -684,10 +684,14 @@ namespace CalamityMod
             Vector2 drawPosition = projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+
             for (int i = 0; i < 10; i++)
             {
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
-                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, 0, 0f);
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
             }
         }
 
@@ -701,12 +705,16 @@ namespace CalamityMod
             Vector2 drawPosition = projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+
             for (int i = 0; i < 10; i++)
             {
                 Vector2 off = Vector2.Zero;
                 if (offset != null) off += offset.Value;
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
-                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, 0, 0f);
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, spriteEffects, 0f);
             }
         }
 
@@ -720,8 +728,11 @@ namespace CalamityMod
             Vector2 drawPosition = projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
 
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+
             projectile.DrawBackglow(backglowColor, backglowArea, texture, frame);
-            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, 0, 0f);
+            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
         }
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
