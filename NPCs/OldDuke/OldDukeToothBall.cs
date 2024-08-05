@@ -252,7 +252,8 @@ namespace CalamityMod.NPCs.OldDuke
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
             for (int i = 0; i < 360; i += 90)
             {
-                Main.EntitySpriteDraw(tex.Value, NPC.Center + new Vector2(0, 4) - Main.screenPosition + new Vector2(4,0).RotatedBy(MathHelper.ToRadians(i)), tex.Frame(), OldDuke.GlowColor, NPC.rotation, tex.Frame().Center(), NPC.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, NPC.Center + new Vector2(0, 4) - Main.screenPosition + new Vector2(4, 0).RotatedBy(MathHelper.ToRadians(i)), tex.Frame(), OldDuke.GlowColor, NPC.rotation, tex.Frame().Center(), NPC.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, NPC.Center + new Vector2(0, 4) - Main.screenPosition + new Vector2(8, 0).RotatedBy(MathHelper.ToRadians(i)), tex.Frame(), OldDuke.GlowColor, NPC.rotation, tex.Frame().Center(), NPC.scale, SpriteEffects.None);
             }
 
             return base.PreDraw(spriteBatch, screenPos, drawColor);

@@ -1646,14 +1646,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
         static void DoChargeBurst(NPC npc, int phase)
         {
-            SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact.WithPitchOffset(-0.5f), npc.Center);
-            if (phase > 0) SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, npc.Center);
-            
-            if (phase > 0)
+            SoundEngine.PlaySound(OldDuke.OldDuke.DashSound, npc.Center);
+
+            if (phase > 1)
             {
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, npc.Center);
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, npc.Center);
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 3, FireGreen, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.05f, 0.2f, 20));
-                if (phase > 1)
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
             }
 
             if (phase > 0)
@@ -1671,9 +1671,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             
             int chargeTime = 36;
 
-            Color col = Color.Lerp(FireGreen, new Color(55, 55, 55, 55), progress / chargeTime);
+            Color col = Color.Lerp(phase > 0 ? FireGreen : new Color(100, 100, 100, 55), new Color(55, 55, 55, 55), progress / chargeTime);
 
-            if (Math.Floor(VisualTimerSystem.GlobalVisualTimer % 6f) < 1f)
+            if (Math.Floor(VisualTimerSystem.GlobalVisualTimer % 6f) < 1f && phase > 1)
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, npc.velocity / 3, col, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.04f, 0.1f, 20));
 
             if (Main.rand.NextBool())

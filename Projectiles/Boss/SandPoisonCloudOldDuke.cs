@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (Projectile.ai[0] < 1620f)
             {
-                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Top + new Vector2(Main.rand.NextFloat(-12, 12), 0f), new Vector2(0, -Main.rand.NextFloat(2)), false, 20, Main.rand.NextFloat(0.5f, 1.2f), new Color(0, 255, 0)));
+                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Top + new Vector2(Main.rand.NextFloat(-12, 12), 6f), new Vector2(0, -Main.rand.NextFloat(2)), false, 20, Main.rand.NextFloat(0.5f, 1.2f), new Color(100, 255, 0)));
 
                 if (Projectile.frame >= 4)
                 {
@@ -77,9 +77,8 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.R = (byte)(100 * Projectile.Opacity);
             lightColor.G = (byte)(155 * Projectile.Opacity);
             lightColor.B = (byte)(55 * Projectile.Opacity);
-            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(10, 30, 13, 0), new Color(10, 30, 13, 0), 1.75f);
             lightColor.A = 0;
-            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(33, 236, 100, 0), Color.White, 1.75f);
+            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(20, 60, 26, 0), Color.White, 2f);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
