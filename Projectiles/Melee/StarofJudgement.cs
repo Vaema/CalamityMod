@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Melee
     public class StarofJudgement : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public override string Texture => "CalamityMod/Projectiles/Melee/StarofJudgement";
         public ref float time => ref Projectile.ai[0];
         public Color mainColor;
         public override void SetStaticDefaults()
@@ -71,19 +72,15 @@ namespace CalamityMod.Projectiles.Melee
 
             time++;
         }
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return lightColor;
-        }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/StarofJudgement").Value;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Color drawColor = Color.White;
+            Color drawColor = Color.Lerp(mainColor, Color.White, 0.2f) with { A = 0 };
             float drawRotation = Projectile.rotation;
             Vector2 rotationPoint = texture.Size() * 0.5f;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(mainColor, Color.White, 0.3f) * 0.4f, 1, texture, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], drawColor * 0.5f, 1, texture, true, true);
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
             return false;
         }

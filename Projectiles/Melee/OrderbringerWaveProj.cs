@@ -20,6 +20,7 @@ namespace CalamityMod.Projectiles.Melee
         public Color mainColor;
         public float fade = 1;
         public float damageMult = 1;
+        public float fadeOut = 1;
         public override void SetDefaults()
         {
             Projectile.width = 336;
@@ -78,37 +79,33 @@ namespace CalamityMod.Projectiles.Melee
                     trailDust.noGravity = true;
                 }
 
-                if (time % 12 == 0)
+                if (time % 9 == 0)
                 {
-                    Particle orb = new GlowSparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)), false, 11, Main.rand.NextFloat(0.03f, 0.055f) * Utils.GetLerpValue(250, 150, time, true), mainColor, new Vector2(1, 0.8f), true, false);
+                    Particle orb = new GlowSparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)), false, 15, Main.rand.NextFloat(0.03f, 0.055f) * Utils.GetLerpValue(250, 150, time, true), mainColor, new Vector2(1, 0.8f), true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(orb);
-                    Particle orb2 = new GlowSparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)), false, 11, Main.rand.NextFloat(0.03f, 0.055f) * Utils.GetLerpValue(250, 150, time, true), mainColor, new Vector2(1, 0.8f), true, false);
+                    Particle orb2 = new GlowSparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)), false, 15, Main.rand.NextFloat(0.03f, 0.055f) * Utils.GetLerpValue(250, 150, time, true), mainColor, new Vector2(1, 0.8f), true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(orb2);
-                    if (Main.rand.NextBool(3))
-                    {
-                        GlowOrbParticle orb3 = new GlowOrbParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)) * Main.rand.NextFloat(20f, 40f), false, 17, Main.rand.NextFloat(0.8f, 1.25f), mainColor, true, true);
-                        GeneralParticleHandler.SpawnParticle(orb3);
-                        GlowOrbParticle orb4 = new GlowOrbParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)) * Main.rand.NextFloat(20f, 40f), false, 17, Main.rand.NextFloat(0.8f, 1.25f), mainColor, true, true);
-                        GeneralParticleHandler.SpawnParticle(orb4);
-                    }
+                }
+                if (Main.rand.NextBool(12))
+                {
+                    Particle orb3 = new SparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)) * Main.rand.NextFloat(5f, 20f), false, 15, Main.rand.NextFloat(0.8f, 1.35f), mainColor);
+                    GeneralParticleHandler.SpawnParticle(orb3);
+                    Particle orb4 = new SparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)) * Main.rand.NextFloat(5f, 20f), false, 15, Main.rand.NextFloat(0.8f, 1.35f), mainColor);
+                    GeneralParticleHandler.SpawnParticle(orb4);
                 }
             }
 
+            fadeOut = Utils.GetLerpValue(0, 180, Projectile.timeLeft, true);
+
             time++;
-        }
-        public override Color? GetAlpha(Color lightColor)
-        {
-            Color color = Color.White;
-            color.A = (byte)(color.A * fade);
-            return color;
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            Main.spriteBatch.EnterShaderRegion(BlendState.NonPremultiplied);
-            
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            Main.spriteBatch.ExitShaderRegion();
+
+            float waveFade = Utils.GetLerpValue(0, 300, Projectile.timeLeft);
+            for (int i = 1; i < 6; i++) // Weird for loop because of squash code
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (i * 0.2f * waveFade), 1 + (i * 0.35f  * waveFade)) * Projectile.scale * 1.1f, SpriteEffects.None, 0);
             return false;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

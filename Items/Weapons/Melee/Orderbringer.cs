@@ -23,14 +23,14 @@ namespace CalamityMod.Items.Weapons.Melee
         private int time = 0;
         private Color mainColor;
         private int swordDirection;
-        private int useTime = 15;
+        private int useTime = 18;
         private int opacityAdjust = 0;
         private float smearOpacity = 0;
         private bool smearGrowth = true;
         public override void SetDefaults()
         {
             Item.width = Item.height = 108;
-            Item.damage = 160;
+            Item.damage = 210;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = Item.useAnimation = useTime;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int i = 0; i < 2; i++)
             {
                 Vector2 targetPos = Main.MouseWorld;
-                NPC target = Main.MouseWorld.ClosestNPCAt(350);
+                NPC target = Main.MouseWorld.ClosestNPCAt(650);
                 if (target != null)
                     targetPos = target.Center + target.velocity * 14;
 

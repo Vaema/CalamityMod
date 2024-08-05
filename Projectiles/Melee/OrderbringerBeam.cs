@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Melee
     public class OrderbringerBeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public override string Texture => "CalamityMod/Projectiles/Melee/OrderbringerBeam";
         private int whiteLightTimer = 5;
         public int time = 0;
         public Color mainColor = Color.White;
@@ -23,8 +24,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 74;
-            Projectile.height = 74;
+            Projectile.width = 100;
+            Projectile.height = 100;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
 
             Player Owner = Main.player[Projectile.owner];
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center); //used for some drawing prevention for when it's offscreen since it makes a fuck load of particles
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             if (Projectile.timeLeft % 3 == 0 && targetDist < 1400f)
             {
                 Particle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 3, -Projectile.velocity * 0.05f, false, 17, 1.5f, mainColor * 0.7f);
@@ -53,22 +54,14 @@ namespace CalamityMod.Projectiles.Melee
             }
             time++;
         }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return Color.White;
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(mainColor, Color.White, 0.5f), 1, null, true, true);
-            return true;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(mainColor, Color.White, 0.3f) with { A = 0 }, 1, null, true, true);
+            return false;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundStyle fire = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2);
-            SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = 0.4f }, Projectile.Center);
             if (Projectile.numHits < 1)
             {
                 Particle orb = new GlowSparkParticle(target.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY), false, 12, 0.07f, mainColor, new Vector2(1.5f, 0.8f), true);

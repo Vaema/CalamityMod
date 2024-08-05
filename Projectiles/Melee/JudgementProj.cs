@@ -8,16 +8,19 @@ using Terraria.ModLoader;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
+using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class JudgementProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public override string Texture => "CalamityMod/Projectiles/Melee/JudgementProj";
         public ref float time => ref Projectile.ai[0];
         public float hitboxSize = 10;
         public Color mainColor;
         public float fade = 1;
+        public float fadeOut = 1;
         public override void SetDefaults()
         {
             Projectile.width = 336;
@@ -35,8 +38,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Vector2 topCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(100f)) * Projectile.scale) * 157;
-            Vector2 bottomCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-100f)) * Projectile.scale) * 157;
+            Vector2 topCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(100f)) * Projectile.scale) * 137;
+            Vector2 bottomCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-100f)) * Projectile.scale) * 137;
 
             if (time == 0)
             {
@@ -97,22 +100,14 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-
+            fadeOut = Utils.GetLerpValue(0, 180, Projectile.timeLeft, true);
             time++;
-        }
-        public override Color? GetAlpha(Color lightColor)
-        {
-            Color color = Color.White;
-            color.A = (byte)(color.A * fade);
-            return color;
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            Main.spriteBatch.EnterShaderRegion(BlendState.NonPremultiplied);
-            
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            Main.spriteBatch.ExitShaderRegion();
+            float waveFade = Utils.GetLerpValue(0, 300, Projectile.timeLeft);
+            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (0.2f * waveFade), 1 + (0.45f * waveFade)) * Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

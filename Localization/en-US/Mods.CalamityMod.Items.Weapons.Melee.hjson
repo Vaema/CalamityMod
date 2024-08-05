@@ -910,8 +910,8 @@ Orderbringer: {
 	DisplayName: Orderbringer
 	Tooltip:
 		'''
-Fires a piercing energy wave along with two blades from the sky and four homing stars that are created near your cursor
-Energy waves deal more damage as they pierce enemies
+		Fires a piercing energy wave along with two blades from the sky and four homing stars that are created near your cursor
+		Energy waves deal more damage as they pierce enemies
 		'No matter where you may be you are never alone'
 		'''
 }

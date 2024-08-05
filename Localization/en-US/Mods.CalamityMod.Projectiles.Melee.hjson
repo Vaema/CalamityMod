@@ -191,6 +191,7 @@ Orbacle.DisplayName: Auric Orb
 OrderbringerAura.DisplayName: Aura
 OrderbringerBeam.DisplayName: Orderbringer Beam
 OrderbringerRain.DisplayName: Rain
+OrderbringerWaveProj.DisplayName: Orderbringer Wave Proj
 OrderbringerWhiteOrb.DisplayName: Orderbringer Orb
 PhoenixsPride.DisplayName: Phoenix's Pride
 PhosphorescentGauntletPunches.DisplayName: Gauntlet Punch
@@ -240,6 +241,7 @@ SpineOfThanatosProjectile.DisplayName: Spine of Thanatos
 StarburstBeam.DisplayName: Star Shiv
 StarburstSHIV.DisplayName: SHIV
 StarnightBeam.DisplayName: Starnight Beam
+StarofJudgement.DisplayName: Star of Judgement
 StellarContemptBlast.DisplayName: Stellar Blast
 StellarContemptEcho.DisplayName: Echoes of Contempt
 StellarContemptHammer.DisplayName: Stellar Contempt
