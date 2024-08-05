@@ -47,6 +47,9 @@ namespace CalamityMod.NPCs.OldDuke
         public static readonly SoundStyle HuffSound = new("CalamityMod/Sounds/Custom/OldDukeHuff");
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/OldDukeRoar");
         public static readonly SoundStyle VomitSound = new("CalamityMod/Sounds/Custom/OldDukeVomit");
+        public static readonly SoundStyle VortexSpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortexSpawn");
+        public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/OldDukeDash");
+        public static readonly SoundStyle DashSoundP3 = new("CalamityMod/Sounds/Custom/OldDukeDashP3");
 
         public SlotId RoarSoundSlot;
 

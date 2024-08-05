@@ -1,8 +1,11 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -55,6 +58,10 @@ namespace CalamityMod.Projectiles.Boss
             int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
             Main.dust[acid].noGravity = true;
             Main.dust[acid].velocity *= 0f;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
         }
 
         public override void OnKill(int timeLeft)

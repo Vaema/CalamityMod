@@ -1034,6 +1034,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
 
+                    SoundEngine.PlaySound(OldDuke.OldDuke.VortexSpawnSound, npc.Center);
                     int type = ModContent.ProjectileType<OldDukeVortex>();
                     int damage = npc.GetProjectileDamage(type);
                     Vector2 vortexSpawn = npc.Center + npc.velocity.RotatedBy(MathHelper.PiOver2 * -npc.direction) * spinTime / MathHelper.TwoPi;
@@ -1564,6 +1565,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
 
+                    SoundEngine.PlaySound(OldDuke.OldDuke.VortexSpawnSound, npc.Center);
                     int type = ModContent.ProjectileType<OldDukeVortex>();
                     int damage = npc.GetProjectileDamage(type);
                     Vector2 vortexSpawn = npc.Center + npc.velocity.RotatedBy(MathHelper.PiOver2 * -npc.direction) * spinTime / MathHelper.TwoPi;
@@ -1646,7 +1648,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
         static void DoChargeBurst(NPC npc, int phase)
         {
-            SoundEngine.PlaySound(OldDuke.OldDuke.DashSound, npc.Center);
+            SoundEngine.PlaySound(phase > 1 ? OldDuke.OldDuke.DashSoundP3 : OldDuke.OldDuke.DashSound, npc.Center);
 
             if (phase > 1)
             {
