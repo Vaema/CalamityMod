@@ -59,7 +59,7 @@ namespace CalamityMod.ForegroundDrawing.LoopingTextures
             Raindrops.Remove(drop);
         }
 
-        public override bool DoesThisShow() => NPC.CountNPCS(ModContent.NPCType<OldDuke>()) > 0 && Main.LocalPlayer.Calamity().ZoneSulphur;
+        public override bool DoesThisShow() => NPC.CountNPCS(ModContent.NPCType<OldDuke>()) > 0 && Main.LocalPlayer.Calamity().ZoneSulphur && !CalamityConfig.Instance.BossesStopWeather;
 
         public override void Update()
         {
