@@ -149,11 +149,11 @@ namespace CalamityMod.NPCs.OldDuke
 
             if (Phase == 2 && NPC.Calamity().newAI[1] != 1)
             {
-                NuclearOverlayVisual = MathHelper.Lerp(NuclearOverlayVisual, 1f, 0.2f);
+                NuclearOverlayVisual = MathHelper.Lerp(NuclearOverlayVisual, 0.2f, 0.2f);
             }
             else
             {
-                NuclearOverlayVisual = MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.05f);
+                NuclearOverlayVisual = MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.1f);
             }
 
             OldDukeAI.VanillaOldDukeAI(NPC, Mod);
@@ -245,6 +245,7 @@ namespace CalamityMod.NPCs.OldDuke
         {
             Color finalDrawColor = Color.Lerp(drawColor, Color.White, NuclearOverlayVisual);
             Color overlayDrawColor = Color.Lerp(Color.Transparent, Color.LimeGreen.MultiplyRGBA(new Color(255, 255, 255, 0)), NuclearOverlayVisual);
+            finalDrawColor = Color.Lerp(finalDrawColor, Color.LimeGreen.MultiplyRGBA(new Color(255, 255, 255, 0)), NuclearOverlayVisual);
 
             finalDrawColor = Color.Lerp(finalDrawColor, Color.Transparent, (float)NPC.alpha / 255f);
             overlayDrawColor = Color.Lerp(overlayDrawColor, Color.Transparent, (float)NPC.alpha / 255f);

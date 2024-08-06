@@ -1675,8 +1675,13 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             Color col = Color.Lerp(phase > 0 ? FireGreen : new Color(100, 100, 100, 55), new Color(55, 55, 55, 55), progress / chargeTime);
 
-            if (Math.Floor(VisualTimerSystem.GlobalVisualTimer % 6f) < 1f && phase > 1)
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, npc.velocity / 3, col, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.04f, 0.1f, 20));
+            if (phase > 1)
+            {
+                if (Math.Floor(VisualTimerSystem.GlobalVisualTimer % 6f) < 1f)
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, npc.velocity / 3, col, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.04f, 0.1f, 20));
+
+                (npc.ModNPC as OldDuke.OldDuke).NuclearOverlayVisual = 1f;
+            }
 
             if (Main.rand.NextBool())
                 GeneralParticleHandler.SpawnParticle(new CustomSpark(npc.Center - (npc.velocity * 2), npc.velocity / 2, "CalamityMod/Particles/ForwardSmear", false, 10, Main.rand.NextFloat(0.3f, 0.5f), col, new Vector2(1f, Main.rand.NextFloat(1.45f, 1.6f)), fadeIn: true, extraRotation: MathHelper.ToRadians(180f)));
