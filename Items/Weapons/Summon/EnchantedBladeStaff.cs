@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public static float SwingTime = 20f;
         public static float SwingWait = 10f;
+        public static float ProjectileSpeed = 15f;
         
         public new string LocalizationCategory => "Items.Weapons.Summon";
 

@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.ID;
 using static CalamityMod.Items.Weapons.Summon.EnchantedBladeStaff;
 using static Terraria.ModLoader.ModContent;
 
@@ -34,9 +33,11 @@ namespace CalamityMod.Projectiles.Summon
         }
         private Action _currentState;
 
-        private ref float SwingTimer => ref Projectile.ai[0];
+        private ref float DashTimer => ref Projectile.ai[0];
 
-        private ref float SwingDirection => ref Projectile.ai[1];
+        private ref float SwingTimer => ref Projectile.ai[1];
+
+        private ref float SwingDirection => ref Projectile.ai[2];
 
         private Vector2 IdlePosition => Owner.MountedCenter +
             new Vector2(50f * MathF.Ceiling(Projectile.minionPos / 2f) * (Projectile.minionPos % 2 == 0 ? -1 : 1), -60f + MathF.Ceiling(Projectile.minionPos / 2f) * 15f);
@@ -62,6 +63,7 @@ namespace CalamityMod.Projectiles.Summon
             if (!HasSpawned)
             {
                 TrailCacheLength = 4;
+                DashTimer = Main.rand.Next(120);
                 CurrentState = GoToOwnerState;
                 HasSpawned = true;
                 NetUpdate();
@@ -109,15 +111,18 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
-            var easing = new CalamityUtils.CurveSegment(CalamityUtils.PolyInOutEasing, 0f, 0f, 1f, 4);
+            SwingCenter += Projectile.velocity;
+            Projectile.velocity *= 0.9f;
 
+            var easing = new CalamityUtils.CurveSegment(CalamityUtils.PolyInOutEasing, 0f, 0f, 1f, 3);
             float swingRotation = MathHelper.Lerp(-MathHelper.PiOver2, MathHelper.PiOver2, CalamityUtils.PiecewiseAnimation(Utils.GetLerpValue(SwingWait, SwingWait + SwingTime, SwingTimer, true), easing)) * MathF.Sign(Target.Center.X - SwingCenter.X);
-            Projectile.Center = SwingCenter + (Projectile.DirectionTo(Target.Center).ToRotation() + swingRotation).ToRotationVector2() * 40f;
+            Vector2 predictiveDirection = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, ProjectileSpeed);
+
+            Projectile.Center = SwingCenter + (predictiveDirection.ToRotation() + swingRotation).ToRotationVector2() * 40f;
             Projectile.rotation = Projectile.DirectionFrom(SwingCenter).ToRotation();
 
             if (SwingTimer == SwingWait + SwingTime * 0.5f && Main.myPlayer == Projectile.owner)
             {
-                Vector2 predictiveDirection = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, 15f);
                 Vector2 spawnPosition = SwingCenter + predictiveDirection.SafeNormalize(-Vector2.UnitY) * 40f;
                 Projectile.NewProjectileDirect(
                     Projectile.GetSource_FromThis(),
@@ -127,6 +132,14 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.damage,
                     Projectile.knockBack,
                     Projectile.owner);
+                NetUpdate();
+            }
+
+            if (DashTimer >= 60f)
+            {
+                Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, 10f);
+                DashTimer = 0f;
+                NetUpdate();
             }
 
             SwingTimer += 1f * SwingDirection;
@@ -137,6 +150,9 @@ namespace CalamityMod.Projectiles.Summon
                 else
                     HasStartedSwinging = true;
             }
+
+            if (Projectile.DistanceSQ(Target.Center) > 320f * 320f)
+                DashTimer += Main.rand.NextBool(120) ? 2 : 1;
         }
 
         private void OnStateChange(Action newState)
@@ -226,6 +242,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             writer.WritePackedVector2(SwingCenter);
             writer.Write(RandomRotationOffset);
+            writer.Write(HasStartedSwinging);
             writer.Write(HasSpawned);
         }
 
@@ -233,6 +250,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             SwingCenter = reader.ReadPackedVector2();
             RandomRotationOffset = reader.ReadSingle();
+            HasStartedSwinging = reader.ReadBoolean();
             HasSpawned = reader.ReadBoolean();
         }
 
