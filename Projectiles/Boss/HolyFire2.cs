@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
@@ -16,6 +17,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyFire2 : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -48,7 +50,8 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
 
-            if (Math.Abs(Projectile.velocity.X) < 7f)
+            float maxVelocity = Projectile.ai[0] == 0f ? 7f : (Main.masterMode || BossRushEvent.BossRushActive) ? 13f : CalamityWorld.death ? 11f : CalamityWorld.revenge ? 10f : Main.expertMode ? 9f : 7f;
+            if (Projectile.velocity.X < maxVelocity)
                 Projectile.velocity.X *= 1.05f;
 
             int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
@@ -74,17 +77,12 @@ namespace CalamityMod.Projectiles.Boss
             GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.2f, false, 10, Main.rand.NextFloat(0.8f, 1.2f), ProvUtils.GetProjectileColor(255)));
 
             if (Main.rand.NextBool())
-            {
                 GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, Main.rand.NextFloat(vel), 150, MathHelper.ToRadians(Main.rand.NextFloat(-1f, 1f))));
-            }
 
             Projectile.rotation = MathHelper.Lerp(0f, MathHelper.WrapAngle(Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.ToRadians(-90f)), Math.Clamp(vel, 0f, 1f));
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return ProvUtils.GetProjectileColor(lightColor);
-        }
+        public override Color? GetAlpha(Color lightColor) => ProvUtils.GetProjectileColor(lightColor);
 
         public override bool PreDraw(ref Color lightColor)
         {
