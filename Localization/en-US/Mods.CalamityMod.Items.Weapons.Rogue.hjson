@@ -1336,9 +1336,8 @@ ToxicantTwister: {
 	DisplayName: Toxicant Twister
 	Tooltip:
 		'''
-		Throws a slow moving boomerang
-		After a few moments, the boomerang chooses a target and rapidly homes in
-		Stealth strikes home in faster and rapidly release sand
+		Throws a fan of four spinning disks that swirls around your cursor
+		Stealth strikes spin around the cursor further away and create a vortex of toxic raindrops that home in on enemies
 		'''
 }
 

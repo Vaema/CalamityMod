@@ -16,18 +16,21 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public NPC targetedNPC;
 
         public override void SetDefaults()
         {
             Projectile.width = 6;
             Projectile.height = 6;
             Projectile.friendly = true;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
-            Projectile.extraUpdates = 2;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 3;
             Projectile.timeLeft = 180;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
@@ -42,9 +45,9 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.rotation += 0.2f;
 
-            NPC target = (Projectile.ai[1] > 90) ? Projectile.Center.ClosestNPCAt(1200) : null;
+            targetedNPC = (Projectile.ai[1] > 90) ? Projectile.Center.ClosestNPCAt(1200) : null;
             float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft);
-            if (target == null)
+            if (targetedNPC == null)
             {
                 Vector2 position = (Owner.Calamity().mouseWorld + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
@@ -55,7 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                Vector2 position = target.Center;
+                Vector2 position = targetedNPC.Center;
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 if (Projectile.velocity.Length() < 13 * moveSpeed)
                     Projectile.velocity += moveToMouse * moveSpeed;
@@ -64,8 +67,8 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.ai[1] % 2 == 0)
                     Projectile.timeLeft++; // Lasts longer if it has a target
             }
-            if (target != null && target.life <= 0)
-                target = null;
+            if (targetedNPC != null && targetedNPC.life <= 0)
+                targetedNPC = null;
             
             Projectile.ai[1]++;
         }
@@ -86,6 +89,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+            if (target == targetedNPC)
+                Projectile.Kill();
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
     }
