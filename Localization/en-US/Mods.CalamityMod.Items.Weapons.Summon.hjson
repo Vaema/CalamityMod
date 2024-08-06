@@ -884,3 +884,8 @@ YharonsKindleStaff: {
 		Requires 5 minion slots to use
 		'''
 }
+
+EnchantedBladeStaff: {
+	DisplayName: Enchanted Blade Staff
+	Tooltip: ""
+}
