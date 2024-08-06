@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.GameContent.Bestiary.IL_BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -14,16 +15,16 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 42;
             Item.height = 46;
-            Item.damage = 333;
+            Item.damage = 150;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 50;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ToxicantTwisterTwoPointZero>();
-            Item.shootSpeed = 18f;
+            Item.shoot = ModContent.ProjectileType<ToxicantTwisterProj>();
+            Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
 
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
@@ -34,14 +35,30 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            float angle1 = MathHelper.ToRadians(20f);
             if (player.Calamity().StealthStrikeAvailable())
             {
-                int boomer = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (boomer.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[boomer].Calamity().stealthStrike = true;
-                return false;
+                for (int i = 0; i < 2; i++)
+                {
+                    int proj = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1), type, damage, knockback, player.whoAmI, 0, 0, 0 + i);
+                    int proj2 = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1 * 0.5f) * 0.9f, type, damage, knockback, player.whoAmI, 0, 0, 2 + i);
+                    angle1 *= -1;
+                    if (proj.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[proj].Calamity().stealthStrike = true;
+                    if (proj2.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[proj2].Calamity().stealthStrike = true;
+                }
             }
-            return true;
+            else
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    int proj = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1), type, damage, knockback, player.whoAmI, 0, 0, 0 + i);
+                    int proj2 = Projectile.NewProjectile(source, position, velocity.RotatedBy(angle1 * 0.5f) * 0.9f, type, damage, knockback, player.whoAmI, 0, 0, 2 + i);
+                    angle1 *= -1;
+                }
+            }
+            return false;
         }
     }
 }
