@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
                     int baseMaxHealth = 400;
                     int bonusHealth = player.statLifeMax2 - baseMaxHealth;
                     float bonusDamage = DamagePerHealth * bonusHealth;
-                    Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, (int)(damage * (1 + bonusDamage)), knockback, player.whoAmI, 0, 0);
+                    Projectile.NewProjectile(source, position, velocity, type, (int)(damage * (1 + bonusDamage)), knockback, player.whoAmI);
                 }
                 // still play the sound if the clones are out since they always fire beams
                 else if (player.ownedProjectileCounts[ModContent.ProjectileType<DarkMasterClone>()] > 0)

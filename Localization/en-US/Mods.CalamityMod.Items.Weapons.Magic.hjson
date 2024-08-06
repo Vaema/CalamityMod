@@ -393,8 +393,12 @@ GruesomeEminence: {
 		'''
 		Summons a gaseous conglomeration of spirits near the cursor that fly around wildly
 		Over time, the spirits accumulate to create a single, controllable monstrosity
-		[c/C61B40:'The spirits of the amalgam could never pass on to their desired afterlife,]
-		[c/C61B40:Tainted and melded by rage as they were.']
+		'''
+	Calamitas:
+		'''
+		'Many will tell you that Yharim fell from grace as his Crusade went on, but that's far from the truth.
+		Sure, he was a good man when he was killing assassins drunk on power, but even as he dethroned dictators, entire kingdoms were leveled alongside.
+		I wish more people could bear witness to this "Polterghast". Maybe then, they would understand the pain he caused for the world.'
 		'''
 }
 
@@ -682,8 +686,12 @@ Rancor: {
 		'''
 		Casts a magic circle that charges energy and eventually releases a powerful laser burst of controlled maleficent magic
 		The laser causes arms and searing lava to appear on surfaces it touches
-		[c/C61B40:'Forgiveness can only heal so much,]
-		[c/C61B40:If the recipient has not yet forgiven themselves.']
+		'''
+	Calamitas:
+		'''
+		'Yharim told me it was Otonilou who unleashed the Brimstone Elemental unto Azafure.
+		I believed him at the time, being a child looking for someone to blame for all her woes.
+		So I unleashed upon them all the fury and scorn I thought they deserved, and only once it was too late did I see through his lies.'
 		'''
 }
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
@@ -8,7 +7,6 @@ using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.DraedonsArsenal;
@@ -19,6 +17,8 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Summon.MirrorofKalandraMinions;
 using CalamityMod.Projectiles.Typeless;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -59,6 +59,9 @@ namespace CalamityMod.Balancing
 
             bool AotCThrowCombo(Projectile p) =>
                 p.type == ProjectileType<ArkoftheCosmosSwungBlade>() && (p.ai[0] == 2 || p.ai[0] == 3);
+
+            bool HiveBeeFilter(Projectile p) =>
+                p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].ActiveItem().type == ItemType<TheHive>();
 
             UniversalBalancingChanges = new List<IBalancingRule[]>()
             {
@@ -188,7 +191,7 @@ namespace CalamityMod.Balancing
 
             #region Duke Fishron
             // 20% vulnerability to The Hive's bees.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.DukeFishron, Do(new ProjectileResistBalancingRule(1.2f, ProjectileType<BasicPlagueBee>()))));
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.DukeFishron, Do(new ProjectileSpecificRequirementBalancingRule(1.2f, HiveBeeFilter))));
 
             // 35% vulnerability to Resurrection Butterfly.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.DukeFishron, Do(new ProjectileResistBalancingRule(1.35f, ProjectileType<SakuraBullet>(), ProjectileType<PurpleButterfly>()))));

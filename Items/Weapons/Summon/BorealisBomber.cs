@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 position = Main.MouseWorld;
                 velocity.X = 0;
                 velocity.Y = 0;
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, Main.myPlayer);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, Main.myPlayer);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }

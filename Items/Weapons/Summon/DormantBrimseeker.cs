@@ -41,13 +41,13 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             if (totalSlots < player.maxMinions)
             {
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }
             else if (player.ownedProjectileCounts[ModContent.ProjectileType<DormantBrimseekerAura>()] <= 0f)
             {
-                int p = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DormantBrimseekerAura>(), damage * 2, knockback, player.whoAmI, 0f, 0f);
+                int p = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DormantBrimseekerAura>(), damage * 2, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage * 2;
             }

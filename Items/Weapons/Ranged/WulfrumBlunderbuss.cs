@@ -117,7 +117,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Vector2 direction = nuzzleDir.RotatedByRandom(spread);
                 Vector2 nuzzlePos = player.MountedCenter + direction * 15f;
 
-                Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(Item, Item.useAmmo), nuzzlePos, direction * Item.shootSpeed * Main.rand.NextFloat(1.5f, 2f), type, damage, (int)Item.knockBack, player.whoAmI, 0, 0);
+                Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(Item, Item.useAmmo), nuzzlePos, direction * Item.shootSpeed * Main.rand.NextFloat(1.5f, 2f), type, damage, (int)Item.knockBack, player.whoAmI);
             }
 
             return false;
