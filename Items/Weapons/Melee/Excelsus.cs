@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
                         type = ModContent.ProjectileType<ExcelsusPink>();
                         break;
                 }
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

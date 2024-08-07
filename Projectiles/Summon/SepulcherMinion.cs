@@ -75,12 +75,12 @@ namespace CalamityMod.Projectiles.Summon
             HoverNearOwner,
             AttackEnemy_Charge,
             AttackEnemy_ReleaseDartBurst,
-            AttackOwner
+            AttackHearts
         }
 
         public int IdleTimer;
         public int AttackTimer;
-        public int PlayerAttackCountdown;
+        public int HeartAttackCountdown;
         public SepulcherSegment[] Segments = new SepulcherSegment[24];
         public List<SepulcherArm> Arms = new List<SepulcherArm>();
         public Player Owner => Main.player[Projectile.owner];
@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Summon
                 Initialize();
 
             writer.Write(IdleTimer);
-            writer.Write(PlayerAttackCountdown);
+            writer.Write(HeartAttackCountdown);
             writer.Write(Arms.Count);
             for (int i = 0; i < Arms.Count; i++)
             {
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Summon
                 Initialize();
 
             IdleTimer = reader.ReadInt32();
-            PlayerAttackCountdown = reader.ReadInt32();
+            HeartAttackCountdown = reader.ReadInt32();
             int armCount = reader.ReadInt32();
             Arms.Clear();
             for (int i = 0; i < armCount; i++)
@@ -183,7 +183,7 @@ namespace CalamityMod.Projectiles.Summon
             NPC potentialTarget = AttemptToFindTarget(1450f);
 
             // Enter the attack state if a valid enemy is found and go back to hovering otherwise.
-            // This will be overriden if attacking the owner.
+            // This will be overriden if attacking its hearts.
             if (CurrentAIState != AIState.AttackEnemy_ReleaseDartBurst && CurrentAIState != AIState.AttackEnemy_Charge)
             {
                 if (potentialTarget != null)
@@ -195,22 +195,18 @@ namespace CalamityMod.Projectiles.Summon
                 AttackTimer = 0;
             }
 
-            // Reset the AI to player attack mode if the countdown is going on.
-            if (PlayerAttackCountdown > 0)
+            // Reset the AI to heart attack mode if the countdown is going on.
+            if (HeartAttackCountdown > 0)
             {
-                if (CurrentAIState != AIState.AttackOwner)
-                    CurrentAIState = AIState.AttackOwner;
+                if (CurrentAIState != AIState.AttackHearts)
+                    CurrentAIState = AIState.AttackHearts;
 
-                PlayerAttackCountdown--;
+                HeartAttackCountdown--;
 
                 // If it's finished, go back to idle owner hover movement.
-                if (PlayerAttackCountdown <= 0)
+                if (HeartAttackCountdown <= 0)
                     CurrentAIState = AIState.HoverNearOwner;
             }
-
-
-            // Determine whether the projectile can attack its owner based on the attakc countdown.
-            Projectile.hostile = PlayerAttackCountdown > 0;
 
             switch (CurrentAIState)
             {
@@ -225,8 +221,8 @@ namespace CalamityMod.Projectiles.Summon
                     AttackEnemyByCharging(potentialTarget);
                     AttackTimer++;
                     break;
-                case AIState.AttackOwner:
-                    AttackOwner();
+                case AIState.AttackHearts:
+                    AttackHearts();
                     break;
             }
 
@@ -248,7 +244,7 @@ namespace CalamityMod.Projectiles.Summon
                     chanceToBecomeAngry = Utils.GetLerpValue(2f, 6f, heartsAttachedToOwner, true);
                 if (Main.rand.NextFloat() < chanceToBecomeAngry)
                 {
-                    PlayerAttackCountdown = 300;
+                    HeartAttackCountdown = 300;
                     Projectile.netUpdate = true;
                 }
                 else if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -349,7 +345,7 @@ namespace CalamityMod.Projectiles.Summon
                 float rotationalVelocityFactor = Utils.GetLerpValue(0f, 6f, Projectile.velocity.Length(), true);
                 if (CurrentAIState == AIState.AttackEnemy_Charge)
                     rotationalVelocityFactor *= 0.85f;
-                if (CurrentAIState == AIState.AttackOwner)
+                if (CurrentAIState == AIState.AttackHearts)
                     rotationalVelocityFactor *= 1.2f;
 
                 if (Arms[i].ReelingBack)
@@ -455,14 +451,39 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public void AttackOwner()
+        public void AttackHearts()
         {
             // Attempt to angle towards the owner.
             float newSpeed = MathHelper.Lerp(Projectile.velocity.Length(), 21f, 0.025f);
 
-            if (!Projectile.WithinRange(Owner.Center, 370f))
+            // Find the closest heart to the minion.
+            float npcDistCompare = 960f;
+            int index = -1;
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                Vector2 idealVelocity = Projectile.SafeDirectionTo(Owner.Center) * newSpeed;
+                if (!n.CanBeChasedBy(Projectile, false) || n.type != ModContent.NPCType<ExhumedHeart>())
+                    continue;
+
+                float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
+                if (currentNPCDist < npcDistCompare)
+                {
+                    npcDistCompare = currentNPCDist;
+                    index = n.whoAmI;
+                }
+            }
+
+            // If there are no Hearts left, immediately go back to being passive.
+            if (index == -1)
+            {
+                HeartAttackCountdown = 0;
+                CurrentAIState = AIState.HoverNearOwner;
+                return;
+            }
+            // Otherwise, move towards the targeted heart.
+            NPC targetHeart = Main.npc[index];
+            if (!Projectile.WithinRange(targetHeart.Center, 185f))
+            {
+                Vector2 idealVelocity = Projectile.SafeDirectionTo(targetHeart.Center) * newSpeed;
                 Projectile.velocity = Projectile.velocity.MoveTowards(idealVelocity, 2f);
 
                 float idealAimDirection = idealVelocity.ToRotation();
@@ -470,15 +491,15 @@ namespace CalamityMod.Projectiles.Summon
             }
             else if (Projectile.velocity.Length() < 36f)
             {
-                Projectile.velocity *= 1.03f;
+                Projectile.velocity *= 1.066f;
                 if (JawSnapTimer <= 0f)
                 {
                     // Open the mouth of the jaw if close but not super close to the owner.
-                    if (Projectile.WithinRange(Owner.Center, 300f))
+                    if (Projectile.WithinRange(targetHeart.Center, 150f))
                         JawRotation = JawRotation.AngleLerp(0.87f, 0.12f);
 
                     // If really close, snap.
-                    if (Projectile.WithinRange(Owner.Center, 180f))
+                    if (Projectile.WithinRange(targetHeart.Center, 90f))
                     {
                         SoundEngine.PlaySound(SoundID.DD2_SkeletonHurt, Projectile.Center);
                         JawSnapTimer = 45f;
@@ -526,7 +547,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float angerFactor = Utils.GetLerpValue(300f, 280f, PlayerAttackCountdown, true) * Utils.GetLerpValue(0f, 30f, PlayerAttackCountdown, true);
+            float angerFactor = Utils.GetLerpValue(300f, 280f, HeartAttackCountdown, true) * Utils.GetLerpValue(0f, 30f, HeartAttackCountdown, true);
             float afterimageOutwardness = MathHelper.Lerp(6f, 8f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 2.3f) * 0.5f + 0.5f) * angerFactor;
             Color backAfterimageColor = Color.Red * angerFactor;
             backAfterimageColor.A = 0;
@@ -671,21 +692,11 @@ namespace CalamityMod.Projectiles.Summon
 
         #endregion
 
-        #region Damage Stuff
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            modifiers.SourceDamage *= 0f;
-            if (Main.masterMode) modifiers.SourceDamage.Flat += 450f;
-            else if (Main.expertMode) modifiers.SourceDamage.Flat += 375f;
-            else modifiers.SourceDamage.Flat += 300f;
-        }
-
         public override bool? CanHitNPC(NPC target)
         {
             if (target.type == ModContent.NPCType<ExhumedHeart>())
-                return false;
+                return HeartAttackCountdown > 0;
             return null;
         }
-        #endregion
     }
 }

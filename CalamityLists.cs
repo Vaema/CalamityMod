@@ -282,7 +282,7 @@ namespace CalamityMod
                 "cocodezi_",
                 "Mendzey",
                 "GameRDheAsianSandwich",
-                "Tobias",
+                "Chigbungus",
                 "Streakist",
                 "Eisaya",
                 "Xenocrona",

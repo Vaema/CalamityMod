@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -35,28 +36,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            ProvUtils.ApplyGFBDamage(Projectile, 80, 20);
+
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
-
-            Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-
-            // Day mode by default but syncs with the boss
-            if (CalamityGlobalNPC.holyBoss != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.holyBoss].active)
-                    Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
-            }
-            else if (CalamityGlobalNPC.doughnutBoss != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
-                {
-                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
-                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
-                    else
-                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-                }
-            }
-            else
-                Projectile.maxPenetrate = (int)Providence.BossMode.Day;
 
             if (Projectile.ai[1] == 0f)
             {
@@ -64,7 +46,7 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
 
-            Projectile.alpha -= (Projectile.maxPenetrate != (int)Providence.BossMode.Day) ? 10 : 5;
+            Projectile.alpha -= !ProvUtils.DayAI() ? 10 : 5;
             if (Projectile.alpha <= 0)
                 Projectile.Kill();
 
@@ -80,36 +62,33 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return ProvUtils.GetProjectileColor(Projectile.maxPenetrate, lightColor);
+            return ProvUtils.GetProjectileColor(lightColor);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.scale = 1.5f;
-            Texture2D texture = (Projectile.maxPenetrate == (int)Providence.BossMode.Day) ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFireNight").Value;
+            Texture2D texture = ProvUtils.DayAI() ? Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFireNight").Value;
             int framing = texture.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(Projectile.maxPenetrate, lightColor, true), 4f, new Vector2(Projectile.scale));
+            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, new Vector2(Projectile.scale));
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            Color hiColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 255, false);
-            Color loColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0, true);
+            Color hiColor = ProvUtils.GetProjectileColor(255, false);
+            Color loColor = ProvUtils.GetProjectileColor(0, true);
 
             for (int i = 0; i < 25; i++)
-            {
                 GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.8f, 1.2f), hiColor));
-            }
 
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
 
             for (float i = 0; i < 1; i += 0.25f)
-            {
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.125f * i, 8));
-            }
+
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 5));
 
             if (Main.rand.NextBool())
@@ -120,12 +99,12 @@ namespace CalamityMod.Projectiles.Boss
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
                 }
             }
             else
@@ -136,32 +115,26 @@ namespace CalamityMod.Projectiles.Boss
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
                 }
             }
+
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             SoundEngine.PlaySound(SoundID.Item100.WithPitchOffset(0.4f), Projectile.Center);
-        }
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            //In GFB, "real damage" is replaced with negative healing
-            if (Projectile.maxPenetrate >= (int)Providence.BossMode.Red)
-                modifiers.SourceDamage *= 0f;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             // If the player is dodging, don't apply debuffs
-            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
+            if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 80, 20);
+            ProvUtils.ApplyDebuffs(target, 80);
         }
     }
 }

@@ -70,11 +70,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<SeasSearingSecondary>(), (int)(damage * 1.22f), knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SeasSearingSecondary>(), (int)(damage * 1.22f), knockback, player.whoAmI);
             }
             else
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<SeasSearingBubble>(), damage, knockback, player.whoAmI, 1f, 0f);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SeasSearingBubble>(), damage, knockback, player.whoAmI, 1f);
             }
             return false;
         }

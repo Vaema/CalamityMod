@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             realPlayerPos.X = Main.mouseX + Main.screenPosition.X;
             realPlayerPos.Y = Main.mouseY + Main.screenPosition.Y;
-            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI);
 
             CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 2);
 

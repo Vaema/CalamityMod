@@ -78,15 +78,8 @@ namespace CalamityMod.NPCs.Providence
         {
             Night = -1,
             Day = 0,
-            Red = 1,
-            Orange = 2,
-            Yellow = 3,
-            Green = 4,
-            Blue = 5,
-            Violet = 6
+            Rainbow = 1,
         }
-
-        public int colorShiftTimer = -1;
 
         Color HighFireColor = new Color(255, 191, 73);
         Color LowFireColor = new Color(116, 45, 23);
@@ -298,7 +291,6 @@ namespace CalamityMod.NPCs.Providence
             writer.Write(text);
             writer.Write(useDefenseFrames);
             writer.Write(biomeType);
-            writer.Write(colorShiftTimer);
             writer.Write(phaseChange);
             writer.Write(frameUsed);
             writer.Write(healTimer);
@@ -324,7 +316,6 @@ namespace CalamityMod.NPCs.Providence
             text = reader.ReadBoolean();
             useDefenseFrames = reader.ReadBoolean();
             biomeType = reader.ReadInt32();
-            colorShiftTimer = reader.ReadInt32();
             phaseChange = reader.ReadInt32();
             frameUsed = reader.ReadInt32();
             healTimer = reader.ReadInt32();
@@ -354,9 +345,6 @@ namespace CalamityMod.NPCs.Providence
 
         public override void AI()
         {
-            // Local helper variable to get the current boss mode without having to use the magic number version
-            int currentMode = (int)NPC.localAI[1];
-
             // Set the border drawing to true if it isn't set to true
             // Can happen when another mod sets to false for a difficulty and that difficulty is then toggled off.
             shouldDrawInfernoBorder = true;
@@ -384,25 +372,9 @@ namespace CalamityMod.NPCs.Providence
             bool bossRush = BossRushEvent.BossRushActive;
 
             bool getFuckedAI = Main.zenithWorld;
-            int timeToShift = 30; //Switches color every half-second
             if (getFuckedAI)
-            {
-                colorShiftTimer++;
-
-                if (colorShiftTimer == -1) //Initiate
-                {
-                    NPC.localAI[1] = (float)BossMode.Red;
-                    colorShiftTimer = 0;
-                }
-                else if (colorShiftTimer >= timeToShift)
-                {
-                    NPC.localAI[1]++;
-                    if (NPC.localAI[1] > (float)BossMode.Violet)
-                        NPC.localAI[1] = (float)BossMode.Red;
-                    colorShiftTimer = 0;
-                }
-            }
-            else if ((!Main.dayTime && !Main.remixWorld) || bossRush) // Normal Night time activity
+                NPC.localAI[1] = (float)BossMode.Rainbow;
+            else if (!ProvUtils.DayAI()) // Normal Night time activity
                 NPC.localAI[1] = (float)BossMode.Night;
             else
                 NPC.localAI[1] = (float)BossMode.Day;
@@ -453,7 +425,9 @@ namespace CalamityMod.NPCs.Providence
 
             // Increase all projectile damage at night, but reduce to 0 for Zenith
             int projectileDamageMult = 1;
-            if (nightAI)
+            if (getFuckedAI)
+                projectileDamageMult = 0;
+            else if (nightAI)
                 projectileDamageMult = 2;
 
             NPC.Calamity().CurrentlyEnraged = !bossRush && nightAI;
@@ -469,7 +443,7 @@ namespace CalamityMod.NPCs.Providence
             int holyStarDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<HolyBurnOrb>()) * projectileDamageMult;
 
             // Change dust type at night
-            int dustType = ProvUtils.GetDustID(NPC.localAI[1]);
+            int dustType = ProvUtils.GetDustID();
 
             // Phase times
             float phaseTime = nightAI ? (240f - 60f * (1f - lifeRatio)) : 300f;
@@ -511,9 +485,9 @@ namespace CalamityMod.NPCs.Providence
             float burnIntensity = CalculateBurnIntensity(attackDelayAfterCocoon);
 
             // Color determination
-            Color hiColor = ProvUtils.GetProjectileColor(currentMode, 0);
-            Color medColor = ProvUtils.GetProjectileColor(currentMode, 255);
-            Color loColor = ProvUtils.GetProjectileColor(currentMode, 255, true);
+            Color hiColor = ProvUtils.GetProjectileColor(0);
+            Color medColor = ProvUtils.GetProjectileColor(255);
+            Color loColor = ProvUtils.GetProjectileColor(255, true);
 
             if (!player.dead && player.active && !player.creativeGodMode && !Dying)
             {
@@ -857,10 +831,7 @@ namespace CalamityMod.NPCs.Providence
             {
                 // Slowly drift down when spawning
                 if (spawnAnimation)
-                {
-                    colorShiftTimer++; // Also double the shift speed in the mean time :)
                     NPC.velocity = Vector2.Zero;
-                }
                 else
                 {
                     // Slows down while firing Holy Rays. It would've not slowed down for the Zenith seed but apparently it was too fast (shockers).
@@ -1133,8 +1104,8 @@ namespace CalamityMod.NPCs.Providence
                             }
                             CalamityUtils.AddScreenshakeAt(NPC.Center, 10, 2000);
 
-                            Color hColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
-                            Color lColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+                            Color hColor = ProvUtils.GetProjectileColor(255, false);
+                            Color lColor = ProvUtils.GetProjectileColor(0, true);
 
                             for (int i = 0; i < 30; i++)
                             {
@@ -1205,7 +1176,7 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition) * projSpeed;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), holyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
@@ -1492,8 +1463,7 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition) * projSpeed;
-                            projectileVelocity.X *= 0.1f;
+                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? player.velocity * 50f : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), moltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
@@ -1853,8 +1823,8 @@ namespace CalamityMod.NPCs.Providence
             {
                 CalamityUtils.AddScreenshakeAt(NPC.Center, 5, 2000);
 
-                Color hiColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
-                Color loColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+                Color hiColor = ProvUtils.GetProjectileColor( 255, false);
+                Color loColor = ProvUtils.GetProjectileColor(0, true);
 
                 for (int i = 0; i < 30; i++)
                 {
@@ -1959,7 +1929,7 @@ namespace CalamityMod.NPCs.Providence
             float shorterDistanceFade = Utils.GetLerpValue(0f, 120f, aiTimer, true);
 
             // Distance does not get shorter if in GFB / Guardians are alive
-            if (!guardianAlive && NPC.localAI[1] < (float)BossMode.Red)
+            if (!guardianAlive && NPC.localAI[1] < (float)BossMode.Rainbow)
             {
                 maxDistance = baseDistance;
                 if (AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon)
@@ -2026,8 +1996,8 @@ namespace CalamityMod.NPCs.Providence
         {
             CalamityUtils.AddScreenshakeAt(NPC.Center, 10, 2000);
 
-            Color hiColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 255, false);
-            Color loColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+            Color hiColor = ProvUtils.GetProjectileColor(255, false);
+            Color loColor = ProvUtils.GetProjectileColor(0, true);
 
             for (int i = 0; i < 30; i++)
             {
@@ -2188,7 +2158,7 @@ namespace CalamityMod.NPCs.Providence
                     {
                         int frameY = (int)(NPC.Calamity().newAI[3] / 4) % 4;
                         float sc1 = MathHelper.Lerp(1, 0, sc);
-                        Main.EntitySpriteDraw(orbTex.Value, NPC.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(MathHelper.Lerp(0f, 10f, sc)), 0).RotatedByRandom(MathHelper.TwoPi), orbTex.Frame(), ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, false).MultiplyRGBA(new Color(sc * 45f, sc * 11f, sc * 22f, 0f)), 0f, orbTex.Frame().Center(), (sc * 4.4f) + (float)(Math.Cos((float)NPC.Calamity().newAI[3] / 10) * sc), SpriteEffects.None);
+                        Main.EntitySpriteDraw(orbTex.Value, NPC.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(MathHelper.Lerp(0f, 10f, sc)), 0).RotatedByRandom(MathHelper.TwoPi), orbTex.Frame(), ProvUtils.GetProjectileColor(0, false).MultiplyRGBA(new Color(sc * 45f, sc * 11f, sc * 22f, 0f)), 0f, orbTex.Frame().Center(), (sc * 4.4f) + (float)(Math.Cos((float)NPC.Calamity().newAI[3] / 10) * sc), SpriteEffects.None);
                     }
                 }
 
@@ -2270,41 +2240,43 @@ namespace CalamityMod.NPCs.Providence
 
                     // Draw the glowmask textures + their afterimages
                     // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.
-                    Color WingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0); // Default to day
+                    Color WingColor = ProvUtils.GetProjectileColor(0); // Default to day
                     Color CrystalColor = Color.Violet;
-                    switch (NPC.localAI[1])
+
+                    if (NPC.localAI[1] == (float)BossMode.Rainbow)
                     {
-                        case (float)BossMode.Red:
-                            WingColor = Color.Red;
-                            CrystalColor = Color.BlueViolet;
-                            break;
-
-                        case (float)BossMode.Orange:
-                            WingColor = Color.Orange;
-                            CrystalColor = Color.HotPink;
-                            break;
-
-                        case (float)BossMode.Yellow: // Same as day
-                            break;
-
-                        case (float)BossMode.Green:
-                            WingColor = Color.Green;
-                            CrystalColor = Color.Gold;
-                            break;
-
-                        case (float)BossMode.Blue: // Same as night
-                        case (float)BossMode.Night:
-                            WingColor = Color.Cyan;
-                            CrystalColor = Color.BlueViolet;
-                            break;
-
-                        case (float)BossMode.Violet:
+                        if (Main.GlobalTimeWrappedHourly % 6f >= 5f) // Violet
+                        {
                             WingColor = Color.Magenta;
                             CrystalColor = Color.GreenYellow;
-                            break;
-
-                        default:
-                            break;
+                        }
+                        else if (Main.GlobalTimeWrappedHourly % 6f >= 4f) // Blue
+                        {
+                            WingColor = Color.Cyan;
+                            CrystalColor = Color.BlueViolet;
+                        }
+                        else if (Main.GlobalTimeWrappedHourly % 6f >= 3f) // Green
+                        {
+                            WingColor = Color.Green;
+                            CrystalColor = Color.Gold;
+                        }
+                        else if (Main.GlobalTimeWrappedHourly % 6f >= 2f) // Yellow
+                            CrystalColor = Color.Violet;
+                        else if (Main.GlobalTimeWrappedHourly % 6f >= 1f) // Orange
+                        {
+                            WingColor = Color.Orange;
+                            CrystalColor = Color.HotPink;
+                        }
+                        else // Red
+                        {
+                            WingColor = Color.Red;
+                            CrystalColor = Color.BlueViolet;
+                        }
+                    }
+                    else if (NPC.localAI[1] == (float)BossMode.Night)
+                    {
+                        WingColor = Color.Cyan;
+                        CrystalColor = Color.BlueViolet;
                     }
 
                     Color BaseWingColor = Color.Lerp(WingColor, BaseColor, Brightness) * NPC.Opacity;
@@ -2315,13 +2287,13 @@ namespace CalamityMod.NPCs.Providence
                         BaseCrystalColor = colorOverride.Value;
                     }
 
-                    Color GlowWingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], NPC.GetAlpha(drawColor), true);
+                    Color GlowWingColor = ProvUtils.GetProjectileColor(NPC.GetAlpha(drawColor), true);
 
                     if (CalamityConfig.Instance.Afterimages)
                     {
                         for (int j = 1; j < maxAfterimages; j++)
                         {
-                            Color AfterimageWingColor = ProvUtils.GetProjectileColor((int)NPC.localAI[1], 0, true);
+                            Color AfterimageWingColor = ProvUtils.GetProjectileColor(0, true);
                             AfterimageWingColor = Color.Lerp(AfterimageWingColor, BaseColor, Brightness);
                             AfterimageWingColor = NPC.GetAlpha(AfterimageWingColor);
                             AfterimageWingColor *= (maxAfterimages - j) / 15f;
@@ -2488,7 +2460,7 @@ namespace CalamityMod.NPCs.Providence
 
         public override Color? GetAlpha(Color drawColor)
         {
-            return ProvUtils.GetProjectileColor((int)NPC.localAI[1], drawColor) * NPC.Opacity;
+            return ProvUtils.GetProjectileColor(drawColor) * NPC.Opacity;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -2515,7 +2487,7 @@ namespace CalamityMod.NPCs.Providence
 
                         int pr = (int)(progress * 30f);
 
-                        Color col = ProvUtils.GetProjectileColor((int)NPC.localAI[1], Color.DarkGray, true);
+                        Color col = ProvUtils.GetProjectileColor(Color.DarkGray, true);
                         col.A = 255;
 
                         Main.EntitySpriteDraw(tex, NPC.Center + vec + new Vector2(0, 310) - Main.screenPosition + new Vector2(Main.rand.Next(-pr, pr) * 2, outset), new Rectangle(0, i * 2, tex.Width, 2), Color.Lerp(col, Color.White, progress * 2f).MultiplyRGBA(new Color(255, 255, 255, MathHelper.Lerp(progress, 1f, 0.2f) * 2f)), 0f, tex.Size() / 2f, 1f, SpriteEffects.None);
@@ -2701,7 +2673,7 @@ namespace CalamityMod.NPCs.Providence
                 SoundEngine.PlaySound(HurtSound, NPC.Center);
             }
 
-            int dustType = ProvUtils.GetDustID(NPC.localAI[1]);
+            int dustType = ProvUtils.GetDustID();
             for (int k = 0; k < 15; k++)
             {
                 int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, hit.HitDirection, -1f, 0, default, 1f);
@@ -2854,11 +2826,26 @@ namespace CalamityMod.NPCs.Providence
     // These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
-        public static Color GetProjectileColor(int Mode, Color givenLightColor, bool Outline = false)
+        public static bool DayAI() => (Main.IsItDay() || Main.remixWorld) && !Main.zenithWorld && !BossRushEvent.BossRushActive;
+
+        // Simplified to day/night only. For PSC and Profaned Guardians
+        public static Color GetDayNightColor(int Alpha, bool Outline = false) => GetDayNightColor(!Main.IsItDay() && !Main.remixWorld, Alpha, Outline);
+        public static Color GetDayNightColor(bool Night, int Alpha, bool Outline = false)
+        {
+            Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to day
+
+            if (Night)
+                FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, Alpha);
+
+            return FinalColor;
+        }
+
+        public static Color GetProjectileColor(Color givenLightColor, bool Outline = false)
         {
             int alpha = 0;
 
-            if (!Outline && Mode == (int)Providence.BossMode.Yellow)
+            // Custom set alpha for GFB Yellow Mode
+            if (!Outline && Main.zenithWorld && Main.GlobalTimeWrappedHourly % 6f >= 2f && Main.GlobalTimeWrappedHourly % 6f < 3f)
             {
                 float colorBrightness = (givenLightColor.R + givenLightColor.G + givenLightColor.B / 3) / 255f;
                 alpha = (int)MathHelper.Lerp(0f, 155f, colorBrightness);
@@ -2869,35 +2856,24 @@ namespace CalamityMod.NPCs.Providence
             }
 
             Color FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha); // Default to day
-            switch (Mode)
+
+            if (Main.zenithWorld)
             {
-                case (int)Providence.BossMode.Red:
-                    FinalColor = new Color(250, 100, Outline ? 200 : 100, alpha);
-                    break;
-
-                case (int)Providence.BossMode.Orange:
-                    FinalColor = new Color(250, 150, Outline ? 150 : 100, alpha);
-                    break;
-
-                case (int)Providence.BossMode.Yellow: // Same as day
-                    break;
-
-                case (int)Providence.BossMode.Green:
-                    FinalColor = new Color(Outline ? 200 : 100, 250, 100, alpha);
-                    break;
-
-                case (int)Providence.BossMode.Blue: // Same as night
-                case (int)Providence.BossMode.Night:
-                    FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, alpha);
-                    break;
-
-                case (int)Providence.BossMode.Violet:
+                if (Main.GlobalTimeWrappedHourly % 6f >= 5f) // Violet
                     FinalColor = new Color(Outline ? 100 : 150, Outline ? 150 : 100, 250, alpha);
-                    break;
-
-                default:
-                    break;
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 4f) // Blue
+                    FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, alpha);
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 3f) // Green
+                    FinalColor = new Color(Outline ? 200 : 100, 250, 100, alpha);
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 2f) // Yellow
+                    FinalColor = new Color(255, Outline ? 0 : 255, Outline ? 0 : 255, alpha);
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 1f) // Orange
+                    FinalColor = new Color(250, 150, Outline ? 150 : 100, alpha);
+                else // Red
+                    FinalColor = new Color(250, 100, Outline ? 200 : 100, alpha);
             }
+            else if (!DayAI())
+                FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, alpha);
 
             if (Outline)
                 FinalColor *= 0.1f;
@@ -2905,38 +2881,27 @@ namespace CalamityMod.NPCs.Providence
             return FinalColor;
         }
        
-        public static Color GetProjectileColor(int Mode, int Alpha, bool Outline = false)
+        public static Color GetProjectileColor(int Alpha, bool Outline = false)
         {
             Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to day
-            switch (Mode)
+
+            if (Main.zenithWorld)
             {
-                case (int)Providence.BossMode.Red:
-                    FinalColor = new Color(250, 100, Outline ? 200 : 100, Alpha);
-                    break;
-
-                case (int)Providence.BossMode.Orange:
-                    FinalColor = new Color(250, 150, Outline ? 150 : 100, Alpha);
-                    break;
-
-                case (int)Providence.BossMode.Yellow: // Same as day
-                    break;
-
-                case (int)Providence.BossMode.Green:
-                    FinalColor = new Color(Outline ? 200 : 100, 250, 100, Alpha);
-                    break;
-
-                case (int)Providence.BossMode.Blue: // Same as night
-                case (int)Providence.BossMode.Night:
-                    FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, Alpha);
-                    break;
-
-                case (int)Providence.BossMode.Violet:
+                if (Main.GlobalTimeWrappedHourly % 6f >= 5f) // Violet
                     FinalColor = new Color(Outline ? 100 : 150, Outline ? 150 : 100, 250, Alpha);
-                    break;
-
-                default:
-                    break;
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 4f) // Blue
+                    FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, Alpha);
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 3f) // Green
+                    FinalColor = new Color(Outline ? 200 : 100, 250, 100, Alpha);
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 2f) // Yellow
+                    FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha);
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 1f) // Orange
+                    FinalColor = new Color(250, 150, Outline ? 150 : 100, Alpha);
+                else // Red
+                    FinalColor = new Color(250, 100, Outline ? 200 : 100, Alpha);
             }
+            else if (!DayAI())
+                FinalColor = new Color(100, Outline ? 250 : 200, Outline ? 200 : 250, Alpha);
 
             if (Outline)
                 FinalColor *= 0.1f;
@@ -2944,88 +2909,92 @@ namespace CalamityMod.NPCs.Providence
             return FinalColor;
         }
 
-        public static int GetDustID(float Mode)
+        // Assign the night bool to turn it into a binary day/night state without accounting for GFB
+        public static int GetDustID(bool? Night = null)
         {
             int DustType = (int)CalamityDusts.ProfanedFire; // Default to day
-            switch (Mode)
+
+            if (Night.HasValue)
             {
-                case (float)Providence.BossMode.Red:
-                    DustType = DustID.RedTorch;
-                    break;
-
-                case (float)Providence.BossMode.Orange:
-                    DustType = DustID.OrangeTorch;
-                    break;
-
-                case (float)Providence.BossMode.Yellow: // Same as day
-                    break;
-
-                case (float)Providence.BossMode.Green:
-                    DustType = DustID.GreenTorch;
-                    break;
-
-                case (float)Providence.BossMode.Blue: // Same as night
-                case (float)Providence.BossMode.Night:
+                if (Night.Value)
                     DustType = (int)CalamityDusts.Nightwither;
-                    break;
-
-                case (float)Providence.BossMode.Violet:
-                    DustType = DustID.PurpleTorch;
-                    break;
-
-                default:
-                    break;
             }
+            else if (Main.zenithWorld)
+            {
+                if (Main.GlobalTimeWrappedHourly % 6f >= 5f) // Violet
+                    DustType = DustID.PurpleTorch;
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 4f) // Blue
+                    DustType = (int)CalamityDusts.Nightwither;
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 3f) // Green
+                    DustType = DustID.GreenTorch;
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 2f) // Yellow
+                    DustType = (int)CalamityDusts.ProfanedFire;
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 1f) // Orange
+                    DustType = DustID.OrangeTorch;
+                else // Red
+                    DustType = DustID.RedTorch;
+            }
+            else if (!DayAI())
+                DustType = (int)CalamityDusts.Nightwither;
+
             return DustType;
+        }
+
+        // Shortcut function for applying Burden Breaker-like negative healing to GFB Providence
+        public static void ApplyGFBDamage(Projectile proj, int BaseDuration, int NegativeHealValue)
+        {
+            int index = Player.FindClosest(proj.position, proj.width, proj.height);
+            Player player = Main.player[index];
+            if (player is null)
+                return;
+            if (proj.Colliding(proj.Hitbox, player.Hitbox))
+                ApplyDebuffs(player, BaseDuration, NegativeHealValue);
         }
 
         // Include debuffs inflicted by Providence's projectiles for all her forms
         // In the GFB seed, also includes negative healing
-        public static void ApplyHitEffects(Player Target, int Mode, int BaseDuration, int NegativeHealValue)
+        public static void ApplyDebuffs(Player Target, int BaseDuration, int NegativeHealValue = 0)
         {
-            int BuffType = ModContent.BuffType<HolyFlames>(); // Default to day
-            float Multiplier = 1f; // Used to counterbalance Cursed Inferno and Shadowflame
+            int BuffType = ModContent.BuffType<HolyFlames>(); // Default to non-GFB
 
-            // Day and Night Providence inflicts 16-80 damage of debuffs depending on attacks
-            // GFB Providence inflicts 24-120 damage (+50%) for half the colors, 26-130 (+62.5%) for another half
-            switch (Mode)
+            // All debuffs are adjusted to be 50% more powerful in GFB
+            float Multiplier = 1f;
+            if (Main.zenithWorld)
             {
-                case (int)Providence.BossMode.Red:
-                    BuffType = ModContent.BuffType<BrimstoneFlames>();
-                    break;
-
-                case (int)Providence.BossMode.Orange:
-                    BuffType = ModContent.BuffType<Dragonfire>();
-                    Multiplier = 0.5f;
-                    break;
-
-                case (int)Providence.BossMode.Yellow: // Same as day
-                    break;
-
-                case (int)Providence.BossMode.Green:
-                    BuffType = BuffID.CursedInferno;
-                    Multiplier = 0.75f;
-                    break;
-
-                case (int)Providence.BossMode.Blue: // Night Providence no longer inflicts a different debuff, but Blue GFB Providence does
-                    BuffType = ModContent.BuffType<Nightwither>();
-                    break;
-                case (int)Providence.BossMode.Night: //Same as Day, will inflict Holy Flames
-                    break;
-                case (int)Providence.BossMode.Violet:
+                if (Main.GlobalTimeWrappedHourly % 6f >= 5f) // Violet
+                {
                     BuffType = ModContent.BuffType<Shadowflame>();
-                    Multiplier = 0.60f;
-                    break;
-
-                default:
-                    break;
+                    Multiplier = 2f;
+                }
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 4f) // Blue
+                {
+                    BuffType = ModContent.BuffType<Nightwither>();
+                    Multiplier = 1.5f;
+                }
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 3f) // Green
+                {
+                    BuffType = BuffID.CursedInferno;
+                    Multiplier = 2.5f;
+                }
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 2f) // Yellow
+                {
+                    BuffType = ModContent.BuffType<HolyFlames>();
+                    Multiplier = 1.5f;
+                }
+                else if (Main.GlobalTimeWrappedHourly % 6f >= 1f) // Orange
+                    BuffType = ModContent.BuffType<Dragonfire>();
+                else // Red
+                {
+                    BuffType = ModContent.BuffType<BrimstoneFlames>();
+                    Multiplier = 2f;
+                }
             }
 
             Target.AddBuff(BuffType, (int)(BaseDuration * Multiplier));
 
             // A. Specifically inflicts Vaporfied in quirky RGB Mode because it's a colorful debuff
             // B. Apply the negative healing
-            if (Mode >= (int)Providence.BossMode.Red)
+            if (Main.zenithWorld)
             {
                 // Obligatory offensive guardian boosting negative heals
                 if (CalamityGlobalNPC.holyBossAttacker != -1)

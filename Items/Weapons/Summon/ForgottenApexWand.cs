@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
                 vector2.X = Main.mouseX + Main.screenPosition.X;
                 vector2.Y = Main.mouseY + Main.screenPosition.Y;
-                int p = Projectile.NewProjectile(source, vector2, Vector2.Zero, ModContent.ProjectileType<ApexShark>(), damage, knockback, player.whoAmI, 0f, 0f);
+                int p = Projectile.NewProjectile(source, vector2, Vector2.Zero, ModContent.ProjectileType<ApexShark>(), damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }

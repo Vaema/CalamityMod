@@ -45,8 +45,6 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment) => NPC.lifeMax = 50000;
-
         public override void AI()
         {
             NPC.Opacity = Utils.GetLerpValue(0f, 25f, Time, true);

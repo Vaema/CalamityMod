@@ -87,6 +87,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Main.rand.NextBool(50))
             {
                 Variant = (int)ShoalColor.Gold;
+                NPC.catchItem = ItemID.GoldCoin;
             }
 
             RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);
@@ -339,6 +340,22 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 int goreType = Main.rand.Next(11, 14);
                 Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-10, 11) * 0.2f, Main.rand.Next(-10, 11) * 0.2f), goreType, 0.2f);
+            }
+        }
+
+        public override void OnCaughtBy(Player player, Item item, bool failed)
+        {
+            // Gold shoals drop Gold Coins instead of ash when caught
+            // The shoal drops 1 coin by default while the extra coins are spawned here in a spread
+            if (!failed)
+            {
+                if (Variant == (int)ShoalColor.Gold)
+                {
+                    for (int i = 0; i < Main.rand.Next(0, 5); i++)
+                    {
+                        Item.NewItem(NPC.GetSource_CatchEntity(NPC), NPC.getRect(), ItemID.GoldCoin);
+                    }
+                }
             }
         }
 

@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             CalamityUtils.KillShootProjectiles(false, type, player);
             for (int i = 0; i < 5; i++)
             {
-                Projectile blossom = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile blossom = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
                 blossom.ai[0] = MathHelper.TwoPi * i / 5f;
                 blossom.rotation = blossom.ai[0];
                 blossom.originalDamage = Item.damage;
