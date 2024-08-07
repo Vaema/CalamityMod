@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -23,6 +24,11 @@ namespace CalamityMod.Projectiles.Magic
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.3f;
         public override string Texture => "CalamityMod/Projectiles/Magic/ThunderstormHoldout";
 
+        public ref float FlashTimer => ref Projectile.ai[0];
+
+        public static Asset<Texture2D> MuzzleFlash;
+        public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/ThunderstormHoldoutFlash");
+
         public override void SetStaticDefaults() => Main.projFrames[Projectile.type] = 15;
 
         public override void KillHoldoutLogic()
@@ -40,6 +46,10 @@ namespace CalamityMod.Projectiles.Magic
         {
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
             Projectile.damage = HeldItem is null ? 0 : Owner.GetWeaponDamage(HeldItem);
+
+            // Update muzzle flash time and frames (4 animation frames ran over 8 frames)
+            if (FlashTimer > 0f)
+                FlashTimer -= 0.5f;
 
             // Time between firing (as the player continues to hold)
             if (Projectile.frame == 14)
@@ -74,6 +84,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frameCounter++;
                 if (Owner.CheckMana(Owner.ActiveItem(), -1, true))
                 {
+                    FlashTimer = 4f;
                     SoundEngine.PlaySound(CommonCalamitySounds.PlasmaBlastSound, GunTipPosition);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed, ModContent.ProjectileType<ThunderstormShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
@@ -96,10 +107,18 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
-            Vector2 rotationPoint = frame.Size() * 0.5f;
+            float scale = Projectile.scale * Owner.gravDir;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, frame.Size() * 0.5f, scale, flipSprite);
+
+            if (FlashTimer > 0f)
+            {
+                Texture2D flashTex = MuzzleFlash.Value;
+                Vector2 flashPos = GunTipPosition + Vector2.UnitX.RotatedBy(Projectile.rotation) * MuzzleFlash.Width() * 0.5f - Main.screenPosition;
+                Rectangle flashFrame = flashTex.Frame(verticalFrames: 4, frameY: (int)(4f - FlashTimer));
+                Main.EntitySpriteDraw(flashTex, flashPos, flashFrame, Color.White, drawRotation, flashFrame.Size() * 0.5f, scale, flipSprite);
+            }
             return false;
         }
     }
