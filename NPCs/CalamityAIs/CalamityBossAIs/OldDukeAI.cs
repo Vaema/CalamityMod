@@ -1652,19 +1652,18 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (phase > 1)
             {
-                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, npc.Center);
-                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, npc.Center);
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 3, FireGreen, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.05f, 0.2f, 20));
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
-            }
-
-            if (phase > 0)
-            {
                 for (int i = 0; i < 30; i++)
                 {
                     float fl = Main.rand.NextFloat(-60, 60);
                     GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + (Vector2.Zero.DirectionTo(npc.velocity) * 20) + new Vector2(0, fl).RotatedBy(Vector2.Zero.AngleTo(npc.velocity)), (-npc.velocity * Main.rand.NextFloat(2f)).RotatedBy(MathHelper.ToRadians(fl)), false, 25, Main.rand.NextFloat(0.3f, 1.2f), FireGreen));
                 }
+
+                CalamityUtils.AddScreenshakeAt(npc.Center, 10, 3000);
+
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, npc.Center);
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, npc.Center);
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 3, FireGreen, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.05f, 0.2f, 20));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
             }
         }
         static void DoChargeVisual(NPC npc, int phase)

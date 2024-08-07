@@ -97,6 +97,30 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
+            float distanceRequired = 800f * Projectile.scale;
+            float succPower = Main.zenithWorld ? 1f : 0.5f;
+            foreach (Player player in Main.ActivePlayers)
+            {
+                float distance = Vector2.Distance(player.Center, Projectile.Center);
+                if (distance < distanceRequired && player.grappling[0] == -1)
+                {
+                    if (Collision.CanHit(Projectile.Center, 1, 1, player.Center, 1, 1))
+                    {
+                        float distanceRatio = distance / distanceRequired;
+
+                        float wingTimeSet = (float)Math.Ceiling((float)player.wingTimeMax * 0.5f * distanceRatio);
+                        if (player.wingTime > wingTimeSet)
+                            player.wingTime = wingTimeSet;
+
+                        float multiplier = 1f - distanceRatio;
+                        if (player.Center.X < Projectile.Center.X)
+                            player.velocity.X += succPower * multiplier;
+                        else
+                            player.velocity.X -= succPower * multiplier;
+                    }
+                }
+            }
+
             if (Projectile.timeLeft <= 85)
             {
                 Projectile.localAI[2] += 1f / 85f;
