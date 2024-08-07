@@ -264,6 +264,8 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        public int cursorFocus = 0;
+        public const int cursorFocusMax = 300;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
@@ -297,6 +299,7 @@ namespace CalamityMod.NPCs
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
         public int vulnerabilityHex = 0;
+        public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
         public int ashesOnDeath = 0;
@@ -491,6 +494,7 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
+            myClone.cursorFocus = cursorFocus;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;
@@ -521,6 +525,7 @@ namespace CalamityMod.NPCs
             myClone.sagePoisonTime = sagePoisonTime;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
+            myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
@@ -986,6 +991,13 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseVulnerabilityHexDoTValue, VulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
             }
 
+            // True Vulnerability Hex
+            if (trueVulnerabilityHex > 0)
+            {
+                int baseTrueVHexDoTValue = (int)(TrueVulnerabilityHex.DPS * heatDamageMult);
+                ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
+            }
+
             // Frostburn
             if (npc.onFrostBurn)
             {
@@ -1193,7 +1205,7 @@ namespace CalamityMod.NPCs
             if (elementalMix > 0)
                 ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
-                ApplyDPSDebuff(2500, 500, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
             // Reduce DoT on worm bosses and Creepers by 75%.
             if ((wormBoss || npc.type == NPCID.Creeper) && npc.lifeRegen < 0)
@@ -5224,6 +5236,13 @@ namespace CalamityMod.NPCs
                 laceration--;
             if (elementalMix > 0)
                 elementalMix--;
+            if (trueVulnerabilityHex > 0)
+            {
+                vulnerabilityHex = 0; // You cannot stack True VHex with its lesser counterpart.
+                trueVulnerabilityHex--;
+                if (trueVulnerabilityHex == 0)
+                    cursorFocus = 0;
+            }
             if (vulnerabilityHex > 0)
                 vulnerabilityHex--;
             if (marked > 0)
@@ -5298,7 +5317,8 @@ namespace CalamityMod.NPCs
                 cobaltNerfTimer--;
             if (mythrilNerfTimer > 0)
                 mythrilNerfTimer--;
-
+            if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
+                cursorFocus--;
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -5827,11 +5847,15 @@ namespace CalamityMod.NPCs
                 modifiers.CritDamage += bonus;
             }
 
-            // Plague Reaper deals 1.1x damage to Plagued enemies
             if (!projectile.npcProj && !projectile.trap)
             {
+                // Plague Reaper deals 1.1x damage to Plagued enemies
                 if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && pFlames > 0)
                     modifiers.SourceDamage *= 1.1f;
+
+                // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
+                if (trueVulnerabilityHex > 0)
+                    modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 1f) ? 2.5f : 1.15f;
             }
 
             // Any weapons that shoot projectiles from anywhere other than the player's center aren't affected by point-blank shot damage boost.
@@ -6664,9 +6688,6 @@ namespace CalamityMod.NPCs
             if (pearlAura > 0)
                 PearlAura.DrawEffects(npc, ref drawColor);
 
-            if (voidfrost > 0)
-                Voidfrost.DrawEffects(npc, ref drawColor);
-
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
@@ -6678,6 +6699,9 @@ namespace CalamityMod.NPCs
 
             if (sulphurPoison > 0)
                 SulphuricPoisoning.DrawEffects(npc, ref drawColor);
+
+            if (trueVulnerabilityHex > 0)
+                TrueVulnerabilityHex.DrawEffects(npc, ref drawColor);
 
             if (vaporfied > 0)
                 Vaporfied.DrawEffects(npc, ref drawColor);
@@ -6693,6 +6717,9 @@ namespace CalamityMod.NPCs
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
                 }
             }
+
+            if (voidfrost > 0)
+                Voidfrost.DrawEffects(npc, ref drawColor);
 
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
             if (electrified > 0)
@@ -6879,6 +6906,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().clamDebuff > 0),
             ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge > 0),
             ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
+            ("CalamityMod/Buffs/DamageOverTime/TrueVulnerabilityHex", NPC => NPC.Calamity().trueVulnerabilityHex > 0),
             ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
             ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
             ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost > 0),
@@ -7193,7 +7221,7 @@ namespace CalamityMod.NPCs
             else
             {
                 // VHex and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
-                if (npc.Calamity().vulnerabilityHex > 0)
+                if (npc.Calamity().vulnerabilityHex > 0 || npc.Calamity().trueVulnerabilityHex > 0)
                 {
                     float compactness = npc.width * 0.6f;
                     if (compactness < 10f)
@@ -7202,7 +7230,7 @@ namespace CalamityMod.NPCs
                     if (power > 2.75f)
                         power = 2.75f;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }
