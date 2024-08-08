@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -62,6 +63,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
             if (Projectile.numHits < 1)
             {
                 Particle orb = new GlowSparkParticle(target.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY), false, 12, 0.07f, mainColor, new Vector2(1.5f, 0.8f), true);

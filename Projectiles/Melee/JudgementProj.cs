@@ -1,14 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using Terraria.ModLoader;
-using CalamityMod.Projectiles.Ranged;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.ComponentModel;
-using Terraria.Utilities.Terraria.Utilities;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -110,6 +105,8 @@ namespace CalamityMod.Projectiles.Melee
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (0.2f * waveFade), 1 + (0.45f * waveFade)) * Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)

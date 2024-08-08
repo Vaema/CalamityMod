@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -108,6 +109,9 @@ namespace CalamityMod.Projectiles.Melee
                 Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (i * 0.2f * waveFade), 1 + (i * 0.35f  * waveFade)) * Projectile.scale * 1.1f, SpriteEffects.None, 0);
             return false;
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Deal more damage on pierce

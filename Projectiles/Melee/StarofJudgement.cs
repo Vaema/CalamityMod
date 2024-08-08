@@ -6,6 +6,7 @@ using CalamityMod.Particles;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -86,6 +87,9 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            int buffType = Projectile.ai[2] == 1f ? ModContent.BuffType<Voidfrost>() : ModContent.BuffType<Nightwither>();
+            target.AddBuff(buffType, 60);
+
             if (Projectile.ai[2] == 0)
             {
                 Projectile.timeLeft = 180;
