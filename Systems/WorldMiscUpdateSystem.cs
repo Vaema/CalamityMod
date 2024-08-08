@@ -85,7 +85,6 @@ namespace CalamityMod.Systems
             if (player is not null && player.active)
             {
                 CalamityPlayer modPlayer = player.Calamity();
-                TrySpawnArmoredDigger(player, modPlayer);
                 TrySpawnDungeonGuardian(player);
                 TrySpawnAEoW(player, modPlayer);
             }
@@ -414,70 +413,6 @@ namespace CalamityMod.Systems
             }
 
             return true;
-        }
-        #endregion
-
-        #region Handle Armored Digger Random Spawns
-        public static void TrySpawnArmoredDigger(Player player, CalamityPlayer modPlayer)
-        {
-            bool gfbCondition = Main.zenithWorld && (player.ZoneHallow || player.ZoneUnderworldHeight) && NPC.downedMoonlord;
-            if ((gfbCondition || (player.ZoneRockLayerHeight && !player.ZoneUnderworldHeight && !player.ZoneJungle)) && !player.ZoneDungeon && !modPlayer.ZoneSunkenSea && !modPlayer.ZoneAbyss && !CalamityPlayer.areThereAnyDamnBosses)
-            {
-                if (NPC.downedPlantBoss && player.townNPCs < 3f)
-                {
-                    double spawnRate = 100000D;
-
-                    if (CalamityWorld.LegendaryMode && revenge)
-                        spawnRate *= 0.25D;
-
-                    if (revenge)
-                        spawnRate *= 0.85D;
-
-                    if (death && Main.bloodMoon)
-                        spawnRate *= 0.2D;
-                    if (modPlayer.zerg)
-                        spawnRate *= 0.5D;
-                    if (modPlayer.chaosCandle)
-                        spawnRate *= 0.6D;
-                    if (player.enemySpawns)
-                        spawnRate *= 0.7D;
-                    if (Main.SceneMetrics.WaterCandleCount > 0)
-                        spawnRate *= 0.8D;
-
-                    if (modPlayer.isNearbyBoss && CalamityConfig.Instance.BossZen)
-                        spawnRate *= 50D;
-                    if (modPlayer.zen || (CalamityConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
-                        spawnRate *= 2D;
-                    if (modPlayer.tranquilityCandle)
-                        spawnRate *= 1.67D;
-                    if (player.calmed)
-                        spawnRate *= 1.43D;
-                    if (Main.SceneMetrics.PeaceCandleCount > 0)
-                        spawnRate *= 1.25D;
-
-                    int chance = (int)spawnRate;
-                    if (Main.rand.NextBool(chance))
-                    {
-                        if (!NPC.AnyNPCs(NPCType<ArmoredDiggerHead>()) && Main.netMode != NetmodeID.MultiplayerClient &&
-                        ArmoredDiggerSpawnCooldown <= 0)
-                        {
-                            NPC.SpawnOnPlayer(player.whoAmI, NPCType<ArmoredDiggerHead>());
-                            ArmoredDiggerSpawnCooldown = 36000;
-                        }
-                    }
-                }
-            }
-            if (ArmoredDiggerSpawnCooldown > 0)
-            {
-                ArmoredDiggerSpawnCooldown--;
-                if (Main.netMode == NetmodeID.Server)
-                {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.ArmoredDiggerCountdownSync);
-                    netMessage.Write(ArmoredDiggerSpawnCooldown);
-                    netMessage.Send();
-                }
-            }
         }
         #endregion
 
