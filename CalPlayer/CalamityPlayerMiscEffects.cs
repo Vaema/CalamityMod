@@ -712,7 +712,7 @@ namespace CalamityMod.CalPlayer
             bool brightenedSigil = false;
             foreach (NPC target in Main.ActiveNPCs)
             {
-                if (!target.Hitbox.Intersects(sigilHitbox) || target.immortal || target.dontTakeDamage || target.townNPC || NPCID.Sets.ActsLikeTownNPC[target.type] || NPCID.Sets.CountsAsCritter[target.type])
+                if (!target.Hitbox.Intersects(sigilHitbox) || target.immortal || target.dontTakeDamage || target.friendly || NPCID.Sets.CountsAsCritter[target.type])
                     continue;
 
                 // Increment the cursor focus counter. Note this actually has a net of increasing by 2 per frame, due to the 1 per frame falloff in GlobalNPC.
