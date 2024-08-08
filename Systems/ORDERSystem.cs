@@ -56,7 +56,7 @@ namespace CalamityMod.Systems
         }
 
         // DIE!
-        public static void JUDGMENT()
+        public static void JUDGEMENT()
         {
             if (!currentlyPlaying)
                 orderSoundSlot = SoundEngine.PlaySound(ORDERTrack);
