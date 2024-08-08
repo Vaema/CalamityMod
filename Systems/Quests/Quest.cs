@@ -115,7 +115,7 @@ namespace CalamityMod.Systems.Quests
         /// Does nothing if the progression point has already been completed.
         /// </summary>
         /// <param name="progressionPoint">The progression point that has been completed.</param>
-        public static void ProggressQuest(TEnum progressionPoint)
+        public static void ProgressQuest(TEnum progressionPoint)
         {
             if (!QuestProgression[progressionPoint])
             {
