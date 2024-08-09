@@ -19,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [AutoloadBossHead]
     public class SkeletronPrime2 : ModNPC
     {
         public override string BossHeadTexture => $"Terraria/Images/NPC_Head_Boss_18";
