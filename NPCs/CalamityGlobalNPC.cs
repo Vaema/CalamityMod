@@ -5,12 +5,12 @@ using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Tools;
@@ -264,6 +264,8 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        public int cursorFocus = 0;
+        public const int cursorFocusMax = 300;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
@@ -285,6 +287,7 @@ namespace CalamityMod.NPCs
         public int nightwither = 0;
         public int shocked = 0;
         public int transformerShocked = 0;
+        public int voidfrost = 0;
         public int shellfishVore = 0;
         public int clamDebuff = 0;
         public int sulphurPoison = 0;
@@ -296,9 +299,10 @@ namespace CalamityMod.NPCs
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
         public int vulnerabilityHex = 0;
+        public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
-        public int RancorBurnTime = 0;
+        public int ashesOnDeath = 0;
 
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
@@ -490,6 +494,7 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
+            myClone.cursorFocus = cursorFocus;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;
@@ -508,6 +513,7 @@ namespace CalamityMod.NPCs
             myClone.nightwither = nightwither;
             myClone.shocked = shocked;
             myClone.transformerShocked = transformerShocked;
+            myClone.voidfrost = voidfrost;
             myClone.shellfishVore = shellfishVore;
             myClone.clamDebuff = clamDebuff;
             myClone.sulphurPoison = sulphurPoison;
@@ -519,9 +525,10 @@ namespace CalamityMod.NPCs
             myClone.sagePoisonTime = sagePoisonTime;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
+            myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
             myClone.wither = wither;
-            myClone.RancorBurnTime = RancorBurnTime;
+            myClone.ashesOnDeath = ashesOnDeath;
 
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
@@ -984,6 +991,13 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseVulnerabilityHexDoTValue, VulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
             }
 
+            // True Vulnerability Hex
+            if (trueVulnerabilityHex > 0)
+            {
+                int baseTrueVHexDoTValue = (int)(TrueVulnerabilityHex.DPS * heatDamageMult);
+                ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
+            }
+
             // Frostburn
             if (npc.onFrostBurn)
             {
@@ -1027,6 +1041,13 @@ namespace CalamityMod.NPCs
             {
                 int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
                 ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Voidfrost
+            if (voidfrost > 0)
+            {
+                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
+                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
             // Plague
@@ -1184,7 +1205,7 @@ namespace CalamityMod.NPCs
             if (elementalMix > 0)
                 ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
-                ApplyDPSDebuff(2500, 500, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
             // Reduce DoT on worm bosses and Creepers by 75%.
             if ((wormBoss || npc.type == NPCID.Creeper) && npc.lifeRegen < 0)
@@ -5215,6 +5236,13 @@ namespace CalamityMod.NPCs
                 laceration--;
             if (elementalMix > 0)
                 elementalMix--;
+            if (trueVulnerabilityHex > 0)
+            {
+                vulnerabilityHex = 0; // You cannot stack True VHex with its lesser counterpart.
+                trueVulnerabilityHex--;
+                if (trueVulnerabilityHex == 0)
+                    cursorFocus = 0;
+            }
             if (vulnerabilityHex > 0)
                 vulnerabilityHex--;
             if (marked > 0)
@@ -5260,6 +5288,8 @@ namespace CalamityMod.NPCs
                 shocked--;
             if (transformerShocked > 0)
                 transformerShocked--;
+            if (voidfrost > 0)
+                voidfrost--;
             if (shellfishVore > 0)
                 shellfishVore--;
             if (clamDebuff > 0)
@@ -5276,20 +5306,19 @@ namespace CalamityMod.NPCs
                 GaussFluxTimer--;
             if (ladHearts > 0)
                 ladHearts--;
-            if (vulnerabilityHex > 0)
-                vulnerabilityHex--;
             if (banishingFire > 0)
                 banishingFire--;
             if (wither > 0)
                 wither--;
-            if (RancorBurnTime > 0)
-                RancorBurnTime--;
+            if (ashesOnDeath > 0)
+                ashesOnDeath--;
 
             if (cobaltNerfTimer > 0)
                 cobaltNerfTimer--;
             if (mythrilNerfTimer > 0)
                 mythrilNerfTimer--;
-
+            if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
+                cursorFocus--;
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -5367,7 +5396,7 @@ namespace CalamityMod.NPCs
                 {
                     SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
                     Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                    int damage = 20;
+                    int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
                     Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
                 }
             }
@@ -5383,6 +5412,7 @@ namespace CalamityMod.NPCs
                 if (player.miscCounter % frequency == 0)
                 {
                     int sDamage = strongerShock ? 50 : 10;
+                    sDamage = player.ApplyArmorAccDamageBonusesTo(sDamage);
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 5f;
                     Projectile spark = Projectile.NewProjectileDirect(npc.GetSource_FromThis(), npc.Center, velocity, ProjectileType<GenericElectricSpark>(), sDamage, 0f, player.whoAmI, 0f, 1f);
                     spark.timeLeft = 120;
@@ -5817,11 +5847,15 @@ namespace CalamityMod.NPCs
                 modifiers.CritDamage += bonus;
             }
 
-            // Plague Reaper deals 1.1x damage to Plagued enemies
             if (!projectile.npcProj && !projectile.trap)
             {
+                // Plague Reaper deals 1.1x damage to Plagued enemies
                 if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && pFlames > 0)
                     modifiers.SourceDamage *= 1.1f;
+
+                // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
+                if (trueVulnerabilityHex > 0)
+                    modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 1f) ? 2.5f : 1.15f;
             }
 
             // Any weapons that shoot projectiles from anywhere other than the player's center aren't affected by point-blank shot damage boost.
@@ -5945,7 +5979,7 @@ namespace CalamityMod.NPCs
                 modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    var color = ProvUtils.GetProjectileColor((int)(Main.dayTime ? Providence.Providence.BossMode.Day : Providence.Providence.BossMode.Night), 0);
+                    var color = ProvUtils.GetDayNightColor(!Main.dayTime, 0);
                     float power = Math.Min(npc.height / 100f, 3f);
                     var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
                     var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
@@ -6010,7 +6044,7 @@ namespace CalamityMod.NPCs
         #region Hit Effect
         public override void HitEffect(NPC npc, NPC.HitInfo hit)
         {
-            if (npc.life <= 0 && npc.Organic() && RancorBurnTime > 0)
+            if (npc.life <= 0 && npc.Organic() && ashesOnDeath > 0)
                 DeathAshParticle.CreateAshesFromNPC(npc);
 
             // Cultist shield flicker
@@ -6584,6 +6618,20 @@ namespace CalamityMod.NPCs
             if (absorberAffliction > 0)
                 AbsorberAffliction.DrawEffects(npc, ref drawColor);
 
+            // Rancor's burn effect
+            if (ashesOnDeath > 0)
+            {
+                if (Main.rand.NextBool(4))
+                {
+                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), ProjectileType<RancorFog>(), 0, 0f, Main.myPlayer, 0f, 0.475f);
+                }
+                if (Main.rand.NextBool(6))
+                {
+                    Vector2 randomPosition = new(npc.position.X + Main.rand.NextFloat(-10f, npc.width + 10f), npc.position.Y + Main.rand.NextFloat(-10f, npc.height + 10f));
+                    RancorLavaMetaball.SpawnParticle(randomPosition, Main.rand.NextFloat(30f, 37f));
+                }
+            }
+
             if (astralInfection > 0)
                 AstralInfectionDebuff.DrawEffects(npc, ref drawColor);
 
@@ -6652,6 +6700,9 @@ namespace CalamityMod.NPCs
             if (sulphurPoison > 0)
                 SulphuricPoisoning.DrawEffects(npc, ref drawColor);
 
+            if (trueVulnerabilityHex > 0)
+                TrueVulnerabilityHex.DrawEffects(npc, ref drawColor);
+
             if (vaporfied > 0)
                 Vaporfied.DrawEffects(npc, ref drawColor);
 
@@ -6666,6 +6717,9 @@ namespace CalamityMod.NPCs
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
                 }
             }
+
+            if (voidfrost > 0)
+                Voidfrost.DrawEffects(npc, ref drawColor);
 
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
             if (electrified > 0)
@@ -6845,7 +6899,6 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
             ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/RancorBurn", NPC => NPC.Calamity().RancorBurnTime > 0),
             ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().rTide > 0),
             ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoisonTime > 0),
             ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishVore > 0),
@@ -6853,8 +6906,10 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().clamDebuff > 0),
             ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge > 0),
             ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
+            ("CalamityMod/Buffs/DamageOverTime/TrueVulnerabilityHex", NPC => NPC.Calamity().trueVulnerabilityHex > 0),
             ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
             ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
+            ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost > 0),
             ("CalamityMod/Buffs/DamageOverTime/VulnerabilityHex", NPC => NPC.Calamity().vulnerabilityHex > 0),
 
             // All other important Calamity debuffs, in alphabetical order
@@ -7166,7 +7221,7 @@ namespace CalamityMod.NPCs
             else
             {
                 // VHex and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
-                if (npc.Calamity().vulnerabilityHex > 0)
+                if (npc.Calamity().vulnerabilityHex > 0 || npc.Calamity().trueVulnerabilityHex > 0)
                 {
                     float compactness = npc.width * 0.6f;
                     if (compactness < 10f)
@@ -7175,7 +7230,7 @@ namespace CalamityMod.NPCs
                     if (power > 2.75f)
                         power = 2.75f;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }

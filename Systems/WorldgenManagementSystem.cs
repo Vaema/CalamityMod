@@ -306,6 +306,16 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Roxcalibur").Value;
                     MiscWorldgenRoutines.PlaceRoxShrine();
                 }));
+
+                // No Traps/GFB Auric Land Mines
+                if (Main.noTrapsWorld)
+                {
+                    tasks.Insert(++currentFinalIndex, new PassLegacy("Auric Land Mines", (progress, config) =>
+                    {
+                        progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AuricLandMines").Value;
+                        MiscWorldgenRoutines.GenerateAuricLandMines();
+                    }));
+                }
             }
         }
 

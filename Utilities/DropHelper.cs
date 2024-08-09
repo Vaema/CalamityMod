@@ -118,8 +118,6 @@ namespace CalamityMod
         public static string CatastropheKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CatastropheKilledLast");
         public static string CynosureText = CalamityUtils.GetTextValue("Condition.Drops.Cynosure");
 
-        public static string ProvidenceHallowText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceHallow");
-        public static string ProvidenceUnderworldText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceUnderworld");
         public static string ProvidenceNightText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceNight");
         public static string ProvidenceChallengeText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceChallenge");
 

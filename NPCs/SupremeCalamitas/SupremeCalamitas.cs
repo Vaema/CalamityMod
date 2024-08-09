@@ -700,7 +700,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #region Enrage and DR
             if ((spawnArena && !player.Hitbox.Intersects(safeBox)) || bossRush)
             {
-                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.5f;
+                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.35f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
                 protectionBoost = !bossRush;
                 if (!player.Hitbox.Intersects(safeBox))

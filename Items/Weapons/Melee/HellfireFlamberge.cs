@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Melee
                     default:
                         break;
                 }
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * damageMult), knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * damageMult), knockback, player.whoAmI);
             }
             return false;
         }

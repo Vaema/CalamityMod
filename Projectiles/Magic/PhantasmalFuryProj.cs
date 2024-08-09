@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Channels;
 using Microsoft.Xna.Framework;
+using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -9,11 +11,14 @@ namespace CalamityMod.Projectiles.Magic
     public class PhantasmalFuryProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public int time = 0;
+        public float dustRotation = 0;
+        public bool launched = false;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
@@ -22,13 +27,19 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 120;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 5;
+            Projectile.timeLeft = 900;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 16 * Projectile.MaxUpdates;
+            Projectile.ArmorPenetration = 15;
         }
 
         public override void AI()
         {
+            Player Owner = Main.player[Projectile.owner];
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
             {
@@ -38,51 +49,94 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.frame >= Main.projFrames[Projectile.type])
                 Projectile.frame = 0;
 
-            if (Projectile.timeLeft % 10 == 0)
-            {
-                if (Projectile.owner == Main.myPlayer)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<Phantom>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-            }
-            if (Projectile.timeLeft < 100)
-            {
-                CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 10f, 20f);
-            }
+            dustRotation += 0.12f;
+            Lighting.AddLight(Projectile.Center, Color.White.ToVector3() * 0.5f);
 
-            Lighting.AddLight(Projectile.Center, 0.25f, 0.25f, 0.25f);
-
-            for (int i = 0; i < 3; i++)
-            {
-                int spectre = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 2f);
-                Main.dust[spectre].noGravity = true;
-                Main.dust[spectre].velocity *= 0.5f;
-                Main.dust[spectre].velocity += Projectile.velocity * 0.1f;
-            }
+            // 175, 100 ALPHA
 
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
 
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
+
+            if (time >= 500)
+            {
+                if (time == 500)
+                {
+                    Projectile.penetrate = 1;
+                    launched = true;
+                }
+
+                NPC target = Projectile.Center.ClosestNPCAt(700);
+                if (target != null && target.CanBeChasedBy(Projectile))
+                {
+                    Vector2 moveTotarget = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                    if (Projectile.velocity.Length() < 6)
+                        Projectile.velocity += moveTotarget * 0.45f;
+                    else
+                        Projectile.velocity *= 0.9f;
+                }
+
+                if (time < 550 && target == null)
+                {
+                    if (Projectile.velocity.Length() < 6)
+                        Projectile.velocity += (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.35f;
+                    else
+                        Projectile.velocity *= 0.9f;
+                }
+            }
+            else if (time > 15)
+            {
+                Vector2 circle = Owner.Center + new Vector2(0, -30).RotatedBy(time * 0.05f);
+                Vector2 moveToEnemy = (circle - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (Projectile.velocity.Length() < 8)
+                    Projectile.velocity += moveToEnemy * Main.rand.NextFloat(0.2f, 0.4f);
+                else
+                    Projectile.velocity *= 0.85f;
+            }
+
+            if (time > 5)
+            {
+                Vector2 dustPos = Projectile.Center + (MathHelper.Pi + dustRotation + MathHelper.PiOver2).ToRotationVector2() * 10f * Projectile.scale;
+                Dust dust = Dust.NewDustPerfect(dustPos, 175, (MathHelper.Pi + dustRotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 2);
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.75f, 1.2f);
+                dust.alpha = Main.rand.Next(100, 170 + 1);
+                dust.velocity = dust.velocity.RotatedByRandom(0f);
+            }
+            time++;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage *= (launched ? 1f : 0.05f);
+
+            Player Owner = Main.player[Projectile.owner];
+            if (target.CanBeMoved(true))
+            {
+                // Custom knockback
+                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 2);
+                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
+            }
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
-            for (int j = 0; j <= 10; j++)
+            //SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
+            for (int i = 0; i <= 3; i++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
-            }
-            if (Projectile.owner == Main.myPlayer)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    Vector2 velocity = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 3f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<Phantom>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                }
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 175, (Projectile.velocity * 6).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(1.2f, 1.8f));
+                dust.noGravity = true;
+                Dust chargefull = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(4) ? 278 : 267);
+                chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(1f, 4);
+                chargefull.scale = Main.rand.NextFloat(0.5f, 0.9f);
+                chargefull.noGravity = true;
+                chargefull.color = Color.Lerp(Color.White, Color.Aqua, 0.3f);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.White, 1);
+
             return false;
         }
     }

@@ -61,12 +61,8 @@ namespace CalamityMod.Projectiles.Magic
             float flySpeed = 8f;
             float flyInertia = 54f;
 
-            Projectile.hostile = true;
-            Projectile.friendly = false;
             if (ProjectileOwner != null && (ProjectileOwner.ModProjectile<SpiritCongregation>().CurrentPower > 0.97f || Projectile.timeLeft < 95))
             {
-                Projectile.hostile = false;
-
                 radius += 36f;
 
                 target = ProjectileOwner;

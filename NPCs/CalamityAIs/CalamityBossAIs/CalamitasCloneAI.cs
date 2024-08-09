@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         {
                             int type = ModContent.ProjectileType<BrimstoneHellblast2>();
                             int damage = npc.GetProjectileDamage(type);
-                            float projSpeed = bossRush ? 5f : 4f;
+                            float projSpeed = bossRush ? 4.5f : 4f;
                             if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
                             {
                                 float distance = Main.rand.NextBool() ? -1000f : 1000f;

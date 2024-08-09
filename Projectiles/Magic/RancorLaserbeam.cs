@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Magic
         public void CreateTileHitEffects()
         {
             Vector2 endOfLaser = Projectile.Center + Projectile.velocity * (LaserLength - Main.rand.NextFloat(12f, 72f));
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), endOfLaser, Main.rand.NextVector2Circular(4f, 8f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), endOfLaser, Main.rand.NextVector2Circular(4f, 8f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner, 0f, 1f);
 
             if (Main.rand.NextBool())
             {
@@ -182,10 +182,7 @@ namespace CalamityMod.Projectiles.Magic
             overWiresUI.Add(index);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<RancorBurn>(), 150);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.Calamity().ashesOnDeath = 10;
 
         public override bool ShouldUpdatePosition() => false;
     }

@@ -319,7 +319,7 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(220, 20, 60);
             if (item.type == ModContent.ItemType<Contagion>())
                 nameLine.OverrideColor = new Color(207, 17, 117);
-            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMightMelee>())
+            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMight>())
                 nameLine.OverrideColor = new Color(227, 226, 180);
             if (item.type == ModContent.ItemType<IllustriousKnives>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(154, 255, 151), new Color(228, 151, 255), 4f);

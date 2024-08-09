@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -28,7 +29,6 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.width = Projectile.height = 4;
             Projectile.friendly = true;
-            Projectile.hostile = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
             // Decide a frame to use and adjust the hitbox based on it.
             if (Projectile.localAI[0] == 0f)
             {
-                // Play a wraith death sound by default, play a generic flame sound when spawned by gfb Orthoceras
+                // Play a wraith death sound by default, play a generic flame sound when spawned by GFB Orthoceras
                 SoundStyle sound = Time == 0 ? SoundID.NPCDeath52 : SoundID.Item20;
                 SoundEngine.PlaySound(sound, Projectile.Center);
 
@@ -133,17 +133,6 @@ namespace CalamityMod.Projectiles.Magic
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             behindNPCsAndTiles.Add(index);
-        }
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            if (Projectile.friendly)
-            {
-                modifiers.SourceDamage *= 0f;
-                if (Main.masterMode) modifiers.SourceDamage.Flat += 450f;
-                else if (Main.expertMode) modifiers.SourceDamage.Flat += 375f;
-                else modifiers.SourceDamage.Flat += 300f;
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)

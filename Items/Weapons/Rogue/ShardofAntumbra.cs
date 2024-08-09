@@ -11,11 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("XerocPitchfork")]
     public class ShardofAntumbra : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 48;

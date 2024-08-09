@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Typeless
                 }
             }
             else if (shardTypes.All(proj => player.ownedProjectileCounts[proj] == 0))
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             return false;
         }
     }
