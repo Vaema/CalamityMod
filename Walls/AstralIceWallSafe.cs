@@ -12,7 +12,7 @@ namespace CalamityMod.Walls
             // TODO -- Change this dust to be one more befitting Astral Ice.
             Main.wallHouse[Type] = true;
             DustType = DustID.Shadowflame;
-
+            WallID.Sets.Conversion.Ice[Type] = true;
             AddMapEntry(new Color(83, 76, 92));
         }
 
