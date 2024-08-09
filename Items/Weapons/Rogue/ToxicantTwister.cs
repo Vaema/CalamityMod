@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 50;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 5f;
+            Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ToxicantTwisterProj>();

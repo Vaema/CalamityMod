@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Melee
                     Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 6, 0.07f, Color.Lerp(Color.Green, Color.Chartreuse, 0.8f) * 0.65f, new Vector2(1, 0.3f), true, false, 1);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
-                
+
                 targetedNPC = Projectile.Center.ClosestNPCAt(600);
                 if (targetedNPC != null && !hasHitTarget)
                 {
@@ -119,6 +119,13 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else if (Projectile.velocity.Length() < 23)
                     Projectile.velocity *= 1.1f;
+            }
+            else if (Main.rand.NextBool(3))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(13, 13), Main.rand.NextBool(7) ? 28 : 215);
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.9f, 1.3f);
+                dust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.7f);
             }
             if (strongTimer == 0)
             {
@@ -158,7 +165,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
 
-            modifiers.SourceDamage *= isPowered ? 1.5f : 1;
+            modifiers.SourceDamage *= isPowered ? 1.2f : 1f;
             if (targetedNPC != null && target == targetedNPC)
                 hasHitTarget = true;
         }

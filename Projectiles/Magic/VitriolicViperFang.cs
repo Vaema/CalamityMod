@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.alpha = (int)(255 * Utils.GetLerpValue(70, 0, Projectile.timeLeft, true));
             if (Main.rand.NextBool(3) && Projectile.timeLeft <= 70)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), (int)CalamityDusts.SulphurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), Main.rand.NextBool(6) ? 215 : (int)CalamityDusts.SulphurousSeaAcid);
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.9f, 1.3f) * Utils.GetLerpValue(255, 0, Projectile.alpha);
                 dust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.7f);

@@ -17,14 +17,14 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 66;
             Item.height = 70;
-            Item.damage = 298;
+            Item.damage = 417;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 13;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 8f;
+            Item.knockBack = 12f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<InsidiousHarpoon>();

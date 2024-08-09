@@ -76,10 +76,15 @@ namespace CalamityMod.Projectiles.Ranged
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
 
             if (Projectile.ai[2] == 5)
+            {
                 ripped = true;
+                pullingTarget = false;
+            }
+            if (Projectile.ai[1] > 0)
+                Projectile.extraUpdates = (int)(MathHelper.Clamp(Projectile.ai[1], 1, 18));
 
             if (!stuckInTarget && (!hasHitTile && !returning))
                 storedVelocity = Projectile.velocity;
@@ -162,8 +167,8 @@ namespace CalamityMod.Projectiles.Ranged
 
                         if (!pullingTarget)
                         {
-                            for (int i = 0; i < 5 + (ripped ? 3 : 0); i++)
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, ((Projectile.Center - Owner.Center).SafeNormalize(Vector2.UnitX) * -18).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 1.2f), ModContent.ProjectileType<SepticSkewerBacteria>(), Projectile.damage / 10, Projectile.knockBack, Projectile.owner, 0);
+                            for (int i = 0; i < 4 + (ripped ? 2 : 0); i++)
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, ((Projectile.Center - Owner.Center).SafeNormalize(Vector2.UnitX) * -18).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 1.2f), ModContent.ProjectileType<SepticSkewerBacteria>(), Projectile.damage / 9, Projectile.knockBack, Projectile.owner, 0);
                         }
                     }
                 }
@@ -217,15 +222,15 @@ namespace CalamityMod.Projectiles.Ranged
                                     closestTarget = Main.npc[index];
                                 }
                             }
-                            if (Main.zenithWorld && Main.npc[index] != null && Main.rand.NextBool(15) && index < 50 && Main.npc[index].realLife == -1)
+                            if (Main.zenithWorld && Main.npc[index] != null && Main.rand.NextBool(15) && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Projectile.type] < 80)
                             {
                                 closestTarget = Main.npc[index];
-                                Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
+                                Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                             }
                         }
                         if (closestTarget != null)
                         {
-                            Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
+                            Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
                         int heal = 25;
@@ -239,6 +244,13 @@ namespace CalamityMod.Projectiles.Ranged
                     canDamage = true;
                 }
             }
+
+            if ((time <= returnTime * 0.6f && !stuckInTarget || returning && Main.rand.NextBool(5)))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(9, 9), Main.rand.NextBool(7) ? 28 : 215, storedVelocity * Main.rand.NextFloat(0.05f, 0.15f), 0, default, Main.rand.NextFloat(0.5f, 0.9f));
+                dust.noGravity = true;
+            }
+
             if (stuckInTarget)
             {
                 placementCenter = chosenTarget.Center + placementVelocity * placementDistance + storedVelocity * 2;
@@ -256,7 +268,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity *= 0.95f;
             }
 
-            if (collideWithTiles && Collision.SolidCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30, 4, 4) && !Main.zenithWorld)
+            if (collideWithTiles && Collision.SolidCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30, 4, 4) && !Main.zenithWorld && Projectile.ai[1] < 1)
             {
                 hasHitTile = true;
                 Projectile.velocity *= -0.5f;
@@ -287,12 +299,12 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = OldVelocities.Length - 1; i > 0; i--)
                 OldVelocities[i] = OldVelocities[i - 1];
 
-            OldVelocities[0] = Projectile.velocity;
+            OldVelocities[0] = storedVelocity;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
 
             if (!stuckInTarget && canStick)
             {
@@ -328,7 +340,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle sound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2");
                 SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
 
-                pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+                pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
                 if (pullCheckValid)
                 {
                     SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
@@ -339,12 +351,12 @@ namespace CalamityMod.Projectiles.Ranged
             bool hitTarget = chosenTarget != null && target == chosenTarget;
             modifiers.SourceDamage *= hitTarget ? pullingTarget ? 20 : (ripped ? 2 : Projectile.numHits < 1 ? 0.01f : 1) : 0.2f;
 
-            pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
             if (!pullCheckValid)
                 target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
         public override bool? CanDamage() => canDamage ? null : false;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, !spawnPullBlood ? 100 : 25, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, !spawnPullBlood ? 150 : 25, targetHitbox);
 
         public override bool PreDraw(ref Color lightColor)
         {

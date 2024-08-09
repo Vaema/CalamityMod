@@ -25,13 +25,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 46;
             Item.height = 24;
-            Item.damage = 972;
+            Item.damage = 1272;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 7.5f;
+            Item.knockBack = 3.5f;
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.shootSpeed = 18f;
@@ -58,7 +58,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0.7f, 0.8f) }, position);
-                player.Calamity().GeneralScreenShakePower = 5.5f;
+                if (pulled)
+                    player.Calamity().GeneralScreenShakePower = 5.5f;
             }
             else
             {

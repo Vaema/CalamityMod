@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.timeLeft += Main.rand.Next(0, 25 + 1);
                 rotDirection = (Main.rand.NextBool() ? -1 : 1);
                 Projectile.rotation = Main.rand.NextFloat(-20, 20);
-                Projectile.scale = Main.rand.NextFloat(0.9f, 1.1f);
+                Projectile.scale = Main.rand.NextFloat(0.55f, 0.8f);
                 setStats = false;
             }
             if (time % 8 == 0 && time > 40)

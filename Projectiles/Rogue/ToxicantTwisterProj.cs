@@ -59,9 +59,9 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            if (Main.rand.NextBool(5) && Projectile.ai[1] > 7)
+            if (Main.rand.NextBool(4) && Projectile.ai[1] > 7)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(13, 13), (int)CalamityDusts.SulphurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(13, 13), Main.rand.NextBool(3) ? 215 : (int)CalamityDusts.SulphurousSeaAcid);
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.9f, 1.3f) * Utils.GetLerpValue(255, 0, Projectile.alpha);
                 dust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.7f);
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i <= 5; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 215 : (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
                 dust.noGravity = true;
             }
         }
