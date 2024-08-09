@@ -906,6 +906,7 @@ namespace CalamityMod.CalPlayer
         public bool icarusFolly = false;
         public bool weakPetrification = false;
         public bool vHex = false;
+        public bool trueVHex = false;
         public bool DoGExtremeGravity = false;
         public bool warped = false;
         public bool cDepth = false;
@@ -1991,6 +1992,7 @@ namespace CalamityMod.CalPlayer
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
+            trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
             cDepth = false;
@@ -2423,6 +2425,7 @@ namespace CalamityMod.CalPlayer
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
+            trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
             cDepth = false;

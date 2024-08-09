@@ -1,13 +1,18 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Particles;
+﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using CalamityMod.Particles;
 using Terraria.ModLoader;
+using CalamityMod.Projectiles.Ranged;
+using Microsoft.Xna.Framework.Graphics;
+using System.ComponentModel;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class JudgementProj : ModProjectile, ILocalizedModType
+    public class OrderbringerWaveProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/JudgementProj";
@@ -15,6 +20,7 @@ namespace CalamityMod.Projectiles.Melee
         public float hitboxSize = 10;
         public Color mainColor;
         public float fade = 1;
+        public float damageMult = 1;
         public float fadeOut = 1;
         public override void SetDefaults()
         {
@@ -26,15 +32,15 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.timeLeft = 450;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.extraUpdates = 9;
+            Projectile.extraUpdates = 10;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            Vector2 topCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(100f)) * Projectile.scale) * 137;
-            Vector2 bottomCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-100f)) * Projectile.scale) * 137;
+            Vector2 topCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(100f)) * Projectile.scale) * 157;
+            Vector2 bottomCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-100f)) * Projectile.scale) * 157;
 
             if (time == 0)
             {
@@ -49,10 +55,11 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.scale += 0.0026f;
                 hitboxSize += 0.4525f;
                 Projectile.velocity *= 0.995f;
-                // Spawn 3
+
                 if (time % 50 == 0 && time > 10)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(hitboxSize * 0.8f, hitboxSize * 0.8f) - Projectile.velocity * 2, (-Projectile.velocity * 3).RotatedByRandom(0.9f), ModContent.ProjectileType<StarofJudgement>(), (int)(Projectile.damage * 0.2f), 3f, Projectile.owner, 0f);
+                    //Projectile stars = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(hitboxSize * 0.8f, hitboxSize * 0.8f) - Projectile.velocity * 2, (-Projectile.velocity * 3).RotatedByRandom(0.9f), ModContent.ProjectileType<StarofJudgement>(), (int)(Projectile.damage * 0.2f), 3f, Projectile.owner, 0f);
+                    //stars.penetrate = 1;
                 }
             }
             else
@@ -64,20 +71,6 @@ namespace CalamityMod.Projectiles.Melee
 
             if (time < 250 && time > 20)
             {
-                if (time < 200)
-                {
-                    if (Projectile.timeLeft % 4 == 0)
-                    {
-                        SparkParticle spark = new SparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(185f)), false, 15, 1f, mainColor * 0.25f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
-                    if (Projectile.timeLeft % 4 == 0)
-                    {
-                        SparkParticle spark = new SparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-185f)), false, 15, 1f, mainColor * 0.25f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
-                }
-
                 if (Main.rand.NextBool(3))
                 {
                     Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(hitboxSize, hitboxSize) - Projectile.velocity * 2, 66);
@@ -87,32 +80,44 @@ namespace CalamityMod.Projectiles.Melee
                     trailDust.noGravity = true;
                 }
 
-                if (Main.rand.NextBool(12))
+                if (time % 9 == 0)
                 {
-                    GlowOrbParticle orb = new GlowOrbParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)) * Main.rand.NextFloat(10f, 30f), false, 17, Main.rand.NextFloat(0.4f, 0.75f), mainColor, true, true);
+                    Particle orb = new GlowSparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)), false, 15, Main.rand.NextFloat(0.03f, 0.055f) * Utils.GetLerpValue(250, 150, time, true), mainColor, new Vector2(1, 0.8f), true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(orb);
-                    GlowOrbParticle orb2 = new GlowOrbParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)) * Main.rand.NextFloat(10f, 30f), false, 17, Main.rand.NextFloat(0.4f, 0.75f), mainColor, true, true);
+                    Particle orb2 = new GlowSparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)), false, 15, Main.rand.NextFloat(0.03f, 0.055f) * Utils.GetLerpValue(250, 150, time, true), mainColor, new Vector2(1, 0.8f), true, false, 0.3f);
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
+                if (Main.rand.NextBool(12))
+                {
+                    Particle orb3 = new SparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)) * Main.rand.NextFloat(5f, 20f), false, 15, Main.rand.NextFloat(0.8f, 1.35f), mainColor);
+                    GeneralParticleHandler.SpawnParticle(orb3);
+                    Particle orb4 = new SparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)) * Main.rand.NextFloat(5f, 20f), false, 15, Main.rand.NextFloat(0.8f, 1.35f), mainColor);
+                    GeneralParticleHandler.SpawnParticle(orb4);
+                }
             }
+
             fadeOut = Utils.GetLerpValue(0, 180, Projectile.timeLeft, true);
+
             time++;
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+
             float waveFade = Utils.GetLerpValue(0, 300, Projectile.timeLeft);
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (0.2f * waveFade), 1 + (0.45f * waveFade)) * Projectile.scale, SpriteEffects.None, 0);
+            for (int i = 1; i < 6; i++) // Weird for loop because of squash code
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (i * 0.2f * waveFade), 1 + (i * 0.35f  * waveFade)) * Projectile.scale * 1.1f, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.88f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            // Deal more damage on pierce
+            modifiers.SourceDamage *= damageMult;
+            if (damageMult < 2f)
+                damageMult += 0.25f;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
     }

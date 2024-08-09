@@ -291,6 +291,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.tRegen && drawInfo.shadow == 0f)
                 TarraLifeRegen.DrawEffects(drawInfo);
 
+            if (calamityPlayer.trueVHex && drawInfo.shadow == 0f)
+                TrueVulnerabilityHex.DrawEffects(drawInfo);
+
             if (calamityPlayer.vaporfied && drawInfo.shadow == 0f)
                 Vaporfied.DrawEffects(drawInfo);
 

@@ -243,6 +243,11 @@ SulphuricPoisoning: {
 	Description: The acidic water burns away your flesh
 }
 
+TrueVulnerabilityHex: {
+	DisplayName: True Vulnerability Hex
+	Description: The end has come
+}
+
 Vaporfied: {
 	DisplayName: Vaporfied
 	Description: Vape
