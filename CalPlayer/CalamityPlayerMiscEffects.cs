@@ -1542,6 +1542,17 @@ namespace CalamityMod.CalPlayer
                 hideOfDeusTimer--;
             if (murasamaHitCooldown > 0)
                 murasamaHitCooldown--;
+            if (burningSeaBurnOut > 0)
+            {
+                burningSeaBurnOut--;
+                if (Main.rand.NextBool())
+                {
+                    Vector2 dustSpawnPos = Player.position + new Vector2(Main.rand.NextFloat(Player.width), 0f);
+                    Vector2 dustVelocity = -Vector2.UnitY * Main.rand.NextFloat(3f, 6f);
+                    Dust burnOutDust = Dust.NewDustPerfect(dustSpawnPos, (int)CalamityDusts.Brimstone, dustVelocity);
+                    burnOutDust.noGravity = true;
+                }
+            }
             if (hellbornBoost > 0)
                 hellbornBoost--;
             if (persecutedEnchantSummonTimer < 1800)
