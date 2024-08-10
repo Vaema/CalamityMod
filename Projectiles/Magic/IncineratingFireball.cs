@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Magic
         public bool Released = false;
         public bool TriggeredBurnOut = false;
         public const float StartScale = 0.0004f;
-        public const float EndScale = 10f;
+        public const float EndScale = 10.25f;
 
         public ref float Timer => ref Projectile.ai[0];
         public override void SetStaticDefaults()
@@ -47,7 +47,6 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Timer++;
-
             Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * (Projectile.scale * 0.5f));
 
             // This CalamityPlayer variable causes the weapon to be unusable while it's greater than 0.
@@ -101,7 +100,8 @@ namespace CalamityMod.Projectiles.Magic
                     Owner.CheckMana(Owner.ActiveItem(), -1, true);
 
                 // If channeled for a while, turns red (handled in PreDraw) and starts emitting smoke as a warning.
-                if (Timer > BurningSea.BurnOutTime - 120f)
+                // The smoke only starts once the fireball is completely red.
+                if (Timer > BurningSea.BurnOutTime - 60f)
                 {
                     for (int s = 0; s < 2; s++)
                     {
