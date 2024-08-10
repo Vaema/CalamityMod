@@ -1239,6 +1239,10 @@ namespace CalamityMod.NPCs
             // Set Plantera to be able to update oldPos[x]
             // This is only used for her Rev+ AI charge attacks
             NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
+
+            // Allow Moon Lord to directly be summoned in Multiplayer.
+            // This is used for the modified Celestial Sigil without Impending Doom.
+            NPCID.Sets.MPAllowedEnemies[NPCID.MoonLordCore] = true;
         }
 
         public override void SetDefaults(NPC npc)

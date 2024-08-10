@@ -1022,8 +1022,11 @@ namespace CalamityMod.ILEditing
 
                 SoundEngine.PlaySound(SoundID.Roar, self.Center);
                 self.ApplyItemTime(sItem);
-                NPC.MoonLordCountdown = 1;
-                NetMessage.SendData(MessageID.MoonlordHorror, -1, -1, null, NPC.MoonLordCountdown);
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    NPC.SpawnOnPlayer(self.whoAmI, NPCID.MoonLordCore);
+                else
+                    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, self.whoAmI, NPCID.MoonLordCore);
             }
             else
                 orig(self, sItem);
