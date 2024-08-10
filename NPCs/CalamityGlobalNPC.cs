@@ -3471,11 +3471,14 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
+                if (npc.type == NPCID.SkeletronPrime && (Main.masterMode || BossRushEvent.BossRushActive))
+                    index = CalamityMod.chadPrimeIcon;
+
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
                     float lifeRatio = npc.life / (float)npc.lifeMax;
                     float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
-                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && Main.masterMode))
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && (Main.masterMode || BossRushEvent.BossRushActive)))
                         index = -1;
                 }
             }
