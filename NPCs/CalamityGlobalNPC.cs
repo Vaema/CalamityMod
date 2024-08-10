@@ -77,6 +77,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
@@ -7049,7 +7050,9 @@ namespace CalamityMod.NPCs
                         var tex = currentDebuffs[i];
                         spriteBatch.Draw(tex, npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), null, Color.White, 0f, default, 0.5f, SpriteEffects.None, 0f);
 
-                        // TODO -- Show number of Shred stacks (how?)
+                        // Shred stack display
+                        if (currentDebuffs[i] == TextureAssets.Buff[ModContent.BuffType<Shred>()].Value)
+                            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
                 }
             }
@@ -7243,31 +7246,6 @@ namespace CalamityMod.NPCs
                 // Only draw the NPC if told to by the miracle blight drawer.
                 if (MiracleBlightRenderer.ValidToDraw(npc))
                     return MiracleBlightRenderer.ActuallyDoPreDraw;
-            }
-
-            // Draw a pillar of light and fade the background as an animation when skipping things in the DD2 event.
-            if (npc.type == NPCID.DD2EterniaCrystal)
-            {
-                float animationTime = 120f - npc.ai[3];
-                animationTime /= 120f;
-
-                if (!Main.dedServ)
-                {
-                    if (!Filters.Scene["CrystalDestructionColor"].IsActive())
-                        Filters.Scene.Activate("CrystalDestructionColor");
-
-                    Filters.Scene["CrystalDestructionColor"].GetShader().UseIntensity((float)Math.Sin(animationTime * MathHelper.Pi) * 0.4f);
-                }
-
-                Vector2 drawPosition = npc.Center - screenPos + Vector2.UnitY * 60f;
-                for (int i = 0; i < 4; i++)
-                {
-                    float intensity = MathHelper.Clamp(animationTime * 2f - i / 3f, 0f, 1f);
-                    Vector2 origin = new Vector2(TextureAssets.MagicPixel.Value.Width / 2f, TextureAssets.MagicPixel.Value.Height);
-                    Vector2 scale = new Vector2((float)Math.Sqrt(intensity) * 50f, intensity * 4f);
-                    Color beamColor = new Color(0.4f, 0.17f, 0.4f, 0f) * (intensity * (1f - MathHelper.Clamp((animationTime - 0.8f) / 0.2f, 0f, 1f))) * 0.5f;
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPosition, null, beamColor, 0f, origin, scale, SpriteEffects.None, 0f);
-                }
             }
 
             if (Main.zenithWorld)

@@ -833,6 +833,21 @@ namespace CalamityMod.NPCs.Crabulon
             return false;
         }
 
+        // GFB removes map icon, hover text, and health bar
+        public override void BossHeadSlot(ref int index)
+        {
+            if (Main.zenithWorld)
+                index = -1;
+        }
+
+        public override void ModifyHoverBoundingBox(ref Rectangle boundingBox)
+        {
+            if (Main.zenithWorld)
+                boundingBox = Rectangle.Empty;
+        }
+
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => Main.zenithWorld ? false : base.DrawHealthBar(hbPosition, ref scale, ref position);
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CrabulonBag>()));
