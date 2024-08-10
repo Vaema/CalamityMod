@@ -158,6 +158,9 @@ namespace CalamityMod.ILEditing
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
+            On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
+            On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
+
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
             On_NPC.PlayerInteraction += FixSplittingWormInteraction;

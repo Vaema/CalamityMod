@@ -645,13 +645,6 @@ namespace CalamityMod.Items
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
 
-            // Moon Lord instantly spawns when Celestial Sigil is used.
-            if (item.type == ItemID.CelestialSigil)
-            {
-                NPC.MoonLordCountdown = 1;
-                NetMessage.SendData(MessageID.MoonlordHorror, -1, -1, null, NPC.MoonLordCountdown);
-            }
-
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
             {
