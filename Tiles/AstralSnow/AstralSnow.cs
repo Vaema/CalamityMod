@@ -30,6 +30,7 @@ namespace CalamityMod.Tiles.AstralSnow
             AddMapEntry(new Color(189, 211, 221));
 
             TileID.Sets.Snow[Type] = true;
+            TileID.Sets.Conversion.Snow[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
 
