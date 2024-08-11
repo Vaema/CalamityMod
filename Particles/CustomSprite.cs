@@ -17,7 +17,7 @@ namespace CalamityMod.Particles
 
         string Tex = "";
         int frames = 1;
-        int currentFrame = 0;
+        int currentFrame = 1;
 
         int Timer = 0;
 
@@ -30,7 +30,7 @@ namespace CalamityMod.Particles
         public override string Texture => "CalamityMod/Particles/CuteStars";
         public override int FrameVariants => frames;
 
-        public CustomSprite(Vector2 relativePosition, Vector2 velocity, int lifetime, string tex, float scale, Color color, float grav = 0f, bool AddativeBlend = true, bool needed = false, int frameCount = 0, int frame = 0)
+        public CustomSprite(Vector2 relativePosition, Vector2 velocity, int lifetime, string tex, float scale, Color color, float grav = 0f, bool AddativeBlend = true, bool needed = false, int frameCount = 1, int frame = 0)
         {
             maxGravity = grav;
             Position = relativePosition;
@@ -47,11 +47,7 @@ namespace CalamityMod.Particles
 
         public override void Update()
         {
-
             Position += Velocity;
-
-            if (addBlend) Color.A = 0;
-            else Color.A = 255;
 
             Timer++;
 
@@ -77,7 +73,7 @@ namespace CalamityMod.Particles
 
             Rectangle fr = tex.Frame(1, frames, 0, currentFrame);
 
-            Main.EntitySpriteDraw(tex.Value, Position - Main.screenPosition, fr, Color.White, Rotation, new Vector2(tex.Width() / 2, tex.Height() / frames / 2), Scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex.Value, Position - Main.screenPosition, fr, Color.Lerp(Color.Transparent, Color, Scale), Rotation, new Vector2(tex.Width() * 0.5f, tex.Height() / frames * 0.5f), 1f, SpriteEffects.None);
         }
     }
 }

@@ -1,10 +1,17 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,7 +19,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class KingSlimeJewelEmerald : ModNPC
     {
-        public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewel";
+        public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald";
 
         private const int ChargePhaseGateValue = 90;
         private const int ChargeGateValue = 60;
@@ -49,7 +56,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (!CalamityPlayer.areThereAnyDamnBosses)
             {
                 NPC.life = 0;
-                NPC.HitEffect();
+                OnKill();
                 NPC.active = false;
                 NPC.netUpdate = true;
                 return;
@@ -121,6 +128,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     // Set damage
                     NPC.damage = NPC.defDamage;
+
+                    NPC.rotation += MathHelper.ToRadians(Math.Sign(NPC.velocity.X) * 15);
+
+                    CustomSprite spriteParticle = new CustomSprite(NPC.Center - NPC.velocity, NPC.velocity * 0.8f, 10, "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald", 1.2f, Color.DarkGreen.MultiplyRGBA(new Color(1f, 1f, 1f, 0f)));
+                    spriteParticle.Rotation = NPC.rotation;
+
+                    GeneralParticleHandler.SpawnParticle(spriteParticle);
 
                     NPC.ai[1] += 1f;
                     if (NPC.ai[1] >= (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue))
@@ -216,17 +230,69 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Asset<Texture2D> primtex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail");
+            float primWidth = 30;
+
+            Color col = Color.DarkOliveGreen;
+            Color flashCol = Color.Lime;
+
+            float alph = 0f;
+
+            float colorTelegraphGateValue =  (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue) - LightTelegraphDuration;
+
+            if (NPC.ai[0] > colorTelegraphGateValue)
+                alph = MathHelper.Lerp(0f, 1f, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
+
+            Rectangle tailArea = NPC.frame with { Width = 28 };
+            GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(primtex);
+            GameShaders.Misc["CalamityMod:PrimitiveTexture"].UseSamplerState(SamplerState.PointWrap);
+            GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(primtex.Width());
+
+            NPC npc = null;
+            if (NPC.CountNPCS(NPCID.KingSlime) > 0)
+            {
+                npc = Main.npc[(int)NPC.localAI[2]];
+
+                List<Vector2> vec2s = new List<Vector2>();
+
+                for (float i = 0; i <= 10; i++)
+                {
+                    vec2s.Add(Vector2.Lerp(NPC.Center, npc.Top, i / 10));
+                }
+
+                PrimitiveRenderer.RenderTrail(vec2s, new PrimitiveSettings(AA => { return primWidth - (CalamityUtils.SineBumpEasing(AA, 1) * primWidth); }, CC => { return col; }, shader: GameShaders.Misc["CalamityMod:PrimitiveTexture"]));
+            }
+
+            Main.EntitySpriteDraw(tex.Value, NPC.Center - Main.screenPosition, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex2.Value, NPC.Center - Main.screenPosition, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
+
+            return false;
+        }
+
+        public override void OnKill()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.DarkSeaGreen));
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Lime));
+            }
+
+            float start = Main.rand.NextFloat(MathHelper.TwoPi);
+            for (int i = 0; i < 3; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomSprite(NPC.Center, new Vector2(0, -2).RotatedByRandom(start + MathHelper.ToRadians(20f)).RotatedBy(MathHelper.ToRadians(i * 125)), 120, "CalamityMod/Particles/KingSlimeEmeraldShards", 1f, new Color(255, 255, 255), Main.rand.NextFloat(0.2f, 0.6f), frameCount: 3, frame: i));
+            }
+            SoundEngine.PlaySound(KingSlimeJewelRuby.ShatterSound, NPC.Center);
+        }
+
         public override Color? GetAlpha(Color drawColor)
         {
-            Color initialColor = new Color(100, 175, 100);
-            Color newColor = initialColor;
-            Color finalColor = new Color(150, 255, 150);
-            float colorTelegraphGateValue = (CalamityWorld.death ? ChargeGateValue_Death : ChargeGateValue) - LightTelegraphDuration;
-            if (NPC.ai[1] > colorTelegraphGateValue)
-                newColor = Color.Lerp(initialColor, finalColor, (NPC.ai[1] - colorTelegraphGateValue) / LightTelegraphDuration);
-            newColor.A = (byte)(255 * NPC.Opacity);
-
-            return newColor;
+            return Color.White;
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
