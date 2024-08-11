@@ -60,10 +60,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frame = 0;
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return ProvUtils.GetProjectileColor(lightColor);
-        }
+        public override Color? GetAlpha(Color lightColor) => ProvUtils.GetProjectileColor(lightColor);
 
         public override bool PreDraw(ref Color lightColor)
         {
