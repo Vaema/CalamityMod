@@ -17,6 +17,8 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class OldDukeVortex : ModProjectile, ILocalizedModType
     {
+        Vector2 cen = Vector2.Zero;
+
         public new string LocalizationCategory => "Projectiles.Boss";
         public static SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortex");
         public SlotId SoundId;
@@ -47,6 +49,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            if (Projectile.localAI[1] == 0)
+            {
+                cen = Projectile.Center;
+                Projectile.localAI[1] = 1;
+            }
+            Projectile.position = cen - (new Vector2(Projectile.width / 2) * Projectile.scale);
+
             if (Main.zenithWorld)
             {
                 if (Projectile.scale < 2f)
@@ -101,10 +110,10 @@ namespace CalamityMod.Projectiles.Boss
             float succPower = Main.zenithWorld ? 1f : 0.5f;
             foreach (Player player in Main.ActivePlayers)
             {
-                float distance = Vector2.Distance(player.Center, Projectile.Center);
+                float distance = Vector2.Distance(player.Center, cen);
                 if (distance < distanceRequired && player.grappling[0] == -1)
                 {
-                    if (Collision.CanHit(Projectile.Center, 1, 1, player.Center, 1, 1))
+                    if (Collision.CanHit(cen, 1, 1, player.Center, 1, 1))
                     {
                         float distanceRatio = distance / distanceRequired;
 
@@ -113,7 +122,7 @@ namespace CalamityMod.Projectiles.Boss
                             player.wingTime = wingTimeSet;
 
                         float multiplier = 1f - distanceRatio;
-                        if (player.Center.X < Projectile.Center.X)
+                        if (player.Center.X < cen.X)
                             player.velocity.X += succPower * multiplier;
                         else
                             player.velocity.X -= succPower * multiplier;
@@ -125,34 +134,34 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.ai[0] % 10 == 1)
             {
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, new Color(55, 195, 0, 20), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), Projectile.scale * 0.9f, Projectile.scale * 0.4f, 40));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(cen, Vector2.Zero, new Color(55, 195, 0, 20), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), Projectile.scale * 0.9f, Projectile.scale * 0.4f, 40));
             }
 
             if (Projectile.timeLeft <= 85)
             {
                 Projectile.localAI[2] += 1f / 85f;
             }
-            Projectile.velocity = Vector2.Normalize(new Vector2(Projectile.ai[0], Projectile.ai[1]) - Projectile.Center) * 1.5f;
+            Projectile.velocity = Vector2.Zero;
 
             Projectile.rotation -= 0.1f * (float)(1D - (Projectile.alpha / 255D));
 
             float lightAmt = 2f * Projectile.scale;
-            Lighting.AddLight(Projectile.Center, lightAmt, lightAmt * 2f, lightAmt);
+            Lighting.AddLight(cen, lightAmt, lightAmt * 2f, lightAmt);
 
             float maxdist = 1200;
 
             if (SoundEngine.TryGetActiveSound(SoundId, out var Sound) && Sound.IsPlaying)
             {
-                Sound.Position = Projectile.Center;
+                Sound.Position = cen;
                 Sound.Volume = Projectile.scale;
                 Sound.Pitch = MathHelper.Lerp(0f, -1f, (MathHelper.Clamp((Projectile.Distance(Main.LocalPlayer.Center) - 800) / maxdist, 0f, 1f) + (-Projectile.scale + 1)));
             }
 
             if (Projectile.timeLeft > 85)
             {
-                Vector2 vec2 = Projectile.Center + new Vector2(Main.rand.NextFloat(320, 540) * Projectile.scale, 0).RotatedByRandom(MathHelper.TwoPi);
+                Vector2 vec2 = cen + new Vector2(Main.rand.NextFloat(320, 540) * Projectile.scale, 0).RotatedByRandom(MathHelper.TwoPi);
 
-                GeneralParticleHandler.SpawnParticle(new SparkParticle(vec2, (Projectile.Center - vec2) / 20, false, 10, Main.rand.NextFloat(0.5f, 1f), Color.LimeGreen, true));
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(vec2, (cen - vec2) / 20, false, 10, Main.rand.NextFloat(0.5f, 1f), Color.LimeGreen, true));
             }
         }
 
@@ -164,13 +173,13 @@ namespace CalamityMod.Projectiles.Boss
 
             float alphaLerp = MathHelper.Lerp(1f, 0f, (float)Projectile.alpha / 255f);
 
-            Main.EntitySpriteDraw(Tex.Value, Projectile.Center - Main.screenPosition, Tex.Frame(), new Color(0f, 0f, 0f, 0.4f).MultiplyRGBA(new Color(alphaLerp, alphaLerp, alphaLerp, alphaLerp)), -Projectile.rotation / 2 * (4 + 1), Tex.Frame().Center(), 1.61f * Projectile.scale * sc, SpriteEffects.None);
+            Main.EntitySpriteDraw(Tex.Value, cen - Main.screenPosition, Tex.Frame(), new Color(0f, 0f, 0f, 0.4f).MultiplyRGBA(new Color(alphaLerp, alphaLerp, alphaLerp, alphaLerp)), -Projectile.rotation / 2 * (4 + 1), Tex.Frame().Center(), 1.61f * Projectile.scale * sc, SpriteEffects.None);
 
             for (int i = 2; i >= 0; i--)
             {
                 float lerp = (float)i / 3f;
 
-                Main.EntitySpriteDraw(Tex.Value, Projectile.Center - Main.screenPosition, Tex.Frame(), Color.Lerp(new Color(5, 155, 95, 100), new Color(255, 255, 255, 55), lerp).MultiplyRGBA(new Color(alphaLerp, alphaLerp, alphaLerp, alphaLerp)), -Projectile.rotation / 2 * (i + 1), Tex.Frame().Center(), MathHelper.Lerp(1f, 1.7f, lerp) * Projectile.scale * sc, SpriteEffects.None);
+                Main.EntitySpriteDraw(Tex.Value, cen - Main.screenPosition, Tex.Frame(), Color.Lerp(new Color(5, 155, 95, 100), new Color(255, 255, 255, 55), lerp).MultiplyRGBA(new Color(alphaLerp, alphaLerp, alphaLerp, alphaLerp)), -Projectile.rotation / 2 * (i + 1), Tex.Frame().Center(), MathHelper.Lerp(1f, 1.7f, lerp) * Projectile.scale * sc, SpriteEffects.None);
             }
             return false;
         }
