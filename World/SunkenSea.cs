@@ -132,45 +132,35 @@ namespace CalamityMod.World
                 }
             });
 
-            FastParallel.For(startPosX - biomeSize + 27, startPosX - biomeSize + 200, (start, end, _) =>
+            //
+            // Places slopes at the sides of the shores to actually make shores.
+            //
+            FastParallel.For(startPosX - biomeSize + 20, startPosX - biomeSize + 200, (start, end, _) =>
             {
                 for (int moundX = start; moundX <= end; moundX += 20)
                 {
-                    int moundY = startPosY + 60;
-
                     ShapeData mound = new();
-                    GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
-
+                    GenAction blotchMod = new Modifiers.Blotches().Output(mound);
+                    int moundY = startPosY + 60;
                     int moundHeight = (int)MathHelper.Lerp(60f, 5f, MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize + 27, startPosX - biomeSize + 200, moundX)));
-                    WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), Actions.Chain(new GenAction[]
-                    {
-                        blotchMod.Output(mound)
-                    }));
 
-                    WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), Actions.Chain(new GenAction[]
-                    {
-                        new Actions.Clear(), new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>())
-                    }));
+                    WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
+                    WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
                 }
             });
-            for (int moundX = startPosX + biomeSize - 27; moundX >= startPosX + biomeSize - 200; moundX -= 20)
+            FastParallel.For(startPosX + biomeSize - 200, startPosX + biomeSize - 20, (start, end, _) =>
             {
-                int moundY = startPosY + 60;
-
-                ShapeData mound = new();
-                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
-
-                int moundHeight = (int)MathHelper.Lerp(60f, 5f, MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize - 27, startPosX + biomeSize - 200, moundX)));
-                WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), Actions.Chain(new GenAction[]
+                for (int moundX = start; moundX <= end; moundX += 20)
                 {
-                    blotchMod.Output(mound)
-                }));
+                    ShapeData mound = new();
+                    GenAction blotchMod = new Modifiers.Blotches().Output(mound);
+                    int moundY = startPosY + 60;
+                    int moundHeight = (int)MathHelper.Lerp(60f, 5f, MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize - 27, startPosX + biomeSize - 200, moundX)));
 
-                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), Actions.Chain(new GenAction[]
-                {
-                    new Actions.Clear(), new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>())
-                }));
-            }
+                    WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
+                    WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
+                }
+            });
 
             //
             // Makes a large platform in the middle of the Timeless Shores.
@@ -363,7 +353,7 @@ namespace CalamityMod.World
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                         {
                             new Modifiers.OnlyTiles(TileID.Sand, TileID.Sandstone, TileID.HardenedSand),
-                            new Modifiers.Dither(ditherStrength).Output(new()),
+                            new Modifiers.Dither(ditherStrength),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<RuneSand>()),
                         }));
@@ -371,12 +361,15 @@ namespace CalamityMod.World
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                         {
                             new Modifiers.OnlyWalls(WallID.Sandstone, WallID.HardenedSand),
-                            new Modifiers.Dither(ditherStrength).Output(new()),
+                            new Modifiers.Dither(ditherStrength),
                             new Actions.ClearWall(),
                             new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()),
                         }));
 
-                        if (WorldGen.genRand.NextBool(15) && y < startPosY - 100)
+                        if (Main.tile[x, y].Get<LiquidData>().LiquidType == LiquidID.Lava)
+                            WorldUtils.Gen(new Point(x, y), new Shapes.Rectangle(5, 5), new Actions.SetLiquid(LiquidID.Lava, 0));
+
+                        if (WorldGen.genRand.NextBool(5) && y < startPosY - 100)
                         {
                             WorldUtils.Gen(new Point(x, y), new Shapes.Circle(WorldGen.genRand.Next(5, 7)), Actions.Chain(new GenAction[]
                             {
