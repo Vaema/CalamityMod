@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Boss
     public class OldDukeVortex : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-        public SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortex");
+        public static SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortex");
         public SlotId SoundId;
 
         public override void SetStaticDefaults()
@@ -119,6 +119,13 @@ namespace CalamityMod.Projectiles.Boss
                             player.velocity.X -= succPower * multiplier;
                     }
                 }
+            }
+
+            Projectile.ai[0]++;
+
+            if (Projectile.ai[0] % 10 == 1)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, new Color(55, 195, 0, 20), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), Projectile.scale * 0.9f, Projectile.scale * 0.4f, 40));
             }
 
             if (Projectile.timeLeft <= 85)

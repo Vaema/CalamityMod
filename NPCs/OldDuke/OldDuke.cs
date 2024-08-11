@@ -55,6 +55,8 @@ namespace CalamityMod.NPCs.OldDuke
 
         public static Asset<Texture2D> GlowTexture;
 
+        public float shake = 0f;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 7;
@@ -75,6 +77,7 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void SetDefaults()
         {
+            NPC.alpha = 255;
             NPC.width = 150;
             NPC.height = 100;
             NPC.aiStyle = -1;
@@ -133,6 +136,8 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void AI()
         {
+            shake = MathHelper.Lerp(shake, 0f, 0.1f);
+
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool bossRush = BossRushEvent.BossRushActive;
@@ -237,6 +242,14 @@ namespace CalamityMod.NPCs.OldDuke
                     NPC.frame.Y = frameHeight * 5;
                     if (NPC.ai[2] > (secondFrameChangeGateValue - 50) && NPC.ai[2] < (secondFrameChangeGateValue - 25))
                         NPC.frame.Y = frameHeight * 6;
+                }
+            }
+
+            if (NPC.ai[0] == -1f)
+            {
+                if (NPC.ai[2] >= 75)
+                {
+                    NPC.frame.Y = frameHeight * 6;
                 }
             }
         }
@@ -366,7 +379,8 @@ namespace CalamityMod.NPCs.OldDuke
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            
+            drawLocation += new Vector2(Main.rand.NextFloat(-shake, shake), Main.rand.NextFloat(-shake, shake));
+
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(finalDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(overlayDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);

@@ -313,8 +313,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Set variables for spawn effects
             if (npc.localAI[0] == 0f)
             {
-                npc.localAI[0] = 1f;
                 npc.alpha = 255;
+
+                npc.velocity.Y = -12f;
+                npc.velocity.X = Main.rand.NextFloat(-2f, 2f);
+
+                npc.localAI[0] = 1f;
                 npc.rotation = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -418,6 +422,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Spawn effects
             if (npc.ai[0] == -1f)
             {
+                npc.alpha = (int)MathHelper.Lerp(npc.alpha, 0, 0.2f);
+
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
@@ -436,8 +442,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 // Alpha
                 if (npc.ai[2] > 20f)
                 {
-                    if (npc.Calamity().newAI[3] == 0f)
-                        npc.velocity.Y = -2f;
+                    npc.velocity *= 0.9f;
 
                     npc.alpha -= 5;
                     if (Collision.SolidCollision(npc.position, npc.width, npc.height))
@@ -448,25 +453,37 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.alpha = 150;
                 }
 
-                // Spawn dust and play sound
-                if (npc.ai[2] == attackTimer - 30)
+                if (npc.ai[2] == 75)
                 {
-                    int dustAmt = 36;
-                    for (int i = 0; i < dustAmt; i++)
-                    {
-                        Vector2 dust = (Vector2.Normalize(npc.velocity) * new Vector2(npc.width / 2f, npc.height) * 0.75f * 0.5f).RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt) + npc.Center;
-                        Vector2 vector2 = dust - npc.Center;
-                        int toxicDust = Dust.NewDust(dust + vector2, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, vector2.X * 2f, vector2.Y * 2f, 100, default, 1.4f);
-                        Main.dust[toxicDust].noGravity = true;
-                        Main.dust[toxicDust].noLight = true;
-                        Main.dust[toxicDust].velocity = Vector2.Normalize(vector2) * 3f;
-                    }
-
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
+
+                    CalamityUtils.AddScreenshakeAt(npc.Center, 14);
+                    SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath.WithPitchOffset(-0.5f), npc.Center);
+                    SoundEngine.PlaySound(OldDuke.OldDuke.DashSoundP3, npc.Center);
+                }
+
+                if (npc.ai[2] >= 75)
+                {
+                    float sd = 1f;
+                    if (player.Center.X > npc.Center.X) sd = -1f;
+
+                    (npc.ModNPC as OldDuke.OldDuke).shake = 2f;
+                    npc.rotation = MathHelper.Lerp(MathHelper.WrapAngle(npc.rotation), MathHelper.ToRadians(sd == 1f ? 75f : -75f), 0.2f);
+
+                    if (npc.ai[2] % 5 == 1)
+                    {
+                        Vector2 mouthCenter = npc.Center + new Vector2(-80 * sd, 0).RotatedBy(npc.rotation);
+
+                        float factor = (npc.ai[2] - 75f) / 50f;
+
+                        float a = MathHelper.Lerp(1f, 0f, factor);
+
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(mouthCenter, Vector2.Zero, new Color(55, 55, 55).MultiplyRGBA(new Color(a, a, a, a)), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.08f + (0.15f * factor), 10));
+                    }
                 }
 
                 npc.ai[2] += 1f;
-                if (npc.ai[2] >= 75)
+                if (npc.ai[2] >= 125)
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;

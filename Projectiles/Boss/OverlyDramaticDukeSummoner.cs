@@ -7,6 +7,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
@@ -20,6 +21,8 @@ namespace CalamityMod.Projectiles.Boss
     {
         Vector2 cen;
 
+        public SlotId SoundId;
+
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/Boss/OldDukeVortex";
 
@@ -32,6 +35,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
+            SoundId = SoundEngine.PlaySound(OldDukeVortex.SpawnSound with { IsLooped = true, MaxInstances = 20 }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
             Projectile.width = Projectile.height = 408;
             Projectile.scale = 0.004f;
             Projectile.hostile = true;
@@ -95,19 +99,21 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.alpha = (int)MathHelper.Lerp(255f, 0f, Projectile.ai[0] / 90f);
             }
-            if (Projectile.ai[0] < 660f)
+            if (Projectile.ai[0] < 600f)
             {
                 Projectile.scale = MathHelper.Lerp(0.004f, 1.6f, Projectile.ai[0] / 660f);
+
+                Vector2 vec2 = Projectile.Center + new Vector2(Main.rand.NextFloat(320, 540) * Projectile.scale, 0).RotatedByRandom(MathHelper.TwoPi);
+
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(vec2, (Projectile.Center - vec2) / 20, false, 10, Main.rand.NextFloat(0.5f, 1f), Color.LimeGreen, true));
             }
 
             if (Projectile.ai[0] % 10 == 1 && Projectile.ai[0] < 600f)
             {
-                SoundStyle style = SoundID.DD2_BetsyFireballShot;
-                style.MaxInstances = 10;
-                SoundEngine.PlaySound(style.WithPitchOffset(-0.5f + (Projectile.ai[0] / 660f * 0.5f)).WithVolumeScale(Projectile.ai[0] / 660f), cen);
-
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(cen, Vector2.Zero, new Color(55, 195, 0, 20), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), Projectile.scale * 0.9f, Projectile.scale * 0.4f, 40));
             }
+
+            float maxdist = 1200;
 
             // Spray gore and acid everywhere
             if (Projectile.ai[0] < 480f && Projectile.ai[0] > 90f)
@@ -129,8 +135,6 @@ namespace CalamityMod.Projectiles.Boss
             // Fade out and die
             if (Projectile.ai[0] >= 600f)
             {
-                Projectile.alpha = (int)MathHelper.Lerp(0f, 255f, (Projectile.ai[0] - 600f) / 120f);
-
                 bool canSpawnBoomer = false;
                 foreach (Player player in Main.ActivePlayers)
                 {
@@ -142,16 +146,21 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 // Summon the boomer duke
-                if (Projectile.ai[0] == 660f)
+                if (Projectile.ai[0] == 600f)
                 {
                     if (canSpawnBoomer)
                     {
-                        SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath.WithPitchOffset(-0.5f), cen);
-                        SoundEngine.PlaySound(OldDuke.DashSoundP3, cen);
+                        SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath.WithPitchOffset(0.5f), cen);
+                        SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact.WithPitchOffset(-0.5f), cen);
 
                         for (float i = 0; i <= 5; i++)
                         {
-                            GeneralParticleHandler.SpawnParticle(new CustomPulse(cen, Vector2.Zero, new Color(55, 255, 0), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, i * 0.2f, 40));
+                            if (i == 5)
+                            {
+                                GeneralParticleHandler.SpawnParticle(new CustomPulse(cen, Vector2.Zero, new Color(55, 255, 0), "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, i * 0.1f, 40));
+                            }
+
+                            GeneralParticleHandler.SpawnParticle(new CustomPulse(cen, Vector2.Zero, new Color(55, 255, 0), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, i * 0.1f, 40));
                         }
                         
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -192,10 +201,23 @@ namespace CalamityMod.Projectiles.Boss
                         AcidRainEvent.UpdateInvasion(false);
                     }
                 }
+
+                if (Projectile.ai[0] >= 600f)
+                {
+                    Projectile.alpha = (int)MathHelper.Lerp(0f, 255f, MathHelper.Clamp((Projectile.ai[0] - 600f) / 30, 0f, 1f));
+                    Projectile.scale = MathHelper.Lerp(Projectile.scale, 0f, MathHelper.Clamp((Projectile.ai[0] - 600f) / 30, 0f, 1f));
+                }
             }
             if (Projectile.ai[0] >= 720f)
             {
                 Projectile.Kill();
+            }
+
+            if (SoundEngine.TryGetActiveSound(SoundId, out var Sound) && Sound.IsPlaying)
+            {
+                Sound.Position = Projectile.Center;
+                Sound.Volume = Projectile.scale * 2f;
+                Sound.Pitch = MathHelper.Lerp(0f, -1f, (MathHelper.Clamp((Projectile.Distance(Main.LocalPlayer.Center) - 800) / maxdist, 0f, 1f) + (-Projectile.scale + 1)));
             }
         }
 
