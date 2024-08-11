@@ -310,9 +310,9 @@ namespace CalamityMod.World
             //
             FastParallel.For(startPosX - biomeSize, startPosX + biomeSize, (start, end, _) =>
             {
-                for (int wallPillarX = start; wallPillarX <= end; wallPillarX += 215)
+                for (int wallPillarX = start; wallPillarX <= end; wallPillarX += 1000)
                 {
-                    int randomDisplacementX = WorldGen.genRand.Next(-35, 35);
+                    int randomDisplacementX = WorldGen.genRand.Next(-10, 30);
 
                     for (int wallPillarY = startPosY - 75; wallPillarY <= startPosY + 70; wallPillarY += 10)
                     {
@@ -341,18 +341,18 @@ namespace CalamityMod.World
             // Makes the transition area to the Timeless Shores.
             // Replaces tiles, walls, and places some water spots.
             //
-            FastParallel.For(startPosX - biomeSize - 20, startPosX + biomeSize + 20, (start, end, _) =>
+            FastParallel.For(startPosX - biomeSize - 25, startPosX + biomeSize + 25, (start, end, _) =>
             {
                 for (int x = start; x <= end; x += 20)
                 {
-                    for (int y = startPosY - 70; y >= startPosY - 220; y -= 15)
+                    for (int y = startPosY - 70; y >= startPosY - 320; y -= 15)
                     {
-                        float interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 220, y, true);
-                        float ditherStrength = MathHelper.Lerp(0f, 0.95f, MathF.Sqrt(interpolator));
+                        float interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 320, y, true);
+                        float ditherStrength = MathHelper.Lerp(0f, 0.95f, interpolator);
 
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                         {
-                            new Modifiers.OnlyTiles(TileID.Sand, TileID.Sandstone, TileID.HardenedSand),
+                            new Modifiers.OnlyTiles(TileID.Sand, TileID.HardenedSand),
                             new Modifiers.Dither(ditherStrength),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<RuneSand>()),
@@ -364,6 +364,16 @@ namespace CalamityMod.World
                             new Modifiers.Dither(ditherStrength),
                             new Actions.ClearWall(),
                             new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()),
+                        }));
+
+                        interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 220, y, true);
+                        ditherStrength = MathHelper.Lerp(0f, 0.95f, interpolator);
+                        WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
+                        {
+                            new Modifiers.OnlyTiles(TileID.Sandstone),
+                            new Modifiers.Dither(ditherStrength),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>()),
                         }));
 
                         if (Main.tile[x, y].Get<LiquidData>().LiquidType == LiquidID.Lava)
