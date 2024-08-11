@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frame = 0;
 
             float maxVelocity = Projectile.ai[0] == 0f ? 7f : (Main.masterMode || BossRushEvent.BossRushActive) ? 13f : CalamityWorld.death ? 11f : CalamityWorld.revenge ? 10f : Main.expertMode ? 9f : 7f;
-            if (Projectile.velocity.X < maxVelocity)
+            if (Math.Abs(Projectile.velocity.X) < maxVelocity)
                 Projectile.velocity.X *= 1.05f;
 
             int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);

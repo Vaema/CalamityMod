@@ -85,8 +85,8 @@ namespace CalamityMod.CalPlayer
         public double contactDamageReduction = 0D;
         public double projectileDamageReduction = 0D;
         public const float projectileMeleeWeaponMeleeSpeedMultiplier = 0f;
-        public bool brimlashBusterBoost = false;
         public int evilSmasherBoost = 0;
+        public int burningSeaBurnOut = 0;
         public int hellbornBoost = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
@@ -2701,10 +2701,10 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             KameiBladeUseDelay = 0;
-            brimlashBusterBoost = false;
             AdrenalineTrail = false;
             ascendantTrail = false;
             evilSmasherBoost = 0;
+            burningSeaBurnOut = 0;
             hellbornBoost = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
