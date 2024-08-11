@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 30;
             Item.height = 38;
-            Item.useTime = Item.useAnimation = 8;
+            Item.useAnimation = Item.useTime = 8;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.shootSpeed = 20f;

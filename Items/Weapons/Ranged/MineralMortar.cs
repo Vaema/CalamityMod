@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.damage = 85;
             Item.DamageType = DamageClass.Ranged;
             Item.shoot = ModContent.ProjectileType<MineralMortarHoldout>();
-            Item.useTime = Item.useAnimation = 60;
+            Item.useAnimation = Item.useTime = 60;
             Item.shootSpeed = 25f;
             Item.knockBack = 20f;
 

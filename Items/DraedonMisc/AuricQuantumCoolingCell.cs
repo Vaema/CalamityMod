@@ -26,7 +26,7 @@ namespace CalamityMod.Items.DraedonMisc
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.rare = ModContent.RarityType<Violet>();
         }
 

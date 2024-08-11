@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Pets
             Item.width = 32;
             Item.height = 34;
             Item.damage = 0;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.shoot = ModContent.ProjectileType<PineapplePetProj>();
             Item.buffType = ModContent.BuffType<PineappleBuff>();
 

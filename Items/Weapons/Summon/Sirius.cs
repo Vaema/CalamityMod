@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = Item.height = 62;
             Item.damage = 600;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.mana = 10;
             Item.knockBack = 10f;
             Item.shoot = ModContent.ProjectileType<SiriusMinion>();

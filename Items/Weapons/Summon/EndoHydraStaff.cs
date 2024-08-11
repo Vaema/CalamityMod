@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 232;
             Item.knockBack = 3f;
             Item.autoReuse = true;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<EndoHydraBody>();
             Item.shootSpeed = 10f;
 

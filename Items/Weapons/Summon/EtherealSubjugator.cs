@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<PhantomGuy>();
             Item.knockBack = 1f;
 
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

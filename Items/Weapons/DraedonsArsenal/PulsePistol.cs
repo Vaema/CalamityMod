@@ -20,22 +20,21 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 62;
             Item.height = 22;
-            Item.DamageType = DamageClass.Magic;
             Item.damage = 22;
-            Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 23;
-            Item.autoReuse = true;
+            Item.DamageType = DamageClass.Magic;
             Item.mana = 6;
+            Item.useAnimation = Item.useTime = 23;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
+            Item.shootSpeed = 5.2f; // This may seem low but the shot has 10 extra updates.
 
-            Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = PulseRifle.FireSound;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-
-            Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
-            Item.shootSpeed = 5.2f; // This may seem low but the shot has 10 extra updates.
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 50f;

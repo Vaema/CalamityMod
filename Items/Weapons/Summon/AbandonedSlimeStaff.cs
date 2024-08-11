@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 40;
             Item.damage = 56;
             Item.knockBack = 3f;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.shoot = ModContent.ProjectileType<AstrageldonSummon>();
             Item.shootSpeed = 10f;
 
