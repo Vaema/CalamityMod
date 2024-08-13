@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 33;
             NPC.height = 31;
             NPC.defense = 8;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 100;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.WalkingAntlion;
             NPC.value = Item.buyPrice(0, 0, 2, 0);

@@ -77,6 +77,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
@@ -264,6 +265,8 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        public int cursorFocus = 0;
+        public const int cursorFocusMax = 300;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
@@ -297,6 +300,7 @@ namespace CalamityMod.NPCs
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
         public int vulnerabilityHex = 0;
+        public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
         public int ashesOnDeath = 0;
@@ -491,6 +495,7 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
+            myClone.cursorFocus = cursorFocus;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;
@@ -521,6 +526,7 @@ namespace CalamityMod.NPCs
             myClone.sagePoisonTime = sagePoisonTime;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
+            myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
@@ -986,6 +992,13 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseVulnerabilityHexDoTValue, VulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
             }
 
+            // True Vulnerability Hex
+            if (trueVulnerabilityHex > 0)
+            {
+                int baseTrueVHexDoTValue = (int)(TrueVulnerabilityHex.DPS * heatDamageMult);
+                ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
+            }
+
             // Frostburn
             if (npc.onFrostBurn)
             {
@@ -1193,7 +1206,7 @@ namespace CalamityMod.NPCs
             if (elementalMix > 0)
                 ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
-                ApplyDPSDebuff(2500, 500, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
             // Reduce DoT on worm bosses and Creepers by 75%.
             if ((wormBoss || npc.type == NPCID.Creeper) && npc.lifeRegen < 0)
@@ -1226,6 +1239,10 @@ namespace CalamityMod.NPCs
             // Set Plantera to be able to update oldPos[x]
             // This is only used for her Rev+ AI charge attacks
             NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
+
+            // Allow Moon Lord to directly be summoned in Multiplayer.
+            // This is used for the modified Celestial Sigil without Impending Doom.
+            NPCID.Sets.MPAllowedEnemies[NPCID.MoonLordCore] = true;
         }
 
         public override void SetDefaults(NPC npc)
@@ -3459,11 +3476,14 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
+                if (npc.type == NPCID.SkeletronPrime && (Main.masterMode || BossRushEvent.BossRushActive))
+                    index = CalamityMod.chadPrimeIcon;
+
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
                     float lifeRatio = npc.life / (float)npc.lifeMax;
                     float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
-                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && Main.masterMode))
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && (Main.masterMode || BossRushEvent.BossRushActive)))
                         index = -1;
                 }
             }
@@ -5224,6 +5244,13 @@ namespace CalamityMod.NPCs
                 laceration--;
             if (elementalMix > 0)
                 elementalMix--;
+            if (trueVulnerabilityHex > 0)
+            {
+                vulnerabilityHex = 0; // You cannot stack True VHex with its lesser counterpart.
+                trueVulnerabilityHex--;
+                if (trueVulnerabilityHex == 0)
+                    cursorFocus = 0;
+            }
             if (vulnerabilityHex > 0)
                 vulnerabilityHex--;
             if (marked > 0)
@@ -5298,7 +5325,8 @@ namespace CalamityMod.NPCs
                 cobaltNerfTimer--;
             if (mythrilNerfTimer > 0)
                 mythrilNerfTimer--;
-
+            if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
+                cursorFocus--;
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -5827,11 +5855,15 @@ namespace CalamityMod.NPCs
                 modifiers.CritDamage += bonus;
             }
 
-            // Plague Reaper deals 1.1x damage to Plagued enemies
             if (!projectile.npcProj && !projectile.trap)
             {
+                // Plague Reaper deals 1.1x damage to Plagued enemies
                 if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && pFlames > 0)
                     modifiers.SourceDamage *= 1.1f;
+
+                // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
+                if (trueVulnerabilityHex > 0)
+                    modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 1f) ? 2.5f : 1.15f;
             }
 
             // Any weapons that shoot projectiles from anywhere other than the player's center aren't affected by point-blank shot damage boost.
@@ -6664,9 +6696,6 @@ namespace CalamityMod.NPCs
             if (pearlAura > 0)
                 PearlAura.DrawEffects(npc, ref drawColor);
 
-            if (voidfrost > 0)
-                Voidfrost.DrawEffects(npc, ref drawColor);
-
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
@@ -6678,6 +6707,9 @@ namespace CalamityMod.NPCs
 
             if (sulphurPoison > 0)
                 SulphuricPoisoning.DrawEffects(npc, ref drawColor);
+
+            if (trueVulnerabilityHex > 0)
+                TrueVulnerabilityHex.DrawEffects(npc, ref drawColor);
 
             if (vaporfied > 0)
                 Vaporfied.DrawEffects(npc, ref drawColor);
@@ -6693,6 +6725,9 @@ namespace CalamityMod.NPCs
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
                 }
             }
+
+            if (voidfrost > 0)
+                Voidfrost.DrawEffects(npc, ref drawColor);
 
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
             if (electrified > 0)
@@ -6879,6 +6914,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().clamDebuff > 0),
             ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge > 0),
             ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
+            ("CalamityMod/Buffs/DamageOverTime/TrueVulnerabilityHex", NPC => NPC.Calamity().trueVulnerabilityHex > 0),
             ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
             ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
             ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost > 0),
@@ -7018,7 +7054,9 @@ namespace CalamityMod.NPCs
                         var tex = currentDebuffs[i];
                         spriteBatch.Draw(tex, npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), null, Color.White, 0f, default, 0.5f, SpriteEffects.None, 0f);
 
-                        // TODO -- Show number of Shred stacks (how?)
+                        // Shred stack display
+                        if (currentDebuffs[i] == TextureAssets.Buff[ModContent.BuffType<Shred>()].Value)
+                            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
                 }
             }
@@ -7193,7 +7231,7 @@ namespace CalamityMod.NPCs
             else
             {
                 // VHex and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
-                if (npc.Calamity().vulnerabilityHex > 0)
+                if (npc.Calamity().vulnerabilityHex > 0 || npc.Calamity().trueVulnerabilityHex > 0)
                 {
                     float compactness = npc.width * 0.6f;
                     if (compactness < 10f)
@@ -7202,7 +7240,7 @@ namespace CalamityMod.NPCs
                     if (power > 2.75f)
                         power = 2.75f;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }
@@ -7212,31 +7250,6 @@ namespace CalamityMod.NPCs
                 // Only draw the NPC if told to by the miracle blight drawer.
                 if (MiracleBlightRenderer.ValidToDraw(npc))
                     return MiracleBlightRenderer.ActuallyDoPreDraw;
-            }
-
-            // Draw a pillar of light and fade the background as an animation when skipping things in the DD2 event.
-            if (npc.type == NPCID.DD2EterniaCrystal)
-            {
-                float animationTime = 120f - npc.ai[3];
-                animationTime /= 120f;
-
-                if (!Main.dedServ)
-                {
-                    if (!Filters.Scene["CrystalDestructionColor"].IsActive())
-                        Filters.Scene.Activate("CrystalDestructionColor");
-
-                    Filters.Scene["CrystalDestructionColor"].GetShader().UseIntensity((float)Math.Sin(animationTime * MathHelper.Pi) * 0.4f);
-                }
-
-                Vector2 drawPosition = npc.Center - screenPos + Vector2.UnitY * 60f;
-                for (int i = 0; i < 4; i++)
-                {
-                    float intensity = MathHelper.Clamp(animationTime * 2f - i / 3f, 0f, 1f);
-                    Vector2 origin = new Vector2(TextureAssets.MagicPixel.Value.Width / 2f, TextureAssets.MagicPixel.Value.Height);
-                    Vector2 scale = new Vector2((float)Math.Sqrt(intensity) * 50f, intensity * 4f);
-                    Color beamColor = new Color(0.4f, 0.17f, 0.4f, 0f) * (intensity * (1f - MathHelper.Clamp((animationTime - 0.8f) / 0.2f, 0f, 1f))) * 0.5f;
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPosition, null, beamColor, 0f, origin, scale, SpriteEffects.None, 0f);
-                }
             }
 
             if (Main.zenithWorld)

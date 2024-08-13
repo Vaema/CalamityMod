@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<HermitCrabMinion>();
             Item.knockBack = 2f;
 
-            Item.useTime = Item.useAnimation = 35;
+            Item.useAnimation = Item.useTime = 35;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

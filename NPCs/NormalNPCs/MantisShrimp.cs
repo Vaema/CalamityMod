@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 24;
             NPC.defense = 10;
             NPC.DR_NERD(0.1f);
-            NPC.lifeMax = 30;
+            NPC.lifeMax = 40;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             AIType = NPCID.Crab;
             NPC.value = Item.buyPrice(0, 0, 1, 0);

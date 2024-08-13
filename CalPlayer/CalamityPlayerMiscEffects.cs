@@ -705,11 +705,6 @@ namespace CalamityMod.CalPlayer
             if (!blazingCursorDamage)
                 return;
 
-            // miscCounter is used to limit Calamity's hit rate.
-            int framesPerHit = 5;
-            if (Player.miscCounter % framesPerHit != 1)
-                return;
-
             Rectangle sigilHitbox = Utils.CenteredRectangle(Main.MouseWorld, new Vector2(35f, 62f));
             int sigilDamage = (int)Player.GetBestClassDamage().ApplyTo(Calamity.BaseDamage);
             sigilDamage = Player.ApplyArmorAccDamageBonusesTo(sigilDamage);
@@ -717,8 +712,38 @@ namespace CalamityMod.CalPlayer
             bool brightenedSigil = false;
             foreach (NPC target in Main.ActiveNPCs)
             {
-                if (!target.Hitbox.Intersects(sigilHitbox) || target.immortal || target.dontTakeDamage || target.townNPC || NPCID.Sets.ActsLikeTownNPC[target.type] || NPCID.Sets.CountsAsCritter[target.type])
+                if (!target.Hitbox.Intersects(sigilHitbox) || target.immortal || target.dontTakeDamage || target.friendly || NPCID.Sets.CountsAsCritter[target.type])
                     continue;
+
+                // Increment the cursor focus counter. Note this actually has a net of increasing by 2 per frame, due to the 1 per frame falloff in GlobalNPC.
+                // If this counter reaches 300 (which takes 2.5 seconds without interruptions), True VHex is activated.
+                if (target.Calamity().cursorFocus < CalamityGlobalNPC.cursorFocusMax)
+                {
+                    target.Calamity().cursorFocus += 3;
+
+                    // Draw an expanding orb effect on the cursor based on the cursor focus value.
+                    float cursorFocusRatio = target.Calamity().cursorFocus / (float)CalamityGlobalNPC.cursorFocusMax;
+                    StrongBloom indicator = new(Main.MouseWorld, Vector2.Zero, Color.Lerp(Color.Magenta, Color.Red, cursorFocusRatio), cursorFocusRatio * 0.7f, 2);
+                    GeneralParticleHandler.SpawnParticle(indicator);
+
+                    if (target.Calamity().cursorFocus >= CalamityGlobalNPC.cursorFocusMax)
+                    {
+                        target.Calamity().trueVulnerabilityHex = target.Calamity().vulnerabilityHex >= 300 ? target.Calamity().vulnerabilityHex : 300;
+                        target.Calamity().vulnerabilityHex = 0;
+                        SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/WeaponEnchant"), target.Center);
+
+                        for (int i = 0; i < 18; i++)
+                        {
+                            Vector2 orbVel = new Vector2(15, 15).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.33f, 1f);
+                            GlowOrbParticle orb = new(target.Center + orbVel, orbVel, false, 60, Main.rand.NextFloat(0.95f, 1.75f), Color.Lerp(Color.Red, Color.Magenta, 0.3f));
+                            GeneralParticleHandler.SpawnParticle(orb);
+                        }
+                    }
+                }
+
+                // miscCounter is used to limit Calamity's hit rate.
+                if (Player.miscCounter % Calamity.FramesPerHit != 1)
+                    return;
 
                 // Brighten the sigil because it is dealing damage. This can only happen once per hit event.
                 if (!brightenedSigil)
@@ -729,13 +754,15 @@ namespace CalamityMod.CalPlayer
 
                 // Create a direct strike to hit this specific NPC.
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Calamity>()));
-                Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI);
+                Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI, 1f);
 
                 // Enable crits by setting the sigil's damage class to be whatever the player's strongest damage class is.
                 sigilStrike.DamageType = Player.GetBestClass();
 
-                // Incinerate the target with Vulnerability Hex.
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), VulnerabilityHex.CalamityDuration);
+                // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
+                // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
+                int buffToInflict = target.Calamity().trueVulnerabilityHex > 0 ? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
+                target.AddBuff(buffToInflict, target.Calamity().trueVulnerabilityHex > 0 ? target.Calamity().trueVulnerabilityHex + 8 : target.Calamity().vulnerabilityHex < VulnerabilityHex.CalamityDuration ? VulnerabilityHex.CalamityDuration : target.Calamity().vulnerabilityHex + 8);
 
                 // Make some fancy dust to indicate damage is being done.
                 for (int j = 0; j < 12; j++)
@@ -1515,6 +1542,17 @@ namespace CalamityMod.CalPlayer
                 hideOfDeusTimer--;
             if (murasamaHitCooldown > 0)
                 murasamaHitCooldown--;
+            if (burningSeaBurnOut > 0)
+            {
+                burningSeaBurnOut--;
+                if (Main.rand.NextBool())
+                {
+                    Vector2 dustSpawnPos = Player.position + new Vector2(Main.rand.NextFloat(Player.width), 0f);
+                    Vector2 dustVelocity = -Vector2.UnitY * Main.rand.NextFloat(3f, 6f);
+                    Dust burnOutDust = Dust.NewDustPerfect(dustSpawnPos, (int)CalamityDusts.Brimstone, dustVelocity);
+                    burnOutDust.noGravity = true;
+                }
+            }
             if (hellbornBoost > 0)
                 hellbornBoost--;
             if (persecutedEnchantSummonTimer < 1800)

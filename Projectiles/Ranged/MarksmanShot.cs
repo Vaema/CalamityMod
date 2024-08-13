@@ -173,7 +173,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Player coinOwner = Main.player[struckCoin.owner];
                 if (coinOwner.name.ToLower() == "v1" || coinOwner.name.ToLower() == "v2" || coinOwner.name.ToLower() == "mirage")
-                    ORDERSystem.JUDGMENT();
+                    ORDERSystem.JUDGEMENT();
             }
         }
 

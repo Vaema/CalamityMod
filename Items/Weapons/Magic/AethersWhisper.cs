@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 44;
             Item.damage = 504;
             Item.knockBack = 5.5f;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<AetherBeam>();
             Item.mana = 30;

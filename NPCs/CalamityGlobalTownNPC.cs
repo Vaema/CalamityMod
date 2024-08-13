@@ -159,6 +159,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] PainterNames =
         {
             "Picasso", // <@!353316526306361347> (sconicboom -- for the late picassosbean2819)
+            "Bew", // <@!232291351167893505> (dmshi)
         };
         private static readonly string[] PartyGirlNames =
         {
@@ -180,6 +181,7 @@ namespace CalamityMod.NPCs
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
+            "Hael", // <@!641747280944431156> (kalebtull)
         };
         private static readonly string[] SantaClausNames =
         {

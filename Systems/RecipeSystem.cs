@@ -1278,15 +1278,6 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Shadow Key
-            r = Recipe.Create(ItemID.ShadowKey);
-            r.AddIngredient(ItemID.GoldenKey);
-            r.AddIngredient(ItemID.Obsidian, 10);
-            r.AddIngredient(ItemID.Bone, 5);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
             // Sky Mill
             r = Recipe.Create(ItemID.SkyMill);
             r.AddIngredient(ItemID.SunplateBlock, 10);
@@ -1696,14 +1687,6 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.BandofRegeneration);
             r.AddIngredient(ItemID.Shackle);
             r.AddIngredient(ItemID.LifeCrystal, 1);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Shoe Spikes
-            r = Recipe.Create(ItemID.ShoeSpikes);
-            r.AddRecipeGroup("IronBar", 5);
-            r.AddIngredient(ItemID.Spike, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();

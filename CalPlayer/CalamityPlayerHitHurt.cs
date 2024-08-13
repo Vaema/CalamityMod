@@ -848,6 +848,9 @@ namespace CalamityMod.CalPlayer
                 modifiers.SourceDamage *= damageReductionFromWhisperingDeath;
             }
 
+            if (trueVHex)
+                modifiers.SourceDamage *= 1.15f;
+
             //
             // At this point, the player is guaranteed to be hit if there is no dodge.
             // The amount of damage that will be dealt is yet to be determined.
@@ -1025,6 +1028,9 @@ namespace CalamityMod.CalPlayer
                 pro.Kill();
                 projectileDamageReduction += 0.2;
             }
+
+            if (trueVHex)
+                modifiers.SourceDamage *= 1.15f;
 
             if (auralisAuroraCounter >= 300)
             {

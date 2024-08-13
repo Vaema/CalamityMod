@@ -167,11 +167,6 @@ namespace CalamityMod
                         CalamityUtils.SpawnOldDuke(playerIndex2);
                         break;
 
-                    case CalamityModMessageType.ArmoredDiggerCountdownSync:
-                        int countdown5 = reader.ReadInt32();
-                        CalamityWorld.ArmoredDiggerSpawnCooldown = countdown5;
-                        break;
-
                     case CalamityModMessageType.ProvidenceDyeConditionSync:
                         byte npcIndex3 = reader.ReadByte();
                         (Main.npc[npcIndex3].ModNPC as Providence).hasTakenDaytimeDamage = reader.ReadBoolean();
@@ -412,7 +407,6 @@ namespace CalamityMod
         SyncSlabCrabAI,
         PlaceAltCritter,
         ServersideSpawnOldDuke,
-        ArmoredDiggerCountdownSync, // TODO -- remove this mechanic entirely
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.
         PSCChallengeSync, // TODO -- once you've failed the PSC challenge this packetstorms
 

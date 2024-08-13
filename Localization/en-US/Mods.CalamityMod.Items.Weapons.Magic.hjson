@@ -165,8 +165,9 @@ BurningSea: {
 	DisplayName: Burning Sea
 	Tooltip:
 		'''
-		Fires a bouncing brimstone fireball that splits into homing fireballs upon collision with liquid
-		Enemies inflicted with a water debuff also spawn homing fireballs on hit
+		Conjures a massive brimstone fireball that hovers near you and incinerates foes
+		Holding the fireball for too long causes it to burn out
+		This burns you with Brimstone Flames and gives a long delay before another can be cast
 		'''
 }
 

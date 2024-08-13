@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -59,10 +60,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frame = 0;
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return ProvUtils.GetProjectileColor(lightColor);
-        }
+        public override Color? GetAlpha(Color lightColor) => ProvUtils.GetProjectileColor(lightColor);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -81,16 +79,13 @@ namespace CalamityMod.Projectiles.Boss
             Color loColor = ProvUtils.GetProjectileColor(0, true);
 
             for (int i = 0; i < 25; i++)
-            {
                 GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.8f, 1.2f), hiColor));
-            }
 
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
 
             for (float i = 0; i < 1; i += 0.25f)
-            {
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.125f * i, 8));
-            }
+
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 5));
 
             if (Main.rand.NextBool())
@@ -101,12 +96,12 @@ namespace CalamityMod.Projectiles.Boss
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
                 }
             }
             else
@@ -117,14 +112,15 @@ namespace CalamityMod.Projectiles.Boss
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
                     if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
                 }
             }
+
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             SoundEngine.PlaySound(SoundID.Item100.WithPitchOffset(0.4f), Projectile.Center);
         }

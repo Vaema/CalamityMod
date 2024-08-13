@@ -82,6 +82,9 @@ namespace CalamityMod
         public static int ghostKillCount = 0;
         public static int sharkKillCount = 0;
 
+        // Boss Head Icons
+        public static int chadPrimeIcon;
+
         public static Asset<Texture2D> carpetOriginal;
 
         // Astral Sky/BG
@@ -373,6 +376,11 @@ namespace CalamityMod
             ThanatosBody1.LoadHeadIcons();
             ThanatosBody2.LoadHeadIcons();
             ThanatosTail.LoadHeadIcons();
+
+            // All the head icon loading shit is done here, so I'm putting this here
+            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
+            CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
+            chadPrimeIcon = ModContent.GetModBossHeadSlot(chadPrimeIconPath);
 
             // TODO -- Is this not possible to place in ModItem.Load or ModItem.SetStaticDefaults ?
             // Centralizing hair dye shaders like this seems absurdly stiff

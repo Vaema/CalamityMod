@@ -109,11 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-            {
-                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                options.aggroRatio = -1f;
-                CalamityUtils.CalamityTargeting(NPC, options);
-            }
+                CalamityUtils.CalamityTargeting(NPC, default);
 
             float enrageScale = bossRush ? 0.5f : 0.3f;
             if (Main.IsItDay() || bossRush)
@@ -211,6 +207,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             float phase1MaxLaserPhaseDurationDecrease = 120f;
 
             // Go to phase 2 early if Spaz and Ret health total goes below 50%
+            // Go to final phase early if Spaz and Ret health total goes below 20%
             float retAndSpazHPRatio = 0f;
             if (CalamityGlobalNPC.fireEye != -1)
             {
@@ -225,14 +222,14 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             // Phase checks
             bool phase2 = lifeRatio < phase2LifeRatio || retAndSpazHPRatio < 0.5f;
-            bool finalPhase = lifeRatio < finalPhaseLifeRatio;
+            bool finalPhase = lifeRatio < finalPhaseLifeRatio || retAndSpazHPRatio < 0.2f;
 
             Vector2 mechQueenSpacing = Vector2.Zero;
             if (NPC.IsMechQueenUp)
             {
                 NPC NPC = Main.npc[NPC.mechQueen];
                 Vector2 mechQueenCenter = NPC.GetMechQueenCenter();
-                Vector2 eyePosition = new Vector2(-150f, -250f);
+                Vector2 eyePosition = new Vector2(0f, -300f);
                 eyePosition *= 0.75f;
                 float mechdusaRotation = NPC.velocity.X * 0.025f;
                 mechQueenSpacing = mechQueenCenter + eyePosition;
@@ -280,8 +277,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.Center.X < Main.player[NPC.target].position.X + Main.player[NPC.target].width)
                         foveanatorFaceDirection = -1;
 
+                    // Foveanator stays further away from the player than Retinazer (Retinazer distance is 300, Foveanator distance is 450)
                     Vector2 foveanatorPosition = NPC.Center;
-                    float distanceFromTarget = 300f;
+                    float distanceFromTarget = 450f;
                     float foveanatorTargetX = Main.player[NPC.target].Center.X + (foveanatorFaceDirection * distanceFromTarget) - foveanatorPosition.X;
                     float foveanatorTargetY = Main.player[NPC.target].Center.Y - distanceFromTarget - foveanatorPosition.Y;
 
@@ -341,13 +339,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
 
+                    // Foveanator stays in this phase longer than Retinazer (Foveanator time is 450, Retinazer time is 300)
+                    // Foveanator has longer cooldown between firing projectiles than Retinazer (Foveanator cooldown is 60, Retinazer cooldown is 30)
                     NPC.ai[2] += 1f;
-                    float phaseGateValue = 300f - (death ? phase1MaxLaserPhaseDurationDecrease * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
-                    float laserGateValue = 30f;
+                    float phaseGateValue = 450f - (death ? phase1MaxLaserPhaseDurationDecrease * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
+                    float laserGateValue = 60f;
                     if (NPC.IsMechQueenUp)
                     {
-                        phaseGateValue = 900f;
-                        laserGateValue = ((!NPC.npcsFoundForCheckActive[NPCID.TheDestroyerBody]) ? 60f : 90f);
+                        phaseGateValue = 1350f;
+                        laserGateValue = ((!NPC.npcsFoundForCheckActive[NPCID.TheDestroyerBody]) ? 120f : 180f);
                     }
                     if (NPC.ai[2] >= phaseGateValue)
                     {
@@ -355,13 +355,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                         NPC.ai[2] = 0f;
                         NPC.ai[3] = 0f;
 
-                        CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                        options.aggroRatio = -1f;
-                        CalamityUtils.CalamityTargeting(NPC, options);
+                        CalamityUtils.CalamityTargeting(NPC, default);
 
                         NPC.netUpdate = true;
                     }
-
                     else if (foveanatorTargetDistCopy < (death ? 960f : 800f))
                     {
                         if (!Main.player[NPC.target].dead)
@@ -374,14 +371,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (NPC.ai[3] >= laserGateValue)
                         {
                             NPC.ai[3] = 0f;
-                            foveanatorPosition = NPC.Center;
-                            foveanatorTargetX = Main.player[NPC.target].Center.X - foveanatorPosition.X;
-                            foveanatorTargetY = Main.player[NPC.target].Center.Y - foveanatorPosition.Y;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float foveanatorSpeed = 10.5f;
-                                foveanatorSpeed += 3f * enrageScale;
+                                float foveanatorLaserSpeed = 12f;
+                                foveanatorLaserSpeed += 4f * enrageScale;
+
+                                // TODO - Change this to Foveanator's laser when it's implemented
                                 int type = ProjectileID.EyeLaser;
                                 int damage = NPC.GetProjectileDamage(type);
 
@@ -396,12 +392,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                foveanatorTargetDist = (float)Math.Sqrt(foveanatorTargetX * foveanatorTargetX + foveanatorTargetY * foveanatorTargetY);
-                                foveanatorTargetDist = foveanatorSpeed / foveanatorTargetDist;
-                                foveanatorTargetX *= foveanatorTargetDist;
-                                foveanatorTargetY *= foveanatorTargetDist;
-
-                                Vector2 laserVelocity = new Vector2(foveanatorTargetX, foveanatorTargetY);
+                                Vector2 laserVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * foveanatorLaserSpeed;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), foveanatorPosition + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
@@ -414,20 +405,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.damage = NPC.defDamage;
 
                     NPC.rotation = foveanatorHoverRotation;
-                    float foveanatorChargeSpeed = 15f;
-                    foveanatorChargeSpeed += 10f * enrageScale;
+                    float foveanatorChargeSpeed = 8f;
+                    foveanatorChargeSpeed += 5f * enrageScale;
                     if (death)
                         foveanatorChargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     if (Main.getGoodWorld)
-                        foveanatorChargeSpeed += 2f;
+                        foveanatorChargeSpeed += 1f;
 
-                    Vector2 foveanatorChargePos = NPC.Center;
-                    float foveanatorChargeTargetX = Main.player[NPC.target].Center.X - foveanatorChargePos.X;
-                    float foveanatorChargeTargetY = Main.player[NPC.target].Center.Y - foveanatorChargePos.Y;
-                    float foveanatorChargeTargetDist = (float)Math.Sqrt(foveanatorChargeTargetX * foveanatorChargeTargetX + foveanatorChargeTargetY * foveanatorChargeTargetY);
-                    foveanatorChargeTargetDist = foveanatorChargeSpeed / foveanatorChargeTargetDist;
-                    NPC.velocity.X = foveanatorChargeTargetX * foveanatorChargeTargetDist;
-                    NPC.velocity.Y = foveanatorChargeTargetY * foveanatorChargeTargetDist;
+                    Vector2 chargeVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * foveanatorChargeSpeed;
+                    NPC.velocity = chargeVelocity;
                     NPC.ai[1] = 2f;
                 }
                 else if (NPC.ai[1] == 2f)
@@ -436,13 +422,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.damage = NPC.defDamage;
 
                     NPC.ai[2] += 1f;
-                    float decelerateGateValue = 36f + (death ? 6f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
+                    float decelerateGateValue = 72f + (death ? 12f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
                     if (NPC.ai[2] >= decelerateGateValue)
                     {
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        float decelerationMultiplier = 0.84f - (death ? 0.16f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
+                        float decelerationMultiplier = 0.8f - (death ? 0.2f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
                         NPC.velocity *= decelerationMultiplier;
                         if (NPC.velocity.X > -0.1 && NPC.velocity.X < 0.1)
                             NPC.velocity.X = 0f;
@@ -450,23 +436,25 @@ namespace CalamityMod.NPCs.NormalNPCs
                             NPC.velocity.Y = 0f;
                     }
                     else
+                    {
+                        // Accelerative charge
+                        NPC.velocity *= 1.015f;
                         NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
+                    }
 
-                    float delayBeforeChargingAgain = 48f - (death ? 3f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
+                    float delayBeforeChargingAgain = 96f - (death ? 6f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
                     if (NPC.ai[2] >= delayBeforeChargingAgain)
                     {
                         NPC.ai[3] += 1f;
                         NPC.ai[2] = 0f;
                         NPC.rotation = foveanatorHoverRotation;
-                        float totalCharges = death ? 6f : 5f;
+                        float totalCharges = death ? 3f : 2f;
                         if (NPC.ai[3] >= totalCharges)
                         {
                             NPC.ai[1] = 0f;
                             NPC.ai[3] = 0f;
 
-                            CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                            options.aggroRatio = -1f;
-                            CalamityUtils.CalamityTargeting(NPC, options);
+                            CalamityUtils.CalamityTargeting(NPC, default);
                         }
                         else
                             NPC.ai[1] = 1f;
@@ -481,9 +469,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.ai[2] = 0f;
                     NPC.ai[3] = 0f;
 
-                    CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                    options.aggroRatio = -1f;
-                    CalamityUtils.CalamityTargeting(NPC, options);
+                    CalamityUtils.CalamityTargeting(NPC, default);
 
                     NPC.netUpdate = true;
                 }
@@ -521,6 +507,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             bool shootLaser = NPC.ai[1] % 20f == 0f;
+
+                            // TODO - Change this to Foveanator's lasers and energy bombs when they're implemented
                             int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<ScavengerLaser>();
                             int damage = NPC.GetProjectileDamage(type);
 
@@ -536,10 +524,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                             }
 
                             Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 7f;
-                            int numProj = shootLaser ? 6 : 2;
-                            int spread = shootLaser ? 20 : 80;
+                            int numProj = shootLaser ? 4 : 2;
+                            int spread = shootLaser ? 15 : 30;
                             float rotation = MathHelper.ToRadians(spread);
-                            float offset = shootLaser ? 150f : 50f;
+                            float offset = shootLaser ? 150f : 100f;
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -565,9 +553,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                         {
                             for (int i = 0; i < 2; i++)
                             {
-                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 143, 1f);
-                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 7, 1f);
-                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 6, 1f);
+                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), Mod.Find<ModGore>("Foveanator1").Type, NPC.scale);
+                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 7, NPC.scale);
+                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-30, 31) * 0.2f, Main.rand.Next(-30, 31) * 0.2f), 6, NPC.scale);
                             }
                         }
 
@@ -604,7 +592,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.chaseable = !spazOrRetInPhase1;
 
                 int setDamage = (int)Math.Round(NPC.defDamage * 1.5);
-                NPC.defense = NPC.defDefense + 10;
+                NPC.defense = NPC.defDefense + 14;
                 calamityGlobalNPC.DR = spazOrRetInPhase1 ? 0.9999f : 0.2f;
                 calamityGlobalNPC.unbreakableDR = spazOrRetInPhase1;
                 calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = spazOrRetInPhase1;
@@ -616,109 +604,101 @@ namespace CalamityMod.NPCs.NormalNPCs
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    float foveanatorPhase2MaxSpeed = 9.5f + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                    float foveanatorPhase2Accel = 0.175f + (death ? 0.05f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                    foveanatorPhase2MaxSpeed += 4.5f * enrageScale;
-                    foveanatorPhase2Accel += 0.075f * enrageScale;
+                    float foveanatorFlamethrowerMaxSpeed = 4f + (death ? 1.2f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    float foveanatorFlamethrowerAccel = 0.06f + (death ? 0.02f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    foveanatorFlamethrowerMaxSpeed += 2f * enrageScale;
+                    foveanatorFlamethrowerAccel += 0.04f * enrageScale;
 
-                    if (Main.getGoodWorld)
+                    int foveanatorFlamethrowerFaceDirection = 1;
+                    if (NPC.Center.X < Main.player[NPC.target].position.X + Main.player[NPC.target].width)
+                        foveanatorFlamethrowerFaceDirection = -1;
+
+                    Vector2 foveanatorFlamethrowerPos = NPC.Center;
+                    int flamethrowerDistance = 360;
+                    float foveanatorFlamethrowerTargetX = Main.player[NPC.target].Center.X + (foveanatorFlamethrowerFaceDirection * flamethrowerDistance) - foveanatorFlamethrowerPos.X;
+                    float foveanatorFlamethrowerTargetY = Main.player[NPC.target].Center.Y - foveanatorFlamethrowerPos.Y;
+                    float foveanatorFlamethrowerTargetDist = (float)Math.Sqrt(foveanatorFlamethrowerTargetX * foveanatorFlamethrowerTargetX + foveanatorFlamethrowerTargetY * foveanatorFlamethrowerTargetY);
+
+                    if (!NPC.IsMechQueenUp)
                     {
-                        foveanatorPhase2MaxSpeed *= 1.15f;
-                        foveanatorPhase2Accel *= 1.15f;
-                    }
+                        // Boost speed if too far from target
+                        if (foveanatorFlamethrowerTargetDist > flamethrowerDistance)
+                            foveanatorFlamethrowerMaxSpeed += MathHelper.Lerp(0f, 12f, MathHelper.Clamp((foveanatorFlamethrowerTargetDist - flamethrowerDistance) / 1000f, 0f, 1f));
 
-                    Vector2 eyePosition = NPC.Center;
-                    float foveanatorPhase2TargetX = Main.player[NPC.target].Center.X - eyePosition.X;
-                    float distanceFromTarget = 420f;
-                    float foveanatorPhase2TargetY = Main.player[NPC.target].Center.Y - distanceFromTarget - eyePosition.Y;
-
-                    if (NPC.IsMechQueenUp)
-                    {
-                        foveanatorPhase2MaxSpeed = 14f;
-                        foveanatorPhase2TargetX = mechQueenSpacing.X;
-                        foveanatorPhase2TargetY = mechQueenSpacing.Y;
-                        foveanatorPhase2TargetX -= eyePosition.X;
-                        foveanatorPhase2TargetY -= eyePosition.Y;
-                    }
-
-                    float foveanatorPhase2TargetDist = (float)Math.Sqrt(foveanatorPhase2TargetX * foveanatorPhase2TargetX + foveanatorPhase2TargetY * foveanatorPhase2TargetY);
-
-                    if (NPC.IsMechQueenUp)
-                    {
-                        if (foveanatorPhase2TargetDist > foveanatorPhase2MaxSpeed)
+                        if (Main.getGoodWorld)
                         {
-                            foveanatorPhase2TargetDist = foveanatorPhase2MaxSpeed / foveanatorPhase2TargetDist;
-                            foveanatorPhase2TargetX *= foveanatorPhase2TargetDist;
-                            foveanatorPhase2TargetY *= foveanatorPhase2TargetDist;
+                            foveanatorFlamethrowerMaxSpeed *= 1.15f;
+                            foveanatorFlamethrowerAccel *= 1.15f;
                         }
 
-                        NPC.velocity.X = (NPC.velocity.X * 4f + foveanatorPhase2TargetX) / 5f;
-                        NPC.velocity.Y = (NPC.velocity.Y * 4f + foveanatorPhase2TargetY) / 5f;
-                    }
-                    else
-                    {
-                        foveanatorPhase2TargetDist = foveanatorPhase2MaxSpeed / foveanatorPhase2TargetDist;
-                        foveanatorPhase2TargetX *= foveanatorPhase2TargetDist;
-                        foveanatorPhase2TargetY *= foveanatorPhase2TargetDist;
+                        foveanatorFlamethrowerTargetDist = foveanatorFlamethrowerMaxSpeed / foveanatorFlamethrowerTargetDist;
+                        foveanatorFlamethrowerTargetX *= foveanatorFlamethrowerTargetDist;
+                        foveanatorFlamethrowerTargetY *= foveanatorFlamethrowerTargetDist;
 
-                        if (NPC.velocity.X < foveanatorPhase2TargetX)
+                        if (NPC.velocity.X < foveanatorFlamethrowerTargetX)
                         {
-                            NPC.velocity.X += foveanatorPhase2Accel;
-                            if (NPC.velocity.X < 0f && foveanatorPhase2TargetX > 0f)
-                                NPC.velocity.X += foveanatorPhase2Accel;
+                            NPC.velocity.X += foveanatorFlamethrowerAccel;
+                            if (NPC.velocity.X < 0f && foveanatorFlamethrowerTargetX > 0f)
+                                NPC.velocity.X += foveanatorFlamethrowerAccel;
                         }
-                        else if (NPC.velocity.X > foveanatorPhase2TargetX)
+                        else if (NPC.velocity.X > foveanatorFlamethrowerTargetX)
                         {
-                            NPC.velocity.X -= foveanatorPhase2Accel;
-                            if (NPC.velocity.X > 0f && foveanatorPhase2TargetX < 0f)
-                                NPC.velocity.X -= foveanatorPhase2Accel;
+                            NPC.velocity.X -= foveanatorFlamethrowerAccel;
+                            if (NPC.velocity.X > 0f && foveanatorFlamethrowerTargetX < 0f)
+                                NPC.velocity.X -= foveanatorFlamethrowerAccel;
                         }
-                        if (NPC.velocity.Y < foveanatorPhase2TargetY)
+                        if (NPC.velocity.Y < foveanatorFlamethrowerTargetY)
                         {
-                            NPC.velocity.Y += foveanatorPhase2Accel;
-                            if (NPC.velocity.Y < 0f && foveanatorPhase2TargetY > 0f)
-                                NPC.velocity.Y += foveanatorPhase2Accel;
+                            NPC.velocity.Y += foveanatorFlamethrowerAccel;
+                            if (NPC.velocity.Y < 0f && foveanatorFlamethrowerTargetY > 0f)
+                                NPC.velocity.Y += foveanatorFlamethrowerAccel;
                         }
-                        else if (NPC.velocity.Y > foveanatorPhase2TargetY)
+                        else if (NPC.velocity.Y > foveanatorFlamethrowerTargetY)
                         {
-                            NPC.velocity.Y -= foveanatorPhase2Accel;
-                            if (NPC.velocity.Y > 0f && foveanatorPhase2TargetY < 0f)
-                                NPC.velocity.Y -= foveanatorPhase2Accel;
+                            NPC.velocity.Y -= foveanatorFlamethrowerAccel;
+                            if (NPC.velocity.Y > 0f && foveanatorFlamethrowerTargetY < 0f)
+                                NPC.velocity.Y -= foveanatorFlamethrowerAccel;
                         }
                     }
 
-                    NPC.ai[2] += (!spazAlive || !retAlive) ? 1.5f : 1f;
-                    float phaseGateValue = NPC.IsMechQueenUp ? 900f : 300f - (death ? 120f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    // Fire flamethrower for x seconds
+                    NPC.ai[2] += (retAlive && spazAlive) ? 1f : 2f;
+                    float phaseGateValue = NPC.IsMechQueenUp ? 1350f : 270f - (death ? 90f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                     if (NPC.ai[2] >= phaseGateValue)
                     {
-                        NPC.ai[1] = 1f;
+                        // Go to charge phase or fire large barrage of lasers and energy bombs if in final phase
+                        NPC.ai[1] = finalPhase ? 3f : 1f;
                         NPC.ai[2] = 0f;
                         NPC.ai[3] = 0f;
-
-                        CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                        options.aggroRatio = -1f;
-                        CalamityUtils.CalamityTargeting(NPC, options);
-
                         NPC.netUpdate = true;
                     }
 
-                    eyePosition = NPC.Center;
-                    foveanatorPhase2TargetX = Main.player[NPC.target].Center.X - eyePosition.X;
-                    foveanatorPhase2TargetY = Main.player[NPC.target].Center.Y - eyePosition.Y;
-                    NPC.rotation = (float)Math.Atan2(foveanatorPhase2TargetY, foveanatorPhase2TargetX) - MathHelper.PiOver2;
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    // Fire fireballs and flamethrower
+                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     {
-                        NPC.localAI[1] += 1f + (death ? (phase2LifeRatio - lifeRatio) / phase2LifeRatio : 0f);
-                        if (NPC.localAI[1] >= ((spazAlive && retAlive) ? 52f : 26f))
+                        // Play flame sound on timer
+                        NPC.localAI[2] += 1f;
+                        if (NPC.localAI[2] > 22f)
                         {
-                            bool canHit = Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
-                            if (canHit || !spazAlive || !retAlive || finalPhase)
+                            NPC.localAI[2] = 0f;
+                            SoundEngine.PlaySound(SoundID.Item34, NPC.Center);
+                        }
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            NPC.localAI[1] += 1f;
+                            if (NPC.localAI[1] > 4f)
                             {
                                 NPC.localAI[1] = 0f;
-                                float foveanatorPhase2LaserSpeed = 10f;
-                                foveanatorPhase2LaserSpeed += enrageScale;
-                                int type = ProjectileID.DeathLaser;
+
+                                float foveanatorFlamethrowerSpeed = 4f;
+                                foveanatorFlamethrowerSpeed += 2f * enrageScale;
+                                float timeForFlamethrowerToReachMaxVelocity = 60f;
+                                float flamethrowerSpeedScalar = MathHelper.Clamp(NPC.ai[2] / timeForFlamethrowerToReachMaxVelocity, 0f, 1f);
+                                foveanatorFlamethrowerSpeed = MathHelper.Lerp(0.1f, foveanatorFlamethrowerSpeed, flamethrowerSpeedScalar);
+
+                                // TODO - Change this to Foveanator's flamethrower when it's done
+                                int type = ModContent.ProjectileType<Shadowflamethrower>();
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -732,351 +712,110 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                foveanatorPhase2TargetDist = (float)Math.Sqrt(foveanatorPhase2TargetX * foveanatorPhase2TargetX + foveanatorPhase2TargetY * foveanatorPhase2TargetY);
-                                foveanatorPhase2TargetDist = foveanatorPhase2LaserSpeed / foveanatorPhase2TargetDist;
-                                foveanatorPhase2TargetX *= foveanatorPhase2TargetDist;
-                                foveanatorPhase2TargetY *= foveanatorPhase2TargetDist;
+                                Vector2 flamethrowerVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * foveanatorFlamethrowerSpeed + NPC.velocity * 0.5f;
 
-                                Vector2 laserVelocity = new Vector2(foveanatorPhase2TargetX, foveanatorPhase2TargetY);
-                                if (canHit)
+                                if (NPC.IsMechQueenUp)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), eyePosition + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                    Vector2 mechdusaFoveanatorShadowFireballPos = (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * foveanatorFlamethrowerSpeed + NPC.velocity * 0.5f;
+                                    foveanatorFlamethrowerTargetX = mechdusaFoveanatorShadowFireballPos.X;
+                                    foveanatorFlamethrowerTargetY = mechdusaFoveanatorShadowFireballPos.Y;
+                                    foveanatorFlamethrowerPos = NPC.Center - mechdusaFoveanatorShadowFireballPos * 3f;
                                 }
-                                else
-                                {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), eyePosition + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                                    Main.projectile[proj].tileCollide = false;
-                                    Main.projectile[proj].timeLeft = 300;
-                                }
+
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), foveanatorFlamethrowerPos + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 25f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
+                    }
+
+                    if (NPC.IsMechQueenUp)
+                    {
+                        foveanatorFlamethrowerMaxSpeed = 14f;
+                        Vector2 mechdusaFoveanatorFlamethrowerPos = mechQueenSpacing - foveanatorFlamethrowerPos;
+                        Vector2 idealVelocity = new Vector2(foveanatorFlamethrowerTargetX, foveanatorFlamethrowerTargetY);
+                        if (mechdusaFoveanatorFlamethrowerPos.Length() > foveanatorFlamethrowerMaxSpeed)
+                            idealVelocity *= foveanatorFlamethrowerMaxSpeed / mechdusaFoveanatorFlamethrowerPos.Length();
+
+                        float inertia = 60f;
+                        NPC.velocity = (NPC.velocity * (inertia - 1f) + idealVelocity) / inertia;
                     }
                 }
-                else
+
+                // Charge
+                else if (NPC.ai[1] == 1f)
                 {
-                    if (NPC.ai[1] == 1f)
+                    // Set damage
+                    NPC.damage = setDamage;
+
+                    // Play charge sound
+                    SoundEngine.PlaySound(SoundID.ForceRoar, NPC.Center);
+
+                    // Set rotation and velocity
+                    NPC.rotation = foveanatorHoverRotation;
+                    float foveanatorPhase2ChargeSpeed = 9f + (death ? 2.5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    foveanatorPhase2ChargeSpeed += 8f * enrageScale;
+                    if (Main.getGoodWorld)
+                        foveanatorPhase2ChargeSpeed *= 1.2f;
+
+                    Vector2 chargeVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * foveanatorPhase2ChargeSpeed;
+                    NPC.velocity = chargeVelocity;
+
+                    NPC.ai[1] = 2f;
+                }
+
+                // Maintain charge velocity until deceleration
+                else if (NPC.ai[1] == 2f)
+                {
+                    // Set damage
+                    NPC.damage = setDamage;
+
+                    NPC.ai[2] += (retAlive || spazAlive) ? 1f : 1.25f;
+
+                    float chargeTime = 60f - (death ? 20f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+
+                    // Slow down
+                    if (NPC.ai[2] >= chargeTime)
                     {
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        int foveanatorPhase2FaceDirection = 1;
-                        if (NPC.Center.X < Main.player[NPC.target].position.X + Main.player[NPC.target].width)
-                            foveanatorPhase2FaceDirection = -1;
-
-                        float foveanatorPhase2RapidFireMaxSpeed = 9.5f + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        float foveanatorPhase2RapidFireAccel = 0.25f + (death ? 0.075f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        foveanatorPhase2RapidFireMaxSpeed += 4.5f * enrageScale;
-                        foveanatorPhase2RapidFireAccel += 0.15f * enrageScale;
-
-                        if (Main.getGoodWorld)
-                        {
-                            foveanatorPhase2RapidFireMaxSpeed *= 1.15f;
-                            foveanatorPhase2RapidFireAccel *= 1.15f;
-                        }
-
-                        Vector2 foveanatorPhase2RapidFirePos = NPC.Center;
-                        float distanceFromTarget = 420f;
-                        float foveanatorPhase2RapidFireTargetX = Main.player[NPC.target].Center.X + (foveanatorPhase2FaceDirection * distanceFromTarget) - foveanatorPhase2RapidFirePos.X;
-                        float foveanatorPhase2RapidFireTargetY = Main.player[NPC.target].Center.Y - foveanatorPhase2RapidFirePos.Y;
-                        float foveanatorPhase2RapidFireTargetDist = (float)Math.Sqrt(foveanatorPhase2RapidFireTargetX * foveanatorPhase2RapidFireTargetX + foveanatorPhase2RapidFireTargetY * foveanatorPhase2RapidFireTargetY);
-                        foveanatorPhase2RapidFireTargetDist = foveanatorPhase2RapidFireMaxSpeed / foveanatorPhase2RapidFireTargetDist;
-                        foveanatorPhase2RapidFireTargetX *= foveanatorPhase2RapidFireTargetDist;
-                        foveanatorPhase2RapidFireTargetY *= foveanatorPhase2RapidFireTargetDist;
-
-                        if (NPC.velocity.X < foveanatorPhase2RapidFireTargetX)
-                        {
-                            NPC.velocity.X += foveanatorPhase2RapidFireAccel;
-                            if (NPC.velocity.X < 0f && foveanatorPhase2RapidFireTargetX > 0f)
-                                NPC.velocity.X += foveanatorPhase2RapidFireAccel;
-                        }
-                        else if (NPC.velocity.X > foveanatorPhase2RapidFireTargetX)
-                        {
-                            NPC.velocity.X -= foveanatorPhase2RapidFireAccel;
-                            if (NPC.velocity.X > 0f && foveanatorPhase2RapidFireTargetX < 0f)
-                                NPC.velocity.X -= foveanatorPhase2RapidFireAccel;
-                        }
-                        if (NPC.velocity.Y < foveanatorPhase2RapidFireTargetY)
-                        {
-                            NPC.velocity.Y += foveanatorPhase2RapidFireAccel;
-                            if (NPC.velocity.Y < 0f && foveanatorPhase2RapidFireTargetY > 0f)
-                                NPC.velocity.Y += foveanatorPhase2RapidFireAccel;
-                        }
-                        else if (NPC.velocity.Y > foveanatorPhase2RapidFireTargetY)
-                        {
-                            NPC.velocity.Y -= foveanatorPhase2RapidFireAccel;
-                            if (NPC.velocity.Y > 0f && foveanatorPhase2RapidFireTargetY < 0f)
-                                NPC.velocity.Y -= foveanatorPhase2RapidFireAccel;
-                        }
-
-                        foveanatorPhase2RapidFirePos = NPC.Center;
-                        foveanatorPhase2RapidFireTargetX = Main.player[NPC.target].Center.X - foveanatorPhase2RapidFirePos.X;
-                        foveanatorPhase2RapidFireTargetY = Main.player[NPC.target].Center.Y - foveanatorPhase2RapidFirePos.Y;
-                        NPC.rotation = (float)Math.Atan2(foveanatorPhase2RapidFireTargetY, foveanatorPhase2RapidFireTargetX) - MathHelper.PiOver2;
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            NPC.localAI[1] += 1f + (death ? (phase2LifeRatio - lifeRatio) / phase2LifeRatio : 0f);
-                            if (NPC.localAI[1] > ((spazAlive && retAlive) ? 20f : 10f))
-                            {
-                                bool canHit = Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
-                                if (canHit || !spazAlive || !retAlive || finalPhase)
-                                {
-                                    NPC.localAI[1] = 0f;
-                                    int type = ProjectileID.DeathLaser;
-                                    int damage = (int)Math.Round(NPC.GetProjectileDamage(type) * 0.75);
-
-                                    // Reduce mech boss projectile damage depending on the new ore progression changes
-                                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                    {
-                                        double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                        double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                        if (!NPC.downedMechBossAny)
-                                            damage = (int)(damage * firstMechMultiplier);
-                                        else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                            damage = (int)(damage * secondMechMultiplier);
-                                    }
-
-                                    foveanatorPhase2RapidFireTargetDist = (float)Math.Sqrt(foveanatorPhase2RapidFireTargetX * foveanatorPhase2RapidFireTargetX + foveanatorPhase2RapidFireTargetY * foveanatorPhase2RapidFireTargetY);
-                                    foveanatorPhase2RapidFireTargetDist = 9f / foveanatorPhase2RapidFireTargetDist;
-                                    foveanatorPhase2RapidFireTargetX *= foveanatorPhase2RapidFireTargetDist;
-                                    foveanatorPhase2RapidFireTargetY *= foveanatorPhase2RapidFireTargetDist;
-
-                                    Vector2 laserVelocity = new Vector2(foveanatorPhase2RapidFireTargetX, foveanatorPhase2RapidFireTargetY);
-                                    if (canHit)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), foveanatorPhase2RapidFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                                    }
-                                    else
-                                    {
-                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), foveanatorPhase2RapidFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                                        Main.projectile[proj].tileCollide = false;
-                                        Main.projectile[proj].timeLeft = 300;
-                                    }
-                                }
-                            }
-                        }
-
-                        NPC.ai[2] += (spazAlive && retAlive) ? 1f : 1.5f;
-                        if (NPC.ai[2] >= 150f - (death ? 60f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f))
-                        {
-                            NPC.ai[1] = (!spazAlive || !retAlive || finalPhase) ? 4f : 0f;
-                            NPC.ai[2] = 0f;
-                            NPC.ai[3] = 0f;
-
-                            CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                            options.aggroRatio = -1f;
-                            CalamityUtils.CalamityTargeting(NPC, options);
-
-                            NPC.netUpdate = true;
-                        }
+                        float deceleration = 0.8f - (death ? 0.15f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        NPC.velocity *= deceleration;
+                        if (NPC.velocity.X > -0.1 && NPC.velocity.X < 0.1)
+                            NPC.velocity.X = 0f;
+                        if (NPC.velocity.Y > -0.1 && NPC.velocity.Y < 0.1)
+                            NPC.velocity.Y = 0f;
+                    }
+                    else
+                    {
+                        // Accelerative charge
+                        // TODO - Make the charge leave behind energy bomb projectiles when the projectiles are done
+                        NPC.velocity *= 1.015f;
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
                     }
 
-                    // Charge
-                    else if (NPC.ai[1] == 2f)
+                    // Charge 2 times
+                    if (NPC.ai[2] >= chargeTime * 1.3f)
                     {
-                        // Set damage
-                        NPC.damage = setDamage;
+                        NPC.ai[3] += 1f;
+                        NPC.ai[2] = 0f;
 
-                        // Set rotation and velocity
                         NPC.rotation = foveanatorHoverRotation;
-                        float foveanatorPhase3ChargeSpeed = 22f + (death ? 8f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        foveanatorPhase3ChargeSpeed += 10f * enrageScale;
 
-                        if (!spazAlive || !retAlive)
-                            foveanatorPhase3ChargeSpeed += 2f;
-
-                        if (Main.getGoodWorld)
-                            foveanatorPhase3ChargeSpeed += 2f;
-
-                        Vector2 foveanatorPhase3ChargePos = NPC.Center;
-                        float foveanatorPhase3ChargeTargetX = Main.player[NPC.target].Center.X - foveanatorPhase3ChargePos.X;
-                        float foveanatorPhase3ChargeTargetY = Main.player[NPC.target].Center.Y - foveanatorPhase3ChargePos.Y;
-                        float foveanatorPhase3ChargeTargetDist = (float)Math.Sqrt(foveanatorPhase3ChargeTargetX * foveanatorPhase3ChargeTargetX + foveanatorPhase3ChargeTargetY * foveanatorPhase3ChargeTargetY);
-                        foveanatorPhase3ChargeTargetDist = foveanatorPhase3ChargeSpeed / foveanatorPhase3ChargeTargetDist;
-                        NPC.velocity.X = foveanatorPhase3ChargeTargetX * foveanatorPhase3ChargeTargetDist;
-                        NPC.velocity.Y = foveanatorPhase3ChargeTargetY * foveanatorPhase3ChargeTargetDist;
-                        NPC.ai[1] = 3f;
-                    }
-
-                    else if (NPC.ai[1] == 3f)
-                    {
-                        // Set damage
-                        NPC.damage = setDamage;
-
-                        NPC.ai[2] += 1f;
-
-                        float chargeTime = (spazAlive && retAlive) ? 45f : 30f;
-                        if (NPC.ai[3] % 3f == 0f)
-                            chargeTime = (spazAlive && retAlive) ? 90f : 60f;
-                        if (death)
-                            chargeTime -= chargeTime * 0.25f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio);
-                        chargeTime -= chargeTime / 5 * enrageScale;
-
-                        // Slow down
-                        if (NPC.ai[2] >= chargeTime)
+                        float maxCharges = 2f;
+                        if (NPC.ai[3] >= maxCharges)
                         {
-                            // Avoid cheap bullshit
-                            NPC.damage = 0;
-
-                            NPC.velocity *= 0.93f;
-                            if (NPC.velocity.X > -0.1 && NPC.velocity.X < 0.1)
-                                NPC.velocity.X = 0f;
-                            if (NPC.velocity.Y > -0.1 && NPC.velocity.Y < 0.1)
-                                NPC.velocity.Y = 0f;
+                            NPC.ai[1] = 0f;
+                            NPC.ai[3] = 0f;
                         }
                         else
-                        {
-                            NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
-
-                            if (NPC.ai[3] % 3f == 0f)
-                            {
-                                float fireRate = (spazAlive && retAlive) ? 13f : 9f;
-
-                                if (NPC.ai[2] % fireRate == 0f)
-                                {
-                                    Vector2 foveanatorPhase3ChargeLaserPos = NPC.Center;
-                                    float foveanatorPhase3ChargeLaserTargetX = Main.player[NPC.target].Center.X - foveanatorPhase3ChargeLaserPos.X;
-                                    float foveanatorPhase3ChargeLaserTargetY = Main.player[NPC.target].Center.Y - foveanatorPhase3ChargeLaserPos.Y;
-                                    float foveanatorPhase3ChargeLaserTargetDist = (float)Math.Sqrt(foveanatorPhase3ChargeLaserTargetX * foveanatorPhase3ChargeLaserTargetX + foveanatorPhase3ChargeLaserTargetY * foveanatorPhase3ChargeLaserTargetY);
-
-                                    SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        int type = ModContent.ProjectileType<ScavengerLaser>();
-                                        int damage = NPC.GetProjectileDamage(type);
-
-                                        // Reduce mech boss projectile damage depending on the new ore progression changes
-                                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                        {
-                                            double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                            double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                            if (!NPC.downedMechBossAny)
-                                                damage = (int)(damage * firstMechMultiplier);
-                                            else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                                damage = (int)(damage * secondMechMultiplier);
-                                        }
-
-                                        float laserDartVelocity = (death ? 9f : 6f) * ((spazAlive && retAlive) ? 1f : 1.5f);
-                                        foveanatorPhase3ChargeLaserPos = NPC.Center;
-                                        foveanatorPhase3ChargeLaserTargetX = Main.player[NPC.target].Center.X - foveanatorPhase3ChargeLaserPos.X;
-                                        foveanatorPhase3ChargeLaserTargetY = Main.player[NPC.target].Center.Y - foveanatorPhase3ChargeLaserPos.Y;
-                                        foveanatorPhase3ChargeLaserTargetDist = (float)Math.Sqrt(foveanatorPhase3ChargeLaserTargetX * foveanatorPhase3ChargeLaserTargetX + foveanatorPhase3ChargeLaserTargetY * foveanatorPhase3ChargeLaserTargetY);
-                                        foveanatorPhase3ChargeLaserTargetDist = laserDartVelocity / foveanatorPhase3ChargeLaserTargetDist;
-                                        foveanatorPhase3ChargeLaserTargetX *= foveanatorPhase3ChargeLaserTargetDist;
-                                        foveanatorPhase3ChargeLaserTargetY *= foveanatorPhase3ChargeLaserTargetDist;
-
-                                        Vector2 laserVelocity = new Vector2(foveanatorPhase3ChargeLaserTargetX, foveanatorPhase3ChargeLaserTargetY);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), foveanatorPhase3ChargeLaserPos + NPC.velocity.SafeNormalize(Vector2.UnitY) * 50f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                                    }
-                                }
-                            }
-                        }
-
-                        // Charge four times
-                        float chargeGateValue = 30f;
-                        chargeGateValue -= chargeGateValue / 4 * enrageScale;
-                        if (NPC.ai[2] >= chargeTime + chargeGateValue)
-                        {
-                            NPC.ai[2] = 0f;
-
-                            float chargeIncrement = 1f;
-                            if (Main.rand.NextBool() && NPC.ai[3] < ((spazAlive && retAlive) ? 1f : 3f))
-                            {
-                                chargeIncrement = 2f;
-
-                                // Net update due to the randomness in Master Mode
-                                NPC.netUpdate = true;
-                            }
-
-                            NPC.ai[3] += chargeIncrement;
-
-                            NPC.rotation = foveanatorHoverRotation;
-                            float maxChargeAmt = (spazAlive && retAlive) ? 2f : 4f;
-                            if (NPC.ai[3] >= maxChargeAmt)
-                            {
-                                NPC.ai[1] = 0f;
-                                NPC.ai[3] = 0f;
-
-                                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
-                                options.aggroRatio = -1f;
-                                CalamityUtils.CalamityTargeting(NPC, options);
-                            }
-                            else
-                                NPC.ai[1] = 4f;
-                        }
+                            NPC.ai[1] = 1f;
                     }
+                }
 
-                    // Get in position for charge
-                    else if (NPC.ai[1] == 4f)
-                    {
-                        // Avoid cheap bullshit
-                        NPC.damage = 0;
+                // Laser and energy bomb barrage
+                else if (NPC.ai[1] == 3f)
+                {
 
-                        int chargeLineUpDist = (spazAlive && retAlive) ? 600 : 500;
-                        float chargeSpeed = 18f + (death ? 6f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        float chargeAccel = 0.45f + (death ? 0.15f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        chargeSpeed += 6f * enrageScale;
-                        chargeAccel += 0.15f * enrageScale;
-
-                        if (spazAlive && retAlive)
-                        {
-                            chargeSpeed *= 0.75f;
-                            chargeAccel *= 0.75f;
-                        }
-
-                        if (Main.getGoodWorld)
-                        {
-                            chargeSpeed *= 1.15f;
-                            chargeAccel *= 1.15f;
-                        }
-
-                        int foveanatorPhase2FaceDirection = 1;
-                        if (NPC.Center.X < Main.player[NPC.target].position.X + Main.player[NPC.target].width)
-                            foveanatorPhase2FaceDirection = -1;
-
-                        Vector2 spazmatismRetDeadChargePos = NPC.Center;
-                        float chargeTargetX = Main.player[NPC.target].Center.X + (chargeLineUpDist * foveanatorPhase2FaceDirection) - spazmatismRetDeadChargePos.X;
-                        float chargeTargetY = Main.player[NPC.target].Center.Y - spazmatismRetDeadChargePos.Y;
-                        float chargeTargetDist = (float)Math.Sqrt(chargeTargetX * chargeTargetX + chargeTargetY * chargeTargetY);
-
-                        chargeTargetDist = chargeSpeed / chargeTargetDist;
-                        chargeTargetX *= chargeTargetDist;
-                        chargeTargetY *= chargeTargetDist;
-
-                        if (NPC.velocity.X < chargeTargetX)
-                        {
-                            NPC.velocity.X += chargeAccel;
-                            if (NPC.velocity.X < 0f && chargeTargetX > 0f)
-                                NPC.velocity.X += chargeAccel;
-                        }
-                        else if (NPC.velocity.X > chargeTargetX)
-                        {
-                            NPC.velocity.X -= chargeAccel;
-                            if (NPC.velocity.X > 0f && chargeTargetX < 0f)
-                                NPC.velocity.X -= chargeAccel;
-                        }
-                        if (NPC.velocity.Y < chargeTargetY)
-                        {
-                            NPC.velocity.Y += chargeAccel;
-                            if (NPC.velocity.Y < 0f && chargeTargetY > 0f)
-                                NPC.velocity.Y += chargeAccel;
-                        }
-                        else if (NPC.velocity.Y > chargeTargetY)
-                        {
-                            NPC.velocity.Y -= chargeAccel;
-                            if (NPC.velocity.Y > 0f && chargeTargetY < 0f)
-                                NPC.velocity.Y -= chargeAccel;
-                        }
-
-                        // Take 1.25 or 1 second to get in position, then charge
-                        NPC.ai[2] += 1f;
-                        if (NPC.ai[2] >= ((spazAlive && retAlive) ? 75f : 60f) - (death ? 20f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f))
-                        {
-                            NPC.ai[1] = 2f;
-                            NPC.ai[2] = 0f;
-                            NPC.netUpdate = true;
-                        }
-                    }
                 }
             }
         }
@@ -1119,10 +858,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), 2);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), 7);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), 9);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), Mod.Find<ModGore>("Foveanator2").Type);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), 2, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), 7, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), 9, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2((float)Main.rand.Next(-30, 31) * 0.2f, (float)Main.rand.Next(-30, 31) * 0.2f), Mod.Find<ModGore>("Foveanator2").Type, NPC.scale);
                 }
             }
 
