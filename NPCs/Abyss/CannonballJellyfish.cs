@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 54;
             NPC.height = 76;
             NPC.defense = 0;
-            NPC.lifeMax = 400;
+            NPC.lifeMax = 500;
             NPC.knockBackResist = 0f;
             NPC.alpha = 100;
             NPC.value = Item.buyPrice(0, 0, 1, 5);

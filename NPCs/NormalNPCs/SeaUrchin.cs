@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 10;
-            NPC.lifeMax = 30;
+            NPC.lifeMax = 40;
             NPC.knockBackResist = 0.8f;
             NPC.value = Item.buyPrice(0, 0, 0, 80);
             NPC.HitSound = SoundID.NPCHit1;

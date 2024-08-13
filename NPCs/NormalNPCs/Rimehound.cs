@@ -38,12 +38,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 56;
             NPC.height = 56;
             NPC.defense = 4;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 65;
             if (DownedBossSystem.downedCryogen)
             {
                 NPC.damage = 60;
                 NPC.defense = 10;
-                NPC.lifeMax = 1000;
+                NPC.lifeMax = 1250;
             }
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.Hellhound;
