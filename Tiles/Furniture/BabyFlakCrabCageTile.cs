@@ -13,9 +13,11 @@ namespace CalamityMod.Tiles.Furniture
     {
         public override void SetStaticDefaults()
         {
-            Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
+            Main.tileSolidTop[Type] = true;
+            Main.tileTable[Type] = true;
+            TileID.Sets.CritterCageLidStyle[Type] = TileID.Sets.CritterCageLidStyle[TileID.BunnyCage]; // Big, gray lid
             TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
             TileObjectData.addTile(Type);
             AnimationFrameHeight = 54;
@@ -32,6 +34,8 @@ namespace CalamityMod.Tiles.Furniture
         {
             num = fail ? 1 : 3;
         }
+
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => offsetY = 2;
 
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {
