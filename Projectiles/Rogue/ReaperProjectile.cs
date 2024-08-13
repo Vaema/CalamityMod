@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
                 }
                 Projectile.spriteDirection = Projectile.direction;
-                SpinSoundSlot = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/SpinningWoosh") with { Pitch = -0.3f, Volume = 0.6f }, Projectile.Center);
+                SpinSoundSlot = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/SpinningWoosh") with { Pitch = -0.3f, Volume = 0.75f }, Projectile.Center);
                 
                 time = 0;
                 spinning = true;
@@ -176,22 +176,51 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (Projectile.Calamity().stealthStrike)
                 {
-                    if (time > 70)
+                    if (time == 30)
                     {
-                        NPC target = Owner.Center.ClosestNPCAt(3000);
-
+                        SpinSound?.Stop();
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationBurst");
+                        SpinSoundSlot = SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.3f }, Projectile.Center);
+                    }
+                    if (time >= 150)
+                    {
+                        NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(4000);
+                        if (time == 150)
+                        {
+                            Projectile.extraUpdates = 25;
+                            //SoundStyle fire = new("CalamityMod/Sounds/Item/ImpalerLaunch");
+                            //SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = 0 }, Projectile.Center);
+                        }
                         if (target != null)
                         {
-                            Projectile.extraUpdates = 4;
                             if (Projectile.Center.Y < target.Center.Y && Projectile.velocity.Length() < 15)
                                 Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.9f;
                             else if (Projectile.Center.Y < target.Center.Y)
                                 Projectile.velocity *= 0.9f;
                         }
-                        else
+                        else if (time == 150)
                         {
-                            Projectile.velocity = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
-                            Projectile.extraUpdates = 4;
+                            Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Owner.direction) * 15;
+                        }
+                        Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 7, 0.13f, Color.Lerp(Color.Green, Color.Chartreuse, 0.8f) * 0.65f, new Vector2(1, 0.3f), true, false, 1.3f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    else if (time > 30)
+                    {
+                        Projectile.velocity *= 0.955f;
+                        float fade = Utils.GetLerpValue(150, 0, time);
+                        float numberOfDusts = 2f;
+                        float rotFactor = 360f / numberOfDusts;
+                        for (int i = 0; i < numberOfDusts; i++)
+                        {
+                            float rot = MathHelper.ToRadians(i * rotFactor);
+                            Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 250f, 0.04f);
+                            velOffset *= Main.rand.NextFloat(25, 45) * fade;
+                            Particle energy = new GlowOrbParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, (int)(14 - (5 * fade)), Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, Color.Chartreuse);
+                            GeneralParticleHandler.SpawnParticle(energy);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                            dust.noGravity = true;
+                            dust.color = Color.Chartreuse;
                         }
                     }
                 }
@@ -201,22 +230,37 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.Calamity().stealthStrike && time <= 70)
+            if (Projectile.Calamity().stealthStrike && time <= 151)
                 Projectile.numHits--;
             if (Projectile.numHits == 0)
             {
                 if (Projectile.Calamity().stealthStrike) // Rainstorm
                 {
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SupernovaStealthBoom>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner, 0, 0, 0);
+                    Vector2 rainSpot = Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 490;
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationRain");
+                    SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0 }, rainSpot);
+                    SoundStyle fire2 = new("CalamityMod/Sounds/Item/ViperSpit");
+                    SoundEngine.PlaySound(fire2 with { Volume = 1f, Pitch = -0.3f }, rainSpot);
+                    for (int i = 0; i < 37; i++)
+                    {
+                        Dust chargefull = Dust.NewDustPerfect(rainSpot, 278);
+                        chargefull.velocity = Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(1, 8);
+                        chargefull.scale = Main.rand.NextFloat(0.45f, 0.75f);
+                        chargefull.noGravity = true;
+                        chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : Color.Chartreuse, 0.7f);
+                    }
+                    Particle Smear = new CustomPulse(rainSpot, Vector2.Zero, Color.Chartreuse * 0.7f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-5, 5), 0, 0.35f, 12);
+                    GeneralParticleHandler.SpawnParticle(Smear);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
                 }
                 else // Radiation Burst
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationBurst");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0, MaxInstances = -1 }, Projectile.Center);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner, 0, 0, 0);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, 0);
                 }
             }
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 90);
         }
 
         public override void OnKill(int timeLeft)

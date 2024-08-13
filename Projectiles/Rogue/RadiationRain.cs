@@ -17,81 +17,89 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public NPC targetedNPC;
+        public int time = 0;
+        public Vector2 spawnSpot;
 
         public override void SetDefaults()
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
+            Projectile.width = 60;
+            Projectile.height = 60;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 3;
-            Projectile.timeLeft = 180;
+            Projectile.extraUpdates = 10;
+            Projectile.timeLeft = 200;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            Projectile.localNPCHitCooldown = 30 * Projectile.MaxUpdates;
+            Projectile.ArmorPenetration = 30;
         }
 
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-            if (Projectile.ai[1] % 2 == 0 && targetDist < 1400)
+
+            if (time == 0)
             {
-                Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 5, 0.04f, Color.Lerp(Color.Green, Color.Chartreuse, 0.8f) * 0.65f, new Vector2(1, 0.3f), true, false, 1.5f);
+                float orbScale = 0.6f * Main.rand.NextFloat(0.8f, 1.1f);
+                Color smokeColor = Color.Lerp(Color.DimGray, Color.DarkGreen, Main.rand.NextFloat(0.2f, 0.6f));
+                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, smokeColor * 0.7f, "CalamityMod/ExtraTextures/GreyscaleVortex", new Vector2(1, 1), Projectile.ai[2] * 0.45f, orbScale, orbScale * 1.1f, 12, false);
+                GeneralParticleHandler.SpawnParticle(orb);
+                Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Chartreuse, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.8f, 0.4f, 18);
+                GeneralParticleHandler.SpawnParticle(orb3);
+                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.4f, 0.2f, 18);
+                GeneralParticleHandler.SpawnParticle(orb2);
+                for (int i = 0; i < 3; i++)
+                {
+                    smokeColor = Color.Lerp(Color.DimGray, Color.DarkGreen, Main.rand.NextFloat(0.2f, 0.6f));
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center, new Vector2(27, 27).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), smokeColor, Main.rand.Next(25, 40 + 1), Main.rand.NextFloat(0.7f, 1.3f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: false);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                }
+                spawnSpot = Projectile.Center;
+
+                targetedNPC = Owner.Calamity().mouseWorld.ClosestNPCAt(1200);
+                if (targetedNPC != null)
+                    Projectile.velocity = (targetedNPC.Center - Projectile.Center + targetedNPC.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 8;
+                else
+                    Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 8;
+            }
+
+            if (targetDist < 1400 && time > 5)
+            {
+                Particle spark = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(70, 70), Projectile.velocity * Main.rand.NextFloat(1.5f, 5f), false, 2, Main.rand.NextFloat(0.04f, 0.06f), Color.Lerp(Color.Green, Color.Chartreuse, Main.rand.NextFloat(0.2f, 1f)), new Vector2(0.2f, 1.5f), true, false, 0.3f);
                 GeneralParticleHandler.SpawnParticle(spark);
+                if (time % 6 == 0)
+                {
+                    Particle spark2 = new AltLineParticle(Projectile.Center + Main.rand.NextVector2Circular(70, 70), Projectile.velocity * Main.rand.NextFloat(4.5f, 9f), false, 12, Main.rand.NextFloat(0.9f, 1.1f), Color.Lerp(Color.Green, Color.Chartreuse, Main.rand.NextFloat(0.2f, 1f)));
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+                if (time % 4 == 0)
+                {
+                    Dust c = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(70, 70), 267);
+                    c.velocity = Projectile.velocity * Main.rand.NextFloat(0.5f, 3f);
+                    c.scale = Main.rand.NextFloat(0.45f, 0.75f);
+                    c.noGravity = true;
+                    c.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : Color.Chartreuse, 0.7f);
+                    c.noLight = true;
+                    c.noLightEmittence = true;
+                }
+            }
+            if (time % 10 * Projectile.MaxUpdates == 0)
+            {
+                Owner.Calamity().GeneralScreenShakePower = 1.5f;
             }
 
-            Projectile.rotation += 0.2f;
+            if (Projectile.ai[2] > 0 && time == 30)
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Projectile.velocity, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
 
-            targetedNPC = (Projectile.ai[1] > 90) ? Projectile.Center.ClosestNPCAt(1200) : null;
-            float moveSpeed = Utils.GetLerpValue(200, 0, Projectile.timeLeft);
-            if (targetedNPC == null)
-            {
-                Vector2 position = (Owner.Calamity().mouseWorld + ((new Vector2(0, -250).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
-                Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 8)
-                    Projectile.velocity += moveToMouse * (0.7f);
-                else
-                    Projectile.velocity *= 0.9f;
-            }
-            else
-            {
-                Vector2 position = targetedNPC.Center;
-                Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 13 * moveSpeed)
-                    Projectile.velocity += moveToMouse * moveSpeed;
-                else
-                    Projectile.velocity *= 0.9f;
-                if (Projectile.ai[1] % 2 == 0)
-                    Projectile.timeLeft++; // Lasts longer if it has a target
-            }
-            if (targetedNPC != null && targetedNPC.life <= 0)
-                targetedNPC = null;
-            
-            Projectile.ai[1]++;
+            time++;
         }
-        public override void OnKill(int timeLeft)
-        {
-            for (int i = 0; i <= 2; i++)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
-                dust.noGravity = true;
-            }
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-            return true;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
-            if (target == targetedNPC)
-                Projectile.Kill();
+            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 60, targetHitbox);
     }
 }

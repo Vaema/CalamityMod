@@ -84,16 +84,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
             time++;
         }
-        public override void OnKill(int timeLeft)
-        {
-            
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-            return true;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
