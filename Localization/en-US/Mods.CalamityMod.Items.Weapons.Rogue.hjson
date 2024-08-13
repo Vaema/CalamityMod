@@ -1275,9 +1275,9 @@ TheOldReaper: {
 	DisplayName: The Old Reaper
 	Tooltip:
 		'''
-		Throws a homing reaper scythe that shreds enemies
-		Stealth strikes throw three at once
-		'Slice 'n dice'
+		Throws an irradiated scythe that cuts through enemies
+		On hit the scythe amplifies background radiation at the point of impact, creating a massive delayed explosion
+		Stealth strikes are thrown into the sky, then strike down at a near enemy seconds later, creating intense radioactive rainfall on impact
 		'''
 }
 

@@ -51,6 +51,14 @@ namespace CalamityMod.Projectiles.Rogue
                 GeneralParticleHandler.SpawnParticle(orb3);
                 Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.4f, 0.2f, 18);
                 GeneralParticleHandler.SpawnParticle(orb2);
+
+                for (int i = 0; i < 2; i++)
+                {
+                    int dir = (i == 0 ? 1 : -1);
+                    Particle pulse3 = new GlowSparkParticle(Projectile.Center + new Vector2(20 * dir, 0), new Vector2(10 * dir, 0), false, 12, 0.087f, Color.Chartreuse, new Vector2(1.7f, 0.8f), true, true, 0.8f);
+                    GeneralParticleHandler.SpawnParticle(pulse3);
+                }
+
                 for (int i = 0; i < 3; i++)
                 {
                     smokeColor = Color.Lerp(Color.DimGray, Color.DarkGreen, Main.rand.NextFloat(0.2f, 0.6f));
@@ -59,7 +67,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 spawnSpot = Projectile.Center;
 
-                targetedNPC = Owner.Calamity().mouseWorld.ClosestNPCAt(1200);
+                targetedNPC = Projectile.Center.ClosestNPCAt(1200);
                 if (targetedNPC != null)
                     Projectile.velocity = (targetedNPC.Center - Projectile.Center + targetedNPC.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 8;
                 else
@@ -68,11 +76,11 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (targetDist < 1400 && time > 5)
             {
-                Particle spark = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(70, 70), Projectile.velocity * Main.rand.NextFloat(1.5f, 5f), false, 2, Main.rand.NextFloat(0.04f, 0.06f), Color.Lerp(Color.Green, Color.Chartreuse, Main.rand.NextFloat(0.2f, 1f)), new Vector2(0.2f, 1.5f), true, false, 0.3f);
+                Particle spark = new GlowSparkParticle(Projectile.Center + Main.rand.NextVector2Circular(70, 70), Projectile.velocity * Main.rand.NextFloat(1.5f, 5f), false, 2, Main.rand.NextFloat(0.04f, 0.06f), Color.Lerp(Color.Green, Color.Chartreuse, Main.rand.NextFloat(0.2f, 1f)), new Vector2(0.2f * (3 * Utils.GetLerpValue(40, 0, time, true) + 1),  1.5f), true, false, 0.3f);
                 GeneralParticleHandler.SpawnParticle(spark);
                 if (time % 6 == 0)
                 {
-                    Particle spark2 = new AltLineParticle(Projectile.Center + Main.rand.NextVector2Circular(70, 70), Projectile.velocity * Main.rand.NextFloat(4.5f, 9f), false, 12, Main.rand.NextFloat(0.9f, 1.1f), Color.Lerp(Color.Green, Color.Chartreuse, Main.rand.NextFloat(0.2f, 1f)));
+                    Particle spark2 = new AltLineParticle(Projectile.Center + Main.rand.NextVector2Circular(70, 70), Projectile.velocity * Main.rand.NextFloat(4.5f, 9f), false, 12, Main.rand.NextFloat(0.9f, 1.1f) * (2 * Utils.GetLerpValue(40, 0, time, true) + 1), Color.Lerp(Color.Green, Color.Chartreuse, Main.rand.NextFloat(0.2f, 1f)));
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
                 if (time % 4 == 0)

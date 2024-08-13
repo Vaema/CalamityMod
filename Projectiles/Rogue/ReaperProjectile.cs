@@ -188,14 +188,12 @@ namespace CalamityMod.Projectiles.Rogue
                         if (time == 150)
                         {
                             Projectile.extraUpdates = 25;
-                            //SoundStyle fire = new("CalamityMod/Sounds/Item/ImpalerLaunch");
-                            //SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = 0 }, Projectile.Center);
                         }
                         if (target != null)
                         {
-                            if (Projectile.Center.Y < target.Center.Y && Projectile.velocity.Length() < 15)
+                            if (Projectile.numHits <= 0 && Projectile.velocity.Length() < 15)
                                 Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.9f;
-                            else if (Projectile.Center.Y < target.Center.Y)
+                            else if (Projectile.numHits <= 0)
                                 Projectile.velocity *= 0.9f;
                         }
                         else if (time == 150)
@@ -257,7 +255,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/RadiationBurst");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0, MaxInstances = -1 }, Projectile.Center);
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), 0f, Projectile.owner, 0, 0, 0);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<RadiationBurst>(), (int)(Projectile.damage), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
                 }
             }
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 90);
