@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
 
             if (Projectile.ai[2] == 5)
             {
@@ -304,7 +304,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
 
             if (!stuckInTarget && canStick)
             {
@@ -340,7 +340,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle sound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2");
                 SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
 
-                pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+                pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
                 if (pullCheckValid)
                 {
                     SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
@@ -351,7 +351,7 @@ namespace CalamityMod.Projectiles.Ranged
             bool hitTarget = chosenTarget != null && target == chosenTarget;
             modifiers.SourceDamage *= hitTarget ? pullingTarget ? 20 : (ripped ? 2 : Projectile.numHits < 1 ? 0.01f : 1) : 0.2f;
 
-            pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 5f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
             if (!pullCheckValid)
                 target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }

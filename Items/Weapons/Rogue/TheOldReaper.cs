@@ -15,17 +15,16 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 106;
             Item.height = 104;
-            Item.damage = 180;
+            Item.damage = 880;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
+            Item.useAnimation = 53;
+            Item.useTime = 53;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ReaperProjectile>();
-            Item.shootSpeed = 16f;
+            Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;
 
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
@@ -39,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
             {
                 int spread = 15;
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2, 3), velocity.Y + Main.rand.Next(-2, 3)).RotatedBy(MathHelper.ToRadians(spread));
                     int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, (int)(damage * 0.45), knockback, player.whoAmI);
