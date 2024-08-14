@@ -25,7 +25,7 @@ namespace CalamityMod.Items.DraedonMisc
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
         }
 
         public override bool? UseItem(Player player) => true;

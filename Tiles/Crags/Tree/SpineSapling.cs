@@ -57,5 +57,7 @@ namespace CalamityMod.Tiles.Crags.Tree
                 }
             }
         }
+
+        public override bool CanDrop(int i, int j) => false;
     }
 }

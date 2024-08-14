@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 44;
             NPC.height = 34;
             NPC.defense = 6;
-            NPC.lifeMax = 90;
+            NPC.lifeMax = 115;
             NPC.knockBackResist = 0.65f;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundDesert,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Underground,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GemCrawler")
             });
         }

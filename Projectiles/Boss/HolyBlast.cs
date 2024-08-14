@@ -110,6 +110,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.localAI[0] = 1f;
                 SoundEngine.PlaySound(ShootSound, Projectile.Center);
             }
+
             if (Math.Abs(Projectile.velocity.X) > 0.2)
                 Projectile.spriteDirection = -Projectile.direction;
 
@@ -122,10 +123,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X);
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return ProvUtils.GetProjectileColor(lightColor);
-        }
+        public override Color? GetAlpha(Color lightColor) => ProvUtils.GetProjectileColor(lightColor);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -167,10 +165,11 @@ namespace CalamityMod.Projectiles.Boss
                 int type = ModContent.ProjectileType<HolyFire2>();
                 float velocity = 5f;
                 Vector2 spinningPoint = new Vector2(0f, -velocity);
+                Vector2 additionalVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 2.5f;
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + Projectile.velocity * 0.25f, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
                 }
             }
 

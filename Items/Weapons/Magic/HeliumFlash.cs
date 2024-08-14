@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 5000;
             Item.knockBack = 9.5f;
             Item.mana = 80;
-            Item.useTime = Item.useAnimation = AftershotCooldownFrames;
+            Item.useAnimation = Item.useTime = AftershotCooldownFrames;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.channel = true;

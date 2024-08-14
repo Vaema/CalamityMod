@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 57;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 5f;

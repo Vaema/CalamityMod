@@ -17,7 +17,7 @@ namespace CalamityMod.Items.LabFinders
             Item.height = 26;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 36;
+            Item.useAnimation = Item.useTime = 36;
             Item.shoot = ModContent.ProjectileType<RedLabSeeker>();
             Item.Calamity().MaxCharge = 100;
             Item.Calamity().ChargePerUse = 10;

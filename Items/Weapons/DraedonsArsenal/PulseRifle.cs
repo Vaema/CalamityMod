@@ -30,20 +30,18 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.height = 32;
             Item.DamageType = DamageClass.Ranged;
             Item.damage = BaseDamage;
-            Item.knockBack = 0f;
-            Item.useTime = 55;
-            Item.useAnimation = 55;
-            Item.autoReuse = true;
+            Item.useAnimation = Item.useTime = 55;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
+            Item.shootSpeed = 5f;
 
-            Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = FireSound;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
-
-            Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
-            Item.shootSpeed = 5f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;

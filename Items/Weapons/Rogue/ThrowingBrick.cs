@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 14;
             Item.shootSpeed = 15f;
             Item.shoot = ModContent.ProjectileType<Brick>();
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
             Item.value = Item.buyPrice(0, 0, 0, 50);

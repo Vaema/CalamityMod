@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 70;
             Item.damage = 1200;
             Item.knockBack = 9f;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.channel = true;
@@ -92,6 +92,11 @@ namespace CalamityMod.Items.Weapons.Melee
                 Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DeathsAscensionSwing>(), damage, knockback, player.whoAmI);
             }
             return false;
+        }
+        
+        public override void UseItemFrame(Player player)
+        {
+            player.itemLocation = (Vector2)player.HandPosition;
         }
 
         public override void AddRecipes()

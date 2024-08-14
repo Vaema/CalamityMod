@@ -159,6 +159,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] PainterNames =
         {
             "Picasso", // <@!353316526306361347> (sconicboom -- for the late picassosbean2819)
+            "Bew", // <@!232291351167893505> (dmshi)
         };
         private static readonly string[] PartyGirlNames =
         {
@@ -197,6 +198,7 @@ namespace CalamityMod.NPCs
             "Vorbis",
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
+            "Linn", // <@!277983612383526913> (duckycolors)
         };
         private static readonly string[] StylistNames =
         {

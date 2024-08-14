@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 300;
             Item.damage = 9600;
             Item.knockBack = 7f;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<UniverseSplitterField>();
             Item.shootSpeed = 10f;
             Item.noUseGraphic = true;

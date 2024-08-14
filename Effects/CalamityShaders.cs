@@ -51,7 +51,7 @@ namespace CalamityMod.Effects
         // Scarlet Devil main spear glowing trail. BEWARE: Is reused by many other items!
         internal static Effect ScarletDevilShader;
 
-        // Yharon border suns (or flame pillars?) unsure. it's one or the other. maybe both
+        // Yharon border flame pillar trail.
         internal static Effect BordernadoFireShader;
 
         // Photon Ripper hardlight teeth trail shader
@@ -99,13 +99,13 @@ namespace CalamityMod.Effects
         // Exoblade's melee slash trails. Also used by Terratomere
         internal static Effect ExobladeSlashShader;
 
-        // Exoblade's projectile on-hit "aniume slash marks". Also used by Terratomere
+        // Exoblade's projectile on-hit "anime slash marks". Also used by Terratomere
         internal static Effect ExobladePierceShader;
 
-        // Used by Subsuming Vortex's various vortices. Draws the main vortices
+        // Used by Subsuming Vortex's various vortices. Draws the main vortices. BEWARE: Reused by Burning Sea's fireball.
         internal static Effect ExoVortexShader;
 
-        // Used by Subsuming Vortex's side vortices. Draws the swirling energy tendrils.
+        // Used by Subsuming Vortex's small vortices. Draws the trailing energy tendrils.
         internal static Effect SideStreakTrailShader;
 
         // Used by Heavenly Gale's hardlight arrows.
