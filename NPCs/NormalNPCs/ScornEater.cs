@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 160;
             NPC.defense = 38;
             NPC.DR_NERD(0.05f);
-            NPC.lifeMax = 11250;
+            NPC.lifeMax = 9000;
             NPC.knockBackResist = 0.1f;
             AIType = -1;
             NPC.lavaImmune = true;
