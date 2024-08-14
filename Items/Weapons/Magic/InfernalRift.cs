@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Vector2 projVelocity = new Vector2(mouseXDist, mouseYDist).SafeNormalize(Vector2.UnitY) * projSpeed;
             projSpawnPos = projSpawnPos.SafeNormalize(projVelocity) * projSpeed;
             projSpawnPos = Vector2.Lerp(projSpawnPos, projVelocity, 0.25f);
-            Projectile.NewProjectile(source, projSpawnOffset, projSpawnPos, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, projSpawnOffset, projSpawnPos, type, damage, knockback, player.whoAmI);
             return false;
         }
 

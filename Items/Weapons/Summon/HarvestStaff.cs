@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<HarvestStaffSentry>();
             Item.knockBack = 5f;
 
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.mana = 10;
             Item.width = 44;
             Item.height = 46;

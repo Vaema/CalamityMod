@@ -19,7 +19,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.friendly = true;
-            Projectile.hostile = true;
             Projectile.timeLeft = 300;
             Projectile.ignoreWater = true;
         }
@@ -47,12 +46,6 @@ namespace CalamityMod.Projectiles.Magic
             RancorLavaMetaball.SpawnParticle(Projectile.Center + Main.rand.NextVector2Circular(6f, 6f), Projectile.scale * 36f);
 
             Time++;
-        }
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            modifiers.SourceDamage *= 0f;
-            modifiers.SourceDamage.Flat += Main.rand.Next(80, 90);
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.White * Projectile.Opacity;

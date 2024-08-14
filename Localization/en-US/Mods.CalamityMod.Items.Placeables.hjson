@@ -762,6 +762,11 @@ SulphurousTorch: {
 	Tooltip: Can be placed in water
 }
 
+SunkenIdol: {
+	DisplayName: Sunken Idol
+	Tooltip: ""
+}
+
 ThaumaticChair: {
 	DisplayName: Thaumatic Chair
 	Tooltip: One of Chloe's finest creations

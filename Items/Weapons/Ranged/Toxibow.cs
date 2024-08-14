@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 54;
             Item.damage = 15;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 28;
+            Item.useAnimation = Item.useTime = 28;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Acidwood>(20).
+                AddIngredient<AcidwoodBow>().
                 AddIngredient<SulphuricScale>(15).
                 AddTile(TileID.Anvils).
                 Register();

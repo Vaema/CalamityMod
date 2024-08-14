@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 1f;
 
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;

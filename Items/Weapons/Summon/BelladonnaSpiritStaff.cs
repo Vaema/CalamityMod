@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<BelladonnaSpirit>();
-            Item.useTime = Item.useAnimation = 35;
+            Item.useAnimation = Item.useTime = 35;
 
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;

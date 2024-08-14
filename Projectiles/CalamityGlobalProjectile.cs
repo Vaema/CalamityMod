@@ -22,6 +22,11 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Tiles.Abyss;
+using CalamityMod.Tiles.Astral;
+using CalamityMod.Tiles.AstralDesert;
+using CalamityMod.Tiles.AstralSnow;
+using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
@@ -4067,7 +4072,8 @@ namespace CalamityMod.Projectiles
                 || projectile.type == ProjectileID.PureSpray
                 || projectile.type == ProjectileID.CorruptSpray
                 || projectile.type == ProjectileID.CrimsonSpray
-                || projectile.type == ProjectileID.HallowSpray;
+                || projectile.type == ProjectileID.HallowSpray
+                || projectile.type == ProjectileID.Fertilizer;
             if (!isConversionProjectile)
                 return;
 
@@ -4078,10 +4084,39 @@ namespace CalamityMod.Projectiles
 
                 bool isPowder = projectile.type == ProjectileID.PurificationPowder || projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder;
 
+                if (!WorldGen.InWorld(x, y, 3))
+                    return;
+
                 for (int i = x - 1; i <= x + 1; i++)
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
+                        if (projectile.type == ProjectileID.Fertilizer)
+                        {
+                            Tile tile = Main.tile[i, j];
+
+                            if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                bool success = WorldGen.GrowTree(i, j);
+                                if (success && isPlayerNear)
+                                    WorldGen.TreeGrowFXCheck(i, j);
+                            }
+                            else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                bool success = WorldGen.GrowPalmTree(i, j);
+                                if (success && isPlayerNear)
+                                    WorldGen.TreeGrowFXCheck(i, j);                                
+                            }
+                            else if (tile.TileType == ModContent.TileType<SpineSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                                    SpineTree.Spawn(i, j, 22, 28, true);
+                            }
+                        }
+
                         if (projectile.type == ProjectileID.PureSpray || projectile.type == ProjectileID.PurificationPowder)
                         {
                             AstralBiome.ConvertFromAstral(i, j, ConvertType.Pure, !isPowder);
@@ -4222,13 +4257,13 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
-            // damageScale = 0.1f + player.velocity.Length() / 7f * 0.9f
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
+                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
+                float vanillaVelocityDamageMultiplier = 0.1f + player.velocity.Length() / 7f * 0.9f;
                 float baseVelocityDamageMultiplier = 0.01f + player.velocity.Length() * 0.002f;
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
-                modifiers.SourceDamage *= calamityVelocityDamageMultiplier;
+                modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
             // If applicable, use ricoshot bonus damage.

@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 20;
             Item.mana = 10;
             Item.damage = 8;
-            Item.useTime = Item.useAnimation = 34;
+            Item.useAnimation = Item.useTime = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
@@ -48,8 +48,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SulphuricScale>(20).
                 AddRecipeGroup("AnySilverBar", 10).
+                AddIngredient<SulphuricScale>(3).
                 AddTile(TileID.Anvils).
                 Register();
         }

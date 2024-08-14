@@ -154,8 +154,12 @@ CindersOfLament: {
 		Summons either Cataclysm or Catastrophe at the mouse position
 		They will look at you for a moment before charging at you
 		They can do damage to both you and enemies
-		[c/C61B40:'The Witch, a sinner of her own making,]
-		[c/C61B40:Within her mind her demon lies, ever patient, until the end of time.']
+		'''
+	Calamitas:
+		'''
+		'My brothers perished in Azafure. I found their bodies near the center of the city, after they left for an expedition.
+		Before my power was what it is now, they were always alongside me and didn't allow anyone to harm me. It may have been a problem sometimes, but they were surprisingly obedient.
+		And even after all that's happened, and even in death, they still look out for me. Isn't that sweet of them?'
 		'''
 }
 
@@ -519,11 +523,16 @@ Metastasis: {
 	Tooltip:
 		'''
 		Summons a Sepulcher to fight for you
-		While the Sepulcher is active brimstone hearts will begin to appear and orbit you
-		It will attempt to attack you more and more frequently depending on how many hearts are present
-		It takes up 4 minion slots and it can only be summoned once
-		[c/C61B40:A contemplated possible future of the cosmic serpent,]
-		[c/C61B40:A gruesome warning for those blinded by the hunger for power.]
+		While the Sepulcher is active, brimstone hearts will begin to appear and orbit you
+		When too many hearts are present, it will interrupt attacking to attack the hearts instead
+		This happens more frequently depending on how many hearts are present
+		Requires 4 minion slots to use and can only be summoned once
+		'''
+	Calamitas:
+		'''
+		'When I joined Yharim's ranks, the Devourer was one of the first to greet me. He seemed kind at first, but that mask did not last long.
+		He was arrogant, disrespectful and shady. If you hadn't killed him, I would've.
+		I made my Sepulcher as a mockery of his arrogance, but it seems the insult fell flat. You can add "slime-brained" to his list of fabricated titles.'
 		'''
 }
 

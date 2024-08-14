@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 120);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
         }
 
         public override void OnKill(int timeLeft)

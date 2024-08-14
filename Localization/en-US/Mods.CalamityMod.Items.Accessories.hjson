@@ -246,7 +246,7 @@ AsgardianAegis: {
 		  Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
 		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch,
 		  Blackout, Brain Rot, Burning Blood, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, God Slayer Inferno, Burning
+		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno, Burning
 		'''
 }
 
@@ -373,6 +373,9 @@ Calamity: {
 		'''
 		Lights your cursor ablaze with the Witch's flames, engulfing it in a blazing aura
 		Enemies touching the blaze take immense damage and are inflicted with Vulnerability Hex
+		Focusing an enemy for 2.5 seconds curses them, ascending Vulnerability Hex to its True form
+		Foes afflicted with True Vulnerability Hex take 1.15x damage from all sources
+		This effect is increased to 2.5x for the blazing cursor itself
 		Equip in a vanity slot to change the cursor without dealing damage
 		These changes work in conjunction with the Rainbow Cursor
 		'''
@@ -1427,7 +1430,6 @@ RoverDrive: {
 		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
-
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
 }

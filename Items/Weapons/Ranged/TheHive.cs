@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.damage = 92;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = OriginalUseTime;
+            Item.useAnimation = Item.useTime = OriginalUseTime;
             Item.shoot = ProjectileType<TheHiveHoldout>();
             Item.shootSpeed = 13f;
             Item.knockBack = 3.5f;

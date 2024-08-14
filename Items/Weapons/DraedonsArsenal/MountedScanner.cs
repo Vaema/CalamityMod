@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.damage = 24;
             Item.knockBack = 2f;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.HoldUp;

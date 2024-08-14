@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
             // Decide scale and initial rotation on the first frame this projectile exists.
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.scale = Main.rand.NextFloat(1f, 1.7f);
+                Projectile.scale = Main.rand.NextFloat(1f, 1.7f) * Projectile.ai[1];
                 Projectile.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
                 Projectile.localAI[0] = 1f;
             }

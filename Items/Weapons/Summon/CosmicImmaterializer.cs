@@ -19,17 +19,19 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 170;
             Item.height = 164;
-            Item.mana = 10;
             Item.damage = 560;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 10;
-            Item.noMelee = true;
-            Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.UseSound = SoundID.Item60;
+            Item.DamageType = DamageClass.Summon;
+            Item.mana = 10;
+            Item.useAnimation = Item.useTime = 10;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<CosmicEnergySpiral>();
             Item.shootSpeed = 10f;
-            Item.DamageType = DamageClass.Summon;
+
+            Item.UseSound = SoundID.Item60;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.noMelee = true;
+
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
 
@@ -38,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             CalamityUtils.KillShootProjectiles(true, type, player);
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             return false;

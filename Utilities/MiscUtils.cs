@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Tools.ClimateChange;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -36,6 +37,7 @@ namespace CalamityMod
                     return i;
             return -1;
         }
+
 
         public static bool ChangeIngredientStack(this Recipe r, int itemID, int stack)
         {

@@ -107,8 +107,7 @@ namespace CalamityMod.Projectiles.Summon
             // Fire laser through walls at max length
             num807 = 2400f;
 
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            int dustType = ProvUtils.GetDustID(pscState);
+            int dustType = ProvUtils.GetDustID(!Main.dayTime);
             float amount = 0.5f;
             Projectile.localAI[1] = MathHelper.Lerp(Projectile.localAI[1], num807, amount); // Length of laser, linear interpolation
             Vector2 vector79 = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14f);
@@ -149,8 +148,7 @@ namespace CalamityMod.Projectiles.Summon
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEndNight", AssetRequestMode.ImmediateLoad).Value;
 
             float num223 = Projectile.localAI[1]; //length of laser
-            int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-            Color color44 = ProvUtils.GetProjectileColor(pscState, 0) * 0.9f;
+            Color color44 = ProvUtils.GetDayNightColor(!Main.dayTime, 0) * 0.9f;
             Vector2 vector = Projectile.Center - Main.screenPosition;
             Rectangle? sourceRectangle2 = null;
             Main.spriteBatch.Draw(texture2D19, vector, sourceRectangle2, color44, Projectile.rotation, texture2D19.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);

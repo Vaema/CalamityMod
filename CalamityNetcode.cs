@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Items;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Providence;
@@ -144,14 +145,26 @@ namespace CalamityMod
                         }
                         break;
 
+                    case CalamityModMessageType.PlaceAltCritter:
+                        {
+                            int placerplayer = reader.ReadInt32();
+                            int posX = reader.ReadInt32();
+                            int posY = reader.ReadInt32();
+                            int type = reader.ReadInt32();
+                            int itemType = reader.ReadInt32();
+                            float color = reader.ReadInt32();
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int n = NPC.NewNPC(Main.player[placerplayer].GetSource_ReleaseEntity(), posX, posY, type, ai1: color);
+                                Main.npc[n].catchItem = itemType;
+                                Main.npc[n].releaseOwner = (short)placerplayer;
+                            }
+                        }
+                        break;
+
                     case CalamityModMessageType.ServersideSpawnOldDuke:
                         byte playerIndex2 = reader.ReadByte();
                         CalamityUtils.SpawnOldDuke(playerIndex2);
-                        break;
-
-                    case CalamityModMessageType.ArmoredDiggerCountdownSync:
-                        int countdown5 = reader.ReadInt32();
-                        CalamityWorld.ArmoredDiggerSpawnCooldown = countdown5;
                         break;
 
                     case CalamityModMessageType.ProvidenceDyeConditionSync:
@@ -392,8 +405,8 @@ namespace CalamityMod
         SyncAndroombaSolution,
         SyncAndroombaAI,
         SyncSlabCrabAI,
+        PlaceAltCritter,
         ServersideSpawnOldDuke,
-        ArmoredDiggerCountdownSync, // TODO -- remove this mechanic entirely
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.
         PSCChallengeSync, // TODO -- once you've failed the PSC challenge this packetstorms
 

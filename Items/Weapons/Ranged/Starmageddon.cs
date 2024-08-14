@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 4f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<StarmageddonHeld>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;

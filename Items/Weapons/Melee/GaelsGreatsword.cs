@@ -31,8 +31,8 @@ namespace CalamityMod.Items.Weapons.Melee
         //NOTE: GetWeaponDamage is in the CalamityPlayer file
         public override void SetDefaults()
         {
-            Item.width = 112;
-            Item.height = 102;
+            Item.width = 108;
+            Item.height = 100;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 13;

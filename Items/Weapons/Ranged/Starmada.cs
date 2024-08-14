@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 15f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = Item.useAnimation = 27;
+            Item.useAnimation = Item.useTime = 27;
             Item.UseSound = SoundID.Item92;
             Item.shoot = ModContent.ProjectileType<StarfleetMK2Gun>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<StarfleetMK2Gun>(), 0, 0f, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<StarfleetMK2Gun>(), 0, 0f, player.whoAmI);
             return false;
         }
 

@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 58;
             Item.height = 50;
             Item.damage = 317;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.shoot = ModContent.ProjectileType<AtzirisDisfavor>();

@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.Opacity = 0f;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 480;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
