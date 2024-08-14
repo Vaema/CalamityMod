@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
@@ -71,8 +72,8 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.GameContent.Achievements;
+using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8947,6 +8948,18 @@ namespace CalamityMod.NPCs
 
             // Insert the debuff info into the NPC's bestiary entry
             bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
+
+            // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
+            if (npc.type == NPCID.EnchantedNightcrawler)
+            {
+                bestiaryEntry.AddTags(GetInstance<AstralInfectionBiome>().ModBiomeBestiaryInfoElement);
+            }
+
+            // Add the Surface Mushroom biome to the Truffle Worm's entry as it spawns there now
+            if (npc.type == NPCID.TruffleWorm)
+            {
+                bestiaryEntry.AddTags(BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom);
+            }
         }
 
         public static string NPCDebuffResistText(bool? effectiveness, string name)

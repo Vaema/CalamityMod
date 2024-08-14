@@ -2241,7 +2241,8 @@ namespace CalamityMod.NPCs.Providence
                     Vector2 BasePosition = NPC.Center - screenPos;
                     BasePosition -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
                     BasePosition += RotationCenter * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
-                    spriteBatch.Draw(texture, BasePosition, NPC.frame, (colorOverride ?? Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)) * NPC.Opacity, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
+                    Color finalDrawColor = NPC.IsABestiaryIconDummy ? Color.White : (colorOverride ?? Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16)) * NPC.Opacity;
+                    spriteBatch.Draw(texture, BasePosition, NPC.frame, finalDrawColor, NPC.rotation, RotationCenter, NPC.scale, spriteEffects, 0f);
 
                     // Draw the glowmask textures + their afterimages
                     // These are the colors at their strongest point. It'll shift towards white by the brightness value used earlier.

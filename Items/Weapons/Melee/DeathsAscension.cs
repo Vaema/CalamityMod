@@ -93,6 +93,11 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             return false;
         }
+        
+        public override void UseItemFrame(Player player)
+        {
+            player.itemLocation = (Vector2)player.HandPosition;
+        }
 
         public override void AddRecipes()
         {

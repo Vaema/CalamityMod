@@ -198,6 +198,7 @@ namespace CalamityMod.NPCs
             "Vorbis",
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
+            "Linn", // <@!277983612383526913> (duckycolors)
         };
         private static readonly string[] StylistNames =
         {
