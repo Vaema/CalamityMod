@@ -259,6 +259,11 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 90);
+
+            float minMult = 0.25f;
+            int hitsToMinMult = 8;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
 
         public override void OnKill(int timeLeft)
