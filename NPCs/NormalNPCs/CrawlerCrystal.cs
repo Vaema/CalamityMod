@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundDesert,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundHallow,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GemCrawler")
             });
         }
