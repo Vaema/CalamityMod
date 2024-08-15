@@ -213,7 +213,7 @@ namespace CalamityMod.UI.CalamitasEnchants
                 new Enchantment(CalamityUtils.GetText("UI.Tainted.DisplayName"), CalamityUtils.GetText("UI.Tainted.Description"),
                     800,
                     "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Tainted",
-                    item => item.useTime = item.useAnimation = 25,
+                    item => item.useAnimation = item.useTime = 25,
                     (Player player) =>
                     {
                         if (Main.gameMenu)

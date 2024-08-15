@@ -30,22 +30,24 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
+            Item.width = 88;
+            Item.height = 28;
             Item.damage = 73; // Here you're modifying the shrapnel's damage.
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 44;
+            Item.useAnimation = Item.useTime = 44;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<FlakToxicannonHoldout>();
             Item.shootSpeed = 15f;
 
-            Item.width = 88;
-            Item.height = 28;
+            Item.useAmmo = AmmoID.Rocket;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.7f, PitchVariance = 0.1f };
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.channel = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.useAmmo = AmmoID.Rocket;
+
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.7f, PitchVariance = 0.1f };
         }
 
         // Obviously we don't want multiple holdouts existing at the same time.

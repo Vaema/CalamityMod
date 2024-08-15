@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 32;
             NPC.height = 80;
             NPC.defense = 20;
-            NPC.lifeMax = 1500;
+            NPC.lifeMax = 1875;
             NPC.knockBackResist = 0.2f;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 30, 0);

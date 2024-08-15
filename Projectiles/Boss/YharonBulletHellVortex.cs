@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D vortexTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/OldDukeVortex").Value;
-            for (int i = 0; i < 110; i++)
+            for (int i = 0; i < 50; i++)
             {
                 float angle = MathHelper.TwoPi * i / 50f + Main.GlobalTimeWrappedHourly * MathHelper.TwoPi;
                 Color drawColor = Color.White * 0.04f;

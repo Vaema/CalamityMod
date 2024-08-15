@@ -13,7 +13,6 @@ namespace CalamityMod.Tiles.Furniture
     {
         public override void SetStaticDefaults()
         {
-            Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
 
@@ -25,6 +24,12 @@ namespace CalamityMod.Tiles.Furniture
             TileObjectData.newTile.Origin = new Point16(0, 3);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 2, 0);
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+            TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
+            TileObjectData.addAlternate(1);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(126, 156, 134), CalamityUtils.GetItemName<Items.Placeables.Furniture.CorruptionEffigy>());
         }

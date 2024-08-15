@@ -239,11 +239,7 @@ Buzzkill: {
 
 ChickenCannon: {
 	DisplayName: Chicken Cannon
-	Tooltip:
-		'''
-		Fires chicken flares which create enormous incendiary explosions
-		Press <right> to detonate all airborne rockets
-		'''
+	Tooltip: Fires chicken flares which create enormous incendiary explosions
 }
 
 ChromaticEruption: {

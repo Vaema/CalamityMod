@@ -156,7 +156,9 @@ namespace CalamityMod.NPCs.Providence
                 }
             }
 
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, yellowLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+            spriteBatch.Draw(texture2D15, vector43, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             return false;
         }

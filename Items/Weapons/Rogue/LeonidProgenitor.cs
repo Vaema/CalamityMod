@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 64;
             Item.DamageType = RogueDamageClass.Instance;
             Item.knockBack = 3f;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<LeonidProgenitorBombshell>();
             Item.shootSpeed = 12f;

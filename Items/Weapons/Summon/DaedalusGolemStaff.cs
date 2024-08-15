@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = Item.height = 32;
             Item.damage = 70;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 3f;
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Point mouseTileCoords = Main.MouseWorld.ToTileCoordinates();
             if (!CalamityUtils.ParanoidTileRetrieval(mouseTileCoords.X, mouseTileCoords.Y).IsTileSolidGround())
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.UnitY * 4f, type, damage, knockback, player.whoAmI, 0f, 0f);
+                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.UnitY * 4f, type, damage, knockback, player.whoAmI);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }

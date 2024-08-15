@@ -1,4 +1,14 @@
 // Critters
+AlphaSeaMinnowItem: {
+	DisplayName: Alpha Sea Minnow
+	Tooltip: ""
+}
+
+AlphaSeaMinnowGoldItem: {
+	DisplayName: Gold Alpha Sea Minnow
+	Tooltip: ""
+}
+
 AndroombaItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.Androomba.DisplayName}"
 	Tooltip:
@@ -19,7 +29,27 @@ BabyFlakCrabItem: {
 }
 
 BabyGhostBellItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.BabyGhostBell.DisplayName}"
+	DisplayName: Blue Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellGoldItem: {
+	DisplayName: Gold Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellGreenItem: {
+	DisplayName: Green Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellRadiantItem: {
+	DisplayName: Radiant Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellRedItem: {
+	DisplayName: Red Baby Ghost Bell
 	Tooltip: ""
 }
 
@@ -43,6 +73,56 @@ NanodroidPlagueRedItem: {
 	Tooltip: ""
 }
 
+PearlpodBlackItem: {
+	DisplayName: Black Pearlpod
+	Tooltip: ""
+}
+
+PearlpodItem: {
+	DisplayName: White Pearlpod
+	Tooltip: ""
+}
+
+PearlpodGoldItem: {
+	DisplayName: Gold Pearlpod
+	Tooltip: ""
+}
+
+PearlpodPinkItem: {
+	DisplayName: Pink Pearlpod
+	Tooltip: ""
+}
+
+PolypPanaseaGoldItem: {
+	DisplayName: Gold Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaGreenItem: {
+	DisplayName: Green Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaItem: {
+	DisplayName: Red Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaPurpleItem: {
+	DisplayName: Purple Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaRadiantItem: {
+	DisplayName: Radiant Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaTurquoiseItem: {
+	DisplayName: Turquoise Polyp Panasea
+	Tooltip: ""
+}
+
 PiggyItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.Piggy.DisplayName}"
 	Tooltip: ""
@@ -55,6 +135,11 @@ RepairUnitItem: {
 
 SeaMinnowItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.SeaMinnow.DisplayName}"
+	Tooltip: ""
+}
+
+SeaMinnowGoldItem: {
+	DisplayName: Gold Sea Minnow
 	Tooltip: ""
 }
 
@@ -236,6 +321,12 @@ VoodooDemonVoodooDoll: {
 }
 
 // Uncategorized
+ExhumeShortTooltip:
+	'''
+	[c/C61B40:'Ah, are you curious what I saw within this item?']
+	[c/BABABA:Press "Left Shift" to listen]
+	'''
+
 AlicornonaStick: {
 	DisplayName: Alicorn on a Stick
 	Tooltip: "'Congratulations, you're winner! Here's my head on a stick.'"

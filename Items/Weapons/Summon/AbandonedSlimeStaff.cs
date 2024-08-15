@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 40;
             Item.damage = 56;
             Item.knockBack = 3f;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.shoot = ModContent.ProjectileType<AstrageldonSummon>();
             Item.shootSpeed = 10f;
 
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Summon
             position = Main.MouseWorld;
             velocity.X = 0;
             velocity.Y = 0;
-            int slime = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, (int)(damage * damageMult), knockback, player.whoAmI);
+            int slime = Projectile.NewProjectile(source, position, velocity, type, (int)(damage * damageMult), knockback, player.whoAmI);
             Main.projectile[slime].originalDamage = (int)(Item.damage * damageMult);
             Main.projectile[slime].minionSlots = slimeSlots;
             return false;

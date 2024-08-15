@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
@@ -9,20 +10,9 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+            ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.ClayBlock, 1);
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 16;
-            Item.height = 16;
-            Item.createTile = ModContent.TileType<Tiles.Astral.AstralClay>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Astral.AstralClay>());
     }
 }

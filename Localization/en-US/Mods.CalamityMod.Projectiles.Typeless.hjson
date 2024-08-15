@@ -76,7 +76,6 @@ JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
 LunicBeam.DisplayName: Beam
-MageHammerBoom.DisplayName: Explosion
 MagnusBeam.DisplayName: Beam
 MythrilFlare.DisplayName: Mythril Flare
 NanoFlare.DisplayName: Nano Flare
@@ -103,6 +102,9 @@ SandExplosion.DisplayName: Sand
 Seashell.DisplayName: Seashell
 SepulcherSoul.DisplayName: Tormented Soul
 SerpentsBiteHook.DisplayName: Serpent's Bite
+ShadeNimbus.DisplayName: Shade Nimbus
+ShadeNimbusRain.DisplayName: Shade Rain
+ShadeNimbusSpawner.DisplayName: Dank Creeper
 ShadowflameExplosion.DisplayName: Shadowflame Explosion
 ShadowflameExplosionBig.DisplayName: Shadowflame Explosion
 SkyFlareFriendly.DisplayName: Flare
@@ -120,6 +122,7 @@ TarraEnergy.DisplayName: Tarra Energy
 TarragonAura.DisplayName: Tarragon Aura
 TeslaAura.DisplayName: Tesla's Electricity
 TitanHeartBoom.DisplayName: Titan Heart Boom
+UrsaSlash.DisplayName: Ursa Slash
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
 VoidFieldGenerator.DisplayName: Void Field Generator
 WaterConvertor.DisplayName: Water Convertor
@@ -130,4 +133,3 @@ WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
-UrsaSlash.DisplayName: Ursa Slash

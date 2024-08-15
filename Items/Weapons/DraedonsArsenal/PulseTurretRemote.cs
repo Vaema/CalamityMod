@@ -20,23 +20,22 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 28;
             Item.height = 26;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.damage = 150;
-            Item.knockBack = 0f;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 24;
-            Item.autoReuse = true;
+            Item.useAnimation = Item.useTime = 24;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<PulseTurret>();
+            Item.shootSpeed = 1f;
 
-            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item15;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.autoReuse = true;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-
-            Item.shoot = ModContent.ProjectileType<PulseTurret>();
-            Item.shootSpeed = 1f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 135f;

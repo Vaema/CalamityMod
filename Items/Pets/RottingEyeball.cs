@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Pets
             Item.height = 30;
             Item.value = Item.buyPrice(0, 4, 0, 0);
             Item.damage = 0;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.NPCHit2;

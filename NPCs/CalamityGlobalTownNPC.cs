@@ -159,6 +159,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] PainterNames =
         {
             "Picasso", // <@!353316526306361347> (sconicboom -- for the late picassosbean2819)
+            "Bew", // <@!232291351167893505> (dmshi)
         };
         private static readonly string[] PartyGirlNames =
         {
@@ -180,6 +181,7 @@ namespace CalamityMod.NPCs
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
+            "Hael", // <@!641747280944431156> (kalebtull)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -196,6 +198,7 @@ namespace CalamityMod.NPCs
             "Vorbis",
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
+            "Linn", // <@!277983612383526913> (duckycolors)
         };
         private static readonly string[] StylistNames =
         {
@@ -1029,6 +1032,8 @@ namespace CalamityMod.NPCs
                 modifiers.SourceDamage *= 2f;
         }
 
+        // Does not affect Dryad's Bane
+        // See CalamityGlobalNPC: UpdateLifeRegen
         public override void BuffTownNPC(ref float damageMult, ref int defense)
         {
             if (NPC.downedMoonlord)

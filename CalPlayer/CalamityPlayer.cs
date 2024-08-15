@@ -85,9 +85,9 @@ namespace CalamityMod.CalPlayer
         public double contactDamageReduction = 0D;
         public double projectileDamageReduction = 0D;
         public const float projectileMeleeWeaponMeleeSpeedMultiplier = 0f;
-        public bool brimlashBusterBoost = false;
         public int evilSmasherBoost = 0;
-        public int hellbornShots = 0;
+        public int burningSeaBurnOut = 0;
+        public int hellbornBoost = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
         public int potionTimer = 0;
@@ -906,6 +906,7 @@ namespace CalamityMod.CalPlayer
         public bool icarusFolly = false;
         public bool weakPetrification = false;
         public bool vHex = false;
+        public bool trueVHex = false;
         public bool DoGExtremeGravity = false;
         public bool warped = false;
         public bool cDepth = false;
@@ -916,6 +917,7 @@ namespace CalamityMod.CalPlayer
         public bool absorberAffliction = false;
         public bool sulphurPoison = false;
         public bool nightwither = false;
+        public bool voidfrost = false;
         public bool eutrophication = false;
         public bool iCantBreathe = false; //Frozen Lungs debuff
         public bool cragsLava = false;
@@ -1990,6 +1992,7 @@ namespace CalamityMod.CalPlayer
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
+            trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
             cDepth = false;
@@ -2001,6 +2004,7 @@ namespace CalamityMod.CalPlayer
             snowmanNoseless = false;
             sulphurPoison = false;
             nightwither = false;
+            voidfrost = false;
             eutrophication = false;
             iCantBreathe = false;
             cragsLava = false;
@@ -2421,6 +2425,7 @@ namespace CalamityMod.CalPlayer
             elementalMix = false;
             icarusFolly = false;
             vHex = false;
+            trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
             cDepth = false;
@@ -2432,6 +2437,7 @@ namespace CalamityMod.CalPlayer
             abyssalDivingSuitPlateHits = 0;
             sulphurPoison = false;
             nightwither = false;
+            voidfrost = false;
             eutrophication = false;
             iCantBreathe = false;
             cragsLava = false;
@@ -2695,11 +2701,11 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             KameiBladeUseDelay = 0;
-            brimlashBusterBoost = false;
             AdrenalineTrail = false;
             ascendantTrail = false;
             evilSmasherBoost = 0;
-            hellbornShots = 0;
+            burningSeaBurnOut = 0;
+            hellbornBoost = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
             potionTimer = 0;
@@ -3481,12 +3487,12 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    //While holding hotkey, but before slam, bring Y velocity closer to 0
+                    // While holding hotkey, but before slam, bring Y velocity closer to 0
                     if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime != 0 && !gSabatonFalling)
                     {
                         Player.velocity.Y *= (60 - (gSabatonHotkeyHoldTime / 2f)) / 60f;
                     }
-                    //Play sound a bit early so it goes in time with the fall
+                    // Play sound a bit early so it goes in time with the fall
                     if (gSabatonHotkeyHoldTime == 15 && !gSabatonFalling)
                     {
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
@@ -3495,9 +3501,11 @@ namespace CalamityMod.CalPlayer
                     if (gSabatonHotkeyHoldTime == 30)
                     {
                         gSabatonFalling = true;
+                        Player.velocity.Y = 0.01f;
                     }
-                    //Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
-                    if (Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
+                    // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
+                    // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
+                    if (Player.velocity.Y < 0f || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
@@ -3506,16 +3514,16 @@ namespace CalamityMod.CalPlayer
                     {
                         SpawnGravistarParticle();
 
-                        //Cap time converted to damage at 2 seconds
+                        // Cap time converted to damage at 2 seconds
                         if (gSabatonFall < 120)
                             gSabatonFall++;
 
                         Player.maxFallSpeed = 40f;
                         Player.gravity = 1.3f;
-                        //If the player can fly during the fall, the physics gets a bit funky
+                        // If the player can fly during the fall, the physics gets a bit funky
                         Player.controlJump = false;
 
-                        //Check if player hit some form of solid resistance (the ground)
+                        // Check if player hit some form of solid resistance (the ground)
                         if (Player.oldVelocity.Y == Player.velocity.Y)
                         {
                             var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<InterstellarStompers>()));
@@ -3526,7 +3534,7 @@ namespace CalamityMod.CalPlayer
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
                             gSabatonFalling = false;
-                            //Temporary jump speed is granted for 40 frames
+                            // Temporary jump speed is granted for 40 frames
                             gSabatonTempJumpSpeed = 40;
                         }
                     }

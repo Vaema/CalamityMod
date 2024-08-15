@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.damage = 33;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = OriginalUseTime;
+            Item.useAnimation = Item.useTime = OriginalUseTime;
             Item.shoot = ProjectileType<ScorpioHoldout>();
             Item.shootSpeed = 15f;
             Item.knockBack = 6.5f;

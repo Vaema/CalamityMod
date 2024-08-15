@@ -280,6 +280,34 @@ namespace CalamityMod
             }
             return true;
         }
+        public static bool IsTileExposedToAir(int x, int y) => IsTileExposedToAir(x, y, out _);
+
+        public static bool IsTileExposedToAir(int x, int y, out float? angleToOpenAir)
+        {
+            angleToOpenAir = null;
+            if (!ParanoidTileRetrieval(x - 1, y).HasTile)
+            {
+                angleToOpenAir = MathHelper.Pi;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x + 1, y).HasTile)
+            {
+                angleToOpenAir = 0f;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y - 1).HasTile)
+            {
+                angleToOpenAir = MathHelper.PiOver2;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y + 1).HasTile)
+            {
+                angleToOpenAir = -MathHelper.PiOver2;
+                return true;
+            }
+
+            return false;
+        }
 
         public static bool TileActiveAndOfType(int x, int y, int type)
         {

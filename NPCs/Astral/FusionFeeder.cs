@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 48;
             NPC.damage = 45;
             NPC.aiStyle = -1;
-            NPC.lifeMax = 400;
+            NPC.lifeMax = 500;
             NPC.defense = 12;
             NPC.DR_NERD(0.15f);
             NPC.value = Item.buyPrice(0, 0, 20, 0);
@@ -72,7 +72,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 65;
                 NPC.defense = 22;
                 NPC.knockBackResist = 0.7f;
-                NPC.lifeMax = 600;
+                NPC.lifeMax = 750;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

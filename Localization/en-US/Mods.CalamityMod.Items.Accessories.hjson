@@ -104,7 +104,8 @@ AmalgamatedBrain: {
 	Tooltip:
 		'''
 		5% increased damage
-		Shade rains down and enemies are confused when hit
+		Taking damage confuses nearby enemies and spawns a dank creeper
+		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
@@ -245,7 +246,7 @@ AsgardianAegis: {
 		  Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
 		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch,
 		  Blackout, Brain Rot, Burning Blood, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, God Slayer Inferno, Burning
+		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno, Burning
 		'''
 }
 
@@ -372,6 +373,9 @@ Calamity: {
 		'''
 		Lights your cursor ablaze with the Witch's flames, engulfing it in a blazing aura
 		Enemies touching the blaze take immense damage and are inflicted with Vulnerability Hex
+		Focusing an enemy for 2.5 seconds curses them, ascending Vulnerability Hex to its True form
+		Foes afflicted with True Vulnerability Hex take 1.15x damage from all sources
+		This effect is increased to 2.5x for the blazing cursor itself
 		Equip in a vanity slot to change the cursor without dealing damage
 		These changes work in conjunction with the Rainbow Cursor
 		'''
@@ -1406,9 +1410,9 @@ RottenBrain: {
 	DisplayName: Rotten Brain
 	Tooltip:
 		'''
-		10% increased damage when below 75% life
-		5% decreased movement speed when below 50% life
-		Shade rains down when you are hit
+		6% increased damage
+		Taking damage spawns a dank creeper
+		The dank creeper flies above you, exploding into several shaderain clouds
 		'''
 }
 
@@ -1426,7 +1430,6 @@ RoverDrive: {
 		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
-
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
 }
@@ -1778,8 +1781,11 @@ TheAmalgam: {
 	Tooltip:
 		'''
 		15% increased damage
-		Shade rains down when you are hit
+		Most buffs last twice as long, and persist after dying
+		Taking damage inflicts several debuffs on nearby enemies and spawns a dank creeper
+		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
+		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip:
 		'''

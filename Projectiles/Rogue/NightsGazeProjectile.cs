@@ -55,13 +55,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), Projectile.timeLeft);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), Projectile.timeLeft);
             OnHitEffects();
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), Projectile.timeLeft);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), Projectile.timeLeft);
             OnHitEffects();
         }
 

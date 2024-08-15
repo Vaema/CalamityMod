@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.damage = 495;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = LightBombCooldown;
+            Item.useAnimation = Item.useTime = LightBombCooldown;
             Item.shootSpeed = 6f;
             Item.knockBack = 2f;
             Item.shoot = ModContent.ProjectileType<PhotovisceratorHoldout>();

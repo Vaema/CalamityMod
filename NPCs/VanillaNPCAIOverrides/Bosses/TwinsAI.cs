@@ -115,6 +115,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Foveanator spawn
+            if (!oblivionAlive && masterMode && calamityGlobalNPC.newAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                NPC.SpawnOnPlayer(npc.FindClosestPlayer(), ModContent.NPCType<Foveanator>());
+                calamityGlobalNPC.newAI[0] = 1f;
+                npc.SyncExtraAI();
+            }
+
             // Phase HP ratios
             float phase2LifeRatio = oblivionAlive ? 0.5f : masterMode ? 0.85f : 0.7f;
             float finalPhaseLifeRatio = masterMode ? 0.4f : 0.25f;

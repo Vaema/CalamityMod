@@ -37,22 +37,24 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
+            Item.width = 152;
+            Item.height = 58;
             Item.damage = 124;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = OriginalUseTime;
+            Item.useAnimation = Item.useTime = OriginalUseTime;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<FlakKrakenHoldout>();
             Item.shootSpeed = 15f;
 
-            Item.width = 152;
-            Item.height = 58;
+            Item.useAmmo = AmmoID.Rocket;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.95f, PitchVariance = 0.1f };
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.channel = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.useAmmo = AmmoID.Rocket;
+            
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.95f, PitchVariance = 0.1f };
         }
 
         // Obviously we don't want multiple holdouts existing at the same time.

@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Magic
             position = Main.MouseWorld;
             for (int x = 0; x < 10; x++)
             {
-                Projectile.NewProjectile(source, position.X + (float)Main.rand.Next(-150, 150), position.Y + 600f, 0f, -10f, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X + (float)Main.rand.Next(-150, 150), position.Y + 600f, 0f, -10f, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

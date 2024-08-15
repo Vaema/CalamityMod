@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Mounts
         {
             Item.width = 32;
             Item.height = 34;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item94;
             Item.noMelee = true;

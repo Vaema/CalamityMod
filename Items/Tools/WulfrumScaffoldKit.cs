@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 52;
             Item.height = 42;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.autoReuse = false;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.HiddenAnimation;

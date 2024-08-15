@@ -204,6 +204,10 @@ namespace CalamityMod.Items
                     break;
             }
 
+            // Increase how much health Mushrooms heal.
+            if (item.type == ItemID.Mushroom && item.healLife == 15)
+                item.healLife = 25;
+
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
             if (item.type == ItemID.BeamSword)
                 item.ChangePlayerDirectionOnShoot = true;
@@ -640,13 +644,6 @@ namespace CalamityMod.Items
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
-
-            // Moon Lord instantly spawns when Celestial Sigil is used.
-            if (item.type == ItemID.CelestialSigil)
-            {
-                NPC.MoonLordCountdown = 1;
-                NetMessage.SendData(MessageID.MoonlordHorror, -1, -1, null, NPC.MoonLordCountdown);
-            }
 
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)

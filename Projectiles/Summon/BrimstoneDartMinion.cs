@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.Other;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -40,6 +41,13 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity *= 1.036f;
 
             Lighting.AddLight(Projectile.Center, 0.75f, 0f, 0f);
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (target.type == ModContent.NPCType<ExhumedHeart>())
+                return false;
+            return null;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);

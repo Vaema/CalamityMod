@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 int index = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
                 Main.projectile[index].noDropItem = true;
             }
-            int projectile = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ProjectileID.CrystalDart, damage / 2, knockback, player.whoAmI);
+            int projectile = Projectile.NewProjectile(source, position, velocity, ProjectileID.CrystalDart, damage / 2, knockback, player.whoAmI);
             Main.projectile[projectile].penetrate = 3;
             return false;
         }

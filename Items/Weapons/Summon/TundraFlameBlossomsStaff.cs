@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 60;
             Item.damage = 40;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 3f;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Summon
             CalamityUtils.KillShootProjectiles(false, type, player);
             for (int i = 0; i < 3; i++)
             {
-                Projectile blossom = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile blossom = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
                 blossom.ai[1] = (int)(MathHelper.TwoPi / 3f * i * 32f);
                 blossom.originalDamage = Item.damage;
             }
