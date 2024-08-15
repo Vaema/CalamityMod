@@ -452,6 +452,7 @@ namespace CalamityMod
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
+            FramedGlowMask.UnloadTexCache();
 
             PopupGUIManager.UnloadGUIs();
             InvasionProgressUIManager.UnloadGUIs();
