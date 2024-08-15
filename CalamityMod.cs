@@ -135,6 +135,11 @@ namespace CalamityMod
         // This can be edited by other mods using reflection to prevent compatibility issues
         public static bool ExternalFlag_DisableNonRevBossAI = false;
 
+        // External flag to disable Defense Damage
+        // This can be edited by other mods using reflection if desired
+        // Note that this flag trumps Bloodflare Core and will stop that accessory from working properly.
+        public static bool ExternalFlag_DisableDefenseDamage = false;
+
         internal static CalamityMod Instance;
 
         // TODO -- Mod references should be contained in a ModSystem (example name "ModLoadedChecker")

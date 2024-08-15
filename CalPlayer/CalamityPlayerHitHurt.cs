@@ -2137,11 +2137,12 @@ namespace CalamityMod.CalPlayer
 
             // If the player was just hit by something capable of dealing defense damage, then apply defense damage.
             // Bloodflare Core makes every hit deal defense damage (to enable its function).
-            // Defense damage is not applied if the player has iframes.
-            // This function will be ignored if the player is wearing Chalice, as it handles its defense damage elsewhere.
+            // Defense damage is not applied if the player has iframes or godmode.
             bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
+            bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
-            if (hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode)
+            // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
+            if (defenseDamageShouldApply && !CalamityMod.ExternalFlag_DisableDefenseDamage)
             {
                 double halfDefense = Player.statDefense / 2.0;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
