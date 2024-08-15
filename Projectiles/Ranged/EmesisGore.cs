@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -47,14 +48,17 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, 70, 0, 0, 255, true));
             if (targetDist < 1400f && Projectile.timeLeft > 70 && Projectile.timeLeft < 790)
             {
-                if (Projectile.timeLeft % 6 == 0)
+                if (Projectile.timeLeft % 5 == 0)
                 {
-                    Particle spark = new LineParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.8f), false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.8f, 1.2f), Color.Chartreuse * Main.rand.NextFloat(0.15f, 0.5f));
+                    //Particle spark = new LineParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.8f), false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.8f, 1.2f), Color.Chartreuse * Main.rand.NextFloat(0.15f, 0.5f));
+                    //GeneralParticleHandler.SpawnParticle(spark);
+
+                    Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 6, 0.07f, Color.Lerp(Color.Green, Color.Chartreuse, 0.8f) * 0.5f, new Vector2(1, 0.3f), true, false, 1);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
-                if (Main.rand.NextBool(6))
+                if (Main.rand.NextBool(5))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 75, -Projectile.velocity.RotatedByRandom(0.1) * Main.rand.NextFloat(0.1f, 0.3f), 0, default, Main.rand.NextFloat(0.5f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), Main.rand.NextBool(4) ? 215 : (int)CalamityDusts.SulphurousSeaAcid, -Projectile.velocity.RotatedByRandom(0.1) * Main.rand.NextFloat(0.1f, 0.3f), 0, default, Main.rand.NextFloat(0.5f, 1.2f));
                     dust.noGravity = true;
                 }
             }

@@ -1087,8 +1087,12 @@ SepticSkewer: {
 	DisplayName: Septic Skewer
 	Tooltip:
 		'''
-		Launches a spiky harpoon infested with toxins
-		Releases bacteria when returning to the player
+		Launches a vile chained harpoon infested with toxins
+		Harpoons stick into enemies and inflict Sulphuric Poisoning for a long time
+		After being impaled for one second, harpoons rip themselves back out and spray damaging gores
+		Press <right> to manually rip out all harpoons, dealing bonus damage
+		Enemies close to death are dragged back with returning harpoons and executed when they reach you
+		Executions heal you for 25 health and launch an additional harpoon automatically
 		'''
 }
 
