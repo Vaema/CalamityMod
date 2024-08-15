@@ -6,7 +6,7 @@ CalamityClientConfig: {
 		Graphics: Graphics Changes
 		UI: UI Changes
 		MeterPositions: Meter Positions
-		MusicEvents: Music Events Header
+		MusicEvents: In-Game Music Events
 	}
 
 	AdrenalineMeterPosX: {
