@@ -1276,8 +1276,9 @@ TheOldReaper: {
 	Tooltip:
 		'''
 		Throws an irradiated scythe that cuts through enemies
-		On hit the scythe amplifies background radiation at the point of impact, creating a massive delayed explosion
-		Stealth strikes are thrown into the sky, then strike down at a near enemy seconds later, creating intense radioactive rainfall on impact
+		Deposits unstable isotopes on hit, which create delayed nuclear explosions when they decay
+		Stealth strikes are thrown into the sky and fall upon enemies a few seconds later
+		On hit, stealth strikes create a focused deluge of acid rain
 		'''
 }
 
@@ -1336,8 +1337,8 @@ ToxicantTwister: {
 	DisplayName: Toxicant Twister
 	Tooltip:
 		'''
-		Throws a fan of four spinning disks that swirls around your cursor
-		Stealth strikes spin around the cursor further away and create a vortex of toxic raindrops that home in on enemies
+		Throws a fan of four spinning disks that swirl around your cursor
+		Stealth strikes swirl in a wider range and create a vortex of toxic raindrops that home in on enemies
 		'''
 }
 

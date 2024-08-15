@@ -970,9 +970,8 @@ VitriolicViper: {
 	DisplayName: Vitriolic Viper
 	Tooltip:
 		'''
-		Charge to fire either a slithering beam of caustic energy or a spread of powerful fangs
-		The first charging stage fires a piercing beam
-		The second charging stage shoots a spread of short range fangs that quickly dissipate
+		Charges up and fires a slithering beam of radiation
+		If fully charged, instead fires a huge spread of short range fangs which quickly vanish
 		'''
 }
 

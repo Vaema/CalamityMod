@@ -731,8 +731,8 @@ InsidiousImpaler: {
 	DisplayName: Insidious Impaler
 	Tooltip:
 		'''
-		Throws harpoons that charge with radiation and propel themselves while homing in on nearby enemies
-		harpoons will ricochet off of enemies if colliding before fully charged, allowing for additional hits at close range
+		Throws self-propelling radioactive harpoons which chase foes
+		Harpoons ricochet at close range for additional hits
 		'''
 }
 
