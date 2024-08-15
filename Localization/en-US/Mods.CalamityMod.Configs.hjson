@@ -320,7 +320,6 @@ CalamityClientConfig: {
 
 CalamityServerConfig: {
 	DisplayName: Server Config
-
 	Denied: You have no permission to change this config
 
 	Headers: {

@@ -59,7 +59,7 @@ namespace CalamityMod.Systems
                 () => CalamityClientConfig.Instance.Interlude2, outroSilence: TimeSpan.FromSeconds(1f));
 
             // Alternative Interlude 2 -> AddEntry("MLDefeated", "Interlude2_CutIntro", TimeSpan.FromSeconds(160.989d),
-            //    () => NPC.downedMoonlord, () => CalamityConfig.Instance.Interlude2,
+            //    () => NPC.downedMoonlord, () => CalamityClientConfig.Instance.Interlude2,
             //    outroSilence: TimeSpan.FromSeconds(1f));
 
             AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d),

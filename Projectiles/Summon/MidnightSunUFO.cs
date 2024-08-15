@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Summon
             Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Color drawColor = Projectile.GetAlpha(lightColor);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {

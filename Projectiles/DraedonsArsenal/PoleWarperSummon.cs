@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Color drawColor = Projectile.GetAlpha(lightColor);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {
