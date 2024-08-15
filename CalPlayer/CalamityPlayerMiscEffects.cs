@@ -1553,8 +1553,6 @@ namespace CalamityMod.CalPlayer
                     burnOutDust.noGravity = true;
                 }
             }
-            if (hellbornBoost > 0)
-                hellbornBoost--;
             if (persecutedEnchantSummonTimer < 1800)
                 persecutedEnchantSummonTimer++;
             else

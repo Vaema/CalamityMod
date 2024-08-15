@@ -87,7 +87,7 @@ namespace CalamityMod.CalPlayer
         public const float projectileMeleeWeaponMeleeSpeedMultiplier = 0f;
         public int evilSmasherBoost = 0;
         public int burningSeaBurnOut = 0;
-        public int hellbornBoost = 0;
+        public int hellbornShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
         public int potionTimer = 0;
@@ -2705,7 +2705,7 @@ namespace CalamityMod.CalPlayer
             ascendantTrail = false;
             evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
-            hellbornBoost = 0;
+            hellbornShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
             potionTimer = 0;

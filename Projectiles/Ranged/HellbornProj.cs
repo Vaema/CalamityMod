@@ -35,13 +35,16 @@ namespace CalamityMod.Projectiles.Ranged
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             //Animation
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
+            if (Projectile.frame == 0 || Projectile.frame == 3)
+                Projectile.frameCounter++;
+            else
+                Projectile.frameCounter += 2;
+            if (Projectile.frameCounter > 20)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame > 6)
+            if (Projectile.frame > 5)
             {
                 Projectile.frame = 0;
             }
@@ -70,7 +73,6 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-
             Vector2 dustPos = Projectile.Center + Main.rand.NextVector2Circular(30, 30);
             Dust dust = Dust.NewDustPerfect(dustPos, 267, -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.4f));
             dust.noGravity = true;
@@ -116,8 +118,15 @@ namespace CalamityMod.Projectiles.Ranged
             Rectangle frame = texture.Frame(1, 6, 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
 
-            for (int i = 0; i < 2; i++)
-                Main.EntitySpriteDraw(texture, drawPosition, frame, Color.White with { A = 0 }, 0, origin, Projectile.scale * (i == 0 ? 1.15f : 1), SpriteEffects.None, 0);
+            Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            // Glow Orb
+            float randSize = Main.rand.NextFloat(0.8f, 1.2f);
+            Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.OrangeRed with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.5f * randSize, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 } * 0.75f, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.35f * randSize, SpriteEffects.None, 0);
+
+            for (int i = 0; i < 1; i++)
+                Main.EntitySpriteDraw(texture, drawPosition, frame, Color.White, 0, origin, Projectile.scale * (i == 0 ? 1.15f : 1), SpriteEffects.None, 0);
 
             return false;
         }
