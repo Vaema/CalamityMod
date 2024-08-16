@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 12;
             Item.knockBack = 3f;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 35;
+            Item.useAnimation = Item.useTime = 35;
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Magic;
             Item.shootSpeed = 10f;
@@ -87,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 xVec *= speedMult;
                 yVec *= speedMult;
                 directionToShoot = new Vector2(xVec, yVec);
-                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

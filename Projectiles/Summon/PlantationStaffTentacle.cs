@@ -229,7 +229,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                 }
             }
-            else if (CalamityConfig.Instance.Afterimages)
+            else if (CalamityClientConfig.Instance.Afterimages)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
 
             return true;

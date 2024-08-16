@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    [LegacyName("RedtideSword")]
+    [LegacyName("RedtideSword", "UrchinFlail")]
     public class UrchinMace : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";

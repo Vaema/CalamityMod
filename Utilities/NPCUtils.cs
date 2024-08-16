@@ -771,6 +771,31 @@ namespace CalamityMod
             }
         }
 
+        public static void ProduceGoldCritterDust(this NPC npc)
+        {
+            npc.position += npc.netOffset;
+            Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
+            if (color.R > 20 || color.B > 20 || color.G > 20)
+            {
+                int colorVal = color.R;
+                if (color.G > colorVal)
+                {
+                    colorVal = color.G;
+                }
+                if (color.B > colorVal)
+                {
+                    colorVal = color.B;
+                }
+                colorVal /= 30;
+                if (Main.rand.Next(300) < colorVal)
+                {
+                    int golddust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.TintableDustLighted, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                    Main.dust[golddust].velocity *= 0f;
+                }
+            }
+            npc.position -= npc.netOffset;
+        }
+
         public static NPCShop AddWithCustomValue(this NPCShop shop, int itemType, int customValue, params Condition[] conditions)
         {
             var item = new Item(itemType)

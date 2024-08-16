@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Yoyos;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,6 +39,16 @@ namespace CalamityMod.Items.Weapons.Melee
 
             Item.rare = ItemRarityID.Yellow;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.HiveFive).
+                AddIngredient<PlagueCellCanister>(10).
+                AddIngredient<InfectedArmorPlating>(6).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

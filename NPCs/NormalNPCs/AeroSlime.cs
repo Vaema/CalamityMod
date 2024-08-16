@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 30;
             NPC.defense = 6;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 75;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.Slimer;
             NPC.value = Item.buyPrice(0, 0, 1, 0);

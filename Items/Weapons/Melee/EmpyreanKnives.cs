@@ -87,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 knifeSpawnYPos *= mouseDistance;
                 float x4 = realPlayerPos.X;
                 float y4 = realPlayerPos.Y;
-                Projectile.NewProjectile(source, x4, y4, knifeSpawnXPos, knifeSpawnYPos, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, x4, y4, knifeSpawnXPos, knifeSpawnYPos, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

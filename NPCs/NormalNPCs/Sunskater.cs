@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 58;
             NPC.height = 22;
             NPC.defense = 4;
-            NPC.lifeMax = 100;
+            NPC.lifeMax = 125;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
@@ -247,6 +247,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         target.AddBuff(BuffID.Burning, 60);
                     if (Main.rand.NextBool(3))
                         target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Daybroken>(), 120);
                     if (Main.rand.NextBool(3))
                         target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
                     if (Main.rand.NextBool(3))

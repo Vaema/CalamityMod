@@ -1074,8 +1074,8 @@ namespace CalamityMod
             double Damage(DamageClass damageClass) => Math.Round(Main.LocalPlayer.GetTotalDamage(damageClass).Additive * Main.LocalPlayer.GetTotalDamage(damageClass).Multiplicative * 100 - 100);
             int Crit(DamageClass damageClass) => (int)Main.LocalPlayer.GetTotalCritChance(damageClass);
 
-            int rogueItem = ModContent.ItemType<WulfrumKnife>();
-            DamageClass rogueDamageClass = ModContent.GetInstance<RogueDamageClass>();
+            int rogueItem = ItemType<WulfrumKnife>();
+            DamageClass rogueDamageClass = GetInstance<RogueDamageClass>();
             Func<string> rogueDamage = () => $"Rogue Damage: {Damage(rogueDamageClass)}%";
             Func<string> rogueCrit = () => $"Rogue Critical: {Crit(rogueDamageClass)}%";
             fargos.Call("AddStat", rogueItem, rogueDamage);
@@ -1156,7 +1156,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<WitherBlossomsStaff>(), BuffType<WitherBlossomsBuff>(), ProjectileType<WitherBlossom>());
             RegisterSummon(ItemType<StarspawnHelixStaff>(), BuffType<AstralProbeBuff>(), ProjectileType<AstralProbeSummon>());
             RegisterSummon(ItemType<TacticalPlagueEngine>(), BuffType<TacticalPlagueEngineBuff>(), ProjectileType<TacticalPlagueJet>());
-            RegisterSummon(ItemType<ElementalAxe>(), BuffType<ElementalAxeBuff>(), ProjectileType<ElementalAxeMinion>());
+            RegisterSummon(ItemType<LegionofCelestia>(), BuffType<LegionofCelestiaBuff>(), ProjectileType<CelestialAxeMinion>());
             RegisterSummon(ItemType<FlowersOfMortality>(), BuffType<FlowersOfMortalityBuff>(), ProjectileType<FlowersOfMortalityPetal>());
             RegisterSummon(ItemType<SnakeEyes>(), BuffType<SnakeEyesBuff>(), ProjectileType<SnakeEyesSummon>());
             RegisterSummon(ItemType<DazzlingStabberStaff>(), BuffType<DazzlingStabberBuff>(), ProjectileType<DazzlingStabber>());

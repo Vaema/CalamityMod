@@ -9,7 +9,6 @@ namespace CalamityMod.Projectiles.Magic
     public class Shaderain : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override string Texture => "CalamityMod/Projectiles/Magic/AuraRain";
 
         public override void SetDefaults()
         {

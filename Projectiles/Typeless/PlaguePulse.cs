@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Typeless
             Player player = Main.player[Projectile.owner];
             target.AddBuff(ModContent.BuffType<Plague>(), 420);
 
-            if (target.life <= 0)
+            if ((target.life <= 0 && target.realLife == -1))
             {
                 player.Heal(10);
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), (int)(startDamage * 0.8f), 0f, Projectile.owner, 0, 0, 1);

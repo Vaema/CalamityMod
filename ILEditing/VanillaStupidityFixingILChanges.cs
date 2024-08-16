@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CalamityMod.Events;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -11,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
@@ -121,7 +123,7 @@ namespace CalamityMod.ILEditing
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
-            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityConfig.Instance.BossZen)
+            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
                 orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
@@ -1001,6 +1003,35 @@ namespace CalamityMod.ILEditing
         }
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
+
+        #region Celestial Sigil Non-Linearity Change
+        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        {
+            if (sItem.type == ItemID.CelestialSigil)
+                return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+
+            return orig(self, sItem);
+        }
+
+        private static void ApplyCelestialSigilChanges(On_Player.orig_ItemCheck_UseEventItems orig, Player self, Item sItem)
+        {
+            if (self.ItemTimeIsZero && self.itemAnimation > 0 && sItem.type == ItemID.CelestialSigil)
+            {
+                if (NPC.AnyNPCs(NPCID.MoonLordCore) || BossRushEvent.BossRushActive)
+                    return;
+
+                SoundEngine.PlaySound(SoundID.Roar, self.Center);
+                self.ApplyItemTime(sItem);
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    NPC.SpawnOnPlayer(self.whoAmI, NPCID.MoonLordCore);
+                else
+                    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, self.whoAmI, NPCID.MoonLordCore);
+            }
+            else
+                orig(self, sItem);
+        }
+        #endregion
 
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
         #region Store The Stupid Fucking Private Wind Map In Public Property

@@ -804,6 +804,7 @@ namespace CalamityMod.Systems
                 { r => r.HasResult(ItemID.HorseshoeBundle) && !r.HasIngredient(ItemID.BundleofBalloons), AddIngredient(ModContent.ItemType<AerialiteBar>(), 3) },
                 { Vanilla(ItemID.NightsEdge), AddIngredient(ModContent.ItemType<PurifiedGel>(), 5) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
+                { Vanilla(ItemID.FairyBell), RemoveIngredient(ItemID.SoulofSight) },
                 { Vanilla(ItemID.HellfireTreads), AddIngredient(ModContent.ItemType<EssenceofHavoc>(), 4) },
                 { Vanilla(ItemID.SpiritFlame), AddGroup(AnyAdamantiteBar, 2) },
                 { Vanilla(ItemID.TerraBlade), AddIngredient(ModContent.ItemType<LivingShard>(), 12) },
@@ -815,7 +816,7 @@ namespace CalamityMod.Systems
                 { VanillaEach(
                     ItemID.MechanicalEye, ItemID.MechanicalWorm, ItemID.MechanicalSkull, ItemID.MechdusaSummon,
                     ItemID.DaoofPow, ItemID.Chik, ItemID.MeteorStaff, ItemID.CoolWhip,
-                    ItemID.AngelWings, ItemID.DemonWings, ItemID.FairyWings,
+                    ItemID.AngelWings, ItemID.DemonWings, ItemID.FairyWings, ItemID.FairyBell,
                     ItemID.CursedArrow, ItemID.CursedBullet, ItemID.IchorArrow, ItemID.IchorBullet),
                     ReplaceTile(TileID.MythrilAnvil, TileID.Anvils)
                 },
@@ -1277,15 +1278,6 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Shadow Key
-            r = Recipe.Create(ItemID.ShadowKey);
-            r.AddIngredient(ItemID.GoldenKey);
-            r.AddIngredient(ItemID.Obsidian, 10);
-            r.AddIngredient(ItemID.Bone, 5);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
             // Sky Mill
             r = Recipe.Create(ItemID.SkyMill);
             r.AddIngredient(ItemID.SunplateBlock, 10);
@@ -1695,14 +1687,6 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.BandofRegeneration);
             r.AddIngredient(ItemID.Shackle);
             r.AddIngredient(ItemID.LifeCrystal, 1);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Shoe Spikes
-            r = Recipe.Create(ItemID.ShoeSpikes);
-            r.AddRecipeGroup("IronBar", 5);
-            r.AddIngredient(ItemID.Spike, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();

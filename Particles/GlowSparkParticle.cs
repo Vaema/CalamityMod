@@ -12,6 +12,7 @@ namespace CalamityMod.Particles
         public bool AffectedByGravity;
         public bool QuickShrink;
         public bool Glowing;
+        public float ShrinkSpeed = 1;
         public Vector2 Squash = new Vector2(0.5f, 1.6f);
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
@@ -19,7 +20,7 @@ namespace CalamityMod.Particles
 
         public override string Texture => "CalamityMod/Particles/GlowSpark";
 
-        public GlowSparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 squash, bool quickShrink = false, bool glow = true)
+        public GlowSparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 squash, bool quickShrink = false, bool glow = true, float shrinkSpeed = 1)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -31,6 +32,7 @@ namespace CalamityMod.Particles
             QuickShrink = quickShrink;
             Glowing = glow;
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
+            ShrinkSpeed = shrinkSpeed;
         }
 
         public override void Update()
@@ -40,8 +42,16 @@ namespace CalamityMod.Particles
             Velocity *= 0.95f;
             if (QuickShrink)
             {
-                Squash.X *= 0.8f;
-                Squash.Y *= 1.2f;
+                if (ShrinkSpeed == 1)
+                {
+                    Squash.X *= 0.8f;
+                    Squash.Y *= 1.2f;
+                }
+                else
+                {
+                    Squash.X *= (1 - 0.2f * ShrinkSpeed);
+                    Squash.Y *= (1 + 0.2f * ShrinkSpeed);
+                }
             }
             if (Velocity.Length() < 12f && AffectedByGravity)
             {

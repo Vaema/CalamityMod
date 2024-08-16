@@ -552,7 +552,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             Color afterimageBaseColor = Main.npc[(int)NPC.ai[2]].localAI[1] == (float)AresBody.Enraged.Yes ? Color.Red : Color.White;
             int numAfterimages = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {
@@ -593,7 +593,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             Texture2D glowTexture = GlowTexture.Value;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {
@@ -660,7 +660,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             for (int k = 0; k < 3; k++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
-            if (NPC.soundDelay == 1)
+            if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 3;
                 SoundEngine.PlaySound(CommonCalamitySounds.ExoHitSound, NPC.Center);

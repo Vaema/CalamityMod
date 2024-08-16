@@ -29,5 +29,12 @@ namespace CalamityMod.Waters
         {
             return Color.Blue;
         }
+
+        public override void LightColorMultiplier(ref float r, ref float g, ref float b)
+        {
+            r = 1.02f;
+            g = 1.03f;
+            b = 1.075f;
+        }
     }
 }

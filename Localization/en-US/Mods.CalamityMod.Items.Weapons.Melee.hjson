@@ -164,7 +164,12 @@ BalefulHarvester: {
 
 BallOFugu: {
 	DisplayName: Ball O' Fugu
-	Tooltip: Throws a fish that spews homing spikes
+	Tooltip:
+		'''
+		Throws a flailing abyssal pufferfish
+		Builds up poisonous spikes as it spins
+		Spikes blow out of the fish as it retracts
+		'''
 }
 
 BansheeHook: {
@@ -174,7 +179,11 @@ BansheeHook: {
 
 Basher: {
 	DisplayName: Basher
-	Tooltip: Swings a rotten club that poisons and irradiates enemies on hit
+	Tooltip:
+		'''
+		Swings a rotten club that poisons and irradiates enemies on hit
+		Holding <right> while swinging will increase the club's damage, but will also knock you back on hit
+		'''
 }
 
 BladecrestOathsword: {
@@ -434,11 +443,6 @@ ElementalLance: {
 		'''
 }
 
-ElementalShiv: {
-	DisplayName: Elemental Shiv
-	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
-}
-
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
 	Tooltip: Throws a flurry of bouncing knives that can heal the user
@@ -446,7 +450,12 @@ EmpyreanKnives: {
 
 EntropicClaymore: {
 	DisplayName: Entropic Claymore
-	Tooltip: Fires a spread of homing plasma balls
+	Tooltip:
+		'''
+		Fires a spread of living plasma that swims though the air
+		Plasma will track your cursor or enemies near it, prioritizing which is closest
+		The plasma pierces, but will stop tracking after hitting the first enemy
+		'''
 }
 
 EssenceFlayer: {
@@ -665,14 +674,7 @@ GrandGuardian: {
 
 GreatswordofJudgement: {
 	DisplayName: Greatsword of Judgement
-	Tooltip:
-		'''
-		Fires a white orb that emits white rain from where it dissipates for a time
-		A pale white sword from a forgotten land
-		You can hear faint yet comforting whispers emanating from the blade
-		'No matter where you may be you are never alone
-		I shall always be at your side, my lord'
-		'''
+	Tooltip: Fires a piercing energy wave that releases homing stars as it flies
 }
 
 Greentide: {
@@ -727,7 +729,11 @@ IllustriousKnives: {
 
 InsidiousImpaler: {
 	DisplayName: Insidious Impaler
-	Tooltip: Fires infected harpoons that stick to enemies and explode
+	Tooltip:
+		'''
+		Throws self-propelling radioactive harpoons which chase foes
+		Harpoons ricochet at close range for additional hits
+		'''
 }
 
 IridescentExcalibur: {
@@ -789,7 +795,9 @@ MantisClaws: {
 	DisplayName: Mantis Claws
 	Tooltip:
 		'''
-		Explodes on enemy hits
+		Rapidly swing a mantis claw which slashes foes in short range
+		Press <right> to form a pressurized bubble in front of you
+		Once fully formed, the bubble is instantly snapped down on, blasting foes with a water jet
 		'It's just that shrimple'
 		'''
 }
@@ -906,11 +914,10 @@ Orderbringer: {
 	DisplayName: Orderbringer
 	Tooltip:
 		'''
-		Fires a rainbow blade that emits rainbow rain from where it dissipated for a time
-		A pale white sword from a forgotten land
-		You can hear faint yet comforting whispers emanating from the blade
-		'No matter where you may be you are never alone
-		I shall always be at your side, my lord'
+		Fires piercing energy waves and summons four homing stars near your cursor
+		Energy waves deal more damage with each consecutive hit
+		Hits with the blade summon two beams from the sky
+		'No matter where you may be you are never alone'
 		'''
 }
 
@@ -1008,7 +1015,7 @@ RemsRevenge: {
 	Tooltip:
 		'''
 		Summons blood explosions and lowers enemy defense on hit
-		Wielded by the most powerful fighter
+		'A deadly morning star befitting its demonic owner'
 		'''
 }
 
@@ -1115,6 +1122,11 @@ SpineOfThanatos: {
 		Once all three collide, a prism of light is shot outward
 		If an enemy is within the line of sight of the whips on collision, the light will fire towards it
 		'''
+}
+
+StarburstShiv: {
+	DisplayName: Starburst Shiv
+	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
 }
 
 StarnightLance: {
@@ -1254,11 +1266,11 @@ TheDarkMaster: {
 	DisplayName: The Dark Master
 	Tooltip:
 		'''
-		Fires red echo slash projectiles at full health
-		Projectile damage increases for every point of HP above 400
+		Fires red echo slash projectiles when above 75% health
+		Projectile damage increases for every HP above 400
 		Press <right> to spawn three shadow clones in a Delta formation
 		The clones will mirror your sword swings and release projectiles
-		The clones will always fire projectiles regardless of your own HP
+		Projectiles are fired regardless of your own HP, but deal less damage
 		The clones may only exist while holding this weapon
 		'The blade by which the shadows levy their foes with a terrible fate'
 		'''
@@ -1333,9 +1345,15 @@ TitanArm: {
 		'''
 }
 
-TriactisTruePaladinianMageHammerofMightMelee: {
+TriactisTruePaladinianMageHammerofMight: {
 	DisplayName: Triactis' True Paladinian Mage-Hammer of Might
-	Tooltip: Explodes on enemy hits
+	Tooltip:
+		'''
+		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
+		Enemy hits release prismatic light flares which orbit around the struck foe
+		Instead of returning, the fourth hit transforms flares into hardlight hammers
+		These hammers converge and form a universe-collapsing explosion
+		'''
 }
 
 TrueArkoftheAncients: {
@@ -1384,7 +1402,12 @@ TrueCausticEdge: {
 
 Tumbleweed: {
 	DisplayName: Tumbleweed
-	Tooltip: Releases a rolling tumbleweed on hit
+	Tooltip:
+		'''
+		Throws a tumbleweed flail
+		Spinning tumbleweeds brew a localized dust storm
+		Launched tumbleweeds detach from their chain upon striking an enemy and roll forwards
+		'''
 }
 
 TyphonsGreed: {

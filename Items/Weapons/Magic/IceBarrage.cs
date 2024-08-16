@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
             Item.damage = 2250;
             Item.knockBack = 6f;
-            Item.useTime = Item.useAnimation = 300;
+            Item.useAnimation = Item.useTime = 300;
             Item.reuseDelay = 60;
             Item.useLimitPerAnimation = 1;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             realPlayerPos.X = Main.mouseX + Main.screenPosition.X;
             realPlayerPos.Y = Main.mouseY + Main.screenPosition.Y;
-            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI);
 
             CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 2);
 

@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         {
                             int type = ModContent.ProjectileType<BrimstoneHellblast2>();
                             int damage = npc.GetProjectileDamage(type);
-                            float projSpeed = bossRush ? 5f : 4f;
+                            float projSpeed = bossRush ? 4.5f : 4f;
                             if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
                             {
                                 float distance = Main.rand.NextBool() ? -1000f : 1000f;
@@ -740,9 +740,26 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
+                if (npc.alpha < 255)
+                {
+                    npc.velocity *= 0.9f;
 
+                    npc.alpha += 2;
+                    if (npc.alpha > 255)
+                        npc.alpha = 255;
+
+                    int dustAmount = (int)Math.Round(MathHelper.Lerp(1f, 5f, (255 - npc.alpha) / 255f));
+                    for (int i = 0; i < dustAmount; i++)
+                    {
+                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f, 90, default, Main.rand.NextFloat(0.5f, 2f));
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].fadeIn = 1f;
+                    }
+                }
+                else
+                    npc.active = false;
+
+                npc.active = false;
                 return;
             }
 
@@ -1058,9 +1075,25 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             if (CalamityGlobalNPC.calamitas < 0 || !Main.npc[CalamityGlobalNPC.calamitas].active)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
+                if (npc.alpha < 255)
+                {
+                    npc.velocity *= 0.9f;
 
+                    npc.alpha += 2;
+                    if (npc.alpha > 255)
+                        npc.alpha = 255;
+
+                    int dustAmount = (int)Math.Round(MathHelper.Lerp(1f, 5f, (255 - npc.alpha) / 255f));
+                    for (int i = 0; i < dustAmount; i++)
+                    {
+                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f, 90, default, Main.rand.NextFloat(0.5f, 2f));
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].fadeIn = 1f;
+                    }
+                }
+                else
+                    npc.active = false;
+                
                 return;
             }
 

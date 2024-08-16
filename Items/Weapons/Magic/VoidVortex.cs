@@ -26,17 +26,18 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 210;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 60;
-            Item.useTime = 49;
-            Item.useAnimation = 49;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.UseSound = SoundID.Item20;
-            Item.autoReuse = true;
+            Item.useAnimation = Item.useTime = 49;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<VoidVortexProj>();
             Item.shootSpeed = 12f;
+
+            Item.UseSound = SoundID.Item20;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<Violet>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

@@ -75,7 +75,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //
-            // Calamity debuffs (Vanilla Shadowflame is added here)
+            // Calamity debuffs (Vanilla Shadowflame and Daybroken are added here)
             //
             void ApplyDoTDebuff(bool hasDebuff, int negativeLifeRegenToApply, bool immuneCondition = false)
             {
@@ -104,9 +104,12 @@ namespace CalamityMod.CalPlayer
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
+            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(hFlames, 40, purity);
+            ApplyDoTDebuff(voidfrost, 40, purity);
             ApplyDoTDebuff(vHex, 35);
+            ApplyDoTDebuff(trueVHex, 50);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
             ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
@@ -653,29 +656,12 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-            if (ursaSergeant)
-            {
-                if (Player.statLife <= (int)(actualMaxLife * 0.15))
-                {
-                    Player.lifeRegen += 3;
-                    Player.lifeRegenTime += 3;
-                }
-                else if (Player.statLife <= (int)(actualMaxLife * 0.25))
-                {
-                    Player.lifeRegen += 2;
-                    Player.lifeRegenTime += 2;
-                }
-                else if (Player.statLife <= (int)(actualMaxLife * 0.5))
-                {
-                    Player.lifeRegen += 1;
-                    Player.lifeRegenTime += 1;
-                }
-            }
-
+            // Remember this is for 5 seconds after triggering a reflect with a long cooldown
             if (evolutionLifeRegenCounter > 0)
             {
-                Player.lifeRegenTime += 2;
-                Player.lifeRegen += 2;
+                Player.lifeRegen += 12;
+                if (Player.lifeRegenTime < 3600f)
+                    Player.lifeRegenTime = 3600f;
             }
 
             if (darkSunRing)

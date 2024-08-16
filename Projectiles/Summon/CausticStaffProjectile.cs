@@ -51,14 +51,8 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            if ((player.ActiveItem().CountsAsClass<SummonDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<MeleeDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<RangedDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<MagicDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<ThrowingDamageClass>()) ||
-                player.ActiveItem().hammer > 0 ||
-                player.ActiveItem().pick > 0 ||
-                player.ActiveItem().axe > 0)
+            Item heldItem = player.ActiveItem();
+            if (!CalamityUtils.ShouldTriggerSummonPenalty(player, heldItem))
             {
                 int duration = Main.rand.Next(60, 181); // Anywhere between 1 and 3 seconds
                 switch ((int)Projectile.ai[0])

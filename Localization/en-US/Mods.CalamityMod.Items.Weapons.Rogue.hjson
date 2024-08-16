@@ -348,7 +348,7 @@ EclipsesFall: {
 		'''
 		Summons spears from the sky on hit
 		Stealth strikes impale enemies and summon a constant barrage of spears over time
-		'When the sun goes dark, you will know judgment'
+		'When the sun goes dark, you will know judgement'
 		'''
 }
 
@@ -588,7 +588,11 @@ Hypothermia: {
 
 Icebreaker: {
 	DisplayName: Icebreaker
-	Tooltip: Stealth strikes spawn a cosmic explosion and freeze nearby enemies on enemy hits
+	Tooltip:
+		'''
+		Throws an icy hammer that magically returns to the player
+		Stealth strikes spawn a cosmic explosion and freeze nearby enemies on hit
+		'''
 }
 
 IceStar: {
@@ -1058,7 +1062,12 @@ Seraphim: {
 
 ShardofAntumbra: {
 	DisplayName: Shard of Antumbra
-	Tooltip: Stealth strikes leave homing stars in their wake
+	Tooltip:
+		'''
+		Throws a cosmic javelin that sticks into enemies and tiles, creating a small rift nearby on enemy hits
+		After hitting a target, it will charge with energy and teleport to the rift, aiming itself at the nearest target
+		Stealth strikes create a multitude of rifts to spawn additional javelins upon teleporting
+		'''
 }
 
 ShatteredSun: {
@@ -1167,9 +1176,10 @@ StarofDestruction: {
 	DisplayName: Star of Destruction
 	Tooltip:
 		'''
-		Fires a huge destructive mine that explodes into destruction bolts
-		Amount of bolts scales with enemies hit, up to 16
-		Stealth strikes always explode into the max amount of bolts
+		Throws a fan of cosmic bolts that meld together into a star of destruction
+		The explosive star will slowly follow your cursor until it expires or hits an enemy
+		Stealth strikes throw additional bolts that converge into faster star that can pierce, exploding on every hit
+		Upon running out of time, the star will burst into a huge explosion that deals increased damage
 		'''
 }
 
@@ -1265,9 +1275,10 @@ TheOldReaper: {
 	DisplayName: The Old Reaper
 	Tooltip:
 		'''
-		Throws a homing reaper scythe that shreds enemies
-		Stealth strikes throw three at once
-		'Slice 'n dice'
+		Throws an irradiated scythe that cuts through enemies
+		Deposits unstable isotopes on hit, which create delayed nuclear explosions when they decay
+		Stealth strikes are thrown into the sky and fall upon enemies a few seconds later
+		On hit, stealth strikes create a focused deluge of acid rain
 		'''
 }
 
@@ -1326,9 +1337,8 @@ ToxicantTwister: {
 	DisplayName: Toxicant Twister
 	Tooltip:
 		'''
-		Throws a slow moving boomerang
-		After a few moments, the boomerang chooses a target and rapidly homes in
-		Stealth strikes home in faster and rapidly release sand
+		Throws a fan of four spinning disks that swirl around your cursor
+		Stealth strikes swirl in a wider range and create a vortex of toxic raindrops that home in on enemies
 		'''
 }
 

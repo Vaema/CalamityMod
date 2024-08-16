@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             Item.width = 8;
             Item.height = 28;
-            Item.useTime = Item.useAnimation = 40;
+            Item.useAnimation = Item.useTime = 40;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.shootSpeed = 5f;

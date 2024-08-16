@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
             Item.mana = 12;
-            Item.useTime = Item.useAnimation = 21;
+            Item.useAnimation = Item.useTime = 21;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.UseSound = SoundID.DD2_FlameburstTowerShot;

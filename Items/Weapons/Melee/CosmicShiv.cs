@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalShiv>().
+                AddIngredient<StarburstShiv>().
                 AddIngredient<CosmiliteBar>(8).
                 AddTile<CosmicAnvil>().
                 Register();

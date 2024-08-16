@@ -18,10 +18,10 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 80;
             Item.height = 74;
-            Item.damage = 300;
+            Item.damage = 325;
             Item.mana = 10;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.noMelee = true;
             Item.knockBack = 7f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;

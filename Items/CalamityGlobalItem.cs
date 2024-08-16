@@ -20,6 +20,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.World;
@@ -202,6 +203,10 @@ namespace CalamityMod.Items
                     item.expert = false;
                     break;
             }
+
+            // Increase how much health Mushrooms heal.
+            if (item.type == ItemID.Mushroom && item.healLife == 15)
+                item.healLife = 25;
 
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
             if (item.type == ItemID.BeamSword)
@@ -639,13 +644,6 @@ namespace CalamityMod.Items
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
-
-            // Moon Lord instantly spawns when Celestial Sigil is used.
-            if (item.type == ItemID.CelestialSigil)
-            {
-                NPC.MoonLordCountdown = 1;
-                NetMessage.SendData(MessageID.MoonlordHorror, -1, -1, null, NPC.MoonLordCountdown);
-            }
 
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
@@ -1205,10 +1203,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.MoonStone)
                 modPlayer.reducedNightwitherDamage = true;
             if (item.type == ItemID.SunStone)
-                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedDaybrokenDamage = true;
             if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
-                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedDaybrokenDamage = true;
                 modPlayer.reducedNightwitherDamage = true;
             }
 
@@ -1417,10 +1415,9 @@ namespace CalamityMod.Items
                 player.noFallDmg = true;
                 if (player.head == ArmorIDs.Head.FrostHelmet && player.body == ArmorIDs.Body.FrostBreastplate && player.legs == ArmorIDs.Legs.FrostLeggings)
                 {
-                    player.GetDamage<MeleeDamageClass>() += 0.02f;
-                    player.GetDamage<RangedDamageClass>() += 0.02f;
-                    player.GetCritChance<MeleeDamageClass>() += 1;
-                    player.GetCritChance<RangedDamageClass>() += 1;
+                    player.GetDamage<MeleeDamageClass>() += 0.04f;
+                    player.GetDamage<RangedDamageClass>() += 0.04f;
+                    player.Calamity().frozenWingsCold = true;
                 }
             }
             else if (item.type == ItemID.FlameWings) // Bonus to melee stats
@@ -1629,9 +1626,10 @@ namespace CalamityMod.Items
             if (grabRangeMultiplier > 1f)
                 grabRange = (int)(grabRangeMultiplier * grabRange);
 
-            // Then, if wearing the appropriate Reaver armor, add 20 flat item grab range.
+            // Then, if wearing the appropriate Reaver armor, add 246 flat item grab range. (2.625 + 15.375 = 18 tiles)
+            // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
             if (player.Calamity().reaverExplore)
-                grabRange += 20;
+                grabRange += 246;
         }
         #endregion
 
@@ -1766,10 +1764,19 @@ namespace CalamityMod.Items
         #endregion
 
         #region On Create
+        private static int cachedForgeID = -1;
         public override void OnCreated(Item item, ItemCreationContext context)
         {
             // ChoosePrefix also happens on craft so go reset it here too
             storedPrefix = -1;
+
+            // 05JUL2024: Ozzatron: Register the usage of Draedon's Forge for the purposes of his dialogue.
+            // This was moved out of an On edit in the DraedonsForge item for Magic Storage compatibility.
+            Player p = Main.LocalPlayer;
+            if (cachedForgeID < 0)
+                cachedForgeID = ModContent.TileType<DraedonsForge>();
+            if (context is RecipeItemCreationContext && p.adjTile[cachedForgeID])
+                p.Calamity().HasCraftedDraedonsForge = true;
         }
         #endregion
 
@@ -1795,7 +1802,7 @@ namespace CalamityMod.Items
                 return keepPrefix ? prefix : 0;
             }
 
-            if (!CalamityConfig.Instance.RemoveReforgeRNG || Main.gameMenu || storedPrefix == -1)
+            if (!CalamityServerConfig.Instance.RemoveReforgeRNG || Main.gameMenu || storedPrefix == -1)
                 return -1;
 
             // Pick a prefix using the new system.
@@ -1814,11 +1821,21 @@ namespace CalamityMod.Items
                 ItemLoader.ReforgePrice(item, ref value, ref p.discountAvailable);
 
                 // Steal 20% of that money.
-                CalamityWorld.MoneyStolenByBandit += value / 5;
+                int stolen = value / 5;
+                CalamityWorld.MoneyStolenByBandit += stolen;
 
                 // Increment the reforge counter to allow the Bandit to refund
                 // Also triggers Tinkerer dialogue that hints to the player that money is being stolen
                 CalamityWorld.Reforges++;
+
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    ModPacket packet = CalamityMod.Instance.GetPacket();
+                    packet.Write((byte)CalamityModMessageType.SomeoneGotScammedByTinkerer);
+                    packet.Write((byte)p.whoAmI);
+                    packet.Write7BitEncodedInt(stolen);
+                    packet.Send();
+                }
             }
         }
         #endregion

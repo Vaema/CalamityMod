@@ -243,6 +243,11 @@ SulphuricPoisoning: {
 	Description: The acidic water burns away your flesh
 }
 
+TrueVulnerabilityHex: {
+	DisplayName: True Vulnerability Hex
+	Description: The end has come
+}
+
 Vaporfied: {
 	DisplayName: Vaporfied
 	Description: Vape
@@ -597,11 +602,6 @@ SulphurskinBuff: {
 	Description: The sulphuric waters have a lesser effect on you
 }
 
-TeslaBuff: {
-	DisplayName: Tesla's Electricity
-	Description: Summons an aura of electricity
-}
-
 WeaponImbueBrimstone: {
 	DisplayName: Weapon Imbue: Brimstone
 	Description: Melee, Whip, and Rogue attacks ignite enemies with brimstone flames
@@ -625,11 +625,6 @@ Zen: {
 Zerg: {
 	DisplayName: Zerg
 	Description: Spawn rates are greatly boosted
-}
-
-RancorBurn: {
-	DisplayName: Rancor Burn
-	Description: Burning
 }
 
 AbyssalDivingSuitBuff: {
@@ -785,7 +780,7 @@ KamiBuff: {
 
 Mushy: {
 	DisplayName: Mushy
-	Description: Increased defense by 6 and life regen by 1HP/s
+	Description: Increased defense by 8 and life regen by 1HP/s
 }
 
 PhantomicEmpowerment: {
@@ -1160,9 +1155,9 @@ DemonshadeSetDevilBuff: {
 	Description: The red devil will protect you
 }
 
-ElementalAxeBuff: {
-	DisplayName: Elemental Axe
-	Description: The elemental axe will protect you
+LegionofCelestiaBuff: {
+	DisplayName: Celestial Axe
+	Description: If only it was this good at chopping trees...
 }
 
 EndoCooperBuff: {
@@ -1561,4 +1556,9 @@ AeolianEarthBuff: {
 		You are strengthened by primordial powers
 		Damage reduction increased by 8%, damage increased by 18%
 		'''
+}
+
+Voidfrost: {
+	DisplayName: Voidfrost
+	Description: The emptiness of space devours all warmth and life
 }

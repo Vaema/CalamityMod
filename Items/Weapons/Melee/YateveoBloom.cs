@@ -1,4 +1,4 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee.MaceFlails;
 using CalamityMod.Projectiles.Melee.Spears;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -17,13 +17,14 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            // Flail already does half damage. No tooltip mutliplier required.
         }
 
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 62;
-            Item.damage = 30; // Spear is 20 damage, Flail is 30 damage
+            Item.damage = 30;
             Item.knockBack = 5f;
             Item.useAnimation = Item.useTime = 22;
 
@@ -41,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Green;
             Item.Calamity().donorItem = true;
 
-            Item.shoot = ModContent.ProjectileType<YateveoBloomProj>();
+            Item.shoot = ModContent.ProjectileType<YateveoBloomMace>();
             Item.shootSpeed = ShootSpeed;
         }
 
@@ -75,9 +76,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             float speedMult = SpearSpeed / ShootSpeed;
             if (player.altFunctionUse == 2)
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X * speedMult, velocity.Y * speedMult, ModContent.ProjectileType<YateveoBloomSpear>(), (int)(damage * 0.666666f), knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity * speedMult, ModContent.ProjectileType<YateveoBloomSpear>(), damage, knockback, player.whoAmI);
             else
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.5f), knockback, player.whoAmI);
             return false;
         }
 

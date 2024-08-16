@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class Metastasis : ModItem, ILocalizedModType
+    public class Metastasis : ExhumedItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 78;
             Item.damage = 400;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1
+            Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;

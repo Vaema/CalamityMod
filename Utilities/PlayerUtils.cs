@@ -10,6 +10,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.Player;
@@ -223,6 +224,8 @@ namespace CalamityMod
                 light += 1;
             if (mp.jellyfishNecklace && underwater) // inherited by jellyfish diving gear and higher
                 light += 1;
+            if (mp.reaverExplore)
+                light += 2;
             if (mp.lumenousAmulet && underwater)
                 light += 2;
             if (mp.shine)
@@ -890,6 +893,42 @@ namespace CalamityMod
         /// <param name="player">The player using the holdout.</param>
         /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
         public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
+        
+        /// <summary>
+        /// A shorthand bool to check if the held item should trigger Calamity's summon damage penalty.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="item">The current held item.</param>
+        /// <returns>Returns <see langword="true"/> if the held item should trigger the summon damage penalty.</returns>
+        public static bool ShouldTriggerSummonPenalty(Player player, Item item)
+        {
+            var modPlayer = player.Calamity();
+
+            bool forbiddenWithMagicWeapon = player.armor[0].type == ItemID.AncientBattleArmorHat && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<MagicDamageClass>();
+            bool gemTechBlueGem = modPlayer.GemTechSet && modPlayer.GemTechState.IsBlueGemActive;
+
+            bool crossClassNerfDisabled = forbiddenWithMagicWeapon || modPlayer.fearmongerSet || gemTechBlueGem || modPlayer.profanedCrystalBuffs || DD2Event.Ongoing;
+
+            if (item.type > ItemID.None && !crossClassNerfDisabled)
+            {
+                bool heldItemIsClassedWeapon = !item.CountsAsClass<SummonDamageClass>() && (
+                    item.CountsAsClass<MeleeDamageClass>() ||
+                    item.CountsAsClass<RangedDamageClass>() ||
+                    item.CountsAsClass<MagicDamageClass>() ||
+                    item.CountsAsClass<ThrowingDamageClass>()
+                );
+
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityLists.BlacklistedWeaponsWithToolPower.Contains(item.type);
+                bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
+                bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
+                bool heldItemIsExcludedByModCall = CalamityLists.DisabledSummonerNerfItems.Contains(item.type);
+
+                if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
+                    return true;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Makes the given player send the given packet to all appropriate receivers.<br />

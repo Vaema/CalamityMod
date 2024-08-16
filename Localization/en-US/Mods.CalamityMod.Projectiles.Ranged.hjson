@@ -43,6 +43,8 @@ ChargedBlast.DisplayName: Blast
 ChargedBlastSplit.DisplayName: Charged Blast Split
 ChickenExplosion.DisplayName: Kentucky Fried Explosion
 ChickenRocket.DisplayName: Chicken Rocket
+ChromaticFire.DisplayName: Chromatic Fire
+ChromaticFlare.DisplayName: Chromatic Flare
 CinderArrowProj.DisplayName: Cinder Arrow
 ClamorRifleProj.DisplayName: Clamor Bolt
 ClamorRifleProjSplit.DisplayName: Clamor Bolt
@@ -68,8 +70,6 @@ DrizzlefishFireSplit.DisplayName: Drizzlefish Flames
 DryadsTearMain.DisplayName: Dryad's Tear
 DryadsTearSplit.DisplayName: Dryad's Tear
 DWArrow.DisplayName: Death's Arrow
-ElementalFire.DisplayName: Elemental Fire
-ElementalFlare.DisplayName: Elemental Flare
 ElysianArrowProj.DisplayName: Elysian Arrow
 ElysianArrowRain.DisplayName: Elysian Light
 EmesisGore.DisplayName: Rotten Gore
@@ -183,7 +183,7 @@ SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower
 SeasSearingSpout.DisplayName: Spout
-SepticSkewerBacteria.DisplayName: Bacteria
+SepticSkewerBacteria.DisplayName: Septic Gore
 SepticSkewerHarpoon.DisplayName: Septic Skewer
 SevensStrikerBrick.DisplayName: Brick
 SevensStrikerCherry.DisplayName: Cherry
@@ -245,3 +245,5 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
+HellbornProj.DisplayName: Hell-born Gunblast
+HellbornShell.DisplayName: Hell's Shell

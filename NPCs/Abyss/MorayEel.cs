@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 136;
             NPC.height = 40;
             NPC.defense = 8;
-            NPC.lifeMax = 360;
+            NPC.lifeMax = 450;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
@@ -99,7 +99,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Venom, 90, true);
+                target.AddBuff(BuffID.Venom, 30, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

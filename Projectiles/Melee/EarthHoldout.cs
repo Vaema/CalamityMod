@@ -1,17 +1,13 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -23,7 +19,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Earth>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Earth";
-        public override float HitboxOutset => 105;
+        public override float HitboxOutset => 135;
 
         public override Vector2 HitboxSize => new Vector2(255, 255);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
@@ -208,7 +204,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if ((damageDone <= 2 || target.life <= 0) && Projectile.numHits > 0)
+            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
             if (target.CanBeMoved(true))

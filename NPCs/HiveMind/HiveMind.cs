@@ -316,7 +316,7 @@ namespace CalamityMod.NPCs.HiveMind
                 Color afterimageBaseColor = Color.White;
                 int numAfterimages = 5;
 
-                if (CalamityConfig.Instance.Afterimages && state != 0)
+                if (CalamityClientConfig.Instance.Afterimages && state != 0)
                 {
                     for (int i = 1; i < numAfterimages; i += 2)
                     {

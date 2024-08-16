@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
 {
@@ -8,7 +9,7 @@ namespace CalamityMod.Walls
         public override void SetStaticDefaults()
         {
             DustType = ModContent.DustType<Dusts.AstralBasic>();
-
+            WallID.Sets.Conversion.Snow[Type] = true;
             AddMapEntry(new Color(135, 145, 149));
         }
 

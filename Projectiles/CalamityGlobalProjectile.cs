@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
@@ -21,6 +22,11 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Tiles.Abyss;
+using CalamityMod.Tiles.Astral;
+using CalamityMod.Tiles.AstralDesert;
+using CalamityMod.Tiles.AstralSnow;
+using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
@@ -53,7 +59,7 @@ namespace CalamityMod.Projectiles
         public bool CreatedByPlayerDash = false;
 
         // Speed cap for accelerating boss laser projectiles with 2 extraUpdates.
-        public const float AcceleratingBossLaserVelocityCap = 10f;
+        public const float AcceleratingBossLaserVelocityCap = 8f;
 
         // Damage Adjusters
         public const float PierceResistHarshness = 0.12f;
@@ -237,8 +243,6 @@ namespace CalamityMod.Projectiles
 
             if (pointBlankShotDuration > 0)
                 pointBlankShotDuration--;
-            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
-                pointBlankShotDistanceTravelled += projectile.velocity.Length() * projectile.MaxUpdates;
 
             // Reduce secondary yoyo damage if the player has Yoyo Glove
             // Brief behavior documentation of yoyo AI: ai[0, 1] are the x, y co-ords and localAI[0] is the airtime in frames
@@ -2672,7 +2676,7 @@ namespace CalamityMod.Projectiles
                             {
                                 int totalProjectiles = masterMode ? 12 : 8;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
-                                int type = ModContent.ProjectileType<ThornBallSpike>();
+                                int type = ProjectileType<ThornBallSpike>();
                                 float velocity = 1f;
                                 Vector2 spinningPoint = new Vector2(0f, -velocity);
                                 for (int k = 0; k < totalProjectiles; k++)
@@ -3641,7 +3645,7 @@ namespace CalamityMod.Projectiles
 
             if (!projectile.npcProj && !projectile.trap && projectile.friendly && projectile.damage > 0)
             {
-                if (modPlayer.fungalSymbiote && CalamityLists.MushroomProjectileIDs.Contains(projectile.type))
+                if (modPlayer.fungalSymbiote && player.HasBuff(BuffType<Mushy>()))
                 {
                     if (Main.player[projectile.owner].miscCounter % 6 == 0 && projectile.FinalExtraUpdate())
                     {
@@ -3812,7 +3816,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case CalamityGlobalBuff.ModdedFlaskEnchant:
-                                int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
+                                int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
                                 if (Main.rand.NextBool(4))
                                 {
                                     Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
@@ -3832,7 +3836,7 @@ namespace CalamityMod.Projectiles
                 {
                     if ((player.Calamity().flaskBrimstone || player.Calamity().flaskCrumbling || player.Calamity().flaskHoly) && !projectile.noEnchantments && !projectile.noEnchantmentVisuals)
                     {
-                        int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
+                        int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
                         if (Main.rand.NextBool(player.Calamity().flaskCrumbling ? 5 : 4))
                         {
                             Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
@@ -3899,7 +3903,7 @@ namespace CalamityMod.Projectiles
                     PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f, Color.Crimson * 0.7f);
                     GeneralParticleHandler.SpawnParticle(spark);
 
-                    Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : ModContent.DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
+                    Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.5f, 1f);
                 }
@@ -4055,6 +4059,12 @@ namespace CalamityMod.Projectiles
                     flatDR = 0;
             }
 
+            // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
+            // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
+            // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
+            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
+                pointBlankShotDistanceTravelled += projectile.velocity.Length();
+
             // optimization to remove conversion X/Y loop for irrelevant projectiles
             bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
                 || projectile.type == ProjectileID.VilePowder
@@ -4062,7 +4072,8 @@ namespace CalamityMod.Projectiles
                 || projectile.type == ProjectileID.PureSpray
                 || projectile.type == ProjectileID.CorruptSpray
                 || projectile.type == ProjectileID.CrimsonSpray
-                || projectile.type == ProjectileID.HallowSpray;
+                || projectile.type == ProjectileID.HallowSpray
+                || projectile.type == ProjectileID.Fertilizer;
             if (!isConversionProjectile)
                 return;
 
@@ -4073,10 +4084,39 @@ namespace CalamityMod.Projectiles
 
                 bool isPowder = projectile.type == ProjectileID.PurificationPowder || projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder;
 
+                if (!WorldGen.InWorld(x, y, 3))
+                    return;
+
                 for (int i = x - 1; i <= x + 1; i++)
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
+                        if (projectile.type == ProjectileID.Fertilizer)
+                        {
+                            Tile tile = Main.tile[i, j];
+
+                            if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                bool success = WorldGen.GrowTree(i, j);
+                                if (success && isPlayerNear)
+                                    WorldGen.TreeGrowFXCheck(i, j);
+                            }
+                            else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                bool success = WorldGen.GrowPalmTree(i, j);
+                                if (success && isPlayerNear)
+                                    WorldGen.TreeGrowFXCheck(i, j);                                
+                            }
+                            else if (tile.TileType == ModContent.TileType<SpineSapling>())
+                            {
+                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                                    SpineTree.Spawn(i, j, 22, 28, true);
+                            }
+                        }
+
                         if (projectile.type == ProjectileID.PureSpray || projectile.type == ProjectileID.PurificationPowder)
                         {
                             AstralBiome.ConvertFromAstral(i, j, ConvertType.Pure, !isPowder);
@@ -4217,13 +4257,13 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
-            // damageScale = 0.1f + player.velocity.Length() / 7f * 0.9f
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
+                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
+                float vanillaVelocityDamageMultiplier = 0.1f + player.velocity.Length() / 7f * 0.9f;
                 float baseVelocityDamageMultiplier = 0.01f + player.velocity.Length() * 0.002f;
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
-                modifiers.SourceDamage *= calamityVelocityDamageMultiplier;
+                modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
             // If applicable, use ricoshot bonus damage.
@@ -4801,7 +4841,7 @@ namespace CalamityMod.Projectiles
                             int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
                             if (Main.zenithWorld)
                             {
-                                beeType = Main.rand.NextBool(3) ? ModContent.NPCType<PlagueChargerLarge>() : ModContent.NPCType<PlagueCharger>();
+                                beeType = Main.rand.NextBool(3) ? NPCType<PlagueChargerLarge>() : NPCType<PlagueCharger>();
                             }
                             else if (Main.masterMode || BossRushEvent.BossRushActive)
                             {

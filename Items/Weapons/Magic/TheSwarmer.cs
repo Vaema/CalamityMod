@@ -26,6 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Wasp;
             Item.shootSpeed = 12f;
+            Item.knockBack = 0.25f;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, -5);

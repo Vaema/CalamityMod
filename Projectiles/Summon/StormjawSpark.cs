@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        //literally had to make another projectile cuz whips exist
+        // Clone of Typeless/GenericElectricSpark but specfically benefits from whips
         public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Projectile.type] = true;
 
         public override void SetDefaults()
@@ -24,65 +26,48 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
+
         public override void AI()
         {
             if (Projectile.velocity.X != Projectile.velocity.X)
-            {
-                Projectile.velocity.X = Projectile.velocity.X * -0.1f;
-            }
-            if (Projectile.velocity.X != Projectile.velocity.X)
-            {
-                Projectile.velocity.X = Projectile.velocity.X * -0.5f;
-            }
+                Projectile.velocity.X *= -0.1f;
             if (Projectile.velocity.Y != Projectile.velocity.Y && Projectile.velocity.Y > 1f)
-            {
-                Projectile.velocity.Y = Projectile.velocity.Y * -0.5f;
-            }
-            Projectile.ai[0] += 1f;
+                Projectile.velocity.Y *= -0.5f;
+
+            Projectile.ai[0]++;
             if (Projectile.ai[0] > 5f)
             {
                 Projectile.ai[0] = 5f;
                 if (Projectile.velocity.Y == 0f && Projectile.velocity.X != 0f)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X * 0.97f;
-                    if ((double)Projectile.velocity.X > -0.01 && (double)Projectile.velocity.X < 0.01)
+                    Projectile.velocity.X *= 0.97f;
+                    if (MathF.Abs(Projectile.velocity.X) < 0.01f)
                     {
                         Projectile.velocity.X = 0f;
                         Projectile.netUpdate = true;
                     }
                 }
-                Projectile.velocity.Y = Projectile.velocity.Y + 0.2f;
+                Projectile.velocity.Y += 0.2f;
             }
-            Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int sparky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1f);
-            Dust expr_8976_cp_0 = Main.dust[sparky];
-            expr_8976_cp_0.position.X -= 2f;
-            Dust expr_8994_cp_0 = Main.dust[sparky];
-            expr_8994_cp_0.position.Y += 2f;
-            Main.dust[sparky].scale += (float)Main.rand.Next(50) * 0.01f;
-            Main.dust[sparky].noGravity = true;
-            Dust expr_89E7_cp_0 = Main.dust[sparky];
-            expr_89E7_cp_0.velocity.Y -= 2f;
+            Dust spark = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Alpha: 100);
+            spark.position.X -= 2f;
+            spark.position.Y += 2f;
+            spark.scale += Main.rand.NextFloat(0f, 0.5f);
+            spark.noGravity = true;
+            spark.velocity.Y -= 2f;
             if (Main.rand.NextBool())
             {
-                int sparkier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1f);
-                Dust expr_8A4E_cp_0 = Main.dust[sparkier];
-                expr_8A4E_cp_0.position.X -= 2f;
-                Dust expr_8A6C_cp_0 = Main.dust[sparkier];
-                expr_8A6C_cp_0.position.Y += 2f;
-                Main.dust[sparkier].scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
-                Main.dust[sparkier].noGravity = true;
-                Main.dust[sparkier].velocity *= 0.1f;
+                spark = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Alpha: 100);
+                spark.position.X -= 2f;
+                spark.position.Y += 2f;
+                spark.scale += Main.rand.NextFloat(0.3f, 0.8f);
+                spark.noGravity = true;
+                spark.velocity *= 0.1f;
             }
-            if ((double)Projectile.velocity.Y < 0.25 && (double)Projectile.velocity.Y > 0.15)
-            {
-                Projectile.velocity.X = Projectile.velocity.X * 0.8f;
-            }
-            Projectile.rotation = -Projectile.velocity.X * 0.05f;
+
             if (Projectile.velocity.Y > 16f)
-            {
                 Projectile.velocity.Y = 16f;
-            }
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;

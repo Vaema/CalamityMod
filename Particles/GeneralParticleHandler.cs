@@ -90,7 +90,7 @@ namespace CalamityMod.Particles
             if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
                 return;
 
-            if (particles.Count >= CalamityConfig.Instance.ParticleLimit && !particle.Important)
+            if (particles.Count >= CalamityClientConfig.Instance.ParticleLimit && !particle.Important)
                 return;
 
             particles.Add(particle);
@@ -165,8 +165,14 @@ namespace CalamityMod.Particles
                         particle.CustomDraw(sb);
                     else
                     {
+                        Color lightColor = particle.Color;
+                        if (particle.AffectedByLight)
+                        {
+                            lightColor = particle.Color.MultiplyRGB(Lighting.GetColor((particle.Position / 16).ToPoint()));
+                        }
+
                         Rectangle frame = particleTextures[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f,
+                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f,
                             particle.Scale, SpriteEffects.None, 0f);
                     }
                 }
@@ -233,7 +239,7 @@ namespace CalamityMod.Particles
             if (Main.dedServ || particles == null)
                 return 0;
 
-            return CalamityConfig.Instance.ParticleLimit - particles.Count();
+            return CalamityClientConfig.Instance.ParticleLimit - particles.Count();
         }
 
         /// <summary>

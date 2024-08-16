@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Renderers;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
@@ -44,8 +45,14 @@ namespace CalamityMod.Particles
             Vector2 scale = new Vector2(0.65f, 1f) * Scale;
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.45f, 1f), 0, 0f);
+            Color lightColor = Color;
+            if (AffectedByLight)
+            {
+                lightColor = Color.MultiplyRGB(Lighting.GetColor((Position / 16).ToPoint()));
+            }
+
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, lightColor, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, lightColor, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.45f, 1f), 0, 0f);
         }
     }
 }

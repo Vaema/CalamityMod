@@ -16,31 +16,28 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 18;
             Item.damage = 6;
-            Item.ArmorPenetration = 10;
-            Item.knockBack = 0f;
-            Item.useTime = 7;
-            Item.useAnimation = 25;
-            Item.hammer = 40;
-
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
-            Item.channel = true;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.rare = ItemRarityID.Blue;
-            Item.UseSound = SoundID.Item23;
-            Item.autoReuse = true;
+            Item.ArmorPenetration = 10;
+            Item.hammer = 59;
+            Item.tileBoost = 7;
+            Item.useAnimation = 25;
+            Item.useTime = 4;
+            Item.knockBack = 0.5f;
             Item.shoot = ModContent.ProjectileType<MarniteDeconstructorProj>();
             Item.shootSpeed = 40f;
-            Item.tileBoost = 7;
+
+            Item.UseSound = SoundID.Item23;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.channel = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Blue;
         }
 
-        public override void HoldItem(Player player)
-        {
-            player.Calamity().mouseWorldListener = true;
-        }
-
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
         public override void AddRecipes()
         {

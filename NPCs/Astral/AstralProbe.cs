@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 30; //216
             NPC.defense = 10;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 70;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.95f;
@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 30;
                 NPC.defense = 20;
                 NPC.knockBackResist = 0.85f;
-                NPC.lifeMax = 70;
+                NPC.lifeMax = 105;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

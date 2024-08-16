@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 34;
             Item.damage = 695;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.knockBack = 10f;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AuralisBullet>();

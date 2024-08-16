@@ -103,11 +103,9 @@ namespace CalamityMod.NPCs
 
                 #region Sky / Space
                 // Harpy
-                // Coco's Feather (bird dev item) @ 0.1%
                 // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
-                    npcLoot.Add(ModContent.ItemType<CocosFeather>(), 1000);
                     postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
@@ -466,6 +464,11 @@ namespace CalamityMod.NPCs
                 case NPCID.TheBride:
                 case NPCID.TheGroom:
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 10);
+                    break;
+
+                // Ghost Bracelet @ 10% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
+                case NPCID.Ghost:
+                    npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 10);
                     break;
                 #endregion
 
@@ -1813,7 +1816,7 @@ DukeEditFailed:
                     if (!Main.hardMode && !BossRushEvent.BossRushActive)
                     {
                         // Increase altar count to allow natural mech boss spawning.
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                        if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                             WorldGen.altarCount++;
 
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
@@ -1837,7 +1840,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
-                    if (!NPC.downedMechBoss1 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (!NPC.downedMechBoss1 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         SpawnMechBossHardmodeOres();
                     break;
 
@@ -1849,7 +1852,7 @@ DukeEditFailed:
                         SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                         SetNewBossJustDowned(npc);
 
-                        if (!NPC.downedMechBoss2 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        if (!NPC.downedMechBoss2 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             SpawnMechBossHardmodeOres();
                     }
                     break;
@@ -1859,7 +1862,7 @@ DukeEditFailed:
                     SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<DILF>(), ModContent.NPCType<FAP>(), ModContent.NPCType<THIEF>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
-                    if (!NPC.downedMechBoss3 && CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                    if (!NPC.downedMechBoss3 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                         SpawnMechBossHardmodeOres();
                     break;
 

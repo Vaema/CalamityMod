@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
+using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace CalamityMod
@@ -19,6 +21,22 @@ namespace CalamityMod
                 fallback = Vector2.Zero;
 
             return (destination - entity.Center).SafeNormalize(fallback.Value);
+        }
+
+        /// <summary>
+        /// Adds screenshake to the local player, using the given position and range to determine whether the player is able to see the screenshake.
+        /// </summary>
+        /// <param name="position">The center of the screenshake, where it is most intense.</param>
+        /// <param name="intensity">The maximum intensity of the screenshake.</param>
+        /// <param name="range">The distance from which the screenshake's power becomes zero.</param>
+        public static void AddScreenshakeAt(Vector2 position, float intensity, float range = 1000)
+        {
+            float dist = 1;
+            dist -= position.Distance(Main.LocalPlayer.Center) / range;
+
+            dist = Math.Max(dist, 0);
+
+            Main.LocalPlayer.GetModPlayer<CalamityPlayer>().GeneralScreenShakePower += (intensity * dist);
         }
     }
 }

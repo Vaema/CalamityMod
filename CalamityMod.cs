@@ -82,6 +82,9 @@ namespace CalamityMod
         public static int ghostKillCount = 0;
         public static int sharkKillCount = 0;
 
+        // Boss Head Icons
+        public static int chadPrimeIcon;
+
         public static Asset<Texture2D> carpetOriginal;
 
         // Astral Sky/BG
@@ -108,6 +111,9 @@ namespace CalamityMod
         // Destroyer glowmasks
         public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
 
+        // Probe glowmask
+        public static Asset<Texture2D> ProbeGlowmask;
+
         // Wall of Flesh glowmasks
         public static Asset<Texture2D> WallOfFleshEyeGlowmask;
         public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
@@ -128,6 +134,11 @@ namespace CalamityMod
         // External flag to disable non-Revengeance boss AI edits
         // This can be edited by other mods using reflection to prevent compatibility issues
         public static bool ExternalFlag_DisableNonRevBossAI = false;
+
+        // External flag to disable Defense Damage
+        // This can be edited by other mods using reflection if desired
+        // Note that this flag trumps Bloodflare Core and will stop that accessory from working properly.
+        public static bool ExternalFlag_DisableDefenseDamage = false;
 
         internal static CalamityMod Instance;
 
@@ -286,6 +297,9 @@ namespace CalamityMod
             DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
             DestroyerGlowmasks[2] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
 
+            // Probe glowmask
+            ProbeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/ProbeGlow", AssetRequestMode.AsyncLoad);
+
             // Wall of Flesh glowmasks
             WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
             WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
@@ -368,6 +382,11 @@ namespace CalamityMod
             ThanatosBody2.LoadHeadIcons();
             ThanatosTail.LoadHeadIcons();
 
+            // All the head icon loading shit is done here, so I'm putting this here
+            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
+            CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
+            chadPrimeIcon = ModContent.GetModBossHeadSlot(chadPrimeIconPath);
+
             // TODO -- Is this not possible to place in ModItem.Load or ModItem.SetStaticDefaults ?
             // Centralizing hair dye shaders like this seems absurdly stiff
             GameShaders.Hair.BindShader(ModContent.ItemType<AdrenalineHairDye>(), new LegacyHairShaderData().UseLegacyMethod((Player player, Color newColor, ref bool lighting) => Color.Lerp(player.hairColor, new Color(0, 255, 171), ((float)player.Calamity().adrenaline / (float)player.Calamity().adrenalineMax))));
@@ -433,6 +452,7 @@ namespace CalamityMod
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
+            FramedGlowMask.UnloadTexCache();
 
             PopupGUIManager.UnloadGUIs();
             InvasionProgressUIManager.UnloadGUIs();
@@ -484,7 +504,7 @@ namespace CalamityMod
         #endregion Render Target Management
 
         #region Force ModConfig save (Reflection)
-        internal static void SaveConfig(CalamityConfig cfg)
+        internal static void SaveConfig(CalamityClientConfig cfg)
         {
             // There is no current way to manually save a mod configuration file in tModLoader.
             // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.

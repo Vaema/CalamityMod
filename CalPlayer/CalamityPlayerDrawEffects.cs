@@ -110,7 +110,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // TODO -- rogue stealth visuals are an utter catastrophe and should be fully destroyed on next stealth rework
-            if (calamityPlayer.rogueStealth > 0f && calamityPlayer.rogueStealthMax > 0f && Player.townNPCs < 3f && CalamityConfig.Instance.StealthInvisibility)
+            if (calamityPlayer.rogueStealth > 0f && calamityPlayer.rogueStealthMax > 0f && Player.townNPCs < 3f && CalamityClientConfig.Instance.StealthInvisibility)
             {
                 // A translucent orchid color, the rogue class color
                 float colorValue = calamityPlayer.rogueStealth / calamityPlayer.rogueStealthMax * 0.9f; //0 to 0.9
@@ -208,6 +208,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.astralInfection && drawInfo.shadow == 0f)
                 AstralInfectionDebuff.DrawEffects(drawInfo);
 
+            if (calamityPlayer.auricRebuke && drawInfo.shadow == 0f)
+                AuricRebuke.DrawEffects(drawInfo);
+
             if (calamityPlayer.bBlood && drawInfo.shadow == 0f)
                 BurningBlood.DrawEffects(drawInfo);
 
@@ -223,14 +226,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.cDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
-            if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
-                VermillionFlux.DrawEffects(drawInfo);
-
-            if (calamityPlayer.auricRebuke && drawInfo.shadow == 0f)
-                AuricRebuke.DrawEffects(drawInfo);
-
-            if (calamityPlayer.staticDischarge && drawInfo.shadow == 0f)
-                StaticDischarge.DrawEffects(drawInfo);
+            // Daybroken's visual effects are reduced if the player resists it
+            if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
+                Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
 
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
@@ -255,11 +253,7 @@ namespace CalamityMod.CalPlayer
 
             // Holy Flames, Holy Inferno and Banishing Fire share the same visual effects
             if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
-            {
-                // You cannot "resist" Holy Inferno or Banishing Fire, so if you have either of those the visuals are always full strength
-                bool resistsHolyFlames = !calamityPlayer.hInferno && !calamityPlayer.banishingFire && reducedHolyFlamesDamage;
-                HolyFlames.DrawEffects(drawInfo, resistsHolyFlames);
-            }
+                HolyFlames.DrawEffects(drawInfo);
 
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
             else if (calamityPlayer.icarusFolly && drawInfo.shadow == 0f)
@@ -275,6 +269,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
                 Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
 
+            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
+                Voidfrost.DrawEffects(drawInfo);
+
             if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
 
@@ -284,6 +281,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.shadowflame && drawInfo.shadow == 0f)
                 Shadowflame.DrawEffects(drawInfo);
 
+            if (calamityPlayer.staticDischarge && drawInfo.shadow == 0f)
+                StaticDischarge.DrawEffects(drawInfo);
+
             if (calamityPlayer.sulphurPoison && drawInfo.shadow == 0f)
                 SulphuricPoisoning.DrawEffects(drawInfo);
 
@@ -291,8 +291,14 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.tRegen && drawInfo.shadow == 0f)
                 TarraLifeRegen.DrawEffects(drawInfo);
 
+            if (calamityPlayer.trueVHex && drawInfo.shadow == 0f)
+                TrueVulnerabilityHex.DrawEffects(drawInfo);
+
             if (calamityPlayer.vaporfied && drawInfo.shadow == 0f)
                 Vaporfied.DrawEffects(drawInfo);
+
+            if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
+                VermillionFlux.DrawEffects(drawInfo);
 
             if (calamityPlayer.vHex && drawInfo.shadow == 0f)
                 VulnerabilityHex.DrawEffects(drawInfo);
@@ -446,7 +452,7 @@ namespace CalamityMod.CalPlayer
                     ModContent.ItemType<SparkSpreader>(),
                     ModContent.ItemType<HalleysInferno>(),
                     ModContent.ItemType<CleansingBlaze>(),
-                    ModContent.ItemType<ElementalEruption>(),
+                    ModContent.ItemType<ChromaticEruption>(),
                     ModContent.ItemType<DeadSunsWind>(),
                     ModContent.ItemType<Meowthrower>(),
                     ModContent.ItemType<OverloadedBlaster>(),

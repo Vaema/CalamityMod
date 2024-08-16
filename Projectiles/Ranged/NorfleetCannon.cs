@@ -229,7 +229,7 @@ namespace CalamityMod.Projectiles.Ranged
             else
             {
                 if (Owner.Calamity().NorfleetCounter >= 1000)
-                    Owner.Calamity().NorfleetCounter = 3;
+                    Owner.Calamity().NorfleetCounter = 4;
                 else
                     Owner.Calamity().NorfleetCounter = 1000;
 
