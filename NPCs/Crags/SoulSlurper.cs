@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.height = 40;
             NPC.defense = 30;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 60;
+            NPC.lifeMax = 80;
             NPC.knockBackResist = 0.65f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.noGravity = true;
