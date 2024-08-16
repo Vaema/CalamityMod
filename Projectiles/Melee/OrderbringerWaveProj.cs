@@ -110,14 +110,17 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+            if (damageMult < 1.3f && damageDone > 2)
+                damageMult += 0.325f;
+        }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Deal more damage on pierce
             modifiers.SourceDamage *= damageMult;
-            if (damageMult < 1.5f)
-                damageMult += 0.2f;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
     }
