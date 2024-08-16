@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.height = 36;
             NPC.defense = 30;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 35;
+            NPC.lifeMax = 50;
             NPC.knockBackResist = 0.25f;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             AIType = NPCID.Crab;
