@@ -116,8 +116,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             // Deal more damage on pierce
             modifiers.SourceDamage *= damageMult;
-            if (damageMult < 2f)
-                damageMult += 0.25f;
+            if (damageMult < 1.5f)
+                damageMult += 0.2f;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
     }
