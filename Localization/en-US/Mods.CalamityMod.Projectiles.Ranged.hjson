@@ -183,7 +183,7 @@ SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower
 SeasSearingSpout.DisplayName: Spout
-SepticSkewerBacteria.DisplayName: Bacteria
+SepticSkewerBacteria.DisplayName: Septic Gore
 SepticSkewerHarpoon.DisplayName: Septic Skewer
 SevensStrikerBrick.DisplayName: Brick
 SevensStrikerCherry.DisplayName: Cherry
@@ -244,3 +244,5 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
+HellbornProj.DisplayName: Hell-born Gunblast
+HellbornShell.DisplayName: Hell's Shell

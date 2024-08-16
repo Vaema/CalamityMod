@@ -3,26 +3,52 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using ReLogic.Content;
+using Terraria.ID;
 
 namespace CalamityMod.Backgrounds
 {
-    internal static class SunkenSeaBurrowsBG
+    public class SunkenSeaBurrowsBG : ModSystem
     {
-        public static void Load()
+        public override void Load()
         {
             if (Main.dedServ)
             {
                 return;
             }
 
-            On_Main.DrawBackgroundBlackFill += DrawBurrowsBG;
+            On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
         }
 
-        public static float Transparency;
+        /// <summary>
+        /// This code runs because there is a system in vanilla that causes backgrounds to not draw if lighting is too low.
+        /// That would be fine, the problem arises because sloped tiles still block light the same way normal tiles do.
+        /// Which means that the background will occasionally be blocked by slopes as though said slopes were full squares.
+        /// This is a hacky method that sets the light level of every sloped tile *AT LEAST* high enough to render the background while in the Burrows.
+        /// 
+        /// ENNWAY's note: 
+        /// if this doesn't get fixed in 1.4.5 i am throwing really big rocks at unsuspecting re logic employees
+        /// </summary>
+        public override void PreUpdatePlayers()
+        {
+            if (!Main.dedServ && Main.LocalPlayer.InModBiome<BiomeManagers.SunkenSeaBurrowsBiome>())
+            {
+                for (int i = 0; i < Main.screenWidth / 16; i++)
+                {
+                    for (int j = 0; j < Main.screenWidth / 16; j++)
+                    {
+                        Point pos = (Main.screenPosition / 16).ToPoint() + new Point(i, j);
 
-        public static float TransitionSpeed => 0.02f;
+                        if (Main.tile[pos.X, pos.Y].Slope != SlopeType.Solid)
+                        {
+                            Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.1f);
+                        }
+                    }
+                }
+            }
+        }
 
-        private static void DrawBurrowsBG(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
+        private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
         {
             if (Main.gameMenu || Main.screenPosition.Y + Main.screenHeight < ((int)Main.worldSurface) * 16f)
             {
@@ -33,6 +59,15 @@ namespace CalamityMod.Backgrounds
 
             orig(self);
 
+            DrawBurrowsBG();
+        }
+
+        public static float Transparency;
+
+        public static float TransitionSpeed => 0.02f;
+
+        private static void DrawBurrowsBG()
+        {
             if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.SunkenSeaBurrowsBiome>()))
             {
                 Transparency += TransitionSpeed;
@@ -75,52 +110,52 @@ namespace CalamityMod.Backgrounds
                     switch (Layers)
                     {
                         case 0:
-                        {
-                            zero.Y += 800f;
-                            break;
-                        }
+                            {
+                                zero.Y += 800f;
+                                break;
+                            }
                         case 1:
-                        {
-                            zero.Y += 200f;
-                            break;
-                        }
+                            {
+                                zero.Y += 200f;
+                                break;
+                            }
                         case 2:
-                        {
-                            zero.Y += 450f;
-                            break;
-                        }
+                            {
+                                zero.Y += 450f;
+                                break;
+                            }
                         case 3:
-                        {
-                            zero.Y += 45f;
-                            break;
-                        }
+                            {
+                                zero.Y += 45f;
+                                break;
+                            }
                         case 4:
-                        {
-                            zero.Y += 45f;
-                            break;
-                        }
+                            {
+                                zero.Y += 45f;
+                                break;
+                            }
                     }
 
                     vector2 *= Scale;
 
                     zero.Y -= num;
                     float LoopWidth = Scale * rectangle.Width;
-                    //float LoopHeight = Scale * rectangle.Height;
+                    float LoopHeight = Scale * rectangle.Height;
                     int LoopX = (int)((vector.X * vector3.X - vector2.X + zero.X - (Main.screenWidth >> 1)) / LoopWidth);
-                    //int LoopY = (int)((vector.Y * vector3.Y - vector2.Y + zero.Y - (Main.screenWidth >> 1)) / LoopWidth);
+                    int LoopY = (int)((vector.Y * vector3.Y - vector2.Y + zero.Y - (Main.screenWidth >> 1)) / LoopWidth);
 
-                    //for (int i = LoopY - 2; i < LoopY + 4 + (int)(Main.screenWidth / LoopHeight); i++)
-                    //{
+                    for (int i = LoopY - 2; i < LoopY + 4 + (int)(Main.screenWidth / LoopHeight); i++)
+                    {
                         for (int j = LoopX - 2; j < LoopX + 4 + (int)(Main.screenWidth / LoopWidth); j++)
                         {
                             Vector2 drawPosition = (new Vector2(j * Scale * (rectangle.Width / vector3.X), ((Main.LocalPlayer.Center.Y / 16f) - 90) * 16f) + vector2 - vector) * vector3 + vector - Main.screenPosition - vector2 + zero;
 
                             var frame = rectangle;
-                            var color = Color.MediumTurquoise * Transparency;
+                            var color = Color.White * Transparency;
 
                             Main.spriteBatch.Draw(BGTexture, drawPosition, frame, color, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
                         }
-                    //}
+                    }
                 }
             }
         }

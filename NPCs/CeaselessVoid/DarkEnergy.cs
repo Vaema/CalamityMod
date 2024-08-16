@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
             drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < trailCount; i += 2)
                 {
@@ -251,7 +251,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             Texture2D glowTexture = GlowTexture.Value;
             Color glowColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f) * NPC.Opacity;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < trailCount; i++)
                 {

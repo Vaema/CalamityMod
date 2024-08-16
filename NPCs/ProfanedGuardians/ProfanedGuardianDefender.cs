@@ -737,7 +737,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[0] == 2f)
                     afterimageAmt = 10;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -775,7 +775,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (colorOverride != null)
                     timeBasedGlowColor = colorOverride.Value;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {

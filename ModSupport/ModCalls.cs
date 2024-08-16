@@ -2180,7 +2180,7 @@ namespace CalamityMod
                 case "GetBossHealthBoost":
                 case "BossHealthMultiplier":
                 case "GetBossHealthMultiplier":
-                    return CalamityConfig.Instance.BossHealthBoost;
+                    return CalamityServerConfig.Instance.BossHealthBoost;
 
                 case "HasPermanentPowerup":
                 case "GetPermanentPowerup":
