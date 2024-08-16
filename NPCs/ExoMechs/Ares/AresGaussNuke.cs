@@ -660,7 +660,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             for (int k = 0; k < 3; k++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
-            if (NPC.soundDelay == 1)
+            if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 3;
                 SoundEngine.PlaySound(CommonCalamitySounds.ExoHitSound, NPC.Center);
