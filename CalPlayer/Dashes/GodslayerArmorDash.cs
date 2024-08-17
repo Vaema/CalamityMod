@@ -32,7 +32,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public float Size = 2.2f;
         public bool SoundOnce = true;
 
-        public override float CalculateDashSpeed(Player player) => 80f;
+        public override float CalculateDashSpeed(Player player) => 30f;
 
         public override void OnDashEffects(Player player)
         {
@@ -57,11 +57,16 @@ namespace CalamityMod.CalPlayer.Dashes
                 Dashsound.Position = player.Center;
 
             Time++;
-            Size -= 0.04f;
+            Size -= 0.0066f;
+
+            // Constantly update the player's velocity direction.
+            Vector2 dashVel = Main.MouseWorld - player.Center;
+            dashVel = dashVel.SafeNormalize(Vector2.UnitX) * CalculateDashSpeed(player);
+            player.velocity = dashVel;
 
             // Fall way, way, faster than usual.
             player.maxFallSpeed = 50f;
-            if (Time < 20)
+            if (Time < 145)
             {
                 Particle jaws = new Jaws(player.Center + player.velocity * 0.5f, player.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), player.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
                 GeneralParticleHandler.SpawnParticle(jaws);
@@ -70,7 +75,7 @@ namespace CalamityMod.CalPlayer.Dashes
             }
 
             float radiusFactor = MathHelper.Lerp(0f, 1f, Utils.GetLerpValue(2f, 2.5f, Time, true));
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 3; i++)
             {
                 float offsetRotationAngle = player.velocity.ToRotation() + Time / 20f;
                 float radius = (30f + (float)Math.Cos(Time / 3f) * 24f) * radiusFactor;
@@ -84,21 +89,24 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust2.noGravity = true;
             }
 
-            float sparkscale = Size * 1.3f;
-            Vector2 SparkVelocity1 = player.velocity.RotatedBy(player.direction * -4, default) * 0.08f - player.velocity / 2f;
-            SparkParticle spark = new SparkParticle(player.Center + player.velocity.RotatedBy(2f * player.direction) * 1.2f, SparkVelocity1, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
-            GeneralParticleHandler.SpawnParticle(spark);
-            Vector2 SparkVelocity2 = player.velocity.RotatedBy(player.direction * 4, default) * 0.08f - player.velocity / 2f;
-            SparkParticle spark2 = new SparkParticle(player.Center + player.velocity.RotatedBy(-2f * player.direction) * 1.2f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
-            GeneralParticleHandler.SpawnParticle(spark2);
+            if (Time % 2 == 0)
+            {
+                float sparkscale = Size * 1.3f;
+                Vector2 SparkVelocity1 = player.velocity.RotatedBy(player.direction * -4, default) * 0.08f - player.velocity / 2f;
+                SparkParticle spark = new SparkParticle(player.Center + player.velocity.RotatedBy(2f * player.direction) * 1.2f, SparkVelocity1, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
+                GeneralParticleHandler.SpawnParticle(spark);
+                Vector2 SparkVelocity2 = player.velocity.RotatedBy(player.direction * 4, default) * 0.08f - player.velocity / 2f;
+                SparkParticle spark2 = new SparkParticle(player.Center + player.velocity.RotatedBy(-2f * player.direction) * 1.2f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
 
-            if (Time > 20 && Time < 100)
+            if (Time > 145 && Time < 200)
             {
                 Particle pulse = new DirectionalPulseRing(player.Center - player.velocity * 0.52f, player.velocity / 1.5f, Color.Fuchsia, new Vector2(1f, 2f), player.velocity.ToRotation(), 0.82f, 0.32f, 60);
                 GeneralParticleHandler.SpawnParticle(pulse);
                 Particle pulse2 = new DirectionalPulseRing(player.Center - player.velocity * 0.40f, player.velocity / 1.5f * 0.9f, Color.Aqua, new Vector2(0.8f, 1.5f), player.velocity.ToRotation(), 0.58f, 0.28f, 50);
                 GeneralParticleHandler.SpawnParticle(pulse2);
-                Time = 111;
+                Time = 222;
             }
 
             // Dash at a much, much faster speed than the default value.

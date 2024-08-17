@@ -315,8 +315,8 @@ namespace CalamityMod.CalPlayer
 
                     if (silvaWings)
                     {
-                        Player.statLife += Player.statLifeMax2 / 2;
-                        Player.HealEffect(Player.statLifeMax2 / 2);
+                        Player.statLife += Player.statLifeMax2 / 3;
+                        Player.HealEffect(Player.statLifeMax2 / 3);
 
                         if (Player.statLife > Player.statLifeMax2)
                             Player.statLife = Player.statLifeMax2;
@@ -1594,6 +1594,10 @@ namespace CalamityMod.CalPlayer
             // 22AUG2023: Ozzatron: god slayer damage resistance removed due to it being strong enough to godmode rev yharon
             // If the incoming damage is somehow less than 1 (TML doesn't allow this, but...), the hit is completely ignored.
             if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
+                return true;
+
+            // Silva armor revive provides complete immunity.
+            if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
                 return true;
 
             // If this hit was marked to be completely ignored due to shield absorption, then process Adrenaline changes and ignore it.
