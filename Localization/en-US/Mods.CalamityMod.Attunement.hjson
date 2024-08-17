@@ -16,7 +16,6 @@ HotAttunement: {
 ColdAttunement: {
 	Name: Biting Embrace
 	Function: Perform a 3 strike combo with a glacial blade, with the final strike freezing foes for a split second
-
 }
 
 TropicalAttunement: {
@@ -106,7 +105,7 @@ MarineAttunement: {
 	Name: Gesture for the Drowned
 	Function:
 		'''
-        Shoot out gravity-affected water orbs, which turn into small waves on ground contact
+                Shoot out gravity-affected water orbs, which turn into small waves on ground contact
 		Waves that make contact with water become much larger and faster
 		'''
 }
