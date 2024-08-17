@@ -83,7 +83,7 @@ HallowPointRound: {
 	DisplayName: Hallow-Point Round
 	Tooltip:
 		'''
-		Gallant light bullets that deal extra flat damage on hit
+		Releases anointed light on hit that increases the bullet's base damage to {0}
 		This effect does not occur if the bullets are converted by special guns
 		'''
 }
