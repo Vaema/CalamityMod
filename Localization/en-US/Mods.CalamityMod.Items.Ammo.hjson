@@ -83,7 +83,7 @@ HallowPointRound: {
 	DisplayName: Hallow-Point Round
 	Tooltip:
 		'''
-		Gallant Light deals extra damage on impact
+		Gallant light bullets that deal extra flat damage on hit
 		This effect does not occur if the bullets are converted by special guns
 		'''
 }
@@ -92,7 +92,8 @@ HolyFireBullet: {
 	DisplayName: Holy Fire Bullet
 	Tooltip:
 		'''
-		Explosive bullets that grow weaker the farther they travel
+		Profaned bullets that explode on impact, dealing extra damage
+                The explosion grows weaker the further the bullet travels
 		'''
 }
 
