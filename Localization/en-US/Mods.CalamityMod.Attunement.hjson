@@ -9,7 +9,7 @@ HotAttunement: {
 	Function:
 		'''
 		Conjure searing blades in front of you that get larger and stronger with enemy hits
-                The blades will bounce you off of tiles while in the air
+		The blades will bounce you off of tiles while in the air
 		'''
 }
 
@@ -22,17 +22,14 @@ TropicalAttunement: {
 	Name: Grovetender's Touch
 	Function:
 		'''
-                Throw out the blade on a vine whip, pulling you toward struck tiles
+		Throw out the blade on a vine whip, pulling you toward struck tiles
 		Striking enemies with the tip of the whip as it cracks guarantees a critical hit
 		'''
 }
 
 EvilAttunement: {
 	Name: Decay's Retort
-	Function:
-		'''
-		Lunge forward with a ghostly rapier projection, bouncing away from struck targets and leeching their life
-		'''
+	Function: Lunge forward with a ghostly rapier projection, bouncing away from struck targets and leeching their life
 }
 
 // Mended Biome Blade
@@ -68,7 +65,7 @@ TrueTropicalAttunement: {
 	Name: Grovetender's Touch
 	Function:
 		'''
-                Throw out the blade on a vine whip, pulling you toward struck tiles
+		Throw out the blade on a vine whip, pulling you toward struck tiles
 		Striking enemies with the tip of the whip as it cracks guarantees a critical hit
 		Spreading vines sprout from critical strikes, which can hit up to three targets
 		'''
@@ -105,7 +102,7 @@ MarineAttunement: {
 	Name: Gesture for the Drowned
 	Function:
 		'''
-                Shoot out gravity-affected water orbs, which turn into small waves on ground contact
+		Shoot out gravity-affected water orbs, which turn into small waves on ground contact
 		Waves that make contact with water become much larger and faster
 		'''
 }
@@ -138,7 +135,7 @@ SuperPogoAttunement: {
 		Conjure molten blades in front of you that get larger and stronger with enemy hits
 		The blades will bounce you off of tiles while in the air
 		Releasing sends the charged blades hurtling forwards like a wheel
-                Attacking immediately after throwing the blade launches you toward it, damaging enemies
+		Attacking immediately after throwing the blade launches you toward it, damaging enemies
 		'''
 	PassiveDesc: Striking enemies will rarely heal you
 }
@@ -175,7 +172,7 @@ AriesAttunement: {
 	Name: Aries' Wrath
 	Function:
 		'''
-                Binds the sword to your cursor through a chain of constellations
+		Binds the sword to your cursor through a chain of constellations
 		Striking enemies causes nebulous explosions which spawn homing cosmic bolts
 		'''
 	PassiveName: Capricorn's Blessing
@@ -193,7 +190,7 @@ PolarisAttunement: {
 		Channel Galaxia's power into a vortex of celestial energies
 		The vortex powers up over time and while hitting enemies
 		Release to fire a powerful star directly at your cursor
-                Attacking immediately after firing the star launches you toward it, damaging enemies
+		Attacking immediately after firing the star launches you toward it, damaging enemies
 		'''
 	PassiveName: Cancer's Blessing
 	PassiveDesc:

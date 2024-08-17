@@ -83,7 +83,7 @@ HallowPointRound: {
 	DisplayName: Hallow-Point Round
 	Tooltip:
 		'''
-		Releases anointed light on hit that increases the bullet's base damage to {0}
+		Releases anointed light on hit that increases the bullet's base damage to [DAMAGE]
 		This effect does not occur if the bullets are converted by special guns
 		'''
 }
@@ -93,16 +93,13 @@ HolyFireBullet: {
 	Tooltip:
 		'''
 		Profaned bullets that explode on impact, dealing extra damage
-                The explosion grows weaker the further the bullet travels
+		              The explosion grows weaker the further the bullet travels
 		'''
 }
 
 HyperiusBullet: {
 	DisplayName: Hyperius Bullet
-	Tooltip:
-		'''
-		Dazzling multicolor bullets that split into swirling lights on impact
-		'''
+	Tooltip: Dazzling multicolor bullets that split into swirling lights on impact
 }
 
 IcicleArrow: {
