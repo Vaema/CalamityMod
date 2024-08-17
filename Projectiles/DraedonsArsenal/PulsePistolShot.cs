@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         private NPC closestTarget = null;
         private NPC lastTarget = null;
         private float distance;
-        private int timesItCanHit = 2;
+        private int timesItCanHit = 1;
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -38,7 +38,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             // If it's hit targeted enemies enough, kill it
             if (timesItCanHit <= 0)
+            {
+                if (Projectile.ai[1] < 5)
+                {
+                    Projectile uwa = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5).RotatedBy(0.3f) * 0.5f, Projectile.type, Projectile.damage / 4, Projectile.knockBack / 2, Projectile.owner, 0, 5);
+                    Projectile uwaAgain = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5).RotatedBy(-0.3f) * 0.5f, Projectile.type, Projectile.damage / 4, Projectile.knockBack / 2, Projectile.owner, 0, 5);
+                    uwa.penetrate = 1;
+                    uwaAgain.penetrate = 1;
+                }
                 Projectile.Kill();
+                return;
+            }
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0f, 0.5f);
             Player Owner = Main.player[Projectile.owner];

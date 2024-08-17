@@ -19,17 +19,17 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 62;
-            Item.height = 22;
+            Item.width = 54;
+            Item.height = 38;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 49;
-            Item.knockBack = 0f;
+            Item.damage = 70;
+            Item.knockBack = 3f;
             Item.useTime = Item.useAnimation = 44;
             Item.autoReuse = true;
             Item.mana = 3;
 
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = PulseRifle.FireSound with { Pitch = 0.5f };
+            Item.UseSound = PulseRifle.FireSound with { Pitch = 0.3f, Volume = 0.7f };
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
@@ -48,9 +48,36 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Projectile.NewProjectile(source, position + velocity * 4, velocity, ModContent.ProjectileType<PulsePistolShot>(), damage, knockback, player.whoAmI, 0f, 3f);
             return false;
         }
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
-        public override Vector2? HoldoutOffset() => new Vector2(10f, 0f);
+            float pullback = 7f;
 
+            float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
+            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            if (animProgress < 0.4f)
+                pullback -= (2.75f) * (float)Math.Pow((0.6f - animProgress) / 0.6f, 2);
+
+            Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * pullback;
+            Vector2 itemSize = new Vector2(54, 38);
+            Vector2 itemOrigin = new Vector2(-24, 4);
+
+            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+
+            base.UseStyle(player, heldItemFrame);
+        }
+
+        public override void UseItemFrame(Player player)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+
+            float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
+            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
+        }
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 1);
 
         public override void AddRecipes()

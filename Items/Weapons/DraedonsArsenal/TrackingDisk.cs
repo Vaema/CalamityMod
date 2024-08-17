@@ -20,8 +20,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 30;
-            Item.height = 34;
+            Item.width = 58;
+            Item.height = 48;
             Item.damage = 16;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = 40;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 50f;
-            modItem.ChargePerUse = 0.07f;
+            modItem.ChargePerUse = 0.05f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

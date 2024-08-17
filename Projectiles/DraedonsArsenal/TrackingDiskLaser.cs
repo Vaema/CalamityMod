@@ -1,6 +1,8 @@
-﻿using Terraria;
-using Terraria.ID;
+﻿using CalamityMod.Particles;
+using Terraria;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
+using CalamityMod.NPCs;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -29,30 +31,68 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, 0.2f, 0.1f, 0f);
-
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             Time++;
-            if (Time >= 10f)
+            if (Time == 1)
             {
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 7; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.TheDestroyer, 0f, 0f, 160, default, 2f);
-                    dust.position = Projectile.Center;
-                    dust.velocity = Projectile.velocity;
-                    dust.scale = Projectile.scale;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 267);
+                    dust.velocity = (Projectile.velocity * 3).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 1f);
+                    dust.scale = Main.rand.NextFloat(0.6f, 0.8f);
                     dust.noGravity = true;
+                    dust.color = Color.Red;
+                }
+            }
+            if (Time >= 15f)
+            {
+                if (Projectile.timeLeft % 11 == 0 && targetDist < 1400)
+                {
+                    Particle spark = new LineParticle(Projectile.Center - Projectile.velocity * 10, -Projectile.velocity * 0.01f, false, 4, 1.5f * Projectile.scale, Color.Red);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                if (Projectile.timeLeft % 2 == 0 && targetDist < 1400)
+                {
+                    Particle spark2 = new LineParticle(Projectile.Center - Projectile.velocity * 10, -Projectile.velocity * 0.01f, false, 4, 0.35f * Projectile.scale, Color.White);
+                    GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // Handles giving the NPC the laser burn effect
+            CalamityGlobalNPC modNPC = target.Calamity();
+            if (!modNPC.laserBurnMarked)
+            {
+                modNPC.laserBurnMarked = true;
+                modNPC.laserBurnType = 1;
+                modNPC.laserBurnTimer = CalamityGlobalNPC.laserBurnTime;
+            }
 
+            modNPC.laserBurnTimer -= modNPC.laserBurnStacks * 2;
+            modNPC.laserBurnDamage += (int)(Projectile.damage * 0.2f);
+
+            modNPC.laserBurnStacks++;
+
+            if (Projectile.scale == 1)
+            {
+                Projectile.damage = 1;
+                modifiers.HideCombatText();
+            }
+            else
+                modifiers.SourceDamage *= 0.15f;
+        }
         public override void OnKill(int timeLeft)
         {
-            Projectile.ExpandHitboxBy(60);
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
+            for (int i = 0; i < 7; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 267);
+                dust.velocity = (Projectile.velocity * 3 * Projectile.scale).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.3f, 1f);
+                dust.scale = Main.rand.NextFloat(0.4f, 0.7f) * Projectile.scale;
+                dust.noGravity = true;
+                dust.color = Color.Red;
+            }
         }
     }
 }
