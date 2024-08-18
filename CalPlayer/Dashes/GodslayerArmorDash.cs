@@ -32,7 +32,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public float Size = 2.2f;
         public bool SoundOnce = true;
 
-        public override float CalculateDashSpeed(Player player) => 30f;
+        public override float CalculateDashSpeed(Player player) => 40f;
 
         public override void OnDashEffects(Player player)
         {
@@ -57,7 +57,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 Dashsound.Position = player.Center;
 
             Time++;
-            Size -= 0.0066f;
+            Size -= 0.01f;
 
             // Constantly update the player's velocity direction.
             Vector2 dashVel = Main.MouseWorld - player.Center;
@@ -66,7 +66,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
             // Fall way, way, faster than usual.
             player.maxFallSpeed = 50f;
-            if (Time < 145)
+            if (Time < 115)
             {
                 Particle jaws = new Jaws(player.Center + player.velocity * 0.5f, player.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), player.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
                 GeneralParticleHandler.SpawnParticle(jaws);
@@ -100,7 +100,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
 
-            if (Time > 145 && Time < 200)
+            if (Time > 115 && Time < 200)
             {
                 Particle pulse = new DirectionalPulseRing(player.Center - player.velocity * 0.52f, player.velocity / 1.5f, Color.Fuchsia, new Vector2(1f, 2f), player.velocity.ToRotation(), 0.82f, 0.32f, 60);
                 GeneralParticleHandler.SpawnParticle(pulse);
