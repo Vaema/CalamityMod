@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
+            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 10f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
 
             if (Projectile.ai[2] == 5)
             {

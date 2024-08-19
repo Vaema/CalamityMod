@@ -1184,7 +1184,7 @@ namespace CalamityMod.ILEditing
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
                     outputColor = Vector3.Lerp(outputColor, Color.DarkSlateGray.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
-                    outputColor *= brightness;
+                    outputColor *= brightness * 6f;
                 }
             }
         }

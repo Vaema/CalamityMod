@@ -831,7 +831,7 @@ namespace CalamityMod.CalPlayer
         public int silvaMageCooldown = 0;
         public bool silvaSummon = false;
         public bool hasSilvaEffect = false;
-        public static int silvaReviveDuration = 480;
+        public static int silvaReviveDuration = 300;
         public int silvaCountdown = silvaReviveDuration;
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
@@ -3139,7 +3139,7 @@ namespace CalamityMod.CalPlayer
             // Trigger for pressing the God Slayer dash key
             if (CalamityKeybinds.GodSlayerDashHotKey.JustPressed)
             {
-                if (godSlayer && (Player.controlUp || Player.controlDown || Player.controlLeft || Player.controlRight) && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
+                if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {
                     godSlayerDashHotKeyPressed = true;
                 }

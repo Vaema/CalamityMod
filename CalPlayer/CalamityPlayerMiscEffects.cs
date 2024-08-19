@@ -661,8 +661,9 @@ namespace CalamityMod.CalPlayer
                         Player.AddBuff(BuffID.Burning, 2);
                 }
 
-                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
+                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
+                // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
                 if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph || Player.creativeGodMode)) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
@@ -1742,8 +1743,12 @@ namespace CalamityMod.CalPlayer
             // Silva invincibility effects
             if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
             {
+                // You become immune to all debuffs
                 foreach (int debuff in CalamityLists.debuffList)
                     Player.buffImmune[debuff] = true;
+
+                // Prevent thorns effects from being abused during invincibility
+                Player.thorns = 0f;
 
                 silvaCountdown -= 1;
                 if (silvaCountdown <= 0)

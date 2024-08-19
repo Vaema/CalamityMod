@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.height = 6;
             Projectile.friendly = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 1;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6;

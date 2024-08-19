@@ -117,7 +117,7 @@ namespace CalamityMod.CalPlayer
                     dashDelayToApply = BalancingConstants.UniversalShieldSlamCooldown;
                 else if (UsedDash.CollisionType == DashCollisionType.ShieldBonk)
                     dashDelayToApply = BalancingConstants.UniversalShieldBonkCooldown;
-                if (DashID == "Deep Diver")
+                if (DashID == DeepDiverDash.ID)
                     dashDelayToApply = 23;
 
                 float dashSpeed = 12f;
@@ -129,10 +129,11 @@ namespace CalamityMod.CalPlayer
 
                 // Handle mid-dash effects.
                 UsedDash.MidDashEffects(Player, ref dashSpeed, ref dashSpeedDecelerationFactor, ref runSpeedDecelerationFactor);
-                if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < 25)
+                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 120 : 25;
+                if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < VerticalOmnidashCap)
                 {
                     VerticalOmnidashTimer++;
-                    if (VerticalOmnidashTimer >= 25)
+                    if (VerticalOmnidashTimer >= VerticalOmnidashCap)
                     {
                         Player.dashDelay = dashDelayToApply;
                         // Stop the player from going flying
@@ -151,6 +152,9 @@ namespace CalamityMod.CalPlayer
                     // Handle mid-dash movement.
                     if (UsedDash.IsOmnidirectional)
                     {
+                        if (DashID == GodslayerArmorDash.ID)
+                            return;
+
                         if (Player.velocity.Length() > dashSpeed)
                         {
                             Player.velocity *= dashSpeedDecelerationFactor;
@@ -385,6 +389,28 @@ namespace CalamityMod.CalPlayer
             return justDashed;
         }
 
+        public bool HandleGodSlayerDash(out DashDirection direction)
+        {
+            bool justDashed = false;
+            direction = DashDirection.Directionless;
+
+            // God Slayer armor's dash will dash towards the player's cursor.
+            Vector2 dashVel = Main.MouseWorld - Player.Center;
+            dashVel = dashVel.SafeNormalize(Vector2.UnitX) * UsedDash.CalculateDashSpeed(Player);
+
+            Player.velocity = dashVel;
+
+            if (dashTimeMod > 0)
+            {
+                justDashed = true;
+                dashTimeMod = 0;
+            }
+            else
+                dashTimeMod = 15;
+
+            return justDashed;
+        }
+
         public bool DoADash(float dashSpeed)
         {
             bool justDashed;
@@ -396,7 +422,9 @@ namespace CalamityMod.CalPlayer
                 dashTimeMod -= (dashTimeMod > 0).ToDirectionInt();
 
             // Determine dash times.
-            if (omnidirectionalDash)
+            if (DashID == GodslayerArmorDash.ID)
+                justDashed = HandleGodSlayerDash(out direction);
+            else if (omnidirectionalDash)
                 justDashed = HandleOmnidirectionalDash(out direction);
             else
                 justDashed = HandleHorizontalDash(out direction);

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,6 +32,13 @@ namespace CalamityMod.Items.Ammo
             Item.shoot = ModContent.ProjectileType<HallowPointRoundProj>();
             Item.shootSpeed = 6f;
             Item.ammo = AmmoID.Bullet;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            // Add the proper damage value
+            int nonConvertDamage = (int)Main.LocalPlayer.GetTotalDamage<RangedDamageClass>().ApplyTo(BaseDamage + BonusDamageOnHit);
+            list.FindAndReplace("[DAMAGE]", nonConvertDamage.ToString());
         }
 
         public override void AddRecipes()
