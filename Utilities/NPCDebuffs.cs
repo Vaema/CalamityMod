@@ -144,7 +144,7 @@ namespace CalamityMod
         private static readonly int[] sunkenSeaEnemyImmunities = new int[2] { ModContent.BuffType<Eutrophication>(), ModContent.BuffType<PearlAura>() };
         private static readonly int[] abyssEnemyImmunities = new int[2] { ModContent.BuffType<CrushDepth>(), ModContent.BuffType<RiptideDebuff>() };
         private static readonly int[] cragEnemyImmunities = new int[3] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>() };
-        private static readonly int[] scalImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<VulnerabilityHex>() };
+        private static readonly int[] scalImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<VulnerabilityHex>(), ModContent.BuffType<TrueVulnerabilityHex>() };
         private static readonly int[] astralEnemyImmunities = new int[2] { BuffID.Poisoned, ModContent.BuffType<AstralInfectionDebuff>() };
         private static readonly int[] plagueEnemyImmunities = new int[3] { BuffID.Poisoned, BuffID.Venom, ModContent.BuffType<Plague>() };
         private static readonly int[] holyEnemyImmunities = new int[4] { BuffID.OnFire, BuffID.OnFire3, ModContent.BuffType<HolyFlames>(), BuffID.Daybreak };
