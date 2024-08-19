@@ -2743,7 +2743,7 @@ namespace CalamityMod.NPCs.Providence
 
         private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
-            if (npc.type == ModContent.NPCType<Providence>())
+            if (npc.type == ModContent.NPCType<Providence>() && !BossRushEvent.BossRushActive)
             {
                 Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
             }
