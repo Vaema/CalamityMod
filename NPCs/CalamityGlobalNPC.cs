@@ -1598,9 +1598,9 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.KingSlime)
             {
                 if (CalamityWorld.death)
-                    npc.scale = Main.getGoodWorld ? 6f : 3f;
+                    npc.scale = Main.getGoodWorld ? 6f : 2.5f;
                 else
-                    npc.scale = Main.getGoodWorld ? 3f : 1.25f;
+                    npc.scale = Main.getGoodWorld ? 3f : 1.5f;
 
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * (Main.getGoodWorld ? 1.8 : 1.5));
             }

@@ -525,7 +525,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
 
             // Adjust size based on HP
-            float maxScale = death ? (Main.getGoodWorld ? 6f : 3f) : (Main.getGoodWorld ? 3f : 1.25f);
+            float maxScale = death ? (Main.getGoodWorld ? 6f : 2.5f) : (Main.getGoodWorld ? 3f : 1.5f);
             float minScale = death ? 0.5f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
