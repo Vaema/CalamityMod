@@ -486,8 +486,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             int type = ProjectileID.BloodNautilusShot;
                             int damage = npc.GetProjectileDamage(type);
-                            int numProj = masterMode ? Main.rand.Next(4, 6) : 3;
-                            int spread = masterMode ? numProj * 3 : 10;
+                            int numProj = masterMode ? 4 : 3;
+                            int spread = masterMode ? 12 : 10;
                             float rotation = MathHelper.ToRadians(spread);
                             for (int i = 0; i < numProj; i++)
                             {
