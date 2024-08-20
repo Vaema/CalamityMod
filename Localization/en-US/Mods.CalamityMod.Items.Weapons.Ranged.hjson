@@ -328,15 +328,6 @@ ContinentalGreatbow: {
 		'''
 }
 
-CoralCannon: {
-	DisplayName: Coral Cannon
-	Tooltip:
-		'''
-		Has a 20% chance to shoot a big coral that stuns enemies
-		Does not consume ammo
-		'''
-}
-
 CorinthPrime: {
 	DisplayName: Corinth Prime
 	Tooltip:
