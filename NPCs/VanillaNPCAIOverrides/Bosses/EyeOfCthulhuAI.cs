@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.getGoodWorld)
                         chargeDelay -= 30;
 
-                    float slowDownGateValue = chargeDelay * (death ? (masterMode ? 0.9f : 0.75f) : (masterMode ? 0.8f : 0.65f));
+                    float slowDownGateValue = chargeDelay * (death ? (masterMode ? 0.85f : 0.75f) : (masterMode ? 0.75f : 0.65f));
 
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
@@ -546,7 +546,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (death)
                         phase2ChargeDelay -= (int)Math.Round(25f * (phase2LifeRatio - lifeRatio));
 
-                    float slowDownGateValue = phase2ChargeDelay * (death ? (masterMode ? 0.95f : 0.85f) : (masterMode ? 0.9f : 0.75f));
+                    float slowDownGateValue = phase2ChargeDelay * (death ? (masterMode ? 0.9f : 0.85f) : (masterMode ? 0.85f : 0.75f));
 
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
