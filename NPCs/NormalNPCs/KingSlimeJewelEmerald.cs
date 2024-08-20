@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewel";
 
-        private const int ChargePhaseGateValue = 90;
+        private const int ChargePhaseGateValue = 120;
         private const int ChargeGateValue = 60;
         private const int ChargeGateValue_Death = 40;
         private const float LightTelegraphDuration = 30f;
