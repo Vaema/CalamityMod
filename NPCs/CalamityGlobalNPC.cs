@@ -3623,6 +3623,10 @@ namespace CalamityMod.NPCs
                 return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
             }
 
+            // Servant of Cthulhu light
+            if (npc.type == NPCID.ServantofCthulhu)
+                Lighting.AddLight(npc.Center, 0.2f, 0.2f, 0.2f);
+
             if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
             {
                 if (npc.type == NPCID.CultistBossClone)

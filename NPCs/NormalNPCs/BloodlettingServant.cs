@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            Lighting.AddLight(NPC.Center, 0.8f, 0f, 0f);
+            Lighting.AddLight(NPC.Center, 0.3f, 0.3f, 0.3f);
 
             NPC.TargetClosest();
             Player target = Main.player[NPC.target];
