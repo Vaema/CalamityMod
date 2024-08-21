@@ -55,6 +55,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+
             // Despawn
             if (!CalamityPlayer.areThereAnyDamnBosses)
             {
@@ -187,9 +188,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Asset<Texture2D> primtex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail");
-            float primWidth = 30;
-
             Color col = Color.Red;
             Color flashCol = Color.Pink;
 
@@ -202,26 +200,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
             Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
-
-            Rectangle tailArea = NPC.frame with { Width = 28 };
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(primtex);
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].UseSamplerState(SamplerState.PointWrap);
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(primtex.Width());
-
-            NPC npc = null;
-            if (NPC.CountNPCS(NPCID.KingSlime) > 0)
-            {
-                npc = Main.npc[(int)NPC.localAI[2]];
-
-                List<Vector2> vec2s = new List<Vector2>();
-
-                for (float i = 0; i <= 10; i++)
-                {
-                    vec2s.Add(Vector2.Lerp(NPC.Center, npc.Top, i / 10));
-                }
-
-                PrimitiveRenderer.RenderTrail(vec2s, new PrimitiveSettings(AA => { return primWidth - (CalamityUtils.SineBumpEasing(AA, 1) * primWidth); }, CC => { return col; }, shader: GameShaders.Misc["CalamityMod:PrimitiveTexture"]));
-            }
 
             Main.EntitySpriteDraw(tex.Value, NPC.Center - Main.screenPosition, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
             Main.EntitySpriteDraw(tex2.Value, NPC.Center - Main.screenPosition, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
