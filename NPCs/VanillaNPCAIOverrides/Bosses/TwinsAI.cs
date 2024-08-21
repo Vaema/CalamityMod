@@ -459,76 +459,38 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Avoid cheap bullshit
                     npc.damage = 0;
 
-                    float retinazerPhase2MaxSpeed = 9.5f + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                    float retinazerPhase2Accel = 0.175f + (death ? 0.05f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                    retinazerPhase2MaxSpeed += 4.5f * enrageScale;
-                    retinazerPhase2Accel += 0.075f * enrageScale;
+                    float maxVelocity = 9.5f + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    float acceleration = 0.175f + (death ? 0.05f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    maxVelocity += 4.5f * enrageScale;
+                    acceleration += 0.075f * enrageScale;
 
                     if (Main.getGoodWorld)
                     {
-                        retinazerPhase2MaxSpeed *= 1.15f;
-                        retinazerPhase2Accel *= 1.15f;
+                        maxVelocity *= 1.15f;
+                        acceleration *= 1.15f;
                     }
 
-                    Vector2 eyePosition = npc.Center;
-                    float retinazerPhase2TargetX = Main.player[npc.target].Center.X - eyePosition.X;
                     float distanceFromTarget = oblivionAlive ? 480f : 420f;
-                    float retinazerPhase2TargetY = Main.player[npc.target].Center.Y - 420f - eyePosition.Y;
+                    Vector2 destination = Main.player[npc.target].Center - Vector2.UnitY * distanceFromTarget;
+                    float distanceFromDestination = (destination - npc.Center).Length();
+                    Vector2 idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitX * direction);
 
                     if (NPC.IsMechQueenUp)
                     {
-                        retinazerPhase2MaxSpeed = 14f;
-                        retinazerPhase2TargetX = mechQueenSpacing.X;
-                        retinazerPhase2TargetY = mechQueenSpacing.Y;
-                        retinazerPhase2TargetX -= eyePosition.X;
-                        retinazerPhase2TargetY -= eyePosition.Y;
-                    }
+                        maxVelocity = 14f;
 
-                    float retinazerPhase2TargetDist = (float)Math.Sqrt(retinazerPhase2TargetX * retinazerPhase2TargetX + retinazerPhase2TargetY * retinazerPhase2TargetY);
+                        destination = mechQueenSpacing;
+                        distanceFromDestination = (destination - npc.Center).Length();
+                        idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitY);
 
-                    if (NPC.IsMechQueenUp)
-                    {
-                        if (retinazerPhase2TargetDist > retinazerPhase2MaxSpeed)
-                        {
-                            retinazerPhase2TargetDist = retinazerPhase2MaxSpeed / retinazerPhase2TargetDist;
-                            retinazerPhase2TargetX *= retinazerPhase2TargetDist;
-                            retinazerPhase2TargetY *= retinazerPhase2TargetDist;
-                        }
+                        if (distanceFromDestination > maxVelocity)
+                            idealVelocity *= maxVelocity / distanceFromDestination;
 
-                        npc.velocity.X = (npc.velocity.X * 4f + retinazerPhase2TargetX) / 5f;
-                        npc.velocity.Y = (npc.velocity.Y * 4f + retinazerPhase2TargetY) / 5f;
+                        float inertia = 5f;
+                        npc.velocity = (npc.velocity * (inertia - 1f) + idealVelocity) / inertia;
                     }
                     else
-                    {
-                        retinazerPhase2TargetDist = retinazerPhase2MaxSpeed / retinazerPhase2TargetDist;
-                        retinazerPhase2TargetX *= retinazerPhase2TargetDist;
-                        retinazerPhase2TargetY *= retinazerPhase2TargetDist;
-
-                        if (npc.velocity.X < retinazerPhase2TargetX)
-                        {
-                            npc.velocity.X += retinazerPhase2Accel;
-                            if (npc.velocity.X < 0f && retinazerPhase2TargetX > 0f)
-                                npc.velocity.X += retinazerPhase2Accel;
-                        }
-                        else if (npc.velocity.X > retinazerPhase2TargetX)
-                        {
-                            npc.velocity.X -= retinazerPhase2Accel;
-                            if (npc.velocity.X > 0f && retinazerPhase2TargetX < 0f)
-                                npc.velocity.X -= retinazerPhase2Accel;
-                        }
-                        if (npc.velocity.Y < retinazerPhase2TargetY)
-                        {
-                            npc.velocity.Y += retinazerPhase2Accel;
-                            if (npc.velocity.Y < 0f && retinazerPhase2TargetY > 0f)
-                                npc.velocity.Y += retinazerPhase2Accel;
-                        }
-                        else if (npc.velocity.Y > retinazerPhase2TargetY)
-                        {
-                            npc.velocity.Y -= retinazerPhase2Accel;
-                            if (npc.velocity.Y > 0f && retinazerPhase2TargetY < 0f)
-                                npc.velocity.Y -= retinazerPhase2Accel;
-                        }
-                    }
+                        npc.SimpleFlyMovement(idealVelocity * maxVelocity, acceleration);
 
                     npc.ai[2] += spazAlive ? 1f : 1.5f;
                     float phaseGateValue = NPC.IsMechQueenUp ? 900f : 300f - (death ? 120f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
@@ -545,10 +507,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    eyePosition = npc.Center;
-                    retinazerPhase2TargetX = Main.player[npc.target].Center.X - eyePosition.X;
-                    retinazerPhase2TargetY = Main.player[npc.target].Center.Y - eyePosition.Y;
-                    npc.rotation = (float)Math.Atan2(retinazerPhase2TargetY, retinazerPhase2TargetX) - MathHelper.PiOver2;
+                    npc.rotation = (float)Math.Atan2(Main.player[npc.target].Center.Y - npc.Center.Y, Main.player[npc.target].Center.X - npc.Center.X) - MathHelper.PiOver2;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -558,8 +517,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                             {
                                 npc.localAI[1] = 0f;
-                                float retinazerPhase2LaserSpeed = 10f;
-                                retinazerPhase2LaserSpeed += enrageScale;
+
+                                float laserSpeed = 10f;
+                                laserSpeed += enrageScale;
                                 int type = ProjectileID.DeathLaser;
                                 int damage = npc.GetProjectileDamage(type);
 
@@ -574,13 +534,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                retinazerPhase2TargetDist = (float)Math.Sqrt(retinazerPhase2TargetX * retinazerPhase2TargetX + retinazerPhase2TargetY * retinazerPhase2TargetY);
-                                retinazerPhase2TargetDist = retinazerPhase2LaserSpeed / retinazerPhase2TargetDist;
-                                retinazerPhase2TargetX *= retinazerPhase2TargetDist;
-                                retinazerPhase2TargetY *= retinazerPhase2TargetDist;
-
-                                Vector2 laserVelocity = new Vector2(retinazerPhase2TargetX, retinazerPhase2TargetY);
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), eyePosition + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -592,55 +547,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Avoid cheap bullshit
                         npc.damage = 0;
 
-                        float retinazerPhase2RapidFireMaxSpeed = 9.5f + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        float retinazerPhase2RapidFireAccel = 0.25f + (death ? 0.075f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        retinazerPhase2RapidFireMaxSpeed += 4.5f * enrageScale;
-                        retinazerPhase2RapidFireAccel += 0.15f * enrageScale;
+                        float maxVelocity = 9.5f + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        float acceleration = 0.25f + (death ? 0.075f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        maxVelocity += 4.5f * enrageScale;
+                        acceleration += 0.15f * enrageScale;
 
                         if (Main.getGoodWorld)
                         {
-                            retinazerPhase2RapidFireMaxSpeed *= 1.15f;
-                            retinazerPhase2RapidFireAccel *= 1.15f;
+                            maxVelocity *= 1.15f;
+                            acceleration *= 1.15f;
                         }
 
-                        Vector2 retinazerPhase2RapidFirePos = npc.Center;
                         float distanceFromTarget = oblivionAlive ? 480f : 420f;
-                        float retinazerPhase2RapidFireTargetX = Main.player[npc.target].Center.X + (direction * distanceFromTarget) - retinazerPhase2RapidFirePos.X;
-                        float retinazerPhase2RapidFireTargetY = Main.player[npc.target].Center.Y - retinazerPhase2RapidFirePos.Y;
-                        float retinazerPhase2RapidFireTargetDist = (float)Math.Sqrt(retinazerPhase2RapidFireTargetX * retinazerPhase2RapidFireTargetX + retinazerPhase2RapidFireTargetY * retinazerPhase2RapidFireTargetY);
-                        retinazerPhase2RapidFireTargetDist = retinazerPhase2RapidFireMaxSpeed / retinazerPhase2RapidFireTargetDist;
-                        retinazerPhase2RapidFireTargetX *= retinazerPhase2RapidFireTargetDist;
-                        retinazerPhase2RapidFireTargetY *= retinazerPhase2RapidFireTargetDist;
+                        Vector2 destination = Main.player[npc.target].Center + Vector2.UnitX * distanceFromTarget * direction;
+                        float distanceFromDestination = (destination - npc.Center).Length();
+                        Vector2 idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitX * direction);
+                        npc.SimpleFlyMovement(idealVelocity * maxVelocity, acceleration);
 
-                        if (npc.velocity.X < retinazerPhase2RapidFireTargetX)
-                        {
-                            npc.velocity.X += retinazerPhase2RapidFireAccel;
-                            if (npc.velocity.X < 0f && retinazerPhase2RapidFireTargetX > 0f)
-                                npc.velocity.X += retinazerPhase2RapidFireAccel;
-                        }
-                        else if (npc.velocity.X > retinazerPhase2RapidFireTargetX)
-                        {
-                            npc.velocity.X -= retinazerPhase2RapidFireAccel;
-                            if (npc.velocity.X > 0f && retinazerPhase2RapidFireTargetX < 0f)
-                                npc.velocity.X -= retinazerPhase2RapidFireAccel;
-                        }
-                        if (npc.velocity.Y < retinazerPhase2RapidFireTargetY)
-                        {
-                            npc.velocity.Y += retinazerPhase2RapidFireAccel;
-                            if (npc.velocity.Y < 0f && retinazerPhase2RapidFireTargetY > 0f)
-                                npc.velocity.Y += retinazerPhase2RapidFireAccel;
-                        }
-                        else if (npc.velocity.Y > retinazerPhase2RapidFireTargetY)
-                        {
-                            npc.velocity.Y -= retinazerPhase2RapidFireAccel;
-                            if (npc.velocity.Y > 0f && retinazerPhase2RapidFireTargetY < 0f)
-                                npc.velocity.Y -= retinazerPhase2RapidFireAccel;
-                        }
-
-                        retinazerPhase2RapidFirePos = npc.Center;
-                        retinazerPhase2RapidFireTargetX = Main.player[npc.target].Center.X - retinazerPhase2RapidFirePos.X;
-                        retinazerPhase2RapidFireTargetY = Main.player[npc.target].Center.Y - retinazerPhase2RapidFirePos.Y;
-                        npc.rotation = (float)Math.Atan2(retinazerPhase2RapidFireTargetY, retinazerPhase2RapidFireTargetX) - MathHelper.PiOver2;
+                        npc.rotation = (float)Math.Atan2(Main.player[npc.target].Center.Y - npc.Center.Y, Main.player[npc.target].Center.X - npc.Center.X) - MathHelper.PiOver2;
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -650,6 +574,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                                 {
                                     npc.localAI[1] = 0f;
+
+                                    float laserSpeed = 9f;
+                                    laserSpeed += enrageScale;
                                     int type = ProjectileID.DeathLaser;
                                     int damage = (int)Math.Round(npc.GetProjectileDamage(type) * 0.75);
 
@@ -664,13 +591,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                             damage = (int)(damage * secondMechMultiplier);
                                     }
 
-                                    retinazerPhase2RapidFireTargetDist = (float)Math.Sqrt(retinazerPhase2RapidFireTargetX * retinazerPhase2RapidFireTargetX + retinazerPhase2RapidFireTargetY * retinazerPhase2RapidFireTargetY);
-                                    retinazerPhase2RapidFireTargetDist = 9f / retinazerPhase2RapidFireTargetDist;
-                                    retinazerPhase2RapidFireTargetX *= retinazerPhase2RapidFireTargetDist;
-                                    retinazerPhase2RapidFireTargetY *= retinazerPhase2RapidFireTargetDist;
-
-                                    Vector2 laserVelocity = new Vector2(retinazerPhase2RapidFireTargetX, retinazerPhase2RapidFireTargetY);
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), retinazerPhase2RapidFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                    Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -745,7 +667,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (npc.ai[3] % 3f == 0f)
                             {
                                 float fireRate = spazAlive ? 13f : 9f;
-
                                 if (npc.ai[2] % fireRate == 0f)
                                 {
                                     Vector2 retinazerPhase3ChargeLaserPos = npc.Center;
