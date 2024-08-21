@@ -1,18 +1,27 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class KingSlimeJewelRuby : ModNPC
     {
-        public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewel";
+        public static readonly SoundStyle ShatterSound = new SoundStyle("CalamityMod/Sounds/NPCKilled/CrownJewelShatter");
+        public static readonly SoundStyle ShootSound = new SoundStyle("CalamityMod/Sounds/Custom/RedJewelFire");
 
         private const int BoltShootGateValue = 60;
         private const int BoltShootGateValue_Death = 75;
@@ -46,11 +55,12 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+
             // Despawn
             if (!CalamityPlayer.areThereAnyDamnBosses)
             {
                 NPC.life = 0;
-                NPC.HitEffect();
+                OnKill();
                 NPC.active = false;
                 NPC.netUpdate = true;
                 return;
@@ -131,21 +141,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                 projVector.X *= projLength;
                 projVector.Y *= projLength;
 
-                for (int dusty = 0; dusty < 10; dusty++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Vector2 dustVel = projVector;
-                    dustVel.Normalize();
-                    int ruby = Dust.NewDust(NPC.Center, NPC.width, NPC.height, DustID.GemRuby, dustVel.X, dustVel.Y, 100, default, 2f);
-                    Main.dust[ruby].velocity *= 1.5f;
-                    Main.dust[ruby].noGravity = true;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[ruby].scale = 0.5f;
-                        Main.dust[ruby].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                    }
+                    GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Red));
+                    GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Pink));
                 }
 
-                SoundEngine.PlaySound(SoundID.Item8, NPC.Center);
+                SoundEngine.PlaySound(ShootSound, NPC.Center);
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -168,17 +170,46 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
+        public override void OnKill()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Red));
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Pink));
+            }
+
+            float start = Main.rand.NextFloat(MathHelper.TwoPi);
+            for (int i = 0; i < 3; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomSprite(NPC.Center, new Vector2(0, -2).RotatedByRandom(start + MathHelper.ToRadians(20f)).RotatedBy(MathHelper.ToRadians(i * 125)), 120, "CalamityMod/Particles/KingSlimeRubyShards", 1f, new Color(255, 255, 255), Main.rand.NextFloat(0.2f, 0.6f), frameCount: 3, frame: i));
+            }
+            SoundEngine.PlaySound(ShatterSound, NPC.Center);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Color col = Color.Red;
+            Color flashCol = Color.Pink;
+
+            float alph = 0f;
+
+            float colorTelegraphGateValue = (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : (CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue)) - LightTelegraphDuration;
+
+            if (NPC.ai[0] > colorTelegraphGateValue)
+                alph = MathHelper.Lerp(0f, 1f, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
+
+            Main.EntitySpriteDraw(tex.Value, NPC.Center - Main.screenPosition, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex2.Value, NPC.Center - Main.screenPosition, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
+
+            return false;
+        }
+
         public override Color? GetAlpha(Color drawColor)
         {
-            Color initialColor = new Color(175, 100, 100);
-            Color newColor = initialColor;
-            Color finalColor = new Color(255, 150, 150);
-            float colorTelegraphGateValue = (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue) - LightTelegraphDuration;
-            if (NPC.ai[0] > colorTelegraphGateValue)
-                newColor = Color.Lerp(initialColor, finalColor, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);
-            newColor.A = (byte)(255 * NPC.Opacity);
-
-            return newColor;
+            return Color.White;
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
@@ -190,37 +221,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemRuby, hit.HitDirection, -1f, 0, default, 1f);
-            Main.dust[dust].noGravity = true;
-
-            if (NPC.life <= 0)
+            for (int i = 0; i < 6; i++)
             {
-                NPC.position = NPC.Center;
-                NPC.width = NPC.height = 45;
-                NPC.position.X = NPC.position.X - (NPC.width / 2);
-                NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-
-                for (int i = 0; i < 2; i++)
-                {
-                    int rubyDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemRuby, 0f, 0f, 100, default, 2f);
-                    Main.dust[rubyDust].velocity *= 3f;
-                    Main.dust[rubyDust].noGravity = true;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[rubyDust].scale = 0.5f;
-                        Main.dust[rubyDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                    }
-                }
-
-                for (int j = 0; j < 10; j++)
-                {
-                    int rubyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemRuby, 0f, 0f, 100, default, 3f);
-                    Main.dust[rubyDust2].noGravity = true;
-                    Main.dust[rubyDust2].velocity *= 5f;
-                    rubyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemRuby, 0f, 0f, 100, default, 2f);
-                    Main.dust[rubyDust2].noGravity = true;
-                    Main.dust[rubyDust2].velocity *= 2f;
-                }
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Red));
             }
         }
     }
