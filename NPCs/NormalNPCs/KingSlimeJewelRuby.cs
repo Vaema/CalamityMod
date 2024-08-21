@@ -40,8 +40,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
-            NPC.width = 22;
-            NPC.height = 22;
+            NPC.width = 32;
+            NPC.height = 32;
             NPC.defense = 10;
             NPC.DR_NERD(0.1f);
             NPC.lifeMax = 120;
@@ -180,9 +180,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             float start = Main.rand.NextFloat(MathHelper.TwoPi);
             for (int i = 0; i < 3; i++)
-            {
                 GeneralParticleHandler.SpawnParticle(new CustomSprite(NPC.Center, new Vector2(0, -2).RotatedByRandom(start + MathHelper.ToRadians(20f)).RotatedBy(MathHelper.ToRadians(i * 125)), 120, "CalamityMod/Particles/KingSlimeRubyShards", 1f, new Color(255, 255, 255), Main.rand.NextFloat(0.2f, 0.6f), frameCount: 3, frame: i));
-            }
+
             SoundEngine.PlaySound(ShatterSound, NPC.Center);
         }
 
@@ -201,16 +200,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
             Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
 
-            Main.EntitySpriteDraw(tex.Value, NPC.Center - Main.screenPosition, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
-            Main.EntitySpriteDraw(tex2.Value, NPC.Center - Main.screenPosition, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex.Value, NPC.Center - screenPos, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex2.Value, NPC.Center - screenPos, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
 
             return false;
         }
 
-        public override Color? GetAlpha(Color drawColor)
-        {
-            return Color.White;
-        }
+        public override Color? GetAlpha(Color drawColor) => Color.White;
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
@@ -222,9 +218,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int i = 0; i < 6; i++)
-            {
                 GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.Red));
-            }
         }
     }
 }
