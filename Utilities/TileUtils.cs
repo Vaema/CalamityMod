@@ -732,5 +732,9 @@ namespace CalamityMod
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);
         }
+
+        public static int PixelsToTiles(this int pixels) => pixels / 16;
+
+        public static int TilesToPixels(this int tiles) => tiles * 16;
     }
 }

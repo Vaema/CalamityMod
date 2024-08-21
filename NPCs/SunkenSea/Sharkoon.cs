@@ -20,7 +20,7 @@ namespace CalamityMod.NPCs.SunkenSea
     public class Sharkoon : SunkenSeaNPC
     {
         public static float DistanceToKaboom = 80f;
-        public static float IdleMovementMaxRange = 640f;
+        public static float IdleMovementMaxRange = 300f;
         public static int ExplosionRadius = 80;
         public static float TimeToRecover = 600f;
         public static float TimeRecovering = 120f;
@@ -131,6 +131,11 @@ namespace CalamityMod.NPCs.SunkenSea
         private float MaximumSpeed = 4f;
 
         /// <summary>
+        /// The acceleration of the Sharkoon.
+        /// </summary>
+        private const float Acceleration = 0.25f;
+
+        /// <summary>
         /// How unlikely is the Sharkoon going to move normally.<br/>
         /// Defaults to 250.
         /// </summary>
@@ -140,6 +145,11 @@ namespace CalamityMod.NPCs.SunkenSea
         /// Whether or not the Sharkoon is capable of exploding.
         /// </summary>
         private bool IsBig => Animation == AnimationState.Normal;
+
+        /// <summary>
+        /// Whether or not the Sharkoon is currently exploding.
+        /// </summary>
+        private bool IsExploding => CurrentBehavior == ExplodingBehavior;
 
         /// <summary>
         /// The squish of this NPC while drawing.
@@ -209,18 +219,22 @@ namespace CalamityMod.NPCs.SunkenSea
             if (attacker.whoAmI == NPC.whoAmI)
                 return false;
 
-            CurrentBehavior = ExplodingBehavior;
-
             return true;
         }
 
-        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        public override void OnHitByNPC(NPC attacker)
         {
             if (IsBig)
                 CurrentBehavior = ExplodingBehavior;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit)
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            if (IsBig)
+                CurrentBehavior = ExplodingBehavior;
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             if (IsBig)
                 CurrentBehavior = ExplodingBehavior;
@@ -262,15 +276,20 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             CurrentBehavior?.Invoke();
 
+            // Sets the direction at which it looks at the cone.
+            // This makes it look at the direction it's going.
             if (!NPC.velocity.HasNaNs())
                 ConeDetectionDirection = (NPC.rotation * MathF.Sign(NPC.velocity.Y) + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0f)).ToRotationVector2();
 
+            // Leans the Sharkoon towards the direction it's going.
             NPC.rotation = MathHelper.ToRadians(NPC.velocity.Length() * 3f) * MathF.Sign(NPC.velocity.X);
 
-            if (MathF.Abs(NPC.velocity.X) > 2f)
+            // When the Sharkoon is fast enough in one direction, it'll turn to that direction.
+            if (MathF.Abs(NPC.velocity.X) > 1f)
                 NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
 
-            bool isEntityPlayerOrNonPreyNPC = NearestEntity is not null && (NearestEntity is Player || NearestEntity is NPC && !HuntNPCs.Contains((NearestEntity as NPC).type));
+            // When the Sharkoon's paranoid, it'll explode at anything that isn't prey which gets close to the Sharkoon.
+            bool isEntityPlayerOrNonPreyNPC = NearestEntity is not null && (NearestEntity is Player || NearestEntity is NPC npc && !HuntNPCs.Contains(npc.type));
             if (isEntityPlayerOrNonPreyNPC)
             {
                 bool isWithinDistance = NPC.DistanceSQ(NearestEntity.Center) < DistanceToKaboom * DistanceToKaboom;
@@ -278,6 +297,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     CurrentBehavior = ExplodingBehavior;
             }
 
+            // When it has already exploded, a timer will start, which when finished it'll make the Sharkoon recover.
             if (!IsBig)
             {
                 RecoverTimer++;
@@ -285,43 +305,50 @@ namespace CalamityMod.NPCs.SunkenSea
                     CurrentBehavior = RecoveringBehavior;
             }
 
-            if (!NPC.wet)
+            // When it gets outside of water, it'll try to gravitate downards towards the water.
+            if (!NPC.wet && !IsExploding)
                 CurrentBehavior = OutsideWaterBehavior;
 
+            // Clamps the velocity at all times.
             if (NPC.velocity.LengthSquared() > MaximumSpeed * MaximumSpeed)
                 NPC.velocity = NPC.velocity.SafeNormalize(Vector2.UnitY) * MaximumSpeed;
 
-            if (ScaleSquish.Y > 1f)
-                ScaleSquish.Y -= 0.025f;
+            if (PathfindingPoints is not null)
+            {
+                foreach (var item in PathfindingPoints)
+                {
+                    Dust bruhdust = Dust.NewDustPerfect(item, DustID.Torch);
+                    bruhdust.noGravity = true;
+                }
+            }
 
-            if (ScaleSquish.Y < 1f)
-                ScaleSquish.Y = 1f;
+            if (ScaleSquish.Y > 1f)
+            {
+                ScaleSquish.Y -= 0.025f;
+                if (ScaleSquish.Y < 1f)
+                    ScaleSquish.Y = 1f;
+            }
         }
 
         protected override void OnBehaviorChange(Action newBehavior)
         {
+            // Obviously, when it gets to the exploding behaivor, it should make the explosion animation.
             if (newBehavior == ExplodingBehavior)
                 Animation = AnimationState.Explosion;
 
-            if (newBehavior == RecoveringBehavior)
+            // Resets the timer when it needs to use it again.
+            if (newBehavior == RecoveringBehavior || PreviousBehavior == RecoveringBehavior)
                 RecoverTimer = 0f;
 
-            if (PreviousBehavior == RecoveringBehavior)
-                RecoverTimer = 0f;
-
-            if (newBehavior == AvoidBehavior)
-                MaximumSpeed *= 1.2f;
-
-            if (PreviousBehavior == AvoidBehavior)
-                MaximumSpeed /= 1.2f;
-
-            NPC.noGravity = newBehavior != OutsideWaterBehavior;
+            // When it gets outside of water, it'll try to gravitate downards towards the water.
+            if (newBehavior == OutsideWaterBehavior)
+                NPC.noGravity = false;
         }
 
         protected override void OnPreyDetection(NPC prey)
         {
             // If it's not a small fish and it's not being chased by a predator, the Sharkoon may hunt.
-            if (IsBig && CurrentPredator is null)
+            if (IsBig && CurrentPredator is null && !IsExploding)
             {
                 CurrentBehavior = HuntBehavior;
                 ScaleSquish.Y += 0.4f;
@@ -331,16 +358,18 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override void OnPredatorDetection(NPC predator)
         {
-            // Regardless of anything, if it detects a predator, time to run.
-            CurrentBehavior = AvoidBehavior;
-
-            React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
-
-            ScaleSquish.Y += 0.4f;
+            // If it detects a predator, time to run.
+            if (!IsExploding)
+            {
+                CurrentBehavior = AvoidBehavior;
+                React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+                ScaleSquish.Y += 0.4f;
+            }
         }
 
         protected override void OnPlayerDetection(Player player)
         {
+            // When there's a predator, player's shouldn't matter.
             if (CurrentPredator is not null)
                 return;
 
@@ -349,12 +378,14 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentBehavior = AvoidBehavior;
                 React(Color.Orange, EmoteExpressionParticle.EmoteType.QuestionExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
+                ScaleSquish.Y += 0.4f;
             }
 
             if (Personality == PersonalityType.Curious)
+            {
                 React(Color.Green, EmoteExpressionParticle.EmoteType.Question, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
-
-            ScaleSquish.Y += 0.4f;
+                ScaleSquish.Y += 0.4f;
+            }
         }
 
         private void IdlingBehavior()
@@ -366,10 +397,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 // Randomly, it'll decide a path whose destination is somewhere around him.
                 if (Main.rand.NextBool(RandomIdleMovementUnlikeliness))
-                    MakePath(NPC.Center + Main.rand.NextVector2CircularEdge(IdleMovementMaxRange, IdleMovementMaxRange) * Main.rand.NextFloat(0.75f, 1f), IdleMovementMaxRange);
+                    SunkenSeaPathfinding();
             }
             else
-                GenericPathFollowing(acceleration: 0.07f, pathFollowingSpeed: 0.07f, conditionToFinishFollowing: FinishedPathfinding());
+                GenericPathFollowing(Acceleration);
         }
 
         private void HuntBehavior()
@@ -383,13 +414,13 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (!HasLineOfSight(CurrentPrey.Center))
             {
-                if (PathfindingPoints is not null)
-                    GenericPathFollowing(acceleration: 0.14f, pathFollowingSpeed: 0.1f, conditionToFinishFollowing: FinishedPathfinding());
+                if (HasPath)
+                    GenericPathFollowing(Acceleration);
                 else
-                    MakePath(CurrentPrey.Center, CalamityUtils.ManhattanDistance(NPC.Center, CurrentPrey.Center));
+                    SunkenSeaPathfinding(CurrentPrey.Center);
             }
             else
-                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * 0.14f;
+                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
         }
 
         private void AvoidBehavior()
@@ -399,11 +430,9 @@ namespace CalamityMod.NPCs.SunkenSea
             switch (Personality)
             {
                 case PersonalityType.Shy:
-                    entityToAvoid = (NearestEntity is NPC && HuntNPCs.Contains((NearestEntity as NPC).type)) ? null : NearestEntity;
+                    entityToAvoid = (NearestEntity is NPC nearestNPC && HuntNPCs.Contains(nearestNPC.type)) ? null : NearestEntity;
                     break;
                 case PersonalityType.Curious:
-                    entityToAvoid = CurrentPredator;
-                    break;
                 case PersonalityType.Paranoid:
                     entityToAvoid = CurrentPredator;
                     break;
@@ -416,31 +445,33 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
-            bool isAvoidingPredator = entityToAvoid is NPC && (entityToAvoid as NPC).whoAmI == CurrentPredator.whoAmI;
-
-            if (Main.tile[(NPC.Center + NPC.DirectionFrom(entityToAvoid.Center) * 80f).ToTileCoordinates()].IsTileSolid())
+            // When it's going in a direction and it detects that it'll stumble into tiles, it'll try to path-find a way to continue avoiding whichever entity.
+            const int TileAnticipationDistance = 5 * 16;
+            const float AngleVariance = 2.2f; // In radians.
+            const int MaxAttemptsToFindPath = 20;
+            const int MinimumEscapeDistance = 160;
+            const int MaximumEscapeDistance = 320;
+            if (Main.tile[(NPC.Center + NPC.DirectionFrom(entityToAvoid.Center) * TileAnticipationDistance).ToTileCoordinates()].IsTileSolid() && !HasPath)
             {
-                if (PathfindingPoints is null)
+                Vector2 randomEscapePoint;
+                int attempts = 0;
+                do
                 {
-                    float fleeingDistance = isAvoidingPredator ? 600f : 400f;
-
-                    Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
-
-                    var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, fleeingDistance);
-
-                    while (!grid.Contains(randomEscapePoint))
-                        randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
-
-                    MakePath(randomEscapePoint.ToWorldCoordinates(), grid);
+                    randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(AngleVariance) * Main.rand.NextFloat(MinimumEscapeDistance, MaximumEscapeDistance);
+                    attempts++;
                 }
-                else
-                    GenericPathFollowing(acceleration: 0.14f * (isAvoidingPredator ? 2f : 1f), pathFollowingSpeed: 0.07f * (isAvoidingPredator ? 2.2f : 1f), conditionToFinishFollowing: FinishedPathfinding());
+                while (Main.tile[randomEscapePoint.ToTileCoordinates()].IsTileSolid() || attempts < MaxAttemptsToFindPath);
+
+                SunkenSeaPathfinding(randomEscapePoint);
             }
+
+            if (HasPath)
+                GenericPathFollowing(Acceleration);
             else
-                NPC.velocity += NPC.DirectionFrom(entityToAvoid.Center) * 0.14f;
+                NPC.velocity += NPC.DirectionFrom(entityToAvoid.Center) * Acceleration;
 
             // If it's capable of exploding and the predator's within distance, kaboom.
-            if (IsBig && NPC.DistanceSQ(entityToAvoid.Center) < DistanceToKaboom * DistanceToKaboom && entityToAvoid is NPC && AvoidNPCs.Contains((entityToAvoid as NPC).type))
+            if (IsBig && NPC.DistanceSQ(entityToAvoid.Center) < DistanceToKaboom * DistanceToKaboom && entityToAvoid is NPC predator && AvoidNPCs.Contains(predator.type))
                 CurrentBehavior = ExplodingBehavior;
         }
 
@@ -449,8 +480,8 @@ namespace CalamityMod.NPCs.SunkenSea
             // Deaccelerate.
             NPC.velocity *= 0.95f;
 
-            if (IsBig)
-                Lighting.AddLight(NPC.Center, Color.Orange.ToVector3() * Utils.GetLerpValue(NPC.height, NPC.height * 9, NPC.frame.Y, true));
+            // Produces light while exploding.
+            Lighting.AddLight(NPC.Center, Color.Orange.ToVector3() * Utils.GetLerpValue(NPC.height, NPC.height * 9, NPC.frame.Y, true));
 
             // On the exact frame that the NPC explodes, it'll will, indeed, explode.
             if (NPC.frame.Y == NPC.height * 9 && NPC.frameCounter == 0)

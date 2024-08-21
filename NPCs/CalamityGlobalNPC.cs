@@ -81,6 +81,7 @@ using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.NPCs.SunkenSea;
 
 namespace CalamityMod.NPCs
 {
@@ -5710,6 +5711,16 @@ namespace CalamityMod.NPCs
                 }
             }
         }
+        #endregion
+
+        #region On Hit NPC
+
+        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
+        {
+            if (target.ModNPC is SunkenSeaNPC ssnpc)
+                ssnpc.OnHitByNPC(npc);
+        }
+
         #endregion
 
         #region Modify Hit
