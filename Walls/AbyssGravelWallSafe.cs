@@ -6,6 +6,7 @@ namespace CalamityMod.Walls
 {
     public class AbyssGravelWallSafe : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/AbyssGravelWall";
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;
