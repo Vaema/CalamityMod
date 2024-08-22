@@ -29,6 +29,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> HuntNPCs => new()
         {
+            // NPCType<GildedAxolotl>(),
             NPCType<SeaFloaty>(),
             NPCType<Probesnout>(),
             NPCType<SeaMinnow>(),
@@ -312,15 +313,6 @@ namespace CalamityMod.NPCs.SunkenSea
             // Clamps the velocity at all times.
             if (NPC.velocity.LengthSquared() > MaximumSpeed * MaximumSpeed)
                 NPC.velocity = NPC.velocity.SafeNormalize(Vector2.UnitY) * MaximumSpeed;
-
-            if (PathfindingPoints is not null)
-            {
-                foreach (var item in PathfindingPoints)
-                {
-                    Dust bruhdust = Dust.NewDustPerfect(item, DustID.Torch);
-                    bruhdust.noGravity = true;
-                }
-            }
 
             if (ScaleSquish.Y > 1f)
             {
