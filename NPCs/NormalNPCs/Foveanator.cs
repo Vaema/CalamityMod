@@ -448,7 +448,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             bool shootLaser = NPC.ai[1] % 20f == 0f;
 
                             // TODO - Change this to Foveanator's lasers and energy bombs when they're implemented
-                            int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<ScavengerLaser>();
+                            int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<HomingLaserDart>();
                             int damage = NPC.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes

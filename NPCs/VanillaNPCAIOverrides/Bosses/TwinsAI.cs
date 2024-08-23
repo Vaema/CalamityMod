@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             Vector2 hoverDestination = new Vector2(npc.Center.X - Main.player[npc.target].position.X - (Main.player[npc.target].width / 2), npc.position.Y + npc.height - 59f - Main.player[npc.target].position.Y - (Main.player[npc.target].height / 2));
             int direction = (npc.Center.X < Main.player[npc.target].position.X + Main.player[npc.target].width) ? -1 : 1;
 
-            float hoverRotation = (float)Math.Atan2(hoverDestination.Y, hoverDestination.X) + MathHelper.PiOver2;
+            float hoverRotation = hoverDestination.ToRotation() + MathHelper.PiOver2;
             if (hoverRotation < 0f)
                 hoverRotation += MathHelper.TwoPi;
             else if (hoverRotation > MathHelper.TwoPi)
@@ -296,7 +296,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.velocity.Y = 0f;
                     }
                     else
-                        npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) - MathHelper.PiOver2;
+                        npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
 
                     float delayBeforeChargingAgain = (masterMode ? 48f : 56f) - (death ? (masterMode ? 3f : 6f) * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
                     if (npc.ai[2] >= delayBeforeChargingAgain + (oblivionAlive ? 15f : 0f))
@@ -369,7 +369,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             bool shootLaser = npc.ai[1] % 20f == 0f;
-                            int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<ScavengerLaser>();
+                            int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<HomingLaserDart>();
                             int damage = npc.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -507,7 +507,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    npc.rotation = (float)Math.Atan2(Main.player[npc.target].Center.Y - npc.Center.Y, Main.player[npc.target].Center.X - npc.Center.X) - MathHelper.PiOver2;
+                    npc.rotation = (Main.player[npc.target].Center - npc.Center).ToRotation() - MathHelper.PiOver2;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -564,7 +564,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitX * direction);
                         npc.SimpleFlyMovement(idealVelocity * maxVelocity, acceleration);
 
-                        npc.rotation = (float)Math.Atan2(Main.player[npc.target].Center.Y - npc.Center.Y, Main.player[npc.target].Center.X - npc.Center.X) - MathHelper.PiOver2;
+                        npc.rotation = (Main.player[npc.target].Center - npc.Center).ToRotation() - MathHelper.PiOver2;
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -662,22 +662,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                         else
                         {
-                            npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) - MathHelper.PiOver2;
+                            npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
 
                             if (npc.ai[3] % 3f == 0f)
                             {
                                 float fireRate = spazAlive ? 13f : 9f;
                                 if (npc.ai[2] % fireRate == 0f)
                                 {
-                                    Vector2 retinazerPhase3ChargeLaserPos = npc.Center;
-                                    float retinazerPhase3ChargeLaserTargetX = Main.player[npc.target].Center.X - retinazerPhase3ChargeLaserPos.X;
-                                    float retinazerPhase3ChargeLaserTargetY = Main.player[npc.target].Center.Y - retinazerPhase3ChargeLaserPos.Y;
-                                    float retinazerPhase3ChargeLaserTargetDist = (float)Math.Sqrt(retinazerPhase3ChargeLaserTargetX * retinazerPhase3ChargeLaserTargetX + retinazerPhase3ChargeLaserTargetY * retinazerPhase3ChargeLaserTargetY);
-
                                     SoundEngine.PlaySound(SoundID.Item33, npc.Center);
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        int type = ModContent.ProjectileType<ScavengerLaser>();
+                                        float laserDartSpeed = (death ? 9f : 6f) * (spazAlive ? 1f : 1.5f);
+                                        int type = ModContent.ProjectileType<HomingLaserDart>();
                                         int damage = npc.GetProjectileDamage(type);
 
                                         // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -691,17 +687,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                                 damage = (int)(damage * secondMechMultiplier);
                                         }
 
-                                        float laserDartVelocity = (death ? 9f : 6f) * (spazAlive ? 1f : 1.5f);
-                                        retinazerPhase3ChargeLaserPos = npc.Center;
-                                        retinazerPhase3ChargeLaserTargetX = Main.player[npc.target].Center.X - retinazerPhase3ChargeLaserPos.X;
-                                        retinazerPhase3ChargeLaserTargetY = Main.player[npc.target].Center.Y - retinazerPhase3ChargeLaserPos.Y;
-                                        retinazerPhase3ChargeLaserTargetDist = (float)Math.Sqrt(retinazerPhase3ChargeLaserTargetX * retinazerPhase3ChargeLaserTargetX + retinazerPhase3ChargeLaserTargetY * retinazerPhase3ChargeLaserTargetY);
-                                        retinazerPhase3ChargeLaserTargetDist = laserDartVelocity / retinazerPhase3ChargeLaserTargetDist;
-                                        retinazerPhase3ChargeLaserTargetX *= retinazerPhase3ChargeLaserTargetDist;
-                                        retinazerPhase3ChargeLaserTargetY *= retinazerPhase3ChargeLaserTargetDist;
-
-                                        Vector2 laserVelocity = new Vector2(retinazerPhase3ChargeLaserTargetX, retinazerPhase3ChargeLaserTargetY);
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), retinazerPhase3ChargeLaserPos + npc.velocity.SafeNormalize(Vector2.UnitY) * 50f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                        Vector2 laserDartVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserDartSpeed;
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + npc.velocity.SafeNormalize(Vector2.UnitY) * 50f, laserDartVelocity, type, damage, 0f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -747,57 +734,27 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Avoid cheap bullshit
                         npc.damage = 0;
 
-                        int chargeLineUpDist = spazAlive ? 600 : 500;
+                        float chargeLineUpDistance = spazAlive ? 600f : 500f;
                         float chargeSpeed = 18f + (death ? 6f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        float chargeAccel = 0.45f + (death ? 0.15f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        float chargeAcceleration = 0.45f + (death ? 0.15f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                         chargeSpeed += 6f * enrageScale;
-                        chargeAccel += 0.15f * enrageScale;
+                        chargeAcceleration += 0.15f * enrageScale;
 
                         if (spazAlive)
                         {
                             chargeSpeed *= 0.75f;
-                            chargeAccel *= 0.75f;
+                            chargeAcceleration *= 0.75f;
                         }
 
                         if (Main.getGoodWorld)
                         {
                             chargeSpeed *= 1.15f;
-                            chargeAccel *= 1.15f;
+                            chargeAcceleration *= 1.15f;
                         }
 
-                        Vector2 spazmatismRetDeadChargePos = npc.Center;
-                        float chargeTargetX = Main.player[npc.target].Center.X + (chargeLineUpDist * direction) - spazmatismRetDeadChargePos.X;
-                        float chargeTargetY = Main.player[npc.target].Center.Y - spazmatismRetDeadChargePos.Y;
-                        float chargeTargetDist = (float)Math.Sqrt(chargeTargetX * chargeTargetX + chargeTargetY * chargeTargetY);
-
-                        chargeTargetDist = chargeSpeed / chargeTargetDist;
-                        chargeTargetX *= chargeTargetDist;
-                        chargeTargetY *= chargeTargetDist;
-
-                        if (npc.velocity.X < chargeTargetX)
-                        {
-                            npc.velocity.X += chargeAccel;
-                            if (npc.velocity.X < 0f && chargeTargetX > 0f)
-                                npc.velocity.X += chargeAccel;
-                        }
-                        else if (npc.velocity.X > chargeTargetX)
-                        {
-                            npc.velocity.X -= chargeAccel;
-                            if (npc.velocity.X > 0f && chargeTargetX < 0f)
-                                npc.velocity.X -= chargeAccel;
-                        }
-                        if (npc.velocity.Y < chargeTargetY)
-                        {
-                            npc.velocity.Y += chargeAccel;
-                            if (npc.velocity.Y < 0f && chargeTargetY > 0f)
-                                npc.velocity.Y += chargeAccel;
-                        }
-                        else if (npc.velocity.Y > chargeTargetY)
-                        {
-                            npc.velocity.Y -= chargeAccel;
-                            if (npc.velocity.Y > 0f && chargeTargetY < 0f)
-                                npc.velocity.Y -= chargeAccel;
-                        }
+                        Vector2 destination = Main.player[npc.target].Center + Vector2.UnitX * chargeLineUpDistance * direction - Vector2.UnitY * chargeLineUpDistance;
+                        Vector2 idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
+                        npc.SimpleFlyMovement(idealVelocity, chargeAcceleration);
 
                         // Take 1.25 or 1 second to get in position, then charge
                         npc.ai[2] += 1f;
