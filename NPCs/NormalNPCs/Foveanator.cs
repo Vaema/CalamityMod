@@ -145,7 +145,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Vector2 lookDirection = NPC.Center - Main.player[NPC.target].Center;
             int direction = (NPC.Center.X < Main.player[NPC.target].position.X + Main.player[NPC.target].width) ? -1 : 1;
 
-            float hoverRotation = (float)Math.Atan2(lookDirection.Y, lookDirection.X) + MathHelper.PiOver2;
+            float hoverRotation = lookDirection.ToRotation() + MathHelper.PiOver2;
             if (hoverRotation < 0f)
                 hoverRotation += MathHelper.TwoPi;
             else if (hoverRotation > MathHelper.TwoPi)
@@ -376,7 +376,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         // Accelerative charge
                         NPC.velocity *= 1.015f;
 
-                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
+                        NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
                     }
 
                     float delayBeforeChargingAgain = 96f - (death ? 6f * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
@@ -697,7 +697,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         // TODO - Make the charge leave behind energy bomb projectiles when the projectiles are done
                         NPC.velocity *= 1.015f;
 
-                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
+                        NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
                     }
 
                     // Charge 2 times

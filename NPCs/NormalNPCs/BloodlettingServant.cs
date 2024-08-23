@@ -125,12 +125,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (lookAt.X > 0f)
                 {
                     NPC.spriteDirection = 1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X);
+                    NPC.rotation = lookAt.ToRotation();
                 }
                 if (lookAt.X < 0f)
                 {
                     NPC.spriteDirection = -1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X) + MathHelper.Pi;
+                    NPC.rotation = lookAt.ToRotation() + MathHelper.Pi;
                 }
             }
 
