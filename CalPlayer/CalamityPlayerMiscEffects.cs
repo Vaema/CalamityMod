@@ -86,7 +86,7 @@ namespace CalamityMod.CalPlayer
             // Give the player a 24% jump speed boost while wings are equipped, otherwise grant 4% more jump speed so that players can jump 7 tiles high
             if (Player.wingsLogic > 0)
                 Player.jumpSpeedBoost += 1.2f;
-            else if (CalamityConfig.Instance.FasterJumpSpeed)
+            else if (CalamityServerConfig.Instance.FasterJumpSpeed)
                 Player.jumpSpeedBoost += 0.2f;
 
             // Decrease the counter on Fearmonger set turbo regeneration
@@ -661,8 +661,9 @@ namespace CalamityMod.CalPlayer
                         Player.AddBuff(BuffID.Burning, 2);
                 }
 
-                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
+                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
+                // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
                 if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph || Player.creativeGodMode)) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
@@ -1001,7 +1002,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.buffImmune[ModContent.BuffType<FrozenLungs>()] = true;
             }
-            if (CalamityConfig.Instance.ChilledWaterRework)
+            if (CalamityServerConfig.Instance.ChilledWaterRework)
             {
                 if (Main.expertMode && Player.ZoneSnow && Player.wet && !Player.lavaWet && !Player.honeyWet)
                 {
@@ -1124,7 +1125,7 @@ namespace CalamityMod.CalPlayer
                     Player.noFallDmg = true;
                 }
 
-                if (CalamityConfig.Instance.FasterFallHotkey)
+                if (CalamityClientConfig.Instance.FasterFallHotkey)
                 {
                     // Allow the player to double their gravity (but NOT max fall speed!) by holding the down button while in midair.
                     bool holdingDown = Player.controlDown && !Player.controlJump;
@@ -1154,7 +1155,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Increase Rope climb velocities, if enabled
-            if (CalamityConfig.Instance.FasterRopeClimbSpeed)
+            if (CalamityServerConfig.Instance.FasterRopeClimbSpeed)
             {
                 if (Player.pulley)
                 {
@@ -1553,8 +1554,6 @@ namespace CalamityMod.CalPlayer
                     burnOutDust.noGravity = true;
                 }
             }
-            if (hellbornBoost > 0)
-                hellbornBoost--;
             if (persecutedEnchantSummonTimer < 1800)
                 persecutedEnchantSummonTimer++;
             else
@@ -1744,8 +1743,12 @@ namespace CalamityMod.CalPlayer
             // Silva invincibility effects
             if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
             {
+                // You become immune to all debuffs
                 foreach (int debuff in CalamityLists.debuffList)
                     Player.buffImmune[debuff] = true;
+
+                // Prevent thorns effects from being abused during invincibility
+                Player.thorns = 0f;
 
                 silvaCountdown -= 1;
                 if (silvaCountdown <= 0)
@@ -2854,7 +2857,7 @@ namespace CalamityMod.CalPlayer
 
             // 50% movement speed bonus so that you don't feel like a snail in the early game
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
-            if (CalamityMod.Instance.overhaul is null && CalamityConfig.Instance.FasterBaseSpeed)
+            if (CalamityMod.Instance.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
                 Player.moveSpeed += BalancingConstants.DefaultMoveSpeedBoost;
 
             // Reduce how slow Chilled makes the player, because it's cancerous right now
@@ -4301,13 +4304,13 @@ namespace CalamityMod.CalPlayer
             {
                 if (startMessageDisplayDelay == 0)
                 {
-                    if (CalamityConfig.Instance.WikiStatusMessage)
+                    if (CalamityClientConfig.Instance.WikiStatusMessage)
                     {
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus1");
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus2");
                     }
 
-                    if (CalamityConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable)
+                    if (CalamityClientConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable)
                     {
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.VCMMStatus");
                     }

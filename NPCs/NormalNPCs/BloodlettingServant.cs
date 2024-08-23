@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            Lighting.AddLight(NPC.Center, 0.8f, 0f, 0f);
+            Lighting.AddLight(NPC.Center, 0.3f, 0.3f, 0.3f);
 
             NPC.TargetClosest();
             Player target = Main.player[NPC.target];
@@ -264,7 +264,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 float telegraphScalar = MathHelper.Clamp((NPC.ai[0] - ChargeTelegraphGateValue) / ChargeTelegraphGateValue, 0f, 1f);
                 Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
 
-                if (CalamityConfig.Instance.Afterimages && NPC.ai[1] > 0f)
+                if (CalamityClientConfig.Instance.Afterimages && NPC.ai[1] > 0f)
                 {
                     int afterimageAmount = 10;
                     int afterImageIncrement = 2;

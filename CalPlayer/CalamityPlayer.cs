@@ -87,7 +87,7 @@ namespace CalamityMod.CalPlayer
         public const float projectileMeleeWeaponMeleeSpeedMultiplier = 0f;
         public int evilSmasherBoost = 0;
         public int burningSeaBurnOut = 0;
-        public int hellbornBoost = 0;
+        public int hellbornShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
         public int potionTimer = 0;
@@ -831,7 +831,7 @@ namespace CalamityMod.CalPlayer
         public int silvaMageCooldown = 0;
         public bool silvaSummon = false;
         public bool hasSilvaEffect = false;
-        public static int silvaReviveDuration = 480;
+        public static int silvaReviveDuration = 300;
         public int silvaCountdown = silvaReviveDuration;
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
@@ -2287,13 +2287,13 @@ namespace CalamityMod.CalPlayer
         #region Screen Position Movements
         public override void ModifyScreenPosition()
         {
-            if (CalamityConfig.Instance.ScreenshakePower == 0)
+            if (CalamityClientConfig.Instance.ScreenshakePower == 0)
                 return;
 
             if (GeneralScreenShakePower > 0f)
             {
-                Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityConfig.Instance.ScreenshakePower);
-                GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityConfig.Instance.ScreenshakePower);
+                Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower);
+                GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityClientConfig.Instance.ScreenshakePower);
             }
         }
         #endregion
@@ -2705,7 +2705,7 @@ namespace CalamityMod.CalPlayer
             ascendantTrail = false;
             evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
-            hellbornBoost = 0;
+            hellbornShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
             potionTimer = 0;
@@ -2729,7 +2729,7 @@ namespace CalamityMod.CalPlayer
 
             // Respawn the player faster
             // 3 seconds normally and configurable while a boss is alive between 15 and 60 seconds
-            int respawnTimerSet = areThereAnyDamnBosses ? (CalamityConfig.Instance.PlayerRespawnTime_BossAlive * 60) : 180;
+            int respawnTimerSet = areThereAnyDamnBosses ? (CalamityServerConfig.Instance.PlayerRespawnTime_BossAlive * 60) : 180;
             if (Player.respawnTimer > respawnTimerSet)
                 Player.respawnTimer = respawnTimerSet;
         }
@@ -3139,7 +3139,7 @@ namespace CalamityMod.CalPlayer
             // Trigger for pressing the God Slayer dash key
             if (CalamityKeybinds.GodSlayerDashHotKey.JustPressed)
             {
-                if (godSlayer && (Player.controlUp || Player.controlDown || Player.controlLeft || Player.controlRight) && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
+                if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {
                     godSlayerDashHotKeyPressed = true;
                 }
@@ -3401,14 +3401,14 @@ namespace CalamityMod.CalPlayer
         public override void UpdateEquips()
         {
             // TODO -- why is boss health bar code in Player.UpdateEquips and not a ModSystem
-            CalamityConfig.Instance.BossHealthBarExtraInfo = shouldDrawSmallText;
+            CalamityClientConfig.Instance.BossHealthBarExtraInfo = shouldDrawSmallText;
 
             // Putting this in GlobalItem will run multiple times for each slot, which this system already does, creating a slew of problems.
             VanillaArmorChangeManager.ApplyPotentialEffectsTo(Player);
 
             // If the config is enabled, vastly increase the player's base tile and wall placement speeds
             // This stacks with the Brick Layer and Portable Cement Mixer
-            if (CalamityConfig.Instance.FasterTilePlacement)
+            if (CalamityServerConfig.Instance.FasterTilePlacement)
             {
                 Player.tileSpeed += 0.5f;
                 Player.wallSpeed += 0.5f;
@@ -3671,7 +3671,7 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateBuffs
         public override void PostUpdateBuffs()
         {
-            if (Player.whoAmI == Main.myPlayer && CalamityConfig.Instance.VanillaCooldownDisplay)
+            if (Player.whoAmI == Main.myPlayer && CalamityClientConfig.Instance.VanillaCooldownDisplay)
             {
                 if (Player.whoAmI == Main.myPlayer && Player.potionDelay != 0)
                     potionSick = true;
@@ -4942,11 +4942,11 @@ namespace CalamityMod.CalPlayer
 
             // Enabling the config while a player is loaded will show the timer immediately.
             // But it won't start running until you save and quit and re-enter a world.
-            if (CalamityConfig.Instance.SpeedrunTimer)
+            if (CalamityClientConfig.Instance.SpeedrunTimer)
                 CalamityMod.SpeedrunTimer.Restart();
 
-            bool showWikiMessage = CalamityConfig.Instance.WikiStatusMessage;
-            bool showVCMMMessage = CalamityConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable;
+            bool showWikiMessage = CalamityClientConfig.Instance.WikiStatusMessage;
+            bool showVCMMMessage = CalamityClientConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable;
             bool showStartupMessages = showWikiMessage || showVCMMMessage;
 
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display

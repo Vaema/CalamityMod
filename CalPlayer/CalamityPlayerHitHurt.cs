@@ -315,8 +315,8 @@ namespace CalamityMod.CalPlayer
 
                     if (silvaWings)
                     {
-                        Player.statLife += Player.statLifeMax2 / 2;
-                        Player.HealEffect(Player.statLifeMax2 / 2);
+                        Player.statLife += Player.statLifeMax2 / 3;
+                        Player.HealEffect(Player.statLifeMax2 / 3);
 
                         if (Player.statLife > Player.statLifeMax2)
                             Player.statLife = Player.statLifeMax2;
@@ -1596,6 +1596,10 @@ namespace CalamityMod.CalPlayer
             if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
                 return true;
 
+            // Silva armor revive provides complete immunity.
+            if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
+                return true;
+
             // If this hit was marked to be completely ignored due to shield absorption, then process Adrenaline changes and ignore it.
             if (freeDodgeFromShieldAbsorption)
             {
@@ -2137,11 +2141,12 @@ namespace CalamityMod.CalPlayer
 
             // If the player was just hit by something capable of dealing defense damage, then apply defense damage.
             // Bloodflare Core makes every hit deal defense damage (to enable its function).
-            // Defense damage is not applied if the player has iframes.
-            // This function will be ignored if the player is wearing Chalice, as it handles its defense damage elsewhere.
+            // Defense damage is not applied if the player has iframes or godmode.
             bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
+            bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
-            if (hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode)
+            // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
+            if (defenseDamageShouldApply && !CalamityMod.ExternalFlag_DisableDefenseDamage)
             {
                 double halfDefense = Player.statDefense / 2.0;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
@@ -2292,8 +2297,6 @@ namespace CalamityMod.CalPlayer
 
                 if (evilSmasherBoost > 0)
                     evilSmasherBoost -= 1;
-
-                hellbornBoost = 0;
 
                 if (trinketOfChi)
                     chiBuffTimer = 0;

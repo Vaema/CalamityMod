@@ -147,8 +147,6 @@ namespace CalamityMod.NPCs.SunkenSea
             // Regardless of anything, if it detects a predator, time to run.
             CurrentBehavior = AvoidBehavior;
 
-            MaximumSpeed *= 1.2f;
-
             React(Color.Red * 0.6f, EmoteExpressionParticle.EmoteType.DoubleExclamation, new("CalamityMod/Sounds/Custom/ur") { PitchVariance = 0.2f });
 
             ScaleSquish.Y += 1.4f;
@@ -171,15 +169,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         private void IdleBehavior()
         {
-            if (PathfindingPoints is null)
+            if (!HasPath)
             {
                 NPC.velocity *= 0.95f;
 
                 if (Main.rand.NextBool(125))
-                    MakePath(NPC.Center + Main.rand.NextVector2CircularEdge(PathDetectionSize, PathDetectionSize) * Main.rand.NextFloat(0.75f, 1f));
+                    SunkenSeaPathfinding(NPC.Center + Main.rand.NextVector2CircularEdge(PathDetectionSize, PathDetectionSize) * Main.rand.NextFloat(0.75f, 1f));
             }
             else
-                GenericPathFollowing(acceleration: 0.03f, pathFollowingSpeed: 0.07f, conditionToFinishFollowing: FinishedPathfinding());
+                GenericPathFollowing(acceleration: 0.03f);
         }
 
         private void AvoidBehavior()
@@ -189,7 +187,7 @@ namespace CalamityMod.NPCs.SunkenSea
             switch (Personality)
             {
                 case PersonalityType.Shy:
-                    entityToAvoid = (NearestEntity is NPC && HuntNPCs.Contains((NearestEntity as NPC).type)) ? null : NearestEntity;
+                    entityToAvoid = (NearestEntity is NPC nearestNPC && HuntNPCs.Contains(nearestNPC.type)) ? null : NearestEntity;
                     break;
                 case PersonalityType.Curious:
                     entityToAvoid = CurrentPredator;
@@ -203,27 +201,23 @@ namespace CalamityMod.NPCs.SunkenSea
             if (entityToAvoid is null)
             {
                 CurrentBehavior = IdleBehavior;
-                MaximumSpeed /= MaximumSpeed % 1.2f == 0f ? 1.2f : 1f;
                 return;
             }
 
-            bool isAvoidingPredator = entityToAvoid is NPC && (entityToAvoid as NPC).whoAmI == CurrentPredator.whoAmI;
+            bool isAvoidingPredator = entityToAvoid is NPC npc && npc.whoAmI == CurrentPredator.whoAmI;
 
-            if (PathfindingPoints is null)
+            if (HasPath)
             {
                 float fleeingDistance = isAvoidingPredator ? 600f : 300f;
 
-                Point randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
+                Vector2 randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f);
+                while (Main.tile[randomEscapePoint.ToTileCoordinates()].IsTileSolid())
+                    randomEscapePoint = NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f);
 
-                var grid = CalamityUtils.AStar.MakeGenericGrid(NPC.Center, fleeingDistance);
-
-                while (!grid.Contains(randomEscapePoint))
-                    randomEscapePoint = (NPC.Center + NPC.DirectionFrom(entityToAvoid.Center).RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(fleeingDistance, fleeingDistance + 100f)).ToSafeTileCoordinates();
-
-                MakePath(randomEscapePoint.ToWorldCoordinates(), grid);
+                SunkenSeaPathfinding(randomEscapePoint);
             }
             else
-                GenericPathFollowing(acceleration: 0.14f * (isAvoidingPredator ? 2f : 1f), pathFollowingSpeed: 0.07f * (isAvoidingPredator ? 2.2f : 1f), conditionToFinishFollowing: FinishedPathfinding());
+                GenericPathFollowing(acceleration: 0.14f);
         }
 
         private void HuntBehavior()
@@ -237,10 +231,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (!HasLineOfSight(CurrentPrey.Center))
             {
-                if (PathfindingPoints is not null)
-                    GenericPathFollowing(acceleration: 0.14f, pathFollowingSpeed: 0.1f, conditionToFinishFollowing: FinishedPathfinding());
+                if (HasPath)
+                    GenericPathFollowing(acceleration: 0.14f);
                 else
-                    MakePath(CurrentPrey.Center, CalamityUtils.ManhattanDistance(NPC.Center, CurrentPrey.Center));
+                    SunkenSeaPathfinding(CurrentPrey.Center);
             }
             else
                 NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * 0.14f;

@@ -544,7 +544,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 			// By default, maces have afterimages when launched.
 			// This can still be disabled via config or set individually by the projectile.
 			// (Does not use utils due to set trail length conditions)
-			if (CurrentFlailState == FlailState.LaunchingForward && CalamityConfig.Instance.Afterimages && AfterimageLength > 0)
+			if (CurrentFlailState == FlailState.LaunchingForward && CalamityClientConfig.Instance.Afterimages && AfterimageLength > 0)
 			{
 				Texture2D maceTex = TextureAssets.Projectile[Type].Value;
 				Vector2 drawOrigin = new Vector2(maceTex.Width * 0.5f, maceTex.Height * 0.5f);

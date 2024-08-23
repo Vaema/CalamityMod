@@ -3837,3 +3837,8 @@ ScintillatingBloom: {
 	DisplayName: Scintillating Bloom
 	Tooltip: ""
 }
+
+PyreMantleWall: {
+	DisplayName: Pyre Mantle Wall
+	Tooltip: ""
+}

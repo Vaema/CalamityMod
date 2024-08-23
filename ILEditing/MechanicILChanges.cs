@@ -345,7 +345,7 @@ namespace CalamityMod.ILEditing
             {
                 // A cached delegate is used here instead of direct reflection for performance reasons
                 // since UpdateTime is called every frame.
-                if (Main.dayTime || CalamityConfig.Instance.TownNPCsSpawnAtNight)
+                if (Main.dayTime || CalamityServerConfig.Instance.TownNPCsSpawnAtNight)
                     VanillaSpawnTownNPCs();
             });
 
@@ -361,7 +361,7 @@ namespace CalamityMod.ILEditing
         private static void AlterTownNPCSpawnRate(Terraria.On_Main.orig_UpdateTime_SpawnTownNPCs orig)
         {
             double oldWorldRate = Main.desiredWorldTilesUpdateRate;
-            Main.desiredWorldTilesUpdateRate *= CalamityConfig.Instance.TownNPCSpawnRateMultiplier;
+            Main.desiredWorldTilesUpdateRate *= CalamityServerConfig.Instance.TownNPCSpawnRateMultiplier;
             orig();
             Main.desiredWorldTilesUpdateRate = oldWorldRate;
         }
@@ -1184,7 +1184,7 @@ namespace CalamityMod.ILEditing
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
                     outputColor = Vector3.Lerp(outputColor, Color.DarkSlateGray.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
-                    outputColor *= brightness;
+                    outputColor *= brightness * 6f;
                 }
             }
         }

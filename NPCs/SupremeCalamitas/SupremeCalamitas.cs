@@ -456,7 +456,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 CalamityNetcode.SyncWorld();
             }
 
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
             bool bossRush = BossRushEvent.BossRushActive;
@@ -3632,7 +3632,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             ponyPos -= new Vector2(pony.Width / 2f, pony.Height / 15) * NPC.scale / 2f;
             ponyPos += ponyOrigin * NPC.scale + new Vector2(-20, NPC.gfxOffY);
 
-            if (CalamityConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
+            if (CalamityClientConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {

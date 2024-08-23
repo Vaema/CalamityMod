@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 150;
             NPC.height = 40;
             NPC.defense = 22;
-            NPC.lifeMax = 200;
+            NPC.lifeMax = 250;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 3, 0);

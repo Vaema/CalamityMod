@@ -632,7 +632,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.chaseable = normalAttackRate;
 
             // Prevent lag by stopping rain
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
             // Set target biome type
@@ -2220,7 +2220,7 @@ namespace CalamityMod.NPCs.Providence
                     float Brightness = 0.5f; // Ranges from 0 (full vibrance) to 1 (pure white)
                     int maxAfterimages = 5;
 
-                    if (CalamityConfig.Instance.Afterimages)
+                    if (CalamityClientConfig.Instance.Afterimages)
                     {
                         for (int i = 1; i < maxAfterimages; i += 2)
                         {
@@ -2295,7 +2295,7 @@ namespace CalamityMod.NPCs.Providence
 
                     Color GlowWingColor = ProvUtils.GetProjectileColor(NPC.GetAlpha(drawColor), true);
 
-                    if (CalamityConfig.Instance.Afterimages)
+                    if (CalamityClientConfig.Instance.Afterimages)
                     {
                         for (int j = 1; j < maxAfterimages; j++)
                         {
@@ -2743,7 +2743,7 @@ namespace CalamityMod.NPCs.Providence
 
         private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
-            if (npc.type == ModContent.NPCType<Providence>())
+            if (npc.type == ModContent.NPCType<Providence>() && !BossRushEvent.BossRushActive)
             {
                 Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
             }

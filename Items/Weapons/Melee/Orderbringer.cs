@@ -46,12 +46,12 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.5f), knockback, player.whoAmI, 0f);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f);
 
             for (int i = 0; i < 4; i++)
             {
                 Vector2 vel = (velocity * 2.5f).RotatedByRandom(0.6f);
-                Projectile.NewProjectile(source, Main.MouseWorld - (velocity * 40) + Main.rand.NextVector2Circular(130, 130), vel * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<StarofJudgement>(), (int)(damage * 0.25f), knockback * 0.2f, player.whoAmI, 0, 0, 1);
+                Projectile.NewProjectile(source, Main.MouseWorld - (velocity * 40) + Main.rand.NextVector2Circular(130, 130), vel * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<StarofJudgement>(), (int)(damage * 0.1f), knockback * 0.2f, player.whoAmI, 0, 0, 1);
             }
             return false;
         }
@@ -102,7 +102,7 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 1.5f);
+            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
             for (int i = 0; i < 2; i++)
             {
                 Vector2 targetPos = Main.MouseWorld;
@@ -117,7 +117,7 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GreatswordofJudgementGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OrderbringerGlow").Value);
         }
 
         public override void AddRecipes()

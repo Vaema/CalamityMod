@@ -328,15 +328,6 @@ ContinentalGreatbow: {
 		'''
 }
 
-CoralCannon: {
-	DisplayName: Coral Cannon
-	Tooltip:
-		'''
-		Has a 20% chance to shoot a big coral that stuns enemies
-		Does not consume ammo
-		'''
-}
-
 CorinthPrime: {
 	DisplayName: Corinth Prime
 	Tooltip:
@@ -622,11 +613,11 @@ Hellborn: {
 	DisplayName: Hellborn
 	Tooltip:
 		'''
-		Fires a spread of 3 bullets
-		Enemies that touch the gun while it's being fired trigger a massive explosion
-		After the explosion, this gun gains a massive boost to damage, fire rate and knockback for 10 seconds
-		These stat bonuses slowly decay over time
-		Converts musket balls into explosive bullets
+		An ornate firearm created during the Draconic Era by Azafure's finest forgemaster
+		Hold <left> to twirl the gun in your hand, rapidly hitting nearby enemies
+		Hits with the gun itself add rounds to the gun, up to a max of 8
+		At the cost of one round, hold <right> to fire a giant energy sphere with potent recoil
+		[c/E1B65F:'Know the grace of a gun forged through beauteous inspiration']
 		'''
 }
 
@@ -1087,8 +1078,12 @@ SepticSkewer: {
 	DisplayName: Septic Skewer
 	Tooltip:
 		'''
-		Launches a spiky harpoon infested with toxins
-		Releases bacteria when returning to the player
+		Launches a vile chained harpoon infested with toxins
+		Harpoons stick into enemies and inflict Sulphuric Poisoning for a long time
+		After being impaled for one second, harpoons rip themselves back out and spray damaging gores
+		Press <right> to manually rip out all harpoons, dealing bonus damage
+		Enemies close to death are dragged back with returning harpoons and executed when they reach you
+		Executions heal you for 25 health and launch an additional harpoon automatically
 		'''
 }
 

@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = -1;
             NPC.damage = 30;
             NPC.defense = 0;
-            NPC.lifeMax = 150;
+            NPC.lifeMax = 190;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 50;
                 NPC.defense = 8;
                 NPC.knockBackResist = 0.4f;
-                NPC.lifeMax = 220;
+                NPC.lifeMax = 285;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

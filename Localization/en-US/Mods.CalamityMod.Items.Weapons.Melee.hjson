@@ -463,11 +463,6 @@ EssenceFlayer: {
 	Tooltip: Shoots an essence scythe that generates healing spirits on enemy kills
 }
 
-EutrophicScimitar: {
-	DisplayName: Eutrophic Scimitar
-	Tooltip: Fires two beams that stun enemies
-}
-
 EvilSmasher: {
 	DisplayName: Evil Smasher
 	Tooltip:
@@ -729,7 +724,11 @@ IllustriousKnives: {
 
 InsidiousImpaler: {
 	DisplayName: Insidious Impaler
-	Tooltip: Fires infected harpoons that stick to enemies and explode
+	Tooltip:
+		'''
+		Throws self-propelling radioactive harpoons which chase foes
+		Harpoons ricochet at close range for additional hits
+		'''
 }
 
 IridescentExcalibur: {

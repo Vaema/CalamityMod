@@ -18,6 +18,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
+            Lighting.AddLight(npc.Center, 0.5f, 0.5f, 0.5f);
+
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
@@ -241,13 +243,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = npc.defDamage;
 
-                    int chargeDelay = masterMode ? 70 : 90;
+                    int chargeDelay = masterMode ? 75 : 95;
                     if (death)
-                        chargeDelay -= (int)Math.Round(40f * (1f - lifeRatio));
+                        chargeDelay -= (int)Math.Round(30f * (1f - lifeRatio));
                     if (Main.getGoodWorld)
                         chargeDelay -= 30;
 
-                    float slowDownGateValue = chargeDelay * (death ? (masterMode ? 0.9f : 0.75f) : (masterMode ? 0.8f : 0.65f));
+                    float slowDownGateValue = chargeDelay * (death ? (masterMode ? 0.85f : 0.75f) : (masterMode ? 0.75f : 0.65f));
 
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
@@ -486,8 +488,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             int type = ProjectileID.BloodNautilusShot;
                             int damage = npc.GetProjectileDamage(type);
-                            int numProj = masterMode ? Main.rand.Next(4, 6) : 3;
-                            int spread = masterMode ? numProj * 3 : 10;
+                            int numProj = masterMode ? 4 : 3;
+                            int spread = masterMode ? 12 : 10;
                             float rotation = MathHelper.ToRadians(spread);
                             for (int i = 0; i < numProj; i++)
                             {
@@ -540,11 +542,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = setDamage;
 
-                    int phase2ChargeDelay = masterMode ? 60 : 80;
+                    int phase2ChargeDelay = masterMode ? 70 : 85;
                     if (death)
-                        phase2ChargeDelay -= (int)Math.Round(35f * (phase2LifeRatio - lifeRatio));
+                        phase2ChargeDelay -= (int)Math.Round(25f * (phase2LifeRatio - lifeRatio));
 
-                    float slowDownGateValue = phase2ChargeDelay * (death ? (masterMode ? 0.95f : 0.85f) : (masterMode ? 0.9f : 0.75f));
+                    float slowDownGateValue = phase2ChargeDelay * (death ? (masterMode ? 0.9f : 0.85f) : (masterMode ? 0.85f : 0.75f));
 
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
@@ -743,7 +745,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float hoverAcceleration = 0.25f + accelerationBoost;
 
                     bool horizontalCharge = calamityGlobalNPC.newAI[0] == 1f || calamityGlobalNPC.newAI[0] == 3f;
-                    float timeGateValue = horizontalCharge ? (100f - (death ? 80f * (phase3LifeRatio - lifeRatio) : 0f)) : (85f - (death ? 70f * (phase3LifeRatio - lifeRatio) : 0f));
+                    float timeGateValue = horizontalCharge ? (110f - (death ? 60f * (phase3LifeRatio - lifeRatio) : 0f)) : (95f - (death ? 55f * (phase3LifeRatio - lifeRatio) : 0f));
                     if (npc.ai[2] > timeGateValue)
                     {
                         float velocityScalar = npc.ai[2] - timeGateValue;
@@ -964,6 +966,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // If you think for a fucking second that I'm going to refactor this...
         public static bool VanillaEyeofCthulhuAI(NPC npc, Mod mod)
         {
+            Lighting.AddLight(npc.Center, 0.5f, 0.5f, 0.5f);
+
             bool flag2 = false;
             if (Main.expertMode && (double)npc.life < (double)npc.lifeMax * (Main.masterMode ? 0.2 : 0.12))
                 flag2 = true;

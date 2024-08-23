@@ -1424,7 +1424,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             // This is created to allow easy duplication of them when drawing the charge.
             void drawInstance(Vector2 drawOffset, Color baseColor)
             {
-                if (CalamityConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
+                if (CalamityClientConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
                 {
                     for (int i = 1; i < numAfterimages; i += 2)
                     {
@@ -1495,7 +1495,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             }
 
             texture = GlowTexture.Value;
-            if (CalamityConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
+            if (CalamityClientConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {

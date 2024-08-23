@@ -345,18 +345,21 @@ namespace CalamityMod.World
             {
                 for (int x = start; x <= end; x += 20)
                 {
-                    for (int y = startPosY - 70; y >= startPosY - 320; y -= 15)
+                    for (int y = startPosY - 70; y >= startPosY - 200; y -= 15)
                     {
-                        float interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 320, y, true);
+                        float interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 150, y, true);
                         float ditherStrength = MathHelper.Lerp(0f, 0.95f, interpolator);
 
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                         {
                             new Modifiers.OnlyTiles(TileID.Sand, TileID.HardenedSand),
-                            new Modifiers.Dither(ditherStrength),
+                            new Modifiers.Dither(ditherStrength + 0.2f),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<RuneSand>()),
                         }));
+                        // changing these makes the walls dither higher up than tiles, to prevent the biome from changing earlier than expected. still looks nice imo :)
+                        interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 200, y, true);
+                        ditherStrength = MathHelper.Lerp(0f, 0.95f, interpolator);
 
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                         {
@@ -366,7 +369,8 @@ namespace CalamityMod.World
                             new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()),
                         }));
 
-                        interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 220, y, true);
+                        // i forgot to change this one. :peepotired:
+                        interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 150, y, true);
                         ditherStrength = MathHelper.Lerp(0f, 0.95f, interpolator);
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                         {

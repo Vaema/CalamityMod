@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.damage = 45;
             NPC.defense = 15;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 230;
+            NPC.lifeMax = 290;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.5f;
@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 75;
                 NPC.defense = 25;
                 NPC.knockBackResist = 0.4f;
-                NPC.lifeMax = 350;
+                NPC.lifeMax = 435;
             }
             if (CalamityWorld.revenge)
             {

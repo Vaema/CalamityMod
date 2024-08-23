@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
@@ -46,6 +47,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<DraconicSwarmerBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -129,7 +132,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
             int afterimageAmt = NPC.ai[0] == 2.1f ? 7 : 0;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {

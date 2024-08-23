@@ -353,7 +353,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             CalamityGlobalNPC.DoGP2 = -1;
 
             // Stop rain
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
             // Get a target (time is checked in the second check to ensure a new target isn't being set constantly)

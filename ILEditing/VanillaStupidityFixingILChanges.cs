@@ -123,7 +123,7 @@ namespace CalamityMod.ILEditing
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
-            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityConfig.Instance.BossZen)
+            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
                 orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses

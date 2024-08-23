@@ -139,7 +139,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.damage = 100;
                 NPC.defense = 50;
                 NPC.knockBackResist = 0.04f;
-                NPC.lifeMax = 1600;
+                NPC.lifeMax = 1800;
             }
             if (CalamityWorld.revenge)
             {

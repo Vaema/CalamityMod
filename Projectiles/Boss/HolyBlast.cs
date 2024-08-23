@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.9f, 0.7f, 0f);
 
-            if (Projectile.timeLeft > TimeLeft - AccelerationTime)
+            if (Projectile.timeLeft > TimeLeft - AccelerationTime && Projectile.ai[2] == 0f)
                 Projectile.velocity *= Acceleration;
 
             if (Projectile.Hitbox.Intersects(new Rectangle((int)Projectile.ai[0], (int)Projectile.ai[1], Player.defaultWidth, Player.defaultHeight)))

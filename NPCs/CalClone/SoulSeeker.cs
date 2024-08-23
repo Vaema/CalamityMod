@@ -194,7 +194,7 @@ namespace CalamityMod.NPCs.CalClone
             float colorLerpAmt = 0.5f;
             int afterImageAmt = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int a = 1; a < afterImageAmt; a += 2)
                 {
@@ -217,7 +217,7 @@ namespace CalamityMod.NPCs.CalClone
             texture = GlowTexture.Value;
             Color glow = Color.Lerp(Color.White, Color.Red, colorLerpAmt);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int a = 1; a < afterImageAmt; a++)
                 {

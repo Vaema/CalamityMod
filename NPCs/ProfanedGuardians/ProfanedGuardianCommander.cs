@@ -571,7 +571,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                 int damage = NPC.GetProjectileDamage(type);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
                                     Main.projectile[proj].timeLeft = projTimeLeft;
                                 }
                             }
@@ -1017,7 +1017,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[0] == 2f)
                     afterimageAmt = 10;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -1055,7 +1055,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (colorOverride != null)
                     timeBasedColorLerp = colorOverride.Value;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {
