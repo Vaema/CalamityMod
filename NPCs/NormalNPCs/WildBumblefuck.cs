@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
@@ -46,6 +47,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<DraconicSwarmerBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
