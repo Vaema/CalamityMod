@@ -21,6 +21,7 @@ namespace CalamityMod.Projectiles.Magic
         // Meanwhile, this is for the shorter trail at the head
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 5000;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Magic
             else 
             {
                 if (Projectile.FinalExtraUpdate() || TrailPos.Count < 15)
-                    TrailPos.Add(Projectile.position);
+                    TrailPos.Add(Projectile.Center);
 
                 if (Projectile.timeLeft < 50) // Starts exploding and fading by itself if it never hits anything
                     Explode();
@@ -77,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 50;
             Projectile.velocity = Vector2.Zero;
             Projectile.netUpdate = true;
-            TrailPos.Add(Projectile.position); // Final position update
+            TrailPos.Add(Projectile.Center); // Final position update
 
             // Right click can not explode
             if (Projectile.ai[0] > 0f)
@@ -97,14 +98,17 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        internal float HeadWidthFunction(float completionRatio) => Projectile.scale * 4f * Utils.GetLerpValue(0.5f, 0.25f, MathF.Abs(0.5f - completionRatio), true);
+        internal float HeadWidthFunction(float completionRatio) => Projectile.scale * (Projectile.ai[0] > 0f ? 2f : 4f) * Utils.GetLerpValue(0.5f, 0.25f, MathF.Abs(0.5f - completionRatio), true);
         internal Color HeadColorFunction(float completionRatio) => Color.LightSlateGray * Projectile.Opacity;
-        internal float TrailWidthFunction(float completionRatio) => Projectile.scale * 4f;
+        internal float TrailWidthFunction(float completionRatio) => Projectile.scale * (Projectile.ai[0] > 0f ? 2f : 4f);
         internal Color TrailColorFunction(float completionRatio) => Color.Lerp(Color.Chartreuse, Color.SlateGray, Utils.Remap(Projectile.Opacity, 0.5f, 1f, 0f, 0.8f)) * Projectile.Opacity * 0.3f;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(TrailPos, new(TrailWidthFunction, TrailColorFunction, (_) => Projectile.Size * 0.5f), 30);
+            if (TrailPos == null)
+                return false;
+
+            PrimitiveRenderer.RenderTrail(TrailPos, new(TrailWidthFunction, TrailColorFunction), 30);
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(HeadWidthFunction, HeadColorFunction, (_) => Projectile.Size * 0.5f), 12);
             return false;
         }

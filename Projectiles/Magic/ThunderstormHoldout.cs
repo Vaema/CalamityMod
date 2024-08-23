@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
@@ -30,6 +31,16 @@ namespace CalamityMod.Projectiles.Magic
         public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/ThunderstormHoldoutFlash");
 
         public override void SetStaticDefaults() => Main.projFrames[Projectile.type] = 15;
+
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
+        }
 
         public override void KillHoldoutLogic()
         {
@@ -86,7 +97,19 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     FlashTimer = 4f;
                     SoundEngine.PlaySound(CommonCalamitySounds.PlasmaBlastSound, GunTipPosition);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed, ModContent.ProjectileType<ThunderstormShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+
+                    // Start from slightly behind the tip
+                    Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
+                    Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<ThunderstormShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        float scale = Main.rand.NextFloat(0.6f, 1.25f);
+                        Vector2 randVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(8f, 12f);
+                        Particle point = new PointParticle(offsetPos, randVelocity, false, 15, scale, new Color(51, 197, 255));
+                        GeneralParticleHandler.SpawnParticle(point);
+                    }
                 }
             }
             // The firing animation
@@ -100,6 +123,11 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
         }
+
+        // Muzzle flash can deal damage
+        public override bool? CanDamage() => FlashTimer > 0f;
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(GunTipPosition + Vector2.UnitX.RotatedBy(Projectile.rotation) * MuzzleFlash.Width() * 0.4f, 64f, targetHitbox);
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -15,20 +15,22 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 220;
             Item.height = 60;
-            Item.damage = 132;
-            Item.mana = 50;
+            Item.damage = 400;
             Item.DamageType = DamageClass.Magic;
+            Item.mana = 50;
             Item.useTime = Item.useAnimation = 80; // 42 frames of firing animation
+            Item.knockBack = 2f;
+            Item.shoot = ModContent.ProjectileType<ThunderstormHoldout>();
+            Item.shootSpeed = 16f;
+
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.channel = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.knockBack = 2f;
+
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.autoReuse = true;
-            Item.shootSpeed = 6f;
-            Item.shoot = ModContent.ProjectileType<ThunderstormHoldout>();
         }
 
         // Cancels out the mana used to summon the holdout
