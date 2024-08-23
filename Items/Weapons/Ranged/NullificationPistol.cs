@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 52;
             Item.height = 28;
-            Item.damage = 150;
+            Item.damage = 333;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                Projectile aBeam = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 2, 0, player.whoAmI, 0, 5);
+                Projectile aBeam = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<NullShot>(), (int)(damage * 0.6f), 0, player.whoAmI, 0, 5);
                 aBeam.penetrate = 1;
                 Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage / 2, 0, player.whoAmI, 0, 5);
                 if (mult < 0.5f)

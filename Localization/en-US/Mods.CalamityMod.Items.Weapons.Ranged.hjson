@@ -840,12 +840,12 @@ NullificationPistol: {
 	DisplayName: Nullification Pistol
 	Tooltip:
 		'''
-		An experimental alien tool used for energy manipulation, now makes for a fine weapon
-		Fires either positive or negative energy, and can switch which is used by pressing <right>
-		Positive energy splits into three beams that can pierce enemies
-		Negative energy homes in on enemies and can be fired rapidly
-		Firing either energy type creates a blast that greatly knocks back enemies
-		Consistently firing one type of energy will reduce efficiency, but switching types will reset it
+		Fires polarized energy, swap between modes with right click
+		Positive energy splits into three piercing beams
+		Negative energy rapidly fires homing bolts
+		Both types blast enemies away at close range
+		Energy modes weaken the longer they are used; switching resets it
+		'Weaponizing alien tech? Now that's what I like to hear!'
 		'''
 }
 

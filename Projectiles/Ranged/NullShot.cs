@@ -21,6 +21,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float time => ref Projectile.ai[0];
         public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public int sineDir = 1;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 23;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 250;
+            Projectile.timeLeft = 400;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 4;
             Projectile.tileCollide = false;
@@ -42,9 +43,12 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Projectile.scale = Projectile.ai[1] == 5 ? 2.2f : 1.5f;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-
+            if (time == 0)
+            {
+                Projectile.scale = Projectile.ai[1] == 5 ? 2.2f : 1.5f;
+                sineDir = Main.rand.NextBool() ? 1 : -1;
+            }
             float rate = (Main.GlobalTimeWrappedHourly * 5);
             List<Color> eColors = new List<Color>()
                 {
@@ -81,14 +85,14 @@ namespace CalamityMod.Projectiles.Ranged
                     float scale = Main.rand.NextFloat(0.8f, 1.1f);
                     if (Main.rand.NextBool(2))
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                         dust2.noGravity = true;
                         dust2.scale = scale;
                         dust2.color = baseColor;
                     }
                     if (Main.rand.NextBool(2))
                     {
-                        Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, /*Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : */ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                         dust3.noGravity = true;
                         dust3.scale = scale;
                         dust3.color = baseColor;
@@ -114,10 +118,27 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Vector2 position = targetedNPC.Center;
                     Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 8)
-                        Projectile.velocity += moveToMouse * 0.42f;
+                    if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(150, 0, Projectile.timeLeft, true) * 2))
+                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(150, 0, Projectile.timeLeft, true));
                     else
                         Projectile.velocity *= 0.9f;
+                }
+            }
+            else
+            {
+                if (Projectile.timeLeft < 100)
+                {
+                    Projectile.velocity *= 0.96f;
+                    Projectile.scale *= 0.98f;
+                }
+                Projectile.timeLeft--;
+                if (Projectile.timeLeft <= 1)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Particle orb2 = new LineParticle(Projectile.Center, (Projectile.velocity * 5).RotatedByRandom(0.05f) * Main.rand.NextFloat(0.1f, 1f), false, Main.rand.Next(20, 28 + 1), Main.rand.NextFloat(0.6f, 1.3f), baseColor);
+                        GeneralParticleHandler.SpawnParticle(orb2);
+                    }
                 }
             }
 
@@ -188,6 +209,13 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 #endregion
             }
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.97f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
         public override bool PreDraw(ref Color lightColor)
         {
