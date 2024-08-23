@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 7f;
+            Item.knockBack = 0.1f;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
@@ -69,18 +69,18 @@ namespace CalamityMod.Items.Weapons.Ranged
             else if (ShotType)
             {
                 for (int i = 0; i < 3; i++)
-                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 3, knockback / 3, player.whoAmI, 0, 0, i);
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage, knockback, player.whoAmI, 0, 0);
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 3, 0, player.whoAmI, 0, 0, i);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage / 2, 0, player.whoAmI, 0, 0);
                 if (mult < 0.35f)
-                    mult += 0.015f;
+                    mult += 0.013f;
             }
             else
             {
-                Projectile aBeam = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 2, knockback, player.whoAmI, 0, 5);
+                Projectile aBeam = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 2, 0, player.whoAmI, 0, 5);
                 aBeam.penetrate = 1;
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), (int)(damage * 1.2f), knockback, player.whoAmI, 0, 5);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage / 2, 0, player.whoAmI, 0, 5);
                 if (mult < 0.5f)
-                    mult += 0.01f;
+                    mult += 0.013f;
             }
             if (player.altFunctionUse != 2)
             {

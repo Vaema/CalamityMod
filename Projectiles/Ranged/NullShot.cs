@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -45,22 +46,20 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             float rate = (Main.GlobalTimeWrappedHourly * 5);
-            List<Color> earthColors = new List<Color>()
+            List<Color> eColors = new List<Color>()
                 {
                     Color.Turquoise,
                     Color.Orchid
                 };
-            int colorIndex = (int)(rate / 2 % earthColors.Count);
-            Color currentColor = earthColors[colorIndex];
-            Color nextColor = earthColors[(colorIndex + 1) % earthColors.Count];
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             if (!Main.zenithWorld)
                 baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             if (Projectile.ai[1] == 5 && !Main.zenithWorld)
                 baseColor = Color.White;
 
-            Player Owner = Main.player[Projectile.owner];
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             if (time == 5)
             {
                 for (int i = 0; i < 4; i++)
@@ -103,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.color = baseColor;
                 }
             }
-            if (time > 7 && time < 28 && Projectile.ai[2] > 0)
+            if (time > 13 && time < 34 && Projectile.ai[2] > 0)
             {
                 Projectile.Center += Projectile.velocity.RotatedBy((Projectile.ai[2] == 1 ? MathHelper.PiOver2 : -MathHelper.PiOver2)) * 0.2f;
             }
@@ -136,7 +135,23 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust.color = baseColor;
                 }
+                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.3f, 0.65f, 13);
+                GeneralParticleHandler.SpawnParticle(orb);
+                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloomRingLayered", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.4f, 0.75f, 13, false);
+                GeneralParticleHandler.SpawnParticle(orb2);
+                Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.4f, 0.25f, 16, false);
+                GeneralParticleHandler.SpawnParticle(orb3);
             }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Particle orb2 = new LineParticle(Projectile.Center, (Projectile.velocity * 2).RotatedByRandom(0.1f) * Main.rand.NextFloat(0.1f, 1f), false, Main.rand.Next(20, 28 + 1), Main.rand.NextFloat(0.6f, 1.3f), baseColor);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
+            }
+            SoundStyle fire = new("CalamityMod/Sounds/Item/NullHit");
+            SoundEngine.PlaySound(fire with { Volume = (Projectile.ai[1] == 5 ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (Projectile.ai[1] == 5 ? 3 : 1) }, Projectile.Center);
             if (Main.zenithWorld)
             {
                 #region NPC Nullification

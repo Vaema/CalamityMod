@@ -25,11 +25,13 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 70;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 30;
+            Projectile.timeLeft = 50;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
 
         public override void AI()
@@ -40,14 +42,14 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             float rate = (Main.GlobalTimeWrappedHourly * 5);
-            List<Color> earthColors = new List<Color>()
+            List<Color> eColors = new List<Color>()
                 {
                     Color.Turquoise,
                     Color.Orchid
                 };
-            int colorIndex = (int)(rate / 2 % earthColors.Count);
-            Color currentColor = earthColors[colorIndex];
-            Color nextColor = earthColors[(colorIndex + 1) % earthColors.Count];
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             if (!Main.zenithWorld)
                 baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
@@ -60,11 +62,19 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            Player Owner = Main.player[Projectile.owner];
             if (Projectile.numHits == 0)
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/NullImpact");
                 SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.5f }, Projectile.Center);
             }
+            if (target.CanBeMoved(true))
+            {
+                // Custom knockback
+                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20;
+                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
+            }
+
             if (Main.zenithWorld)
             {
                 #region NPC Nullification
@@ -106,7 +116,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (time < 1)
                 return false;
-            Vector2 placement = Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 40;
+            Vector2 placement = Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 50;
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmear");
             for (int i = 0; i < 3; i++)
             {
