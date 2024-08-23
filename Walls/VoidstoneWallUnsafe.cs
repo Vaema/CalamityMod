@@ -12,6 +12,7 @@ namespace CalamityMod.Walls
     public class VoidstoneWallUnsafe : ModWall
     {
         internal static FramedGlowMask GlowMask;
+        public override string Texture => "CalamityMod/Walls/VoidstoneWall";
 
         public override void SetStaticDefaults()
         {

@@ -7,6 +7,7 @@ namespace CalamityMod.Walls
 {
     public class AstralDirtWallSafe : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/AstralDirtWall";
 
         public override void SetStaticDefaults()
         {

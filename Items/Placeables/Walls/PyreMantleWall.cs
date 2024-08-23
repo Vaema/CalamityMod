@@ -1,15 +1,14 @@
-﻿using CalamityMod.Items.Placeables.Walls;
-using Terraria.ID;
-using Terraria.ModLoader; // If you are using c# 6, you can use: "using static Terraria.Localization.GameCulture;" which would mean you could just write "DisplayName.AddTranslation(German, "");"
-
-namespace CalamityMod.Items.Placeables
+﻿using Terraria.ID;
+using Terraria.ModLoader;
+using WallTiles = CalamityMod.Walls;
+namespace CalamityMod.Items.Placeables.Walls
 {
-    public class PyreMantle : ModItem, ILocalizedModType
+    public class PyreMantleWall : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 100;
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
@@ -20,16 +19,16 @@ namespace CalamityMod.Items.Placeables
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
-            Item.useTime = 10;
+            Item.useTime = 7;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.Abyss.PyreMantle>();
+            Item.createWall = ModContent.WallType<WallTiles.PyreMantleWallSafe>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient<PyreMantleWall>(4).
+            CreateRecipe(4).
+                AddIngredient<PyreMantle>().
                 AddTile(TileID.WorkBenches).
                 Register();
         }

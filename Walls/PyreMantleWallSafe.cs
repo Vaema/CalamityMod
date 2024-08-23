@@ -4,14 +4,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class EutrophicSandWallSafe : ModWall
+    public class PyreMantleWallSafe : ModWall
     {
-        public override string Texture => "CalamityMod/Walls/EutrophicSandWall";
+        public override string Texture => "CalamityMod/Walls/PyreMantleWall";
+
         public override void SetStaticDefaults()
         {
+            DustType = 33;
             Main.wallHouse[Type] = true;
-            DustType = 108;
-            AddMapEntry(new Color(11, 56, 81));
+            AddMapEntry(new Color(6, 10, 54));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
