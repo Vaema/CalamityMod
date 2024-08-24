@@ -2624,7 +2624,7 @@ namespace CalamityMod.CalPlayer
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 300 : aBrain ? 50 : 15;
+                        int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
                         effectDamage = Player.ApplyArmorAccDamageBonusesTo(effectDamage);
 
