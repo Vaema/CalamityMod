@@ -1196,8 +1196,7 @@ namespace CalamityMod.World
         public static void GenerateChests(List<Vector2> scrapPilePositions)
         {
             GenerateTreasureChest();
-            // DISABLED. CAUSES LAVA TO FILL THE ENTIRETY OF LAYER 4
-            //CalamityUtils.SettleWater();
+            CalamityUtils.SettleWater(false);
             GenerateOpenAirChestChest();
             GenerateScrapPileChest(scrapPilePositions);
             GenerateDeepWaterChest();

@@ -311,8 +311,7 @@ namespace CalamityMod.World
                 }
             }
 
-            //DISABLED. CAUSES LAVA TO GENERATE IN THE SUNKEN SEA
-            //CalamityUtils.SettleWater();
+            CalamityUtils.SettleWater(false);
 
             //spread grass on all scorched remains with no lava above them
             for (int x = biomeStart; x <= biomeEdge; x++)
