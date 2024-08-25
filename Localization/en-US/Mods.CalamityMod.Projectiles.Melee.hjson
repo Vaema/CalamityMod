@@ -67,9 +67,7 @@ CosmicShivAura.DisplayName: Cosmic Shiv Aura
 CosmicShivBall.DisplayName: Cosmic Energy
 CosmicShivBlade.DisplayName: Cosmic Beam
 CosmicShivTrail.DisplayName: Cosmic Shiv Trail
-CosmicSpiritBomb1.DisplayName: Cosmic Bomb
-CosmicSpiritBomb2.DisplayName: Cosmic Bomb
-CosmicSpiritBomb3.DisplayName: Cosmic Bomb
+CosmicSpiritBomb.DisplayName: Cosmic Bomb
 CrescentMoonFlail.DisplayName: Crescent Moon
 CrescentMoonProj.DisplayName: Crescent Moon
 CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
