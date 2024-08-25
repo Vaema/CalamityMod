@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 85;
             Item.knockBack = 3f;
             Item.autoReuse = true;
-            Item.useTime = Item.useAnimation = 14;
+            Item.useAnimation = Item.useTime = 14;
             Item.shoot = ModContent.ProjectileType<GammaHead>();
             Item.shootSpeed = 10f;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;

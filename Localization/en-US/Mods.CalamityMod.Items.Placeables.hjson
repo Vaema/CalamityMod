@@ -762,6 +762,11 @@ SulphurousTorch: {
 	Tooltip: Can be placed in water
 }
 
+SunkenIdol: {
+	DisplayName: Sunken Idol
+	Tooltip: ""
+}
+
 ThaumaticChair: {
 	DisplayName: Thaumatic Chair
 	Tooltip: One of Chloe's finest creations
@@ -3830,5 +3835,10 @@ PeatMossItem: {
 
 ScintillatingBloom: {
 	DisplayName: Scintillating Bloom
+	Tooltip: ""
+}
+
+PyreMantleWall: {
+	DisplayName: Pyre Mantle Wall
 	Tooltip: ""
 }

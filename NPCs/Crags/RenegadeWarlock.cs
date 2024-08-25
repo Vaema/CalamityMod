@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 16;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 100;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.ZombieXmas;
             AIType = NPCID.ChaosElemental;

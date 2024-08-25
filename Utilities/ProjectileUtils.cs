@@ -691,6 +691,25 @@ namespace CalamityMod
             }
         }
 
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Vector2 scale, Texture2D? texture = null, Rectangle? frame = null, Vector2? offset = null)
+        {
+            texture ??= TextureAssets.Projectile[projectile.type].Value;
+
+            // Use a fallback for the frame.
+            frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+
+            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 origin = frame.Value.Size() * 0.5f;
+            Color backAfterimageColor = backglowColor * projectile.Opacity;
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 off = Vector2.Zero;
+                if (offset != null) off += offset.Value;
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, 0, 0f);
+            }
+        }
+
         public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
@@ -707,7 +726,7 @@ namespace CalamityMod
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
         {
-            Texture2D aura = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
+            Texture2D aura = Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
             Vector2 offsets = new Vector2(0f, projectile.gfxOffY) - Main.screenPosition;
             Rectangle auraRec = aura.Frame();
             float auraRotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;

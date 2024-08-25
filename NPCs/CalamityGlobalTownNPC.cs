@@ -159,6 +159,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] PainterNames =
         {
             "Picasso", // <@!353316526306361347> (sconicboom -- for the late picassosbean2819)
+            "Bew", // <@!232291351167893505> (dmshi)
         };
         private static readonly string[] PartyGirlNames =
         {
@@ -170,6 +171,7 @@ namespace CalamityMod.NPCs
             "Cap'n Deek", // "Alex N" on Patreon (No discord account)
             "Captain Billy Bones", // <@!699589229507772416> (djackv)
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
+            "Gol D. Roger", // <@!256228859110752257> (xtra3678)
         };
         private static readonly string[] PrincessNames =
         {
@@ -179,6 +181,7 @@ namespace CalamityMod.NPCs
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
+            "Hael", // <@!641747280944431156> (kalebtull)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -195,6 +198,7 @@ namespace CalamityMod.NPCs
             "Vorbis",
             "Angel",
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
+            "Linn", // <@!277983612383526913> (duckycolors)
         };
         private static readonly string[] StylistNames =
         {
@@ -217,6 +221,7 @@ namespace CalamityMod.NPCs
         {
             "Stan Pines",
             "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Borgus", // <@!539127427482255376> (therealmeepman)
         };
         private static readonly string[] TruffleNames =
         {
@@ -677,7 +682,7 @@ namespace CalamityMod.NPCs
 
         public void TownNPCAlertSystem(NPC npc, Mod mod, SpriteBatch spriteBatch)
         {
-            if (CalamityConfig.Instance.ShopNewAlert && npc.townNPC)
+            if (CalamityClientConfig.Instance.ShopNewAlert && npc.townNPC)
             {
                 for (int i = 0; i < npcAlertList.Count; i++)
                 {
@@ -1000,7 +1005,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Wizard:
-                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ModContent.ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
+                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.MentionRoD");
                     if (Main.rand.NextBool(10) && Main.hardMode)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.Hardmode");
@@ -1028,6 +1033,8 @@ namespace CalamityMod.NPCs
                 modifiers.SourceDamage *= 2f;
         }
 
+        // Does not affect Dryad's Bane
+        // See CalamityGlobalNPC: UpdateLifeRegen
         public override void BuffTownNPC(ref float damageMult, ref int defense)
         {
             if (NPC.downedMoonlord)
@@ -1070,7 +1077,7 @@ namespace CalamityMod.NPCs
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
             //Not an axe but close enough
-            if (npc.type == NPCID.TaxCollector && projectile.type == ModContent.ProjectileType<SlickCaneProjectile>())
+            if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
                 return true;
             return base.CanBeHitByProjectile(npc, projectile);
         }
@@ -1115,7 +1122,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Demolitionist)
             {
-                shop.Add(ModContent.ItemType<DeepcoreGK2>(), Condition.DownedMechBossAny);
+                shop.Add(ItemType<DeepcoreGK2>(), Condition.DownedMechBossAny);
             }
 
             if (type == NPCID.ArmsDealer)

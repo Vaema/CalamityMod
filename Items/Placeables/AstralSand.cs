@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Typeless;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,6 +11,7 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+            ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.SandBlock, 1);
 
             // +5 flat damage, equal to other sand variants
             ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<AstralSandBallGun>(), 5);

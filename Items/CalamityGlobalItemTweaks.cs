@@ -248,7 +248,7 @@ namespace CalamityMod.Items
                 { ItemID.TerraBlade, Do(DamageExact(122)) },
                 // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
                 // Terrarian is extremely overpowered and requires a heavy nerf.
-                { ItemID.Terrarian, Do(AutoReuse, DamageExact(86)) },
+                { ItemID.Terrarian, Do(AutoReuse, DamageExact(90)) },
                 { ItemID.TheEyeOfCthulhu, Do(AutoReuse, DamageExact(90)) },
                 { ItemID.TheRottedFork, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.TheUndertaker, Do(PointBlank, AutoReuse, DamageExact(15)) },

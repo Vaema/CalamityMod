@@ -33,12 +33,12 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Projectile.rotation += 0.01f;
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             Vector2 posDiff = player.Center - Projectile.Center;
             if (posDiff.Length() <= radius)
             {
-                player.statDefense += 6;
-                player.lifeRegen += 2;
+                player.statDefense += 8;
+                player.GetCritChance<GenericDamageClass>() += 3;
             }
         }
 
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Typeless
             // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
             if (CalamityGlobalNPC.ShouldAffectNPC(target))
             {
-                float knockbackMultiplier = SandCloak.KnockbackStrength * MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
+                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
                 Vector2 trueKnockback = target.Center - Projectile.Center;
                 trueKnockback.Normalize();
                 target.velocity = trueKnockback * knockbackMultiplier;

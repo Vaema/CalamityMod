@@ -16,6 +16,7 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
@@ -32,6 +33,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Achievements;
@@ -343,7 +345,7 @@ namespace CalamityMod.ILEditing
             {
                 // A cached delegate is used here instead of direct reflection for performance reasons
                 // since UpdateTime is called every frame.
-                if (Main.dayTime || CalamityConfig.Instance.TownNPCsSpawnAtNight)
+                if (Main.dayTime || CalamityServerConfig.Instance.TownNPCsSpawnAtNight)
                     VanillaSpawnTownNPCs();
             });
 
@@ -359,7 +361,7 @@ namespace CalamityMod.ILEditing
         private static void AlterTownNPCSpawnRate(Terraria.On_Main.orig_UpdateTime_SpawnTownNPCs orig)
         {
             double oldWorldRate = Main.desiredWorldTilesUpdateRate;
-            Main.desiredWorldTilesUpdateRate *= CalamityConfig.Instance.TownNPCSpawnRateMultiplier;
+            Main.desiredWorldTilesUpdateRate *= CalamityServerConfig.Instance.TownNPCSpawnRateMultiplier;
             orig();
             Main.desiredWorldTilesUpdateRate = oldWorldRate;
         }
@@ -782,7 +784,7 @@ namespace CalamityMod.ILEditing
         private static void AdditiveDrawing(ILContext il)
         {
             ILCursor cursor = new(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<MoonlordDeathDrama>("DrawWhite")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<ScreenObstruction>("Draw")))
                 return;
 
             cursor.EmitDelegate<Action>(() =>
@@ -1182,7 +1184,7 @@ namespace CalamityMod.ILEditing
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
                     outputColor = Vector3.Lerp(outputColor, Color.DarkSlateGray.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
-                    outputColor *= brightness;
+                    outputColor *= brightness * 6f;
                 }
             }
         }
@@ -1553,7 +1555,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Change the Twins' announcement name in Revengeance Master Mode
+        #region Revengeance Master Mode Twins Shenanigans
         public static void TripletsSpawnTextOverride(Terraria.On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
         {
             if (Main.masterMode && CalamityWorld.revenge && type == NPCID.Retinazer)
@@ -1579,6 +1581,37 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(x, y, type, targetPlayerIndex);
+            }
+        }
+
+        public static void PreventFoveanatorDefeatMessageIfNotKilledLast(On_NPC.orig_DoDeathEvents_BeforeLoot orig, NPC self, Player closestPlayer)
+        {
+            if (Main.masterMode && CalamityWorld.revenge && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
+            {
+                self.value = 0f;
+                self.boss = false;
+                return;
+            }
+            else
+            {
+                orig(self, closestPlayer);
+            }
+        }
+
+        public static void TripletsDefeatTextOverride(On_NPC.orig_DoDeathEvents_CelebrateBossDeath orig, NPC self, string typeName)
+        {
+            bool correctNPCType = self.type == NPCID.Retinazer || self.type == NPCID.Spazmatism || self.type == ModContent.NPCType<Foveanator>();
+            if (Main.masterMode && CalamityWorld.revenge && correctNPCType)
+            {
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                    Main.NewText(Language.GetTextValue("Announcement.HasBeenDefeated_Plural", CalamityUtils.GetTextValue("Status.Boss.TripletsDefeatName")), 175, 75, 255);
+                else if (Main.dedServ)
+                    ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasBeenDefeated_Plural", NetworkText.FromKey("Mods.CalamityMod.Status.Boss.TripletsDefeatName")), new Color(175, 75, 255));
+                return;
+            }
+            else
+            {
+                orig(self, typeName);
             }
         }
         #endregion

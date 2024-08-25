@@ -82,9 +82,9 @@ namespace CalamityMod.NPCs.DevourerofGods
         }
 
         // Laser spread variables
-        private const int shotSpacingMax = 1470;
+        private const int shotSpacingMax = 1440;
         private int shotSpacing = shotSpacingMax;
-        private const int totalShots = 14;
+        private const int totalShots = 10;
         private const int spacingVar = shotSpacingMax / totalShots * 2;
         private int laserWallType = 0;
         private const float laserWallSpacingOffset = 16f;
@@ -125,11 +125,11 @@ namespace CalamityMod.NPCs.DevourerofGods
         }
 
         // Laser wall variables
-        private const int shotSpacingMax_Phase2 = 1470;
+        private const int shotSpacingMax_Phase2 = 1440;
         private int[] shotSpacing_Phase2 = new int[4] { shotSpacingMax_Phase2, shotSpacingMax_Phase2, shotSpacingMax_Phase2, shotSpacingMax_Phase2 };
-        private const int spacingVar_Phase2 = 105;
-        private const int totalShots_Phase2 = 28;
-        private const int totalDiagonalShots = 8;
+        private const int spacingVar_Phase2 = 120;
+        private const int totalShots_Phase2 = 24;
+        private const int totalDiagonalShots = 6;
         private const int diagonalSpacingVar = shotSpacingMax_Phase2 / totalDiagonalShots * 2;
         private int laserWallType_Phase2 = 0;
         public int laserWallPhase = 0;
@@ -353,7 +353,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             CalamityGlobalNPC.DoGP2 = -1;
 
             // Stop rain
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
             // Get a target (time is checked in the second check to ensure a new target isn't being set constantly)
@@ -950,7 +950,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[3], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
                                         }
 
-                                        shotSpacing_Phase2[3] -= Main.rand.NextBool() ? 180 : 200;
+                                        shotSpacing_Phase2[3] -= Main.rand.NextBool() ? 215 : 235;
                                     }
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)

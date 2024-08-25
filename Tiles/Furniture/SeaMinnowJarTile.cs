@@ -13,9 +13,9 @@ namespace CalamityMod.Tiles.Furniture
     {
         public override void SetStaticDefaults()
         {
-            Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
+            TileID.Sets.InteractibleByNPCs[Type] = true; // Emulating Fish Bowl. NPCs do not interact with Jelly jars (probably because they're deadly or something)
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AnimationFrameHeight = 36;
@@ -32,6 +32,8 @@ namespace CalamityMod.Tiles.Furniture
         {
             num = fail ? 1 : 3;
         }
+
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => offsetY = 2;
 
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {

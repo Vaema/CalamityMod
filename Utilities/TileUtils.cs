@@ -280,6 +280,34 @@ namespace CalamityMod
             }
             return true;
         }
+        public static bool IsTileExposedToAir(int x, int y) => IsTileExposedToAir(x, y, out _);
+
+        public static bool IsTileExposedToAir(int x, int y, out float? angleToOpenAir)
+        {
+            angleToOpenAir = null;
+            if (!ParanoidTileRetrieval(x - 1, y).HasTile)
+            {
+                angleToOpenAir = MathHelper.Pi;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x + 1, y).HasTile)
+            {
+                angleToOpenAir = 0f;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y - 1).HasTile)
+            {
+                angleToOpenAir = MathHelper.PiOver2;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y + 1).HasTile)
+            {
+                angleToOpenAir = -MathHelper.PiOver2;
+                return true;
+            }
+
+            return false;
+        }
 
         public static bool TileActiveAndOfType(int x, int y, int type)
         {
@@ -696,13 +724,17 @@ namespace CalamityMod
 
             if (ignoreAbyss)
             {
-                tileExcludeList.Add(ModContent.TileType<AbyssGravel>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantle>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantleMolten>());
-                tileExcludeList.Add(ModContent.TileType<Voidstone>());
+                tileExcludeList.Add(TileType<AbyssGravel>());
+                tileExcludeList.Add(TileType<PyreMantle>());
+                tileExcludeList.Add(TileType<PyreMantleMolten>());
+                tileExcludeList.Add(TileType<Voidstone>());
             }
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);
         }
+
+        public static int PixelsToTiles(this int pixels) => pixels / 16;
+
+        public static int TilesToPixels(this int tiles) => tiles * 16;
     }
 }

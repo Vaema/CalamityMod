@@ -20,7 +20,6 @@ AstralCrystalInvisibleExplosion.DisplayName: Astral Crystal Invisible Explosion
 AstralStarMagic.DisplayName: Astral Star
 AtlantisSpear.DisplayName: Atlantis Spear
 AugurTentacle.DisplayName: Elemental Tentacle
-AuraRain.DisplayName: Aura Rain
 AuroraAustralis.DisplayName: Aurora Australis
 BeamingBolt.DisplayName: Beaming Bolt
 BeamingBolt2.DisplayName: Beaming Bolt
@@ -35,10 +34,7 @@ BloodRay.DisplayName: Blood Ray
 BlueBubble.DisplayName: Bubble
 BlushieStaffProj.DisplayName: Staff of Blushie
 BrimroseBeam.DisplayName: Brimrose Beam
-BrimstoneFireball.DisplayName: Brimstone Fireball
 BrimstoneHellfireballFriendly.DisplayName: Hellfireball
-BrimstoneHomer.DisplayName: Brimstone Homer
-BrimstoneTentacle.DisplayName: Brimstone Tentacle
 CauldronProj.DisplayName: Smauldron
 CauldronProjSmall.DisplayName: Smaullerdron
 ChronoIcicleLarge.DisplayName: Chrono Icicle
@@ -104,6 +100,7 @@ IceBlockIcicle.DisplayName: Ice Barrage
 IceCluster.DisplayName: Ice Cluster
 Icicle.DisplayName: Icicle
 IcicleStaffProj.DisplayName: Furious Icicle
+IncineratingFireball.DisplayName: Incinerating Fireball
 InfernadoFriendly.DisplayName: Infernado
 InfernadoMarkFriendly.DisplayName: Infernado Mark
 InfernalBlade.DisplayName: Infernal Blade
@@ -195,7 +192,6 @@ SerpentineBody.DisplayName: Serpentine
 SerpentineHead.DisplayName: Serpentine
 SerpentineTail.DisplayName: Serpentine
 ShadecrystalProjectile.DisplayName: Shadecrystal
-ShadeNimbus.DisplayName: Shade Nimbus
 ShadeNimbusCloud.DisplayName: Shade Nimbus
 Shaderain.DisplayName: Shaderain
 Shadowbolt.DisplayName: Shadowbolt

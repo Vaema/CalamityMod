@@ -110,7 +110,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // TODO -- rogue stealth visuals are an utter catastrophe and should be fully destroyed on next stealth rework
-            if (calamityPlayer.rogueStealth > 0f && calamityPlayer.rogueStealthMax > 0f && Player.townNPCs < 3f && CalamityConfig.Instance.StealthInvisibility)
+            if (calamityPlayer.rogueStealth > 0f && calamityPlayer.rogueStealthMax > 0f && Player.townNPCs < 3f && CalamityClientConfig.Instance.StealthInvisibility)
             {
                 // A translucent orchid color, the rogue class color
                 float colorValue = calamityPlayer.rogueStealth / calamityPlayer.rogueStealthMax * 0.9f; //0 to 0.9
@@ -269,6 +269,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
                 Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
 
+            if (calamityPlayer.voidfrost && drawInfo.shadow == 0f)
+                Voidfrost.DrawEffects(drawInfo);
+
             if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
 
@@ -287,6 +290,9 @@ namespace CalamityMod.CalPlayer
             // Tarragon life regen
             if (calamityPlayer.tRegen && drawInfo.shadow == 0f)
                 TarraLifeRegen.DrawEffects(drawInfo);
+
+            if (calamityPlayer.trueVHex && drawInfo.shadow == 0f)
+                TrueVulnerabilityHex.DrawEffects(drawInfo);
 
             if (calamityPlayer.vaporfied && drawInfo.shadow == 0f)
                 Vaporfied.DrawEffects(drawInfo);

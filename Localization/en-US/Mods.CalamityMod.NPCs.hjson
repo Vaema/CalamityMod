@@ -259,18 +259,36 @@ MicrobialCluster.DisplayName: Microbial Cluster
 Sulflounder.DisplayName: Sulflounder
 Toxicatfish.DisplayName: Toxicatfish
 Trasher.DisplayName: Trasher
+AlphaSeaMinnow.DisplayName: Alpha Sea Minnow
+AlphaSeaMinnowGold.DisplayName: Gold Alpha Sea Minnow
+MinnowPrime: Minnow Prime
 BabyGhostBell.DisplayName: Baby Ghost Bell
 BlindedAngler.DisplayName: Blinded Angler
 Clam.DisplayName: Clam
 EutrophicRay.DisplayName: Eutrophic Ray
+FesteringRemains.DisplayName: Festering Remains
 GhostBell.DisplayName: Ghost Bell
 GiantClam.DisplayName: Giant Clam
 Clamitas: Clamitas
 SupremeClamitas: Supreme Clamitas
+HauntedChum.DisplayName: Haunted Chum
+Jellyghoul.DisplayName: Jellyghoul
+KelpieSeadragon.DisplayName: Kelpie Seadragon
+LostShoal.DisplayName: Lost Shoal
+PearlpodBlack.DisplayName: Pearlpod
+PearlpodGold.DisplayName: Gold Pearlpod
+PearlpodPink.DisplayName: Pearlpod
+PearlpodWhite.DisplayName: Pearlpod
+PolypPanasea.DisplayName: Polyp Panasea
 PrismBack.DisplayName: Prism-Back
+Probesnout.DisplayName: Probesnout
+ProbesnoutGold.DisplayName: Probesnout Gold
+SandProwler.DisplayName: Sand Prowler
+SandProwlerNested.DisplayName: Sand Prowler
 SeaFloaty.DisplayName: Sea Floaty
 SeaMinnow.DisplayName: Sea Minnow
-SeaSerpent1.DisplayName: Sea Serpent
+SeaMinnowGold.DisplayName: Gold Sea Minnow
+Sharkoon.DisplayName: Sharkoon
 BrimstoneHeart.DisplayName: Brimstone Heart
 SepulcherHead.DisplayName: Sepulcher
 SoulSeekerSupreme.DisplayName: Soul Seeker

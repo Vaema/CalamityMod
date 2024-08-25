@@ -319,7 +319,7 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(220, 20, 60);
             if (item.type == ModContent.ItemType<Contagion>())
                 nameLine.OverrideColor = new Color(207, 17, 117);
-            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMightMelee>())
+            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMight>())
                 nameLine.OverrideColor = new Color(227, 226, 180);
             if (item.type == ModContent.ItemType<IllustriousKnives>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(154, 255, 151), new Color(228, 151, 255), 4f);
@@ -488,7 +488,7 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text += ", including Mighty Wind");
 
             // If Early Hardmode Rework is enabled: Remind users that ores will NOT spawn when an altar is smashed.
-            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
                 EditTooltipByNum(0, (line) => line.Text += "\nDemon Altars now drop Souls of Night instead of generating ores when destroyed" +
                 "\nHardmode ores now generate after defeating Mechanical Bosses for the first time");
 
@@ -826,7 +826,7 @@ namespace CalamityMod.Items
             //Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
             {
-                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25\n" +
+                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25x\n" +
                 "All attacks light enemies on fire\n" +
                 "'Never get cold feet again'");
             }
@@ -835,7 +835,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HellfireTreads)
             {
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("fire blocks", "the Burning and On Fire! debuffs"));
-                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5, does not stack with downgrades\n" +
+                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5x, does not stack with downgrades\n" +
                 "All attacks inflict Hellfire");
             }
 

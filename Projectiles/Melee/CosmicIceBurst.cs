@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1] += 0.01f;
             Projectile.scale = Projectile.ai[1];
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= (float)(3 * Main.projFrames[Projectile.type]))
+            if (Projectile.ai[0] >= (3 * Main.projFrames[Projectile.type]))
             {
                 Projectile.Kill();
                 return;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
-            Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
+            Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5f) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5f) / 16));
             if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Projectile.type])
             {
                 colorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
@@ -115,16 +115,18 @@ namespace CalamityMod.Projectiles.Melee
             return new Color(150, Main.DiscoG, 255, 127);
         }*/
 
+        // Only inflict Voidfrost if not spawned from Icebreaker
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
+            if (Projectile.ai[2] != 1f)
+                target.AddBuff(ModContent.BuffType<Voidfrost>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Frostburn, 180);
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
+            if (Projectile.ai[2] != 1f)
+                target.AddBuff(ModContent.BuffType<Voidfrost>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }
     }

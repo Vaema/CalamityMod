@@ -130,6 +130,7 @@ namespace CalamityMod.NPCs.CalClone
             double dist = death ? 180 : 150;
             NPC.position.X = parent.Center.X - (int)(Math.Cos(rad) * dist) - NPC.width / 2;
             NPC.position.Y = parent.Center.Y - (int)(Math.Sin(rad) * dist) - NPC.height / 2;
+            NPC.velocity = Vector2.Zero;
             NPC.ai[1] += death ? 0.5f : 2f;
             return false;
         }
@@ -193,7 +194,7 @@ namespace CalamityMod.NPCs.CalClone
             float colorLerpAmt = 0.5f;
             int afterImageAmt = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int a = 1; a < afterImageAmt; a += 2)
                 {
@@ -216,7 +217,7 @@ namespace CalamityMod.NPCs.CalClone
             texture = GlowTexture.Value;
             Color glow = Color.Lerp(Color.White, Color.Red, colorLerpAmt);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int a = 1; a < afterImageAmt; a++)
                 {

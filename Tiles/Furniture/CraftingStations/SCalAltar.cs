@@ -48,6 +48,8 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.AltarOfTheAccursedItem>());
             TileID.Sets.DisableSmartCursor[Type] = true;
+
+            // This cannot be placed and only exists for backwards compatibility, so item has to be returned to the player manually if broken.
             RegisterItemDrop(ModContent.ItemType<AltarOfTheAccursedItem>());
         }
 

@@ -19,12 +19,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 2500;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = RarityType<Violet>();
             Item.Calamity().donorItem = true;
 
             Item.autoReuse = false;

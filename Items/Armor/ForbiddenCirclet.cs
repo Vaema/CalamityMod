@@ -13,6 +13,12 @@ namespace CalamityMod.Items.Armor
         public const int tornadoBaseDmg = 80;
         public const float tornadoBaseKB = 1f;
 
+        public override void SetStaticDefaults()
+        {
+            if (Main.netMode != NetmodeID.Server)
+                ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
+        }
+
         public override void SetDefaults()
         {
             Item.width = 18;

@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<HerringAI>();
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item21;

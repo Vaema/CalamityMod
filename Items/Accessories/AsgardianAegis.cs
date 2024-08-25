@@ -80,9 +80,10 @@ namespace CalamityMod.Items.Accessories
             // Additional debuff immunities (Everything from Elysian Aegis + thematic counterparts)
             player.buffImmune[BuffID.CursedInferno] = true;
             player.buffImmune[BuffID.ShadowFlame] = true;
-            player.buffImmune[BuffID.Daybreak] = true;
+            player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
             player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
             player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+            player.buffImmune[ModContent.BuffType<Voidfrost>()] = true;
 
             // Immune to God Slayer Inferno itself
             player.buffImmune[ModContent.BuffType<GodSlayerInferno>()] = true;

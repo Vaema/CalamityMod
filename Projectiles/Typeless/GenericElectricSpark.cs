@@ -23,7 +23,12 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.localNPCHitCooldown = 15;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Prevents Amidias' Spark sparks from inflicting it to not make its other effect worthless
+            if (Projectile.ai[1] != 1f)
+                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
+        }
 
         public override void AI()
         {

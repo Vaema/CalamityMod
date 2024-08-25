@@ -78,7 +78,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 38;
             NPC.defense = 4;
-            NPC.lifeMax = 20;
+            NPC.lifeMax = 25;
             NPC.value = Item.buyPrice(0, 0, 1, 50);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;

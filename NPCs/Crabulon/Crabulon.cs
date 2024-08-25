@@ -43,6 +43,11 @@ namespace CalamityMod.NPCs.Crabulon
         public static Asset<Texture2D> AltTexture_Glow;
         public static Asset<Texture2D> AttackTexture_Glow;
 
+        public static readonly SoundStyle JumpSound = new("CalamityMod/Sounds/Custom/Crabulon/CrabJump");
+        public static readonly SoundStyle SlamSound = new("CalamityMod/Sounds/Custom/Crabulon/CrabSlam", 2);
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/CrabulonHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/CrabulonDeath");
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
@@ -82,8 +87,8 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.boss = true;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 10, 0, 0);
-            NPC.HitSound = SoundID.NPCHit45;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -471,6 +476,7 @@ namespace CalamityMod.NPCs.Crabulon
                         NPC.direction = playerLocation < 0 ? 1 : -1;
 
                         NPC.velocity.X = velocityX * NPC.direction;
+                        SoundEngine.PlaySound(JumpSound, NPC.Center);
 
                         NPC.ai[0] = 3f;
                         NPC.ai[1] = 0f;
@@ -485,7 +491,7 @@ namespace CalamityMod.NPCs.Crabulon
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    SoundEngine.PlaySound(SoundID.Item14, NPC.Center);
+                    SoundEngine.PlaySound(SlamSound, NPC.Center);
 
                     int type = ModContent.ProjectileType<MushBombFall>();
                     int damage = NPC.GetProjectileDamage(type);
@@ -832,6 +838,21 @@ namespace CalamityMod.NPCs.Crabulon
             }
             return false;
         }
+
+        // GFB removes map icon, hover text, and health bar
+        public override void BossHeadSlot(ref int index)
+        {
+            if (Main.zenithWorld)
+                index = -1;
+        }
+
+        public override void ModifyHoverBoundingBox(ref Rectangle boundingBox)
+        {
+            if (Main.zenithWorld)
+                boundingBox = Rectangle.Empty;
+        }
+
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => Main.zenithWorld ? false : base.DrawHealthBar(hbPosition, ref scale, ref position);
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {

@@ -34,13 +34,9 @@ namespace CalamityMod.Items
                 player.Calamity().noStupidNaturalARSpawns = false;
             else
                 player.Calamity().noStupidNaturalARSpawns = true;
-            Item.NetStateChanged();
             state = player.Calamity().noStupidNaturalARSpawns;
 
-            bool favorited = Item.favorited;
-            Item.SetDefaults(ModContent.ItemType<BrokenWaterFilter>());
-            Item.stack++;
-            Item.favorited = favorited;
+            Item.RestoreConsumedItemByRightClick();
         }
 
         /*
@@ -95,8 +91,8 @@ namespace CalamityMod.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SulphuricScale>(20).
                 AddRecipeGroup("IronBar", 10).
+                AddIngredient<SulphuricScale>().
                 AddTile(TileID.Anvils).
                 Register();
         }

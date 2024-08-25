@@ -67,9 +67,7 @@ CosmicShivAura.DisplayName: Cosmic Shiv Aura
 CosmicShivBall.DisplayName: Cosmic Energy
 CosmicShivBlade.DisplayName: Cosmic Beam
 CosmicShivTrail.DisplayName: Cosmic Shiv Trail
-CosmicSpiritBomb1.DisplayName: Cosmic Bomb
-CosmicSpiritBomb2.DisplayName: Cosmic Bomb
-CosmicSpiritBomb3.DisplayName: Cosmic Bomb
+CosmicSpiritBomb.DisplayName: Cosmic Bomb
 CrescentMoonFlail.DisplayName: Crescent Moon
 CrescentMoonProj.DisplayName: Crescent Moon
 CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
@@ -106,7 +104,6 @@ EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceFlame2.DisplayName: Essence Flame
 EssenceScythe.DisplayName: Essence Scythe
-EutrophicScimitarProj.DisplayName: Scimitar Zap
 ExcelsusBlue.DisplayName: Excelsus
 ExcelsusMain.DisplayName: Excelsus
 ExcelsusPink.DisplayName: Excelsus
@@ -168,6 +165,9 @@ LifeScythe.DisplayName: Lifehunt Scythe
 LightBeam.DisplayName: Light Beam
 LightningThing.DisplayName: Lightning
 LuxorsGiftMelee.DisplayName: Luxor's Melee
+MantisClawHoldout.DisplayName: Mantis Claw
+MantisClawJet.DisplayName: Mantis Claw Jet
+MantisClawSlash.DisplayName: Mantis Claw Slash
 MercurialTides.DisplayName: Mercurial Tides
 MercurialTidesBlast.DisplayName: Mercurial Blast
 MercurialTidesMonolith.DisplayName: Mercurial Monolith
@@ -185,10 +185,8 @@ NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
 Oathblade.DisplayName: Oathblade
 OathswordFlame.DisplayName: Oathsword Flame
 Orbacle.DisplayName: Auric Orb
-OrderbringerAura.DisplayName: Aura
 OrderbringerBeam.DisplayName: Orderbringer Beam
-OrderbringerRain.DisplayName: Rain
-OrderbringerWhiteOrb.DisplayName: Orderbringer Orb
+OrderbringerWaveProj.DisplayName: Order-bringing Wave
 PhoenixsPride.DisplayName: Phoenix's Pride
 PhosphorescentGauntletPunches.DisplayName: Gauntlet Punch
 PhotonRipperProjectile.DisplayName: Extraordinarily Cost-Inefficient Chainsaw
@@ -237,6 +235,7 @@ SpineOfThanatosProjectile.DisplayName: Spine of Thanatos
 StarburstBeam.DisplayName: Star Shiv
 StarburstSHIV.DisplayName: SHIV
 StarnightBeam.DisplayName: Starnight Beam
+StarofJudgement.DisplayName: Star of Judgement
 StellarContemptBlast.DisplayName: Stellar Blast
 StellarContemptEcho.DisplayName: Echoes of Contempt
 StellarContemptHammer.DisplayName: Stellar Contempt
@@ -271,6 +270,8 @@ ThornBase.DisplayName: Thorn
 TinyCrystal.DisplayName: Crystal
 TinyFlare.DisplayName: Flare
 Tornado.DisplayName: Tornado
+TriactisHammerExplosion.DisplayName: The Great Collapse
+TriactisHammerFlare.DisplayName: Prismatic Light Flare
 TriactisHammerProj.DisplayName: Triactis' True Paladinian Mage-Hammer of Might
 TrueAncientBeam.DisplayName: True Ancient Beam
 TrueAncientBlast.DisplayName: Ancient Energy Blast
@@ -295,14 +296,7 @@ VoidTentacle.DisplayName: Void Tentacle
 VolcanicFireball.DisplayName: Volcanic Fireball
 VolcanicFireballLarge.DisplayName: Volcanic Fireball
 Waterfall.DisplayName: Waterfall Beam
-WhiteBoltAura.DisplayName: White Aura
-WhiteOrb.DisplayName: White Orb
-Whiterain.DisplayName: White Rain
 WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-MantisClawHoldout.DisplayName: Mantis Claw
-MantisClawSlash.DisplayName: Mantis Claw Slash
-MantisClawJet.DisplayName: Mantis Claw Jet
-StellarStrikerMeteor.DisplayName: Stellar Striker Meteor

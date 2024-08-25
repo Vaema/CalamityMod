@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, 272, new Vector2(Projectile.velocity.X * 0.4f + velOffset.X, Projectile.velocity.Y * 0.4f + velOffset.Y), 100, default, 0.7f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 272, Projectile.velocity * 0.4f + velOffset, 100, default, 0.7f);
                 dust.noGravity = true;
             }
 
@@ -197,7 +197,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, 226, new Vector2(Projectile.velocity.X * 0.5f + velOffset.X, Projectile.velocity.Y * 0.5f + velOffset.Y), 100, default, 0.7f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 226, Projectile.velocity * 0.5f + velOffset, 100, default, 0.7f);
                 dust.noGravity = true;
             }
         }

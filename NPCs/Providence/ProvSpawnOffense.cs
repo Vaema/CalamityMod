@@ -120,7 +120,7 @@ namespace CalamityMod.NPCs.Providence
             if (NPC.ai[0] == 2f)
                 afterimageAmt = 10;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -143,7 +143,7 @@ namespace CalamityMod.NPCs.Providence
             texture2D15 = ProfanedGuardianCommander.Texture_Glow.Value;
             Color yellowLerpColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
@@ -158,7 +158,9 @@ namespace CalamityMod.NPCs.Providence
                 }
             }
 
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, yellowLerpColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            NPC.DrawBackglow(ProvUtils.GetDayNightColor(0, true), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetDayNightColor(0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             return false;
         }

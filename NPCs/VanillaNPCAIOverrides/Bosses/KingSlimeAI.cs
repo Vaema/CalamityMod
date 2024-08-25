@@ -13,6 +13,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class KingSlimeAI
     {
+        public static readonly SoundStyle SpawnCrystalSound = new SoundStyle("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
+
         public static bool BuffedKingSlimeAI(NPC npc, Mod mod)
         {
             // Percent life remaining
@@ -102,10 +104,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelEmerald>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<KingSlimeJewelEmerald>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
 
                 if (phase3 && npc.Calamity().newAI[0] == 1f)
@@ -126,10 +132,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
 
                 if (spawnBlueCrystal && npc.Calamity().newAI[0] == 2f)
@@ -150,10 +160,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelSapphire>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<KingSlimeJewelSapphire>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
             }
             else
@@ -177,10 +191,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    SoundEngine.PlaySound(SoundID.Item38, vector);
+                    SoundEngine.PlaySound(SpawnCrystalSound, npc.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                    {
+                        int jewel = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
+                        Main.npc[jewel].localAI[2] = npc.whoAmI;
+                        Main.npc[jewel].velocity.Y = -6;
+                    }
                 }
             }
 
@@ -525,7 +543,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
 
             // Adjust size based on HP
-            float maxScale = death ? (Main.getGoodWorld ? 6f : 3f) : (Main.getGoodWorld ? 3f : 1.25f);
+            float maxScale = death ? (Main.getGoodWorld ? 6f : 2.5f) : (Main.getGoodWorld ? 3f : 1.5f);
             float minScale = death ? 0.5f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
