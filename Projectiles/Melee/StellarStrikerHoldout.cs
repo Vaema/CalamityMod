@@ -202,6 +202,11 @@ namespace CalamityMod.Projectiles.Melee
                 dust2.scale = Main.rand.NextFloat(0.55f, 0.95f);
                 dust2.noGravity = true;
                 dust2.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
+                if (Main.rand.NextBool(4))
+                {
+                    Particle spark3 = new CustomSpark(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -24).RotatedByRandom(0.5) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/Sparkle", false, 35, Main.rand.NextFloat(0.3f, 1f), Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise, new Vector2(0.6f, 1.5f));
+                    GeneralParticleHandler.SpawnParticle(spark3);
+                }
             }
 
             if (spawnBoom)
