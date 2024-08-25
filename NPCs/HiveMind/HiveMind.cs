@@ -331,7 +331,7 @@ namespace CalamityMod.NPCs.HiveMind
             Vector2 center = NPC.position - screenPos + origin;
 
             // AfterImage Effect for Phase Two
-            if (CalamityConfig.Instance.Afterimages && state != 0 && IsPhaseTwo)
+            if (CalamityClientConfig.Instance.Afterimages && state != 0 && IsPhaseTwo)
             {
                 Color afterimageBaseColor = Color.White;
                 int numAfterimages = 5;
