@@ -17,20 +17,20 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 38;
             Item.height = 54;
-            Item.damage = 128;
+            Item.damage = 60;
             Item.mana = 17;
             Item.noMelee = true;
-            Item.useAnimation = 18;
+            Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 18;
+            Item.useTime = 22;
             Item.knockBack = 8.5f;
             Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<BeastScythe>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Magic;
-            Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
@@ -56,9 +56,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.DemonScythe).
-                AddIngredient<CoreofHavoc>(12).
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<NightmareFuel>(20).
+                AddIngredient<CoreofHavoc>(6).
+                AddIngredient<BloodstoneCore>(6).
                 AddTile(TileID.Bookcases).
                 Register();
         }
