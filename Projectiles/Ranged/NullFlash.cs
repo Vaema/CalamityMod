@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 70;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 50;
+            Projectile.timeLeft = 40;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;

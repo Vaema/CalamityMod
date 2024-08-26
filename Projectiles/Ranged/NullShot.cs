@@ -29,8 +29,8 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void SetDefaults()
         {
-            Projectile.width = 23;
-            Projectile.height = 23;
+            Projectile.width = 28;
+            Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 400;
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 position = targetedNPC.Center;
                     Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                     if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(150, 0, Projectile.timeLeft, true) * 2))
-                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(150, 0, Projectile.timeLeft, true));
+                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(300, 150, Projectile.timeLeft, true));
                     else
                         Projectile.velocity *= 0.9f;
                 }

@@ -33,10 +33,11 @@ namespace CalamityMod.Dusts
             {
                 Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 // Glow Orb
-                Main.EntitySpriteDraw(rechargeTexture, dustCenter - Main.screenPosition, null, dust.color with { A = 0 }, dust.rotation, rechargeTexture.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(rechargeTexture, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f, dust.rotation, rechargeTexture.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(rechargeTexture, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, rechargeTexture.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
+                if (dust.alpha < 1)
+                    Main.EntitySpriteDraw(rechargeTexture, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, rechargeTexture.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);
             }
-            Main.EntitySpriteDraw(rechargeTexture2, dustCenter - Main.screenPosition, null, Color.Black, dust.rotation, rechargeTexture2.Size() * 0.5f, dust.scale * 0.075f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture2, dustCenter - Main.screenPosition, null, Color.Black * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, rechargeTexture2.Size() * 0.5f, dust.scale * 0.075f, SpriteEffects.None, 0);
             return false;
         }
     }
