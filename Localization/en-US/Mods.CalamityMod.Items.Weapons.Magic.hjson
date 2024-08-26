@@ -276,7 +276,7 @@ EidolicWail: {
 	DisplayName: Eidolic Wail
 	Tooltip:
 		'''
-		Fires a string of bouncing sound waves that become stronger as they travel
+		Fires a string of bouncing sound waves that slow down on enemy hits
 		RIP headphone users
 		'''
 }

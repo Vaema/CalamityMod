@@ -52,8 +52,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<NullificationPistol>().
-                AddIngredient<DarkPlasma>(2).
                 AddIngredient<CoreofCalamity>().
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

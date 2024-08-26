@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
                 AddIngredient<UelibloomBar>(5).
-                AddIngredient<DarkPlasma>().
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
             CreateRecipe().
@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
                 AddIngredient<UelibloomBar>(5).
-                AddIngredient<DarkPlasma>().
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
