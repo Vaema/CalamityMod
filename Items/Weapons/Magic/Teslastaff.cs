@@ -46,8 +46,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.ThunderStaff).
                 AddRecipeGroup("AnyCopperBar", 20).
-                AddIngredient<ArmoredShell>(2).
                 AddIngredient<CoreofSunlight>(6).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

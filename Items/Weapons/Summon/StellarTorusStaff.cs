@@ -55,8 +55,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.XenoStaff).
-                AddIngredient<ArmoredShell>(3).
                 AddIngredient(ItemID.FragmentStardust, 6).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

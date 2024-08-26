@@ -104,8 +104,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.DeathSickle).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<TwistingNether>().
                 AddIngredient(ItemID.SoulofNight, 15).
+                AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
