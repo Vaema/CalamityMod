@@ -803,6 +803,8 @@ namespace CalamityMod.NPCs
                 case NPCID.Demolitionist:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG)
                         chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.DoGDefeated");
+                    else if (Main.rand.NextBool(10))
+                        chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.MentionSkynamite");
                     break;
 
                 case NPCID.Dryad:

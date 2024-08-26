@@ -40,7 +40,10 @@ CyborgChat: {
 	Rain: All these moments will be lost in time. Like tears... in the rain.
 }
 
-DemolitionistChat.DoGDefeated: God Slayer Dynamite? Boy do I like the sound of that!
+DemolitionistChat: {
+	MentionSkynamite: Tired of dynamites blowing your legs off? Try throwing them into a Sky Mill or something.
+	DoGDefeated: God Slayer Dynamite? Boy do I like the sound of that!
+}
 
 DryadChat: {
 	DarksunEclipse: There's a dark solar energy emanating from the moths that appear during this time. What's up with moths getting stronger as you do too?
