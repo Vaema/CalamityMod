@@ -151,7 +151,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             else if (hoverRotation > MathHelper.TwoPi)
                 hoverRotation -= MathHelper.TwoPi;
 
-            float rotationRate = 0.1f;
+            // Rotate faster during energy bomb and laser barrage
+            float rotationRate = NPC.ai[1] == 3f ? 0.25f : 0.1f;
             NPC.rotation = NPC.rotation.AngleTowards(hoverRotation, rotationRate);
 
             if (Main.rand.NextBool(5))
@@ -722,7 +723,119 @@ namespace CalamityMod.NPCs.NormalNPCs
                 // Laser and energy bomb barrage
                 else if (NPC.ai[1] == 3f)
                 {
+                    float maxVelocity = 12f + (death ? 2.4f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    float acceleration = 0.16f + (death ? 0.32f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    maxVelocity += 6f * enrageScale;
+                    acceleration += 0.08f * enrageScale;
 
+                    if (Main.getGoodWorld)
+                    {
+                        maxVelocity *= 1.15f;
+                        acceleration *= 1.15f;
+                    }
+
+                    float distanceFromTarget = 640f;
+                    Vector2 destination = Main.player[NPC.target].Center + Vector2.UnitX * distanceFromTarget * direction;
+                    float distanceFromDestination = (destination - NPC.Center).Length();
+                    Vector2 idealVelocity = (destination - NPC.Center).SafeNormalize(Vector2.UnitX * direction);
+
+                    bool gettingIntoPosition = NPC.ai[2] == 0f;
+                    if (NPC.Distance(Main.player[NPC.target].Center) < distanceFromTarget && gettingIntoPosition)
+                    {
+                        NPC.SimpleFlyMovement(idealVelocity * maxVelocity, acceleration);
+                    }
+                    else
+                    {
+                        NPC.SimpleFlyMovement(idealVelocity * maxVelocity * 0.5f, acceleration * 0.5f);
+
+                        // Fire 2 spreads (3 in Death Mode) of energy bombs and lasers
+                        int totalSpreads = death ? 6 : 4;
+
+                        // Fire rates
+                        float laserBarrageFireRate = 45f;
+                        float energyBombFireRate = 90f;
+
+                        // Laser barrages
+                        NPC.ai[2] += 1f;
+                        if (NPC.ai[2] % laserBarrageFireRate == 0f)
+                        {
+                            SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                // TODO - Change this to Foveanator's laser when it's made
+                                int type = ProjectileID.DeathLaser;
+                                int damage = NPC.GetProjectileDamage(type);
+
+                                // Reduce mech boss projectile damage depending on the new ore progression changes
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                {
+                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                                    if (!NPC.downedMechBossAny)
+                                        damage = (int)(damage * firstMechMultiplier);
+                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                        damage = (int)(damage * secondMechMultiplier);
+                                }
+
+                                Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 12f;
+                                int numProj = 4;
+                                int spread = 40;
+                                float rotation = MathHelper.ToRadians(spread);
+                                for (int i = 0; i < numProj; i++)
+                                {
+                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                }
+                            }
+
+                            NPC.ai[3] += 1f;
+                        }
+
+                        // Energy bombs
+                        else if (NPC.ai[2] % energyBombFireRate == 0f)
+                        {
+                            SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                // TODO - Change this to Foveanator's energy bomb when it's made
+                                int type = ModContent.ProjectileType<HomingLaserDart>();
+                                int damage = NPC.GetProjectileDamage(type);
+
+                                // Reduce mech boss projectile damage depending on the new ore progression changes
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                {
+                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                                    if (!NPC.downedMechBossAny)
+                                        damage = (int)(damage * firstMechMultiplier);
+                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                        damage = (int)(damage * secondMechMultiplier);
+                                }
+
+                                Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 6f;
+                                int numProj = 3;
+                                int spread = 30;
+                                float rotation = MathHelper.ToRadians(spread);
+                                float offset = 50f;
+                                for (int i = 0; i < numProj; i++)
+                                {
+                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * offset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                }
+                            }
+
+                            NPC.ai[3] += 1f;
+                        }
+
+                        // Charge
+                        if (NPC.ai[3] >= totalSpreads)
+                        {
+                            NPC.ai[1] = 1f;
+                            NPC.ai[2] = 0f;
+                            NPC.ai[3] = 0f;
+                            NPC.netUpdate = true;
+                        }
+                    }
                 }
             }
         }
