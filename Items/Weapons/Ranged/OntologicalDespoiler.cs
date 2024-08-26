@@ -1,0 +1,104 @@
+﻿using System.Linq;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Items.Weapons.Ranged
+{
+    [LegacyName("MolecularManipulator")]
+    public class OntologicalDespoiler : ModItem, ILocalizedModType
+    {
+        public static readonly SoundStyle ChargeLV1 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1") { Volume = 0.6f };
+        public static readonly SoundStyle ChargeLV2 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2") { Volume = 0.6f };
+        public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeStart") { Volume = 0.6f };
+        public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLoop") { Volume = 0.6f };
+        internal static readonly int ChargeLoopSoundFrames = 151;
+        public static readonly SoundStyle SmallShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserSmallShot") { PitchVariance = 0.3f };
+        public static readonly SoundStyle BigShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserBigShot") { PitchVariance = 0.3f };
+
+        public bool shotType = true; // true = positive shot, false = negative shot
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            Item.width = 88;
+            Item.height = 34;
+            Item.damage = 772;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useAnimation = Item.useTime = 8;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.channel = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.knockBack = 6f;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.UseSound = null;
+            Item.autoReuse = false;
+            Item.shoot = ModContent.ProjectileType<OntologicalDespoilerHoldout>();
+            Item.shootSpeed = 12f;
+            Item.Calamity().canFirePointBlankShots = true;
+        }
+
+        public override bool AltFunctionUse(Player player) => true;
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player)
+        {
+            if (player.whoAmI != Main.myPlayer)
+                return;
+
+            // Right-click channeling
+            player.Calamity().rightClickListener = true;
+
+            if (player.Calamity().mouseRight && CanUseItem(player) && !Main.mapFullscreen && !Main.blockMouse)
+            {
+                // Only one out at a time
+                if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
+                    return;
+
+                var source = player.GetSource_ItemUse(player.ActiveItem());
+                Projectile holdout = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
+                holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
+                SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, player.Center);
+                shotType = !shotType;
+            }
+        }
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            // Only one out at a time
+            if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
+                return false;
+
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, shotType ? 0 : 5);
+            holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
+            return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<ArcNovaDiffuser>().
+                AddIngredient<NullificationPistol>().
+                AddIngredient<DarkPlasma>(2).
+                AddIngredient<CoreofCalamity>().
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+        }
+    }
+}

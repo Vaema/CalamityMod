@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class NullificationPistol : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public bool ShotType = true;
+        public bool shotType = true; // true = positive shot, false = negative shot
         public float mult = 0;
 
         public override void SetStaticDefaults()
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
                 return 1.3f;
 
-            if (!ShotType)
+            if (!shotType)
                 return 1.5f - mult;
 
             return 1f - mult;
@@ -55,18 +55,18 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
-                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (ShotType ? 0.5f : 0) }, position);
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, position);
                 for (int i = 0; i < 18; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(position, ShotType ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (velocity).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(position, shotType ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (velocity).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.9f, 1.25f);
-                    dust.color = ShotType ? Color.White : (Main.rand.NextBool() ? Color.Orchid : Color.Turquoise);
+                    dust.color = shotType ? Color.White : (Main.rand.NextBool() ? Color.Orchid : Color.Turquoise);
                 }
-                ShotType = !ShotType;
+                shotType = !shotType;
                 mult = 0;
             }
-            else if (ShotType)
+            else if (shotType)
             {
                 for (int i = 0; i < 3; i++)
                     Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 3, 0, player.whoAmI, 0, 0, i);
@@ -85,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse != 2)
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/NullShot");
-                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (!ShotType ? 0.3f : 0) }, position);
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (!shotType ? 0.3f : 0) }, position);
             }
             return false;
         }

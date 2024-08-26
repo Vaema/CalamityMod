@@ -784,15 +784,6 @@ MineralMortar: {
 		'''
 }
 
-MolecularManipulator: {
-	DisplayName: Molecular Manipulator
-	Tooltip:
-		'''
-		Fires a fast null bullet that distorts NPC stats
-		'Is it nullable or not? Let's find out!'
-		'''
-}
-
 MonolithBow: {
 	DisplayName: Monolith Bow
 	Tooltip: ""
@@ -1447,4 +1438,9 @@ WulfrumBlunderbuss: {
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
+}
+
+OntologicalDespoiler: {
+	DisplayName: Ontological Despoiler
+	Tooltip: ""
 }

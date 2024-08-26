@@ -1,0 +1,223 @@
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
+using CalamityMod.NPCs;
+using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
+
+namespace CalamityMod.Projectiles.Ranged
+{
+    public class OntologicalDespoilerShot : ModProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot";
+        public ref float time => ref Projectile.ai[0];
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public int sineDir = 1;
+        public int zagRate = 55;
+
+        public Color color1 = Color.DarkMagenta;
+        public Color color2 = Color.DarkOrchid;
+        public Color color3 = Color.Purple;
+        public Color color4 = Color.BlueViolet;
+        public bool Positive => Projectile.ai[2] < 5;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
+        public override void SetDefaults()
+        {
+            Projectile.width = 28;
+            Projectile.height = 28;
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 600;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.extraUpdates = 4;
+            Projectile.tileCollide = false;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        public override void AI()
+        {
+            Projectile.rotation = Projectile.velocity.ToRotation();
+
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter > 1)
+            {
+                Projectile.frame++;
+                Projectile.frameCounter = 0;
+            }
+            if (Projectile.frame > 5)
+            {
+                Projectile.frame = 0;
+            }
+
+            if (time == 0)
+            {
+                Projectile.scale = 1f;
+                sineDir = Main.rand.NextBool() ? 1 : -1;
+                Projectile.frame = Main.rand.Next(0, 6 + 1);
+                zagRate = Main.rand.Next(55, 70 + 1);
+                if (!Positive)
+                    Projectile.penetrate = 1;
+            }
+            float rate = (Main.GlobalTimeWrappedHourly * 15);
+            List<Color> eColors = new List<Color>()
+                {
+                    color1,
+                    color2,
+                    color3,
+                    color4
+                };
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            if (!Positive)
+                baseColor = Color.White;
+
+            if (time > 20)
+            {
+                if (!Positive)
+                {
+                    // Spawn in a helix-style pattern
+                    float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
+
+                    Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 8f;
+                    float scale = Main.rand.NextFloat(0.3f, 0.4f);
+                    if (true)
+                    {
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        dust2.noGravity = true;
+                        dust2.scale = scale;
+                        dust2.color = baseColor;
+                        //Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        //dust3.noGravity = true;
+                        //dust3.scale = scale;
+                        //dust3.color = baseColor;
+                    }
+                }
+                else
+                {
+                    if (Main.rand.NextBool(21))
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 1.8f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.8f, 1.15f);
+                        dust.color = baseColor;
+                    }
+                    if ((time < 15 || time % 25 <= 15) && Projectile.ai[2] != 1)
+                    {
+                        Projectile.velocity = Projectile.velocity.RotatedBy(0.5f / 15f * (Projectile.ai[2] == 2 ? 1 : -1));
+                        if (time % 25 == 0 || time == 15)
+                            Projectile.ai[2] = (Projectile.ai[2] == 2 ? 0 : 2);
+                    }
+                }
+            }
+
+            if (!Positive)
+            {
+                NPC targetedNPC = Projectile.Center.ClosestNPCAt(700);
+                if (targetedNPC != null && time > 30 && Projectile.numHits < 1 && Vector2.Distance(targetedNPC.Center, Projectile.Center) < 700)
+                {
+                    Vector2 position = targetedNPC.Center;
+                    Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                    if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true) * 2))
+                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(500, 350, Projectile.timeLeft, true));
+                    else
+                        Projectile.velocity *= 0.9f;
+                }
+            }
+            else
+            {
+                if (Projectile.timeLeft < 100)
+                {
+                    Projectile.velocity *= 0.96f;
+                    Projectile.scale *= 0.98f;
+                }
+                Projectile.timeLeft--;
+                if (Projectile.timeLeft <= 1)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle orb2 = new LineParticle(Projectile.Center, (Projectile.velocity * 5).RotatedByRandom(0.05f) * Main.rand.NextFloat(0.1f, 1f), false, Main.rand.Next(20, 28 + 1), Main.rand.NextFloat(0.6f, 1.3f), baseColor);
+                        GeneralParticleHandler.SpawnParticle(orb2);
+                    }
+                }
+            }
+
+            time++;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (!Positive)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, !Positive ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
+                    dust.color = baseColor;
+                }
+                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.15f, 0.65f, 8);
+                GeneralParticleHandler.SpawnParticle(orb);
+                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloomRingLayered", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.2f, 0.75f, 8, false);
+                GeneralParticleHandler.SpawnParticle(orb2);
+                Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.4f, 0.05f, 9, false);
+                GeneralParticleHandler.SpawnParticle(orb3);
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Particle orb2 = new LineParticle(Projectile.Center, (Projectile.velocity * 4).RotatedByRandom(0.15f) * Main.rand.NextFloat(0.1f, 1f), false, Main.rand.Next(20, 28 + 1), Main.rand.NextFloat(0.6f, 1.3f), baseColor);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
+            }
+            SoundStyle fire = new("CalamityMod/Sounds/Item/NullHit");
+            SoundEngine.PlaySound(fire with { Volume = (!Positive ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (!Positive ? 3 : 1) }, Projectile.Center);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.9f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (time < 2)
+                return false;
+
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            float drawRotation = Projectile.rotation;
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom2");
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLine2");
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], baseColor with { A = 0 } * 0.8f, 1, tex.Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Positive ? Color.Lerp(Color.White, baseColor, MathHelper.Clamp(Utils.GetLerpValue(50, 175, time, true), 0, 0.5f)) with { A = 0 } : Color.Black, 1, tex2.Value, true, true);
+
+            Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot");
+            Asset<Texture2D> tex4 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot2");
+            Rectangle frame = tex3.Frame(1, 6, 0, Projectile.frame);
+            Vector2 rotationPoint = frame.Size() * 0.5f;
+            Main.EntitySpriteDraw(Positive ? tex4.Value : tex3.Value, drawPosition, frame, baseColor with { A = 0 }, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+
+            return false;
+        }
+    }
+}
