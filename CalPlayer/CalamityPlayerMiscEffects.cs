@@ -543,7 +543,8 @@ namespace CalamityMod.CalPlayer
                 adrenalineDiff = -adrenalineMax / AdrenalineDuration;
 
                 // If using Draedon's Heart, you get healing instead of damage.
-                if (draedonsHeart)
+                // 26AUG2024: Ozzatron: Cut Draedon's Heart healing in half by making it heal every other frame.
+                if (draedonsHeart && Player.miscCounter % 2 == 1)
                 {
                     Player.statLife += DraedonsHeart.NanomachinesHealPerFrame;
                     if (Player.statLife >= Player.statLifeMax2)
