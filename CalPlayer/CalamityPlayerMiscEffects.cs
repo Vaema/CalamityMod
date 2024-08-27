@@ -2312,24 +2312,30 @@ namespace CalamityMod.CalPlayer
                     double breathLoss = Main.remixWorld ? (point.Y < abyssLevel1 ? 50D * depthRatioFromAbyssLayer1 : 0D) : (point.Y > abyssLevel1 ? 50D * depthRatioFromAbyssLayer1 : 0D);
 
                     // Breath Loss Multiplier, depending on gear
-                    double breathLossMult = 1D -
-                        (Player.gills ? 0.2 : 0D) - // 0.8
-                        (oceanCrest ? 0.2 : 0D) - // 0.8
-                        (victideSet ? 0.2 : 0D) - // 0.8
-                        (Player.accDivingHelm ? 0.25 : 0D) - // 0.75
-                        (Player.arcticDivingGear ? 0.25 : 0D) - // 0.75
-                        (aquaticEmblem ? 0.25 : 0D) - // 0.75
-                        (Player.accMerman ? 0.3 : 0D) - // 0.7
-                        (reaverExplore ? 0.3 : 0D) - // 0.7
-                        ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) - // 0.7
-                        (abyssalDivingSuit ? 0.3 : 0D); // 0.7
+                    // 27AUG2024: Ozzatron: fixed this being subtractive like mining speed. now doesn't stack exponentially
+                    // It is now a multiplier for the time it takes to lose any unit amount of breath
+                    double breathLossTimeMult = 1D +
+                        (Player.gills ? 0.2 : 0D) + // 1.2
+                        (oceanCrest ? 0.2 : 0D) + // 1.2
+                        (victideSet ? 0.2 : 0D) + // 1.2
+                        (Player.accDivingHelm ? 0.25 : 0D) + // 1.25
+                        (Player.arcticDivingGear ? 0.25 : 0D) + // 1.25
+                        (aquaticEmblem ? 0.25 : 0D) + // 1.25
+                        (Player.accMerman ? 0.3 : 0D) + // 1.3
+                        (reaverExplore ? 0.3 : 0D) + // 1.3
+                        ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) + // 1.3
+                        (abyssalDivingSuit ? 0.3 : 0D) + // 1.3
+                        externalBreathLossMultBoost;
+
+                    // Invert the breath loss time multiplier, to get the multiplier for the speed at which breath is actually lost
+                    double breathLossMult = 1D / breathLossTimeMult;
 
                     // Limit the multiplier to 5%
                     if (breathLossMult < 0.05)
                         breathLossMult = 0.05;
 
                     // Reduce breath lost while at zero breath, depending on gear
-                    breathLoss *= breathLossMult;
+                    breathLoss *= breathLossTimeMult;
 
                     // Record the final breath loss for the stat meter
                     abyssBreathLossStat = (float)breathLoss;

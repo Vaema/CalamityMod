@@ -670,6 +670,12 @@ namespace CalamityMod
                 p.Calamity().externalAbyssLight += add;
         }
 
+        public static void AddBreathLossMult(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().externalBreathLossMultBoost += add;
+        }
+
         public static void AddFlightTimeMult(Player p, float add)
         {
             if (p != null)
@@ -1256,6 +1262,21 @@ namespace CalamityMod
                     if (!isValidPlayerArg(args[1]))
                         return new ArgumentException("ERROR: The first argument to \"AddLightStrength\" must be a Player or an int.");
                     AddAbyssLightStrength(castPlayer(args[1]), light);
+                    return null;
+
+                case "BreathMult":
+                case "BreathLossMult":
+                case "AddBreathMult":
+                case "AddBreathLossMult":
+                    if (args.Length < 2)
+                        return new ArgumentNullException("ERROR: Must specify both a Player object (or int index of a Player) and breath loss mult change as a float.");
+                    if (args.Length < 3)
+                        return new ArgumentNullException("ERROR: Must specify breath loss mult change as a float.");
+                    if (!(args[2] is float breathLossMult))
+                        return new ArgumentException("ERROR: The second argument to \"AddBreathLossMult\" must be a float.");
+                    if (!isValidPlayerArg(args[1]))
+                        return new ArgumentException("ERROR: The first argument to \"AddBreathLossMult\" must be a Player or an int.");
+                    AddBreathLossMult(castPlayer(args[1]), breathLossMult);
                     return null;
 
                 case "FlightMult":
