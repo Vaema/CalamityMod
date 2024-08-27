@@ -2393,7 +2393,8 @@ namespace CalamityMod.CalPlayer
                         (Player.accMerman ? 15D : 0D) + // 55
                         (victideSet ? 5D : 0D) + // 60
                         ((aquaticHeart && NPC.downedBoss3) ? 15D : 0D) + // 75
-                        (abyssalDivingSuit ? 15D : 0D); // 90
+                        (abyssalDivingSuit ? 15D : 0D) + // 90
+                        externalBreathTickBoost;
 
                     // Limit the multiplier to 50
                     if (tickMult > 50D)

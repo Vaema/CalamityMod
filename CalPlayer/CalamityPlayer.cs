@@ -142,6 +142,7 @@ namespace CalamityMod.CalPlayer
         #region External variables -- Not used by Calamity, only via Mod.Call or reflection
         public int externalAbyssLight = 0;
         public float externalBreathLossMultBoost = 0f;
+        public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
@@ -1591,6 +1592,7 @@ namespace CalamityMod.CalPlayer
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
             externalDefenseDamageImmunity = false;
@@ -2390,6 +2392,7 @@ namespace CalamityMod.CalPlayer
 
             externalAbyssLight = 0;
             externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
             externalDefenseDamageImmunity = false;
