@@ -2146,7 +2146,9 @@ namespace CalamityMod.CalPlayer
             bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
             // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
-            if (defenseDamageShouldApply && !CalamityMod.ExternalFlag_DisableDefenseDamage)
+            bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
+
+            if (defenseDamageShouldApply && externalFlagsAppropriate)
             {
                 double halfDefense = Player.statDefense / 2.0;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
@@ -2967,11 +2969,16 @@ namespace CalamityMod.CalPlayer
             ApplyDefenseDamageInternal(defenseDamageTaken);
         }
 
-        // Actually applies defense damage. Cannot be called externally.
+        // Actually applies defense damage. Really should not be called externally.
         private void ApplyDefenseDamageInternal(int defenseDamage, bool showVisuals = true)
         {
             // If zero defense damage is being dealt, don't waste your time or display a grey 0.
             if (defenseDamage <= 0)
+                return;
+
+            // There are two flags which disable the application of defense damage. If either is true, don't do anything.
+            bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
+            if (!externalFlagsAppropriate)
                 return;
             
             // Can be dynamically reduced by Adamantite set bonus and maybe other future effects.
