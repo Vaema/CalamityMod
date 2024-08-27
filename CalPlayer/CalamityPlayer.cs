@@ -140,6 +140,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region External variables -- Not used by Calamity, only via Mod.Call or reflection
+        public float externalFlightTimeMultBoost = 0f;
         public int externalAbyssLight = 0;
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
@@ -1586,8 +1587,12 @@ namespace CalamityMod.CalPlayer
             accStealthGenBoost = 0f;
 
             DashID = string.Empty;
+
+            externalFlightTimeMultBoost = 0f;
             externalAbyssLight = 0;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
@@ -2380,8 +2385,10 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+            externalFlightTimeMultBoost = 0f;
             externalAbyssLight = 0;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
             dragonRageHits = 0;
             dragonRageCooldown = 0;
             spectralVeilImmunity = 0;
