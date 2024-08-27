@@ -1,4 +1,5 @@
-﻿using CalamityMod.Sounds;
+﻿using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -26,11 +27,10 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.BulletHighVelocity;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.timeLeft = 600;
-            Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
@@ -45,11 +45,64 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(CommonCalamitySounds.LargeWeaponFireSound with { Volume = CommonCalamitySounds.LargeWeaponFireSound.Volume * 0.45f }, Projectile.Center);
                 }
             }
+            if (Projectile.timeLeft == 596)
+            {
+                for (int i = 0; i <= 4; i++) //Dragon's Breath shot particles my beloved
+                {
+                    Vector2 sparkVelocity = Projectile.velocity * 0.5f;
+
+                    float sparkScale1 = Main.rand.NextFloat(0.3f, 0.8f);
+                    Vector2 sparkvelocity1 = sparkVelocity.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.4f, 0.95f);
+                    SparkParticle spark1 = new SparkParticle(Projectile.Center, sparkvelocity1, false, 6, sparkScale1, Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed);
+                    GeneralParticleHandler.SpawnParticle(spark1);
+
+                    float sparkScale2 = Main.rand.NextFloat(0.4f, 1f);
+                    Vector2 sparkvelocity2 = sparkVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(1.1f, 3.1f);
+                    SparkParticle spark2 = new SparkParticle(Projectile.Center, sparkvelocity2, false, 6, sparkScale2, Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+            }
+            if (Projectile.timeLeft < 597 && Projectile.timeLeft > 450)
+            {
+                AltSparkParticle spark = new AltSparkParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 15, 1f, Color.OrangeRed * 0.1f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            Collision.HitTiles(Projectile.Center, Projectile.velocity, Projectile.width, Projectile.height);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
+            return true;
+        }
+        public override void OnKill(int timeLeft)
+        {
+            Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Red, Color.OrangeRed, Utils.GetLerpValue(0, 3, 1, true)), "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 0.05f, 10);
+            GeneralParticleHandler.SpawnParticle(explosion);
+            for (int i = 0; i <= 6; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 90 : 183, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f), 0, default, Main.rand.NextFloat(1.6f, 2.2f));
+                dust.noGravity = true;
+                dust.fadeIn = 0.5f;
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.CritDamage += 0.25f;
+            for (int i = 0; i <= 2; i++)
+            {
+                LineParticle spark = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.18f, 0.44f)) * Main.rand.NextFloat(0.4f, 2.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.Red : Color.OrangeRed);
+                GeneralParticleHandler.SpawnParticle(spark);
+                LineParticle spark2 = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.18f, -0.44f)) * Main.rand.NextFloat(0.4f, 2.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.Red : Color.OrangeRed);
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
+
+            for (int i = 0; i <= 3; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 90 : 183, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f), 0, default, Main.rand.NextFloat(1.6f, 2.2f));
+                dust.noGravity = true;
+                dust.fadeIn = 0.5f;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor) => Projectile.timeLeft < 600;
