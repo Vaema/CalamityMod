@@ -179,7 +179,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Movement variables
             float phase1MaxSpeedIncrease = 2f;
             float phase1MaxAccelerationIncrease = 0.025f;
-            float phase1MaxChargeSpeedIncrease = 3f;
+            float phase1MaxChargeSpeedIncrease = 1f;
 
             // Phase duration variables
             float phase1MaxLaserPhaseDurationDecrease = 120f;
@@ -341,8 +341,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.rotation = hoverRotation;
 
-                    float chargeSpeed = 8f;
-                    chargeSpeed += 5f * enrageScale;
+                    float chargeSpeed = 4f;
+                    chargeSpeed += 1f * enrageScale;
                     if (death)
                         chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     if (Main.getGoodWorld)
@@ -375,7 +375,22 @@ namespace CalamityMod.NPCs.NormalNPCs
                     else
                     {
                         // Accelerative charge
-                        NPC.velocity *= 1.015f;
+                        float maxVelocity = 24f;
+                        maxVelocity += 6f * enrageScale;
+                        if (death)
+                            maxVelocity += (phase1MaxChargeSpeedIncrease * 6f) * ((1f - lifeRatio) / (1f - phase2LifeRatio));
+                        if (Main.getGoodWorld)
+                            maxVelocity += 6f;
+
+                        if (NPC.velocity.Length() < maxVelocity)
+                        {
+                            NPC.velocity *= 1.025f;
+                            if (NPC.velocity.Length() > maxVelocity)
+                            {
+                                NPC.velocity.Normalize();
+                                NPC.velocity *= maxVelocity;
+                            }
+                        }
 
                         NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
                     }
@@ -658,8 +673,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     // Set rotation and velocity
                     NPC.rotation = hoverRotation;
 
-                    float chargeSpeed = 9f + (death ? 2.5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                    chargeSpeed += 8f * enrageScale;
+                    float chargeSpeed = 4.5f + (death ? 1.25f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    chargeSpeed += 4f * enrageScale;
                     if (Main.getGoodWorld)
                         chargeSpeed *= 1.2f;
 
@@ -696,7 +711,22 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         // Accelerative charge
                         // TODO - Make the charge leave behind energy bomb projectiles when the projectiles are done
-                        NPC.velocity *= 1.015f;
+                        float maxVelocity = 27f;
+                        maxVelocity += 6f * enrageScale;
+                        if (death)
+                            maxVelocity += 7.5f * ((1f - lifeRatio) / (1f - phase2LifeRatio));
+                        if (Main.getGoodWorld)
+                            maxVelocity *= 1.2f;
+
+                        if (NPC.velocity.Length() < maxVelocity)
+                        {
+                            NPC.velocity *= 1.05f;
+                            if (NPC.velocity.Length() > maxVelocity)
+                            {
+                                NPC.velocity.Normalize();
+                                NPC.velocity *= maxVelocity;
+                            }
+                        }
 
                         NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
                     }
