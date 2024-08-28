@@ -764,46 +764,6 @@ namespace CalamityMod.NPCs
                     ApplyDPSDebuff(20, 4, ref npc.lifeRegen, ref damage);
             }
 
-            // Glacial State and Temporal Sadness don't work on normal/expert Queen Bee.
-            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
-            {
-                if (npc.type != NPCID.QueenBee || CalamityWorld.revenge || BossRushEvent.BossRushActive)
-                {
-                    float baseXVelocityMult = 0.9f;
-                    float baseYVelocityIncrease = 0.05f;
-                    if (VulnerableToCold.HasValue)
-                    {
-                        if (VulnerableToCold.Value)
-                        {
-                            baseXVelocityMult = 0.5f;
-                            baseYVelocityIncrease = 0.2f;
-                        }
-                        else
-                        {
-                            baseXVelocityMult = 0.98f;
-                            baseYVelocityIncrease = 0.01f;
-                        }
-                    }
-
-                    if (gState > 0)
-                    {
-                        if (!CalamityPlayer.areThereAnyDamnBosses)
-                        {
-                            npc.velocity.X *= baseXVelocityMult;
-                            npc.velocity.Y += baseYVelocityIncrease * 0.5f;
-                            if (npc.velocity.Y > 15f)
-                                npc.velocity.Y = 15f;
-                        }
-                        else
-                        {
-                            npc.velocity *= baseXVelocityMult;
-                        }
-                    }
-                    else if (tSad > 0)
-                        npc.velocity *= 0.5f;
-                }
-            }
-
             // Debuff vulnerabilities and resistances.
             // Damage multiplier calcs.
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
@@ -5350,71 +5310,7 @@ namespace CalamityMod.NPCs
                 veriumDoomStacks = 0;
             }
 
-            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
-            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
-                return;
-
-            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
-            {
-                if (gState <= 0 && tSad <= 0)
-                {
-                    if (eutrophication > 0)
-                    {
-                        float velocityMult = 0.95f;
-                        if (VulnerableToWater.HasValue)
-                        {
-                            if (VulnerableToWater.Value)
-                                velocityMult = 0.6f;
-                            else
-                                velocityMult = 0.99f;
-                        }
-                        npc.velocity *= velocityMult;
-                    }
-                    else if (timeSlow > 0 || webbed > 0)
-                    {
-                        npc.velocity *= 0.85f;
-                    }
-                    else if (slowed > 0 || tesla > 0 || vaporfied > 0)
-                    {
-                        float velocityMult = 0.95f;
-                        if (tesla > 0)
-                        {
-                            if (VulnerableToElectricity.HasValue)
-                            {
-                                if (VulnerableToElectricity.Value)
-                                    velocityMult = 0.6f;
-                                else
-                                    velocityMult = 0.99f;
-                            }
-                        }
-                        npc.velocity *= velocityMult;
-                    }
-                    else if (vulnerabilityHex > 0)
-                    {
-                        npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
-                    }
-                    else if (kamiFlu > 420)
-                    {
-                        npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
-                    }
-                }
-            }
-
-            if (pearlAura > 0)
-            {
-                // Slow the enemy
-                npc.velocity *= 0.9f;
-
-                // Spawn pearl shards on a counter
-                if (pearlAuraCounter % 12 == 0)
-                {
-                    SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
-                    Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                    int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
-                    Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
-                }
-            }
-
+            // Amidias' Spark and Transformer spark spawning
             if (shocked > 0 || transformerShocked > 0)
             {
                 var player = Main.LocalPlayer;
@@ -5438,6 +5334,96 @@ namespace CalamityMod.NPCs
                         spark.penetrate = 10;
                     }
                 }
+            }
+
+            // Pearl Aura shard spawning
+            // Slowing is handled in the general slowing code below
+            if (pearlAura > 0 && pearlAuraCounter % 12 == 0)
+            {
+                SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
+                Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
+                int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
+                Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+            }
+
+            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
+            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
+                return;
+
+            // Apply slowing debuff effects
+            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
+            {
+                // Slowing debuffs which set a velocity hard cap take priority first.
+                if (vulnerabilityHex > 0)
+                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
+                else if (kamiFlu > 300)
+                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
+
+                // Then debuffs which apply a multiplier to velocity.
+                // These multipliers can stack with each other, even if you'll rarely see this on a boss.
+                float velocitySlownessFactor = 1f;
+
+                if (tSad > 0)
+                    velocitySlownessFactor += 0.2f;
+
+                if (timeSlow > 0)
+                    velocitySlownessFactor += 0.15f;
+
+                if (webbed > 0)
+                    velocitySlownessFactor += 0.15f;
+
+                if (gState > 0)
+                {
+                    float baseSlownessFactor = 0.1f;
+                    if (VulnerableToCold.HasValue)
+                    {
+                        if (VulnerableToCold.Value)
+                            baseSlownessFactor = 0.4f;
+                        else
+                            baseSlownessFactor = 0.025f;
+                    }
+                    velocitySlownessFactor += baseSlownessFactor;
+                }
+
+                if (pearlAura > 0)
+                    velocitySlownessFactor += 0.1f;
+
+                if (eutrophication > 0)
+                {
+                    float baseSlownessFactor = 0.05f;
+                    if (VulnerableToWater.HasValue)
+                    {
+                        if (VulnerableToWater.Value)
+                            baseSlownessFactor = 0.2f;
+                        else
+                            baseSlownessFactor = 0.0125f;
+                    }
+                    velocitySlownessFactor += baseSlownessFactor;
+                }
+
+                if (slowed > 0)
+                    velocitySlownessFactor += 0.05f;
+
+                if (tesla > 0)
+                {
+                    float baseSlownessFactor = 0.05f;
+                    if (VulnerableToElectricity.HasValue)
+                    {
+                        if (VulnerableToElectricity.Value)
+                            baseSlownessFactor = 0.2f;
+                        else
+                            baseSlownessFactor = 0.0125f;
+                    }
+                    velocitySlownessFactor += baseSlownessFactor;
+                }
+
+                if (vaporfied > 0)
+                    velocitySlownessFactor += 0.05f;
+
+                // Divide 1 by the slowness factor to get the amount to slow by.
+                // This scales with diminishing returns, though getting slowed every frame means they quickly slow down either way.
+                velocitySlownessFactor = 1f / velocitySlownessFactor;
+                npc.velocity *= velocitySlownessFactor;
             }
 
             // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
