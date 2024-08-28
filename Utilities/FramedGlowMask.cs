@@ -130,6 +130,12 @@ namespace CalamityMod
             if (Texture is null)
                 return false;
 
+            if (xFrame < 0 || xFrame >= FrameXCount)
+                return false;
+
+            if (yFrame < 0 || yFrame >= FrameYCount)
+                return false;
+
             return _HasGlowContent[xFrame, yFrame];
         }
 
@@ -138,7 +144,16 @@ namespace CalamityMod
             if (Texture is null)
                 return false;
 
-            return _HasGlowContent[xPos / FrameWidth, yPos / FrameHeight];
+            int xFrame = xPos / FrameWidth;
+            int yFrame = yPos / FrameHeight;
+
+            if (xFrame < 0 || xFrame >= FrameXCount)
+                return false;
+
+            if (yFrame < 0 || yFrame >= FrameYCount)
+                return false;
+
+            return _HasGlowContent[xFrame, yFrame];
         }
     }
 }
