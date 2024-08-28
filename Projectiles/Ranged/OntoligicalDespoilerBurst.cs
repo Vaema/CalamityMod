@@ -1,16 +1,10 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class NullBurst : ModProjectile, ILocalizedModType
+    public class OntoligicalDespoilerBurst : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -35,10 +29,10 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.9f);
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.ai[2] == 0 ? 150 : 300, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 300, targetHitbox);
     }
 }

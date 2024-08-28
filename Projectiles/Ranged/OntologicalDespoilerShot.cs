@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +10,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -23,7 +20,6 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float time => ref Projectile.ai[0];
         public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
         public int sineDir = 1;
-        public int zagRate = 55;
 
         public Color color1 = Color.DarkMagenta;
         public Color color2 = Color.DarkOrchid;
@@ -69,7 +65,6 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.scale = 1f;
                 sineDir = Main.rand.NextBool() ? 1 : -1;
                 Projectile.frame = Main.rand.Next(0, 6 + 1);
-                zagRate = Main.rand.Next(55, 70 + 1);
                 if (!Positive)
                     Projectile.penetrate = 1;
             }
@@ -182,19 +177,19 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < MathHelper.Clamp((int)(3 - Projectile.numHits * 0.3f), 1, 3); i++)
                 {
                     Particle orb2 = new LineParticle(Projectile.Center, (Projectile.velocity * 4).RotatedByRandom(0.15f) * Main.rand.NextFloat(0.1f, 1f), false, Main.rand.Next(20, 28 + 1), Main.rand.NextFloat(0.6f, 1.3f), baseColor);
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-            SoundStyle fire = new("CalamityMod/Sounds/Item/NullHit");
+            SoundStyle fire = OntologicalDespoiler.SmallImpact;
             SoundEngine.PlaySound(fire with { Volume = (!Positive ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (!Positive ? 3 : 1) }, Projectile.Center);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.9f);
+                Projectile.damage = (int)(Projectile.damage * 0.92f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

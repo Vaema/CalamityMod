@@ -12,13 +12,14 @@ namespace CalamityMod.Particles
         public bool AffectedByGravity;
         public float Ylength = 1f;
         public float Xlength = 0.6f;
+        public float ShrinkSpeed = 1;
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
         public override bool UseAdditiveBlend => false;
 
         public override string Texture => "CalamityMod/Particles/LargeSpark";
 
-        public VoidSparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color)
+        public VoidSparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, float shrinkSpeed = 1)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -26,6 +27,7 @@ namespace CalamityMod.Particles
             Scale = scale;
             Lifetime = lifetime;
             Color = InitialColor = color;
+            ShrinkSpeed = shrinkSpeed;
         }
 
         public override void Update()
@@ -33,8 +35,8 @@ namespace CalamityMod.Particles
             Scale *= 0.9f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             Velocity *= 0.95f;
-            Ylength *= 1.25f;
-            Xlength *= 0.7f;
+            Ylength *= (1 + (0.25f * ShrinkSpeed));
+            Xlength *= (1 - (0.3f * ShrinkSpeed));
 
             if (Velocity.Length() < 12f && AffectedByGravity)
             {

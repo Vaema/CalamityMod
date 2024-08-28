@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -15,13 +14,17 @@ namespace CalamityMod.Items.Weapons.Ranged
     [LegacyName("MolecularManipulator")]
     public class OntologicalDespoiler : ModItem, ILocalizedModType
     {
-        public static readonly SoundStyle ChargeLV1 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1") { Volume = 0.6f };
-        public static readonly SoundStyle ChargeLV2 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2") { Volume = 0.6f };
-        public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeStart") { Volume = 0.6f };
-        public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLoop") { Volume = 0.6f };
+        public static readonly SoundStyle ChargeLV1 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1");
+        public static readonly SoundStyle ChargeLV2 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2");
+        public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeStart");
+        public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLoop");
         internal static readonly int ChargeLoopSoundFrames = 151;
-        public static readonly SoundStyle SmallShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserSmallShot") { PitchVariance = 0.3f };
-        public static readonly SoundStyle BigShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserBigShot") { PitchVariance = 0.3f };
+        public static readonly SoundStyle SmallShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserSmallShot");
+        public static readonly SoundStyle BigShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserBigShot");
+        public static readonly SoundStyle SmallImpact = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1");
+        public static readonly SoundStyle LargeImpact = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2");
+
+
 
         public bool shotType = true; // true = positive shot, false = negative shot
         public new string LocalizationCategory => "Items.Weapons.Ranged";
@@ -35,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 88;
             Item.height = 34;
-            Item.damage = 772;
+            Item.damage = 426;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 8;
             Item.noMelee = true;
