@@ -145,7 +145,6 @@ namespace CalamityMod.Projectiles.Ranged
             // Changing Mode
             if (Projectile.ai[2] >= 10)
             {
-                Owner.Calamity().despoilerNerf = false; // Remove charge speed penalty if you swap
                 ShotsLoaded = 0;
                 if (Time == 0)
                 {
@@ -163,14 +162,15 @@ namespace CalamityMod.Projectiles.Ranged
                         dust.scale = Main.rand.NextFloat(0.9f, 1.25f);
                         dust.color = Projectile.ai[2] == 15 ? baseColor : useColor;
                     }
-                    Projectile.timeLeft = (int)(AftershotCooldownFrames * 3.5f);
+                    Projectile.timeLeft = (int)(AftershotCooldownFrames * 2.5f * (!Owner.Calamity().despoilerNerf ? 2 : 1)); // If you're swapping with no penalty, the swap takes longer
+                    Owner.Calamity().despoilerNerf = false; // Remove charge speed penalty if you swap
                     OffsetLengthFromArm = 45f;
                 }
                 if (Main.rand.NextBool() && Time > 1)
                 {
                     Dust dust = Dust.NewDustPerfect(GunTipPosition - (Projectile.velocity * 60).RotatedBy(0.15f * Projectile.direction), Projectile.ai[2] == 15 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (Projectile.velocity * 14).RotatedBy(MathHelper.ToRadians(-135f) * Projectile.direction).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.6f, 1f));
                     dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(0.8f, 0.9f) * Utils.GetLerpValue(-10, 20, Projectile.timeLeft);
+                    dust.scale = Main.rand.NextFloat(0.8f, 0.9f) * Utils.GetLerpValue(-10, 15, Projectile.timeLeft);
                     dust.color = baseColor;
                 }
             }
@@ -292,24 +292,15 @@ namespace CalamityMod.Projectiles.Ranged
                 if (ShotsLoaded < MaxLoadableShots && CurrentChargingFrames % FramesPerLoad == 0)
                     ShotsLoaded++;
 
-                CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1 : 2) * (Owner.Calamity().despoilerNerf ? 0.5f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
+                CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1.2f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
 
                 // Sounds
                 if (ChargeLV1)
                 {
-                    // Pulse sounds play independently of the loop
-                    if (CurrentChargingFrames == Charge2Frames)
-                        SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV2, Projectile.Center);
-                    else if (CurrentChargingFrames == Charge1Frames)
-                    {
-                        SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV1, Projectile.Center);
-                        ShotsLoaded = MaxLoadableShots;
-                    }
-
                     if ((CurrentChargingFrames - Charge1Frames) % (OntologicalDespoiler.ChargeLoopSoundFrames * 2) == 0)
                         OntologicalChargeSlot = SoundEngine.PlaySound(OntologicalDespoiler.ChargeLoop, Projectile.Center);
                 }
-                else if (CurrentChargingFrames == 10)
+                else if (Time == 10)
                     OntologicalChargeSlot = SoundEngine.PlaySound(OntologicalDespoiler.ChargeStart, Projectile.Center);
 
                 // Charge-up visuals
@@ -350,9 +341,11 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 }
 
-                // Full charge dusts
+                // Full charge dusts and sounds
                 if (ChargeLV1 && !hasReachedLV1)
                 {
+                    ShotsLoaded = MaxLoadableShots;
+                    SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV1, Projectile.Center);
                     for (int i = 0; i < 16; i++)
                     {
                         Color useColor = Main.rand.Next(4) switch
@@ -374,6 +367,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (ChargeLV2 && !hasReachedLV2)
                 {
+                    SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV2, Projectile.Center);
                     for (int i = 0; i < 25; i++)
                     {
                         Color useColor = Main.rand.Next(4) switch

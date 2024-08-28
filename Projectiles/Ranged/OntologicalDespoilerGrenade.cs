@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             if (time < 60)
-                Projectile.velocity *= 0.979f;
+                Projectile.velocity *= 0.982f;
 
             float rate = (Main.GlobalTimeWrappedHourly * 15);
             List<Color> eColors = new List<Color>()
@@ -106,10 +106,10 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Vector2 position = targetedNPC.Center;
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 6 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true)))
+                if (Projectile.velocity.Length() < 7 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true) * 2))
                     Projectile.velocity += moveToMouse * (0.02f + Utils.GetLerpValue(550, 250, Projectile.timeLeft, true));
                 else
-                    Projectile.velocity *= 0.9f;
+                    Projectile.velocity *= 0.94f;
                 explode = true;
             }
             time++;

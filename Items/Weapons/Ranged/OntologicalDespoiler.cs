@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -52,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<OntologicalDespoilerHoldout>();
             Item.shootSpeed = 12f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool AltFunctionUse(Player player) => true;
@@ -91,6 +91,25 @@ namespace CalamityMod.Items.Weapons.Ranged
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, shotType ? 0 : 5);
             holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
             return false;
+        }
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            float rate = (Main.GlobalTimeWrappedHourly * 3);
+            List<Color> eColors = new List<Color>()
+                {
+                    Color.DarkMagenta,
+                    Color.DarkOrchid,
+                    Color.Purple,
+                    Color.BlueViolet
+                };
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip6");
+            if (line != null)
+                line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.3f);
         }
 
         public override void AddRecipes()

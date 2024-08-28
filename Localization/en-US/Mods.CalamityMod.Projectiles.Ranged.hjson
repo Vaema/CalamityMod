@@ -139,7 +139,12 @@ NorfleetExplosion.DisplayName: Explosion
 NovaChargedShot.DisplayName: Charged Nova Blast
 NovaShot.DisplayName: Nova Bolt
 Nuke.DisplayName: Nuke
+NullFlash.DisplayName: Null Flash
 NullShot.DisplayName: Null
+OntologicalDespoilerBeam.DisplayName: Annihilation Beam
+OntoligicalDespoilerBurst.DisplayName: Disruption Burst
+OntologicalDespoilerGrenade.DisplayName: Disruption Shot
+OntologicalDespoilerShot.DisplayName: Volatile Energy Shot
 OpalChargedStrike.DisplayName: Charged Plasma Bolt
 OpalStrike.DisplayName: Heated Bolt
 PiercingBullet.DisplayName: Piercing Blow
@@ -245,8 +250,3 @@ WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
 HellbornProj.DisplayName: Hell-born Gunblast
 HellbornShell.DisplayName: Hell's Shell
-NullFlash.DisplayName: Null Flash
-OntologicalDespoilerBeam.DisplayName: Ontological Despoiler Beam
-OntologicalDespoilerGrenade.DisplayName: Ontological Despoiler Grenade
-OntologicalDespoilerShot.DisplayName: Ontological Despoiler Shot
-OntoligicalDespoilerBurst.DisplayName: Ontoligical Despoiler Burst

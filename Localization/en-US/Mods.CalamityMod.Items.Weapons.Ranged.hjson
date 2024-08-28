@@ -840,6 +840,20 @@ NullificationPistol: {
 		'''
 }
 
+OntologicalDespoiler: {
+	DisplayName: Ontological Despoiler
+	Tooltip:
+		'''
+		Charges and fires bursts of concentrated unreality, swap between unstable and null modes with right click
+		Unstable is trifurcated and pierces through enemies
+		Null is fired rapidly and has homing properties
+		The first charging stage increases the fire rate of the burst
+		The second charging stage replaces the burst with a disruption shot for unstable, or an annihilation beam for null
+		Modes charge slower when used in succession; switching resets it
+		'Rob them of continuity and the laws of physics they hold so dear.'
+		'''
+}
+
 OnyxChainBlaster: {
 	DisplayName: Onyx Chain Blaster
 	Tooltip:
@@ -1438,9 +1452,4 @@ WulfrumBlunderbuss: {
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
-}
-
-OntologicalDespoiler: {
-	DisplayName: Ontological Despoiler
-	Tooltip: ""
 }
