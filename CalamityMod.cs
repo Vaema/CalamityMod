@@ -131,6 +131,7 @@ namespace CalamityMod
         // Speedrun timer
         internal static Stopwatch SpeedrunTimer = new Stopwatch();
 
+        #region External Flags
         // External flag to disable non-Revengeance boss AI edits
         // This can be edited by other mods using reflection to prevent compatibility issues
         public static bool ExternalFlag_DisableNonRevBossAI = false;
@@ -138,7 +139,9 @@ namespace CalamityMod
         // External flag to disable Defense Damage
         // This can be edited by other mods using reflection if desired
         // Note that this flag trumps Bloodflare Core and will stop that accessory from working properly.
+        // There is also a means to disable defense damage on a per-player basis.
         public static bool ExternalFlag_DisableDefenseDamage = false;
+        #endregion
 
         internal static CalamityMod Instance;
 
