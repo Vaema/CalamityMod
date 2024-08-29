@@ -6,6 +6,7 @@ namespace CalamityMod.Walls
 {
     public class EutrophicSandWallSafe : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/EutrophicSandWall";
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;

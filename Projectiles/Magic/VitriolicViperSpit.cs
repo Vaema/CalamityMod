@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -66,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 230);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 230);
 
             SoundStyle fire = new("CalamityMod/Sounds/NPCHit/NuclearTerrorHit");
             SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.7f }, Projectile.Center);

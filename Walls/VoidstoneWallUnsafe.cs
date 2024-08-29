@@ -12,6 +12,7 @@ namespace CalamityMod.Walls
     public class VoidstoneWallUnsafe : ModWall
     {
         internal static FramedGlowMask GlowMask;
+        public override string Texture => "CalamityMod/Walls/VoidstoneWall";
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +31,7 @@ namespace CalamityMod.Walls
                 Main.tile[i, j].Get<LiquidData>().LiquidType = LiquidID.Water;
                 Main.tile[i, j].LiquidAmount = byte.MaxValue;
                 WorldGen.SquareTileFrame(i, j);
-                if (Main.netMode == NetmodeID.MultiplayerClient)
+                if (Main.netMode == NetmodeID.Server)
                     NetMessage.sendWater(i, j);
             }
         }

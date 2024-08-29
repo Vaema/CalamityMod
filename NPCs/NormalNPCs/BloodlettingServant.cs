@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            Lighting.AddLight(NPC.Center, 0.8f, 0f, 0f);
+            Lighting.AddLight(NPC.Center, 0.3f, 0.3f, 0.3f);
 
             NPC.TargetClosest();
             Player target = Main.player[NPC.target];
@@ -125,12 +125,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (lookAt.X > 0f)
                 {
                     NPC.spriteDirection = 1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X);
+                    NPC.rotation = lookAt.ToRotation();
                 }
                 if (lookAt.X < 0f)
                 {
                     NPC.spriteDirection = -1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X) + MathHelper.Pi;
+                    NPC.rotation = lookAt.ToRotation() + MathHelper.Pi;
                 }
             }
 

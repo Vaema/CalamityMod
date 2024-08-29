@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 76;
             Item.height = 36;
-            Item.damage = 63;
+            Item.damage = 115; 
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 55;
             Item.useAnimation = 55;
@@ -50,9 +52,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.SuperStarCannon).
-                AddIngredient<AquashardShotgun>().
-                AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient(ItemID.FragmentStardust, 6).
+                AddIngredient<Lumenyl>(6).
+                AddIngredient<RuinousSoul>(4).
+                AddIngredient<ExodiumCluster>(12).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

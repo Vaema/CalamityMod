@@ -155,6 +155,7 @@ namespace CalamityMod.NPCs
             "Farsni",
             "Fanny", // <@!799749125720637460> (zombiewolf511)
             "Mausi", // <@!194156349347594241> (sadouken)
+            "Fiona", // <@!475216964168450048> (thatgayguy69)
         };
         private static readonly string[] PainterNames =
         {
@@ -221,6 +222,7 @@ namespace CalamityMod.NPCs
         {
             "Stan Pines",
             "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Borgus", // <@!539127427482255376> (therealmeepman)
         };
         private static readonly string[] TruffleNames =
         {
@@ -801,6 +803,8 @@ namespace CalamityMod.NPCs
                 case NPCID.Demolitionist:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG)
                         chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.DoGDefeated");
+                    else if (Main.rand.NextBool(10))
+                        chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.MentionSkynamite");
                     break;
 
                 case NPCID.Dryad:

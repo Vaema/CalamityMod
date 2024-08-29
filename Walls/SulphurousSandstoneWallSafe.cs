@@ -6,6 +6,7 @@ namespace CalamityMod.Walls
 {
     public class SulphurousSandstoneWallSafe : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/SulphurousSandstoneWall";
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;

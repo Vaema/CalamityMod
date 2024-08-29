@@ -139,10 +139,17 @@ namespace CalamityMod.CalPlayer
         public string CurrentlyViewedHologramText;
         #endregion
 
-        #region External variables -- Only set by Mod.Call
+        #region External variables -- Not used by Calamity, only via Mod.Call or reflection
         public int externalAbyssLight = 0;
+        public float externalBreathLossMultBoost = 0f;
+        public float externalBreathTickBoost = 0f;
+        public float externalFlightTimeMultBoost = 0f;
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
+
+        // 27AUG2024: Ozzatron: per request, there is now an external bool for per-player defense damage immunity
+        public bool externalDefenseDamageImmunity = false;
+
         // NOTE -- With the Armageddon item removed from Calamity, this bool can only be set by other mods
         public bool disableAllDodges = false;
         #endregion
@@ -1583,8 +1590,14 @@ namespace CalamityMod.CalPlayer
             accStealthGenBoost = 0f;
 
             DashID = string.Empty;
+
             externalAbyssLight = 0;
+            externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
+            externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
@@ -2377,8 +2390,14 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+
             externalAbyssLight = 0;
+            externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
+            externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             dragonRageHits = 0;
             dragonRageCooldown = 0;
             spectralVeilImmunity = 0;
