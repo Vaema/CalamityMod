@@ -13,6 +13,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync]
     public class OarfishHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;
@@ -41,7 +42,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 59;
             NPC.height = 38;
             NPC.defense = 10;
-            NPC.lifeMax = 4000;
+            NPC.lifeMax = 5000;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

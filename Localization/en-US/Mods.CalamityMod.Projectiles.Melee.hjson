@@ -67,9 +67,7 @@ CosmicShivAura.DisplayName: Cosmic Shiv Aura
 CosmicShivBall.DisplayName: Cosmic Energy
 CosmicShivBlade.DisplayName: Cosmic Beam
 CosmicShivTrail.DisplayName: Cosmic Shiv Trail
-CosmicSpiritBomb1.DisplayName: Cosmic Bomb
-CosmicSpiritBomb2.DisplayName: Cosmic Bomb
-CosmicSpiritBomb3.DisplayName: Cosmic Bomb
+CosmicSpiritBomb.DisplayName: Cosmic Bomb
 CrescentMoonFlail.DisplayName: Crescent Moon
 CrescentMoonProj.DisplayName: Crescent Moon
 CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
@@ -106,7 +104,6 @@ EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceFlame2.DisplayName: Essence Flame
 EssenceScythe.DisplayName: Essence Scythe
-EutrophicScimitarProj.DisplayName: Scimitar Zap
 ExcelsusBlue.DisplayName: Excelsus
 ExcelsusMain.DisplayName: Excelsus
 ExcelsusPink.DisplayName: Excelsus
@@ -188,10 +185,8 @@ NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
 Oathblade.DisplayName: Oathblade
 OathswordFlame.DisplayName: Oathsword Flame
 Orbacle.DisplayName: Auric Orb
-OrderbringerAura.DisplayName: Aura
 OrderbringerBeam.DisplayName: Orderbringer Beam
-OrderbringerRain.DisplayName: Rain
-OrderbringerWhiteOrb.DisplayName: Orderbringer Orb
+OrderbringerWaveProj.DisplayName: Order-bringing Wave
 PhoenixsPride.DisplayName: Phoenix's Pride
 PhosphorescentGauntletPunches.DisplayName: Gauntlet Punch
 PhotonRipperProjectile.DisplayName: Extraordinarily Cost-Inefficient Chainsaw
@@ -240,6 +235,7 @@ SpineOfThanatosProjectile.DisplayName: Spine of Thanatos
 StarburstBeam.DisplayName: Star Shiv
 StarburstSHIV.DisplayName: SHIV
 StarnightBeam.DisplayName: Starnight Beam
+StarofJudgement.DisplayName: Star of Judgement
 StellarContemptBlast.DisplayName: Stellar Blast
 StellarContemptEcho.DisplayName: Echoes of Contempt
 StellarContemptHammer.DisplayName: Stellar Contempt
@@ -300,9 +296,6 @@ VoidTentacle.DisplayName: Void Tentacle
 VolcanicFireball.DisplayName: Volcanic Fireball
 VolcanicFireballLarge.DisplayName: Volcanic Fireball
 Waterfall.DisplayName: Waterfall Beam
-WhiteBoltAura.DisplayName: White Aura
-WhiteOrb.DisplayName: White Orb
-Whiterain.DisplayName: White Rain
 WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard

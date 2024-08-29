@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 46;
             NPC.height = 30;
             NPC.defense = 4;
-            NPC.lifeMax = 60;
+            NPC.lifeMax = 75;
             NPC.knockBackResist = 0.3f;
             AIType = NPCID.Wolf;
             NPC.value = Item.buyPrice(0, 0, 2, 0);

@@ -19,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [AutoloadBossHead]
     public class SkeletronPrime2 : ModNPC
     {
         public override string BossHeadTexture => $"Terraria/Images/NPC_Head_Boss_18";
@@ -417,7 +418,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             int damage = NPC.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             {
                                 double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                 double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -682,7 +683,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     int damage = NPC.GetProjectileDamage(type);
 
                                     // Reduce mech boss projectile damage depending on the new ore progression changes
-                                    if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                                     {
                                         double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                         double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -750,7 +751,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                                 {
                                     double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
                                     double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
@@ -877,50 +878,44 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, 149);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, 150);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_1").Type, NPC.scale);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_2").Type, NPC.scale);
 
-                    int num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    Gore gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X += 1f;
-                    Main.gore[num802].velocity.Y += 1f;
+                    int gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X += 1f;
+                    Main.gore[gore].velocity.Y += 1f;
 
-                    num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X -= 1f;
-                    Main.gore[num802].velocity.Y += 1f;
+                    gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X -= 1f;
+                    Main.gore[gore].velocity.Y += 1f;
 
-                    num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X += 1f;
-                    Main.gore[num802].velocity.Y -= 1f;
+                    gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X += 1f;
+                    Main.gore[gore].velocity.Y -= 1f;
 
-                    num802 = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
-                    gore2 = Main.gore[num802];
-                    gore2.velocity *= 0.4f;
-                    Main.gore[num802].velocity.X -= 1f;
-                    Main.gore[num802].velocity.Y -= 1f;
+                    gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default(Vector2), Main.rand.Next(61, 64));
+                    Main.gore[gore].velocity *= 0.4f;
+                    Main.gore[gore].velocity.X -= 1f;
+                    Main.gore[gore].velocity.Y -= 1f;
                 }
 
-                for (int num798 = 0; num798 < 10; num798++)
+                for (int i = 0; i < 10; i++)
                 {
-                    int num799 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
-                    Dust dust = Main.dust[num799];
-                    dust.velocity *= 1.4f;
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
+                    Main.dust[dust].velocity *= 1.4f;
                 }
 
-                for (int num800 = 0; num800 < 5; num800++)
+                for (int i = 0; i < 5; i++)
                 {
-                    int num801 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 2.5f);
-                    Main.dust[num801].noGravity = true;
-                    Dust dust = Main.dust[num801];
-                    dust.velocity *= 5f;
-                    num801 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 1.5f);
-                    dust = Main.dust[num801];
-                    dust.velocity *= 3f;
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 2.5f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity *= 5f;
+
+                    dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default(Color), 1.5f);
+                    Main.dust[dust].velocity *= 3f;
                 }
             }
         }

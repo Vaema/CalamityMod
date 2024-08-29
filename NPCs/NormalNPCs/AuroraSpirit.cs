@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -31,12 +32,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 24;
             NPC.defense = 8;
             NPC.alpha = 100;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 65;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.knockBackResist = 0f;
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath15;
             NPC.coldDamage = true;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<AuroraSpiritBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;

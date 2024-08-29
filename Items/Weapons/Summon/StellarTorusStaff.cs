@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 42;
             Item.height = 42;
             Item.damage = 142;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.shoot = ModContent.ProjectileType<StellarTorusSummon>();
@@ -55,8 +55,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.XenoStaff).
-                AddIngredient<ArmoredShell>(3).
                 AddIngredient(ItemID.FragmentStardust, 6).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

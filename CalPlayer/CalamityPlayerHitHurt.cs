@@ -315,8 +315,8 @@ namespace CalamityMod.CalPlayer
 
                     if (silvaWings)
                     {
-                        Player.statLife += Player.statLifeMax2 / 2;
-                        Player.HealEffect(Player.statLifeMax2 / 2);
+                        Player.statLife += Player.statLifeMax2 / 3;
+                        Player.HealEffect(Player.statLifeMax2 / 3);
 
                         if (Player.statLife > Player.statLifeMax2)
                             Player.statLife = Player.statLifeMax2;
@@ -848,6 +848,9 @@ namespace CalamityMod.CalPlayer
                 modifiers.SourceDamage *= damageReductionFromWhisperingDeath;
             }
 
+            if (trueVHex)
+                modifiers.SourceDamage *= 1.15f;
+
             //
             // At this point, the player is guaranteed to be hit if there is no dodge.
             // The amount of damage that will be dealt is yet to be determined.
@@ -1025,6 +1028,9 @@ namespace CalamityMod.CalPlayer
                 pro.Kill();
                 projectileDamageReduction += 0.2;
             }
+
+            if (trueVHex)
+                modifiers.SourceDamage *= 1.15f;
 
             if (auralisAuroraCounter >= 300)
             {
@@ -1590,6 +1596,10 @@ namespace CalamityMod.CalPlayer
             if (info.Damage < 1 /* || (godSlayerDamage && info.Damage <= 80) */)
                 return true;
 
+            // Silva armor revive provides complete immunity.
+            if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
+                return true;
+
             // If this hit was marked to be completely ignored due to shield absorption, then process Adrenaline changes and ignore it.
             if (freeDodgeFromShieldAbsorption)
             {
@@ -2131,11 +2141,14 @@ namespace CalamityMod.CalPlayer
 
             // If the player was just hit by something capable of dealing defense damage, then apply defense damage.
             // Bloodflare Core makes every hit deal defense damage (to enable its function).
-            // Defense damage is not applied if the player has iframes.
-            // This function will be ignored if the player is wearing Chalice, as it handles its defense damage elsewhere.
+            // Defense damage is not applied if the player has iframes or godmode.
             bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
+            bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
-            if (hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode)
+            // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
+            bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
+
+            if (defenseDamageShouldApply && externalFlagsAppropriate)
             {
                 double halfDefense = Player.statDefense / 2.0;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
@@ -2286,8 +2299,6 @@ namespace CalamityMod.CalPlayer
 
                 if (evilSmasherBoost > 0)
                     evilSmasherBoost -= 1;
-
-                hellbornBoost = 0;
 
                 if (trinketOfChi)
                     chiBuffTimer = 0;
@@ -2615,7 +2626,7 @@ namespace CalamityMod.CalPlayer
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 300 : aBrain ? 50 : 15;
+                        int effectDamage = amalgam ? 400 : aBrain ? 50 : 15;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
                         effectDamage = Player.ApplyArmorAccDamageBonusesTo(effectDamage);
 
@@ -2958,11 +2969,16 @@ namespace CalamityMod.CalPlayer
             ApplyDefenseDamageInternal(defenseDamageTaken);
         }
 
-        // Actually applies defense damage. Cannot be called externally.
+        // Actually applies defense damage. Really should not be called externally.
         private void ApplyDefenseDamageInternal(int defenseDamage, bool showVisuals = true)
         {
             // If zero defense damage is being dealt, don't waste your time or display a grey 0.
             if (defenseDamage <= 0)
+                return;
+
+            // There are two flags which disable the application of defense damage. If either is true, don't do anything.
+            bool externalFlagsAppropriate = !CalamityMod.ExternalFlag_DisableDefenseDamage && !externalDefenseDamageImmunity;
+            if (!externalFlagsAppropriate)
                 return;
             
             // Can be dynamically reduced by Adamantite set bonus and maybe other future effects.

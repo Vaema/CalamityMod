@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 42;
             Item.damage = 277;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, 0, 0f, player.whoAmI, 1);
+            Projectile.NewProjectile(source, position, velocity, Item.shoot, 0, 0f, player.whoAmI, 1);
             return false;
         }
     }

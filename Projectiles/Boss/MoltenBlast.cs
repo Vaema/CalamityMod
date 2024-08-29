@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.45f, 0.35f, 0f);
 
-            if (Projectile.timeLeft > TimeLeft - AccelerationTime)
+            if (Projectile.timeLeft > TimeLeft - AccelerationTime && Projectile.ai[2] == 0f)
                 Projectile.velocity *= Acceleration;
 
             if (Projectile.Hitbox.Intersects(new Rectangle((int)Projectile.ai[0], (int)Projectile.ai[1], Player.defaultWidth, Player.defaultHeight)))
@@ -86,6 +86,7 @@ namespace CalamityMod.Projectiles.Boss
                         Main.dust[holyDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
+
                 Projectile.localAI[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
             }
@@ -115,15 +116,10 @@ namespace CalamityMod.Projectiles.Boss
             GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.5f, false, 10, Main.rand.NextFloat(0.8f, 1.2f), ProvUtils.GetProjectileColor(255)));
 
             if (Main.rand.NextBool())
-            {
                 GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, Main.rand.NextFloat(vel), 150, MathHelper.ToRadians(Main.rand.NextFloat(-1f, 1f))));
-            }
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return ProvUtils.GetProjectileColor(0);
-        }
+        public override Color? GetAlpha(Color lightColor) => ProvUtils.GetProjectileColor(0);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -141,16 +137,13 @@ namespace CalamityMod.Projectiles.Boss
             Color loColor = ProvUtils.GetProjectileColor(0, true);
 
             for (int i = 0; i < 25; i++)
-            {
                 GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.8f, 1.2f), hiColor));
-            }
 
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.5f, 0.1f, 4));
 
             for (float i = 0; i < 1; i += 0.25f)
-            {
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f * i, 0.125f * i, 8));
-            }
+
             GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, hiColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.02f, 0.045f, 5));
 
             int blobAmt = !ProvUtils.DayAI() ? 9 : 6;
@@ -166,6 +159,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MoltenBlob>(), (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
                 }
             }
+
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
         }
 

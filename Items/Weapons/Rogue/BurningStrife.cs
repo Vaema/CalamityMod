@@ -13,21 +13,21 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 16;
             Item.height = 28;
+            Item.damage = 96;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useAnimation = Item.useTime = 25;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<BurningStrifeProj>();
+            Item.shootSpeed = 8f;
+
             Item.UseSound = SoundID.Item1;
             Item.useStyle = ItemUseStyleID.Swing;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-
-            Item.useAnimation = 25;
-            Item.useTime = 25;
-            Item.damage = 96;
-            Item.shootSpeed = 8f;
-            Item.shoot = ModContent.ProjectileType<BurningStrifeProj>();
-
-            Item.DamageType = RogueDamageClass.Instance;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults

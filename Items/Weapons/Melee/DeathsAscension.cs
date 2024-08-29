@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 70;
             Item.damage = 1200;
             Item.knockBack = 9f;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.channel = true;
@@ -93,14 +93,19 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             return false;
         }
+        
+        public override void UseItemFrame(Player player)
+        {
+            player.itemLocation = (Vector2)player.HandPosition;
+        }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.DeathSickle).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<TwistingNether>().
                 AddIngredient(ItemID.SoulofNight, 15).
+                AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

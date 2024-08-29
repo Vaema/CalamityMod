@@ -19,7 +19,6 @@ AuricBullet.DisplayName: Auric Bullet
 AuroraFire.DisplayName: Aurora Blaze
 BallistaGreatArrow.DisplayName: Ballista Great Arrow
 BarinadeArrow.DisplayName: Fin Arrow
-BigCoral.DisplayName: Big Coral
 BlightFlames.DisplayName: Blight Flames
 BlissfulBombardierDustProjectile.DisplayName: Holy Flare Dust
 BloodBoilerFire.DisplayName: Blood Fire
@@ -183,7 +182,7 @@ SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower
 SeasSearingSpout.DisplayName: Spout
-SepticSkewerBacteria.DisplayName: Bacteria
+SepticSkewerBacteria.DisplayName: Septic Gore
 SepticSkewerHarpoon.DisplayName: Septic Skewer
 SevensStrikerBrick.DisplayName: Brick
 SevensStrikerCherry.DisplayName: Cherry
@@ -218,6 +217,9 @@ SulphuricBlast.DisplayName: Sulphuric Blast
 SuperradiantBolt.DisplayName: Superradiant Bolt
 SuperradiantSaw.DisplayName: Superradiant Saw
 SuperradiantSawLingering.DisplayName: Ultraradiant Saw
+TauCannonBeam.DisplayName: Tau Cannon Beam
+TauCannonBolt.DisplayName: Tau Cannon Bolt
+TauCannonPortal.DisplayName: Tau Cannon Portal
 TelluricGlareArrow.DisplayName: Radiant Arrow
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark
@@ -244,6 +246,5 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
-TauCannonBolt.DisplayName: Tau Cannon Bolt
-TauCannonBeam.DisplayName: Tau Cannon Beam
-TauCannonPortal.DisplayName: Tau Cannon Portal
+HellbornProj.DisplayName: Hell-born Gunblast
+HellbornShell.DisplayName: Hell's Shell

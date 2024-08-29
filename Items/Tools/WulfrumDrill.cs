@@ -15,29 +15,26 @@ namespace CalamityMod.Items.Tools
             Item.width = 46;
             Item.height = 38;
             Item.damage = 5;
-            Item.knockBack = 0f;
-            Item.useTime = 5;
-            Item.useAnimation = 16;
+            Item.DamageType = DamageClass.Melee;
             Item.pick = 35;
             Item.tileBoost += 1;
-
-            Item.DamageType = DamageClass.Melee;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.rare = ItemRarityID.Blue;
-            Item.UseSound = SoundID.Item23;
-            Item.autoReuse = true;
+            Item.useAnimation = 16;
+            Item.useTime = 5;
+            Item.knockBack = 0.5f;
             Item.shoot = ModContent.ProjectileType<WulfrumDrillProj>();
 
+            Item.UseSound = SoundID.Item23;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
             Item.channel = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
+
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Blue;
         }
 
-        public override void HoldItem(Player player)
-        {
-            player.Calamity().mouseWorldListener = true;
-        }
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
         public override void AddRecipes()
         {

@@ -456,7 +456,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 CalamityNetcode.SyncWorld();
             }
 
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
             bool bossRush = BossRushEvent.BossRushActive;
@@ -700,7 +700,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #region Enrage and DR
             if ((spawnArena && !player.Hitbox.Intersects(safeBox)) || bossRush)
             {
-                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.5f;
+                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.35f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
                 protectionBoost = !bossRush;
                 if (!player.Hitbox.Intersects(safeBox))
@@ -3632,7 +3632,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             ponyPos -= new Vector2(pony.Width / 2f, pony.Height / 15) * NPC.scale / 2f;
             ponyPos += ponyOrigin * NPC.scale + new Vector2(-20, NPC.gfxOffY);
 
-            if (CalamityConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
+            if (CalamityClientConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {

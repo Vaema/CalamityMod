@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
@@ -71,14 +72,16 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.GameContent.Achievements;
+using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.NPCs.SunkenSea;
 
 namespace CalamityMod.NPCs
 {
@@ -264,6 +267,11 @@ namespace CalamityMod.NPCs
         public int veriumDoomTimer = 0;
         public int veriumDoomStacks = 0;
         public bool veriumDoomMarked = false;
+        public int cursorFocus = 0;
+        public const int cursorFocusMax = 300;
+
+        // Used by Septic Skewer to prevent enemies from hurting the player when they are pulled into them
+        public bool pacified = false;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
@@ -297,6 +305,7 @@ namespace CalamityMod.NPCs
         public int sagePoisonTime = 0;
         public int sagePoisonDamage = 0;
         public int vulnerabilityHex = 0;
+        public int trueVulnerabilityHex = 0;
         public int banishingFire = 0;
         public int wither = 0;
         public int ashesOnDeath = 0;
@@ -491,6 +500,9 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomTimer = veriumDoomTimer;
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
+            myClone.cursorFocus = cursorFocus;
+
+            myClone.pacified = pacified;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;
@@ -521,6 +533,7 @@ namespace CalamityMod.NPCs
             myClone.sagePoisonTime = sagePoisonTime;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
+            myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
@@ -756,46 +769,6 @@ namespace CalamityMod.NPCs
                     ApplyDPSDebuff(20, 4, ref npc.lifeRegen, ref damage);
             }
 
-            // Glacial State and Temporal Sadness don't work on normal/expert Queen Bee.
-            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
-            {
-                if (npc.type != NPCID.QueenBee || CalamityWorld.revenge || BossRushEvent.BossRushActive)
-                {
-                    float baseXVelocityMult = 0.9f;
-                    float baseYVelocityIncrease = 0.05f;
-                    if (VulnerableToCold.HasValue)
-                    {
-                        if (VulnerableToCold.Value)
-                        {
-                            baseXVelocityMult = 0.5f;
-                            baseYVelocityIncrease = 0.2f;
-                        }
-                        else
-                        {
-                            baseXVelocityMult = 0.98f;
-                            baseYVelocityIncrease = 0.01f;
-                        }
-                    }
-
-                    if (gState > 0)
-                    {
-                        if (!CalamityPlayer.areThereAnyDamnBosses)
-                        {
-                            npc.velocity.X *= baseXVelocityMult;
-                            npc.velocity.Y += baseYVelocityIncrease * 0.5f;
-                            if (npc.velocity.Y > 15f)
-                                npc.velocity.Y = 15f;
-                        }
-                        else
-                        {
-                            npc.velocity *= baseXVelocityMult;
-                        }
-                    }
-                    else if (tSad > 0)
-                        npc.velocity *= 0.5f;
-                }
-            }
-
             // Debuff vulnerabilities and resistances.
             // Damage multiplier calcs.
             // Worms that are vulnerable to debuffs and Slime God slimes take reduced damage from vulnerabilities.
@@ -984,6 +957,13 @@ namespace CalamityMod.NPCs
             {
                 int baseVulnerabilityHexDoTValue = (int)(VulnerabilityHex.DPS * heatDamageMult);
                 ApplyDPSDebuff(baseVulnerabilityHexDoTValue, VulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
+            }
+
+            // True Vulnerability Hex
+            if (trueVulnerabilityHex > 0)
+            {
+                int baseTrueVHexDoTValue = (int)(TrueVulnerabilityHex.DPS * heatDamageMult);
+                ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
             }
 
             // Frostburn
@@ -1193,7 +1173,7 @@ namespace CalamityMod.NPCs
             if (elementalMix > 0)
                 ApplyDPSDebuff(400, 80, ref npc.lifeRegen, ref damage);
             if (miracleBlight > 0)
-                ApplyDPSDebuff(2500, 500, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
             // Reduce DoT on worm bosses and Creepers by 75%.
             if ((wormBoss || npc.type == NPCID.Creeper) && npc.lifeRegen < 0)
@@ -1226,6 +1206,10 @@ namespace CalamityMod.NPCs
             // Set Plantera to be able to update oldPos[x]
             // This is only used for her Rev+ AI charge attacks
             NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
+
+            // Allow Moon Lord to directly be summoned in Multiplayer.
+            // This is used for the modified Celestial Sigil without Impending Doom.
+            NPCID.Sets.MPAllowedEnemies[NPCID.MoonLordCore] = true;
         }
 
         public override void SetDefaults(NPC npc)
@@ -1580,9 +1564,9 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.KingSlime)
             {
                 if (CalamityWorld.death)
-                    npc.scale = Main.getGoodWorld ? 6f : 3f;
+                    npc.scale = Main.getGoodWorld ? 6f : 2.5f;
                 else
-                    npc.scale = Main.getGoodWorld ? 3f : 1.25f;
+                    npc.scale = Main.getGoodWorld ? 3f : 1.5f;
 
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * (Main.getGoodWorld ? 1.8 : 1.5));
             }
@@ -2306,7 +2290,7 @@ namespace CalamityMod.NPCs
             }
             if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityLists.bossHPScaleList.Contains(npc.type))
             {
-                double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+                double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);
             }
 
@@ -2509,7 +2493,7 @@ namespace CalamityMod.NPCs
             }
 
             // Reduce mech boss HP and damage depending on the new ore progression changes
-            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
             {
                 if (!NPC.downedMechBossAny)
                 {
@@ -3209,7 +3193,7 @@ namespace CalamityMod.NPCs
             Texture2D npcTexture = texture ?? TextureAssets.Npc[npc.type].Value;
             Vector2 screenOffset = npc.IsABestiaryIconDummy ? Vector2.Zero : Main.screenPosition;
             int afterimageCounter = 1;
-            while (afterimageCounter < NPCID.Sets.TrailCacheLength[npc.type] && CalamityConfig.Instance.Afterimages)
+            while (afterimageCounter < NPCID.Sets.TrailCacheLength[npc.type] && CalamityClientConfig.Instance.Afterimages)
             {
                 Color colorToDraw = Color.Lerp(drawColor, endingColor, afterimageCounter / (float)NPCID.Sets.TrailCacheLength[npc.type]);
                 colorToDraw *= afterimageCounter / (float)NPCID.Sets.TrailCacheLength[npc.type];
@@ -3281,6 +3265,9 @@ namespace CalamityMod.NPCs
         #region Can Hit Player
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
+            if (pacified)
+                return false;
+
             if (target.Calamity().prismaticHelmet && !CalamityPlayer.areThereAnyDamnBosses)
             {
                 if (npc.lifeMax < 500)
@@ -3459,11 +3446,14 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
+                if (npc.type == NPCID.SkeletronPrime && (Main.masterMode || BossRushEvent.BossRushActive))
+                    index = CalamityMod.chadPrimeIcon;
+
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
                     float lifeRatio = npc.life / (float)npc.lifeMax;
                     float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
-                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && Main.masterMode))
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && (Main.masterMode || BossRushEvent.BossRushActive)))
                         index = -1;
                 }
             }
@@ -3526,7 +3516,7 @@ namespace CalamityMod.NPCs
 
             // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
             if (CalamityLists.ZeroContactDamageNPCList.Contains(npc.type) && (npc.type != NPCID.RuneWizard || !Main.zenithWorld))
-                npc.damage = npc.defDamage = 0;
+                npc.damage = 0;
 
             // Don't do damage for 42 frames after spawning in
             if (npc.type == NPCID.Sharkron || npc.type == NPCID.Sharkron2)
@@ -3601,6 +3591,10 @@ namespace CalamityMod.NPCs
             {
                 return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
             }
+
+            // Servant of Cthulhu light
+            if (npc.type == NPCID.ServantofCthulhu)
+                Lighting.AddLight(npc.Center, 0.2f, 0.2f, 0.2f);
 
             if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
             {
@@ -5224,6 +5218,13 @@ namespace CalamityMod.NPCs
                 laceration--;
             if (elementalMix > 0)
                 elementalMix--;
+            if (trueVulnerabilityHex > 0)
+            {
+                vulnerabilityHex = 0; // You cannot stack True VHex with its lesser counterpart.
+                trueVulnerabilityHex--;
+                if (trueVulnerabilityHex == 0)
+                    cursorFocus = 0;
+            }
             if (vulnerabilityHex > 0)
                 vulnerabilityHex--;
             if (marked > 0)
@@ -5298,7 +5299,8 @@ namespace CalamityMod.NPCs
                 cobaltNerfTimer--;
             if (mythrilNerfTimer > 0)
                 mythrilNerfTimer--;
-
+            if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
+                cursorFocus--;
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
             if (veriumDoomTimer == 0 && veriumDoomMarked)
@@ -5316,71 +5318,7 @@ namespace CalamityMod.NPCs
                 veriumDoomStacks = 0;
             }
 
-            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
-            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
-                return;
-
-            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
-            {
-                if (gState <= 0 && tSad <= 0)
-                {
-                    if (eutrophication > 0)
-                    {
-                        float velocityMult = 0.95f;
-                        if (VulnerableToWater.HasValue)
-                        {
-                            if (VulnerableToWater.Value)
-                                velocityMult = 0.6f;
-                            else
-                                velocityMult = 0.99f;
-                        }
-                        npc.velocity *= velocityMult;
-                    }
-                    else if (timeSlow > 0 || webbed > 0)
-                    {
-                        npc.velocity *= 0.85f;
-                    }
-                    else if (slowed > 0 || tesla > 0 || vaporfied > 0)
-                    {
-                        float velocityMult = 0.95f;
-                        if (tesla > 0)
-                        {
-                            if (VulnerableToElectricity.HasValue)
-                            {
-                                if (VulnerableToElectricity.Value)
-                                    velocityMult = 0.6f;
-                                else
-                                    velocityMult = 0.99f;
-                            }
-                        }
-                        npc.velocity *= velocityMult;
-                    }
-                    else if (vulnerabilityHex > 0)
-                    {
-                        npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
-                    }
-                    else if (kamiFlu > 420)
-                    {
-                        npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
-                    }
-                }
-            }
-
-            if (pearlAura > 0)
-            {
-                // Slow the enemy
-                npc.velocity *= 0.9f;
-
-                // Spawn pearl shards on a counter
-                if (pearlAuraCounter % 12 == 0)
-                {
-                    SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
-                    Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
-                    int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
-                    Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
-                }
-            }
-
+            // Amidias' Spark and Transformer spark spawning
             if (shocked > 0 || transformerShocked > 0)
             {
                 var player = Main.LocalPlayer;
@@ -5404,6 +5342,96 @@ namespace CalamityMod.NPCs
                         spark.penetrate = 10;
                     }
                 }
+            }
+
+            // Pearl Aura shard spawning
+            // Slowing is handled in the general slowing code below
+            if (pearlAura > 0 && pearlAuraCounter % 12 == 0)
+            {
+                SoundEngine.PlaySound(SoundID.Item49, Main.LocalPlayer.Center);
+                Vector2 shardVel = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 7.5f;
+                int damage = Main.LocalPlayer.ApplyArmorAccDamageBonusesTo(20);
+                Projectile.NewProjectile(npc.GetSource_FromThis(), Main.LocalPlayer.Center, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, Main.myPlayer);
+            }
+
+            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
+            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
+                return;
+
+            // Apply slowing debuff effects
+            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
+            {
+                // Slowing debuffs which set a velocity hard cap take priority first.
+                if (vulnerabilityHex > 0)
+                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
+                else if (kamiFlu > 300)
+                    npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-KamiFlu.MaxNPCSpeed), new Vector2(KamiFlu.MaxNPCSpeed));
+
+                // Then debuffs which apply a multiplier to velocity.
+                // These multipliers can stack with each other, even if you'll rarely see this on a boss.
+                float velocitySlownessFactor = 1f;
+
+                if (tSad > 0)
+                    velocitySlownessFactor += 0.2f;
+
+                if (timeSlow > 0)
+                    velocitySlownessFactor += 0.15f;
+
+                if (webbed > 0)
+                    velocitySlownessFactor += 0.15f;
+
+                if (gState > 0)
+                {
+                    float baseSlownessFactor = 0.1f;
+                    if (VulnerableToCold.HasValue)
+                    {
+                        if (VulnerableToCold.Value)
+                            baseSlownessFactor = 0.4f;
+                        else
+                            baseSlownessFactor = 0.025f;
+                    }
+                    velocitySlownessFactor += baseSlownessFactor;
+                }
+
+                if (pearlAura > 0)
+                    velocitySlownessFactor += 0.1f;
+
+                if (eutrophication > 0)
+                {
+                    float baseSlownessFactor = 0.05f;
+                    if (VulnerableToWater.HasValue)
+                    {
+                        if (VulnerableToWater.Value)
+                            baseSlownessFactor = 0.2f;
+                        else
+                            baseSlownessFactor = 0.0125f;
+                    }
+                    velocitySlownessFactor += baseSlownessFactor;
+                }
+
+                if (slowed > 0)
+                    velocitySlownessFactor += 0.05f;
+
+                if (tesla > 0)
+                {
+                    float baseSlownessFactor = 0.05f;
+                    if (VulnerableToElectricity.HasValue)
+                    {
+                        if (VulnerableToElectricity.Value)
+                            baseSlownessFactor = 0.2f;
+                        else
+                            baseSlownessFactor = 0.0125f;
+                    }
+                    velocitySlownessFactor += baseSlownessFactor;
+                }
+
+                if (vaporfied > 0)
+                    velocitySlownessFactor += 0.05f;
+
+                // Divide 1 by the slowness factor to get the amount to slow by.
+                // This scales with diminishing returns, though getting slowed every frame means they quickly slow down either way.
+                velocitySlownessFactor = 1f / velocitySlownessFactor;
+                npc.velocity *= velocitySlownessFactor;
             }
 
             // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
@@ -5679,6 +5707,16 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
+        #region On Hit NPC
+
+        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
+        {
+            if (target.ModNPC is SunkenSeaNPC ssnpc)
+                ssnpc.OnHitByNPC(npc);
+        }
+
+        #endregion
+
         #region Modify Hit
         public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
         {
@@ -5827,11 +5865,15 @@ namespace CalamityMod.NPCs
                 modifiers.CritDamage += bonus;
             }
 
-            // Plague Reaper deals 1.1x damage to Plagued enemies
             if (!projectile.npcProj && !projectile.trap)
             {
+                // Plague Reaper deals 1.1x damage to Plagued enemies
                 if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && pFlames > 0)
                     modifiers.SourceDamage *= 1.1f;
+
+                // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
+                if (trueVulnerabilityHex > 0)
+                    modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 1f) ? 2.5f : 1.15f;
             }
 
             // Any weapons that shoot projectiles from anywhere other than the player's center aren't affected by point-blank shot damage boost.
@@ -6268,12 +6310,12 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 1.4);
                 maxSpawns = (int)(maxSpawns * 0.4f);
             }
-            if (player.Calamity().zen || (CalamityConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
+            if (player.Calamity().zen || (CalamityServerConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
             {
                 spawnRate = (int)(spawnRate * 2.5);
                 maxSpawns = (int)(maxSpawns * 0.3f);
             }
-            if (player.Calamity().isNearbyBoss && CalamityConfig.Instance.BossZen)
+            if (player.Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
             {
                 spawnRate *= 5;
                 maxSpawns = (int)(maxSpawns * 0.001f);
@@ -6391,7 +6433,7 @@ namespace CalamityMod.NPCs
             }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
-            if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
+            if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
             {
                 pool.Add(NPCType<LavaSlimeNoLavaDrop>(), SpawnCondition.Underworld.Chance);
                 pool.Remove(NPCID.LavaSlime);
@@ -6664,9 +6706,6 @@ namespace CalamityMod.NPCs
             if (pearlAura > 0)
                 PearlAura.DrawEffects(npc, ref drawColor);
 
-            if (voidfrost > 0)
-                Voidfrost.DrawEffects(npc, ref drawColor);
-
             if (pFlames > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
@@ -6678,6 +6717,9 @@ namespace CalamityMod.NPCs
 
             if (sulphurPoison > 0)
                 SulphuricPoisoning.DrawEffects(npc, ref drawColor);
+
+            if (trueVulnerabilityHex > 0)
+                TrueVulnerabilityHex.DrawEffects(npc, ref drawColor);
 
             if (vaporfied > 0)
                 Vaporfied.DrawEffects(npc, ref drawColor);
@@ -6693,6 +6735,9 @@ namespace CalamityMod.NPCs
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
                 }
             }
+
+            if (voidfrost > 0)
+                Voidfrost.DrawEffects(npc, ref drawColor);
 
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
             if (electrified > 0)
@@ -6879,6 +6924,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().clamDebuff > 0),
             ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge > 0),
             ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
+            ("CalamityMod/Buffs/DamageOverTime/TrueVulnerabilityHex", NPC => NPC.Calamity().trueVulnerabilityHex > 0),
             ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
             ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
             ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost > 0),
@@ -6906,7 +6952,7 @@ namespace CalamityMod.NPCs
         {
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
-                if (CalamityConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityLists.needsDebuffIconDisplayList.Contains(npc.type)))
+                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityLists.needsDebuffIconDisplayList.Contains(npc.type)))
                 {
                     List<Texture2D> currentDebuffs = new List<Texture2D>() { };
 
@@ -7018,7 +7064,9 @@ namespace CalamityMod.NPCs
                         var tex = currentDebuffs[i];
                         spriteBatch.Draw(tex, npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), null, Color.White, 0f, default, 0.5f, SpriteEffects.None, 0f);
 
-                        // TODO -- Show number of Shred stacks (how?)
+                        // Shred stack display
+                        if (currentDebuffs[i] == TextureAssets.Buff[ModContent.BuffType<Shred>()].Value)
+                            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
                 }
             }
@@ -7193,7 +7241,7 @@ namespace CalamityMod.NPCs
             else
             {
                 // VHex and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
-                if (npc.Calamity().vulnerabilityHex > 0)
+                if (npc.Calamity().vulnerabilityHex > 0 || npc.Calamity().trueVulnerabilityHex > 0)
                 {
                     float compactness = npc.width * 0.6f;
                     if (compactness < 10f)
@@ -7202,7 +7250,7 @@ namespace CalamityMod.NPCs
                     if (power > 2.75f)
                         power = 2.75f;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }
@@ -7212,31 +7260,6 @@ namespace CalamityMod.NPCs
                 // Only draw the NPC if told to by the miracle blight drawer.
                 if (MiracleBlightRenderer.ValidToDraw(npc))
                     return MiracleBlightRenderer.ActuallyDoPreDraw;
-            }
-
-            // Draw a pillar of light and fade the background as an animation when skipping things in the DD2 event.
-            if (npc.type == NPCID.DD2EterniaCrystal)
-            {
-                float animationTime = 120f - npc.ai[3];
-                animationTime /= 120f;
-
-                if (!Main.dedServ)
-                {
-                    if (!Filters.Scene["CrystalDestructionColor"].IsActive())
-                        Filters.Scene.Activate("CrystalDestructionColor");
-
-                    Filters.Scene["CrystalDestructionColor"].GetShader().UseIntensity((float)Math.Sin(animationTime * MathHelper.Pi) * 0.4f);
-                }
-
-                Vector2 drawPosition = npc.Center - screenPos + Vector2.UnitY * 60f;
-                for (int i = 0; i < 4; i++)
-                {
-                    float intensity = MathHelper.Clamp(animationTime * 2f - i / 3f, 0f, 1f);
-                    Vector2 origin = new Vector2(TextureAssets.MagicPixel.Value.Width / 2f, TextureAssets.MagicPixel.Value.Height);
-                    Vector2 scale = new Vector2((float)Math.Sqrt(intensity) * 50f, intensity * 4f);
-                    Color beamColor = new Color(0.4f, 0.17f, 0.4f, 0f) * (intensity * (1f - MathHelper.Clamp((animationTime - 0.8f) / 0.2f, 0f, 1f))) * 0.5f;
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPosition, null, beamColor, 0f, origin, scale, SpriteEffects.None, 0f);
-                }
             }
 
             if (Main.zenithWorld)
@@ -7445,7 +7468,7 @@ namespace CalamityMod.NPCs
                         }
                     }
 
-                    Texture2D glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[0].Value : TextureAssets.Dest[0].Value;
+                    Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[0].Value : TextureAssets.Dest[0].Value;
                     switch (npc.type)
                     {
                         default:
@@ -7453,11 +7476,11 @@ namespace CalamityMod.NPCs
                             break;
 
                         case NPCID.TheDestroyerBody:
-                            glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[1].Value : TextureAssets.Dest[1].Value;
+                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[1].Value : TextureAssets.Dest[1].Value;
                             break;
 
                         case NPCID.TheDestroyerTail:
-                            glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[2].Value : TextureAssets.Dest[2].Value;
+                            glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.DestroyerGlowmasks[2].Value : TextureAssets.Dest[2].Value;
                             break;
                     }
 
@@ -7467,7 +7490,7 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe && CalamityConfig.Instance.NewVanillaTextures)
+            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.NewVanillaTextures)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
                 Texture2D glowTexture = CalamityMod.ProbeGlowmask.Value;
@@ -7781,7 +7804,7 @@ namespace CalamityMod.NPCs
                     float eyeTelegraphGateValue = WallOfFleshAI.LaserShootGateValue - WallOfFleshAI.LaserShootTelegraphTime;
                     if (npc.localAI[1] > eyeTelegraphGateValue || npc.localAI[2] > 0f || enraged)
                     {
-                        Texture2D glowTexture = CalamityConfig.Instance.NewVanillaTextures ? CalamityMod.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
+                        Texture2D glowTexture = CalamityClientConfig.Instance.NewVanillaTextures ? CalamityMod.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
                         Vector2 halfSize = npc.frame.Size() / 2;
                         SpriteEffects spriteEffects = SpriteEffects.None;
                         if (npc.spriteDirection == 1)
@@ -7933,7 +7956,7 @@ namespace CalamityMod.NPCs
                             float telegraphScalar = MathHelper.Clamp((Math.Abs(PlanteraAI.StopChargeGateValue) - telegraphTimer) / Math.Abs(PlanteraAI.StopChargeGateValue), 0f, 1f);
                             Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
 
-                            if (CalamityConfig.Instance.Afterimages)
+                            if (CalamityClientConfig.Instance.Afterimages)
                             {
                                 int afterimageAmount = 10;
                                 int afterImageIncrement = 2;
@@ -8934,6 +8957,18 @@ namespace CalamityMod.NPCs
 
             // Insert the debuff info into the NPC's bestiary entry
             bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
+
+            // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
+            if (npc.type == NPCID.EnchantedNightcrawler)
+            {
+                bestiaryEntry.AddTags(GetInstance<AstralInfectionBiome>().ModBiomeBestiaryInfoElement);
+            }
+
+            // Add the Surface Mushroom biome to the Truffle Worm's entry as it spawns there now
+            if (npc.type == NPCID.TruffleWorm)
+            {
+                bestiaryEntry.AddTags(BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom);
+            }
         }
 
         public static string NPCDebuffResistText(bool? effectiveness, string name)

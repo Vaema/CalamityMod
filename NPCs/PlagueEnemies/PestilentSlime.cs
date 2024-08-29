@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.width = 40;
             NPC.height = 30;
             NPC.defense = 12;
-            NPC.lifeMax = 350;
+            NPC.lifeMax = 440;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
             NPC.value = Item.buyPrice(0, 0, 10, 0);

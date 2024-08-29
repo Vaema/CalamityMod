@@ -167,11 +167,6 @@ namespace CalamityMod
                         CalamityUtils.SpawnOldDuke(playerIndex2);
                         break;
 
-                    case CalamityModMessageType.ArmoredDiggerCountdownSync:
-                        int countdown5 = reader.ReadInt32();
-                        CalamityWorld.ArmoredDiggerSpawnCooldown = countdown5;
-                        break;
-
                     case CalamityModMessageType.ProvidenceDyeConditionSync:
                         byte npcIndex3 = reader.ReadByte();
                         (Main.npc[npcIndex3].ModNPC as Providence).hasTakenDaytimeDamage = reader.ReadBoolean();
@@ -208,6 +203,29 @@ namespace CalamityMod
                             Main.npc[npcIndex].Center = center;
                             Main.npc[npcIndex].velocity = velocity;
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npcIndex);
+                        }
+                        break;
+
+                    case CalamityModMessageType.SyncNPCPosAndRotOnly:
+                        npcIndex = reader.ReadByte();
+                        Vector2 position = reader.ReadVector2();
+                        float rotation = (float)reader.ReadHalf(); //rotation unit is radian (-π/2 ≤ rotation ≤ π/2) so Half precision should works
+
+                        if (npcIndex >= Main.maxNPCs)
+                            break;
+
+                        npc = Main.npc[npcIndex];
+                        npc.position = position;
+                        npc.rotation = rotation;
+
+                        if (Main.dedServ)
+                        {
+                            ModPacket packet = CalamityMod.Instance.GetPacket();
+                            packet.Write((byte)CalamityModMessageType.SyncNPCPosAndRotOnly);
+                            packet.Write((byte)npcIndex);
+                            packet.WriteVector2(position);
+                            packet.Write((Half)rotation);
+                            packet.Send(ignoreClient: whoAmI);
                         }
                         break;
 
@@ -331,6 +349,47 @@ namespace CalamityMod
                         break;
 
                     //
+                    // Bandit refund syncs
+                    //
+                    case CalamityModMessageType.SomeoneGotScammedByTinkerer:
+                        int scammedOne = reader.ReadByte();
+                        int stolen = reader.Read7BitEncodedInt();
+
+                        CalamityWorld.MoneyStolenByBandit += stolen;
+                        CalamityWorld.Reforges++;
+
+                        // Broadcast back for tragic event
+                        // WorldSync DO sync the MoneyStolenByBandit and Refores variable, But spamming SyncWorld is not a ideal action
+                        if (Main.dedServ)
+                        {
+                            ModPacket packet = CalamityMod.Instance.GetPacket();
+                            packet.Write((byte)CalamityModMessageType.SomeoneGotScammedByTinkerer);
+                            packet.Write((byte)scammedOne);
+                            packet.Write7BitEncodedInt(stolen);
+                            packet.Send(ignoreClient: scammedOne);
+                        }
+
+                        break;
+
+                    case CalamityModMessageType.WantToRefundReforges:
+                        int requester = reader.ReadByte();
+
+                        // Only Server should handle this action!
+                        if (!Main.dedServ)
+                            break;
+
+                        int banditIdx = NPC.FindFirstNPC(ModContent.NPCType<THIEF>());
+                        if (banditIdx == -1)
+                            break;
+
+                        NPC bandit = Main.npc[banditIdx];
+                        if (bandit == null || !bandit.active)
+                            break;
+
+                        THIEF.DoRefund(bandit);
+                        break;
+
+                    //
                     // Default case: with no idea how long the packet is, we can't safely read data.
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
@@ -412,13 +471,13 @@ namespace CalamityMod
         SyncSlabCrabAI,
         PlaceAltCritter,
         ServersideSpawnOldDuke,
-        ArmoredDiggerCountdownSync, // TODO -- remove this mechanic entirely
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.
         PSCChallengeSync, // TODO -- once you've failed the PSC challenge this packetstorms
 
         // General things for entities
         SpawnNPCOnPlayer,
         SyncNPCMotionDataToServer,
+        SyncNPCPosAndRotOnly,
 
         // Tile Entities
         PowerCellFactory,
@@ -456,6 +515,10 @@ namespace CalamityMod
 
         // Music events
         MusicEventSyncRequest,
-        MusicEventSyncResponse
+        MusicEventSyncResponse,
+        
+        // Bandit Reforge Refund
+        SomeoneGotScammedByTinkerer,
+        WantToRefundReforges
     }
 }

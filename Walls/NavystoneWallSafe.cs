@@ -6,6 +6,7 @@ namespace CalamityMod.Walls
 {
     public class NavystoneWallSafe : ModWall, IVisibleThroughWater
     {
+        public override string Texture => "CalamityMod/Walls/NavystoneWall";
         int IVisibleThroughWater.WaterMapEntry { get; set; }
         
         public override void SetStaticDefaults()

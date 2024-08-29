@@ -311,8 +311,7 @@ namespace CalamityMod.World
                 }
             }
 
-            //settle all liquids
-            CalamityUtils.SettleWater();
+            CalamityUtils.SettleWater(false);
 
             //spread grass on all scorched remains with no lava above them
             for (int x = biomeStart; x <= biomeEdge; x++)

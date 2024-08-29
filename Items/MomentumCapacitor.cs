@@ -21,7 +21,7 @@ namespace CalamityMod.Items
             Item.rare = ItemRarityID.Pink;
 
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.useTime = Item.useAnimation = 2;
+            Item.useAnimation = Item.useTime = 2;
             Item.noMelee = true;
             Item.channel = true;
             Item.autoReuse = true;

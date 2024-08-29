@@ -21,15 +21,16 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 10;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAnimation = Item.useTime = 10;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<YharimsCrystalPrism>();
+            Item.shootSpeed = 30f;
+
             Item.UseSound = SoundID.Item13;
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.knockBack = 0f;
-            Item.shoot = ModContent.ProjectileType<YharimsCrystalPrism>();
-            Item.shootSpeed = 30f;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();

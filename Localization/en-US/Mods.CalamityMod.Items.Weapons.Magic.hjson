@@ -165,8 +165,9 @@ BurningSea: {
 	DisplayName: Burning Sea
 	Tooltip:
 		'''
-		Fires a bouncing brimstone fireball that splits into homing fireballs upon collision with liquid
-		Enemies inflicted with a water debuff also spawn homing fireballs on hit
+		Conjures a massive brimstone fireball that hovers near you and incinerates foes
+		Holding the fireball for too long causes it to burn out
+		This burns you with Brimstone Flames and gives a long delay before another can be cast
 		'''
 }
 
@@ -275,7 +276,7 @@ EidolicWail: {
 	DisplayName: Eidolic Wail
 	Tooltip:
 		'''
-		Fires a string of bouncing sound waves that become stronger as they travel
+		Fires a string of bouncing sound waves that slow down on enemy hits
 		RIP headphone users
 		'''
 }
@@ -967,7 +968,11 @@ Viscera: {
 
 VitriolicViper: {
 	DisplayName: Vitriolic Viper
-	Tooltip: Releases a volley of venomous fangs and spit
+	Tooltip:
+		'''
+		Charges up and fires a slithering beam of radiation
+		If fully charged, instead fires a huge spread of short range fangs which quickly vanish
+		'''
 }
 
 VividClarity: {
