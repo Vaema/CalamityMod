@@ -289,8 +289,9 @@ namespace CalamityMod.Projectiles.Ranged
             else
             {
                 // Loads shots until maxed out
-                if (ShotsLoaded < MaxLoadableShots && CurrentChargingFrames % FramesPerLoad == 0)
-                    ShotsLoaded++;
+                ShotsLoaded = Utils.Remap(CurrentChargingFrames, 0, Charge1Frames, 1, MaxLoadableShots / 2);
+                if (ChargeLV1)
+                    ShotsLoaded = MaxLoadableShots;
 
                 CurrentChargingFrames += ((ChargeLV1 && !Positive) ? 1.2f : 2) * (Owner.Calamity().despoilerNerf ? 0.4f : 1); // Charges slower if nerfed, charge LV2 for Negative is slower
 
@@ -344,7 +345,6 @@ namespace CalamityMod.Projectiles.Ranged
                 // Full charge dusts and sounds
                 if (ChargeLV1 && !hasReachedLV1)
                 {
-                    ShotsLoaded = MaxLoadableShots;
                     SoundEngine.PlaySound(OntologicalDespoiler.ChargeLV1, Projectile.Center);
                     for (int i = 0; i < 16; i++)
                     {
