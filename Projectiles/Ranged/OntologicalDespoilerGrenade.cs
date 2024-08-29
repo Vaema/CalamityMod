@@ -106,8 +106,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Vector2 position = targetedNPC.Center;
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                if (Projectile.velocity.Length() < 7 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true) * 2))
-                    Projectile.velocity += moveToMouse * (0.02f + Utils.GetLerpValue(550, 250, Projectile.timeLeft, true));
+                if (Projectile.velocity.Length() < 7 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true)))
+                    Projectile.velocity += moveToMouse * (0.1f * Utils.GetLerpValue(550, 60, Projectile.timeLeft, true) * 10);
                 else
                     Projectile.velocity *= 0.94f;
                 explode = true;
@@ -121,6 +121,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (explode)
             {
                 Owner.Calamity().GeneralScreenShakePower = 8.5f;
+                float power = 1.5f;
 
                 for (int i = 0; i < 40; i++)
                 {
@@ -131,14 +132,14 @@ namespace CalamityMod.Projectiles.Ranged
                         2 => color3,
                         _ => color4,
                     };
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 6).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 6 * power).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(1.85f, 2.45f);
+                    dust.scale = Main.rand.NextFloat(1.85f, 2.45f) * power;
                     dust.color = useColor;
 
                     if (i % 2 == 0)
                     {
-                        Particle orb2 = new CustomSpark(Projectile.Center, new Vector2(0, -40).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f), "CalamityMod/Particles/Sparkle", false, 40, Main.rand.NextFloat(1.4f, 2.4f), useColor, new Vector2(0.4f, 1.1f));
+                        Particle orb2 = new CustomSpark(Projectile.Center, new Vector2(0, -40 * power).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f), "CalamityMod/Particles/Sparkle", false, 40, Main.rand.NextFloat(1.4f, 2.4f) * power, useColor, new Vector2(0.4f, 1.1f));
                         GeneralParticleHandler.SpawnParticle(orb2);
                     }
                 }
@@ -151,10 +152,10 @@ namespace CalamityMod.Projectiles.Ranged
                         2 => color3,
                         _ => color4,
                     };
-                    Particle orb4 = new CustomPulse(Projectile.Center, Vector2.Zero, useColor, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.4f - i * 0.03f, 13);
+                    Particle orb4 = new CustomPulse(Projectile.Center, Vector2.Zero, useColor, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.4f - i * 0.03f * power, 13);
                     GeneralParticleHandler.SpawnParticle(orb4);
                 }
-                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, baseColor, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.15f, 2.5f, 38);
+                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, baseColor, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.15f * power, 2.5f * power, 38);
                 GeneralParticleHandler.SpawnParticle(orb);
                 int parts = 8;
                 float rot = Main.rand.NextFloat(-9, 9);
@@ -167,16 +168,16 @@ namespace CalamityMod.Projectiles.Ranged
                         2 => color3,
                         _ => color4,
                     };
-                    Particle orb2 = new CustomSpark(Projectile.Center, new Vector2(0, -15 * (i % 2 == 0 ? 1.8f : 1f)).RotatedBy(i * (MathHelper.ToRadians(360f) / parts)).RotatedBy(rot), "CalamityMod/Particles/VerticalSmear", false, 19, 3, useColor, new Vector2(0.2f, 1));
+                    Particle orb2 = new CustomSpark(Projectile.Center, new Vector2(0, -15 * (i % 2 == 0 ? 1.8f : 1f) * power).RotatedBy(i * (MathHelper.ToRadians(360f) / parts)).RotatedBy(rot), "CalamityMod/Particles/VerticalSmear", false, 19, 3 * power, useColor, new Vector2(0.2f, 1));
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
-                Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 1.2f, 39, false);
+                Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 1.2f * power, 39, false);
                 GeneralParticleHandler.SpawnParticle(orb3);
 
                 SoundStyle fire = new("CalamityMod/Sounds/Item/EarthMeteor");
                 SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = Main.rand.NextFloat(0, 0.1f) * -3 }, Projectile.Center);
 
-                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 2f), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 5.5f), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
             }
             else
             {

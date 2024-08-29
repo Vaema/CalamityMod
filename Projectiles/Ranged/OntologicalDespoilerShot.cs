@@ -33,11 +33,11 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void SetDefaults()
         {
-            Projectile.width = 28;
-            Projectile.height = 28;
+            Projectile.width = 30;
+            Projectile.height = 30;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 750;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 4;
             Projectile.tileCollide = false;
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 1)
+            if (Projectile.frameCounter > 10)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
@@ -82,7 +82,12 @@ namespace CalamityMod.Projectiles.Ranged
             baseColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             if (!Positive)
+            {
                 baseColor = Color.White;
+                Projectile.extraUpdates = 3;
+            }
+            else
+                Projectile.extraUpdates = 5;
 
             if (time > 20)
             {
@@ -131,7 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 position = targetedNPC.Center;
                     Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                     if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(350, 0, Projectile.timeLeft, true) * 2))
-                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(500, 350, Projectile.timeLeft, true));
+                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(650, 450, Projectile.timeLeft, true));
                     else
                         Projectile.velocity *= 0.9f;
                 }
@@ -189,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.92f);
+                Projectile.damage = (int)(Projectile.damage * 0.95f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
@@ -208,10 +213,16 @@ namespace CalamityMod.Projectiles.Ranged
 
             Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot");
             Asset<Texture2D> tex4 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot2");
+
+            Texture2D rTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+
             Rectangle frame = tex3.Frame(1, 6, 0, Projectile.frame);
             Vector2 rotationPoint = frame.Size() * 0.5f;
-            Main.EntitySpriteDraw(Positive ? tex4.Value : tex3.Value, drawPosition, frame, baseColor with { A = 0 }, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
 
+            for (int i = 0; i < (Positive ? 3 : 1); i++)
+                Main.EntitySpriteDraw(Positive ? tex4.Value : tex3.Value, drawPosition, frame, Positive ? baseColor with { A = 0 } : baseColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+            if (Positive)
+                Main.EntitySpriteDraw(tex4.Value, drawPosition, frame, Color.Lerp(baseColor, Color.White, 0.7f) with { A = 0 }, drawRotation, rotationPoint, Projectile.scale * 0.9f, SpriteEffects.None);
             return false;
         }
     }

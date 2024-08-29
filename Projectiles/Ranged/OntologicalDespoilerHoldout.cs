@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.Ranged
                         dust.scale = Main.rand.NextFloat(0.9f, 1.25f);
                         dust.color = Projectile.ai[2] == 15 ? baseColor : useColor;
                     }
-                    Projectile.timeLeft = (int)(AftershotCooldownFrames * 2.5f * (!Owner.Calamity().despoilerNerf ? 2 : 1)); // If you're swapping with no penalty, the swap takes longer
+                    Projectile.timeLeft = (int)(AftershotCooldownFrames * 2.5f * (!Owner.Calamity().despoilerNerf ? 3 : 1)); // If you're swapping with no penalty, the swap takes longer
                     Owner.Calamity().despoilerNerf = false; // Remove charge speed penalty if you swap
                     OffsetLengthFromArm = 45f;
                 }
@@ -194,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
                         ChargeSound?.Stop();
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                        int charge2DamagePos = Projectile.damage * 3; // Most of the damage comes from the explosion
+                        int charge2DamagePos = Projectile.damage; // Most of the damage comes from the explosion
                         int charge2DamageNeg = Projectile.damage * 30;
 
                         if (Positive)
@@ -257,7 +257,7 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 3; i++)
                             {
                                 float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.4f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, 0, i);
                             }
                         }
                         else
