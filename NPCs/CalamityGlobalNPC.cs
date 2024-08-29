@@ -270,6 +270,9 @@ namespace CalamityMod.NPCs
         public int cursorFocus = 0;
         public const int cursorFocusMax = 300;
 
+        // Used by Septic Skewer to prevent enemies from hurting the player when they are pulled into them
+        public bool pacified = false;
+
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
         public int somaShredStacks = 0;
@@ -498,6 +501,8 @@ namespace CalamityMod.NPCs
             myClone.veriumDoomStacks = veriumDoomStacks;
             myClone.veriumDoomMarked = veriumDoomMarked;
             myClone.cursorFocus = cursorFocus;
+
+            myClone.pacified = pacified;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;
@@ -3260,6 +3265,9 @@ namespace CalamityMod.NPCs
         #region Can Hit Player
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
+            if (pacified)
+                return false;
+
             if (target.Calamity().prismaticHelmet && !CalamityPlayer.areThereAnyDamnBosses)
             {
                 if (npc.lifeMax < 500)

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -27,7 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool setPosition = true;
         public int returnTime = 75;
 
-        public NPC chosenTarget;
+        public NPC chosenTarget = null;
         public bool stuckInTarget = false;
         public bool canStick = true;
         public Vector2 placementCenter;
@@ -40,7 +39,13 @@ namespace CalamityMod.Projectiles.Ranged
 
         public bool ripped = false;
         public bool pullingTarget = false;
+        public bool hasLatchedTarget = false;
         public bool spawnPullBlood = true;
+        public bool calledToPull = false;
+        public bool strongEnemy = false;
+        public bool normalHit = false;
+
+        public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 28f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
@@ -75,10 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 10f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
-
-            if (Projectile.ai[2] == 5)
+            if (calledToPull && !hasLatchedTarget)
             {
                 ripped = true;
                 pullingTarget = false;
@@ -95,15 +97,17 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.extraUpdates = 7;
             }
 
-            if (time >= returnTime * (pullCheckValid ? 0.9f : stuckInTarget ? 5 : 1) || ripped)
+            if (time >= returnTime * (pullCheckValid ? strongEnemy ? 1.5f : 0.9f : stuckInTarget ? 5 : 1) || ripped)
             {
                 stuckInTarget = false;
                 returning = true;
-                if (pullCheckValid && chosenTarget != null)
+                if (pullCheckValid && chosenTarget != null && spawnPullBlood)
                 {
+                    CalamityGlobalNPC modNPC = chosenTarget.Calamity();
                     pullingTarget = true;
                     canDamage = false;
                     chosenTarget.damage = 0;
+                    modNPC.pacified = true;
                     chosenTarget.Center = Projectile.Center;
                     chosenTarget.velocity = Projectile.velocity;
                 }
@@ -111,6 +115,11 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     canDamage = true;
                 }
+            }
+            if (hasLatchedTarget && !pullingTarget)
+            {
+                chosenTarget.velocity = (storedVelocity * (strongEnemy ? 0.4f : 2));
+                storedVelocity *= strongEnemy ? 0.982f : 0.975f;
             }
 
             if (returning)
@@ -182,11 +191,28 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     if (spawnPullBlood && chosenTarget != null && chosenTarget.life > 0)
                     {
-                        SoundStyle die = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
-                        SoundEngine.PlaySound(die with { Pitch = Main.rand.NextFloat(0, 0.1f), Volume = 0.85f }, Projectile.Center);
-                        for (int i = 0; i < 40; i++)
+                        if (Projectile.ai[1] == 0 && strongEnemy)
                         {
-                            Vector2 vel = (Vector2.One * -28).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.9f);
+                            SoundStyle die2 = new("CalamityMod/Sounds/NPCKilled/PerfHiveDeath");
+                            SoundEngine.PlaySound(die2 with { Pitch = Main.rand.NextFloat(0.1f, 0.2f), Volume = 0.95f }, Projectile.Center);
+                            SoundStyle die3 = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
+                            SoundEngine.PlaySound(die3 with { Pitch = Main.rand.NextFloat(0f, 0.1f), Volume = 0.85f }, Projectile.Center);
+
+                            for (int i = 0; i < 3; i++)
+                            {
+                                Particle orb7 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Maroon, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, (0.5f + i * 0.2f), 30, false);
+                                GeneralParticleHandler.SpawnParticle(orb7);
+                            }
+
+                            Owner.Calamity().GeneralScreenShakePower = 8.5f;
+                        }
+
+                        SoundStyle die = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
+                        SoundEngine.PlaySound(die with { Pitch = Main.rand.NextFloat(0.2f, 0.3f), Volume = 0.85f }, Projectile.Center);
+                        float intensity = strongEnemy ? 1.2f : 0.5f;
+                        for (int i = 0; i < (int)(40 * intensity); i++)
+                        {
+                            Vector2 vel = (Vector2.One * -28).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.9f) * intensity;
                             if (i % 3 == 0)
                             {
                                 Particle spark = new AltLineParticle(Projectile.Center, vel, true, (int)(35), Main.rand.NextFloat(0.55f, 1.3f), Color.DarkRed * 0.8f);
@@ -200,9 +226,14 @@ namespace CalamityMod.Projectiles.Ranged
 
                             for (int r = 0; r < 2; r++)
                             {
-                                Vector2 vel2 = (Vector2.One * -28).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f);
+                                Vector2 vel2 = (Vector2.One * -28).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f) * intensity;
                                 Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, vel2, 100, default, Main.rand.NextFloat(0.9f, 1.7f));
                                 dust.noGravity = false;
+                            }
+                            if (strongEnemy)
+                            {
+                                Dust dust5 = Dust.NewDustPerfect(Projectile.Center, 278, vel * 0.6f, 0, Color.Red, Main.rand.NextFloat(0.7f, 0.9f));
+                                dust5.noGravity = false;
                             }
                         }
 
@@ -291,6 +322,10 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.rotation = storedVelocity.ToRotation() + MathHelper.ToRadians(90f);
             }
+
+            if (Projectile.ai[2] == 5 && !pullingTarget && !hasLatchedTarget)
+                calledToPull = true;
+
             AdjustOldVelocityArray();
             time++;
         }
@@ -304,8 +339,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            bool pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
-
             if (!stuckInTarget && canStick)
             {
                 for (int i = 0; i <= 8; i++)
@@ -340,26 +373,41 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle sound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2");
                 SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
 
-                pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
                 if (pullCheckValid)
                 {
+                    chosenTarget.velocity += storedVelocity * (strongEnemy ? 0.3f : 1.5f);
+                    hasLatchedTarget = true;
+                    if ((chosenTarget.life <= chosenTarget.lifeMax * 0.3f) || chosenTarget.boss)
+                        strongEnemy = true;
                     SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
                     SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
+                    if (strongEnemy)
+                    {
+                        SoundStyle sound8 = new("CalamityMod/Sounds/Item/MetalEcho");
+                        SoundEngine.PlaySound(sound8 with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.8f, 0.9f) }, Projectile.Center);
+                    }
                 }
+                else
+                    normalHit = true;
             }
 
             bool hitTarget = chosenTarget != null && target == chosenTarget;
-            modifiers.SourceDamage *= hitTarget ? pullingTarget ? 20 : (ripped ? 2 : Projectile.numHits < 1 ? 0.01f : 1) : 0.2f;
+            modifiers.SourceDamage *= hitTarget ? (ripped ? 2 : Projectile.numHits < 1 ? 0.01f : 1) : 0.2f;
+            if (hitTarget && pullingTarget)
+            {
+                chosenTarget.velocity = -storedVelocity * 3;
+                modifiers.SetInstantKill();
+            }
 
-            pullCheckValid = ((chosenTarget != null && chosenTarget.life < Projectile.damage * 15f && Projectile.ai[2] != 5 && chosenTarget.CanBeMoved(true)) || Main.zenithWorld);
             if (!pullCheckValid)
                 target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
         public override bool? CanDamage() => canDamage ? null : false;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, !spawnPullBlood ? 150 : 25, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25, targetHitbox);
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Player Owner = Main.player[Projectile.owner];
             Texture2D chain = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SepticChain").Value;
             Vector2 end = Projectile.Center - storedVelocity.SafeNormalize(Vector2.UnitX) * 35;
 
@@ -380,14 +428,39 @@ namespace CalamityMod.Projectiles.Ranged
                 chainPointCount = 12;
             BezierCurve bezierCurve = new BezierCurve(controlPoints.ToArray());
             List<Vector2> chainPoints = bezierCurve.GetPoints(chainPointCount);
+            if (hasLatchedTarget)
+            {
+                for (int i = 0; i < chainPoints.Count; i++)
+                {
+                    Vector2 positionAtPoint = chainPoints[i];
+                    if (Vector2.Distance(Owner.Center, positionAtPoint) > 1400)
+                        continue;
+                    if (Vector2.Distance(positionAtPoint, Projectile.Center) < 10f)
+                        continue;
+                    float angleAtPoint = i == chainPoints.Count - 1 ? (end - chainPoints[i]).ToRotation() : (chainPoints[i + 1] - chainPoints[i]).ToRotation();
+                    angleAtPoint += MathHelper.PiOver2;
 
+                    Main.EntitySpriteDraw(chain,
+                                    positionAtPoint - Main.screenPosition + Main.rand.NextVector2Circular(3, 3),
+                                    null,
+                                    Color.Chartreuse with { A = 0 } * Utils.GetLerpValue(0, returnTime, time, true),
+                                    angleAtPoint,
+                                    chain.Size() / 2f,
+                                    1.35f,
+                                    SpriteEffects.None,
+                                    0);
+                }
+            }
             for (int i = 0; i < chainPoints.Count; i++)
             {
                 Vector2 positionAtPoint = chainPoints[i];
+                if (Vector2.Distance(Owner.Center, positionAtPoint) > 1400)
+                    continue;
                 if (Vector2.Distance(positionAtPoint, Projectile.Center) < 10f)
                     continue;
                 float angleAtPoint = i == chainPoints.Count - 1 ? (end - chainPoints[i]).ToRotation() : (chainPoints[i + 1] - chainPoints[i]).ToRotation();
                 angleAtPoint += MathHelper.PiOver2;
+
                 Main.EntitySpriteDraw(chain,
                                  positionAtPoint - Main.screenPosition,
                                  null,
