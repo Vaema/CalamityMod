@@ -15,11 +15,14 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.damage = 500;
+            CalamityGlobalItem modItem = Item.Calamity();
+
+            Item.damage = 592;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 180;
             Item.shoot = ModContent.ProjectileType<TauCannonHoldout>();
             Item.shootSpeed = 15f;
+            Item.knockBack = 4f;
 
             Item.width = 146;
             Item.height = 52;
@@ -29,11 +32,21 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.useStyle = ItemUseStyleID.Shoot;
+
+            modItem.UsesCharge = true;
+            modItem.MaxCharge = 200f;
         }
 
         public override bool AltFunctionUse(Player player) => false;
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+        public override bool CanUseItem(Player player)
+        {
+            CalamityGlobalItem modItem = Item.Calamity();
+            if (player.ownedProjectileCounts[Item.shoot] == 0 && modItem.Charge > 0)
+                return true;
+            else
+                return false;
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -45,6 +58,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<ArcNovaDiffuser>().
+                AddIngredient<MysteriousCircuitry>(10).
+                AddIngredient<DubiousPlating>(15).
                 AddIngredient<AstralBar>(10).
                 AddIngredient<RuinousSoul>(2).
                 AddTile(TileID.LunarCraftingStation).

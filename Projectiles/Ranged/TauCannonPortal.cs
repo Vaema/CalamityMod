@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,7 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => "CalamityMod/ExtraTextures/GreyscaleVortex";
-
+        public Color color1 = Color.Coral;
+        public Color color2 = Color.MediumTurquoise;
         private float Scale01
         {
             get
@@ -33,21 +35,35 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.width = Projectile.height = 153;
+            Projectile.width = Projectile.height = 100;
             Projectile.timeLeft = 420;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 5 * Projectile.MaxUpdates;
+            Projectile.extraUpdates = 2;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-            => CalamityUtils.CircularHitboxCollision(Projectile.Center, 256f * Scale01, targetHitbox);
+            => CalamityUtils.CircularHitboxCollision(Projectile.Center, 100f * Scale01, targetHitbox);
 
         public override void AI()
         {
-            Projectile.rotation += MathHelper.ToRadians(5f) * Scale01;
+            Projectile.rotation += MathHelper.ToRadians(1.5f) * Scale01;
+
+            if (Projectile.timeLeft < 300)
+            {
+                Player Owner = Main.player[Projectile.owner];
+                Vector2 moveTotarget = (Owner.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (Projectile.velocity.Length() < 25)
+                    Projectile.velocity += moveTotarget * 0.05f;
+                else
+                    Projectile.velocity *= 0.98f;
+            }
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= 2f;
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= 0.08f;
 
         public override void OnKill(int timeLeft)
         {
@@ -66,18 +82,21 @@ namespace CalamityMod.Projectiles.Ranged
                         ModContent.ProjectileType<TauCannonBolt>(),
                         Projectile.damage,
                         Projectile.knockBack,
-                        Projectile.owner);
+                        Projectile.owner, 0, 0, 5);
                 }
             }
         }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 anchorPoint = texture.Size() * 0.5f;
-
-            Main.EntitySpriteDraw(texture, drawPosition, null, Color.Pink * Scale01, Projectile.rotation, anchorPoint, Scale01 * 0.375f, SpriteEffects.None);
+            for (int i = 0; i < 13; i++)
+                Main.EntitySpriteDraw(texture, drawPosition, null, Color.Lerp(color1, Color.White, i * 0.075f) with { A = 0 } * Scale01 * 0.45f, Projectile.rotation * 3 - i * 0.15f, anchorPoint, MathHelper.Clamp(Scale01 * 0.375f - i * 0.02f, 0, 5), SpriteEffects.None);
 
             return false;
         }

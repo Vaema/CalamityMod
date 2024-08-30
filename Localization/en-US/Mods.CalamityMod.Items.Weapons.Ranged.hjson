@@ -1275,6 +1275,18 @@ Svantechnical: {
 		'''
 }
 
+TauCannon: {
+	DisplayName: Tau Cannon
+	Tooltip:
+		'''
+		A bulky assault rifle with three charge levels that fires astral energy
+		Charge level one fires a burst of bolts
+		Charge level two fires a beam of energy that quickly fizzles out
+		Charge level three fires a massive laser and creates astral portals around you
+		'This weapon is very ethically questionable'
+		'''
+}
+
 TelluricGlare: {
 	DisplayName: Telluric Glare
 	Tooltip: Fires volleys of four colossal radiant arrows which can pass through walls
@@ -1434,9 +1446,4 @@ WulfrumBlunderbuss: {
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
-}
-
-TauCannon: {
-	DisplayName: Tau Cannon
-	Tooltip: ""
 }

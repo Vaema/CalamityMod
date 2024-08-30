@@ -1,4 +1,5 @@
-﻿using CalamityMod.Graphics.Primitives;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,11 +15,13 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public Color color1 = Color.MediumTurquoise;
+        public Color color2 = Color.Coral;
 
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailingMode[Type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -28,20 +31,25 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
+            Projectile.extraUpdates = 1;
         }
 
         public override void AI()
         {
             if (Main.dedServ)
                 return;
+            if (Main.rand.NextBool(10))
+            {
+                Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 278, Scale: Main.rand.NextFloat(0.5f, 0.8f));
+                trailDust.noGravity = true;
+                trailDust.color = Main.rand.NextBool(3) ? color2 : color1;
+            }
 
-            Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 72, Scale: Main.rand.NextFloat(0.3f, 0.6f));
-            trailDust.noGravity = true;
-            trailDust.noLight = true;
-            trailDust.noLightEmittence = true;
-
-            Particle orb = new GenericBloom(Projectile.Center, Vector2.Zero, Color.Pink, 0.2f, 2, false);
+            Particle orb = new CustomSpark(Projectile.Center, Projectile.velocity, "CalamityMod/Projectiles/StarProj",false, 2, 1f, Color.Lerp(color1, Color.White, 0.7f), new Vector2(1f, 1f));
             GeneralParticleHandler.SpawnParticle(orb);
+
+            if (Projectile.ai[2] == 5)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 500f, 12, 70f);
         }
 
         public override void OnKill(int timeLeft)
@@ -49,17 +57,21 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.dedServ)
                 return;
 
-            int dustAmount = Main.rand.Next(15, 26);
+            int dustAmount = Main.rand.Next(5, 10);
             for (int i = 0; i < dustAmount; i++)
             {
-                Dust boomDust = Dust.NewDustPerfect(Projectile.Center, 72, (MathHelper.TwoPi / dustAmount * i).ToRotationVector2() * Main.rand.NextFloat(3f, 6f), Scale: Main.rand.NextFloat(0.6f, 1f));
+                Dust boomDust = Dust.NewDustPerfect(Projectile.Center, 278, (MathHelper.TwoPi / dustAmount * i).ToRotationVector2() * Main.rand.NextFloat(5f, 8f), Scale: Main.rand.NextFloat(0.6f, 1f));
                 boomDust.noGravity = true;
+                boomDust.color = Main.rand.NextBool(3) ? color2 : color1;
             }
         }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
+        }
         private float WidthFunction(float completionRatio) => Projectile.scale * 32f * CalamityUtils.Convert01To010(completionRatio);
 
-        private Color ColorFunction(float completionRatio) => Color.Lerp(Color.Pink, Color.Transparent, completionRatio) * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
+        private Color ColorFunction(float completionRatio) => Color.Lerp(color1, Color.Transparent, completionRatio) * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
         public override bool PreDraw(ref Color lightColor)
         {
