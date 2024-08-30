@@ -39,6 +39,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Cryogen
 {
     [AutoloadBossHead]
+    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
     public class Cryogen : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
@@ -263,7 +264,7 @@ namespace CalamityMod.NPCs.Cryogen
                 NPC.ai[2] = 0f;
             }
 
-            if (CalamityConfig.Instance.BossesStopWeather)
+            if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
             else if (!Main.raining && !BossRushEvent.BossRushActive)
                 CalamityUtils.StartRain();

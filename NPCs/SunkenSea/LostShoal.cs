@@ -406,7 +406,7 @@ namespace CalamityMod.NPCs.SunkenSea
             float colorLerpAmt = 0.5f;
             int afterimageAmt = 7;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {

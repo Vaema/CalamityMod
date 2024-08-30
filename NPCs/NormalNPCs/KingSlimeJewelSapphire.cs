@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,8 +19,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class KingSlimeJewelSapphire : ModNPC
     {
-        public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewel";
-
         private const int BuffDustGateValue = 60;
         private const float LightTelegraphDuration = 45f;
 
@@ -30,8 +34,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 0;
-            NPC.width = 22;
-            NPC.height = 22;
+            NPC.width = 32;
+            NPC.height = 32;
             NPC.defense = 5;
             NPC.DR_NERD(0.05f);
             NPC.lifeMax = 120;
@@ -49,7 +53,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (!CalamityPlayer.areThereAnyDamnBosses)
             {
                 NPC.life = 0;
-                NPC.HitEffect();
+                OnKill();
                 NPC.active = false;
                 NPC.netUpdate = true;
                 return;
@@ -184,6 +188,24 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Color col = Color.BlueViolet;
+            Color flashCol = Color.LightSkyBlue;
+
+            NPC.localAI[1]++;
+
+            float alph = 0.4f + (float)(Math.Sin(NPC.localAI[1] / 30f) * 0.4f);
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
+
+            Main.EntitySpriteDraw(tex.Value, NPC.Center - screenPos, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex2.Value, NPC.Center - screenPos, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
+
+            return false;
+        }
+
         public override Color? GetAlpha(Color drawColor)
         {
             Color initialColor = new Color(100, 100, 175);
@@ -200,6 +222,21 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * balance);
+        }
+
+        public override void OnKill()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.BlueViolet));
+                GeneralParticleHandler.SpawnParticle(new PointParticle(NPC.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.LightSkyBlue));
+            }
+
+            float start = Main.rand.NextFloat(MathHelper.TwoPi);
+            for (int i = 0; i < 3; i++)
+                GeneralParticleHandler.SpawnParticle(new CustomSprite(NPC.Center, new Vector2(0, -2).RotatedByRandom(start + MathHelper.ToRadians(20f)).RotatedBy(MathHelper.ToRadians(i * 125)), 120, "CalamityMod/Particles/KingSlimeSapphireShards", 1f, new Color(255, 255, 255), Main.rand.NextFloat(0.2f, 0.6f), frameCount: 3, frame: i));
+
+            SoundEngine.PlaySound(KingSlimeJewelRuby.ShatterSound, NPC.Center);
         }
 
         public override bool CheckActive() => false;

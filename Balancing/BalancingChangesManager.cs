@@ -54,6 +54,9 @@ namespace CalamityMod.Balancing
             bool MushroomSpearFilter(Projectile p) =>
                 p.type == ProjectileID.Mushroom && Main.player[p.owner].ActiveItem().type == ItemID.MushroomSpear;
 
+            bool OrichalcumPetalFilter(Projectile p) =>
+                p.type == ProjectileID.FlowerPetal && Main.player[p.owner].onHitPetal;
+
             bool SpectreMaskSetBonusFilter(Projectile p) =>
                 p.type == ProjectileID.SpectreWrath && Main.player[p.owner].ghostHurt;
 
@@ -80,6 +83,9 @@ namespace CalamityMod.Balancing
 
                 // Nerf Mushroom Spear projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, MushroomSpearFilter)),
+
+                // Nerf Orichalcum armor set bonus petals by 33%.
+                Do(new ProjectileSpecificRequirementBalancingRule(0.66f, OrichalcumPetalFilter)),
 
                 // Nerf Spectre Mask set bonus projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, SpectreMaskSetBonusFilter)),
@@ -325,6 +331,9 @@ namespace CalamityMod.Balancing
             // 50% resist to Tactician's Trump Card's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<TacticiansElectricBoom>()))));
 
+            // 35% resist to Event Horizon.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
+
             // 25% resist to Molten Amputator's blobs.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.StormWeaverIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<MoltenBlobThrown>()))));
             #endregion
@@ -335,11 +344,11 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region The Devourer of Gods
-            // 80% resist to Wave Pounder.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.2f, ProjectileType<WavePounderBoom>()))));
+            // 65% resist to Wave Pounder.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<WavePounderBoom>()))));
 
-            // 50% resist to Eidolic Wail.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<EidolicWailSoundwave>()))));
+            // 35% resist to Venusian Trident.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>()))));
 
             // 25% resist to Corinth Prime's Grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.DevourerOfGodsIDs, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
@@ -385,10 +394,8 @@ namespace CalamityMod.Balancing
             #region Exo Mechs: Artemis and Apollo
             // Artemis and Apollo have to be defined here because they aren't a pre-existing list.
             // TODO -- NPC sets (mostly worm bosses) should probably be their own holding class.
-            int[] exoTwins = new int[] { NPCType<Artemis>(), NPCType<Apollo>() };
-
-            // 10% resist to Eclipse's Fall's mini spears.
-            NPCSpecificBalancingChanges.AddRange(Bundle(exoTwins, Do(new ProjectileResistBalancingRule(0.9f, ProjectileType<EclipsesSmol>()))));
+            // Commented out since they currently have no resists.
+            // int[] exoTwins = new int[] { NPCType<Artemis>(), NPCType<Apollo>() };
             #endregion
 
             #region Exo Mechs: Thanatos

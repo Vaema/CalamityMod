@@ -86,7 +86,7 @@ namespace CalamityMod.CalPlayer
             // Give the player a 24% jump speed boost while wings are equipped, otherwise grant 4% more jump speed so that players can jump 7 tiles high
             if (Player.wingsLogic > 0)
                 Player.jumpSpeedBoost += 1.2f;
-            else if (CalamityConfig.Instance.FasterJumpSpeed)
+            else if (CalamityServerConfig.Instance.FasterJumpSpeed)
                 Player.jumpSpeedBoost += 0.2f;
 
             // Decrease the counter on Fearmonger set turbo regeneration
@@ -543,7 +543,8 @@ namespace CalamityMod.CalPlayer
                 adrenalineDiff = -adrenalineMax / AdrenalineDuration;
 
                 // If using Draedon's Heart, you get healing instead of damage.
-                if (draedonsHeart)
+                // 26AUG2024: Ozzatron: Cut Draedon's Heart healing in half by making it heal every other frame.
+                if (draedonsHeart && Player.miscCounter % 2 == 1)
                 {
                     Player.statLife += DraedonsHeart.NanomachinesHealPerFrame;
                     if (Player.statLife >= Player.statLifeMax2)
@@ -661,8 +662,9 @@ namespace CalamityMod.CalPlayer
                         Player.AddBuff(BuffID.Burning, 2);
                 }
 
-                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
+                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
+                // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
                 if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph || Player.creativeGodMode)) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
@@ -1001,7 +1003,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.buffImmune[ModContent.BuffType<FrozenLungs>()] = true;
             }
-            if (CalamityConfig.Instance.ChilledWaterRework)
+            if (CalamityServerConfig.Instance.ChilledWaterRework)
             {
                 if (Main.expertMode && Player.ZoneSnow && Player.wet && !Player.lavaWet && !Player.honeyWet)
                 {
@@ -1124,7 +1126,7 @@ namespace CalamityMod.CalPlayer
                     Player.noFallDmg = true;
                 }
 
-                if (CalamityConfig.Instance.FasterFallHotkey)
+                if (CalamityClientConfig.Instance.FasterFallHotkey)
                 {
                     // Allow the player to double their gravity (but NOT max fall speed!) by holding the down button while in midair.
                     bool holdingDown = Player.controlDown && !Player.controlJump;
@@ -1154,7 +1156,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Increase Rope climb velocities, if enabled
-            if (CalamityConfig.Instance.FasterRopeClimbSpeed)
+            if (CalamityServerConfig.Instance.FasterRopeClimbSpeed)
             {
                 if (Player.pulley)
                 {
@@ -1553,8 +1555,6 @@ namespace CalamityMod.CalPlayer
                     burnOutDust.noGravity = true;
                 }
             }
-            if (hellbornBoost > 0)
-                hellbornBoost--;
             if (persecutedEnchantSummonTimer < 1800)
                 persecutedEnchantSummonTimer++;
             else
@@ -1744,8 +1744,12 @@ namespace CalamityMod.CalPlayer
             // Silva invincibility effects
             if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
             {
+                // You become immune to all debuffs
                 foreach (int debuff in CalamityLists.debuffList)
                     Player.buffImmune[debuff] = true;
+
+                // Prevent thorns effects from being abused during invincibility
+                Player.thorns = 0f;
 
                 silvaCountdown -= 1;
                 if (silvaCountdown <= 0)
@@ -2308,24 +2312,30 @@ namespace CalamityMod.CalPlayer
                     double breathLoss = Main.remixWorld ? (point.Y < abyssLevel1 ? 50D * depthRatioFromAbyssLayer1 : 0D) : (point.Y > abyssLevel1 ? 50D * depthRatioFromAbyssLayer1 : 0D);
 
                     // Breath Loss Multiplier, depending on gear
-                    double breathLossMult = 1D -
-                        (Player.gills ? 0.2 : 0D) - // 0.8
-                        (oceanCrest ? 0.2 : 0D) - // 0.8
-                        (victideSet ? 0.2 : 0D) - // 0.8
-                        (Player.accDivingHelm ? 0.25 : 0D) - // 0.75
-                        (Player.arcticDivingGear ? 0.25 : 0D) - // 0.75
-                        (aquaticEmblem ? 0.25 : 0D) - // 0.75
-                        (Player.accMerman ? 0.3 : 0D) - // 0.7
-                        (reaverExplore ? 0.3 : 0D) - // 0.7
-                        ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) - // 0.7
-                        (abyssalDivingSuit ? 0.3 : 0D); // 0.7
+                    // 27AUG2024: Ozzatron: fixed this being subtractive like mining speed. now doesn't stack exponentially
+                    // It is now a multiplier for the time it takes to lose any unit amount of breath
+                    double breathLossTimeMult = 1D +
+                        (Player.gills ? 0.2 : 0D) + // 1.2
+                        (oceanCrest ? 0.2 : 0D) + // 1.2
+                        (victideSet ? 0.2 : 0D) + // 1.2
+                        (Player.accDivingHelm ? 0.25 : 0D) + // 1.25
+                        (Player.arcticDivingGear ? 0.25 : 0D) + // 1.25
+                        (aquaticEmblem ? 0.25 : 0D) + // 1.25
+                        (Player.accMerman ? 0.3 : 0D) + // 1.3
+                        (reaverExplore ? 0.3 : 0D) + // 1.3
+                        ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) + // 1.3
+                        (abyssalDivingSuit ? 0.3 : 0D) + // 1.3
+                        externalBreathLossMultBoost;
+
+                    // Invert the breath loss time multiplier, to get the multiplier for the speed at which breath is actually lost
+                    double breathLossMult = 1D / breathLossTimeMult;
 
                     // Limit the multiplier to 5%
                     if (breathLossMult < 0.05)
                         breathLossMult = 0.05;
 
                     // Reduce breath lost while at zero breath, depending on gear
-                    breathLoss *= breathLossMult;
+                    breathLoss *= breathLossTimeMult;
 
                     // Record the final breath loss for the stat meter
                     abyssBreathLossStat = (float)breathLoss;
@@ -2383,7 +2393,8 @@ namespace CalamityMod.CalPlayer
                         (Player.accMerman ? 15D : 0D) + // 55
                         (victideSet ? 5D : 0D) + // 60
                         ((aquaticHeart && NPC.downedBoss3) ? 15D : 0D) + // 75
-                        (abyssalDivingSuit ? 15D : 0D); // 90
+                        (abyssalDivingSuit ? 15D : 0D) + // 90
+                        externalBreathTickBoost;
 
                     // Limit the multiplier to 50
                     if (tickMult > 50D)
@@ -2854,7 +2865,7 @@ namespace CalamityMod.CalPlayer
 
             // 50% movement speed bonus so that you don't feel like a snail in the early game
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
-            if (CalamityMod.Instance.overhaul is null && CalamityConfig.Instance.FasterBaseSpeed)
+            if (CalamityMod.Instance.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
                 Player.moveSpeed += BalancingConstants.DefaultMoveSpeedBoost;
 
             // Reduce how slow Chilled makes the player, because it's cancerous right now
@@ -2998,7 +3009,6 @@ namespace CalamityMod.CalPlayer
 
             // Flight time boosts
             double flightTimeMult = 1D +
-                (ZoneAstral ? 0.05 : 0D) +
                 (harpyRing ? 0.2 : 0D) +
                 (reaverSpeed ? 0.1 : 0D) +
                 (angelTreads ? 0.1 : 0D) +
@@ -3007,7 +3017,8 @@ namespace CalamityMod.CalPlayer
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
                 (ascendantInsignia ? 0.05 : 0D) + // Added to soaring insignia's flight to get 30%
-                (Player.empressBrooch ? 0.25 : 0D);
+                (Player.empressBrooch ? 0.25 : 0D) +
+                externalFlightTimeMultBoost;
 
             if (community)
             {
@@ -4301,13 +4312,13 @@ namespace CalamityMod.CalPlayer
             {
                 if (startMessageDisplayDelay == 0)
                 {
-                    if (CalamityConfig.Instance.WikiStatusMessage)
+                    if (CalamityClientConfig.Instance.WikiStatusMessage)
                     {
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus1");
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus2");
                     }
 
-                    if (CalamityConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable)
+                    if (CalamityClientConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable)
                     {
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.VCMMStatus");
                     }

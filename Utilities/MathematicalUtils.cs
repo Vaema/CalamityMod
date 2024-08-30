@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using ReLogic.Threading;
 using Terraria;
 
 namespace CalamityMod
@@ -363,7 +364,95 @@ namespace CalamityMod
 
         #endregion
 
-        #region A* Search Algorithm
+        #region Pathfinding Algorithm
+
+        /// <summary>
+        /// Creates a grid with the desired nodes/points to use the pathfinding algorithm.
+        /// </summary>
+        /// <param name="center">The center of the grid.</param>
+        /// <param name="gridSize">The grid is a square, so this is the side's lenght in tiles.</param>
+        /// <param name="tileValidation">A method for extra validation that takes each tile coordinate and returns a bool value stating if this tile's valid for the grid.</param>
+        /// <returns>A list of tile coordiantes which represents all the valid points on the grid.</returns>
+        public static List<Point> MakeGenericGrid(this Vector2 center, int gridSize, Func<Point, bool> tileValidation = null)
+        {
+            // To calculate the corners of the grid we'll use the half-length of the square's side.
+            gridSize /= 2;
+
+            Point topLeftCorner = ToSafeTileCoordinates(center + new Vector2(-gridSize, -gridSize));
+            Point bottomRightCorner = ToSafeTileCoordinates(center + new Vector2(gridSize, gridSize));
+
+            List<Point> grid = new();
+            for (int coordX = topLeftCorner.X; coordX < bottomRightCorner.X; coordX++)
+            {
+                for (int coordY = topLeftCorner.Y; coordY < bottomRightCorner.Y; coordY++)
+                {
+                    Point point = new(coordX, coordY);
+
+                    if (Main.tile[point].IsTileSolid())
+                        continue;
+
+                    if (tileValidation is not null && !tileValidation.Invoke(point))
+                        continue;
+
+                    grid.Add(point);
+                }
+            }
+
+            return grid;
+        }
+
+        /// <summary>
+        /// A quick method to see if an enemy fits in a path on the grid.
+        /// </summary>
+        public static bool DoesEntityFitInPath(this Entity entity, Point point, int fluffX = 0, int fluffY = 0)
+        {
+            Rectangle hitbox = entity.Hitbox;
+            Vector2 worldCoordinatePoint = point.ToWorldCoordinates();
+            hitbox.Inflate(fluffX, fluffY);
+
+            bool doesFit = true;
+            FastParallel.For((int)(worldCoordinatePoint.X - hitbox.Width / 2), (int)(worldCoordinatePoint.X + hitbox.Width / 2), (start, end, _) =>
+            {
+                for (int coordX = start; coordX < end; coordX++)
+                {
+                    for (int coordY = (int)(worldCoordinatePoint.Y - hitbox.Height / 2); coordY < worldCoordinatePoint.Y + hitbox.Height / 2; coordY++)
+                    {
+                        Point point = new Vector2(coordX, coordY).ToTileCoordinates();
+                        if (Main.tile[point].IsTileSolid())
+                        {
+                            doesFit = false;
+                            break;
+                        }
+                    }
+                }
+            });
+
+            return doesFit;
+        }
+
+        public static List<Vector2> DoPathfinding(this Vector2 start, Vector2? goal = null, Func<Point, bool> tileValidation = null)
+        {
+            var grid = start.MakeGenericGrid(640, tileValidation);
+
+            Point randomGoal = new();
+            if (goal is null)
+                randomGoal = grid[Main.rand.Next(grid.Count)];
+
+            var pathfinding = new AStar(grid, start.ToTileCoordinates(), goal is null ? randomGoal : ((Vector2)goal).ToTileCoordinates());
+            return pathfinding.FindPath();
+        }
+
+        public static List<Vector2> DoPathfinding(this Point start, Point? goal = null, Func<Point, bool> tileValidation = null)
+        {
+            var grid = start.ToWorldCoordinates().MakeGenericGrid(640, tileValidation);
+
+            Point randomGoal = new();
+            if (goal is null)
+                randomGoal = grid[Main.rand.Next(grid.Count)];
+
+            var pathfinding = new AStar(grid, start, goal is null ? randomGoal : (Point)goal);
+            return pathfinding.FindPath();
+        }
 
         public class Node(Point position, Node parent = null)
         {
@@ -395,19 +484,7 @@ namespace CalamityMod
             private List<Node> openList = new() { new(start) };
             private HashSet<Node> closedList = new();
 
-            public static List<Vector2> GetPath(List<Point> grid, Point start, Point goal)
-            {
-                var pathfinding = new AStar(grid, start, goal);
-                return pathfinding.FindPath();
-            }
-
-            public static List<Vector2> GetPath(List<Point> grid, Vector2 start, Vector2 goal)
-            {
-                var pathfinding = new AStar(grid, start.ToTileCoordinates(), goal.ToTileCoordinates());
-                return pathfinding.FindPath();
-            }
-
-            private List<Vector2> FindPath()
+            public List<Vector2> FindPath()
             {
                 while (openList.Count > 0)
                 {
@@ -444,7 +521,7 @@ namespace CalamityMod
                 return null;
             }
 
-            private List<Vector2> ReconstructPath(Node node)
+            private static List<Vector2> ReconstructPath(Node node)
             {
                 var path = new List<Vector2>();
                 while (node != null)
@@ -469,50 +546,6 @@ namespace CalamityMod
                 }
 
                 return neighbors;
-            }
-
-            public static List<Point> MakeGenericGrid(Vector2 position, float size, Func<Point, bool> adjacentTileValidation = null)
-            {
-                adjacentTileValidation ??= GenericAdjacentTileValidation;
-                
-                List<Point> grid = new();
-
-                Point topLeftCorner = ToSafeTileCoordinates(position + new Vector2(-size, -size));
-                Point bottomRightCorner = ToSafeTileCoordinates(position + new Vector2(size, size));
-
-                for (int coordY = topLeftCorner.Y; coordY <= bottomRightCorner.Y; coordY++)
-                {
-                    for (int coordX = topLeftCorner.X; coordX <= bottomRightCorner.X; coordX++)
-                    {
-                        Point point = new(coordX, coordY);
-
-                        if (Main.tile[point].IsTileSolid() || Main.tile[point].LiquidAmount != 255 || !adjacentTileValidation.Invoke(point))
-                            continue;
-
-                        grid.Add(point);
-                    }
-                }
-
-                return grid;
-            }
-
-            private static bool GenericAdjacentTileValidation(Point point)
-            {
-                Vector2[] adjacents = new Vector2[12]
-                {
-                Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY,
-                new(1f, 1f), new(1f, -1f), new(-1f, -1f), new(-1f, 1f),
-                Vector2.UnitX * 2f, -Vector2.UnitX * 2f, Vector2.UnitY * 2f, -Vector2.UnitY * 2f
-                };
-
-                foreach (var adjacent in adjacents)
-                {
-                    Point adjacentPoint = new(point.X + (int)adjacent.X, point.Y + (int)adjacent.Y);
-                    if (Main.tile[adjacentPoint].IsTileSolid())
-                        return false;
-                }
-
-                return true;
             }
         }
 

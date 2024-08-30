@@ -3,11 +3,14 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Particles;
+using CalamityMod.Dusts;
 namespace CalamityMod.Projectiles.Magic
 {
     public class UberBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public Color EffectsColor;
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -40,11 +43,30 @@ namespace CalamityMod.Projectiles.Magic
                 rotationClamp -= -MathHelper.TwoPi;
 
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+            if (Projectile.timeLeft == 26) // Firing effects, we set them on this frame so it comes out of the tip
+            {
+                for (int i = 0; i <= 10; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(5) ? DustID.HallowSpray : DustID.GemAmethyst, Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 0.5f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.85f, 1.4f);
+                }
+                for (int i = 0; i <= 2; i++)
+                {
+                    SquishyLightParticle energy = new(Projectile.Center, Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 0.4f), Main.rand.NextFloat(0.2f, 0.4f), Color.Purple, Main.rand.Next(0, 40 + 1), 0.25f, 2f);
+                    GeneralParticleHandler.SpawnParticle(energy);
+                }
+            }
         }
 
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item96, Projectile.Center);
+            Particle Star = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Purple, Color.PeachPuff, Main.rand.NextFloat(0.5f, 0.6f), 30, 0.1f, 3f);
+            GeneralParticleHandler.SpawnParticle(Star);
+            Star = new GenericSparkle(Projectile.Center + Projectile.velocity, Vector2.Zero, Color.MediumPurple, Color.LightPink, Main.rand.NextFloat(0.5f, 0.6f), 20, 0.1f, 3f);
+            GeneralParticleHandler.SpawnParticle(Star);
+
             int randDustAmt = Main.rand.Next(4, 6);
             for (int i = 0; i < randDustAmt; i++)
             {

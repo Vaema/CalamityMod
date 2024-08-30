@@ -850,7 +850,7 @@ ReaverRage: {
 
 SilvaRevival: {
 	DisplayName: Silva Immunity
-	Description: You are unkillable and immune to most debuffs
+	Description: Silva's blessing makes you invulnerable and immune to most debuffs
 }
 
 SpiritDefense: {

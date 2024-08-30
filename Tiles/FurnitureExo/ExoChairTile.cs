@@ -17,8 +17,6 @@ namespace CalamityMod.Tiles.FurnitureExo
     {
         public override void SetStaticDefaults()
         {
-            RegisterItemDrop(ModContent.ItemType<ExoChair>());
-
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = false;
             Main.tileWaterDeath[Type] = false;
@@ -29,6 +27,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.Origin = new Point16(1, 1);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 2, 0);

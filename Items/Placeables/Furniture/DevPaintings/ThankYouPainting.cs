@@ -74,6 +74,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Dia",
             "enamoured",
             "ENNWAY",
+            "Flowaria",
             "Fluffi",
             "HaguriHat",
             "Heart Plus Up!",

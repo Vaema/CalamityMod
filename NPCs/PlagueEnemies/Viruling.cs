@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.width = 58;
             NPC.height = 44;
             NPC.defense = 18;
-            NPC.lifeMax = 400;
+            NPC.lifeMax = 500;
             NPC.knockBackResist = 0.3f;
             NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.HitSound = SoundID.NPCHit22;

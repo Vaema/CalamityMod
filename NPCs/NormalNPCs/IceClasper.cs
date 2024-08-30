@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 12;
-            NPC.lifeMax = 625;
+            NPC.lifeMax = 750;
             NPC.knockBackResist = 0.25f;
             NPC.noTileCollide = true;
             NPC.aiStyle = -1;
@@ -342,7 +342,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 (MathHelper.Clamp(AITimer, 0f, TimeBeforeDash) / TimeBeforeDash);
             float AfterimageFade = MathHelper.Lerp(0f, 1f, interpolant);
 
-            if (CurrentState == IceClasperAIState.Dashing && CalamityConfig.Instance.Afterimages)
+            if (CurrentState == IceClasperAIState.Dashing && CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < NPC.oldPos.Length; i++)
                 {

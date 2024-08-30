@@ -72,7 +72,7 @@ namespace CalamityMod
             // If no afterimages are drawn due to an invalid mode being specified, ensure the projectile itself is drawn anyway.
             bool failedToDrawAfterimages = false;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 Vector2 centerOffset = drawCentered ? proj.Size / 2f : Vector2.Zero;
                 Color alphaColor = proj.GetAlpha(lightColor);
@@ -139,7 +139,7 @@ namespace CalamityMod
             }
 
             // Draw the projectile itself. Only do this if no afterimages are drawn because afterimage 0 is the projectile itself.
-            if (!CalamityConfig.Instance.Afterimages || ProjectileID.Sets.TrailCacheLength[proj.type] <= 0 || failedToDrawAfterimages)
+            if (!CalamityClientConfig.Instance.Afterimages || ProjectileID.Sets.TrailCacheLength[proj.type] <= 0 || failedToDrawAfterimages)
             {
                 Vector2 startPos = drawCentered ? proj.Center : proj.position;
                 Main.spriteBatch.Draw(texture, startPos - Main.screenPosition + new Vector2(0f, proj.gfxOffY), rectangle, proj.GetAlpha(lightColor), rotation, origin, scale, spriteEffects, 0f);
@@ -339,7 +339,7 @@ namespace CalamityMod
         }
 
         // Cached for efficiency purposes.
-        internal static readonly FieldInfo BeginEndPairField = typeof(SpriteBatch).GetField("inBeginEndPair", BindingFlags.NonPublic | BindingFlags.Instance);
+        internal static readonly FieldInfo BeginCalled = typeof(SpriteBatch).GetField("beginCalled", BindingFlags.NonPublic | BindingFlags.Instance);
 
         /// <summary>
         /// Determines if a <see cref="SpriteBatch"/> is in a lock due to a <see cref="SpriteBatch.Begin"/> call.
@@ -347,7 +347,39 @@ namespace CalamityMod
         /// <param name="spriteBatch">The sprite batch to check.</param>
         public static bool HasBeginBeenCalled(this SpriteBatch spriteBatch)
         {
-            return (bool)BeginEndPairField.GetValue(spriteBatch);
+            return (bool)BeginCalled.GetValue(spriteBatch);
+        }
+
+        public static bool TryBegin(this SpriteBatch spriteBatch, SpriteSortMode sortMode,
+            BlendState blendState,
+            SamplerState samplerState,
+            DepthStencilState depthStencilState,
+            RasterizerState rasterizerState,
+            Effect effect,
+            Matrix transformMatrix)
+        {
+            if (spriteBatch.HasBeginBeenCalled())
+            {
+                return false;
+            }
+            else
+            {
+                spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, transformMatrix);
+                return true;
+            }
+        }
+
+        public static bool TryEnd(this SpriteBatch spriteBatch)
+        {
+            if (!spriteBatch.HasBeginBeenCalled())
+            {
+                return false;
+            }
+            else
+            {
+                spriteBatch.End();
+                return true;
+            }
         }
 
         /// <summary>

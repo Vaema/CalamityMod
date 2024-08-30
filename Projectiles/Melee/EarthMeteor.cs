@@ -149,6 +149,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
             if (Projectile.numHits <= 0)
             {
                 Player Owner = Main.player[Projectile.owner];

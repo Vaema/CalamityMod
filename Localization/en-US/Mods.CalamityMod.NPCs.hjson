@@ -272,6 +272,7 @@ GiantClam.DisplayName: Giant Clam
 Clamitas: Clamitas
 SupremeClamitas: Supreme Clamitas
 HauntedChum.DisplayName: Haunted Chum
+Jellyghoul.DisplayName: Jellyghoul
 KelpieSeadragon.DisplayName: Kelpie Seadragon
 LostShoal.DisplayName: Lost Shoal
 PearlpodBlack.DisplayName: Pearlpod
@@ -280,6 +281,8 @@ PearlpodPink.DisplayName: Pearlpod
 PearlpodWhite.DisplayName: Pearlpod
 PolypPanasea.DisplayName: Polyp Panasea
 PrismBack.DisplayName: Prism-Back
+Probesnout.DisplayName: Probesnout
+ProbesnoutGold.DisplayName: Probesnout Gold
 SandProwler.DisplayName: Sand Prowler
 SandProwlerNested.DisplayName: Sand Prowler
 SeaFloaty.DisplayName: Sea Floaty
@@ -639,6 +642,3 @@ WITCH: {
 		Princess_LovesNPC: "{NPCName} is always lonely, it's why I want to hang out with her, no one should be left alone like that!"
 	}
 }
-
-Probesnout.DisplayName: Probesnout
-ProbesnoutGold.DisplayName: Probesnout Gold

@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.ShadowbeamStaff).
-                AddIngredient<ArmoredShell>(3).
                 AddIngredient<RuinousSoul>(2).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

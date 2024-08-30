@@ -383,7 +383,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 if (NPC.ai[0] == 0f && NPC.localAI[0] == 1f)
                 {

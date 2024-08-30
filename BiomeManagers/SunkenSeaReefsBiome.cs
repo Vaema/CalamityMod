@@ -23,7 +23,7 @@ namespace CalamityMod.BiomeManagers
             bool MoreThanBurrows = BiomeTileCounterSystem.SunkenSeaReefsTiles > BiomeTileCounterSystem.SunkenSeaBurrowsTiles;
             bool MoreThanPolyp = BiomeTileCounterSystem.SunkenSeaReefsTiles > BiomeTileCounterSystem.SunkenSeaPolypTiles;
 
-            return BiomeTileCounterSystem.SunkenSeaReefsTiles > 500 && MoreThanBurrows && MoreThanPolyp;
+            return BiomeTileCounterSystem.SunkenSeaReefsTiles > 1000 && MoreThanBurrows && MoreThanPolyp;
         }
     }
 }

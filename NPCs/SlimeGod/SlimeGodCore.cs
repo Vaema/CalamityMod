@@ -596,7 +596,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 spriteBatch.Draw(pog, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             }
             if (!Main.zenithWorld)
-                while (((twoConst > 0 && coreID < 8) || (twoConst < 0 && coreID > 8)) && CalamityConfig.Instance.Afterimages)
+                while (((twoConst > 0 && coreID < 8) || (twoConst < 0 && coreID > 8)) && CalamityClientConfig.Instance.Afterimages)
                 {
                     Color colorLightingAlpha = NPC.GetAlpha(colorLightingArea);
                     {

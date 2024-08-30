@@ -55,7 +55,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.SpectreStaff).
                 AddIngredient(ItemID.MagnetSphere).
                 AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).

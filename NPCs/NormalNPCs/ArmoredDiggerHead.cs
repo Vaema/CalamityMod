@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [LongDistanceNetSync]
     public class ArmoredDiggerHead : ModNPC
     {
         bool TailSpawned = false;

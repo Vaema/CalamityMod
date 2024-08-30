@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,6 +9,7 @@ namespace CalamityMod.Walls
 {
     public class BrimstoneSlagWallUnsafe : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/BrimstoneSlagWall";
         public override void SetStaticDefaults()
         {
             AddMapEntry(new Color(24, 16, 29));
@@ -24,7 +26,7 @@ namespace CalamityMod.Walls
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            Texture2D sprite = ModContent.Request<Texture2D>("CalamityMod/Walls/BrimstoneSlagWall").Value;
+            Texture2D sprite = TextureAssets.Wall[Type].Value;
             Color lightColor = GetWallColour(i, j);
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             zero -= new Vector2(8, 8);

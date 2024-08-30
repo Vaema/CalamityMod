@@ -852,7 +852,7 @@ namespace CalamityMod.NPCs.Signus
                 transparency = (100 - (stealthTimer - 300)) * 0.01f;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -878,7 +878,7 @@ namespace CalamityMod.NPCs.Signus
                 eyeGlowColor = Color.MediumBlue;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
