@@ -11,6 +11,21 @@ namespace CalamityMod.Waters
 
     public class FloralParadiseWater : CalamityModWaterStyle
     {
+        public static int Type { get; private set; }
+        public static CalamityModWaterStyle Instance { get; private set; }
+
+        public override void SetStaticDefaults()
+        {
+            Type = Slot;
+            Instance = this;
+        }
+
+        public override void Unload()
+        {
+            Type = -1;
+            Instance = null;
+        }
+
         public override int ChooseWaterfallStyle()
         {
             return ModContent.Find<ModWaterfallStyle>("CalamityMod/FloralParadiseWaterflow").Slot;

@@ -15,6 +15,7 @@ namespace CalamityMod.Waters
 
     public class SulphuricDepthsWater : CalamityModWaterStyle
     {
+        public static int Type { get; private set; }
         public static CalamityModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
         public static int SplashDust { get; private set; }
@@ -22,6 +23,7 @@ namespace CalamityMod.Waters
 
         public override void SetStaticDefaults()
         {
+            Type = Slot;
             Instance = this;
             WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/SulphuricDepthsWaterflow");
             SplashDust = ModContent.DustType<SulphuricDepthsSplash>();
@@ -30,6 +32,7 @@ namespace CalamityMod.Waters
 
         public override void Unload()
         {
+            Type = -1;
             Instance = null;
             WaterfallStyle = null;
             SplashDust = 0;

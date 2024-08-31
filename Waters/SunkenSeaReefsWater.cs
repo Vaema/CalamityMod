@@ -11,13 +11,21 @@ namespace CalamityMod.Waters
 
     public class SunkenSeaReefsWater : CalamityModWaterStyle
     {
-        public static int Type;
-
         private readonly Vector3 WaterGlowColor = new Color(140, 222, 239).ToVector3();
+
+        public static int Type { get; private set; }
+        public static CalamityModWaterStyle Instance { get; private set; }
 
         public override void SetStaticDefaults()
         {
             Type = Slot;
+            Instance = this;
+        }
+
+        public override void Unload()
+        {
+            Type = -1;
+            Instance = null;
         }
 
         public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)

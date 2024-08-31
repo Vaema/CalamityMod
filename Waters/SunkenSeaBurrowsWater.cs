@@ -11,14 +11,23 @@ namespace CalamityMod.Waters
 
     public class SunkenSeaBurrowsWater : CalamityModWaterStyle
     {
-        public static int Type;
-
         private readonly Vector3 WaterGlowColor = new Color(76, 211, 231).ToVector3();
+
+        public static int Type { get; private set; }
+        public static CalamityModWaterStyle Instance { get; private set; }
 
         public override void SetStaticDefaults()
         {
             Type = Slot;
+            Instance = this;
         }
+
+        public override void Unload()
+        {
+            Type = -1;
+            Instance = null;
+        }
+
         public override int ChooseWaterfallStyle()
         {
             return ModContent.Find<ModWaterfallStyle>("CalamityMod/SunkenSeaBurrowsWaterflow").Slot;
