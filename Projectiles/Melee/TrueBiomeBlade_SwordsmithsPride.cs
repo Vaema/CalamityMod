@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         Vector2 direction = Vector2.Zero;
         public ref float CurrentState => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
-        public const float throwOutTime = 90f;
+        public const float throwOutTime = 60f;
         public const float throwOutDistance = 440f;
 
         public static float snapPoint = 0.45f;
@@ -199,7 +199,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = Owner.Center + (direction * Projectile.scale * 10) + (direction * throwOutDistance * ThrowCurve());
                 Projectile.scale = (1 + Empowerment / maxEmpowerment * 1.5f) * MathHelper.Clamp(1 - retractionTimer, 0.3f, 1f);
 
-                if (snapTimer > 0.01f && snapTimer < 0.02f)
+                if (snapTimer > 0f && snapTimer < 0.04f)
                 {
                     Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, direction, ProjectileType<SwordsmithsPrideMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_MonolithDamageMult), Projectile.knockBack, Owner.whoAmI, Main.rand.Next(4), 1f, hasMadeChargeSound);
                     if (proj.ModProjectile is SwordsmithsPrideMonolith monolith)
