@@ -12,19 +12,13 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
     //
     // Pirate Crate With Glow
 
-    public class PirateCrate1 : ModTile
+    public class PirateCrate1 : GlowMaskTile
     {
-        protected virtual string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate1Glow";
-        internal static FramedGlowMask GlowMask;
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate1Glow";
 
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/CrateBreak", 3) { Volume = 0.8f };
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
-            if (!string.IsNullOrEmpty(GlowAsset))
-            {
-                GlowMask = new(GlowAsset, 18, 18);
-            }
-
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = false;
@@ -35,8 +29,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             AddMapEntry(new Color(97, 69, 52), CalamityUtils.GetText("Tiles.PirateCrate"));
             DustType = DustID.WoodFurniture;
             HitSound = MineSound;
-
-            base.SetStaticDefaults();
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
@@ -54,28 +46,20 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             num = fail ? 1 : 2;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            if (GlowMask is not null && GlowMask.HasContentInFramePos(tile.TileFrameX, tile.TileFrameY))
-            {
-                Vector2 pos = new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero;
-                Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
-                spriteBatch.Draw(GlowMask.Texture, pos, frame, Color.White);
-            }
+            return Color.White;
         }
     }
 
     public class PirateCrate2 : PirateCrate1
     {
-        protected override string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate2Glow";
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate2Glow";
     }
 
     public class PirateCrate3 : PirateCrate1
     {
-        protected override string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate3Glow";
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate3Glow";
     }
 
     //

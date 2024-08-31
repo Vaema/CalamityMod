@@ -10,14 +10,12 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
-    public class AbyssGiantKelp3 : ModTile
+    public class AbyssGiantKelp3 : GlowMaskTile
     {
-        internal static FramedGlowMask GlowMask;
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp3Glow";
 
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
-            GlowMask = new("CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp3Glow", 18, 18);
-
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.Width = 2;
@@ -35,8 +33,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             AddMapEntry(new Color(92, 93, 42));
             DustType = DustID.Grass;
             HitSound = SoundID.Grass;
-
-            base.SetStaticDefaults();
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -66,15 +62,9 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             num = fail ? 1 : 2;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            if (GlowMask.HasContentInFramePos(tile.TileFrameX, tile.TileFrameY))
-            {
-                spriteBatch.Draw(GlowMask.Texture, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-            }
+            return Color.White;
         }
     }
 }

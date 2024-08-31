@@ -10,8 +10,12 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class RustyChestTile : ModTile
     {
+        public static int Type;
+
         public override void SetStaticDefaults()
         {
+            Type = (ushort)ModContent.TileType<RustyChestTile>();
+
             this.SetUpChest(ModContent.ItemType<RustyChest>());
             AddMapEntry(new Color(113, 90, 71), CalamityUtils.GetItemName<RustyChest>(), CalamityUtils.GetMapChestName);
         }
