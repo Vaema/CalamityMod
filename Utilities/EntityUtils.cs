@@ -39,17 +39,66 @@ namespace CalamityMod
             Main.LocalPlayer.GetModPlayer<CalamityPlayer>().GeneralScreenShakePower += (intensity * dist);
         }
 
+        #region Fallback Method for IndexInRange
         /// <summary>
-        /// Fallback method for Main.[EntityType].IndexInRange which provide accurate range check (0 <= index < Main.max[EntityType]s)
+        /// Fallback method for Main.npc.IndexInRange which provide accurate range check (0 <= index < Main.maxNPCs)
         /// </summary>
-        /// <param name="entityArrayFromMainISuppose"></param>
         /// <param name="index">whoAmI index to check</param>
-        /// <returns>true if index is in valid range [0 <= index < Main.max[EntityType]s]</returns>
-        public static bool IndexInRange(this Entity[] entityArrayFromMainISuppose, int index)
+        /// <returns>true if index is in valid range [0 <= index < Main.maxNPCs]</returns>
+        public static bool IndexInRange(this NPC[] _, int index)
         {
             if (index >= 0)
-                return index < entityArrayFromMainISuppose.Length - 1;
+                return index < Main.maxNPCs;
             return false;
         }
+
+        /// <summary>
+        /// Fallback method for Main.player.IndexInRange which provide accurate range check (0 <= index < Main.maxPlayers)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxPlayers]</returns>
+        public static bool IndexInRange(this Player[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxPlayers;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.projectile.IndexInRange which provide accurate range check (0 <= index < Main.maxProjectiles)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxProjectiles]</returns>
+        public static bool IndexInRange(this Projectile[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxProjectiles;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.gore.IndexInRange which provide accurate range check (0 <= index < Main.maxGore)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxGore]</returns>
+        public static bool IndexInRange(this Gore[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxGore;
+            return false;
+        }
+
+        /// <summary>
+        /// Fallback method for Main.npc.IndexInRange which provide accurate range check (0 <= index < Main.maxDust)
+        /// </summary>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.maxDust]</returns>
+        public static bool IndexInRange(this Dust[] _, int index)
+        {
+            if (index >= 0)
+                return index < Main.maxDust;
+            return false;
+        }
+        #endregion
     }
 }
