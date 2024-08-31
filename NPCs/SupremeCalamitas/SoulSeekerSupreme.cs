@@ -106,8 +106,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.frame.Y += frameHeight;
             if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type])
                 NPC.frame.Y = 0;
-
-            Main.NewText(NPC.frame.Y);
         }
 
         public override void AI()
