@@ -11,45 +11,54 @@ using Terraria.ModLoader;
 
 namespace CalamityMod
 {
-    public sealed class FramedGlowMask
+    public sealed class FramedMaskTexture
     {
         /// <summary>
         /// Cached Texture2D reference, null on server
         /// </summary>
-        public Texture2D Texture { get; private set; }
+        public Texture2D Texture; // Leave this as field for performances sake
         
         /// <summary>
         /// X axis's frame count, 0 on server
         /// </summary>
-        public int FrameXCount { get; private set; } = 0;
+        public int FrameXCount => _FrameXCount;
 
         /// <summary>
         /// Y axis's frame count, 0 on server
         /// </summary>
-        public int FrameYCount { get; private set; } = 0;
-        
+        public int FrameYCount => _FrameYCount;
+
         /// <summary>
         /// Pixel width for each frame
         /// </summary>
-        public int FrameWidth { get; private set; }
+        public int FrameWidth => _FrameWidth;
 
         /// <summary>
         /// Pixel height for each frame
         /// </summary>
-        public int FrameHeight { get; private set; }
+        public int FrameHeight => _FrameHeight;
 
-        private static event Action _OnUnload;
-        private readonly bool[,] _HasGlowContent;
+        /// <summary>
+        /// Pixel Width of Texture, 0 on server
+        /// </summary>
+        public int TextureWidth => _TextureWidth;
 
-        internal static void UnloadTexCache()
+        /// <summary>
+        /// Pixel Height of Texture, 0 on server
+        /// </summary>
+        public int TextureHeight => _TextureHeight;
+
+        private int _FrameWidth = 0, _FrameHeight = 0;
+        private int _FrameXCount = 0, _FrameYCount = 0;
+        private int _TextureWidth = 0, _TextureHeight = 0;
+        private readonly bool[] _HasMaskContent;
+
+        public FramedMaskTexture(string asset, int frameWidth, int frameHeight, bool pretendEveryFrameHaveGlow = false)
         {
-            _OnUnload?.Invoke();
-        }
+            _FrameWidth = frameWidth;
+            _FrameHeight = frameHeight;
 
-        public FramedGlowMask(string asset, int frameWidth, int frameHeight, bool pretendEveryFrameHaveGlow = false)
-        {
-            FrameWidth = frameWidth;
-            FrameHeight = frameHeight;
+            FramedGlowMaskSystem.OnUnload += Unload;
 
             // Don't do anything further on server
             if (Main.dedServ)
@@ -59,19 +68,12 @@ namespace CalamityMod
             if (Texture is null)
                 return;
 
-            _OnUnload += () =>
-            {
-                Texture = null;
-                FrameWidth = 0;
-                FrameHeight = 0;
-                FrameXCount = 0;
-                FrameYCount = 0;
-            };
+            _TextureWidth = Texture.Width;
+            _TextureHeight = Texture.Height;
+            _FrameXCount = _TextureWidth / frameWidth;
+            _FrameYCount = _TextureHeight / frameHeight;
 
-            FrameXCount = Texture.Width / frameWidth;
-            FrameYCount = Texture.Height / frameHeight;
-
-            _HasGlowContent = new bool[FrameXCount, FrameYCount];
+            _HasMaskContent = new bool[FrameXCount * FrameYCount];
 
             
             if (pretendEveryFrameHaveGlow)
@@ -80,7 +82,7 @@ namespace CalamityMod
                 {
                     for (int y = 0; y<FrameYCount; y++)
                     {
-                        _HasGlowContent[x, y] = true;
+                        _HasMaskContent[x + (y * _FrameXCount)] = true;
                     }
                 }
             }
@@ -89,16 +91,21 @@ namespace CalamityMod
                 Main.QueueMainThreadAction(() =>
                 {
                     var colData = Texture.GetColorsFromTexture();
+                    
+                    // Interesting case, not sure if this will even happens
+                    if (colData is null)
+                        return;
+
                     Parallel.For(0, FrameXCount * FrameYCount, (i) =>
                     {
                         int xFrame = i % FrameXCount;
                         int yFrame = i / FrameXCount;
 
                         int xStart = xFrame * frameWidth;
-                        int xEnd = xStart + frameWidth;
+                        int xEnd = Math.Min(xStart + frameWidth, _TextureWidth);
 
                         int yStart = yFrame * frameHeight;
-                        int yEnd = yStart + frameHeight;
+                        int yEnd = Math.Min(yStart + frameHeight, _TextureHeight);
 
                         bool frameHasData = false;
                         for (int x = xStart; x < xEnd; x++)
@@ -119,10 +126,19 @@ namespace CalamityMod
                             }
                         }
 
-                        _HasGlowContent[xFrame, yFrame] = frameHasData;
+                        _HasMaskContent[xFrame + (yFrame * _FrameXCount)] = frameHasData;
                     });
                 });
             }
+        }
+
+        public void Unload()
+        {
+            Texture = null;
+            _FrameWidth = 0;
+            _FrameHeight = 0;
+            _FrameXCount = 0;
+            _FrameYCount = 0;
         }
 
         public bool HasContentInFrameIndex(int xFrame, int yFrame)
@@ -130,30 +146,38 @@ namespace CalamityMod
             if (Texture is null)
                 return false;
 
-            if (xFrame < 0 || xFrame >= FrameXCount)
+            if (xFrame < 0 || xFrame >= _FrameXCount)
                 return false;
 
-            if (yFrame < 0 || yFrame >= FrameYCount)
+            if (yFrame < 0 || yFrame >= _FrameYCount)
                 return false;
 
-            return _HasGlowContent[xFrame, yFrame];
+            return _HasMaskContent[xFrame + (yFrame * _FrameXCount)];
         }
 
         public bool HasContentInFramePos(int xPos, int yPos)
         {
-            if (Texture is null)
+            int xFrame = xPos / _FrameWidth;
+            int yFrame = yPos / _FrameHeight;
+
+            if (xFrame < 0 || xFrame >= _FrameXCount)
                 return false;
 
-            int xFrame = xPos / FrameWidth;
-            int yFrame = yPos / FrameHeight;
-
-            if (xFrame < 0 || xFrame >= FrameXCount)
+            if (yFrame < 0 || yFrame >= _FrameYCount)
                 return false;
 
-            if (yFrame < 0 || yFrame >= FrameYCount)
-                return false;
+            return _HasMaskContent[xFrame + (yFrame * _FrameXCount)];
+        }
 
-            return _HasGlowContent[xFrame, yFrame];
+        private sealed class FramedGlowMaskSystem : ModSystem
+        {
+            public static event Action OnUnload;
+
+            public override void Unload()
+            {
+                OnUnload?.Invoke();
+                OnUnload = null; // Clear cache completly
+            }
         }
     }
 }
