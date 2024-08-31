@@ -190,9 +190,9 @@ AndromedaAttunement: {
 	Name: Andromeda's Stride
 	Function:
 		'''
-		Charge a spatial lunge, release to shred all enemies in your path
+		Charge a spatial lunge, release to unleash a galactic blow
 		Charging the sword periodically emits homing bolts
-		Lunging into tiles releases a ripple of large homing stars
+		Lunging into enemies rains large homing stars from the heavens
 		'''
 	PassiveName: Cancer's Blessing
 	PassiveDesc:
