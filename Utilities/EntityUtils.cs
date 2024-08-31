@@ -38,5 +38,18 @@ namespace CalamityMod
 
             Main.LocalPlayer.GetModPlayer<CalamityPlayer>().GeneralScreenShakePower += (intensity * dist);
         }
+
+        /// <summary>
+        /// Fallback method for Main.[EntityType].IndexInRange which provide accurate range check (0 <= index < Main.max[EntityType]s)
+        /// </summary>
+        /// <param name="entityArrayFromMainISuppose"></param>
+        /// <param name="index">whoAmI index to check</param>
+        /// <returns>true if index is in valid range [0 <= index < Main.max[EntityType]s]</returns>
+        public static bool IndexInRange(this Entity[] entityArrayFromMainISuppose, int index)
+        {
+            if (index >= 0)
+                return index < entityArrayFromMainISuppose.Length - 1;
+            return false;
+        }
     }
 }
