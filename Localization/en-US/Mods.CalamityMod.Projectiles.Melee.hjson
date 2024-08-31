@@ -98,9 +98,10 @@ DragonRageFireball.DisplayName: Dragon Rage Fireball
 EarthBoom.DisplayName: Earth's Judgement
 EarthMeteor.DisplayName: Gaia Meteor
 EarthenTides.DisplayName: Earthen Tides
-EarthenTidesBeam.DisplayName: Swordsmith's Projection
+EarthenTidesBeam.DisplayName: Earthen Projection
 EarthenTidesBlast.DisplayName: Earthen Tides Blast
-EarthenTidesMonolith.DisplayName: Earthen Tides Monolith
+EarthenTidesBlastSpawner.DisplayName: Blast Spawner
+EarthenTidesShockwave.DisplayName: Earthen Tides Shockwave
 ElementalGlassStar.DisplayName: Glass Star
 ElementBall.DisplayName: Elemental Ball
 EmpyreanKnife.DisplayName: Empyrean Knife

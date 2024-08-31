@@ -49,10 +49,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 16;
         }
 
-        public override bool? CanDamage()
-        {
-            return (State == 1);
-        }
+        // Only deal damage while charging
+        public override bool? CanDamage() => State == 1f;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -73,17 +71,19 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!initialized) //Initialization. Here its litterally just playing a sound tho lmfao
+            if (!initialized) //Initialization. Here it's literally just playing a sound
             {
                 Projectile.velocity = Vector2.Zero;
                 SoundEngine.PlaySound(SoundID.Item101, Projectile.Center);
                 initialized = true;
             }
 
+            // Attempt a charge if the player stops channeling the sword
             if (Owner.CantUseHoldout())
             {
                 if (State == 0f)
                 {
+                    // You need at least 25% charge duration to do a charge
                     if (Charge / MaxCharge < 0.25f)
                     {
                         SoundEngine.PlaySound(SoundID.Item109, Projectile.Center);
@@ -92,7 +92,6 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     else
                     {
-
                         SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
                         State = 1f;
                         Projectile.timeLeft = (7 + (int)((Charge / MaxCharge - 0.25f) * 20)) * 2; //Keep that even, if its an odd number itll fuck off and wont reset the players velocity on death
@@ -151,9 +150,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 Owner.Calamity().LungingDown = true;
 
-                if (Collision.SolidCollision(Owner.Center + (direction * 120 * Projectile.scale) - Vector2.One * 5f, 10, 10))
+                Vector2 collisionCheckPos = Owner.Center + (direction * 120 * Projectile.scale) - Vector2.One * 5f;
+                if (Collision.SolidCollision(collisionCheckPos, 10, 10))
                 {
-                    SlamDown();
+                    SlamDown(collisionCheckPos);
                     Projectile.timeLeft = 0;
                     Owner.Calamity().LungingDown = false;
                     Projectile.active = false;
@@ -190,59 +190,34 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemAnimation = 2;
         }
 
-        public void SlamDown()
+        public void SlamDown(Vector2 collisionSpot)
         {
-            SoundEngine.PlaySound(GroundImpact, Projectile.Center);
-
-
             if (Owner.whoAmI != Main.myPlayer || Owner.velocity.Y == 0f)
                 return;
 
+            // Sound and screenshake
+            SoundEngine.PlaySound(GroundImpact, Projectile.Center);
             if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 15)
                 Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15;
 
-            Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + (direction * 120 * Projectile.scale), -direction, ProjectileType<EarthenTidesMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), 1f);
-            proj.timeLeft = 81;
+            // Dust and particles from the impact
+            for (int d = 0; d < 13; d++)
+                Dust.NewDustPerfect(collisionSpot, Main.rand.NextBool() ? DustID.Clay : DustID.Dirt, Main.rand.NextVector2CircularEdge(6f, 6f), Scale: 1.2f);
 
-
-            SideSprouts(1, 150f, 1f * Charge / MaxCharge);
-            SideSprouts(-1, 150f, 1f * Charge / MaxCharge);
-
-        }
-
-        public bool SideSprouts(float facing, float distance, float projSize)
-        {
-            float widestAngle = 0f;
-            float widestSurfaceAngle = 0f;
-            bool validPositionFound = false;
-            for (float i = 0f; i < 1; i += 1 / distance)
+            CustomPulse shatter = new(collisionSpot, Vector2.Zero, Color.SandyBrown, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.03f, 0.275f, 30);
+            GeneralParticleHandler.SpawnParticle(shatter);
+            for (int i = 0; i < 10; i++)
             {
-                Vector2 positionToCheck = Owner.Center + (direction * 120 * Projectile.scale) + direction.RotatedBy((i * MathHelper.PiOver2 + MathHelper.PiOver4) * facing) * distance;
-
-                if (Main.tile[(int)(positionToCheck.X / 16), (int)(positionToCheck.Y / 16)].IsTileSolid())
-                    widestAngle = i;
-
-                else if (widestAngle != 0)
-                {
-                    validPositionFound = true;
-                    widestSurfaceAngle = widestAngle;
-                }
+                Vector2 rockVel = -(Owner.velocity * 0.55f).RotatedByRandom(MathHelper.Pi / 2.5f);
+                StoneDebrisParticle rock = new(collisionSpot, rockVel, Color.White, 1f, 35);
+                GeneralParticleHandler.SpawnParticle(rock);
             }
 
-            if (validPositionFound)
-            {
-                Vector2 projPosition = Owner.Center + (direction * 120 * Projectile.scale) + direction.RotatedBy((widestSurfaceAngle * MathHelper.PiOver2 + MathHelper.PiOver4) * facing) * distance;
-                Vector2 monolithRotation = direction.RotatedBy(Utils.AngleLerp(widestSurfaceAngle * -facing, 0f, projSize));
-                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projPosition, -monolithRotation, ProjectileType<EarthenTidesMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 10f, Owner.whoAmI, Main.rand.Next(4), projSize);
-                if (proj.ModProjectile is EarthenTidesMonolith monolith)
-                {
-                    monolith.WaitTimer = (1 - projSize) * 34f;
-                    monolith.OriginDirection = direction;
-                    monolith.Facing = facing;
-                }
-            }
+            // Spawn the blast spawner
+            // Its duration scales with the current charge level
+            int duration = 12 + (int)CurrentIndicator * 12;
+            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ProjectileType<EarthenTidesBlastSpawner>(), (int)(Projectile.damage * OmegaBiomeBlade.ShockwaveAttunement_MonolithDamageBoost), 0f, Owner.whoAmI, duration);
 
-            return validPositionFound;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -253,6 +228,9 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
                 WhirlwindAttunement.RealPassiveEffect(target);
+
+            if (!CalamityUtils.AnyProjectiles(ProjectileType<EarthenTidesShockwave>()))
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), (int)(Projectile.damage * 0.5f), 0f, Owner.whoAmI, 1f);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

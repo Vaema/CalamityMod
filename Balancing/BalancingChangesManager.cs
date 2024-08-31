@@ -291,7 +291,7 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<HiveNuke>()))));
 
             // 20% resist to Earthen Tides (True Biome Blade).
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<EarthenTides>(), ProjectileType<EarthenTidesMonolith>(), ProjectileType<EarthenTidesBlast>()))));
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.MoonLordCore, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<EarthenTides>(), ProjectileType<EarthenTidesShockwave>(), ProjectileType<EarthenTidesBlast>()))));
             #endregion
 
             #region Profaned Guardians

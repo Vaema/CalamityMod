@@ -566,7 +566,7 @@ namespace CalamityMod.DataStructures
             if (UseTimer % 120 == 119)
             {
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.ShockwaveAttunement_PassiveBaseDamage);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<EarthenTidesBlast>(), damage, 10f, player.whoAmI, 2.25f);
+                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), damage, 10f, player.whoAmI, 2f);
                 UseTimer++;
             }
         }

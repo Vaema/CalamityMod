@@ -131,8 +131,8 @@ ShockwaveAttunement: {
 		'''
 		Charge an earth-shattering lunge, release to unleash a devastating blow
 		Homing sword beams are emitted as the sword charges up
-		Striking an enemy with the lunge marks them with an armor crunching sigil that sword beam homing will prioritize
-		Striking the earth with the lunge will cause a massive shock wave on impact which raises a flood of stalagmites
+		Striking an enemy with the lunge creates a shockwave and marks them with an armor crunching sigil that attracts sword beam homing
+		Striking the earth with the lunge will cause several blasts of dust to erupt around you
 		'''
 	PassiveDesc: Periodically emit large shock waves while attacking
 }
