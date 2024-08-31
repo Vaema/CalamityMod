@@ -95,11 +95,19 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void FindFrame(int frameHeight)
         {
+            if (start)
+            {
+                NPC.frame.Y = Main.rand.Next(0, 5 + 1) * frameHeight;
+                start = false;
+            }
+
             NPC.frameCounter++;
             if (NPC.frameCounter % 5 == 4)
                 NPC.frame.Y += frameHeight;
             if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type])
                 NPC.frame.Y = 0;
+
+            Main.NewText(NPC.frame.Y);
         }
 
         public override void AI()
@@ -119,7 +127,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 for (int i = 0; i < 10; i++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                 RotationalDegreeOffset = NPC.ai[0];
-                start = false;
             }
 
             // Increase DR if the target leaves SCal's arena.
