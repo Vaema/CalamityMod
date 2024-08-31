@@ -394,10 +394,8 @@ namespace CalamityMod.Balancing
             #region Exo Mechs: Artemis and Apollo
             // Artemis and Apollo have to be defined here because they aren't a pre-existing list.
             // TODO -- NPC sets (mostly worm bosses) should probably be their own holding class.
-            int[] exoTwins = new int[] { NPCType<Artemis>(), NPCType<Apollo>() };
-
-            // 10% resist to Eclipse's Fall's mini spears.
-            NPCSpecificBalancingChanges.AddRange(Bundle(exoTwins, Do(new ProjectileResistBalancingRule(0.9f, ProjectileType<EclipsesSmol>()))));
+            // Commented out since they currently have no resists.
+            // int[] exoTwins = new int[] { NPCType<Artemis>(), NPCType<Apollo>() };
             #endregion
 
             #region Exo Mechs: Thanatos
