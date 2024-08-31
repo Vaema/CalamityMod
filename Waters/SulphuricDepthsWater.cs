@@ -47,8 +47,7 @@ namespace CalamityMod.Waters
         public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
-            if (outputColor == Vector3.One || outputColor == new Vector3(0.25f, 0.25f, 0.25f) || outputColor == new Vector3(0.5f, 0.5f, 0.5f))
-                return;
+
             if (tile.TileType != RustyChestTile.Type)
             {
                 outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
