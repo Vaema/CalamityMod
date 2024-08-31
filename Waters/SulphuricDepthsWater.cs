@@ -15,17 +15,38 @@ namespace CalamityMod.Waters
 
     public class SulphuricDepthsWater : CalamityModWaterStyle
     {
-        public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/SulphuricDepthsWaterflow").Slot;
-        public override int GetSplashDust() => ModContent.DustType<SulphuricDepthsSplash>();
-        public override int GetDropletGore() => ModContent.GoreType<SulphuricDepthsWaterDroplet>();
+        public static CalamityModWaterStyle Instance { get; private set; }
+        public static ModWaterfallStyle WaterfallStyle { get; private set; }
+        public static int SplashDust { get; private set; }
+        public static int DropletGore { get; private set; }
+
+        public override void SetStaticDefaults()
+        {
+            Instance = this;
+            WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/SulphuricDepthsWaterflow");
+            SplashDust = ModContent.DustType<SulphuricDepthsSplash>();
+            DropletGore = ModContent.GoreType<SulphuricDepthsWaterDroplet>();
+        }
+
+        public override void Unload()
+        {
+            Instance = null;
+            WaterfallStyle = null;
+            SplashDust = 0;
+            DropletGore = 0;
+        }
+
+        public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
+        public override int GetSplashDust() => SplashDust;
+        public override int GetDropletGore() => DropletGore;
         public override Color BiomeHairColor() => new Color(35, 117, 89);
         public override void DrawColor(int x, int y, ref VertexColors liquidColor, bool isSlope) => ILEditing.ILChanges.SelectSulphuricWaterColor(x, y, ref liquidColor, isSlope);
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
             if (outputColor == Vector3.One || outputColor == new Vector3(0.25f, 0.25f, 0.25f) || outputColor == new Vector3(0.5f, 0.5f, 0.5f))
                 return;
-            if (CalamityUtils.ParanoidTileRetrieval(i, j).TileType != (ushort)ModContent.TileType<RustyChestTile>())
+            if (tile.TileType != RustyChestTile.Type)
             {
                 outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
             }

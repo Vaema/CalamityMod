@@ -84,6 +84,7 @@ namespace CalamityMod.ILEditing
             On_NPC.SpawnBoss += TripletsSpawnTextOverride;
             On_NPC.DoDeathEvents_BeforeLoot += PreventFoveanatorDefeatMessageIfNotKilledLast;
             On_NPC.DoDeathEvents_CelebrateBossDeath += TripletsDefeatTextOverride;
+            On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
@@ -123,7 +124,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Liquid Lighting and alpha (Liquid Viusuals)
-            On_TileLightScanner.ApplyLiquidLight += LiquidEmitLight;
+            IL_TileLightScanner.GetTileLight += ApplyLiquidEmit;
             IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColors; //Liquid Light
             IL_TileDrawing.DrawTile_LiquidBehindTile += LiquidSlopeDrawColors;
 

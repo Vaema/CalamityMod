@@ -29,19 +29,19 @@ namespace CalamityMod.Systems
         /// <param name="r">The red component of light, usually a value between 0 and 1</param>
         /// <param name="g">The green component of light, usually a value between 0 and 1</param>
         /// <param name="b">The blue component of light, usually a value between 0 and 1</param>
-        public virtual void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        public virtual void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
         }
     }
 
     internal static class CalamityWaterLoader
     {
-        internal static void ModifyLightSetup(int i, int j, int type, ref float r, ref float g, ref float b)
+        internal static void ModifyLightSetup(ref readonly Tile tile, int i, int j, int type, ref float r, ref float g, ref float b)
         {
             CalamityModWaterStyle styles = (CalamityModWaterStyle)LoaderManager.Get<WaterStylesLoader>().Get(type);
             if (styles != null)
             {
-                styles?.ModifyLight(i, j, ref r, ref g, ref b);
+                styles?.ModifyLight(in tile, i, j, ref r, ref g, ref b);
             }
         }
 

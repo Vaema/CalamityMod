@@ -24,6 +24,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
@@ -839,7 +840,7 @@ namespace CalamityMod.ILEditing
         //BiomeLava is a check for whether they load or not. If BiomeLava is active all ModLavaStyles will be turned into ModCalls for BiomeLava.
 
         #region Lava Rendering
-        private void DoDrawLavas(ILContext il)
+        private static void DoDrawLavas(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("drawToScreen"), i => i.MatchBrfalse(out _), i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawWaters")))
@@ -860,7 +861,7 @@ namespace CalamityMod.ILEditing
             });
         }
 
-        private void RenderLavas(ILContext il)
+        private static void RenderLavas(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchCall<Main>("DrawWaters")))
@@ -873,7 +874,7 @@ namespace CalamityMod.ILEditing
             });
         }
 
-        private void RenderLavaBackgrounds(ILContext il)
+        private static void RenderLavaBackgrounds(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawWaters")))
@@ -886,7 +887,7 @@ namespace CalamityMod.ILEditing
             });
         }
 
-        private void DrawLavatoCapture(ILContext il)
+        private static void DrawLavatoCapture(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("liquidAlpha"), i => i.MatchCall(out _), i => i.MatchStloc2()))
@@ -964,7 +965,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(12);
             cursor.EmitLdloc(13);
             cursor.EmitLdloc(14);
-            cursor.EmitDelegate((Microsoft.Xna.Framework.Vector2 unscaledPosition, Microsoft.Xna.Framework.Vector2 vector, int j, int i, Terraria.Tile tile) => {
+            cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) => {
                 LavaRendering.instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
             });
         }
@@ -1021,14 +1022,25 @@ namespace CalamityMod.ILEditing
 
         private void BlockLavaDrawingForSlopes(On_TileDrawing.orig_DrawTile_LiquidBehindTile orig, TileDrawing self, bool solidLayer, bool inFrontOfPlayers, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, Tile tileCache)
         {
-            Tile tile = Main.tile[tileX + 1, tileY];
-            Tile tile2 = Main.tile[tileX - 1, tileY];
-            Tile tile3 = Main.tile[tileX, tileY - 1];
-            Tile tile4 = Main.tile[tileX, tileY + 1];
-            if (tileCache.LiquidType == LiquidID.Lava || tile.LiquidType == LiquidID.Lava || tile2.LiquidType == LiquidID.Lava || tile3.LiquidType == LiquidID.Lava || tile4.LiquidType == LiquidID.Lava)
-            {
+            if (tileCache.LiquidType == LiquidID.Lava)
                 return;
-            }
+
+            Tile tile = Main.tile[tileX + 1, tileY];
+            if (tile.LiquidType == LiquidID.Lava)
+                return;
+
+            Tile tile2 = Main.tile[tileX - 1, tileY];
+            if (tile2.LiquidType == LiquidID.Lava)
+                return;
+
+            Tile tile3 = Main.tile[tileX, tileY - 1];
+            if (tile3.LiquidType == LiquidID.Lava)
+                return;
+
+            Tile tile4 = Main.tile[tileX, tileY + 1];
+            if (tile4.LiquidType == LiquidID.Lava)
+                return;
+
             orig.Invoke(self, solidLayer, inFrontOfPlayers, waterStyleOverride, screenPosition, screenOffset, tileX, tileY, tileCache);
         }
 
@@ -1166,78 +1178,80 @@ namespace CalamityMod.ILEditing
 
         #region Liquid Visuals
         //Contains all liquid light and liquid alpha (seethrough-ability)
-        private void LiquidEmitLight(On_TileLightScanner.orig_ApplyLiquidLight orig, TileLightScanner self, Tile tile, ref Vector3 lightColor)
+        private static void ApplyLiquidEmit(ILContext il)
         {
-            orig.Invoke(self, tile, ref lightColor);
-            if (tile.LiquidAmount > 0 && !tile.HasTile)
+            ILCursor cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchRet()))
             {
+                LogFailure("Liquid Light Emit", "ret instruction is missing????? how is this even possible?????");
+                return;
+            }
+
+            cursor.EmitLdloc0(); // This should be tile
+            cursor.EmitLdarg1(); // x
+            cursor.EmitLdarg2(); // y
+            cursor.EmitLdarg3(); // ref OutputColor
+            cursor.EmitDelegate((Tile tile, int x, int y, ref Vector3 lightColor) =>
+            {
+                if (tile.HasTile || tile.LiquidAmount <= 0)
+                    return;
+
                 if (tile.LiquidType == LiquidID.Water)
                 {
                     float R = 0f;
                     float G = 0f;
                     float B = 0f;
-                    CalamityWaterLoader.ModifyLightSetup(tile.X(), tile.Y(), Main.waterStyle, ref R, ref G, ref B);
-                    if (lightColor.X < R)
-                    {
-                        lightColor.X = R;
-                    }
-                    if (lightColor.Y < G)
-                    {
-                        lightColor.Y = G;
-                    }
-                    if (lightColor.Z < B)
-                    {
-                        lightColor.Z = B;
-                    }
+                    CalamityWaterLoader.ModifyLightSetup(in tile, x, y, Main.waterStyle, ref R, ref G, ref B);
+
+                    lightColor.X = Math.Max(lightColor.X, R);
+                    lightColor.Y = Math.Max(lightColor.Y, G);
+                    lightColor.Z = Math.Max(lightColor.Z, B);
                 }
                 else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
                 {
                     Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
+
                     float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
                     float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
                     float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                    LavaStylesLoader.ModifyLightSetup(tile.X(), tile.Y(), CalamityMod.LavaStyle, ref R, ref G, ref B);
-                    for (int j = 0; j < LavaStylesLoader.TotalCount; j++)
+                    LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
+
+                    for (int styleIndex = 0; styleIndex < LavaStylesLoader.TotalCount; styleIndex++)
                     {
-                        if (CalamityMod.lavaAlpha[j] > 0f && j != CalamityMod.LavaStyle)
+                        if (CalamityMod.lavaAlpha[styleIndex] > 0f && styleIndex != CalamityMod.LavaStyle)
                         {
-                            float r = j == 0 ? lavaLight.X : 0f;
-                            float g = j == 0 ? lavaLight.Y : 0f;
-                            float b = j == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(tile.X(), tile.Y(), j, ref r, ref g, ref b);
+                            float r = styleIndex == 0 ? lavaLight.X : 0f;
+                            float g = styleIndex == 0 ? lavaLight.Y : 0f;
+                            float b = styleIndex == 0 ? lavaLight.Z : 0f;
+                            LavaStylesLoader.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
+
                             float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
                             float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
                             float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(tile.X(), tile.Y(), CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
-                            R = Single.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            G = Single.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            B = Single.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
+
+                            R = float.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            G = float.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            B = float.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
                         }
                     }
-                    if (!(R == 0 && G == 0 && B == 0))
+
+                    if (R != 0.0f || G != 0.0f || B != 0.0f)
                     {
                         float colorManipulator = (float)(270 - Main.mouseTextColor) / 900f;
                         R += colorManipulator;
                         G += colorManipulator;
                         B += colorManipulator;
                     }
-                    if (lightColor.X < R)
-                    {
-                        lightColor.X = R;
-                    }
-                    if (lightColor.Y < G)
-                    {
-                        lightColor.Y = G;
-                    }
-                    if (lightColor.Z < B)
-                    {
-                        lightColor.Z = B;
-                    }
+
+                    lightColor.X = Math.Max(lightColor.X, R);
+                    lightColor.Y = Math.Max(lightColor.Y, G);
+                    lightColor.Z = Math.Max(lightColor.Z, B);
                 }
-            }
+            });
         }
 
-        private void LavafallLightEditor(On_WaterfallManager.orig_AddLight orig, int waterfallType, int x, int y)
+        private static void LavafallLightEditor(On_WaterfallManager.orig_AddLight orig, int waterfallType, int x, int y)
         {
             if (waterfallType == 1)
             {
@@ -1290,37 +1304,69 @@ namespace CalamityMod.ILEditing
         {
             ILCursor cursor = new ILCursor(il);
 
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdcI4(0), c => c.MatchStloc(19), c => c.MatchLdloc(11), c => c.MatchBrfalse(out _)))
+            var loaderGetMethod = typeof(LoaderManager)
+                .GetMethod(nameof(LoaderManager.Get))
+                .MakeGenericMethod([typeof(WaterStylesLoader)]);
+            if (loaderGetMethod is null)
+            {
+                LogFailure("Liquid Slope Draw Colors", "Cannot find \"LoaderManager.Get<WaterStylesLoader>\" Method");
+                return;
+            }
+
+            var getTotalCountGetter = typeof(Loader)
+                .GetProperty("TotalCount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                .GetMethod;
+            if (getTotalCountGetter is null)
+            {
+                LogFailure("Liquid Slope Draw Colors", "Cannot find \"Loader.TotalCount (internal)\" Method");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.After,
+                c => c.MatchCall(loaderGetMethod),
+                c => c.MatchCallOrCallvirt(getTotalCountGetter)))
             {
                 LogFailure("Liquid Slope Draw Colors", "Could not locate the liquid slope vertex colors for drawing");
                 return;
             }
 
-            cursor.Emit(OpCodes.Ldarg, 6);
-            cursor.Emit(OpCodes.Ldarg, 7);
-            cursor.Emit(OpCodes.Ldloca, 14);
-            cursor.Emit(OpCodes.Ldloc, 11);
-            cursor.Emit(OpCodes.Ldloc, 10);
+            // callvirt Loader.TotalCount
+            // [We are here]
+            // stloc.s  totalCount
 
-            cursor.EmitDelegate((int x, int y, ref VertexColors initialColor, bool flag6, int num2) =>
+            // Starts from callvirt (ret: int)
+            // Stack now have TotalCount and about to pop by local variable, so:
+            cursor.EmitLdarg(8); // Push tileCache
+            cursor.EmitLdarg(6); // Push tileX
+            cursor.EmitLdarg(7); // Push tileY
+            cursor.EmitLdloca(14); // Push Color*
+            cursor.EmitDelegate((Tile tileCache, int x, int y, ref VertexColors initialColor) =>
             {
-                if (flag6)
-                {
-                    int totalCount = (int)typeof(Loader).GetProperty("TotalCount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).GetValue(LoaderManager.Get<WaterStylesLoader>());
-                    for (int i = 0; i < totalCount; i++)
-                    {
-                        Tile tile = Main.tile[x, y];
-                        if (i == Main.waterStyle && tile.LiquidType == LiquidID.Water)
-                        {
-                            CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor, true);
-                        }
-                        else if ((tile.LiquidType == LiquidID.Lava || i == 1) && CalamityMod.Instance.biomeLava == null)
-                        {
-                            LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
-                        }
-                    }
-                }
+                // TODO: Properly handle Transition between styles
+                // That will require extra il injection to achieve
+                if (tileCache.LiquidType == LiquidID.Water)
+                    CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor, true);
+
+                // Known Issue: Sloped Lava Rendering actually does not work on here! (It's been a case even before edited in 2024/08/30)
+                // Reason: Flag6 is "IsWater" flag, and since we don't modified that behaviour "yet" it will never be triggered here
+                // Fix this when there will be new lava style with dynamic color changes
+                else if (tileCache.LiquidType == LiquidID.Lava)
+                    LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
             });
+
+            // And now remaining TotalCount is now could pass to local variable
+
+            #region Intended Result for Reference
+            // callvirt Loader.TotalCount push 1
+            //
+            // ldarg    8 (tileCache)   push 1
+            // ldarg    6 (tileX)       push 1
+            // ldarg    7 (tileY)       push 1
+            // ldloca   14 (vertices)   push 1
+            // call     ModdedDelegate  pop 4
+            // 
+            // stloc.s  totalCount      pop 1
+            #endregion
         }
         #endregion
 
@@ -1440,7 +1486,7 @@ namespace CalamityMod.ILEditing
                 ForegroundManager.DrawTiles();
         }
 
-        private static void ClearForegroundStuff(Terraria.GameContent.Drawing.On_TileDrawing.orig_PreDrawTiles orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
+        private static void ClearForegroundStuff(On_TileDrawing.orig_PreDrawTiles orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
         {
             orig(self, solidLayer, forRenderTargets, intoRenderTargets);
 
@@ -1450,7 +1496,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Tile ping overlay
-        private static void ClearTilePings(Terraria.GameContent.Drawing.On_TileDrawing.orig_Draw orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
+        private static void ClearTilePings(On_TileDrawing.orig_Draw orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
             //Retro & Trippy light modes are fine. Just reset the cache before every time stuff gets drawn.
             if (Lighting.UpdateEveryFrame)
@@ -1599,7 +1645,7 @@ namespace CalamityMod.ILEditing
             {
                 return;
             }
-            
+
             // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
             for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
             {
@@ -1746,6 +1792,63 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, typeName);
+            }
+        }
+        #endregion
+
+        #region Optimized GlowMask Rendering on Tile
+        private static void GlowMaskTileRender(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
+        {
+            orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
+
+            var type = drawData.typeCache;
+            if (type < 0 || type >= GlowMaskTile.LookupLength)
+                return;
+
+            var glowMaskTile = GlowMaskTile.InstanceLookup[type];
+            if (glowMaskTile is null)
+                return;
+
+            var glowMask = glowMaskTile.GlowMask;
+            int xPos = drawData.tileFrameX + drawData.addFrX;
+            int yPos = drawData.tileFrameY + drawData.addFrY;
+            if (glowMask.HasContentInFramePos(xPos, yPos))
+            {
+                ref Tile tileCache = ref drawData.tileCache;
+                int colType = tileCache.TileColor;
+
+                Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
+                Color tileLight = drawData.tileLight;
+
+                if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
+                if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
+                if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+
+                drawColor = glowMaskTile.GlowMaskPaintInteraction switch
+                {
+                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
+                    GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
+                    _ => drawColor
+                };
+
+                // Cull no lit and too dark colors
+                if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
+                    return;
+
+                drawColor.A = 255;
+
+                if (Main.tileSolid[type])
+                {
+                    var drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    TileFramingSystem.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawRect, drawColor, default);
+                }
+                else
+                {
+                    Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - Main.screenPosition + zero;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
             }
         }
         #endregion

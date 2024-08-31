@@ -13,10 +13,32 @@ namespace CalamityMod.Waters
 
     public class AstralWater : CalamityModWaterStyle
     {
-        public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/AstralWaterflow").Slot;
-        public override int GetSplashDust() => ModContent.DustType<AstralSplash>();
-        public override int GetDropletGore() => ModContent.GoreType<AstralWaterDroplet>();
-        public override Asset<Texture2D> GetRainTexture() => ModContent.Request<Texture2D>("CalamityMod/Waters/AstralRain");
+        public static CalamityModWaterStyle Instance { get; private set; }
+        public static ModWaterfallStyle WaterfallStyle { get; private set; }
+        public static int SplashDust { get; private set; }
+        public static int DropletGore { get; private set; }
+        public static Asset<Texture2D> RainTexture { get; private set; }
+
+        public override void SetStaticDefaults()
+        {
+            Instance = this;
+            WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/AstralWaterflow");
+            SplashDust = ModContent.DustType<AstralSplash>();
+            DropletGore = ModContent.GoreType<AstralWaterDroplet>();
+        }
+
+        public override void Unload()
+        {
+            Instance = null;
+            WaterfallStyle = null;
+            SplashDust = 0;
+            DropletGore = 0;
+        }
+
+        public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
+        public override int GetSplashDust() => SplashDust;
+        public override int GetDropletGore() => DropletGore;
+        public override Asset<Texture2D> GetRainTexture() => RainTexture ??= ModContent.Request<Texture2D>("CalamityMod/Waters/AstralRain");
         public override byte GetRainVariant() => (byte)Main.rand.Next(3);
         public override Color BiomeHairColor() => new Color(93, 78, 107);
     }

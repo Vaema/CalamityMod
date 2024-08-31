@@ -113,6 +113,9 @@ namespace CalamityMod
         // Destroyer glowmasks
         public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
 
+        // Probe glowmask
+        public static Asset<Texture2D> ProbeGlowmask;
+
         // Holds the Texture Arrays for all the lava textures.
         // These are used for the lava styles. They are seperate from Textureasset.Instance._liquidTexture as they will conflict with ModWaterStyle
         // Can hold up to 255 lava styles (more than enough) (excluding the normal lava texture which is liquidTexture 1)
@@ -328,6 +331,9 @@ namespace CalamityMod
             var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
             LavaTextures.fall[0] = waterfallTexture[1];
 
+            // Probe glowmask
+            ProbeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/ProbeGlow", AssetRequestMode.AsyncLoad);
+
             // Wall of Flesh glowmasks
             WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
             WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
@@ -481,7 +487,6 @@ namespace CalamityMod
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
-            FramedGlowMask.UnloadTexCache();
 
             PopupGUIManager.UnloadGUIs();
             InvasionProgressUIManager.UnloadGUIs();
