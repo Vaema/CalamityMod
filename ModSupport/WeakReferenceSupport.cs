@@ -233,8 +233,6 @@ namespace CalamityMod
             // Items
             ItemRedirect(ItemType<PineapplePet>(), "Pineapple (calamity)");
             ItemRedirect(ItemType<TrashmanTrashcan>(), "Trash Can (pet)");
-            ItemRedirect(ItemType<SandstormGun>(), "Sandstorm (weapon)");
-            ItemRedirect(ItemType<Thunderstorm>(), "Thunderstorm (weapon)");
             // Lore items
             ItemRedirect(ItemType<LoreAstralInfection>(), loreItemPage);
             ItemRedirect(ItemType<LoreAbyss>(), loreItemPage);
