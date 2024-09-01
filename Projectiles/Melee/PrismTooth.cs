@@ -2,7 +2,9 @@
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Achievements;
@@ -22,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CanBreakTrees => ref Projectile.ai[2];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 3;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 90;
         }
 
@@ -52,6 +54,11 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi * Time / Lifetime;
+            if (Main.rand.NextBool(6) && (Time < 35 || Time > 45))
+            {
+                Particle spark2 = new GlowOrbParticle(Projectile.Center + Main.rand.NextVector2Circular(12, 12), Projectile.velocity * Main.rand.NextFloat(0.6f, 0.9f), false, 22, Main.rand.NextFloat(0.3f, 0.9f), Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f));
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
 
             Vector2 baseDirection = (MathHelper.TwoPi * Time / Lifetime - MathHelper.PiOver2).ToRotationVector2();
             baseDirection.X *= 0.25f;
@@ -115,7 +122,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Color? GetAlpha(Color lightColor) => Color.White;
 
-        internal float WidthFunction(float completionRatio) => Projectile.scale * 24f * (1f - Utils.GetLerpValue(0.7f, 1f, completionRatio, true)) + 1f;
+        internal float WidthFunction(float completionRatio) => (Projectile.scale * 24f * (1f - Utils.GetLerpValue(0.7f, 1f, completionRatio, true)) + 1f);
 
         internal Color ColorFunction(float completionRatio)
         {
@@ -133,14 +140,14 @@ namespace CalamityMod.Projectiles.Melee
             // these crystals go, it's probably not something to worry too much about.
             Vector2 generalOffset = Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * 15f;
             generalOffset += Projectile.rotation.ToRotationVector2() * -5f * (float)Math.Sin(Projectile.rotation);
-
+            generalOffset *= Vector2.Zero;
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:PrismaticStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
             // Photon Ripper tracks 90 positions in oldPos.
-            // Provide 60 points for smoothing, but only render 12
-            int numPointsRendered = 12;
-            int numPointsProvided = 60;
+            // Provide 80 points for smoothing, but only render 22
+            int numPointsRendered = 22;
+            int numPointsProvided = 80;
             var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
             PrimitiveRenderer.RenderTrail(positionsToUse, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"], smoothen: false), numPointsRendered);
             Main.spriteBatch.ExitShaderRegion();
