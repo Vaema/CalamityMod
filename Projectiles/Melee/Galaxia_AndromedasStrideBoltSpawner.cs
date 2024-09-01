@@ -41,7 +41,14 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Constantly follow its target
-            Projectile.Center = Target.Center;
+            // Die if the target is no longer active
+            if (!Target.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+            else
+                Projectile.Center = Target.Center;
 
             // Spawn smoke
             if (Projectile.timeLeft < 59)

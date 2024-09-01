@@ -21,10 +21,12 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_SwordsmithsPrideMonolith";
         public Player Owner => Main.player[Projectile.owner];
         public float Timer => (100f - Projectile.timeLeft) / 100f;
-        public ref float Variant => ref Projectile.ai[0]; //Yes
-        public ref float Size => ref Projectile.ai[1]; //Yes
-        public Vector2 OriginDirection; //The direction of the original strike
-        public float Facing; //The direction of the original strike
+        public ref float Variant => ref Projectile.ai[0];
+        public ref float Size => ref Projectile.ai[1];
+        public float Scale; // The scale multiplier based on the target's size
+        public Vector2 OriginDirection; // The direction of the original strike
+        public float Facing; // The direction of the original strike
+        public NPC Target; // The NPC to stick on top of
         public const float BaseWidth = 90f;
         public const float BaseHeight = 420f;
 
@@ -41,9 +43,6 @@ namespace CalamityMod.Projectiles.Melee
         public CurveSegment Hold = new CurveSegment(EasingType.ExpOut, 0.70f, 1f, -0.1f);
         internal float Height() => PiecewiseAnimation(Timer, new CurveSegment[] { Anticipate, Overextend, Unextend, Hold }) * BaseHeight * Size;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -52,6 +51,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 102;
+            Projectile.scale = Scale;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20;
             Projectile.hide = true;
@@ -75,6 +75,14 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 Projectile.velocity = Vector2.Zero;
             }
+
+            if (!Target.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+            else
+                Projectile.Center = Target.Center;
 
             if (Projectile.timeLeft == 100)
             {
@@ -128,12 +136,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public void SideSprouts(float facing, float projSize)
         {
-            Vector2 monolithRotation = OriginDirection.RotatedBy((MathHelper.Pi / 6f) * facing);
+            Vector2 monolithRotation = OriginDirection.RotatedBy(MathHelper.Pi / 9.5f * facing);
             Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, monolithRotation, ProjectileType<SwordsmithsPrideMonolith>(), Projectile.damage, 10f, Owner.whoAmI, Main.rand.Next(4), projSize, Projectile.ai[2] - 1f);
             if (proj.ModProjectile is SwordsmithsPrideMonolith monolith)
             {
+                monolith.Scale = Scale;
                 monolith.OriginDirection = monolithRotation;
                 monolith.Facing = facing;
+                monolith.Target = Target;
             }
         }
 
@@ -152,7 +162,7 @@ namespace CalamityMod.Projectiles.Melee
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
-            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight);
+            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 
@@ -169,7 +179,7 @@ namespace CalamityMod.Projectiles.Melee
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
-            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight);
+            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 

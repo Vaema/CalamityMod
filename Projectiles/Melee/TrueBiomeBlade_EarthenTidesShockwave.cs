@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft == 60)
             {
                 SoundEngine.PlaySound(SoundID.Item79, Projectile.Center);
-                Particle Sparkle = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Main.rand.NextBool() ? Color.BurlyWood : Color.Brown, Projectile.scale, 20, 0.2f, 2);
+                Particle Sparkle = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Main.rand.NextBool() ? Color.Aqua : Color.SpringGreen, Projectile.scale, 20, 0.2f, 2);
                 GeneralParticleHandler.SpawnParticle(Sparkle);
             }
 
@@ -62,21 +62,21 @@ namespace CalamityMod.Projectiles.Melee
             {
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
 
-                BloomRing = new BloomRing(Projectile.Center, Vector2.Zero, Color.Brown, Projectile.scale, 40);
+                BloomRing = new BloomRing(Projectile.Center, Vector2.Zero, Color.Aqua, Projectile.scale, 40);
                 GeneralParticleHandler.SpawnParticle(BloomRing);
 
-                Particle Bloom = new StrongBloom(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.BurlyWood * 0.6f : Color.Brown * 0.6f, Projectile.scale * (1f + Main.rand.NextFloat(0f, 1.5f)), 20);
+                Particle Bloom = new StrongBloom(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.Aqua * 0.6f : Color.SpringGreen * 0.6f, Projectile.scale * (1f + Main.rand.NextFloat(0f, 1.5f)), 20);
                 GeneralParticleHandler.SpawnParticle(Bloom);
                 for (int i = 0; i < 10; i++)
                 {
-                    Particle Sparkle = new CritSpark(Projectile.Center, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(17.5f, 25f) * Projectile.scale, Color.White, Main.rand.NextBool() ? Color.SandyBrown : Color.LimeGreen, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
+                    Particle Sparkle = new CritSpark(Projectile.Center, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(17.5f, 25f) * Projectile.scale, Color.White, Main.rand.NextBool() ? Color.DarkSlateBlue : Color.Chocolate, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
                     GeneralParticleHandler.SpawnParticle(Sparkle);
                 }
 
                 for (float i = 0f; i < 1; i += 0.05f)
                 {
                     float rotation = i * MathHelper.TwoPi;
-                    Particle Sparkle = new CritSpark(Projectile.Center + rotation.ToRotationVector2() * 65f * Projectile.scale, rotation.ToRotationVector2() * 10f, Color.White, Main.rand.NextBool() ? Color.SaddleBrown : Color.Brown, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
+                    Particle Sparkle = new CritSpark(Projectile.Center + rotation.ToRotationVector2() * 65f * Projectile.scale, rotation.ToRotationVector2() * 10f, Color.White, Main.rand.NextBool() ? Color.Aqua : Color.SpringGreen, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
                     GeneralParticleHandler.SpawnParticle(Sparkle);
                 }
             }

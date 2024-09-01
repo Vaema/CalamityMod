@@ -544,12 +544,10 @@ FourSeasonsGalaxia: {
 	Tooltip:
 		'''
 		[FUNC]
-		[PASS]
 		Freed from earthly shackles and coursing with cosmic power
 		Has access to all of the attunements at all times
 		Press <right> to cycle the sword's attunement depending on the cursor's position
 		Active Attunement : [ATT]
-		Passive Blessing : [BLE]
 		'''
 }
 

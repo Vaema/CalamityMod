@@ -18,9 +18,10 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_HeavensMonolith";
         public Player Owner => Main.player[Projectile.owner];
+        public NPC Target => Main.npc[(int)Projectile.ai[2]];
         public float Timer => (100f - Projectile.timeLeft) / 100f;
-        public ref float Variant => ref Projectile.ai[0]; //Yes
-        public ref float WaitTimer => ref Projectile.ai[1]; //How long till it appears fr
+        public ref float Variant => ref Projectile.ai[0];
+        public ref float Scale => ref Projectile.ai[1];
         public const float BaseWidth = 90f;
         public const float BaseHeight = 420f;
 
@@ -37,9 +38,6 @@ namespace CalamityMod.Projectiles.Melee
         public CurveSegment Hold = new CurveSegment(EasingType.ExpOut, 0.70f, 1f, -0.1f);
         internal float Height() => PiecewiseAnimation(Timer, new CurveSegment[] { Anticipate, Overextend, Unextend, Hold }) * BaseHeight;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -48,6 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 102;
+            Projectile.scale = Scale;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
             Projectile.hide = true;
@@ -77,6 +76,16 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(Sparkle);
                 }
             }
+
+            // Constantly follow its target
+            // Die if its target is no longer active
+            if (!Target.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+            else
+                Projectile.Center = Target.Center;
 
             if (Projectile.timeLeft == 80)
             {
@@ -108,7 +117,7 @@ namespace CalamityMod.Projectiles.Melee
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
-            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight);
+            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 
@@ -125,7 +134,7 @@ namespace CalamityMod.Projectiles.Melee
             float drawAngle = Projectile.rotation;
             Rectangle frame = new Rectangle(0 + (int)Variant * 94, 0, 94, 420);
 
-            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight);
+            Vector2 drawScale = new Vector2(Width() / BaseWidth, Height() / BaseHeight) * Scale;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 26f;
             Vector2 drawOrigin = new Vector2(frame.Width / 2f, frame.Height);
 

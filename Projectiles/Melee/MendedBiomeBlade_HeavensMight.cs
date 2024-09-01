@@ -98,7 +98,6 @@ namespace CalamityMod.Projectiles.Melee
                 else if (CurrentState == 0f)
                 {
                     CurrentState = 1f;
-                    Projectile.numHits = 0;
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                     //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES
@@ -205,11 +204,14 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Spawn a monolith on max power sword throws
-            if (!(CurrentState == 1f && Projectile.numHits <= 0))
+            if (!(CurrentState == 1f && !CalamityUtils.AnyProjectiles(ProjectileType<HeavensMonolith>())))
                 return;
 
             if (Empowerment >= maxEmpowerment)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10), ProjectileType<HeavensMonolith>(), (int)(Projectile.damage * TrueBiomeBlade.HolyAttunement_MonolithDamage), 10f, Owner.whoAmI, Main.rand.Next(4));
+            {
+                float monolithScale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10f), ProjectileType<HeavensMonolith>(), (int)(Projectile.damage * TrueBiomeBlade.HolyAttunement_MonolithDamage), 10f, Owner.whoAmI, Main.rand.Next(4), monolithScale, target.whoAmI);
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

@@ -599,16 +599,6 @@ namespace CalamityMod.DataStructures
             item.UseSound = null;
             item.noMelee = true;
         }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
-                UseTimer++;
-            }
-        }
     }
 
     public class AriesAttunement : Attunement
@@ -632,16 +622,6 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-        }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
-                UseTimer++;
-            }
         }
     }
 
@@ -667,16 +647,6 @@ namespace CalamityMod.DataStructures
             item.UseSound = null;
             item.noMelee = true;
         }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), FourSeasonsGalaxia.CancerPassiveDamage, 0f, player.whoAmI, 0f);
-                UseTimer++;
-            }
-        }
     }
 
     public class AndromedaAttunement : Attunement
@@ -701,16 +671,6 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-        }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), FourSeasonsGalaxia.CancerPassiveDamage, 0f, player.whoAmI, 0f);
-                UseTimer++;
-            }
         }
     }
 

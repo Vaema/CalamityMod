@@ -146,12 +146,6 @@ PhoenixAttunement: {
 		The swirling nebula constantly emits homing cosmic bolts
 		Release to hurl the sword toward the cursor alongside 6 gigantic cosmic bolts
 		'''
-	PassiveName: Capricorn's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of weakening stars around your cursor when attacking
-		The ring moves away from you, but slows down over time
-		'''
 }
 
 AriesAttunement: {
@@ -160,12 +154,6 @@ AriesAttunement: {
 		'''
 		Binds the sword to your cursor through a chain of constellations
 		Striking enemies causes nebulous explosions which spawn homing cosmic bolts
-		'''
-	PassiveName: Capricorn's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of weakening stars around your cursor when attacking
-		The ring moves away from you, but slows down over time
 		'''
 }
 
@@ -178,12 +166,6 @@ PolarisAttunement: {
 		Release to fire a powerful star directly at your cursor
 		Attacking immediately after firing the star launches you toward it, damaging enemies
 		'''
-	PassiveName: Cancer's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of lifestealing stars around you when attacking
-		The ring moves toward you, but slows down over time
-		'''
 }
 
 AndromedaAttunement: {
@@ -193,11 +175,5 @@ AndromedaAttunement: {
 		Charge a spatial lunge, release to unleash a galactic blow
 		Charging the sword periodically emits homing bolts
 		Lunging into enemies rains large homing stars from the heavens
-		'''
-	PassiveName: Cancer's Blessing
-	PassiveDesc:
-		'''
-		Periodically releases a ring of lifestealing stars around you when attacking
-		The ring moves toward you, but slows down over time
 		'''
 }
