@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
@@ -56,16 +57,21 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            PhotoMetaball.SpawnParticle(Projectile.Center, 54);
-            PhotoMetaball2.SpawnParticle(Projectile.Center, 50);
-
-            sparkColor = Main.rand.Next(4) switch
+            List<Color> eColors = new List<Color>()
             {
-                0 => Color.Red,
-                1 => Color.MediumTurquoise,
-                2 => Color.Orange,
-                _ => Color.LawnGreen,
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
             };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            Particle beam3 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.01f, 0.1f), "CalamityMod/Particles/SmallBloom", false, 13, 0.2f, sparkColor, new Vector2(1f, 1), true, true);
+            GeneralParticleHandler.SpawnParticle(beam3);
 
             Lighting.AddLight(Projectile.Center, Color.DarkSlateGray.ToVector3());
             Projectile.scale = MathHelper.Lerp(0.001f, 1f, Utils.GetLerpValue(0f, 25f, Time, true));
