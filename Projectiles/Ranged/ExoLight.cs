@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float YDirection => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
         public Color sparkColor;
+        public Vector2 oldPos = Vector2.Zero;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -70,8 +71,12 @@ namespace CalamityMod.Projectiles.Ranged
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
-            Particle beam3 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.01f, 0.1f), "CalamityMod/Particles/SmallBloom", false, 13, 0.2f, sparkColor, new Vector2(1f, 1), true, true);
-            GeneralParticleHandler.SpawnParticle(beam3);
+            if (oldPos != Vector2.Zero)
+            {
+                Particle beam3 = new CustomSpark(Projectile.Center, (oldPos - Projectile.Center).SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/SmallBloom", false, 13, 0.2f, sparkColor, new Vector2(1f, 1), true, true, 0, false, false, 0.3f);
+                GeneralParticleHandler.SpawnParticle(beam3);
+            }
+            oldPos = Projectile.Center;
 
             Lighting.AddLight(Projectile.Center, Color.DarkSlateGray.ToVector3());
             Projectile.scale = MathHelper.Lerp(0.001f, 1f, Utils.GetLerpValue(0f, 25f, Time, true));

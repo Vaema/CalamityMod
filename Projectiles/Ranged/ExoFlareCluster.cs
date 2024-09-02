@@ -59,11 +59,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle beam3 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.01f, 0.1f), "CalamityMod/Particles/SmallBloom", false, 3, 0.4f, sparkColor, new Vector2(1f, 1), true, true);
                 GeneralParticleHandler.SpawnParticle(beam3);
 
-                float sine = (float)Math.Sin(Projectile.timeLeft * 0.875f / MathHelper.Pi);
+                float sine = MathHelper.Clamp((float)Math.Sin(Projectile.timeLeft * 0.875f / MathHelper.Pi), -0.7f, 0.7f);
 
-                Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 18.5f;
+                Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 22.5f;
 
-                Particle beam33 = new CustomSpark(Projectile.Center + offset, Projectile.velocity * Main.rand.NextFloat(0.01f, 0.1f), "CalamityMod/Particles/SmallBloom", false, 23, 0.2f, sparkColor, new Vector2(1f, 1), true, true);
+                Particle beam33 = new CustomSpark(Projectile.Center + offset, (-offset.RotatedBy(MathHelper.PiOver2) * 0.3f) * Main.rand.NextFloat(0.01f, 0.1f), "CalamityMod/Particles/SmallBloom", false, 23, 0.3f, sparkColor, new Vector2(1f, 1), true, true, 0, false, false, 0.1f);
                 GeneralParticleHandler.SpawnParticle(beam33);
             }
 
