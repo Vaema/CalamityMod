@@ -431,7 +431,7 @@ DragonsBreath: {
 		Upon firing for long enough, you will begin using a cartridge of energy
 		While using a cartridge you will shoot a draconic beam of fire that doesn't consume ammo
 		Once a cartridge has been ejected you will return to the original fire rate
-		90% chance to save ammo
+		80% chance to save ammo
 		'''
 }
 
