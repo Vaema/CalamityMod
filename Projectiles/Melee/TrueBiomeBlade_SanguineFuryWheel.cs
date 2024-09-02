@@ -25,11 +25,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public const float MaxTime = 120;
 
-
-
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -89,9 +84,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_WheelProc)
                     sword.OnHitProc = true;
-
-                if (sword.secondaryAttunement.id == AttunementID.Whirlwind)
-                    WhirlwindAttunement.RealPassiveEffect(target);
             }
         }
 

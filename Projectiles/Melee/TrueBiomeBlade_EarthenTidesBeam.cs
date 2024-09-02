@@ -128,12 +128,6 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
-                WhirlwindAttunement.RealPassiveEffect(target);
-        }
-
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_SwordBeamProc)

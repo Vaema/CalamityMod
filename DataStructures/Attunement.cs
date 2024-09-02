@@ -460,12 +460,15 @@ namespace CalamityMod.DataStructures
 
         public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
         {
-            // CIT 15JUL2024: Swordsmith's Pride no longer applies its passive effect using this function, since it requires an NPC argument.
-            // It is now applied using the RealPassiveEffect function below.
-            // This implentation is admittedly kinda clunky, but oh well.
-        }
+            if (Procced)
+            {
+                int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.WhirlwindAttunement_PassiveBaseDamage);
+                Vector2 velocity = (Main.MouseWorld - player.Center).SafeNormalize(Vector2.UnitX) * 15f;
+                Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<SwordsmithsPrideAstralBomber>(), damage, 0f, player.whoAmI);
 
-        public static void RealPassiveEffect(NPC target) => target.AddBuff(BuffType<AstralInfectionDebuff>(), 90);
+                Procced = false;
+            }
+        }
     }
 
     public class FlailBladeAttunement : Attunement

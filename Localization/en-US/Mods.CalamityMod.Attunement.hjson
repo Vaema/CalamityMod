@@ -100,7 +100,7 @@ WhirlwindAttunement: {
 		Once swung for long enough, releasing hurls the sword towards your cursor
 		Once pulled back, the hurled sword erupts into astral monoliths
 		'''
-	PassiveDesc: All attacks inflict the Astral Infection debuff
+	PassiveDesc: Striking enemies occasionally spawns homing astral bombers that spread the Astral Infection
 }
 
 FlailBladeAttunement: {

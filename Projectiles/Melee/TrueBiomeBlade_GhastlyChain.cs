@@ -57,12 +57,6 @@ namespace CalamityMod.Projectiles.Melee
                 sword.OnHitProc = true;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
-                WhirlwindAttunement.RealPassiveEffect(target);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D chainTex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_LamentationsOfTheChainedChain").Value;

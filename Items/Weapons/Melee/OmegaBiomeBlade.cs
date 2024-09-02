@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float WhirlwindAttunement_ThrowDamageBoost = 3.3f;
         public static float WhirlwindAttunement_MonolithDamageMult = 0.5f;
 
-        public static int WhirlwindAttunement_PassiveBaseDamage = 200;
+        public static int WhirlwindAttunement_PassiveBaseDamage = 80;
 
 
         public static int SuperPogoAttunement_BaseDamage = 200;

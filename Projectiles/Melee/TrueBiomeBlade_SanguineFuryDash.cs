@@ -20,9 +20,6 @@ namespace CalamityMod.Projectiles.Melee
         public Vector2 DashStart;
         public Vector2 DashEnd;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -48,9 +45,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Main.rand.NextFloat() <= OmegaBiomeBlade.SuperPogoAttunement_DashProc)
                     sword.OnHitProc = true;
-
-                if (sword.secondaryAttunement.id == AttunementID.Whirlwind)
-                    WhirlwindAttunement.RealPassiveEffect(target);
             }
 
             Particle bloom = new StrongBloom(target.Center, target.velocity, Color.Crimson * 0.5f, 1f, 30);

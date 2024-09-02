@@ -81,7 +81,6 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 starVel = (Projectile.Center - starPos).SafeNormalize(Vector2.UnitY) * 27f;
                         Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), starPos, starVel, ProjectileType<GalaxiaBolt>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, 0.75f, MathHelper.Pi / 20f);
                         star.scale = 2f;
-                        star.timeLeft = 100;
                     }
                 }
 

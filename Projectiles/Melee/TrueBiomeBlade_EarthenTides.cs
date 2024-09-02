@@ -226,9 +226,6 @@ namespace CalamityMod.Projectiles.Melee
             // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
             Owner.GiveUniversalIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
 
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && sword.secondaryAttunement.id == AttunementID.Whirlwind)
-                WhirlwindAttunement.RealPassiveEffect(target);
-
             if (!CalamityUtils.AnyProjectiles(ProjectileType<EarthenTidesShockwave>()))
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), (int)(Projectile.damage * 0.5f), 0f, Owner.whoAmI, 1f);
         }
