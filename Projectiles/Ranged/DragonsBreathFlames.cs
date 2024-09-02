@@ -50,7 +50,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center); //used for some drawing prevention for when it's offscreen
-
             float sine = MathHelper.Clamp(Math.Abs((float)Math.Sin((Time + Projectile.ai[1]) * 0.575f / MathHelper.Pi)), 0.6f + Time * 0.0015f, 1);
             beamWidth = sine;
             //Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 22.5f;
@@ -99,7 +98,8 @@ namespace CalamityMod.Projectiles.Ranged
                     Particle beam33 = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/SmallBloom", false, 10, 0.04f + Time * 0.0015f, Color.Lerp(Color.Orange, Color.White, 0.25f) * 0.5f, new Vector2(1f, 1), true, false, 0, false, false, 0.5f);
                     GeneralParticleHandler.SpawnParticle(beam33);
                 }
-                Projectile.velocity *= 1.01f;
+                if (Time < 120)
+                    Projectile.velocity *= 1.01f;
             }
             if (Projectile.ai[0] == 1) //Welding Mode
             {
