@@ -74,6 +74,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
+using static CalamityMod.Items.Accessories.DaawnlightSpiritOrigin;
 
 namespace CalamityMod.CalPlayer
 {
@@ -187,14 +188,14 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // After everything else, if Daawnlight Spirit Origin is equipped, set ranged crit to the base 4%.
-            // Store all the crit so it can be used in damage calculations.
-            if (spiritOrigin)
+
+            int critChanceDecreaseRate = (int)Utils.Remap(SpiritOrginCritChanceIncrease, 0, ExtraCritHardCap, MinimumLossRate, MaximumLossRate);
+            int perFrameCritChanceDecrease = SpiritOrginCritChanceIncrease <= ExtraCritHardCap ? MinCritLossPerFrame :
+                (int)Utils.Remap(SpiritOrginCritChanceIncrease, ExtraCritHardCap, ExtraCritHardCap + CritHardCapScalingInterval, MinCritLossPerFrame, CritLossPerFrameIncreasePerInterval, clamped: false);
+            if (SpiritOrginCritChanceIncrease > 0 && Player.miscCounter % critChanceDecreaseRate == 0)
             {
-                // player.rangedCrit already contains the crit stat of the held item, no need to grab it separately.
-                // Don't store the base 4% because you're not removing it.
-                spiritOriginConvertedCrit = (int)(Player.GetTotalCritChance<RangedDamageClass>() - 4);
-                Player.GetCritChance<RangedDamageClass>() = -spiritOriginConvertedCrit;
+                SpiritOrginCritChanceIncrease -= perFrameCritChanceDecrease;
+                Main.NewText(SpiritOrginCritChanceIncrease, Color.Lerp(Color.Green, Color.Red, Utils.GetLerpValue(0, ExtraCritHardCap, SpiritOrginCritChanceIncrease, true)) * 5f);
             }
 
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())

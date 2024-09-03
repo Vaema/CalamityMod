@@ -6118,7 +6118,6 @@ namespace CalamityMod.NPCs
 
                 // Don't allow large hitbox projectiles or explosions to "snipe" enemies.
                 // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
-                bool hitBullseye = false;
                 bool acceptableVelocity = projectile.velocity != Vector2.Zero;
                 bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
                 if (bullseye != null && acceptableVelocity && acceptableHitbox)
@@ -6149,19 +6148,19 @@ namespace CalamityMod.NPCs
                     bool willStrikeBullseye = dotCenter > dotOne && dotCenter > dotTwo;
 
                     // If a bullseye is triggered, set it as hit.
-                    if (willStrikeBullseye && bullseye.ai[1] == 0f)
+                    if (willStrikeBullseye)
                     {
-                        modifiers.SetCrit();
-                        hitBullseye = true;
-                        bullseye.ai[1] = 1f; // Make the bullseye disappear immediately.
+                        Main.player[projectile.owner].Calamity().SpiritOrginCritChanceIncrease += Main.player[projectile.owner].ActiveItem().useTime;
+
+                        if (bullseye.ai[2] == 0f)
+                        {
+                            bullseye.timeLeft = DaawnlightSpiritOrigin.BullseyeHitLifetime; 
+                            bullseye.ai[2] = 1f;
+                        }
+
                         bullseye.netUpdate = true;
                     }
                 }
-
-                // The bonus provided by Daawnlight Spirit Origin can be computed as a complete replacement to regular crits.
-                // As such, it is subtracted by the base critical strike damage boost of 200%
-                float bonus = DaawnlightSpiritOrigin.GetDamageMultiplier(player, modPlayer, hitBullseye, cgp.forcedCrit) - 2f;
-                modifiers.CritDamage += bonus;
             }
 
             if (!projectile.npcProj && !projectile.trap)

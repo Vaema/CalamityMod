@@ -10,15 +10,27 @@ namespace CalamityMod.Projectiles.Typeless
     public class SpiritOriginBullseye : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+
         public Player Owner => Main.player[Projectile.owner];
+
         public NPC Target => Main.npc[(int)Projectile.ai[0]];
+
         public bool FadingOut
         {
             get => Projectile.ai[1] == 1f;
             set => Projectile.ai[1] = value.ToInt();
         }
+
+        public bool HasBeenHit
+        {
+            get => Projectile.ai[2] == 1f;
+            set => Projectile.ai[2] = value.ToInt();
+        }
+
         public Vector2 BullseyeOffsetFromCenter;
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = (int)(2 * DaawnlightSpiritOrigin.RegularEnemyBullseyeRadius);
@@ -27,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.hostile = false;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = DaawnlightSpiritOrigin.BullseyeIdleLifetime;
             Projectile.Opacity = 0f;
             Projectile.penetrate = -1;
         }

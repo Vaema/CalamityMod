@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -18,16 +17,58 @@ namespace CalamityMod.Items.Accessories
 
         // "Despite the seemingly insane numbers here, I think this item might actually be underpowered"
         // hindsight: the item was not underpowered. Ozzatron 05NOV2021
-        //
-        // Regular crits are intentionally weak, especially because they rarely happen (your crit chance gets murdered).
-        // Bullseyes should be doing all the work.
-        private const float OriginBullseyeCritRatio = 3.5f; // Bullseye crits deal x3.5 damage instead of x2.
-        private const float ForcedCritBullseyeCritRatio = 2.4f; // If your projectile is forced to crit, you get less of a reward.
+        // Memes 03SEP2024: Old comments kept for record.
 
-        private const float StoredCritConversionRatio = 0.01f; // Add +1% more damage to crits for every 1% critical chance the player would have had.
-        private const float MinUseTimeForSlowBonus = 11f;
-        private const float MaxSlowBonusUseTime = 72f;
-        private const float MaxSlowWeaponBonus = 0.33f; // Up to +33% more damage to crits for slower weapons.
+        #region Balancing Variables
+
+        /// <summary>
+        /// The bullseye's total lifespan while it is not hit.
+        /// </summary>
+        public const int BullseyeIdleLifetime = 600;
+
+        /// <summary>
+        /// The bullseye's lifespan when hit.
+        /// </summary>
+        public const int BullseyeHitLifetime = 90;
+
+        /// <summary>
+        /// The minimum amount of critcal strike chance lost per decrease.
+        /// </summary>
+        public const int MinCritLossPerFrame = 1;
+
+        /// <summary>
+        /// The minimum rate at which the extra critcal strike chance decreases.<br/>
+        /// This means that it'll decrease every X frames.<br/>
+        /// <br/>
+        /// When there's no critical strike chance, this will be the loss rate,<br/>
+        /// and it'll linearly scale to <see cref="MaximumLossRate"/>.
+        /// </summary>
+        public const int MinimumLossRate = 4;
+
+        /// <summary>
+        /// The maximum rate at which the extra critcal strike chance decreases.<br/>
+        /// This means that it'll decrease every X frames.<br/>
+        /// <br/>
+        /// When the extra critical strike chance reaches <see cref="ExtraCritHardCap"/>,<br/>
+        /// this value will be the loss rate.
+        /// </summary>
+        public const int MaximumLossRate = 1;
+
+        /// <summary>
+        /// The amount of extra critcal strike chance at which the hard scaling starts applying.
+        /// </summary>
+        public const int ExtraCritHardCap = 75;
+
+        /// <summary>
+        /// When the extra critical strike chance is past <see cref="ExtraCritHardCap"/>,<br/>
+        /// every <see cref="CritHardCapScalingInterval"/> more, it'll start decreasing by <see cref="CritLossPerFrameIncreasePerInterval"/> more.
+        /// </summary>
+        public const int CritHardCapScalingInterval = 25;
+
+        /// <summary>
+        /// The amount of extra critical strike chance lost every <see cref="CritLossPerFrameIncreasePerInterval"/> past <see cref="ExtraCritHardCap"/>.
+        /// </summary>
+        public const int CritLossPerFrameIncreasePerInterval = 4;
 
         // These were very carefully calculated, please don't change them.
         internal const float RegularEnemyBullseyeRadius = 8f;
@@ -36,25 +77,7 @@ namespace CalamityMod.Items.Accessories
         // Special search radius for coin ricoshots that only applies to DSO targets.
         public static readonly float RicoshotSearchDistance = 2800f;
 
-        internal static float GetDamageMultiplier(Player p, CalamityPlayer mp, bool hitBullseye, bool wasForcedCrit)
-        {
-            float baseCritMult = 2f; // In vanilla Terraria, crits do +100% damage.
-
-            // If a bullseye was struck, replace a "regular crit" with a "bullseye crit".
-            if (hitBullseye)
-            {
-                // Bullseye crits are weaker if the projectile was already a forced crit.
-                // This is currently implemented for ULTRAKILL-style ricoshots and for Heavenly Gale's lightning.
-                baseCritMult = wasForcedCrit ? ForcedCritBullseyeCritRatio : OriginBullseyeCritRatio;
-            }
-
-            // Factor in the critical strike chance the player isn't getting to use.
-            float convertedCritBonus = StoredCritConversionRatio * mp.spiritOriginConvertedCrit;
-
-            float useTimeInterpolant = Utils.GetLerpValue(MinUseTimeForSlowBonus, MaxSlowBonusUseTime, p.ActiveItem().useTime, true);
-            float slowWeaponBonus = MathHelper.Lerp(0f, MaxSlowWeaponBonus, useTimeInterpolant);
-            return baseCritMult * (1f + convertedCritBonus + slowWeaponBonus);
-        }
+        #endregion
 
         public override void SetDefaults()
         {

@@ -245,7 +245,6 @@ namespace CalamityMod.CalPlayer
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
         public int spiritOriginBullseyeShootCountdown = 0;
-        public int spiritOriginConvertedCrit = 0;
         public int RustyMedallionCooldown = 0;
         public int MiniSwamerCooldown = 0;
         public float SulphWaterPoisoningLevel;
@@ -255,6 +254,7 @@ namespace CalamityMod.CalPlayer
         public bool ragePulse = false;
         public int ragePulseVisualTimer = 0;
         public int ragePulseTimer = 0;
+        public int SpiritOrginCritChanceIncrease = 0;
 
         private const int DashDisableCooldown = 12;
 
@@ -1904,9 +1904,11 @@ namespace CalamityMod.CalPlayer
             lumenousAmulet = false;
             oceanCrest = false;
             aquaticEmblem = false;
+            if (!spiritOrigin)
+                SpiritOrginCritChanceIncrease = 0;
             spiritOrigin = false;
             spiritOriginVanity = false;
-            spiritOriginConvertedCrit = 0;
+
 
             astralStarRain = false;
 
@@ -2396,7 +2398,7 @@ namespace CalamityMod.CalPlayer
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
-            spiritOriginConvertedCrit = 0;
+            SpiritOrginCritChanceIncrease = 0;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0f;
