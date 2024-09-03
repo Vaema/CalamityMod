@@ -238,6 +238,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.ai[1] = -Projectile.ai[1];
                     }
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction), 0.2f);
+                    FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
                 }
                 else
                 {

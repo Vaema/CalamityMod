@@ -35,6 +35,7 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool spawnBoom = true;
         public Color mainColor = Color.OrangeRed;
+        public bool finalFlip = false;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -104,6 +105,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 swingCount++;
+                finalFlip = false;
             }
             else
             {
@@ -135,6 +137,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
+                    if (!finalFlip)
+                    {
+                        FlipAsSword = Owner.direction < 0 ? true : false;
+                    }
+
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
@@ -159,7 +166,7 @@ namespace CalamityMod.Projectiles.Melee
                             Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 240), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
                             if (Main.rand.NextBool(3))
                             {
-                                Particle sparker = new CustomSpark(particlePos + Main.rand.NextVector2Circular(15, 15), -particleVel * Main.rand.NextFloat(0.4f, 0.8f), "CalamityMod/Particles/Sparkle", false, 30, Main.rand.NextFloat(1.4f, 1.8f), mainColor, new Vector2(0.4f, Main.rand.NextFloat(0.9f, 1.4f)), true, true);
+                                Particle sparker = new CustomSpark(particlePos + Main.rand.NextVector2Circular(15, 15), -particleVel * Main.rand.NextFloat(0.4f, 0.8f), "CalamityMod/Particles/Sparkle", false, 30, Main.rand.NextFloat(1.2f, 2.2f), mainColor, new Vector2(0.4f, Main.rand.NextFloat(0.9f, 1.4f)), true, true);
                                 GeneralParticleHandler.SpawnParticle(sparker);
                             }
                             else

@@ -33,6 +33,7 @@ namespace CalamityMod.Projectiles.Melee
         public int useAnim;
         public int swingCount;
         public bool spawnBoom = true;
+        public bool finalFlip = false;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -53,7 +54,7 @@ namespace CalamityMod.Projectiles.Melee
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
 
-            FlipAsSword = Owner.direction == -1 ? true : false;
+            FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
         }
 
         public override void UseStyle()
@@ -84,10 +85,11 @@ namespace CalamityMod.Projectiles.Melee
                 CanHit = false;
                 if (mousePos.X < Owner.Center.X) Owner.direction = -1;
                 else Owner.direction = 1;
-                FlipAsSword = Owner.direction == -1 ? true : false;
+                FlipAsSword = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX).X > 0 ? true : false;
                 doSwing = true;
                 swingCount++;
                 spawnBoom = true;
+                finalFlip = false;
             }
             else
             {
@@ -119,6 +121,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
+                    if (!finalFlip)
+                    {
+                        FlipAsSword = Owner.direction < 0 ? true : false;
+                    }
+
                     float time = (AnimationProgress) - (useAnim / 8);
                     float timeMax = useAnim - (useAnim / 8);
 
@@ -150,14 +157,14 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         Vector2 particleVel = new Vector2(0, 3 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                         Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(5, 130), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                        Particle orb = new CustomPulse(particlePos, particleVel * Main.rand.NextFloat(0.8f, 1.2f), Main.rand.NextBool(4) ? Color.PaleTurquoise : Color.Turquoise, "CalamityMod/Particles/HealingPlus", new Vector2(1f, 1f), Main.rand.NextFloat(-2, 2), Main.rand.NextFloat(0.8f, 1.2f), 0.2f, 23);
+                        Particle orb = new CustomPulse(particlePos, -particleVel * Main.rand.NextFloat(1.1f, 3.2f), Main.rand.NextBool(4) ? Color.PaleTurquoise : Color.Turquoise, "CalamityMod/Particles/Sparkle", new Vector2(2f, 1f), particleVel.ToRotation(), Main.rand.NextFloat(0.4f, 1.1f), 0.2f, 23);
                         GeneralParticleHandler.SpawnParticle(orb);
                     }
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         float randRot = Main.rand.NextFloat(-30, -60);
                         Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
-                        Particle spark2 = new GlowSparkParticle(Owner.Center + (new Vector2(140, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.4f)), -dustVel, false, 12, Main.rand.NextFloat(0.007f, 0.012f), Color.Turquoise, new Vector2(1.3f, 0.5f), true, false, 0.9f);
+                        Particle spark2 = new GlowSparkParticle(Owner.Center + (new Vector2(140, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.4f)), -dustVel, false, 20, Main.rand.NextFloat(0.007f, 0.012f), Color.Turquoise, new Vector2(1.3f, 0.5f), true, false, Main.rand.NextFloat(0.5f, 0.7f));
                         GeneralParticleHandler.SpawnParticle(spark2);
                     }
                 }
