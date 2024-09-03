@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -13,9 +14,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = Item.height = 120;
-            Item.damage = 616;
+            Item.damage = 231;
             Item.knockBack = 8.5f;
-            Item.useAnimation = Item.useTime = 18;
+            Item.useAnimation = Item.useTime = 55;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.shootSpeed = 18f;
@@ -29,14 +30,26 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-        public override float StealthDamageMultiplier => 0.75f;
+        public override float StealthDamageMultiplier => 0.3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int shuriken = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && Main.projectile.IndexInRange(shuriken))
-                Main.projectile[shuriken].Calamity().stealthStrike = true;
-            return false;
+            CalamityPlayer p = Main.player[Main.myPlayer].Calamity();
+            //If stealth is full, shoot a spread of 3 shurikens
+            if (p.StealthStrikeAvailable())
+            {
+                int spread = 30;
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 perturbedspeed = velocity.RotatedBy(MathHelper.ToRadians(spread));
+                    int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, damage, knockback, player.whoAmI, 0f, 1f);
+                    if (proj.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[proj].Calamity().stealthStrike = true;
+                    spread -= 30;
+                }
+                return false;
+            }
+            return true;
         }
     }
 }

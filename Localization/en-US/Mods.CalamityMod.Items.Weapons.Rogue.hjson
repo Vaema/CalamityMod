@@ -923,9 +923,9 @@ RefractionRotor: {
 	DisplayName: Refraction Rotor
 	Tooltip:
 		'''
-		Fires a huge prismatic disk shuriken
+		Throws a huge prismatic shuriken
 		The shuriken shatters moments after impact into homing rockets
-		Stealth strikes shatter into many more rockets
+		Stealth throw 3 shurikens that rapidly home in
 		'''
 }
 
