@@ -845,7 +845,7 @@ namespace CalamityMod
                 ProjectileType<EarthHoldout>(),
                 ProjectileType<MajesticGuardHoldout>(),
                 ProjectileType<HellkiteHoldout>(),
-                ProjectileType<PhangasmBow>(),
+                ProjectileType<RiftburstBow>(),
                 ProjectileType<ContagionBow>(),
                 ProjectileType<DaemonsFlameBow>(),
                 ProjectileType<DrataliornusBow>(),

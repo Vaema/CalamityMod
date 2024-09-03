@@ -434,15 +434,6 @@ EarthenPike: {
 		'''
 }
 
-ElementalLance: {
-	DisplayName: Elemental Lance
-	Tooltip:
-		'''
-		Fires a lance beam that splits multiple times as it travels
-		'Rend the cosmos asunder!'
-		'''
-}
-
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
 	Tooltip: Throws a flurry of bouncing knives that can heal the user
@@ -1435,6 +1426,15 @@ UrchinFlail: {
 UrchinMace: {
 	DisplayName: Urchin Mace
 	Tooltip: Throws out a whirlpool when released at full charge
+}
+
+VanishingPoint: {
+	DisplayName: Vanishing Point
+	Tooltip:
+		'''
+		Fires a lance beam that splits multiple times as it travels
+		'Rend the cosmos asunder!'
+		'''
 }
 
 VeinBurster: {

@@ -10,9 +10,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
-    public class ElementalLanceProjectile : BaseSpearProjectile
+    public class VanishingPointProjectile : BaseSpearProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<ElementalLance>();
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<VanishingPoint>();
 
         public override void SetDefaults()
         {

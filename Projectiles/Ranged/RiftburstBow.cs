@@ -10,10 +10,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PhangasmBow : ModProjectile
+    public class RiftburstBow : ModProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Phangasm>();
-        public override string Texture => "CalamityMod/Items/Weapons/Ranged/Phangasm";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Riftburst>();
+        public override string Texture => "CalamityMod/Items/Weapons/Ranged/Riftburst";
 
         public override void SetDefaults()
         {
@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/PhangasmGlow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/RiftburstGlow").Value;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;

@@ -900,15 +900,6 @@ PestilentDefiler: {
 	Tooltip: Converts musket balls into plague rounds that explode and split apart on hit
 }
 
-Phangasm: {
-	DisplayName: Phangasm
-	Tooltip:
-		'''
-		Fires a spread of 5 arrows and emits phantom arrows on enemy hits
-		66% chance to save ammo
-		'''
-}
-
 Photoviscerator: {
 	DisplayName: Photoviscerator
 	Tooltip:
@@ -1003,6 +994,15 @@ ReedBlowgun: {
 		Fires a high-pressure stream of bubbles
 		[c/5C95A1:'The Old Sea Kingdom never truly sought to expand beyond its initial borders.]
 		[c/5C95A1:However, they had a perfect track record of repelling any invasions, thanks to their insurmountable advantage in the water.']
+		'''
+}
+
+Riftburst: {
+	DisplayName: Riftburst
+	Tooltip:
+		'''
+		Fires a spread of 5 arrows and emits phantom arrows on enemy hits
+		66% chance to save ammo
 		'''
 }
 
