@@ -925,7 +925,7 @@ RefractionRotor: {
 		'''
 		Throws a huge prismatic shuriken
 		The shuriken shatters moments after impact into homing rockets
-		Stealth throw 3 shurikens that rapidly home in
+		Stealth strikes throw 3 shurikens that rapidly home on enemies
 		'''
 }
 
