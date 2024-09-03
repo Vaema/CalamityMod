@@ -502,7 +502,17 @@ namespace CalamityMod.NPCs.SunkenSea
             // a dedicated server doesn't need to load these.
             if (!Main.dedServ)
             {
-                // HI XYK!
+                float fade = Utils.GetLerpValue(TimeRecovering, 0, RecoverTimer);
+                float rotFactor = 360f;
+                if (Main.rand.NextBool())
+                {
+                    float rot = MathHelper.ToRadians(rotFactor);
+                    Vector2 velOffset = CalamityUtils.RandomVelocity(50f, 20f, 70f, 0.04f);
+                    velOffset *= Main.rand.NextFloat(15, 20) * fade;
+                    Dust dust = Dust.NewDustPerfect(NPC.Center + velOffset * 2.5f, 267, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.8f, 0.95f));
+                    dust.noGravity = true;
+                    dust.color = Color.Aqua;
+                }
             }
 
             RecoverTimer++;

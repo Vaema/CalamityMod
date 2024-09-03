@@ -995,6 +995,11 @@ namespace CalamityMod.Systems
 
             InsertShimmerResult(ModContent.ItemType<RogueEmblem>(), ItemID.SummonerEmblem);
 
+            // Cyclical Travelling Merchant Cell Phone materials
+            convert[ItemID.DPSMeter] = ItemID.LifeformAnalyzer;
+            convert[ItemID.LifeformAnalyzer] = ItemID.Stopwatch;
+            convert[ItemID.Stopwatch] = ItemID.DPSMeter;
+
             // Pyramid loot edits. There's no good way to have this not be hardcoded.
             convert[ItemID.PharaohsMask] = ItemID.PharaohsRobe;
             convert[ItemID.PharaohsRobe] = ItemID.PharaohsMask;
@@ -1655,14 +1660,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Wire, 10);
             r.AddIngredient(ItemID.SpelunkerGlowstick, 5);
             r.AddRecipeGroup(AnyCopperBar, 5);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // DPS Meter
-            r = Recipe.Create(ItemID.DPSMeter);
-            r.AddIngredient(ItemID.Wire, 10);
-            r.AddRecipeGroup(AnyGoldBar, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();

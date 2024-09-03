@@ -1015,8 +1015,8 @@ RubicoPrime: {
 		'''
 }
 
-SandstormGun: {
-	DisplayName: Sandstorm
+Sandblaster: {
+	DisplayName: Sandblaster
 	Tooltip:
 		'''
 		Fires sand bullets that explode and slow enemies on hit

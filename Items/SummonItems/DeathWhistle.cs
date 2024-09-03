@@ -35,7 +35,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<RavagerBody>()) && player.ZoneOverworldHeight && !BossRushEvent.BossRushActive;
+            return !NPC.AnyNPCs(ModContent.NPCType<RavagerBody>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)

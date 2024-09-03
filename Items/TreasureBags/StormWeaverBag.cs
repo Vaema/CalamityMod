@@ -63,7 +63,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<StormDragoon>(),
                 ModContent.ItemType<TheStorm>()
             }));
-            itemLoot.Add(ModContent.ItemType<Thunderstorm>(), 10);
+            itemLoot.Add(ModContent.ItemType<Thunderbolt>(), 10);
 
             // Equipment
             itemLoot.AddRevBagAccessories();

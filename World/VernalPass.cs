@@ -58,7 +58,7 @@ namespace CalamityMod.World
 
         public static void FillVernalPassChests(Chest chest, int Type, bool firstItem)
         {
-            int mainItem = Utils.SelectRandom(WorldGen.genRand, ItemID.StaffofRegrowth, ItemID.AnkletoftheWind, ItemID.FeralClaws);
+            int mainItem = Utils.SelectRandom(WorldGen.genRand, ItemID.StaffofRegrowth, ItemID.AnkletoftheWind, ItemID.FeralClaws, ModContent.ItemType<Items.Weapons.Summon.BelladonnaSpiritStaff>());
 
             int bars = Utils.SelectRandom(WorldGen.genRand, ItemID.GoldBar, ItemID.PlatinumBar);
             int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.ThornsPotion, ItemID.BattlePotion, ItemID.ShinePotion, ItemID.HunterPotion);

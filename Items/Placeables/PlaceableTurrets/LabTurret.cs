@@ -26,7 +26,6 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
             CreateRecipe().
                 AddIngredient<MysteriousCircuitry>(14).
                 AddIngredient<DubiousPlating>(20).
-                AddIngredient<SuspiciousScrap>().
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
                 Register();

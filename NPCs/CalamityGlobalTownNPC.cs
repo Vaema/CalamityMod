@@ -155,6 +155,7 @@ namespace CalamityMod.NPCs
             "Farsni",
             "Fanny", // <@!799749125720637460> (zombiewolf511)
             "Mausi", // <@!194156349347594241> (sadouken)
+            "Fiona", // <@!475216964168450048> (thatgayguy69)
         };
         private static readonly string[] PainterNames =
         {
@@ -802,6 +803,8 @@ namespace CalamityMod.NPCs
                 case NPCID.Demolitionist:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG)
                         chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.DoGDefeated");
+                    else if (Main.rand.NextBool(10))
+                        chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.MentionSkynamite");
                     break;
 
                 case NPCID.Dryad:
@@ -844,7 +847,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Mechanic:
-                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
+                        chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.HasPortalGun");
+                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
@@ -925,9 +930,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Steampunker:
-                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
-                        chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.HasPortalGun");
-                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneAstral)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.Astral");

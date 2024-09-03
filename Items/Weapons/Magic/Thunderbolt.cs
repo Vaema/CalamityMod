@@ -7,7 +7,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class Thunderstorm : ModItem, ILocalizedModType
+    [LegacyName("Thunderstorm")]
+    public class Thunderbolt : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
@@ -27,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
             Item.autoReuse = true;
             Item.shootSpeed = 6f;
-            Item.shoot = ModContent.ProjectileType<ThunderstormShot>();
+            Item.shoot = ModContent.ProjectileType<ThunderboltShot>();
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);

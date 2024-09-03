@@ -623,8 +623,17 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Mothron
-                // 20-30 Darksun Fragment @ 100% IF Devourer of Gods dead
                 case NPCID.Mothron:
+                    // Make all drops accessible pre-Mechs as Mothrons already only spawn post-Plantera (linearity rule removal)
+                    // This is identical to vanilla drop rates
+                    // This loot is already reported in vanilla regardless of condition so we don't need to report it twice
+                    LeadingConditionRule postMechs = new LeadingConditionRule(new Conditions.DownedAllMechBosses());
+                    postMechs.OnFailedConditions(ItemDropRule.ExpertGetsRerolls(ItemID.BrokenHeroSword, 4, 1), hideLootReport: true);
+                    postMechs.OnFailedConditions(ItemDropRule.ExpertGetsRerolls(ItemID.MothronWings, 20, 1), hideLootReport: true);
+                    postMechs.OnFailedConditions(ItemDropRule.ExpertGetsRerolls(ItemID.TheEyeOfCthulhu, 3, 1), hideLootReport: true);
+                    npcLoot.Add(postMechs);
+
+                    // 20-30 Darksun Fragment @ 100% IF Devourer of Gods dead
                     postDoG.Add(ModContent.ItemType<DarksunFragment>(), 1, 20, 30);
                     break;
 

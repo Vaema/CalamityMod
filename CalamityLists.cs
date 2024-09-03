@@ -1713,7 +1713,7 @@ namespace CalamityMod
                 ItemType<SHPC>(),
                 ItemType<TeslaCannon>(),
                 ItemType<TheSwarmer>(),
-                ItemType<Thunderstorm>(),
+                ItemType<Thunderbolt>(),
                 ItemType<Wingman>(),
                 ItemID.BeeGun,
                 ItemID.BubbleGun,
