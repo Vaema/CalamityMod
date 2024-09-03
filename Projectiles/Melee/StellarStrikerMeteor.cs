@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -119,6 +120,8 @@ namespace CalamityMod.Projectiles.Melee
             int hitsToMinMult = 4;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
+
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 120);
         }
 
         public override void OnKill(int timeLeft)

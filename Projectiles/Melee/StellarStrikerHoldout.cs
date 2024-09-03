@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -222,6 +223,8 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), (int)(Projectile.damage * 1.3f), Projectile.knockBack, Projectile.owner, 0, 0, 6);
                 spawnBoom = false;
             }
+
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 500);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
