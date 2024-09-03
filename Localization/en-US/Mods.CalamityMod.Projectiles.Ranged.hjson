@@ -58,6 +58,7 @@ CorrodedShell.DisplayName: Corroded Shell
 CosmicFire.DisplayName: Dead Sun's Fire
 DaemonsFlameArrow.DisplayName: Daemon's Arrow
 DeadSunExplosion.DisplayName: Dead Sun's Explosion
+DragonsBreathBurst.DisplayName: Draconic Burst
 DragonsBreathFlames.DisplayName: Draconic Flames
 DragonsBreathMag.DisplayName: Dragons Breath Cartridge
 DragonsBreathRound.DisplayName: Dragon's Breath Round
@@ -245,4 +246,3 @@ WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
 HellbornProj.DisplayName: Hell-born Gunblast
 HellbornShell.DisplayName: Hell's Shell
-DragonsBreathBurst.DisplayName: Dragons Breath Burst

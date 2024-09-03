@@ -211,7 +211,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else if (!postHit)
             {
-                for (int i = 0; i <= 6; i++)
+                for (int i = 0; i <= 5; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 0.5f, Main.rand.NextBool(3) ? 293 : 174, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 3.5f), 0, default, Main.rand.NextFloat(1.6f, 2.3f));
                     dust.noGravity = true;

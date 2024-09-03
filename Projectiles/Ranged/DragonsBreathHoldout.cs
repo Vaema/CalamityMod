@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
-            fade = MathHelper.Lerp(fade, 0, 0.2f);
+            fade = MathHelper.Lerp(fade, 0, 0.25f);
             if (Time == 0)
             {
                 weldingTimer = Owner.itemAnimationMax * 4;
@@ -130,8 +130,8 @@ namespace CalamityMod.Projectiles.Ranged
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             // Glow Orb
-            Main.EntitySpriteDraw(rechargeTexture, drawPosition, null, Color.OrangeRed with { A = 0 } * fade, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.5f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(rechargeTexture, drawPosition, null, Color.Orange with { A = 0 } * 0.75f * fade, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.35f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture, drawPosition, null, Color.OrangeRed with { A = 0 } * fade, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.4f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture, drawPosition, null, Color.Orange with { A = 0 } * 0.75f * fade, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.25f, SpriteEffects.None, 0);
 
             return false;
         }
