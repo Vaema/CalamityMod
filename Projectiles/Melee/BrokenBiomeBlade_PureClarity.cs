@@ -15,10 +15,10 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override int AssignedItemID => ModContent.ItemType<BrokenBiomeBlade>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/BrokenBiomeBlade";
-        public override float HitboxOutset => 30f;
-        public override Vector2 HitboxSize => new Vector2(36, 36);
+        public override float HitboxOutset => 36f;
+        public override Vector2 HitboxSize => new Vector2(45, 45);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
-        public override Vector2 SpriteOrigin => new(0, 12);
+        public override Vector2 SpriteOrigin => new(0, 30);
 
         public ref float SwingDir => ref Projectile.ai[1];
         public Vector2 mousePos;
@@ -130,6 +130,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             ArmRotationOffset = MathHelper.ToRadians(-140f);
+            ArmRotationOffsetBack = MathHelper.ToRadians(-140f);
         }
 
         public override bool PreDraw(ref Color lightColor)

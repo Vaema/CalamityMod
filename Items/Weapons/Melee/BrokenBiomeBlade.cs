@@ -252,8 +252,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
             return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
-            (n.type == ProjectileType<PureClarity>() ||
-             n.type == ProjectileType<BitingEmbrace>() ||
+            (n.type == ProjectileType<BitingEmbrace>() ||
              n.type == ProjectileType<AridGrandeur>()));
         }
 
