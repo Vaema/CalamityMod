@@ -14,7 +14,7 @@ namespace CalamityMod.DataStructures
 {
     public enum AttunementID : byte
     {
-        Default, Hot, Cold, Tropical, Evil,  //Broken biome blade
+        Default, Hot, Cold, Evil,  //Broken biome blade
         TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, //Biome blade
         Whirlwind, FlailBlade, SuperPogo, Shockwave, //True biome blade
         Phoenix, Aries, Polaris, Andromeda //Galaxia
@@ -28,7 +28,7 @@ namespace CalamityMod.DataStructures
         public static void Load()
         {
             attunementArray = new Attunement[] {
-                  new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
+                  new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new EvilAttunement(),
                   new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(),
                   new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),
                   new PhoenixAttunement(), new AriesAttunement(), new PolarisAttunement(), new AndromedaAttunement(),
@@ -98,13 +98,13 @@ namespace CalamityMod.DataStructures
 
         public override void ApplyStats(Item item)
         {
-            item.channel = false;
-            item.noUseGraphic = false;
-            item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileType<PurityProjection>();
+            item.channel = true;
+            item.noUseGraphic = true;
+            item.useStyle = ItemUseStyleID.Shoot;
+            item.shoot = ProjectileType<PureClarity>();
             item.shootSpeed = 12f;
-            item.UseSound = SoundID.Item1;
-            item.noMelee = false;
+            item.UseSound = null;
+            item.noMelee = true;
         }
     }
     public class HotAttunement : Attunement
@@ -175,31 +175,6 @@ namespace CalamityMod.DataStructures
             if (Combo > 2)
                 Combo = 0;
             return false;
-        }
-    }
-
-    public class TropicalAttunement : Attunement
-    {
-        public TropicalAttunement()
-        {
-            id = AttunementID.Tropical;
-            tooltipColor = new Color(162, 200, 85);
-
-            energyParticleEdgeColor = new Color(53, 112, 4);
-            energyParticleCenterColor = new Color(131, 173, 39);
-        }
-
-        public override float DamageMultiplier => BrokenBiomeBlade.TropicalAttunement_BaseDamage / (float)BrokenBiomeBlade.BaseDamage;
-
-        public override void ApplyStats(Item item)
-        {
-            item.channel = false;
-            item.noUseGraphic = true;
-            item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileType<GrovetendersTouch>();
-            item.shootSpeed = 30;
-            item.UseSound = null;
-            item.noMelee = true;
         }
     }
 

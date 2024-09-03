@@ -18,15 +18,6 @@ ColdAttunement: {
 	Function: Perform a 3 strike combo with a glacial blade, with the final strike freezing foes for a split second
 }
 
-TropicalAttunement: {
-	Name: Grovetender's Touch
-	Function:
-		'''
-		Throw out the blade on a vine whip, pulling you toward struck tiles
-		Striking enemies with the tip of the whip as it cracks guarantees a critical hit
-		'''
-}
-
 EvilAttunement: {
 	Name: Decay's Retort
 	Function: Lunge forward with a ghostly rapier projection, bouncing away from struck targets and leeching their life
