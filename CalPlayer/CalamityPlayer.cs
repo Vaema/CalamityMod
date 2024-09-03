@@ -66,6 +66,7 @@ namespace CalamityMod.CalPlayer
         #region No Category
         public static bool areThereAnyDamnBosses = false;
         public static bool areThereAnyDamnEvents = false;
+        public float calamityBonusLuck = 0f;
         public bool potionSick = false;
         public int timePotionSick;
         public bool drawBossHPBar = true;
@@ -1578,6 +1579,8 @@ namespace CalamityMod.CalPlayer
 
             ResetRogueStealth();
 
+            calamityBonusLuck = 0f;
+
             // Reset adrenaline duration to default. If Draedon's Heart is equipped, it'll change itself every frame.
             AdrenalineDuration = CalamityUtils.SecondsToFrames(5);
 
@@ -2341,6 +2344,8 @@ namespace CalamityMod.CalPlayer
                     SyncCooldownDictionary(Main.netMode == NetmodeID.Server);
                 }
             }
+
+            calamityBonusLuck = 0f;
 
             #region Defense Damage
             totalDefenseDamage = 0;
@@ -3958,6 +3963,13 @@ namespace CalamityMod.CalPlayer
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
                 knockback += item.knockBack;
+        }
+        #endregion
+
+        #region Modify Luck
+        public override void ModifyLuck(ref float luck)
+        {
+            luck += calamityBonusLuck;
         }
         #endregion
 
