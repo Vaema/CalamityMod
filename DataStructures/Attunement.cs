@@ -102,7 +102,7 @@ namespace CalamityMod.DataStructures
             item.noUseGraphic = true;
             item.useStyle = ItemUseStyleID.Shoot;
             item.shoot = ProjectileType<PureClarity>();
-            item.shootSpeed = 12f;
+            item.shootSpeed = 0f;
             item.UseSound = null;
             item.noMelee = true;
         }

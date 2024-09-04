@@ -3,9 +3,10 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
@@ -15,10 +16,10 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override int AssignedItemID => ModContent.ItemType<BrokenBiomeBlade>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/BrokenBiomeBlade";
-        public override float HitboxOutset => 36f;
-        public override Vector2 HitboxSize => new Vector2(45, 45);
+        public override float HitboxOutset => 50f;
+        public override Vector2 HitboxSize => new Vector2(48, 48);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
-        public override Vector2 SpriteOrigin => new(0, 30);
+        public override Vector2 SpriteOrigin => new(-5, 40);
 
         public ref float SwingDir => ref Projectile.ai[1];
         public Vector2 mousePos;
@@ -30,6 +31,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetDefaults()
         {
             base.SetDefaults();
+            Projectile.scale = 1.25f;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -76,6 +78,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (AnimationProgress < (useAnimation / 3))
                 {
+                    // Swing wind-up. Should not deal damage.
                     aimPos = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
                     postSwing = false;
@@ -95,8 +98,9 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         CanHit = true;
 
+                        // Particle effects on swing.
                         Vector2 particleVel = new Vector2(0, 10 * -SwingDir * Owner.direction).RotatedBy(FinalRotation - MathHelper.PiOver4);
-                        Vector2 particlePos = Owner.Center + new Vector2(Main.rand.Next(10, 90), 0).RotatedBy(FinalRotation - MathHelper.PiOver4);
+                        Vector2 particlePos = Owner.Center + new Vector2(Main.rand.Next(0, 80), 0).RotatedBy(FinalRotation - MathHelper.PiOver4);
                         Color particleColor = (Owner.HeldItem.ModItem as BrokenBiomeBlade).mainAttunement.tooltipColor;
                         if (Main.rand.NextBool())
                         {
@@ -112,9 +116,11 @@ namespace CalamityMod.Projectiles.Melee
                     else
                         CanHit = false;
 
+                    // Fire projectiles.
                     if (swingTime == (int)(swingTimeMax * 0.4f))
                     {
-                        Vector2 projVel = -aimPos.SafeNormalize(Vector2.UnitX) * Owner.HeldItem.shootSpeed;
+                        SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
+                        Vector2 projVel = -aimPos.SafeNormalize(Vector2.UnitX) * 12f;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, projVel, ModContent.ProjectileType<PurityProjection>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI);
                     }
 
@@ -129,22 +135,9 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
+            // Make the player's arms rotate.
             ArmRotationOffset = MathHelper.ToRadians(-140f);
             ArmRotationOffsetBack = MathHelper.ToRadians(-140f);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            // Only draw the projectile if the projectile's owner is currently using the item this projectile is attached to.
-            if ((useAnimation > 0 || DrawUnconditionally) && Owner.ItemAnimationActive)
-            {
-                Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-
-                float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
-
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
-            }
-            return false;
         }
 
         public override void ResetStyle()
