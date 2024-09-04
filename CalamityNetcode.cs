@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Potions.Alcohol;
@@ -7,6 +9,7 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Systems;
 using CalamityMod.TileEntities;
 using CalamityMod.World;
@@ -15,16 +18,61 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod
 {
-    public class CalamityNetcode
+    public class CalamityNetcode : ModSystem
     {
+        private static Dictionary<byte, CalamityModPacket> _PacketRegistry;
+
+        public override void OnModLoad()
+        {
+            _PacketRegistry = [];
+            foreach (var mod in ModLoader.Mods)
+            {
+                foreach (var type in AssemblyManager.GetLoadableTypes(mod.Code))
+                {
+                    if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityModPacket)))
+                        continue;
+
+                    if (Activator.CreateInstance(type) is not CalamityModPacket packetHandler)
+                        continue;
+
+                    var msgType = packetHandler.MessageType;
+                    if (_PacketRegistry.TryGetValue(msgType, out var existingHandler))
+                    {
+                        CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
+                            $" [Failed: '{type.FullName}'" +
+                            $" Current Owner: '{existingHandler.GetType().FullName}'," +
+                            $" msgTypeToRegister: '{msgType}']");
+                        continue;
+                    }
+
+                    _PacketRegistry[packetHandler.MessageType] = packetHandler;
+
+                    var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                    instanceProperty?.SetValue(null, packetHandler);
+                }
+            }
+        }
+
+        public override void OnModUnload()
+        {
+            _PacketRegistry?.Clear();
+            _PacketRegistry = null;
+        }
+
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
         {
             try
             {
                 CalamityModMessageType msgType = (CalamityModMessageType)reader.ReadByte();
+                if (_PacketRegistry.TryGetValue((byte)msgType, out var packetHandler))
+                {
+                    packetHandler.HandlePacket(in reader, whoAmI);
+                }
+
                 switch (msgType)
                 {
                     //
@@ -519,6 +567,8 @@ namespace CalamityMod
         
         // Bandit Reforge Refund
         SomeoneGotScammedByTinkerer,
-        WantToRefundReforges
+        WantToRefundReforges,
+
+        Reserved = 150
     }
 }
