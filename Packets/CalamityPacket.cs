@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public abstract class CalamityModPacket
+    public abstract class CalamityPacket
     {
         public abstract byte MessageType { get; }
         public abstract void HandlePacket(in BinaryReader packet, int sender);

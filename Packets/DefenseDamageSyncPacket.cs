@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class DefenseDamageSyncPacket : CalamityModPacket
+    public sealed class DefenseDamageSyncPacket : CalamityPacket
     {
         public static DefenseDamageSyncPacket Instance { get; private set; }
 

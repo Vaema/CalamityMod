@@ -24,20 +24,20 @@ namespace CalamityMod
 {
     public class CalamityNetcode : ModSystem
     {
-        private static CalamityModPacket[] _PacketRegistry;
+        private static CalamityPacket[] _PacketRegistry;
 
         public override void OnModLoad()
         {
-            _PacketRegistry = new CalamityModPacket[byte.MaxValue];
+            _PacketRegistry = new CalamityPacket[byte.MaxValue];
 
             foreach (var mod in ModLoader.Mods)
             {
                 foreach (var type in AssemblyManager.GetLoadableTypes(mod.Code))
                 {
-                    if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityModPacket)))
+                    if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityPacket)))
                         continue;
 
-                    if (Activator.CreateInstance(type) is not CalamityModPacket packetHandler)
+                    if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
                         continue;
 
                     var msgType = packetHandler.MessageType;
