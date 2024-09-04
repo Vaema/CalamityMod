@@ -13,7 +13,6 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Melee/OrderbringerBeam";
-        private int whiteLightTimer = 5;
         public int time = 0;
         public Color mainColor = Color.White;
 
