@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee
 
         const float MaxTime = 90;
         const int coyoteTimeFrames = 15; //How many frames does the whip stay extended
-        const int MaxReach = 450;
+        const int MaxReach = 600;
         const int MinReach = 250;
         const float SnappingPoint = 0.55f; //When does the snap occur.
 

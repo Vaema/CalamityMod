@@ -227,13 +227,13 @@ namespace CalamityMod.DataStructures
 
         public override void ApplyStats(Item item)
         {
-            item.channel = false;
-            item.noUseGraphic = false;
-            item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileType<TruePurityProjection>();
-            item.shootSpeed = 12f;
-            item.UseSound = SoundID.Item1;
-            item.noMelee = false;
+            item.channel = true;
+            item.noUseGraphic = true;
+            item.useStyle = ItemUseStyleID.Shoot;
+            item.shoot = ProjectileType<TruePureClarity>();
+            item.shootSpeed = 0f;
+            item.UseSound = null;
+            item.noMelee = true;
         }
     }
     public class TrueHotAttunement : Attunement

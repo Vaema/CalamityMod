@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
@@ -20,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
 {
     // TODO -- CANNOT RENAME this and True Biome Blade to "TrueBiomeBlade" and "BiomeBlade" internally without corrupting existing items
     // (Comment copied from an equivalent one on OmegaBiomeBlade from June 2022)
-    public class TrueBiomeBlade : ModItem, ILocalizedModType
+    public class TrueBiomeBlade : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public Attunement mainAttunement = null;

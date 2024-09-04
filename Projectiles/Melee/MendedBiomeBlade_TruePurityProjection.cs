@@ -10,7 +10,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TruePurityProjection : ModProjectile, ILocalizedModType //The boring plain one. With cool homing now
+    public class TruePurityProjection : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public NPC target;
@@ -80,7 +80,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
             for (int i = 0; i <= 15; i++)
             {
                 Vector2 displace = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (-0.5f + (i / 15f)) * 88f;
@@ -90,10 +89,6 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            int debuffTime = 90;
-            target.AddBuff(BuffType<ArmorCrunch>(), debuffTime);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffType<ArmorCrunch>(), 90);
     }
 }
