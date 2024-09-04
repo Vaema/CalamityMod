@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 spawnOffset = SlashDirection.ToRotationVector2();
                 spawnOffset *= Main.rand.NextFloatDirection() * maxOffset;
                 Vector2 sliceVelocity = spawnOffset.SafeNormalize(Vector2.UnitY) * 0.1f;
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + spawnOffset, sliceVelocity, ModContent.ProjectileType<RefractionSlash>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner);
                 }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.AccessControl;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -37,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.MaxUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 20;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
@@ -68,6 +70,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.timeLeft = 80;
             Projectile.ModifyHitNPCSticky(10);
             Projectile.velocity *= 0.8f;
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.7f}, Projectile.Center);
             if (Main.myPlayer == Projectile.owner)
             {
                 int slash = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.1f, ModContent.ProjectileType<RefractionRotorSlashCreator>(), Projectile.damage, 0f, Projectile.owner, target.whoAmI, Projectile.velocity.ToRotation());
