@@ -352,15 +352,6 @@ EclipsesFall: {
 		'''
 }
 
-ElementalDisk: {
-	DisplayName: Elemental Disk
-	Tooltip:
-		'''
-		Throws a disk that has a chance to generate several disks if enemies are near it
-		Stealth strikes fly slower but travel farther, pierce through enemies, and spawn extra disks more frequently
-		'''
-}
-
 EnchantedAxe: {
 	DisplayName: Enchanted Axe
 	Tooltip:
@@ -916,6 +907,15 @@ RealityRupture: {
 		'''
 		Cycles between throwing 3 small homing spears and throwing a single piercing lance
 		Stealth Strikes throw a high-velocity reality shattering lance that explodes on hit
+		'''
+}
+
+ReboundingRainbow: {
+	DisplayName: Rebounding Rainbow
+	Tooltip:
+		'''
+		Throws a disk that has a chance to generate several disks if enemies are near it
+		Stealth strikes fly slower but travel farther, pierce through enemies, and spawn extra disks more frequently
 		'''
 }
 

@@ -8,8 +8,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    [LegacyName("AccretionDisk")]
-    public class ElementalDisk : RogueWeapon
+    [LegacyName("AccretionDisk", "ElementalDisk")]
+    public class ReboundingRainbow : RogueWeapon
     {
         public static int stealthTimeMult = 2;
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
-            Item.shoot = ModContent.ProjectileType<ElementalDiskProj>();
+            Item.shoot = ModContent.ProjectileType<ReboundingRainbowProj>();
             Item.shootSpeed = 15f;
             Item.DamageType = RogueDamageClass.Instance;
         }

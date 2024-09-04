@@ -9,10 +9,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ElementalDiskProj : ModProjectile, ILocalizedModType
+    public class ReboundingRainbowProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ElementalDisk";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ReboundingRainbow";
         private int Lifetime = 400;
         private int ReboundTime = 30;
 
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Returns after some number of frames in the air
-            int timeMult = Projectile.Calamity().stealthStrike ? ElementalDisk.stealthTimeMult : 1;
+            int timeMult = Projectile.Calamity().stealthStrike ? ReboundingRainbow.stealthTimeMult : 1;
             if (Projectile.timeLeft < Lifetime * timeMult - ReboundTime * timeMult)
                 Projectile.ai[0] = 1f;
 
@@ -139,7 +139,7 @@ namespace CalamityMod.Projectiles.Rogue
                 int counter = Projectile.Calamity().stealthStrike ? 40 : 60;
                 if (Main.player[Projectile.owner].miscCounter % counter == 0)
                 {
-                    int splitProj = ModContent.ProjectileType<ElementalDiskSplit>();
+                    int splitProj = ModContent.ProjectileType<ReboundingRainbowSplit>();
                     if (Projectile.owner == Main.myPlayer && Main.player[Projectile.owner].ownedProjectileCounts[splitProj] < 16)
                     {
                         float spread = 45f * 0.0174f;
