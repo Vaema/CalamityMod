@@ -24,11 +24,12 @@ namespace CalamityMod
 {
     public class CalamityNetcode : ModSystem
     {
-        private static Dictionary<byte, CalamityModPacket> _PacketRegistry;
+        private static CalamityModPacket[] _PacketRegistry;
 
         public override void OnModLoad()
         {
-            _PacketRegistry = [];
+            _PacketRegistry = new CalamityModPacket[byte.MaxValue];
+
             foreach (var mod in ModLoader.Mods)
             {
                 foreach (var type in AssemblyManager.GetLoadableTypes(mod.Code))
@@ -40,7 +41,8 @@ namespace CalamityMod
                         continue;
 
                     var msgType = packetHandler.MessageType;
-                    if (_PacketRegistry.TryGetValue(msgType, out var existingHandler))
+                    var existingHandler = _PacketRegistry[msgType];
+                    if (existingHandler != null)
                     {
                         CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
                             $" [Failed: '{type.FullName}'" +
@@ -59,7 +61,6 @@ namespace CalamityMod
 
         public override void OnModUnload()
         {
-            _PacketRegistry?.Clear();
             _PacketRegistry = null;
         }
 
@@ -68,9 +69,14 @@ namespace CalamityMod
             try
             {
                 CalamityModMessageType msgType = (CalamityModMessageType)reader.ReadByte();
-                if (_PacketRegistry.TryGetValue((byte)msgType, out var packetHandler))
+                var packetHandler = _PacketRegistry[(byte)msgType];
+                if (packetHandler is not null)
                 {
                     packetHandler.HandlePacket(in reader, whoAmI);
+                }
+                else
+                {
+                    // Error Message will be goes here!
                 }
 
                 switch (msgType)
