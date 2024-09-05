@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,12 +12,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class CometQuasherMeteor : ModProjectile, ILocalizedModType
+    public class StellarStrikerMeteor : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public ref float time => ref Projectile.ai[0];
-        public Color mainColor = Color.DodgerBlue;
+        public Color mainColor = Color.Turquoise;
         public int fallTime = 60;
+        public bool spawnMet = true;
+        public int direction = 1;
+        public float wavePower = 7;
         public NPC chosenTarget;
         public override void SetStaticDefaults()
         {
@@ -44,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             if (time % 5 == 0 && Projectile.extraUpdates < 12)
-                Projectile.extraUpdates++;
+                Projectile.extraUpdates ++;
             if (time == 0)
             {
                 chosenTarget = Owner.Calamity().mouseWorld.ClosestNPCAt(2000);
@@ -75,27 +79,37 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(orb);
                 }
                 if (time % 4 == 0)
-                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.5f), Main.rand.NextBool(4) ? Color.AliceBlue : Color.DodgerBlue, 6, Main.rand.NextFloat(0.4f, 0.9f), 0.65f, 0, true));
+                {
+                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.5f), Main.rand.NextBool(4) ? Color.PaleTurquoise : Color.Turquoise, 6, Main.rand.NextFloat(0.3f, 0.7f), 0.65f, 0, true));
+                } 
             }
-            if (Main.rand.NextBool(13))
+            if (time % 2 == 0)
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 278, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 3));
-                dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
-                dust2.noGravity = true;
-                dust2.color = Main.rand.NextBool(3) ? Color.AliceBlue : Color.DodgerBlue;
+                // Spawn in a helix-style pattern
+                float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
+
+                Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * wavePower;
+
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset * direction, 267, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.3f));
+                dust.scale = Main.rand.NextFloat(0.85f, 0.95f);
+                dust.noGravity = true;
+                dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
             }
             
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             time++;
+
+            if (time == 20 && spawnMet && Projectile.ai[2] > 0)
+            {
+                spawnMet = false;
+                Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            if (Projectile.Calamity().lineColor == 1)
-                tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor2").Value;
-            if (Projectile.Calamity().lineColor == 2)
-                tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor3").Value;
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.White, 1, tex);
             return false;
@@ -106,6 +120,8 @@ namespace CalamityMod.Projectiles.Melee
             int hitsToMinMult = 4;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
+
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 120);
         }
 
         public override void OnKill(int timeLeft)
@@ -113,23 +129,31 @@ namespace CalamityMod.Projectiles.Melee
             Player Owner = Main.player[Projectile.owner];
             SoundEngine.PlaySound(SoundID.Item89, Projectile.position);
 
-            if (Projectile.ai[2] > 0)
+            if (Projectile.ai[2] > 0 && spawnMet)
             {
                 Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
             }
 
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.damage = (int)(Projectile.damage * 0.3f);
-                Projectile.ExpandHitboxBy((int)(128f * Projectile.scale));
+                Projectile.ExpandHitboxBy((int)(228f * Projectile.scale));
                 Projectile.penetrate = -1;
                 Projectile.Damage();
             }
-            for (int i = 0; i < 13; i++)
+            for (int i = 0; i < 6; i++)
             {
-                Particle spark3 = new GlowOrbParticle(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(3.5f, 9), false, 20, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(5) ? Color.AliceBlue : Color.DodgerBlue, true, false, false);
+                Particle spark3 = new SparkParticle(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(3.5f, 14), false, 20, Main.rand.NextFloat(0.3f, 0.8f), Main.rand.NextBool(5) ? Color.PaleTurquoise : Color.Turquoise);
                 GeneralParticleHandler.SpawnParticle(spark3);
+            }
+            for (int i = 0; i < 18; i++)
+            {
+                Dust c = Dust.NewDustPerfect(Projectile.Center, 267);
+                c.velocity = (MathHelper.TwoPi * i / 18f).ToRotationVector2() * 10f + Owner.velocity * 0.5f;
+                c.scale = Main.rand.NextFloat(0.8f, 0.9f);
+                c.noGravity = true;
+                c.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
             }
             Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * 0.7f, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2f, 1f, 25, true);
             GeneralParticleHandler.SpawnParticle(blastRing);

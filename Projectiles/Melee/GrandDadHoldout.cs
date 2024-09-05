@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
         public float fadeIn = 0;
         public int useAnim;
         public int swingCount;
+        public bool finalFlip = false;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -91,6 +92,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 swingCount++;
+                finalFlip = false;
             }
             else
             {
@@ -122,6 +124,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
+                    if (!finalFlip)
+                    {
+                        FlipAsSword = Owner.direction < 0 ? true : false;
+                    }
+
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
