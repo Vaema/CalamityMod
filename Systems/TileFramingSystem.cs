@@ -214,6 +214,112 @@ namespace CalamityMod.Systems
         }
         #endregion
 
+        #region Tile Variation Helpers
+        public static int GetVariation4x4_012_Low0(int i, int j)
+        {
+            int xRel = i & 0b0011;
+            int yRel = j & 0b0011;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 2,
+                    2 => 1,
+                    _ => 2
+                }),
+                1 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 0,
+                    2 => 2,
+                    _ => 2
+                }),
+                2 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 0,
+                    2 => 1,
+                    _ => 2
+                }),
+                _ => (yRel switch
+                {
+                    0 => 1,
+                    1 => 2,
+                    2 => 0,
+                    _ => 2
+                }),
+            };
+            return output;
+        }
+
+        public static int GetVariation4x4_01_Low0(int i, int j)
+        {
+            int xRel = i & 0b0011;
+            int yRel = j & 0b0011;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 0,
+                    2 => 1,
+                    _ => 1
+                }),
+                1 => (yRel switch
+                {
+                    0 => 1,
+                    1 => 0,
+                    2 => 1,
+                    _ => 1
+                }),
+                2 => (yRel switch
+                {
+                    0 => 1,
+                    1 => 0,
+                    2 => 0,
+                    _ => 1
+                }),
+                _ => (yRel switch
+                {
+                    0 => 0,
+                    1 => 1,
+                    2 => 0,
+                    _ => 1
+                }),
+            };
+            return output;
+        }
+
+        public static int GetVariation3x3_01234_Low3(int i, int j)
+        {
+            int xRel = i % 3;
+            int yRel = j % 3;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 1,
+                    _ => 2
+                }),
+                1 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 3,
+                    _ => 4
+                }),
+                _ => (yRel switch
+                {
+                    0 => 4,
+                    1 => 0,
+                    _ => 1
+                }),
+            };
+            return output;
+        }
+        #endregion
+
         #region Framing Helpers
         private static bool GetMerge(Tile myTile, Tile mergeTile)
         {
@@ -1301,57 +1407,48 @@ namespace CalamityMod.Systems
             #endregion
         }
 
-        internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset, bool overrideTileFrame = false)
+        internal static void SlopedGlowmask(ref readonly Tile tile, int i, int j, Texture2D texture, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
         {
-            var tile = Main.tile[i, j];
+            int frameX = tile.TileFrameX;
+            int frameY = tile.TileFrameY;
 
-            int TileFrameX = tile.TileFrameX;
-            int TileFrameY = tile.TileFrameY;
-
-            if (overrideTileFrame)
-            {
-                TileFrameX = 0;
-                TileFrameY = 0;
-            }
-
-            var width = 16;
-            var height = 16;
+            int width = 16;
+            int height = 16;
 
             if (sourceRectangle != null)
             {
-                TileFrameX = ((Rectangle)sourceRectangle).X;
-                TileFrameY = ((Rectangle)sourceRectangle).Y;
+                frameX = ((Rectangle)sourceRectangle).X;
+                frameY = ((Rectangle)sourceRectangle).Y;
             }
 
-            var iX16 = i * 16;
-            var jX16 = j * 16;
-            var location = new Vector2(iX16, jX16);
-            var zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
-            if (Main.drawToScreen)
-                zero = Vector2.Zero;
+            int iX16 = i * 16;
+            int jX16 = j * 16;
 
-            var offsets = -Main.screenPosition + zero + positionOffset;
-            var drawCoordinates = location + offsets;
-            if (tile.Slope == 0 && !tile.IsHalfBlock || Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType]) //second one should be for platforms
+            Vector2 location = new Vector2(iX16, jX16);
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+            Vector2 offsets = -Main.screenPosition + zero + positionOffset;
+            Vector2 drawCoordinates = location + offsets;
+
+            if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
             {
-                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(frameX, frameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else if (tile.IsHalfBlock)
             {
-                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(TileFrameX, TileFrameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(frameX, frameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else
             {
-                var b = (byte)tile.Slope;
+                byte b = (byte)tile.Slope;
                 Rectangle TileFrame;
                 Vector2 drawPos;
                 if (b == 1 || b == 2)
                 {
                     int length;
                     int height2;
-                    for (var a = 0; a < 8; ++a)
+                    for (int a = 0; a < 8; ++a)
                     {
-                        var aX2 = a * 2;
+                        int aX2 = a * 2;
                         if (b == 2)
                         {
                             length = 16 - aX2 - 2;
@@ -1363,12 +1460,12 @@ namespace CalamityMod.Systems
                             height2 = 14 - length;
                         }
 
-                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY, 2, height2);
+                        TileFrame = new Rectangle(frameX + length, frameY, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16 + aX2) + offsets;
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
 
-                    TileFrame = new Rectangle(TileFrameX, TileFrameY + 14, 16, 2);
+                    TileFrame = new Rectangle(frameX, frameY + 14, 16, 2);
                     drawPos = new Vector2(iX16, jX16 + 14) + offsets;
                     Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                 }
@@ -1376,9 +1473,9 @@ namespace CalamityMod.Systems
                 {
                     int length;
                     int height2;
-                    for (var a = 0; a < 8; ++a)
+                    for (int a = 0; a < 8; ++a)
                     {
-                        var aX2 = a * 2;
+                        int aX2 = a * 2;
                         if (b == 3)
                         {
                             length = aX2;
@@ -1390,15 +1487,15 @@ namespace CalamityMod.Systems
                             height2 = 16 - aX2;
                         }
 
-                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY + 16 - height2, 2, height2);
+                        TileFrame = new Rectangle(frameX + length, frameY + 16 - height2, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16) + offsets;
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
 
                     drawPos = new Vector2(iX16, jX16) + offsets;
-                    if (tile.TileType != ModContent.TileType<EutrophicGlass>())
+                    if (tile.TileType != EutrophicGlass.TypeCache)
                     {
-                        TileFrame = new Rectangle(TileFrameX, TileFrameY, 16, 2);
+                        TileFrame = new Rectangle(frameX, frameY, 16, 2);
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
                 }

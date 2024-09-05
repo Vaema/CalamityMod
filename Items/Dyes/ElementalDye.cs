@@ -27,8 +27,8 @@ namespace CalamityMod.Items.Dyes
             CreateRecipe(5).
                 AddIngredient(ItemID.SolarDye).
                 AddIngredient(ItemID.VortexDye).
-                AddIngredient(ItemID.StardustDye).
                 AddIngredient(ItemID.NebulaDye).
+                AddIngredient(ItemID.StardustDye).
                 AddIngredient<GalacticaSingularity>().
                 AddTile(TileID.DyeVat).
                 Register();

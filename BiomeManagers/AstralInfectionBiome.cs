@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
 using Terraria;
 using Terraria.GameContent.Events;
 using Terraria.ID;
@@ -9,7 +10,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class AstralInfectionBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/AstralWater");
+        public override ModWaterStyle WaterStyle => AstralWater.Instance;
 
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle
         {

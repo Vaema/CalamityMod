@@ -8,7 +8,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Graphics.Primitives;
 
 namespace CalamityMod.Projectiles.Melee
 {

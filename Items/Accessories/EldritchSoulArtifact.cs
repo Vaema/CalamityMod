@@ -32,9 +32,9 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ExodiumCluster>(25).
-                AddIngredient<Navyplate>(25).
                 AddIngredient<Necroplasm>(5).
+                AddIngredient<Navyplate>(25).
+                AddIngredient<ExodiumCluster>(25).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

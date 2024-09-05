@@ -440,7 +440,7 @@ namespace CalamityMod.ILEditing
             }
 
             if (item.prefix == PrefixID.Lucky)
-                self.luck += 0.05f;
+                self.Calamity().calamityBonusLuck += 0.05f;
         }
         #endregion
 

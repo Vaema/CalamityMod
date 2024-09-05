@@ -59,10 +59,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LunarBar, 4).
-                AddIngredient<UelibloomBar>(8).
                 AddIngredient<MysteriousCircuitry>(12).
                 AddIngredient<DubiousPlating>(18).
+                AddIngredient<UelibloomBar>(8).
+                AddIngredient(ItemID.LunarBar, 4).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

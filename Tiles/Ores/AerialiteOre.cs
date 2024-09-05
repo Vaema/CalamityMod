@@ -1,12 +1,10 @@
-﻿
-using System.Collections.Generic;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
@@ -70,199 +68,26 @@ namespace CalamityMod.Tiles.Ores
         }
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
+            frameXOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);
         }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             if (GlowTexture is null)
                 return;
 
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            int xOffset = 0;
-            int relativeXPos = i % 4;
-            int relativeYPos = j % 4;
-            switch (relativeXPos)
-            {
-                case 0:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 0;
-                            break;
-                        case 1:
-                            xOffset = 2;
-                            break;
-                        case 2:
-                            xOffset = 1;
-                            break;
-                        case 3:
-                            xOffset = 2;
-                            break;
-                        default:
-                            xOffset = 2;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 2;
-                            break;
-                        case 1:
-                            xOffset = 0;
-                            break;
-                        case 2:
-                            xOffset = 2;
-                            break;
-                        case 3:
-                            xOffset = 2;
-                            break;
-                        default:
-                            xOffset = 2;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 2;
-                            break;
-                        case 1:
-                            xOffset = 0;
-                            break;
-                        case 2:
-                            xOffset = 1;
-                            break;
-                        case 3:
-                            xOffset = 2;
-                            break;
-                        default:
-                            xOffset = 2;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 1;
-                            break;
-                        case 1:
-                            xOffset = 2;
-                            break;
-                        case 2:
-                            xOffset = 0;
-                            break;
-                        case 3:
-                            xOffset = 2;
-                            break;
-                        default:
-                            xOffset = 2;
-                            break;
-                    }
-                    break;
-            }
-            xOffset *= 234;
+            var tile = Main.tile[i, j];
+            int xPos = tile.TileFrameX;
+            int yPos = tile.TileFrameY;
+            int xOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);
             xPos += xOffset;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = GetDrawColour(i, j, new Color(100, 100, 100, 50));
-            Tile trackTile = Main.tile[i, j];
-
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
+            if (!tile.IsHalfBlock && tile.Slope == 0)
             {
                 Main.spriteBatch.Draw(GlowTexture, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }
-            else if (trackTile.IsHalfBlock)
+            else if (tile.IsHalfBlock)
             {
                 Main.spriteBatch.Draw(GlowTexture, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }

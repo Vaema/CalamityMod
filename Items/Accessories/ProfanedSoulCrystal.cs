@@ -516,9 +516,9 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<ProfanedSoulArtifact>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<DivineGeode>(50).
                 AddIngredient<UnholyEssence>(100).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<ProfanedCrucible>().
                 Register();
         }

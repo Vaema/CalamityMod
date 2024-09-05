@@ -91,8 +91,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<TrueCausticEdge>().
                 AddIngredient(ItemID.BrokenHeroSword).
-                AddIngredient(ItemID.FlaskofVenom, 5).
                 AddIngredient(ItemID.ChlorophyteBar, 15).
+                AddIngredient(ItemID.VialofVenom, 10).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

@@ -21,7 +21,6 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
@@ -205,6 +204,54 @@ namespace CalamityMod
                 PopupGUIManager.LoadGUIs();
             }
         }
+
+        #region BiomeLava
+        public static void LavaStytleToBiomeLava()
+        {
+            CalamityMod calamity = GetInstance<CalamityMod>();
+            Mod biomelava = calamity.biomeLava;
+            if (biomelava == null)
+                return;
+
+            foreach (ModLavaStyle item in LavaStylesLoader.Content)
+            {
+                int type = item.Slot;
+                ModLavaStyle lavaStyle = LavaStylesLoader.Get(type);
+                if (lavaStyle != null)
+                {
+                    Func<int> GetSplashDust = lavaStyle.GetSplashDust;
+                    Func<int> GetDropletGore = lavaStyle.GetDropletGore;
+                    Func<int, int, float, float, float, Vector3> ModifyLightFunc = ModifyLight;
+                    Func<bool> IsLavaActive = lavaStyle.IsLavaActive;
+                    Func<bool> lavafallGlowmask = lavaStyle.LavafallGlowmask;
+                    Func<Player, NPC, int, Action> InflictDebuffFunc = InflictDebuff;
+                    Func<bool> yes = InflictsOnFire;
+
+                    Vector3 ModifyLight(int x, int y, float r, float g, float b)
+                    {
+                        lavaStyle.ModifyLight(x, y, ref r, ref g, ref b);
+                        return new Vector3(r, g, b);
+                    }
+
+                    Action InflictDebuff(Player player, NPC npc, int onfireDuration)
+                    {
+                        if (player != null && npc == null)
+                        {
+                            lavaStyle.InflictDebuff(player, onfireDuration);
+                        }
+                        return null;
+                    }
+
+                    bool InflictsOnFire()
+                    {
+                        return true;
+                    }
+
+                    biomelava.Call("ModLavaStyle", calamity, lavaStyle.Name, lavaStyle.Texture, lavaStyle.BlockTexture, lavaStyle.SlopeTexture, lavaStyle.WaterfallTexture, GetSplashDust, GetDropletGore, ModifyLightFunc, IsLavaActive, lavafallGlowmask, InflictDebuffFunc, yes);
+                }
+            }
+        }
+        #endregion
 
         #region WikiThis
         // This is a separate function because it only runs clientside

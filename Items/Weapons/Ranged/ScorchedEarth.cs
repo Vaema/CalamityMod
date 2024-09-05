@@ -63,9 +63,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BlissfulBombardier>().
+                AddRecipeGroup("AnyAdamantiteBar", 15).
                 AddIngredient<DarksunFragment>(10).
                 AddIngredient(ItemID.FragmentSolar, 50).
-                AddRecipeGroup("AnyAdamantiteBar", 15).
                 AddTile<CosmicAnvil>().
                 Register();
         }
