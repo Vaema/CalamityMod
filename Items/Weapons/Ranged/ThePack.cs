@@ -51,9 +51,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Scorpio>().
                 AddIngredient(ItemID.MarbleBlock, 50).
-                AddIngredient<ArmoredShell>(4).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).
+                AddIngredient<ArmoredShell>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

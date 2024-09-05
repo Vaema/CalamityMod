@@ -6,10 +6,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class ElementalDiskSplit : ModProjectile, ILocalizedModType
+    public class ReboundingRainbowSplit : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ElementalDisk";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ReboundingRainbow";
 
         public override void SetStaticDefaults()
         {

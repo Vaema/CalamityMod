@@ -900,15 +900,6 @@ PestilentDefiler: {
 	Tooltip: Converts musket balls into plague rounds that explode and split apart on hit
 }
 
-Phangasm: {
-	DisplayName: Phangasm
-	Tooltip:
-		'''
-		Fires a spread of 5 arrows and emits phantom arrows on enemy hits
-		66% chance to save ammo
-		'''
-}
-
 Photoviscerator: {
 	DisplayName: Photoviscerator
 	Tooltip:
@@ -1006,6 +997,15 @@ ReedBlowgun: {
 		'''
 }
 
+Riftburst: {
+	DisplayName: Riftburst
+	Tooltip:
+		'''
+		Fires a spread of 5 arrows and emits phantom arrows on enemy hits
+		66% chance to save ammo
+		'''
+}
+
 RubicoPrime: {
 	DisplayName: Rubico Prime
 	Tooltip:
@@ -1015,8 +1015,8 @@ RubicoPrime: {
 		'''
 }
 
-SandstormGun: {
-	DisplayName: Sandstorm
+Sandblaster: {
+	DisplayName: Sandblaster
 	Tooltip:
 		'''
 		Fires sand bullets that explode and slow enemies on hit

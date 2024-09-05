@@ -11,7 +11,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Phangasm : ModItem, ILocalizedModType
+    [LegacyName("Phangasm")]
+    public class Riftburst : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
@@ -30,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.DamageType = DamageClass.Ranged;
             Item.channel = true;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<PhangasmBow>();
+            Item.shoot = ModContent.ProjectileType<RiftburstBow>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
             Item.rare = ModContent.RarityType<DarkBlue>();
@@ -44,13 +45,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PhangasmBow>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<RiftburstBow>(), damage, knockback, player.whoAmI);
             return false;
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/PhangasmGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/RiftburstGlow").Value);
         }
 
         public override void AddRecipes()

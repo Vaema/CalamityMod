@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<HoneyDew>().
-                AddIngredient<TrapperBulb>(3).
                 AddIngredient<LivingShard>(6).
                 // TODO -- Replace with Water Essence
                 AddIngredient<EssenceofSunlight>(5).

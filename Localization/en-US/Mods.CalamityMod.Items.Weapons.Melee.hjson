@@ -434,15 +434,6 @@ EarthenPike: {
 		'''
 }
 
-ElementalLance: {
-	DisplayName: Elemental Lance
-	Tooltip:
-		'''
-		Fires a lance beam that splits multiple times as it travels
-		'Rend the cosmos asunder!'
-		'''
-}
-
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
 	Tooltip: Throws a flurry of bouncing knives that can heal the user
@@ -450,11 +441,19 @@ EmpyreanKnives: {
 
 EntropicClaymore: {
 	DisplayName: Entropic Claymore
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Fires a spread of living plasma that swims though the air
 		Plasma will track your cursor or enemies near it, prioritizing which is closest
 		The plasma pierces, but will stop tracking after hitting the first enemy
+		'''
+	TooltipGFB:
+		'''
+		Fires a spread of dead tapeworms that swim throuh the air
+		Tapeworms will track your cursor or enemies near it, prioritizing which is closest
+		The tapeworms pierce, but will stop tracking after hitting the first enemy
+		[c/FF0000:'Go my tapeworms, make their balls itch']
 		'''
 }
 
@@ -698,7 +697,7 @@ Hellkite: {
 		'''
 		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
 		Swings a slow and heavy blade with powerful knockback
-		Holding <right> while swinging will begin charging a strengthened swing
+		Holding <right> will begin charging a strengthened swing
 		Releasing <right> while fully charged will unleash a devastating slash
 		[c/E1B65F:'Feel the strength of a blade forged through passion']
 		'''
@@ -1427,6 +1426,15 @@ UrchinFlail: {
 UrchinMace: {
 	DisplayName: Urchin Mace
 	Tooltip: Throws out a whirlpool when released at full charge
+}
+
+VanishingPoint: {
+	DisplayName: Vanishing Point
+	Tooltip:
+		'''
+		Fires a lance beam that splits multiple times as it travels
+		'Rend the cosmos asunder!'
+		'''
 }
 
 VeinBurster: {

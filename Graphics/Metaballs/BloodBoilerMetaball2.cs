@@ -50,7 +50,7 @@ namespace CalamityMod.Graphics.Metaballs
 
         public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
 
-        public override Color EdgeColor => Color.DarkRed;
+        public override Color EdgeColor => Color.Red with { A = 0 };
 
         public override void Update()
         {
@@ -85,7 +85,7 @@ namespace CalamityMod.Graphics.Metaballs
         public override void DrawInstances()
         {
             float pureRedIntensity = 0.15f;
-            float opacity = 0.3f;
+            float opacity = 1f;
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
 
             foreach (BloodBoilerParticle2 particle in Particles)

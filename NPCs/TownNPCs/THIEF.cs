@@ -354,8 +354,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
         {
-            cooldown = 180;
-            randExtraCooldown = 60;
+            cooldown = 90;
+            randExtraCooldown = 15;
         }
 
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)

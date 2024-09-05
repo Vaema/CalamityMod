@@ -84,12 +84,12 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ExoPrism>(5).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<ExoPrism>(5).
                 AddIngredient<LifeAlloy>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<AscendantSpiritEssence>().
                 AddIngredient<GalacticaSingularity>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile<DraedonsForge>().
                 Register();
         }
