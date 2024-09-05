@@ -44,12 +44,12 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<AmalgamatedBrain>().
+                AddIngredient<CosmiliteBar>(5).
+                AddIngredient<AscendantSpiritEssence>(4).
                 AddIngredient<UnholyCore>(5).
                 AddIngredient<MolluskHusk>(10).
                 AddIngredient<CorrodedFossil>(15).
                 AddIngredient<PlagueCellCanister>(15).
-                AddIngredient<CosmiliteBar>(5).
-                AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -50,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Terragrim).
-                AddIngredient<DemonicBoneAsh>(10).
+                AddIngredient<ScorchedBone>(10).
                 AddIngredient<BloodstoneCore>(25).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

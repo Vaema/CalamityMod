@@ -30,8 +30,8 @@ namespace CalamityMod.Items.Materials
             CreateRecipe().
                 AddIngredient(ItemID.FragmentSolar).
                 AddIngredient(ItemID.FragmentVortex).
-                AddIngredient(ItemID.FragmentStardust).
                 AddIngredient(ItemID.FragmentNebula).
+                AddIngredient(ItemID.FragmentStardust).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

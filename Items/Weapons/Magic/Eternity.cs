@@ -54,9 +54,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<Heresy>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<DarkPlasma>(20).
                 AddIngredient(ItemID.UnicornHorn, 5).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

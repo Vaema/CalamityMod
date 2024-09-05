@@ -551,8 +551,8 @@ namespace CalamityMod.Systems
 
             // Demon Conch
             Recipe.Create(ItemID.DemonConch).
-                AddIngredient<DemonicBoneAsh>().
                 AddIngredient(ItemID.HellstoneBar, 4).
+                AddIngredient<ScorchedBone>(8).
                 AddTile(TileID.Hellforge).
                 Register();
 
@@ -565,8 +565,8 @@ namespace CalamityMod.Systems
 
             // Lava Fishing Hook
             Recipe.Create(ItemID.LavaFishingHook).
-                AddIngredient(ItemID.Seashell).
                 AddIngredient(ItemID.HellstoneBar, 10).
+                AddIngredient(ItemID.Seashell).
                 AddTile(TileID.Hellforge).
                 Register();
 
@@ -823,7 +823,7 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.OpticStaff), RemoveIngredient(ItemID.HallowedBar) },
 
                 // Swap hellstone recipe ordering (they have bars first and it's wrong and irritating)
-                { VanillaEach(ItemID.Flamarang, ItemID.PhoenixBlaster), SwapIngredients(0, 1) },
+                { VanillaEach(ItemID.Flamarang, ItemID.PhoenixBlaster, ItemID.FireproofBugNet), SwapIngredients(0, 1) },
 
                 // Swap Beetle Armor recipe ordering (they have beetle husks first and it's wrong and irritating)
                 { VanillaEach(ItemID.BeetleHelmet, ItemID.BeetleScaleMail, ItemID.BeetleShell, ItemID.BeetleLeggings), SwapIngredients(0, 1) },
@@ -1065,38 +1065,23 @@ namespace CalamityMod.Systems
         private static void AddBloodOrbPotionRecipes()
         {
             // List of vanilla potions which can be crafted with Blood Orbs
-            short[] potions = new[]
+            short[] FiveOrbGroup = new[]
             {
                 ItemID.WormholePotion,
                 ItemID.TeleportationPotion,
                 ItemID.SwiftnessPotion,
                 ItemID.FeatherfallPotion,
-                ItemID.GravitationPotion,
                 ItemID.ShinePotion,
                 ItemID.InvisibilityPotion,
                 ItemID.NightOwlPotion,
-                ItemID.SpelunkerPotion,
                 ItemID.HunterPotion,
                 ItemID.TrapsightPotion,
-                ItemID.BattlePotion,
-                ItemID.CalmingPotion,
-                ItemID.WrathPotion,
-                ItemID.RagePotion,
                 ItemID.ThornsPotion,
                 ItemID.IronskinPotion,
-                ItemID.EndurancePotion,
                 ItemID.RegenerationPotion,
-                ItemID.LifeforcePotion,
-                ItemID.HeartreachPotion,
                 ItemID.TitanPotion,
                 ItemID.ArcheryPotion,
                 ItemID.AmmoReservationPotion,
-                ItemID.MagicPowerPotion,
-                ItemID.ManaRegenerationPotion,
-                ItemID.SummoningPotion,
-                ItemID.InfernoPotion,
-                ItemID.WarmthPotion,
-                ItemID.ObsidianSkinPotion,
                 ItemID.GillsPotion,
                 ItemID.WaterWalkingPotion,
                 ItemID.FlipperPotion,
@@ -1109,13 +1094,47 @@ namespace CalamityMod.Systems
                 ItemID.LovePotion,
                 ItemID.StinkPotion,
                 ItemID.RecallPotion,
+                ItemID.LuckPotionLesser
+            };
+
+            short[] TenOrbGroup = new[]
+            {
+                ItemID.GravitationPotion,
+                ItemID.SpelunkerPotion,
+                ItemID.BattlePotion,
+                ItemID.CalmingPotion,
+                ItemID.MagicPowerPotion,
+                ItemID.ManaRegenerationPotion,
+                ItemID.WarmthPotion,
+                ItemID.ObsidianSkinPotion,
                 ItemID.PotionOfReturn,
-                ItemID.LuckPotionLesser,
+                ItemID.LuckPotion,
                 ItemID.BiomeSightPotion
+            };
+
+            short[] FifteenOrbGroup = new[]
+            {
+                ItemID.WrathPotion,
+                ItemID.RagePotion,
+                ItemID.EndurancePotion,
+                ItemID.LifeforcePotion,
+                ItemID.HeartreachPotion,
+                ItemID.SummoningPotion,
+                ItemID.InfernoPotion,
+                ItemID.LuckPotionGreater
             };
             Recipe r;
 
-            foreach (var potion in potions)
+            foreach (var potion in FiveOrbGroup)
+            {
+                r = Recipe.Create(potion);
+                r.AddIngredient(ItemID.BottledWater);
+                r.AddIngredient(ModContent.ItemType<BloodOrb>(), 5);
+                r.AddTile(TileID.AlchemyTable);
+                r.Register();
+                r.DisableDecraft();
+            }
+            foreach (var potion in TenOrbGroup)
             {
                 r = Recipe.Create(potion);
                 r.AddIngredient(ItemID.BottledWater);
@@ -1124,20 +1143,15 @@ namespace CalamityMod.Systems
                 r.Register();
                 r.DisableDecraft();
             }
-
-            r = Recipe.Create(ItemID.LuckPotion);
-            r.AddIngredient(ItemID.BottledWater);
-            r.AddIngredient(ModContent.ItemType<BloodOrb>(), 20);
-            r.AddTile(TileID.AlchemyTable);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.LuckPotionGreater);
-            r.AddIngredient(ItemID.BottledWater);
-            r.AddIngredient(ModContent.ItemType<BloodOrb>(), 30);
-            r.AddTile(TileID.AlchemyTable);
-            r.Register();
-            r.DisableDecraft();
+            foreach (var potion in FifteenOrbGroup)
+            {
+                r = Recipe.Create(potion);
+                r.AddIngredient(ItemID.BottledWater);
+                r.AddIngredient(ModContent.ItemType<BloodOrb>(), 15);
+                r.AddTile(TileID.AlchemyTable);
+                r.Register();
+                r.DisableDecraft();
+            }
         }
         #endregion
 
@@ -1767,7 +1781,7 @@ namespace CalamityMod.Systems
 
             // Bezoar (poison)
             r = Recipe.Create(ItemID.Bezoar);
-            r.AddIngredient(ModContent.ItemType<MurkyPaste>(), 3);
+            r.AddIngredient(ItemID.JungleSpores, 15);
             r.AddIngredient(ItemID.Stinger, 5);
             r.AddTile(TileID.Anvils);
             r.Register();

@@ -71,7 +71,6 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             CreateRecipe().
                 AddIngredient(ItemID.LifeFruit, 5).
-                AddIngredient<TrapperBulb>(5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).

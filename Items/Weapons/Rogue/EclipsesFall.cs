@@ -52,9 +52,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<NightsGaze>().
-                AddIngredient<CoreofSunlight>(12).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<CoreofSunlight>(12).
                 AddTile<CosmicAnvil>().
                 Register();
         }

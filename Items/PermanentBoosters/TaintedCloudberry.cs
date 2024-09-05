@@ -75,7 +75,6 @@ namespace CalamityMod.Items.PermanentBoosters
                 AddIngredient(ItemID.LifeFruit, 5).
                 AddIngredient<UelibloomBar>(10).
                 AddIngredient<DivineGeode>(10).
-                AddIngredient<UnholyEssence>(20).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
