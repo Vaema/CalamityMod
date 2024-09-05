@@ -188,15 +188,19 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (spiritOrigin)
+            {
+                if (Player.Calamity().cooldowns.TryGetValue(DaawnlightSpiritOriginExtraCrit.ID, out var cooldown))
+                    cooldown.timeLeft = Math.Max(0, ExtraCritHardCap - SpiritOrginCritChanceIncrease);
+                else
+                    Player.AddCooldown(DaawnlightSpiritOriginExtraCrit.ID, ExtraCritHardCap);
+            }
 
             int critChanceDecreaseRate = (int)Utils.Remap(SpiritOrginCritChanceIncrease, 0, ExtraCritHardCap, MinimumLossRate, MaximumLossRate);
             int perFrameCritChanceDecrease = SpiritOrginCritChanceIncrease <= ExtraCritHardCap ? MinCritLossPerFrame :
                 (int)Utils.Remap(SpiritOrginCritChanceIncrease, ExtraCritHardCap, ExtraCritHardCap + CritHardCapScalingInterval, MinCritLossPerFrame, CritLossPerFrameIncreasePerInterval, clamped: false);
             if (SpiritOrginCritChanceIncrease > 0 && Player.miscCounter % critChanceDecreaseRate == 0)
-            {
                 SpiritOrginCritChanceIncrease -= perFrameCritChanceDecrease;
-                Main.NewText(SpiritOrginCritChanceIncrease, Color.Lerp(Color.Green, Color.Red, Utils.GetLerpValue(0, ExtraCritHardCap, SpiritOrginCritChanceIncrease, true)) * 5f);
-            }
 
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;

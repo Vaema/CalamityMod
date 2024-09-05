@@ -6158,6 +6158,24 @@ namespace CalamityMod.NPCs
                             bullseye.ai[2] = 1f;
                         }
 
+                        if (Main.rand.NextBool(5))
+                        {
+                            int randomStarAmount = Main.rand.Next(3, 6);
+                            float randomCircleRotation = Main.rand.NextFloat(MathHelper.TwoPi);
+                            for (int i = 0 ; i < randomStarAmount ; i++)
+                            {
+                                Particle fancyStars = new FancyStars(
+                                bullseye.Center,
+                                Main.rand.NextFloat(MathHelper.TwoPi) * Main.rand.NextBool().ToDirectionInt(),
+                                Main.rand.NextFloat(0.42f, 0.63f),
+                                (MathHelper.TwoPi / randomStarAmount * i).ToRotationVector2().RotatedBy(randomCircleRotation).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(7f, 12f),
+                                Main.rand.NextFloat(0.1f, 0.5f),
+                                55,
+                                new Color(Main.rand.Next(256), Main.rand.Next(256), Main.rand.Next(256)) * 1.2f);
+                                GeneralParticleHandler.SpawnParticle(fancyStars);
+                            } 
+                        }
+
                         bullseye.netUpdate = true;
                     }
                 }
