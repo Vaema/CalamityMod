@@ -1,7 +1,7 @@
 // Broken Biome Blade
 DefaultAttunement: {
 	Name: Pure Clarity
-	Function: Fires a weak projectile that crushes enemy defenses
+	Function: Fires a weak sword beam that crushes enemy defenses
 }
 
 HotAttunement: {
@@ -28,8 +28,9 @@ TrueDefaultAttunement: {
 	Name: Pure Clarity
 	Function:
 		'''
-		Fires a weak projectile that crushes enemy defenses
-		True melee hits mark enemies with a sigil; your projectiles home onto marked foes
+		Fires a weak sword beam that crushes enemy defenses
+		True melee hits charge a powerful lunge, unleashed when you stop swinging the sword
+		Enemies hit by the lunge are marked with a sigil that sword beams will home in on
 		'''
 }
 
