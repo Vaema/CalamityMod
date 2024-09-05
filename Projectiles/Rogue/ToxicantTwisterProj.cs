@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ToxicantTwister";
 
-        private int targetIndex = -1;
         public float circleRange = -150;
         public float circleSpeed = 1;
         public override void SetStaticDefaults()

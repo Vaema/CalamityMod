@@ -161,6 +161,6 @@ namespace CalamityMod.Projectiles.Melee
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 170);
 
         // Deal damage only once it starts swinging down and then going back up 
-        public override bool? CanDamage() => ((frameX == 0 && frameY >= 3) || frameX == 1) && Projectile.frameCounter > 6;
+        public override bool? CanDamage() => ((frameX == 0 && frameY >= 3) || frameX == 1);
     }
 }

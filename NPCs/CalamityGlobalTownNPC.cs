@@ -847,7 +847,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Mechanic:
-                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
+                        chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.HasPortalGun");
+                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
@@ -928,9 +930,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Steampunker:
-                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
-                        chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.HasPortalGun");
-                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneAstral)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.Astral");

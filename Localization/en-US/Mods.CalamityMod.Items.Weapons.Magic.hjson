@@ -899,8 +899,8 @@ ThornBlossom: {
 		'''
 }
 
-Thunderstorm: {
-	DisplayName: Thunderstorm
+Thunderbolt: {
+	DisplayName: Thunderbolt
 	Tooltip:
 		'''
 		Fires a stream of exploding green plasma bullets that rain down additional plasma from the sky

@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Phangasm>().
+                AddIngredient<Riftburst>().
                 AddIngredient<PlagueCellCanister>(20).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().

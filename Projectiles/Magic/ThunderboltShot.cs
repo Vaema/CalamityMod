@@ -5,7 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ThunderstormShot : ModProjectile, ILocalizedModType
+    public class ThunderboltShot : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
             SoundEngine.PlaySound(SoundID.Item125, Projectile.Center);
             for (int n = 0; n < 5; n++)
             {
-                CalamityUtils.ProjectileRain(source, Projectile.Center, 200f, 100f, 1500f, 1500f, 29f, ModContent.ProjectileType<ThunderstormShotSplit>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                CalamityUtils.ProjectileRain(source, Projectile.Center, 200f, 100f, 1500f, 1500f, 29f, ModContent.ProjectileType<ThunderboltShotSplit>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
             Projectile.ExpandHitboxBy(36);
             int dustAmt = 36;

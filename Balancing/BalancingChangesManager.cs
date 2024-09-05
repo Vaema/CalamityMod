@@ -303,7 +303,7 @@ namespace CalamityMod.Balancing
             // 80% resist to Hell's Sun.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Providence>(), new ProjectileResistBalancingRule(0.2f, ProjectileType<HellsSunProj>())));
 
-            // 35% resist to Elemental Lance. This thing desperately needs a rework.
+            // 35% resist to Vanishing Point. This thing desperately needs a rework.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Providence>(), new ProjectileResistBalancingRule(0.65f, ProjectileType<SpatialSpear>(), ProjectileType<SpatialSpear2>(), ProjectileType<SpatialSpear3>(), ProjectileType<SpatialSpear4>())));
             #endregion
 

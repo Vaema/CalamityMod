@@ -6,8 +6,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    [LegacyName("SpatialLance")]
-    public class ElementalLance : ModItem, ILocalizedModType
+    [LegacyName("SpatialLance", "ElementalLance")]
+    public class VanishingPoint : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
-            Item.shoot = ModContent.ProjectileType<ElementalLanceProjectile>();
+            Item.shoot = ModContent.ProjectileType<VanishingPointProjectile>();
             Item.shootSpeed = 12f;
         }
 
