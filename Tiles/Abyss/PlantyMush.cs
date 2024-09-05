@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
@@ -51,93 +52,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
+            frameXOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_01_Low0(i, j);
         }
 
         public override void RandomUpdate(int i, int j)
@@ -161,24 +76,26 @@ namespace CalamityMod.Tiles.Abyss
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
 
+            Tile down = Main.tile[i, j + 1];
             int vineLength = WorldGen.genRand.Next((int)Main.rockLayer, (int)(Main.rockLayer + (double)Main.maxTilesY * 0.143));
-            if (Main.tile[i, j + 1] != null)
+            if (down != null)
             {
-                if (!Main.tile[i, j + 1].HasTile && Main.tile[i, j + 1].TileType != (ushort)ModContent.TileType<ViperVines>())
+                if (!down.HasTile && down.TileType != (ushort)ModContent.TileType<ViperVines>())
                 {
-                    if (Main.tile[i, j + 1].LiquidAmount == 255 &&
-                        Main.tile[i, j + 1].WallType == (ushort)ModContent.WallType<AbyssGravelWall>() &&
-                        Main.tile[i, j + 1].LiquidType != LiquidID.Lava)
+                    if (down.LiquidAmount == 255 &&
+                        down.WallType == (ushort)ModContent.WallType<AbyssGravelWall>() &&
+                        down.LiquidType != LiquidID.Lava)
                     {
                         bool canGrowVine = false;
                         for (int k = vineLength; k > vineLength - 10; k--)
                         {
-                            if (Main.tile[i, k].BottomSlope)
+                            var vineTile = Main.tile[i, k];
+                            if (vineTile.BottomSlope)
                             {
                                 canGrowVine = false;
                                 break;
                             }
-                            if (Main.tile[i, k].HasTile && !Main.tile[i, k].BottomSlope)
+                            if (vineTile.HasTile && !vineTile.BottomSlope)
                             {
                                 canGrowVine = true;
                                 break;
@@ -188,8 +105,9 @@ namespace CalamityMod.Tiles.Abyss
                         {
                             int vineX = i;
                             int vineY = j + 1;
-                            Main.tile[vineX, vineY].TileType = (ushort)ModContent.TileType<ViperVines>();
-                            Main.tile[vineX, vineY].Get<TileWallWireStateData>().HasTile = true;
+                            var newVineTile = Main.tile[vineX, vineY];
+                            newVineTile.TileType = (ushort)ModContent.TileType<ViperVines>();
+                            newVineTile.Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(vineX, vineY, true);
                             if (Main.netMode == NetmodeID.Server)
                                 NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
