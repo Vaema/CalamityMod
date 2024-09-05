@@ -51,8 +51,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Terragrim).
-                AddIngredient<ScorchedBone>(10).
                 AddIngredient<BloodstoneCore>(25).
+                AddIngredient<ScorchedBone>(10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
