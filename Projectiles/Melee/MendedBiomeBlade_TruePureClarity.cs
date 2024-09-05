@@ -61,11 +61,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void UseStyle()
         {
+            // If the player stops using the weapon after hitting with it once, switch to lunge.
             if (Owner.CantUseHoldout())
             {
                 if (State == 0f && Projectile.numHits > 0)
                 {
                     State = 1f;
+                    SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
+
                     AnimationProgress = 0;
                     Projectile.rotation = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX).ToRotation();
                     Projectile.timeLeft = dashTime;
@@ -75,6 +78,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
+            // Normal swing behavior.
             if (State == 0f)
             {
                 dashDirection = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero).SafeNormalize(Vector2.UnitX);
@@ -84,6 +88,7 @@ namespace CalamityMod.Projectiles.Melee
                 else
                     mousePos = Owner.Calamity().mouseWorld;
 
+                // Reset before a new swing.
                 if (!doSwing)
                 {
                     for (int i = 0; i < Main.maxNPCs; i++)
@@ -158,6 +163,7 @@ namespace CalamityMod.Projectiles.Melee
                             MathHelper.ToRadians(MathHelper.Lerp(150f * SwingDir * Owner.direction, 120f * -SwingDir * Owner.direction, CalamityUtils.ExpInOutEasing(swingTime / swingTimeMax, 1))),
                             0.2f);
 
+                        // Extra swing control.
                         if (swingTime >= swingTimeMax)
                             doSwing = false;
                         if (swingTime < (int)(swingTimeMax * 0.7f))
@@ -171,6 +177,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else
             {
+                // These are set to ensure the lunge looks and works properly.
                 CanHit = true;
                 Owner.direction = Owner.velocity.X > 0f ? 1 : -1;
                 FlipAsSword = Owner.direction == -1 ? true : false;
@@ -179,12 +186,12 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
                 Owner.Calamity().LungingDown = true;
 
-                // Fancy particle dash effects
+                // Fancy particle dash effects.
                 Vector2 waterVel = Owner.velocity.RotatedBy(MathHelper.PiOver2 * (Main.rand.NextBool() ? 1 : -1)).RotatedByRandom(MathHelper.Pi / 16f).SafeNormalize(Vector2.UnitX) * 5f;
                 WaterFoamParticle water = new(Owner.Center, waterVel, 20, 0.45f, outlineColorBlue);
                 GeneralParticleHandler.SpawnParticle(water);
 
-                // Immediately cancel if the lunge hits a tile
+                // Immediately cancel if the lunge hits a tile.
                 Vector2 collisionCheckPos = Owner.Center + (dashDirection * 120 * Projectile.scale) - Vector2.One * 5f;
                 if (Collision.SolidCollision(collisionCheckPos, 10, 10))
                 {
@@ -207,13 +214,13 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (proj.active && proj.type == ModContent.ProjectileType<PurityProjectionSigil>() && proj.owner == Owner.whoAmI)
                     {
-                        // Reset the time left on the sigil and set the new target
+                        // Reset the time left on the sigil and set the new target.
                         proj.ai[0] = target.whoAmI;
                         proj.timeLeft = TrueBiomeBlade.DefaultAttunement_SigilTime;
                         return;
                     }
                 }
-                // If no sigil exists, spawn one
+                // If no sigil exists, spawn one.
                 var source = Owner.GetSource_ItemUse(Owner.HeldItem);
                 Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<PurityProjectionSigil>(), 0, 0, Owner.whoAmI, target.whoAmI);
             }
@@ -227,7 +234,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnKill(int timeLeft)
         {
-            // Cut the velocity short if dashing
+            // Cut the velocity short if dashing.
             if (State == 1f)
                 Owner.velocity *= 0.33f;
 
@@ -243,6 +250,7 @@ namespace CalamityMod.Projectiles.Melee
                 Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
                 float r = FlipAsSword ? (State == 1f ? MathHelper.Pi : MathHelper.PiOver2) : 0f;
 
+                // Draw extra outline sprites if you've hit once, to signify that you can lunge.
                 if (Projectile.numHits > 0)
                 {
                     for (int i = 0; i < 5; i++)
