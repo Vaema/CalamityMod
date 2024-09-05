@@ -138,11 +138,9 @@ namespace CalamityMod.Projectiles.Ranged
                 // Draw the masking smoke
                 if (MistType > 2 || MistType < 0)
                     return false;
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
                 Rectangle frame = mist.Frame(1, 3, 0, MistType);
-                Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f), mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
-                Main.EntitySpriteDraw(mist, firePos, frame, fireColor, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f) with { A = 0 }, mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
+                Main.EntitySpriteDraw(mist, firePos, frame, fireColor with { A = 0 }, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
             }
             return false;
         }
