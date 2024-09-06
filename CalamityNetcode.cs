@@ -165,17 +165,6 @@ namespace CalamityMod
                         break;
 
                     //
-                    // Music event syncs
-                    //
-                    case CalamityModMessageType.MusicEventSyncRequest:
-                        MusicEventSystem.FulfillSyncRequest(whoAmI);
-                        break;
-
-                    case CalamityModMessageType.MusicEventSyncResponse:
-                        MusicEventSystem.ReceiveSyncResponse(reader);
-                        break;
-
-                    //
                     // Default case: with no idea how long the packet is, we can't safely read data.
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
