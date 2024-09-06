@@ -19,7 +19,7 @@ namespace CalamityMod.Packets
 
         public override byte MessageType => (byte)CalamityModMessageType.ChargingStationStandard;
 
-        public static void Send(TEChargingStation chargingStn, short timer, short cellStack, float chargeOrNaN)
+        public static void Send(TEChargingStation chargingStn, short timer, short cellStack, float chargeOrNaN, int toClient = -1, int ignoreClient = -1)
         {
             if (chargingStn is null)
                 return;
@@ -29,6 +29,7 @@ namespace CalamityMod.Packets
             packet.Write(timer);
             packet.Write(cellStack);
             packet.Write(chargeOrNaN);
+            packet.Send(toClient, ignoreClient);
         }
 
         public override void HandlePacket(in BinaryReader packet, int sender)
