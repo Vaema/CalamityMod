@@ -45,21 +45,18 @@ namespace CalamityMod
         #endregion TileEntity RW
 
         #region Entity RW
-        public static void WriteWhoAmI(this BinaryWriter writer, Entity entity)
+        public static void WriteWhoAmI(this BinaryWriter writer, ModPlayer player) => WriteWhoAmI(writer, player?.Player);
+        public static void WriteWhoAmI(this BinaryWriter writer, Player player)
         {
-            if (entity is NPC npc)
-            {
-                writer.Write((byte)npc.whoAmI);
-            }
-            else if (entity is Player player)
-            {
-                writer.Write((byte)player.whoAmI);
-            }
-            else
-            {
-                CalamityMod.Instance.Logger.Error($"Type: {entity} is not eligible for networking! We'll still send whoAmI for packet align, but we should fix this immediately! {Environment.StackTrace}");
-                writer.Write((byte)entity.whoAmI);
-            }
+            byte whoAmI = (byte)(player?.whoAmI ?? Main.maxPlayers);
+            writer.Write(whoAmI);
+        }
+
+        public static void WriteWhoAmI(this BinaryWriter writer, ModNPC npc) => WriteWhoAmI(writer, npc?.NPC);
+        public static void WriteWhoAmI(this BinaryWriter writer, NPC npc)
+        {
+            byte whoAmI = (byte)(npc?.whoAmI ?? Main.maxNPCs);
+            writer.Write(whoAmI);
         }
 
         public static CalamityPlayer ReadCalamityPlayer(this BinaryReader reader, bool nullOnInactive = true) => ReadPlayer(reader, nullOnInactive)?.Calamity() ?? null;

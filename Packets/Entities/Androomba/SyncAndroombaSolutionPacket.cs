@@ -21,7 +21,7 @@ namespace CalamityMod.Packets
                 return;
 
             var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(roomba.NPC);
+            packet.WriteWhoAmI(roomba);
             packet.Write(solType != -1 ? solType : (int)roomba.NPC.ai[3]); // Solution
             packet.Send(toClient, ignoreClient);
         }

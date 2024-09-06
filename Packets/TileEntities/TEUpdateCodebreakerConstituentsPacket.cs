@@ -19,6 +19,9 @@ namespace CalamityMod.Packets
 
         public static void Send(TECodebreaker codeBreaker, int toClient = -1, int ignoreClient = -1)
         {
+            if (codeBreaker is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             BitsByte containmentFlagWrapper = new BitsByte();
             containmentFlagWrapper[0] = codeBreaker.ContainsDecryptionComputer;

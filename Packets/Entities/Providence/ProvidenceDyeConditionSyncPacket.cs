@@ -20,7 +20,7 @@ namespace CalamityMod.Packets
                 return;
 
             var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(providence.NPC);
+            packet.WriteWhoAmI(providence);
             packet.Write(providence.hasTakenDaytimeDamage);
             packet.Send(toClient, ignoreClient);
         }

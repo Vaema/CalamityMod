@@ -17,6 +17,9 @@ namespace CalamityMod.Packets
 
         public static void Send(TELabHologramProjector projector, bool poppingUp, int toClient = -1, int ignoreClient = -1)
         {
+            if (projector is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteTileEntityID(projector);
             packet.Write(poppingUp);

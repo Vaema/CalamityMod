@@ -22,7 +22,7 @@ namespace CalamityMod.Packets
                 return;
 
             var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(crab.NPC);
+            packet.WriteWhoAmI(crab);
             packet.Write(phase != -1 ? phase : (int)crab.NPC.ai[0]); // Phase
             packet.Send(toClient, ignoreClient);
         }

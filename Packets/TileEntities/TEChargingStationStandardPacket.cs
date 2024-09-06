@@ -21,6 +21,9 @@ namespace CalamityMod.Packets
 
         public static void Send(TEChargingStation chargingStn, short timer, short cellStack, float chargeOrNaN)
         {
+            if (chargingStn is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteTileEntityID(chargingStn);
             packet.Write(timer);

@@ -20,6 +20,9 @@ namespace CalamityMod.Packets
 
         public static void Send(TEChargingStation chargingStn, Item pluggedItem, int toClient = -1, int ignoreClient = -1)
         {
+            if (chargingStn is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteTileEntityID(chargingStn);
             ItemIO.Send(pluggedItem, packet, writeStack: true, writeFavorite: true);

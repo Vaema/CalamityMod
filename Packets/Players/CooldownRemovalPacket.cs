@@ -19,8 +19,11 @@ namespace CalamityMod.Packets
 
         public static void Send(CalamityPlayer player, ushort[] netIDsToRemove, int toClient = -1, int ignoreClient = -1)
         {
+            if (player is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(player.Player);
+            packet.WriteWhoAmI(player);
             packet.Write(netIDsToRemove.Length);
             for (int i = 0; i < netIDsToRemove.Length; i++)
             {

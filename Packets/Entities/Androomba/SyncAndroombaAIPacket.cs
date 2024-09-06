@@ -24,7 +24,7 @@ namespace CalamityMod.Packets
                 return;
 
             var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(roomba.NPC);
+            packet.WriteWhoAmI(roomba);
             packet.Write(phase != -1 ? phase : (int)roomba.NPC.ai[0]); // Phase
             packet.Send(toClient, ignoreClient);
         }

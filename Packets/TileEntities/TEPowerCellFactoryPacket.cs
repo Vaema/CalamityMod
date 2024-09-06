@@ -19,6 +19,9 @@ namespace CalamityMod.Packets
 
         public static void Send(TEPowerCellFactory cellFactory, long time, int stack, int toClient = -1, int ignoreClient = -1)
         {
+            if (cellFactory is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteTileEntityID(cellFactory);
             packet.Write(time);
