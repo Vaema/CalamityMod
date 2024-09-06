@@ -63,7 +63,7 @@ namespace CalamityMod
                         if (instanceProperty.PropertyType.IsAssignableFrom(type))
                         {
                             instanceProperty.SetValue(null, packetHandler);
-                            packetHandler._Prop_Static_Instance = instanceProperty;
+                            packetHandler._Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
                         }
                         else
                         {
@@ -166,39 +166,6 @@ namespace CalamityMod
                         break;
                     case CalamityModMessageType.UpdateCodebreakerDecryptCountdown:
                         TECodebreaker.ReadDecryptCountdownSync(mod, reader);
-                        break;
-
-                    //
-                    // Boss Rush
-                    //
-
-                    case CalamityModMessageType.BossRushStage:
-                        int stage = reader.ReadInt32();
-                        BossRushEvent.BossRushStage = stage;
-                        break;
-                    case CalamityModMessageType.BossRushStartTimer:
-                        BossRushEvent.StartTimer = reader.ReadInt32();
-                        break;
-                    case CalamityModMessageType.BossRushEndTimer:
-                        BossRushEvent.EndTimer = reader.ReadInt32();
-                        break;
-                    case CalamityModMessageType.EndBossRush:
-                        BossRushEvent.EndEffects();
-                        break;
-                    case CalamityModMessageType.BRHostileProjKillSync:
-                        int countdown3 = reader.ReadInt32();
-                        BossRushEvent.HostileProjectileKillCounter = countdown3;
-                        break;
-
-                    //
-                    // Mouse control syncs
-                    //
-
-                    case CalamityModMessageType.RightClickSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleRightClick(reader);
-                        break;
-                    case CalamityModMessageType.MousePositionSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleMousePosition(reader);
                         break;
 
                     //
