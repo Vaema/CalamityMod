@@ -1081,7 +1081,6 @@ namespace CalamityMod.Systems
                 ItemID.IronskinPotion,
                 ItemID.RegenerationPotion,
                 ItemID.TitanPotion,
-                ItemID.ArcheryPotion,
                 ItemID.AmmoReservationPotion,
                 ItemID.GillsPotion,
                 ItemID.WaterWalkingPotion,
@@ -1100,6 +1099,7 @@ namespace CalamityMod.Systems
 
             short[] TenOrbGroup = new[]
             {
+                ItemID.ArcheryPotion,
                 ItemID.GravitationPotion,
                 ItemID.SpelunkerPotion,
                 ItemID.BattlePotion,
