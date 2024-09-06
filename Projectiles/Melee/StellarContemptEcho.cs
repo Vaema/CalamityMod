@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,6 +20,7 @@ namespace CalamityMod.Projectiles.Melee
         public float rotatehammer = 35f;
         public int ColorAlpha = 225;
         public float speed = 0f;
+        public NPC targeted;
 
         public override void SetStaticDefaults()
         {
@@ -25,29 +29,21 @@ namespace CalamityMod.Projectiles.Melee
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
-        // This is all copied straight from PwnagehammerEcho with some minor edits.
         public override void SetDefaults()
         {
             Projectile.width = 74;
-            Projectile.height = 76;
+            Projectile.height = 74;
             Projectile.aiStyle = 0;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(64, 224, 208, ColorAlpha);
-        }
-
         public override void AI()
         {
-            Projectile.scale = 1.8f;
-            ColorAlpha -= 4;
             rotatehammer--;
             Projectile.rotation += MathHelper.ToRadians(rotatehammer) * Projectile.direction;
 
@@ -57,48 +53,54 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity *= 0.95f;
                 Projectile.rotation += MathHelper.ToRadians(Projectile.ai[0] * 0.5f) * Projectile.localAI[0];
             }
-            else if (Projectile.ai[0] > 42f)
+            else if (Projectile.ai[0] >= 42f)
             {
-                Projectile.extraUpdates = 1;
-                if (Projectile.ai[1] < 0f)
-                {
-                    CalamityUtils.HomeInOnNPC(Projectile, Projectile.tileCollide, 2000f, speed, 12f);
-                    if (Projectile.ai[0] > 80f)
-                        Projectile.Kill();
-                    return;
-                }
+                Projectile.extraUpdates = 5;
 
-                NPC target = Main.npc[(int)Projectile.ai[1]];
-                if (!target.CanBeChasedBy(Projectile, false) || !target.active)
+                targeted = Main.npc[(int)Projectile.ai[1]];
+                if (!targeted.CanBeChasedBy(Projectile, false) || !targeted.active || targeted == null)
+                    targeted = Projectile.Center.ClosestNPCAt(2000);
+                if (targeted != null)
                 {
-                    Projectile.Kill();
+                    float speedMult = 0.7f;
+                    Vector2 moveTotarget = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                    if (Projectile.velocity.Length() < MathHelper.Clamp(25 - Projectile.ai[0] * 0.1f, 10, 25) * speedMult)
+                        Projectile.velocity += moveTotarget * (0.35f + Projectile.ai[0] * 0.03f) * speedMult;
+                    else
+                        Projectile.velocity *= 0.9f;
                 }
                 else
+                    Projectile.Kill();
+
+                if (Main.rand.NextBool(6))
                 {
-                    float velConst = 7f;
-                    velConst--;
-                    Projectile.velocity = new Vector2((target.Center.X - Projectile.Center.X) / velConst, (target.Center.Y - Projectile.Center.Y) / velConst);
-                    Projectile.rotation += MathHelper.ToRadians(48f) * Projectile.localAI[0];
+                    Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
+                    Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
+                    Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, ModContent.DustType<LightDust>(), new Vector2(Projectile.velocity.X * 0.5f + velOffset.X, Projectile.velocity.Y * 0.5f + velOffset.Y));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(1.5f, 1.9f);
+                    dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
+                }
+            }
+            if (Projectile.ai[0] == 42f && targeted != null)
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, ((targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 25).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.2f, 1f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.8f, 1.9f);
+                    dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
                 }
             }
 
-
-            if (Main.rand.NextBool())
+            for (int i = 0; i < 2; i++)
             {
-                Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.Terragrim, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100);
+                Vector2 offset = new Vector2(0, -30).RotatedBy(-MathHelper.PiOver4 * 0.5f).RotatedBy(Projectile.rotation);
+                Vector2 velOffset = new Vector2(0, -5).RotatedBy(-MathHelper.PiOver4).RotatedBy(Projectile.rotation) * Main.rand.NextFloat(0.5f, 1f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset + Main.rand.NextVector2Circular(6, 6), Main.rand.NextBool(3) ? 278 : ModContent.DustType<LightDust>(), velOffset);
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(2.2f, 3.6f);
-            }
-
-            if (Main.rand.NextBool(6))
-            {
-                Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.Vortex, new Vector2(Projectile.velocity.X * 0.5f + velOffset.X, Projectile.velocity.Y * 0.5f + velOffset.Y), 100);
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(2.2f, 3.6f);
+                dust.scale = Main.rand.NextFloat(0.9f, 1.3f);
+                dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
             }
         }
 
@@ -109,12 +111,10 @@ namespace CalamityMod.Projectiles.Melee
 
             return null;
         }
-
-        public override bool CanHitPvp(Player target) => Projectile.ai[0] > 42f;
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.localAI[0] = target.whoAmI;
+            if (target == targeted)
+                Projectile.Kill();
         }
 
         public override bool PreKill(int timeLeft)
@@ -134,47 +134,51 @@ namespace CalamityMod.Projectiles.Melee
             for (int i = 0; i < numberOfDusts; i++)
             {
                 float rot = MathHelper.ToRadians(i * rotFactor);
+                float intensity = Main.rand.NextFloat(0.2f, 1f);
                 Vector2 offset = new Vector2(30f, 5.8f).RotatedBy(rot);
-                Vector2 velOffset = new Vector2(20.8f, 10.5f).RotatedBy(rot);
-                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, DustID.Vortex, velOffset.X, velOffset.Y);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity = velOffset;
-                Main.dust[dust].scale = 3.8f;
+                Vector2 velOffset = new Vector2(40.8f, 10.5f).RotatedBy(rot);
+                if (i % 2 == 0)
+                {
+                    Particle orb = new CustomSpark(Projectile.Center + offset, velOffset * intensity * 0.7f, "CalamityMod/Particles/Sparkle", false, (int)(40 * intensity), intensity, Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise, new Vector2(1f, 2f), true, true);
+                    GeneralParticleHandler.SpawnParticle(orb);
+                }
+                else
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, ModContent.DustType<LightDust>(), velOffset);
+                    dust.noGravity = true;
+                    dust.velocity = velOffset * intensity;
+                    dust.scale = Main.rand.NextFloat(2.1f, 2.8f) * intensity;
+                    dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
+                }
             }
 
-            for (int i = 0; i < 88; ++i)
+            for (int i = 0; i < 40; ++i)
             {
-                // Pick a random type of dust.
-                int dustID;
-                switch (Main.rand.Next(6))
-                {
-                    case 0:
-                        dustID = 229;
-                        break;
-                    case 1:
-                    case 2:
-                        dustID = 156;
-                        break;
-                    default:
-                        dustID = 156;
-                        break;
-                }
-
+                int dustID = ModContent.DustType<LightDust>();
                 // Choose a random speed and angle for the dust.
-                float dustSpeed = Main.rand.NextFloat(6.0f, 29.0f);
-                float angleRandom = 0.09f;
+                float dustSpeed = 45;
+                float intensity = Main.rand.NextFloat(0.5f, 1.5f);
                 Vector2 dustVel = new Vector2(dustSpeed, 0.0f).RotatedBy(Projectile.velocity.ToRotation());
-                dustVel = dustVel.RotatedBy(-angleRandom);
-                dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
+                dustVel = dustVel.RotatedByRandom((1.5f - intensity) * 0.4f) * intensity;
+
 
                 // Pick a size for the dust particle.
-                float scale = Main.rand.NextFloat(2.2f, 4.8f);
+                float scale = Main.rand.NextFloat(2.8f, 3.5f) - intensity;
 
                 // Actually spawn the dust.
-                int idx = Dust.NewDust(Projectile.Center, 1, 1, dustID, dustVel.X, dustVel.Y, 0, default, scale);
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].position = Projectile.Center;
+                Dust idx = Dust.NewDustPerfect(Projectile.Center, dustID, dustVel, 0, default, scale);
+                idx.noGravity = true;
+                idx.position = Projectile.Center;
+                idx.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
             }
+
+            Particle pulse3 = new GlowSparkParticle(Projectile.Center + Projectile.velocity, Projectile.velocity * 2, false, 12, 0.17f, Color.Turquoise, new Vector2(2.5f, 0.7f), true, true, 0.85f);
+            GeneralParticleHandler.SpawnParticle(pulse3);
+
+            Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Turquoise, "CalamityMod/Particles/BloomRing", new Vector2(0.7f, 1), Projectile.velocity.ToRotation(), 0f, 3f, 25);
+            GeneralParticleHandler.SpawnParticle(bolt2);
+            Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.PaleTurquoise, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1), Projectile.velocity.ToRotation(), 0f, 4f, 25);
+            GeneralParticleHandler.SpawnParticle(bolt3);
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<StellarContemptBlast>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
 
@@ -183,23 +187,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (Projectile.spriteDirection == -1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width + 12, texture.Height + 12);
-            Vector2 origin = sourceRectangle.Size() / 2f;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Turquoise with { A = 0 } * 0.5f, 1, texture, true, true);
 
-            for (int i = 0; i < Projectile.oldPos.Length; i++)
-            {
-                float rot = MathHelper.ToRadians(22.5f) * Math.Sign(Projectile.velocity.X);
-                Vector2 drawPos = Projectile.oldPos[i] - Main.screenPosition + origin + new Vector2(0f, Projectile.gfxOffY);
-                Color color = Projectile.GetAlpha(lightColor) * ((Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                Main.EntitySpriteDraw(texture, drawPos, new Rectangle?(), color, Projectile.rotation - i * rot, origin, Projectile.scale, spriteEffects, 0);
-            }
-
-            return false;
+            Projectile.DrawProjectileWithBackglow(Color.Turquoise with { A = 0 }, Color.White, 12f * Utils.GetLerpValue(0, 42, Projectile.ai[0], true) , texture);
+            return true;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Melee
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PwnagehammerSound") { Volume = 0.35f };
         public static readonly SoundStyle UseSoundFunny = new("CalamityMod/Sounds/Item/CalamityBell") { Volume = 1.5f };
         public static int HighBong = 0;
+        public int time = 0;
         public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer;
 
         public override void SetStaticDefaults()
@@ -25,12 +26,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 40;
+            Projectile.width = Projectile.height = 66;
             Projectile.friendly = true;
             Projectile.timeLeft = 3600;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
+            Projectile.extraUpdates = 1;
         }
 
         public override void AI()
@@ -40,25 +42,22 @@ namespace CalamityMod.Projectiles.Melee
             if (EmpoweredHammer >= 5)
                 EmpoweredHammer = 0;
 
-            Projectile.velocity.X *= 0.9511f;
-            Projectile.velocity.Y += 0.502f;
+            int falloffTime = 10;
+            if (time > falloffTime)
+                Projectile.velocity.X *= 0.9711f;
+            if (Projectile.velocity.Y < 15 && time > falloffTime)
+                Projectile.velocity.Y += 0.426f;
+            if (Projectile.velocity.Y < 5)
+                Projectile.velocity.Y *= 0.98f;
 
-            if (Main.rand.NextBool())
+            if (Main.rand.NextBool(3))
             {
                 Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 1.5f);
                 dust.noGravity = true;
             }
-
-            if (Main.rand.NextBool(6))
-            {
-                Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
-                dust.noGravity = true;
-            }
-
+            time++;
         }
 
         public override bool PreKill(int timeLeft)
@@ -71,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(9f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(6f, 0).RotatedBy(rot);
-                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, 269, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 269, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = true;
                 dust.velocity = velOffset;
                 dust.scale = 2.5f;
@@ -104,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
             if (EmpoweredHammer >= 3)
             {
                 Projectile.ai[1] = target.whoAmI;
-                int hammer = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(0, -15f), ModContent.ProjectileType<PwnagehammerEcho>(), Projectile.damage * 2, Projectile.knockBack * 1.5f, Projectile.owner, 0f, Projectile.ai[1]);
+                int hammer = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Projectile.velocity.SafeNormalize(Vector2.UnitX).X * 5, -15f), ModContent.ProjectileType<PwnagehammerEcho>(), Projectile.damage * 2, Projectile.knockBack * 1.5f, Projectile.owner, 0f, Projectile.ai[1]);
                 Main.projectile[hammer].localAI[0] = Math.Sign(Projectile.velocity.X);
                 Main.projectile[hammer].netUpdate = true;
                 EmpoweredHammer = 0;

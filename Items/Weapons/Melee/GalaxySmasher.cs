@@ -14,15 +14,14 @@ namespace CalamityMod.Items.Weapons.Melee
     public class GalaxySmasher : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public static int BaseDamage = 1300;
-        public static float Speed = 30f;
+        public static float Speed = 35f;
 
         public override void SetDefaults()
         {
             Item.width = 86;
             Item.height = 72;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = BaseDamage;
+            Item.damage = 1300;
             Item.knockBack = 14f;
             Item.useAnimation = 40;
             Item.useTime = 40;

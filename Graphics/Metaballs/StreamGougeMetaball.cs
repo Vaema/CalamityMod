@@ -56,7 +56,7 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeProjectiles;
 
         public override Color EdgeColor => Color.Lerp(Color.DarkBlue, Color.Black, 0.75f);
 

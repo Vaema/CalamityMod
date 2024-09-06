@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -37,30 +38,18 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(HitSound, Projectile.Center);
-            float damageInterpolant = Utils.GetLerpValue(950f, 2000f, hit.Damage, true);
-            float impactAngularVelocity = MathHelper.Lerp(0.08f, 0.2f, damageInterpolant);
-            float impactParticleScale = MathHelper.Lerp(0.6f, 1f, damageInterpolant);
-            impactAngularVelocity *= Main.rand.NextBool().ToDirectionInt() * Main.rand.NextFloat(0.75f, 1.25f);
-
-            Color impactColor = Color.Lerp(Color.Fuchsia, Color.Aqua, Main.rand.NextFloat(0.5f));
-            Vector2 impactPoint = Vector2.Lerp(Projectile.Center, target.Center, 0.65f);
-            Vector2 bloodSpawnPosition = target.Center + Main.rand.NextVector2Circular(target.width, target.height) * 0.04f;
-            Vector2 splatterDirection = (Projectile.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
-            for (int i = 0; i < 3; i++)
+            /*
+            for (int i = 0; i < 8; i++)
             {
-                int sparkLifetime = Main.rand.Next(9, 12);
-                float sparkScale = Main.rand.NextFloat(0.8f, 1f) + damageInterpolant * 0.85f;
-                Color sparkColor = Color.Lerp(Color.Fuchsia, Color.Aqua, Main.rand.NextFloat(0.7f));
-                sparkColor = Color.Lerp(sparkColor, Color.Fuchsia, Main.rand.NextFloat());
-                Vector2 sparkVelocity = splatterDirection.RotatedByRandom(0.6f) * Main.rand.NextFloat(12f, 25f);
-                sparkVelocity.Y -= 6f;
-                SparkParticle spark = new SparkParticle(impactPoint, sparkVelocity, true, sparkLifetime, sparkScale, sparkColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                Vector2 spawnPosition = target.Center + Main.rand.NextVector2Circular(10f, 10f);
+                StreamGougeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(3f, 3f), 60f);
+
+                float scale = MathHelper.Lerp(24f, 64f, CalamityUtils.Convert01To010(i / 8f));
+                spawnPosition = target.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * MathHelper.Lerp(-40f, 90f, i / 8f);
+                Vector2 particleVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.23f) * Main.rand.NextFloat(2.5f, 9f);
+                StreamGougeMetaball.SpawnParticle(spawnPosition, particleVelocity, scale);
             }
-            //Create an impact point particle.
-            ImpactParticle impactParticle = new ImpactParticle(impactPoint, impactAngularVelocity, 20, impactParticleScale, impactColor);
-            GeneralParticleHandler.SpawnParticle(impactParticle);
+            */
         }
     }
 }

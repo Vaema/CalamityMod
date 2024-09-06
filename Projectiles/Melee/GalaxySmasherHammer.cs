@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -25,17 +30,19 @@ namespace CalamityMod.Projectiles.Melee
         public float EchoHammerPrep = 0f;
         public float WaitTimer = 0f;
         public int InPulse = 0;
+        public int time = 0;
+        public Color usedColor = Color.Aqua;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 14;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 62;
-            Projectile.height = 62;
+            Projectile.width = 86;
+            Projectile.height = 72;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.tileCollide = false;
@@ -50,44 +57,46 @@ namespace CalamityMod.Projectiles.Melee
         {
             //returnhammer determines if the hammer is slowing down after hitting an enemy, or homing in on the player.
             Player player = Main.player[Projectile.owner];
-            Projectile.direction = Projectile.spriteDirection = Projectile.velocity.X > 0f ? 1 : -1;
-            Projectile.rotation += MathHelper.ToRadians(rotatehammer) * Projectile.direction;
+            float targetDist = Vector2.Distance(player.Center, Projectile.Center);
+            Projectile.rotation += MathHelper.ToRadians(rotatehammer * 2) * Projectile.direction;
+
+            List<Color> eColors = new List<Color>()
+            {
+                Color.Aqua,
+                Color.Magenta,
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 12);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             if (EmpoweredHammer >= 8)
                 EmpoweredHammer = 0;
 
             if (returnhammer == 0)
             {
-                Projectile.velocity.X *= 0.988f;
-                Projectile.velocity.Y += 0.326f;
+                int falloffTime = 10;
+                if (time > falloffTime)
+                    Projectile.velocity.X *= 0.967f;
+                if (Projectile.velocity.Y < 25 && time > falloffTime)
+                    Projectile.velocity.Y += 0.426f;
+                if (Projectile.velocity.Y < 5)
+                    Projectile.velocity.Y *= 0.98f;
             }
 
             if (returnhammer == 1) //Hammer slows after the inital hit
             {
-                if (EmpoweredHammer == 7)
-                {
-                    ++WaitTimer;
-                    if (WaitTimer == 20f)
-                    {
-                        Projectile.velocity *= 0f;
-                        EmpoweredHammer = 0;
-                        returnhammer = 3;
-                    }
-                }
-                else
-                {
-                    Projectile.velocity.Y *= 0.926f;
-                    Projectile.velocity.X *= 0.811f;
-                    if (Projectile.velocity.X > -1.05f && Projectile.velocity.X < 1.05f & Projectile.velocity.Y > -1.05f && Projectile.velocity.Y < 1.05f)
-                        returnhammer = 2;
-                }
+                Projectile.velocity.Y *= 0.926f;
+                Projectile.velocity.X *= 0.811f;
+                if (Projectile.velocity.X > -1.05f && Projectile.velocity.X < 1.05f & Projectile.velocity.Y > -1.05f && Projectile.velocity.Y < 1.05f)
+                    returnhammer = 2;
             }
 
             if (returnhammer == 2) // Projectile returns to player
             {
-                ++PulseCooldown;
                 Projectile.extraUpdates = 2;
-                float returnSpeed = StellarContempt.Speed;
+                float returnSpeed = StellarContempt.Speed * 0.7f;
                 float acceleration = 1.1f;
                 Player owner = Main.player[Projectile.owner];
                 Vector2 playerCenter = owner.Center;
@@ -127,53 +136,85 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (Projectile.Hitbox.Intersects(player.Hitbox))
                     {
-                        EmpoweredHammer++;
-                        SoundEngine.PlaySound(SoundID.DD2_BetsysWrathShot with { Volume = 0.4f }, Projectile.Center);
-                        for (int i = 0; i < 30; i++)
+                        Main.NewText(EmpoweredHammer);
+                        if (EmpoweredHammer >= 6)
                         {
-                            Dust fire = Dust.NewDustPerfect(Projectile.Center, 181);
-                            fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
-                            fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-                            fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
-
-                            fire.noGravity = true;
-                            fire.scale = Main.rand.NextFloat(0.2f, 0.6f) * EmpoweredHammer;
-
-                            fire = Dust.CloneDust(fire);
-                            fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
-                            fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
+                            if (WaitTimer == 0)
+                                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10;
+                            ++WaitTimer;
+                            if (WaitTimer == 20f)
+                            {
+                                Projectile.velocity *= 0.001f;
+                                EmpoweredHammer = 0;
+                                WaitTimer = 0;
+                                returnhammer = 3;
+                                rotatehammer = 0;
+                            }
                         }
-                        Projectile.Kill();
+                        else
+                        {
+                            EmpoweredHammer++;
+                            SoundEngine.PlaySound(SoundID.DD2_BetsysWrathShot with { Volume = 0.4f }, Projectile.Center);
+                            for (int i = 0; i < 30; i++)
+                            {
+                                Dust fire = Dust.NewDustPerfect(Projectile.Center, 181);
+                                fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
+                                fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
+                                fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
+
+                                fire.noGravity = true;
+                                fire.scale = Main.rand.NextFloat(0.2f, 0.6f) * EmpoweredHammer;
+
+                                fire = Dust.CloneDust(fire);
+                                fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
+                                fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
+                            }
+                            Projectile.Kill();
+                        }
                     }
                 }
             }
-            if (returnhammer == 3) //Hammer prepares to spawn echo hammer, VibroIntensity
+            if (returnhammer == 3) //Hammer prepares to spawn echo hammer
             {
                 if (InPulse == 0)
                 {
                     SoundEngine.PlaySound(RedHamSound, Projectile.Center);
-                    Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(1f, 1f), Main.rand.NextFloat(12f, 25f), 0.1f, 1.95f, 120);
-                    GeneralParticleHandler.SpawnParticle(pulse);
                     InPulse = 1;
                 }
 
-                rotatehammer -= 0.25f;
-                if (EchoHammerPrep >= 17f)
+                rotatehammer += 0.12f;
+                Projectile.Center += new Vector2(0, -3).RotatedBy(Projectile.rotation * 0.1f);
+                if (EchoHammerPrep >= 8f && InPulse < 2)
                 {
-                    if (InPulse == 1)
+                    if (time % 12 == 0)
                     {
-                        Particle pulse2 = new StaticPulseRing(Projectile.Center, Vector2.Zero, Color.Orchid, new Vector2(1f, 1f), 0f, 4.9f, 0f, 25);
+                        Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, usedColor * 0.4f, "CalamityMod/Particles/HighResHollowCircleHardEdge", new Vector2(1f * Utils.GetLerpValue(4, 12, EchoHammerPrep), 1f * Utils.GetLerpValue(30, 8, EchoHammerPrep, true)), 0f, 2f, 0f, (int)(40 * Utils.GetLerpValue(35, 8, EchoHammerPrep, true)));
                         GeneralParticleHandler.SpawnParticle(pulse2);
-                        InPulse = 2;
                     }
                 }
-
+                if (EchoHammerPrep >= 20)
+                {
+                    InPulse = 2;
+                }
                 if (EchoHammerPrep <= 24f)
                 {
                     EchoHammerPrep += 0.2f;
-                    Projectile.scale += 0.017f;
-                    Particle streak = new ManaDrainStreak(player, Main.rand.NextFloat(0.7f, 0.9f), Main.rand.NextVector2CircularEdge(2f, 2f) * Main.rand.NextFloat(135f, 335f), Main.rand.NextFloat(20f, 20f), Color.Aqua, Color.Fuchsia, Main.rand.Next(10, 20), Projectile.Center);
-                    GeneralParticleHandler.SpawnParticle(streak);
+
+                    float fade = Utils.GetLerpValue(30, 0, EchoHammerPrep, true);
+                    float numberOfDusts = 3f;
+                    float rotFactor = 360f / numberOfDusts;
+                    for (int i = 0; i < numberOfDusts; i++)
+                    {
+                        float rot = MathHelper.ToRadians(i * rotFactor);
+                        Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 250f, 0.04f);
+                        velOffset *= Main.rand.NextFloat(45, 65) * fade;
+                        Particle energy = new SparkParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, 14, Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, usedColor);
+                        GeneralParticleHandler.SpawnParticle(energy);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                        dust.noGravity = true;
+                        dust.color = usedColor;
+                        dust.velocity += Projectile.velocity;
+                    }
                 }
                 else
                 {
@@ -184,22 +225,28 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            //Spawn dust as the hammer travels.
-            if (Main.rand.NextBool())
+            if (targetDist < 1400)
             {
-                Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 272, Projectile.velocity * 0.4f + velOffset, 100, default, 0.7f);
-                dust.noGravity = true;
+                if (Main.rand.NextBool(3))
+                {
+                    Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
+                    Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 278, -Projectile.velocity * 0.2f + velOffset, 100, default, 0.7f);
+                    dust.noGravity = true;
+                    dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
+                }
+                Vector2 linePos = Projectile.Center + (MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 25f;
+                Particle spark = new CustomSpark(linePos, (MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedByRandom(0.4f) * Main.rand.NextFloat(2f, 14f), "CalamityMod/Particles/BloomRing", false, Main.rand.Next(7, 16), Main.rand.NextFloat(0.25f, 0.5f), usedColor * 0.35f, new Vector2(1f, 1f), true, false, Main.rand.NextFloat(-10, 10));
+                GeneralParticleHandler.SpawnParticle(spark);
+                for (int i = 0; i < (InPulse > 0 ? 3 : 2); i++)
+                {
+                    Vector2 offset = new Vector2(0, -30).RotatedBy(-MathHelper.PiOver4 * 0.5f).RotatedBy(Projectile.rotation);
+                    Vector2 velOffset = new Vector2(0, -5).RotatedBy(-MathHelper.PiOver4).RotatedBy(Projectile.rotation) * Main.rand.NextFloat(0.4f, 1f);
+                    Vector2 spawnPosition = Projectile.Center + offset + Main.rand.NextVector2Circular(6, 6);
+                    StreamGougeMetaball.SpawnParticle(spawnPosition, velOffset * (InPulse > 0 ? 3 : 0.2f), 40f * Main.rand.NextFloat(0.9f, 1.3f) * (InPulse > 0 ? 3 : 1));
+                }
             }
-
-            if (Main.rand.NextBool(6))
-            {
-                Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 226, Projectile.velocity * 0.5f + velOffset, 100, default, 0.7f);
-                dust.noGravity = true;
-            }
+            time++;
         }
         // On hit play GONG and spawn dust.
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -241,27 +288,57 @@ namespace CalamityMod.Projectiles.Melee
 
                 returnhammer = 1;
             }
-            if (PulseCooldown >= 15)
+            float numberOfDusts = MathHelper.Clamp(30 - Projectile.numHits * 3, 6, 30);
+            float rotFactor = 360f / numberOfDusts;
+            for (int i = 0; i < numberOfDusts; i++)
             {
-                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Violet, new Vector2(0.5f, 0.5f), Main.rand.NextFloat(12f, 25f), 0.2f, 1.4f + (EmpoweredHammer * 0.1f), 14);
-                GeneralParticleHandler.SpawnParticle(pulse);
-                PulseCooldown = 0;
+                float rot = MathHelper.ToRadians(i * rotFactor);
+                Vector2 offset = new Vector2(4.8f, 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 4.1f));
+                Vector2 velOffset = new Vector2(7f, 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 4.1f));
+
+                if (i % 3 == 0)
+                {
+                    StreamGougeMetaball.SpawnParticle(Projectile.Center + offset, velOffset * Main.rand.NextFloat(1f, 1.2f), 60f * Main.rand.NextFloat(0.9f, 1.3f));
+                }
+                else
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, ModContent.DustType<LightDust>());
+                    dust.noGravity = true;
+                    dust.velocity = velOffset * Main.rand.NextFloat(0.45f, 1);
+                    dust.scale = Main.rand.NextFloat(0.8f, 1.7f);
+                    dust.color = Main.rand.NextBool(3) ? Color.Aqua : Color.Magenta;
+                }
             }
-            SoundEngine.PlaySound(SoundID.Item14 with { Volume = 0.22f }, Projectile.Center);
             Projectile.ai[1] = target.whoAmI;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.9f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float minMult = 0.7f;
+            int hitsToMinMult = 10;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3);
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GalaxySmasher").Value;
+            Asset<Texture2D> p = ModContent.Request<Texture2D>("CalamityMod/Particles/FlameExplosion2");
+            Asset<Texture2D> p2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
+            Asset<Texture2D> p3 = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom");
+
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.5f, 3, texture, true, true);
+
+            Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
+            float fade = Utils.GetLerpValue(2, 15, Projectile.velocity.Length(), true);
+            Main.EntitySpriteDraw(p3.Value, generalDrawPos, null, Color.Black * fade, Projectile.rotation, p3.Size() * 0.5f, 0.6f, SpriteEffects.None);
+            for (int i = 0; i < 3; i++)
+            Main.EntitySpriteDraw(p.Value, generalDrawPos, null, Color.Indigo * 0.95f * fade, Projectile.rotation * Main.rand.NextFloat(1.2f, 1.3f) + i * 0.2f, p.Size() * 0.5f, 0.05f + i * 0.004f, SpriteEffects.None);
+            //Projectile.DrawProjectileWithBackglow(Color.Transparent with { A = 0 }, Color.White, 5f, texture);
+
+            Main.EntitySpriteDraw(texture, generalDrawPos, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, Projectile.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+
+            Main.EntitySpriteDraw(p2.Value, generalDrawPos, null, usedColor with { A = 0 } * 0.65f * fade, Projectile.rotation * Main.rand.NextFloat(1.4f, 1.45f), p2.Size() * 0.5f, 0.9f * Main.rand.NextFloat(0.9f, 1.1f), SpriteEffects.None);
             return false;
         }
     }

@@ -38,6 +38,8 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
             if (Projectile.frame >= 8)
                 Projectile.Kill();
+
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2 * 1.5f;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);

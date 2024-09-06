@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
@@ -38,8 +39,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
         }
-
-
         public override void AI()
         {
             Projectile.scale = 2.78f;
@@ -80,15 +79,6 @@ namespace CalamityMod.Projectiles.Melee
                 Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, 272, new Vector2(Projectile.velocity.X * 0.4f + velOffset.X, Projectile.velocity.Y * 0.4f + velOffset.Y), 100, default, 0.9f);
                 dust.noGravity = true;
             }
-
-            if (Main.rand.NextBool(6))
-            {
-                Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, 226, new Vector2(Projectile.velocity.X * 0.5f + velOffset.X, Projectile.velocity.Y * 0.5f + velOffset.Y), 100, default, 0.9f);
-                dust.noGravity = true;
-            }
-
         }
 
         public override bool? CanHitNPC(NPC target)
@@ -97,28 +87,21 @@ namespace CalamityMod.Projectiles.Melee
                 return false;
             return null;
         }
-
-        public override bool CanHitPvp(Player target) => Projectile.ai[0] > 42f;
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.localAI[0] = target.whoAmI;
-            float damageInterpolant = Utils.GetLerpValue(950f, 2000f, hit.Damage, true);
-            float impactAngularVelocity = MathHelper.Lerp(0.08f, 0.2f, damageInterpolant);
-            impactAngularVelocity *= Main.rand.NextBool().ToDirectionInt() * Main.rand.NextFloat(0.75f, 1.25f);
-            Vector2 splatterDirection = Projectile.velocity;
-            for (int i = 0; i < 20; i++)
+            /*
+            for (int i = 0; i < 51; i++)
             {
-                int sparkLifetime = Main.rand.Next(55, 70);
-                float sparkScale = Main.rand.NextFloat(0.7f, Main.rand.NextFloat(3.3f, 5.5f)) + damageInterpolant * 0.85f;
-                Color sparkColor = Color.Lerp(Color.Fuchsia, Color.Aqua, Main.rand.NextFloat(0.7f));
-                sparkColor = Color.Lerp(sparkColor, Color.Fuchsia, Main.rand.NextFloat());
+                Vector2 spawnPosition = target.Center + Main.rand.NextVector2Circular(60f, 60f);
+                StreamGougeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(3f, 3f), 60f);
 
-                Vector2 sparkVelocity = splatterDirection.RotatedByRandom(0.7f) * Main.rand.NextFloat(1f, 1.2f);
-                sparkVelocity.Y -= 7f;
-                SparkParticle spark = new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                float scale = MathHelper.Lerp(144f, 294f, CalamityUtils.Convert01To010(i / 49f));
+                spawnPosition = target.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * MathHelper.Lerp(-40f, 90f, i / 49f);
+                Vector2 particleVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.23f) * Main.rand.NextFloat(8.5f, 15f);
+                StreamGougeMetaball.SpawnParticle(spawnPosition, particleVelocity, scale);
             }
+            */
         }
 
         public override bool PreKill(int timeLeft)
