@@ -29,8 +29,8 @@ TrueDefaultAttunement: {
 	Function:
 		'''
 		Fires a weak sword beam that crushes enemy defenses
-		True melee hits charge a powerful lunge, unleashed when you stop swinging the sword
-		Enemies hit by the lunge are marked with a sigil that sword beams will home in on
+		Landing three true melee hits charges a powerful lunge, unleashed when you stop swinging the sword
+		Enemies struck by the lunge are marked with a sigil that sword beams will home in on
 		'''
 }
 

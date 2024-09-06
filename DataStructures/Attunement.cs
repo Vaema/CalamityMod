@@ -217,7 +217,7 @@ namespace CalamityMod.DataStructures
         public TrueDefaultAttunement()
         {
             id = AttunementID.TrueDefault;
-            tooltipColor = new Color(171, 180, 73);
+            tooltipColor = new Color(201, 220, 93);
 
             energyParticleEdgeColor = new Color(117, 126, 72);
             energyParticleCenterColor = new Color(200, 184, 136);

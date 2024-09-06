@@ -30,9 +30,10 @@ namespace CalamityMod.Projectiles.Melee
         public bool doSwing = true;
         public bool postSwing = false;
         public int useAnimation;
+        public static readonly SoundStyle FullChargeSound = new("CalamityMod/Sounds/Item/MagicRockSound");
 
         public Color outlineColorGreen => (Main.player[Projectile.owner].HeldItem.ModItem as TrueBiomeBlade).mainAttunement.tooltipColor;
-        public Color outlineColorBlue => new Color(90, 176, 255);
+        public Color outlineColorBlue => new Color(110, 216, 255);
         public const int dashTime = 30;
         public float dashRotation;
         public Vector2 lastDisplacement;
@@ -64,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
             // If the player stops using the weapon after hitting with it once, switch to lunge.
             if (Owner.CantUseHoldout())
             {
-                if (State == 0f && Projectile.numHits > 0)
+                if (State == 0f && Projectile.numHits > 2)
                 {
                     State = 1f;
                     SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
@@ -136,15 +137,15 @@ namespace CalamityMod.Projectiles.Melee
                             Vector2 particleVel = new Vector2(0, 10 * -SwingDir * Owner.direction).RotatedBy(FinalRotation - MathHelper.PiOver4);
                             Vector2 particlePos = Owner.Center + new Vector2(Main.rand.Next(0, 80), 0).RotatedBy(FinalRotation - MathHelper.PiOver4);
                             Color particleColor = Main.rand.NextBool() ? outlineColorBlue : outlineColorGreen;
-                            bool empowered = Projectile.numHits > 0;
+                            bool empowered = Projectile.numHits > 2;
                             if (Main.rand.NextBool())
                             {
-                                GenericBloom bloom = new(particlePos, particleVel, particleColor, empowered ? 0.13f : 0.08f, 20);
+                                GenericBloom bloom = new(particlePos, particleVel, particleColor, empowered ? 0.12f : 0.08f, 20);
                                 GeneralParticleHandler.SpawnParticle(bloom);
                             }
                             else
                             {
-                                GenericSparkle sparkle = new(particlePos, particleVel, particleColor, particleColor, empowered ? 0.75f : 0.55f, 20);
+                                GenericSparkle sparkle = new(particlePos, particleVel, particleColor, particleColor, empowered ? 0.78f : 0.55f, 20);
                                 GeneralParticleHandler.SpawnParticle(sparkle);
                             }
                         }
@@ -208,6 +209,20 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            // Burst of particles to signify that the lunge is ready.
+            // Due to how numHits works, this has to be 1 less than our target.
+            if (Projectile.numHits == 2)
+            {
+                SoundEngine.PlaySound(FullChargeSound, Owner.Center);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 particleVel = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)) * Main.rand.NextFloat(3.5f, 4f);
+                    MediumMistParticle readySmoke = new(Owner.Center, particleVel, outlineColorGreen, Color.Brown, 1f, 192f);
+                    GeneralParticleHandler.SpawnParticle(readySmoke);
+                }
+            }
+
             if (State == 1f)
             {
                 foreach (Projectile proj in Main.projectile)
@@ -255,7 +270,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     for (int i = 0; i < 5; i++)
                     {
-                        Color outlineColor = Color.Lerp(outlineColorGreen, outlineColorBlue, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.5f));
+                        Color outlineColor = Color.Lerp(outlineColorGreen, outlineColorBlue, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.5f)) * MathHelper.Clamp(Projectile.numHits / 3f, 0f, 1f);
                         Texture2D outline = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/MendedBiomeBlade_TruePureClarityGhost").Value;
                         Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
                         rotationalDrawOffset *= MathHelper.Lerp(3.25f, 6f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 1.5f);
