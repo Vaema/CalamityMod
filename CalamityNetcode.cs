@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Potions.Alcohol;
@@ -35,33 +36,52 @@ namespace CalamityMod
             var types = ModLoader.Mods.SelectMany(mod => AssemblyManager.GetLoadableTypes(mod.Code));
             foreach (var type in types)
             {
-                if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityPacket)))
-                    continue;
-
-                if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
-                    continue;
-
-                var msgType = packetHandler.MessageType;
-                var existingHandler = _PacketRegistry[msgType];
-                if (existingHandler != null)
+                try
                 {
-                    CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
-                        $" [Failed: '{type.FullName}'" +
-                        $" Current Owner: '{existingHandler.GetType().FullName}'," +
-                        $" msgTypeToRegister: '{msgType}']");
+                    if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityPacket)))
+                        continue;
+
+                    if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
+                        continue;
+
+                    var msgType = packetHandler.MessageType;
+                    var existingHandler = _PacketRegistry[msgType];
+                    if (existingHandler != null)
+                    {
+                        CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
+                            $" [Failed On: '{type.FullName}'" +
+                            $" Current Owner: '{existingHandler.GetType().FullName}'," +
+                            $" msgTypeToRegister: '{msgType}']");
+                        continue;
+                    }
+
+                    _PacketRegistry[packetHandler.MessageType] = packetHandler;
+
+                    var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                    if (instanceProperty is not null)
+                    {
+                        if (instanceProperty.PropertyType.IsAssignableFrom(type))
+                        {
+                            instanceProperty.SetValue(null, packetHandler);
+                            packetHandler._Prop_Static_Instance = instanceProperty;
+                        }
+                        else
+                        {
+                            CalamityMod.Instance.Logger.Error($"Packet instance's 'Instance' property is not asssignable with given type!" +
+                                $" [Failed On: '{type.FullName}']");
+                        }
+                    }
+                    // We should not print error message if "Instance" property is missing
+                    // Addons still can assign them with OnLoaded overload, and it's up to their implementation
+                    // Still, Calamity's Standard is having "Instance" property for every packet types
+
+                    packetHandler.OnLoaded();
+                }
+                catch (Exception e)
+                {
+                    CalamityMod.Instance.Logger.Error($"Exception was thrown while loading for Packets! {e}");
                     continue;
                 }
-
-                _PacketRegistry[packetHandler.MessageType] = packetHandler;
-
-                var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
-                if (instanceProperty?.PropertyType.IsAssignableFrom(type) ?? false)
-                {
-                    instanceProperty.SetValue(null, packetHandler);
-                    packetHandler._Prop_Static_Instance = instanceProperty;
-                }
-
-                packetHandler.OnLoaded();
             }
         }
 
