@@ -92,6 +92,11 @@ namespace CalamityMod
                 }
                 else
                 {
+                    //
+                    // Default case: with no idea how long the packet is, we can't safely read data.
+                    // Throw an exception now instead of allowing the network stream to corrupt.
+                    //
+
                     CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
                     throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
                 }
@@ -163,34 +168,6 @@ namespace CalamityMod
                     case CalamityModMessageType.BRHostileProjKillSync:
                         int countdown3 = reader.ReadInt32();
                         BossRushEvent.HostileProjectileKillCounter = countdown3;
-                        break;
-
-                    //
-                    // Acid Rain
-                    //
-
-                    case CalamityModMessageType.AcidRainSync:
-                        AcidRainEvent.AcidRainEventIsOngoing = reader.ReadBoolean();
-                        AcidRainEvent.AccumulatedKillPoints = reader.ReadInt32();
-                        AcidRainEvent.TimeSinceLastAcidRainKill = reader.ReadInt32();
-                        break;
-                    case CalamityModMessageType.AcidRainOldDukeSummonSync:
-                        AcidRainEvent.HasTriedToSummonOldDuke = reader.ReadBoolean();
-                        break;
-                    case CalamityModMessageType.EncounteredOldDukeSync:
-                        AcidRainEvent.OldDukeHasBeenEncountered = reader.ReadBoolean();
-                        break;
-
-                    //
-                    // Draedon Summoner stuff
-                    //
-                    case CalamityModMessageType.CodebreakerSummonStuff:
-                        CalamityWorld.DraedonSummonCountdown = reader.ReadInt32();
-                        CalamityWorld.DraedonSummonPosition = reader.ReadVector2();
-                        CalamityWorld.DraedonMechdusa = reader.ReadBoolean();
-                        break;
-                    case CalamityModMessageType.ExoMechSelection:
-                        CalamityWorld.DraedonMechToSummon = (ExoMech)reader.ReadInt32();
                         break;
 
                     //
