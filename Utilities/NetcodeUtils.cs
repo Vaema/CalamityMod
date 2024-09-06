@@ -30,27 +30,37 @@ namespace CalamityMod
             }
         }
 
-        public static CalamityPlayer ReadCalamityPlayer(this BinaryReader reader) => ReadPlayer(reader)?.Calamity() ?? null;
-        public static Player ReadPlayer(this BinaryReader reader)
+        public static CalamityPlayer ReadCalamityPlayer(this BinaryReader reader, bool nullOnInactive = true) => ReadPlayer(reader, nullOnInactive)?.Calamity() ?? null;
+        public static Player ReadPlayer(this BinaryReader reader, bool nullOnInactive = true)
         {
             int index = reader.ReadByte();
             
             if (index >= Main.maxPlayers)
                 return null;
 
-            return Main.player[index];
+            var player = Main.player[index];
+
+            if (nullOnInactive && player.IsNullOrInactive())
+                return null;
+
+            return player;
         }
 
-        public static NPCType ReadModNPC<NPCType>(this BinaryReader reader) where NPCType : ModNPC => ReadNPC(reader)?.ModNPC as NPCType;
-        public static ModNPC ReadModNPC(this BinaryReader reader) => ReadNPC(reader)?.ModNPC ?? null;
-        public static NPC ReadNPC(this BinaryReader reader)
+        public static NPCType ReadModNPC<NPCType>(this BinaryReader reader, bool nullOnInactive = true) where NPCType : ModNPC => ReadNPC(reader, nullOnInactive)?.ModNPC as NPCType;
+        public static ModNPC ReadModNPC(this BinaryReader reader, bool nullOnInactive = true) => ReadNPC(reader, nullOnInactive)?.ModNPC ?? null;
+        public static NPC ReadNPC(this BinaryReader reader, bool nullOnInactive = true)
         {
             int index = reader.ReadByte();
 
             if (index >= Main.maxNPCs)
                 return null;
 
-            return Main.npc[index];
+            var npc = Main.npc[index];
+
+            if (nullOnInactive && npc.IsNullOrInactive())
+                return null;
+
+            return npc;
         }
     }
 }
