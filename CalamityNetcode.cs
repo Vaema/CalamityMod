@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -68,6 +69,9 @@ namespace CalamityMod
         {
             foreach (var packetHandler in _PacketRegistry ?? Enumerable.Empty<CalamityPacket>())
             {
+                if (packetHandler is null)
+                    continue;
+
                 packetHandler.OnUnloaded();
                 packetHandler._Prop_Static_Instance?.SetValue(null, null);
                 packetHandler._Prop_Static_Instance = null;
@@ -105,66 +109,6 @@ namespace CalamityMod
                         break;
                     case CalamityModMessageType.SyncCooldownDictionary:
                         Main.player[reader.ReadInt32()].Calamity().HandleCooldownDictionary(reader);
-                        break;
-
-                    //
-                    // Syncs for specific bosses or entities
-                    //
-                    case CalamityModMessageType.SyncAndroombaSolution:
-                        int index = reader.ReadInt32();
-                        int solType = reader.ReadInt32();
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            AndroombaFriendly.SwapSolution(index, solType);
-                        break;
-
-                    case CalamityModMessageType.SyncAndroombaAI:
-                        {
-                            int idx = reader.ReadInt32();
-                            int phase = reader.ReadInt32();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                AndroombaFriendly.ChangeAI(idx, phase);
-                        }
-                        break;
-
-                    case CalamityModMessageType.SyncSlabCrabAI:
-                        {
-                            int idx = reader.ReadInt32();
-                            int phase = reader.ReadInt32();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                AndroombaFriendly.ChangeAI(idx, phase);
-                        }
-                        break;
-
-                    case CalamityModMessageType.PlaceAltCritter:
-                        {
-                            int placerplayer = reader.ReadInt32();
-                            int posX = reader.ReadInt32();
-                            int posY = reader.ReadInt32();
-                            int type = reader.ReadInt32();
-                            int itemType = reader.ReadInt32();
-                            float color = reader.ReadInt32();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int n = NPC.NewNPC(Main.player[placerplayer].GetSource_ReleaseEntity(), posX, posY, type, ai1: color);
-                                Main.npc[n].catchItem = itemType;
-                                Main.npc[n].releaseOwner = (short)placerplayer;
-                            }
-                        }
-                        break;
-
-                    case CalamityModMessageType.ServersideSpawnOldDuke:
-                        byte playerIndex2 = reader.ReadByte();
-                        CalamityUtils.SpawnOldDuke(playerIndex2);
-                        break;
-
-                    case CalamityModMessageType.ProvidenceDyeConditionSync:
-                        byte npcIndex3 = reader.ReadByte();
-                        (Main.npc[npcIndex3].ModNPC as Providence).hasTakenDaytimeDamage = reader.ReadBoolean();
-                        break;
-
-                    case CalamityModMessageType.PSCChallengeSync:
-                        byte npcIndex4 = reader.ReadByte();
-                        (Main.npc[npcIndex4].ModNPC as Providence).challenge = reader.ReadBoolean();
                         break;
 
                     //
@@ -355,6 +299,34 @@ namespace CalamityMod
                 NetMessage.SendData(MessageID.WorldData);
         }
 
+        /// <summary>
+        /// Shorthand for NetMessage.SendData(MessageID.SyncNPC)
+        /// </summary>
+        public static void SyncNPC(NPC npcToSync, int toClient = -1, int ignoreClient = -1)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                return;
+
+            if (npcToSync is null)
+                return;
+
+            NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcToSync.whoAmI);
+        }
+
+        /// <summary>
+        /// Shorthand for NetMessage.SendData(MessageID.SyncNPC)
+        /// </summary>
+        public static void SyncNPC(int npcWhoAmI, int toClient = -1, int ignoreClient = -1)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                return;
+
+            if (npcWhoAmI < 0 || npcWhoAmI >= Main.maxNPCs)
+                return;
+
+            NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcWhoAmI);
+        }
+
         public static void SyncCalamityWorldDifficulties(int sender)
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
@@ -408,12 +380,12 @@ namespace CalamityMod
         SyncAndroombaAI,
         SyncSlabCrabAI,
         PlaceAltCritter,
-        ServersideSpawnOldDuke,
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.
         PSCChallengeSync, // TODO -- once you've failed the PSC challenge this packetstorms
 
         // General things for entities
         SpawnNPCOnPlayer,
+        SpawnBossOnPosition,
         SyncNPCMotionDataToServer,
         SyncNPCPosAndRotOnly,
 

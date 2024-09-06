@@ -39,7 +39,10 @@ namespace CalamityMod.Packets
             if (Main.dedServ)
             {
                 int spawnedNPC = NPC.NewNPC(new EntitySource_WorldEvent(), x, y, npcType, Target: player.whoAmI);
-                NetMessage.SendData(MessageID.SyncNPC, -1, player.whoAmI, null, spawnedNPC);
+                if (spawnedNPC >= Main.maxNPCs)
+                    return;
+
+                CalamityNetcode.SyncNPC(spawnedNPC);
             }
         }
     }

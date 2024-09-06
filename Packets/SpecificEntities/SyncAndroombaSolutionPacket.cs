@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.NPCs.TownNPCs;
+using Terraria;
+
+namespace CalamityMod.Packets
+{
+    public sealed class SyncAndroombaSolutionPacket : CalamityPacket
+    {
+        public static SyncAndroombaSolutionPacket Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.SyncAndroombaSolution;
+
+        public static void Send(AndroombaFriendly roomba, int toClient = -1, int ignoreClient = -1)
+        {
+            var packet = Instance.CreateBasePacket();
+            packet.WriteWhoAmI(roomba.NPC);
+            packet.Write((int)roomba.NPC.ai[3]); // Solution
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var roomba = packet.ReadModNPC<AndroombaFriendly>();
+            var solution = packet.ReadInt32();
+
+            if (roomba is null)
+                return;
+
+            if (Main.dedServ)
+                AndroombaFriendly.SwapSolution(roomba.NPC.whoAmI, solution);
+        }
+    }
+}

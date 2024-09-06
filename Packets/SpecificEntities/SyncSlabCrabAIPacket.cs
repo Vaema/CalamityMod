@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.NPCs.Abyss;
+using CalamityMod.NPCs.TownNPCs;
+using Terraria;
+
+namespace CalamityMod.Packets
+{
+    public sealed class SyncSlabCrabAIPacket : CalamityPacket
+    {
+        public static SyncSlabCrabAIPacket Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.SyncSlabCrabAI;
+
+        public static void Send(SlabCrab crab, int toClient = -1, int ignoreClient = -1)
+        {
+            var packet = Instance.CreateBasePacket();
+            packet.WriteWhoAmI(crab.NPC);
+            packet.Write((int)crab.NPC.ai[0]); // Phase
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var crab = packet.ReadModNPC<SlabCrab>();
+            var phase = packet.ReadInt32();
+
+            if (crab is null)
+                return;
+
+            if (Main.dedServ)
+                crab.ChangePhase(phase);
+        }
+    }
+}
