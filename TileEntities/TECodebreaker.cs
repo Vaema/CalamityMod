@@ -2,6 +2,7 @@
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
+using CalamityMod.Packets;
 using CalamityMod.Tiles.DraedonSummoner;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -175,56 +176,7 @@ namespace CalamityMod.TileEntities
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = Mod.GetPacket();
-            BitsByte containmentFlagWrapper = new BitsByte();
-            containmentFlagWrapper[0] = ContainsDecryptionComputer;
-            containmentFlagWrapper[1] = ContainsSensorArray;
-            containmentFlagWrapper[2] = ContainsAdvancedDisplay;
-            containmentFlagWrapper[3] = ContainsVoltageRegulationSystem;
-            containmentFlagWrapper[4] = ContainsCoolingCell;
-
-            packet.Write((byte)CalamityModMessageType.UpdateCodebreakerConstituents);
-            packet.Write(ID);
-            packet.Write(sender);
-            packet.Write(containmentFlagWrapper);
-            packet.Send(-1, sender);
-        }
-
-        public static void ReadConstituentsUpdateSync(Mod mod, BinaryReader reader)
-        {
-            int id = reader.ReadInt32();
-            short sender = reader.ReadInt16();
-            bool exists = ByID.TryGetValue(id, out TileEntity tileEntity);
-
-            // Continue reading to the end even if a tile entity with the given ID does not exist.
-            // Not doing this will cause errors/bugs.
-            BitsByte containmentFlagWrapper = reader.ReadByte();
-            bool containsDecryptionComputer = containmentFlagWrapper[0];
-            bool containsSensorArray = containmentFlagWrapper[1];
-            bool containsAdvancedDisplay = containmentFlagWrapper[2];
-            bool containsVoltageRegulationSystem = containmentFlagWrapper[3];
-            bool containsCoolingCell = containmentFlagWrapper[4];
-
-            // After doing reading, check again to see if the tile entity is actually there.
-            // If it isn't don't bother doing anything else.
-            if (!exists)
-                return;
-
-            // Furthermore, verify to ensure that the tile entity is a valid one.
-            if (!(tileEntity is TECodebreaker codebreakerTileEntity))
-                return;
-
-            codebreakerTileEntity.ContainsDecryptionComputer = containsDecryptionComputer;
-            codebreakerTileEntity.ContainsSensorArray = containsSensorArray;
-            codebreakerTileEntity.ContainsAdvancedDisplay = containsAdvancedDisplay;
-            codebreakerTileEntity.ContainsVoltageRegulationSystem = containsVoltageRegulationSystem;
-            codebreakerTileEntity.ContainsCoolingCell = containsCoolingCell;
-
-            // Send the packet again to the other clients if this packet was received on the server.
-            // Since ModPackets go solely to the server when sent by a client this is necesssary
-            // to ensure that all clients are informed of what happened.
-            if (Main.netMode == NetmodeID.Server)
-                codebreakerTileEntity.SyncConstituents(sender);
+            TEUpdateCodebreakerConstituentsPacket.Send(this);
         }
 
         public void SyncContainedStuff()
@@ -233,39 +185,7 @@ namespace CalamityMod.TileEntities
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.UpdateCodebreakerContainedStuff);
-            packet.Write(ID);
-            packet.Write(InputtedCellCount);
-            packet.Write(InitialCellCountBeforeDecrypting);
-            packet.Write(HeldSchematicID);
-            packet.Write(ContainsBloodSample);
-            packet.Send();
-        }
-
-        public static void ReadContainmentSync(Mod mod, BinaryReader reader)
-        {
-            int id = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(id, out TileEntity tileEntity);
-
-            // Continue reading to the end even if a tile entity with the given ID does not exist.
-            // Not doing this will cause errors/bugs.
-            int cellCount = reader.ReadInt32();
-            int cellCountBeforeDecrypting = reader.ReadInt32();
-            int schematicID = reader.ReadInt32();
-
-            // After doing reading, check again to see if the tile entity is actually there.
-            // If it isn't don't bother doing anything else.
-            if (!exists)
-                return;
-
-            // Furthermore, verify to ensure that the tile entity is a valid one.
-            if (!(tileEntity is TECodebreaker codebreakerTileEntity))
-                return;
-
-            codebreakerTileEntity.InputtedCellCount = cellCount;
-            codebreakerTileEntity.InitialCellCountBeforeDecrypting = cellCountBeforeDecrypting;
-            codebreakerTileEntity.HeldSchematicID = schematicID;
+            TEUpdateCodebreakerContainedStuffPacket.Send(this);
         }
 
         public void SyncDecryptCountdown()
@@ -279,27 +199,6 @@ namespace CalamityMod.TileEntities
             packet.Write(ID);
             packet.Write(DecryptionCountdown);
             packet.Send();
-        }
-
-        public static void ReadDecryptCountdownSync(Mod mod, BinaryReader reader)
-        {
-            int id = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(id, out TileEntity tileEntity);
-
-            // Continue reading to the end even if a tile entity with the given ID does not exist.
-            // Not doing this will cause errors/bugs.
-            int countdown = reader.ReadInt32();
-
-            // After doing reading, check again to see if the tile entity is actually there.
-            // If it isn't don't bother doing anything else.
-            if (!exists)
-                return;
-
-            // Furthermore, verify to ensure that the tile entity is a valid one.
-            if (!(tileEntity is TECodebreaker codebreakerTileEntity))
-                return;
-
-            codebreakerTileEntity.DecryptionCountdown = countdown;
         }
 
         public void UpdateTime()

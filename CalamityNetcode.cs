@@ -71,6 +71,7 @@ namespace CalamityMod
                                 $" [Failed On: '{type.FullName}']");
                         }
                     }
+
                     // We should not print error message if "Instance" property is missing
                     // Addons still can assign them with OnLoaded overload, and it's up to their implementation
                     // Still, Calamity's Standard is having "Instance" property for every packet types
@@ -134,34 +135,6 @@ namespace CalamityMod
                         break;
                     case CalamityModMessageType.SyncCooldownDictionary:
                         Main.player[reader.ReadInt32()].Calamity().HandleCooldownDictionary(reader);
-                        break;
-
-                    //
-                    // Tile Entities
-                    //
-                    case CalamityModMessageType.PowerCellFactory:
-                        TEPowerCellFactory.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.ChargingStationStandard:
-                        TEChargingStation.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.ChargingStationItemChange:
-                        TEChargingStation.ReadItemSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.Turret:
-                        TEBaseTurret.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.LabHologramProjector:
-                        TELabHologramProjector.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.UpdateCodebreakerConstituents:
-                        TECodebreaker.ReadConstituentsUpdateSync(mod, reader);
-                        break;
-                    case CalamityModMessageType.UpdateCodebreakerContainedStuff:
-                        TECodebreaker.ReadContainmentSync(mod, reader);
-                        break;
-                    case CalamityModMessageType.UpdateCodebreakerDecryptCountdown:
-                        TECodebreaker.ReadDecryptCountdownSync(mod, reader);
                         break;
 
                     //

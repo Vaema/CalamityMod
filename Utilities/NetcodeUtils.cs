@@ -7,12 +7,44 @@ using System.Threading.Tasks;
 using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
+        #region TileEntity RW
+        public static void WriteTileEntityID(this BinaryWriter writer, TileEntity tileEntity)
+        {
+            if (tileEntity is null)
+            {
+                writer.Write(int.MaxValue);
+                return;
+            }
+
+            if (!TileEntity.ByID.ContainsKey(tileEntity.ID))
+            {
+                writer.Write(int.MaxValue);
+                return;
+            }
+
+            writer.Write(tileEntity.ID);
+        }
+
+        public static TileEntityType ReadTileEntity<TileEntityType>(this BinaryReader reader) where TileEntityType : TileEntity
+            => ReadTileEntity(reader) as TileEntityType;
+
+        public static TileEntity ReadTileEntity(this BinaryReader reader)
+        {
+            var id = reader.ReadInt32();
+            bool exists = TileEntity.ByID.TryGetValue(id, out TileEntity tileEntity);
+
+            return exists ? tileEntity : null;
+        }
+        #endregion TileEntity RW
+
+        #region Entity RW
         public static void WriteWhoAmI(this BinaryWriter writer, Entity entity)
         {
             if (entity is NPC npc)
@@ -62,5 +94,6 @@ namespace CalamityMod
 
             return npc;
         }
+        #endregion Entity RW
     }
 }
