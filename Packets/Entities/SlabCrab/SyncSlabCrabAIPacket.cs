@@ -16,11 +16,14 @@ namespace CalamityMod.Packets
 
         public override byte MessageType => (byte)CalamityModMessageType.SyncSlabCrabAI;
 
-        public static void Send(SlabCrab crab, int toClient = -1, int ignoreClient = -1)
+        public static void Send(SlabCrab crab, int phase = -1, int toClient = -1, int ignoreClient = -1)
         {
+            if (crab is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(crab.NPC);
-            packet.Write((int)crab.NPC.ai[0]); // Phase
+            packet.Write(phase != -1 ? phase : (int)crab.NPC.ai[0]); // Phase
             packet.Send(toClient, ignoreClient);
         }
 

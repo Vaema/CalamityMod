@@ -15,11 +15,15 @@ namespace CalamityMod.Packets
 
         public override byte MessageType => (byte)CalamityModMessageType.SyncAndroombaSolution;
 
-        public static void Send(AndroombaFriendly roomba, int toClient = -1, int ignoreClient = -1)
+        public static void Send(AndroombaFriendly roomba, int solType = -1, int toClient = -1, int ignoreClient = -1)
         {
+            if (roomba is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(roomba.NPC);
-            packet.Write((int)roomba.NPC.ai[3]); // Solution
+            packet.Write(solType != -1 ? solType : (int)roomba.NPC.ai[3]); // Solution
+            packet.Send(toClient, ignoreClient);
         }
 
         public override void HandlePacket(in BinaryReader packet, int sender)

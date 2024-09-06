@@ -24,6 +24,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
@@ -2584,11 +2585,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ProvidenceDyeConditionSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(hasTakenDaytimeDamage);
-                        netMessage.Send();
+                        ProvidenceDyeConditionSyncPacket.Send(this);
                     }
                 }
             }
@@ -2624,11 +2621,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.PSCChallengeSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(challenge);
-                        netMessage.Send();
+                        PSCChallengeSyncPacket.Send(this);
                     }
                 }
             }
@@ -2644,11 +2637,7 @@ namespace CalamityMod.NPCs.Providence
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ProvidenceDyeConditionSync);
-                        netMessage.Write((byte)NPC.whoAmI);
-                        netMessage.Write(hasTakenDaytimeDamage);
-                        netMessage.Send();
+                        ProvidenceDyeConditionSyncPacket.Send(this);
                     }
                 }
             }
@@ -2659,11 +2648,7 @@ namespace CalamityMod.NPCs.Providence
 
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    var netMessage = Mod.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.PSCChallengeSync);
-                    netMessage.Write((byte)NPC.whoAmI);
-                    netMessage.Write(challenge);
-                    netMessage.Send();
+                    PSCChallengeSyncPacket.Send(this);
                 }
             }
         }

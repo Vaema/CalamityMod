@@ -18,6 +18,9 @@ namespace CalamityMod.Packets
 
         public static void Send(Player player, int x, int y, int npcType, int toClient = -1, int ignoreClient = -1)
         {
+            if (player is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(player);
             packet.Write(x);

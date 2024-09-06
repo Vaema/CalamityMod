@@ -20,11 +20,17 @@ namespace CalamityMod.Packets
         /// </summary>
         public static void Send(Player placer, int x, int y, Item critterItem, int colorType, int toClient = -1, int ignoreClient = -1)
         {
+            if (critterItem is null)
+                return;
+
             Send(placer, x, y, critterItem.makeNPC, critterItem.type, colorType, toClient, ignoreClient);
         }
 
         public static void Send(Player placer, int x, int y, int critterNPCType, int itemType, int colorType, int toClient = -1, int ignoreClient = -1)
         {
+            if (placer is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(placer);
             packet.Write(x);

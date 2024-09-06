@@ -250,14 +250,10 @@ namespace CalamityMod
                 NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType, Target: player.whoAmI);
                 return;
             }
-
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.SpawnNPCOnPlayer);
-            netMessage.Write((int)spawnPosition.X);
-            netMessage.Write((int)spawnPosition.Y);
-            netMessage.Write(npcType);
-            netMessage.Write(player.whoAmI);
-            netMessage.Send();
+            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                SpawnNPCOnPlayerPacket.Send(player, (int)spawnPosition.X, (int)spawnPosition.Y, npcType);
+            }
         }
     }
 

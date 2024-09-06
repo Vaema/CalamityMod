@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Packets;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -59,9 +60,7 @@ namespace CalamityMod.Items
                     // dummies are gone, and cause them to reappear, making the deletion moot.
                     else
                     {
-                        var netMessage = Mod.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.DeleteAllSuperDummies);
-                        netMessage.Send();
+                        DeleteAllSuperDummiesPacket.Send();
                     }
                 }
             }
@@ -77,11 +76,7 @@ namespace CalamityMod.Items
                 // Otherwise, send a message to the server indicating that a Super Dummy should be spawned at this position.
                 else
                 {
-                    var netMessage = Mod.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.SpawnSuperDummy);
-                    netMessage.Write(x);
-                    netMessage.Write(y);
-                    netMessage.Send();
+                    SpawnSuperDummyPacket.Send(x, y);
                 }
             }
             return true;
@@ -98,9 +93,7 @@ namespace CalamityMod.Items
             }
             else
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.DeleteAllSuperDummies);
-                netMessage.Send();
+                DeleteAllSuperDummiesPacket.Send();
             }
 
             Item.RestoreConsumedItemByRightClick();

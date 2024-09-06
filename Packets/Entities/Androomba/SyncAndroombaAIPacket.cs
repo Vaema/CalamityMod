@@ -18,11 +18,14 @@ namespace CalamityMod.Packets
 
         public override byte MessageType => (byte)CalamityModMessageType.SyncAndroombaAI;
 
-        public static void Send(AndroombaFriendly roomba, int toClient = -1, int ignoreClient = -1)
+        public static void Send(AndroombaFriendly roomba, int phase = -1, int toClient = -1, int ignoreClient = -1)
         {
+            if (roomba is null)
+                return;
+
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(roomba.NPC);
-            packet.Write((int)roomba.NPC.ai[0]); // Phase
+            packet.Write(phase != -1 ? phase : (int)roomba.NPC.ai[0]); // Phase
             packet.Send(toClient, ignoreClient);
         }
 

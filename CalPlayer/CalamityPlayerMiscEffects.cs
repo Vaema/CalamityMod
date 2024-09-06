@@ -45,6 +45,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Magic;
@@ -4452,11 +4453,7 @@ namespace CalamityMod.CalPlayer
                             }
                             else
                             {
-                                var netMessage = Mod.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.SyncAndroombaSolution);
-                                netMessage.Write(npc.whoAmI);
-                                netMessage.Write(soltype);
-                                netMessage.Send();
+                                SyncAndroombaSolutionPacket.Send(npc.ModNPC<AndroombaFriendly>(), soltype);
                             }
                             if (npc.ai[0] == 0f)
                             {
@@ -4466,11 +4463,7 @@ namespace CalamityMod.CalPlayer
                                 }
                                 else
                                 {
-                                    var netMessage = Mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncAndroombaAI);
-                                    netMessage.Write(npc.whoAmI);
-                                    netMessage.Write(1);
-                                    netMessage.Send();
+                                    SyncAndroombaAIPacket.Send(npc.ModNPC<AndroombaFriendly>(), phase: 1);
                                 }
                             }
                             if (Main.netMode == NetmodeID.Server)
