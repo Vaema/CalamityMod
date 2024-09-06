@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -16,17 +18,19 @@ namespace CalamityMod.Projectiles.Melee
     public class GalaxySmasherEcho : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public static readonly SoundStyle SlamHamSound = new("CalamityMod/Sounds/Item/GalaxySmasherSmash") { Volume = 0.6f };
+        public override string Texture => "CalamityMod/Items/Weapons/Melee/GalaxySmasher";
+        public static readonly SoundStyle SlamHamSound = new("CalamityMod/Sounds/Item/GalaxySmasherSmash") { Volume = 0.7f };
         public static readonly SoundStyle Kunk = new("CalamityMod/Sounds/Item/TF2PanHit") { Volume = 1.1f };
-        public float rotatehammer = 35f;
+        public float rotatehammer = 15f;
         public float speed = 0f;
+        public NPC targeted;
+        public Color usedColor = Color.Aqua;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
-        //This is all copied straight from PwnagehammerEcho with some minor edits.
         public override void SetDefaults()
         {
             Projectile.width = 78;
@@ -34,91 +38,105 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.aiStyle = 0;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
         public override void AI()
         {
-            Projectile.scale = 2.78f;
-            rotatehammer *= 1.2f;
+            List<Color> eColors = new List<Color>()
+            {
+                Color.Aqua,
+                Color.Magenta,
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 43);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            rotatehammer += 2f;
             Projectile.rotation += MathHelper.ToRadians(rotatehammer) * Projectile.direction;
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] < 42f)
+            if (true)
             {
-                Projectile.velocity *= 0.95f;
-                Projectile.rotation += MathHelper.ToRadians(Projectile.ai[0] * 0.5f) * Projectile.localAI[0];
-            }
-            else if (Projectile.ai[0] > 42f)
-            {
-                Projectile.extraUpdates = 1;
-                if (Projectile.ai[1] < 0f)
+                if (Projectile.timeLeft % 2 == 0)
                 {
-                    CalamityUtils.HomeInOnNPC(Projectile, Projectile.tileCollide, 2000f, speed, 12f);
-                    if (Projectile.ai[0] > 80f)
-                        Projectile.Kill();
+                    Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/SmallBloom", false, 13, 0.5f, usedColor, new Vector2(0.6f, 1f), true, false, 0, false, false, 0.7f);
+                    GeneralParticleHandler.SpawnParticle(spark);
                 }
 
-                NPC target = Main.npc[(int)Projectile.ai[1]];
-                if (!target.CanBeChasedBy(Projectile, false) || !target.active)
-                    Projectile.Kill();
+                Projectile.extraUpdates = 7;
+
+                targeted = Main.npc[(int)Projectile.ai[1]];
+                if (!targeted.CanBeChasedBy(Projectile, false) || !targeted.active || targeted == null)
+                    targeted = Projectile.Center.ClosestNPCAt(2000);
+                if (targeted != null)
+                {
+                    float speedMult = 0.9f;
+                    Vector2 moveTotarget = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                    if (Projectile.velocity.Length() < MathHelper.Clamp(25 - Projectile.ai[0] * 0.1f, 10, 25) * speedMult)
+                        Projectile.velocity += moveTotarget * (0.35f + Projectile.ai[0] * 0.03f) * speedMult;
+                    else
+                        Projectile.velocity *= 0.9f;
+                }
                 else
-                {
-                    float velConst = 5f;
-                    velConst--;
-                    Projectile.velocity = new Vector2((target.Center.X - Projectile.Center.X) / velConst, (target.Center.Y - Projectile.Center.Y) / velConst);
-                    Projectile.rotation += MathHelper.ToRadians(48f) * Projectile.localAI[0];
-                }
+                    Projectile.Kill();
             }
 
-            if (Main.rand.NextBool())
+            Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
+            Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 278, (-Projectile.velocity + velOffset) * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(0.35f, 0.75f));
+            dust.noGravity = true;
+            dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
+
+            for (int i = 0; i < 2; i++)
             {
-                Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, 272, new Vector2(Projectile.velocity.X * 0.4f + velOffset.X, Projectile.velocity.Y * 0.4f + velOffset.Y), 100, default, 0.9f);
-                dust.noGravity = true;
+                StreamGougeMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 195f * Main.rand.NextFloat(0.9f, 1f));
             }
         }
 
         public override bool? CanHitNPC(NPC target)
         {
-            if (Projectile.ai[0] <= 42f)
-                return false;
             return null;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.localAI[0] = target.whoAmI;
-            /*
-            for (int i = 0; i < 51; i++)
-            {
-                Vector2 spawnPosition = target.Center + Main.rand.NextVector2Circular(60f, 60f);
-                StreamGougeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(3f, 3f), 60f);
-
-                float scale = MathHelper.Lerp(144f, 294f, CalamityUtils.Convert01To010(i / 49f));
-                spawnPosition = target.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * MathHelper.Lerp(-40f, 90f, i / 49f);
-                Vector2 particleVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.23f) * Main.rand.NextFloat(8.5f, 15f);
-                StreamGougeMetaball.SpawnParticle(spawnPosition, particleVelocity, scale);
-            }
-            */
+            if (target == targeted)
+                Projectile.Kill();
         }
 
         public override bool PreKill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
             //This is what we call fucking IMPACT (3).
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 12;
+            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 15;
             if (Main.zenithWorld)
                 SoundEngine.PlaySound(Kunk, Projectile.Center);
 
             else
                 SoundEngine.PlaySound(SlamHamSound, Projectile.Center);
+            for (int i = 0; i < 8; i++)
+            {
+                float rot = MathHelper.PiOver4 * i;
+                Particle pulse1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Aqua * 0.4f, "CalamityMod/Particles/HighResHollowCircleHardEdge", new Vector2(1.4f, 0.6f), rot, 0, 1f, 40);
+                GeneralParticleHandler.SpawnParticle(pulse1);
+            }
 
-            Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Violet, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.2f, 4f, 12);
-            GeneralParticleHandler.SpawnParticle(pulse);
-            Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 1.5f, 11);
-            GeneralParticleHandler.SpawnParticle(pulse2);
+            float numberOfDusts = 40f;
+            float rotFactor = 360f / numberOfDusts;
+            for (int i = 0; i < numberOfDusts; i++)
+            {
+                float rot = MathHelper.ToRadians(i * rotFactor);
+                Vector2 offset = new Vector2(15f, 0).RotatedBy(rot);
+                Vector2 velOffset = new Vector2(42.5f, 0).RotatedBy(rot) * (i % 2 == 0 ? 0.8f : i % 3 == 0 ? 0.6f : 1f);
+
+                Particle spark = new CustomSpark(Projectile.Center + offset * 6, velOffset, "CalamityMod/Particles/SmallBloom", false, 35, 1f, Color.Magenta * 0.75f, new Vector2(1.2f, 1f), true, false, 0, false, false, 0.3f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            StreamGougeMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, 275f);
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<GalaxySmasherBlast>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
 
@@ -127,20 +145,16 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (Projectile.spriteDirection == -1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width + 12, texture.Height + 12);
-            Vector2 origin = sourceRectangle.Size() / 2f;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GalaxySmasher").Value;
+            Asset<Texture2D> p2 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
 
-            for (int i = 0; i < Projectile.oldPos.Length; i++)
-            {
-                float rot = MathHelper.ToRadians(22.5f) * Math.Sign(Projectile.velocity.X);
-                Vector2 drawPos = Projectile.oldPos[i] - Main.screenPosition + origin + new Vector2(0f, Projectile.gfxOffY);
-                Color color = Projectile.GetAlpha(lightColor) * ((Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                Main.EntitySpriteDraw(texture, drawPos, new Rectangle?(), color, Projectile.rotation - i * rot, origin, Projectile.scale, spriteEffects, 0);
-            }
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.5f, 3, texture, true, true);
+
+            Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
+
+            Projectile.DrawProjectileWithBackglow(usedColor with { A = 0 }, Color.White, 9.5f, texture, null, Projectile.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+
+            Main.EntitySpriteDraw(p2.Value, generalDrawPos, null, usedColor with { A = 0 } * 0.65f, Projectile.rotation * Main.rand.NextFloat(1.4f, 1.45f), p2.Size() * 0.5f, 1.2f * Main.rand.NextFloat(0.9f, 1.1f), SpriteEffects.None);
             return false;
         }
     }

@@ -76,13 +76,13 @@ namespace CalamityMod.Projectiles.Melee
 
             if (returnhammer == 0)
             {
-                int falloffTime = 10;
+                int falloffTime = 18;
                 if (time > falloffTime)
-                    Projectile.velocity.X *= 0.967f;
+                    Projectile.velocity.X *= 0.96f;
                 if (Projectile.velocity.Y < 25 && time > falloffTime)
-                    Projectile.velocity.Y += 0.426f;
+                    Projectile.velocity.Y += 0.54f;
                 if (Projectile.velocity.Y < 5)
-                    Projectile.velocity.Y *= 0.98f;
+                    Projectile.velocity.Y *= 0.973f;
             }
 
             if (returnhammer == 1) //Hammer slows after the inital hit
@@ -95,60 +95,62 @@ namespace CalamityMod.Projectiles.Melee
 
             if (returnhammer == 2) // Projectile returns to player
             {
-                Projectile.extraUpdates = 2;
-                float returnSpeed = StellarContempt.Speed * 0.7f;
-                float acceleration = 1.1f;
-                Player owner = Main.player[Projectile.owner];
-                Vector2 playerCenter = owner.Center;
-                float xDist = playerCenter.X - Projectile.Center.X;
-                float yDist = playerCenter.Y - Projectile.Center.Y;
-                float dist = (float)Math.Sqrt(xDist * xDist + yDist * yDist);
-                dist = returnSpeed / dist;
-                xDist *= dist;
-                yDist *= dist;
+                if (WaitTimer == 0)
+                {
+                    Projectile.extraUpdates = 2;
+                    float returnSpeed = StellarContempt.Speed * 0.7f;
+                    float acceleration = 1.1f;
+                    Player owner = Main.player[Projectile.owner];
+                    Vector2 playerCenter = owner.Center;
+                    float xDist = playerCenter.X - Projectile.Center.X;
+                    float yDist = playerCenter.Y - Projectile.Center.Y;
+                    float dist = (float)Math.Sqrt(xDist * xDist + yDist * yDist);
+                    dist = returnSpeed / dist;
+                    xDist *= dist;
+                    yDist *= dist;
 
-                if (Projectile.velocity.X < xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X + acceleration;
-                    if (Projectile.velocity.X < 0f && xDist > 0f)
-                        Projectile.velocity.X += acceleration;
+                    if (Projectile.velocity.X < xDist)
+                    {
+                        Projectile.velocity.X = Projectile.velocity.X + acceleration;
+                        if (Projectile.velocity.X < 0f && xDist > 0f)
+                            Projectile.velocity.X += acceleration;
+                    }
+                    else if (Projectile.velocity.X > xDist)
+                    {
+                        Projectile.velocity.X = Projectile.velocity.X - acceleration;
+                        if (Projectile.velocity.X > 0f && xDist < 0f)
+                            Projectile.velocity.X -= acceleration;
+                    }
+                    if (Projectile.velocity.Y < yDist)
+                    {
+                        Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
+                        if (Projectile.velocity.Y < 0f && yDist > 0f)
+                            Projectile.velocity.Y += acceleration;
+                    }
+                    else if (Projectile.velocity.Y > yDist)
+                    {
+                        Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
+                        if (Projectile.velocity.Y > 0f && yDist < 0f)
+                            Projectile.velocity.Y -= acceleration;
+                    }
                 }
-                else if (Projectile.velocity.X > xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - acceleration;
-                    if (Projectile.velocity.X > 0f && xDist < 0f)
-                        Projectile.velocity.X -= acceleration;
-                }
-                if (Projectile.velocity.Y < yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
-                    if (Projectile.velocity.Y < 0f && yDist > 0f)
-                        Projectile.velocity.Y += acceleration;
-                }
-                else if (Projectile.velocity.Y > yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
-                    if (Projectile.velocity.Y > 0f && yDist < 0f)
-                        Projectile.velocity.Y -= acceleration;
-                }
+                
                 // Delete the projectile if it touches its owner, increase counter to the big hammer, and spawn a dustsplosion on the player that scales with how close they are to getting a big hammer.
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    if (Projectile.Hitbox.Intersects(player.Hitbox))
+                    if (Projectile.Hitbox.Intersects(player.Hitbox) || WaitTimer > 0)
                     {
-                        Main.NewText(EmpoweredHammer);
-                        if (EmpoweredHammer >= 6)
+                        if (EmpoweredHammer >= 7)
                         {
+                            Projectile.extraUpdates = 1;
                             if (WaitTimer == 0)
-                                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10;
-                            ++WaitTimer;
+                                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 20;
+                            WaitTimer++;
+                            Projectile.velocity *= 0.97f;
                             if (WaitTimer == 20f)
                             {
-                                Projectile.velocity *= 0.001f;
                                 EmpoweredHammer = 0;
-                                WaitTimer = 0;
                                 returnhammer = 3;
-                                rotatehammer = 0;
                             }
                         }
                         else
@@ -182,26 +184,24 @@ namespace CalamityMod.Projectiles.Melee
                     InPulse = 1;
                 }
 
-                rotatehammer += 0.12f;
-                Projectile.Center += new Vector2(0, -3).RotatedBy(Projectile.rotation * 0.1f);
-                if (EchoHammerPrep >= 8f && InPulse < 2)
+                rotatehammer -= 0.09f;
+                Projectile.velocity *= 0.96f;
+                if (EchoHammerPrep >= 5f && InPulse < 2)
                 {
-                    if (time % 12 == 0)
+                    if (time % 20 == 0)
                     {
-                        Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, usedColor * 0.4f, "CalamityMod/Particles/HighResHollowCircleHardEdge", new Vector2(1f * Utils.GetLerpValue(4, 12, EchoHammerPrep), 1f * Utils.GetLerpValue(30, 8, EchoHammerPrep, true)), 0f, 2f, 0f, (int)(40 * Utils.GetLerpValue(35, 8, EchoHammerPrep, true)));
+                        Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, usedColor * 0.35f, "CalamityMod/Particles/HighResHollowCircleHardEdge", new Vector2(1f, 1f * Utils.GetLerpValue(40, 20, EchoHammerPrep)), 0f, 2f, 0f, (int)(40 * Utils.GetLerpValue(50, 0, EchoHammerPrep, true)));
                         GeneralParticleHandler.SpawnParticle(pulse2);
                     }
                 }
-                if (EchoHammerPrep >= 20)
+                if (EchoHammerPrep >= 32)
                 {
                     InPulse = 2;
                 }
-                if (EchoHammerPrep <= 24f)
+                if (EchoHammerPrep <= 30f)
                 {
-                    EchoHammerPrep += 0.2f;
-
-                    float fade = Utils.GetLerpValue(30, 0, EchoHammerPrep, true);
-                    float numberOfDusts = 3f;
+                    float fade = Utils.GetLerpValue(40, 0, EchoHammerPrep, true);
+                    float numberOfDusts = 2f;
                     float rotFactor = 360f / numberOfDusts;
                     for (int i = 0; i < numberOfDusts; i++)
                     {
@@ -213,21 +213,23 @@ namespace CalamityMod.Projectiles.Melee
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                         dust.noGravity = true;
                         dust.color = usedColor;
-                        dust.velocity += Projectile.velocity;
+                        StreamGougeMetaball.SpawnParticle(Projectile.Center + velOffset * 1.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 50f * Main.rand.NextFloat(0.9f, 1.3f) * fade);
                     }
                 }
-                else
+                if (EchoHammerPrep > 40)
                 {
                     int hammer = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<GalaxySmasherEcho>(), Projectile.damage * 10, Projectile.knockBack * 2.5f, Projectile.owner, 0f, Projectile.ai[1]);
                     Main.projectile[hammer].localAI[0] = Math.Sign(Projectile.velocity.X);
                     Main.projectile[hammer].netUpdate = true;
                     Projectile.Kill();
                 }
+                else
+                    EchoHammerPrep += 0.2f;
             }
 
             if (targetDist < 1400)
             {
-                if (Main.rand.NextBool(3))
+                if (Main.rand.NextBool(3) && returnhammer < 3)
                 {
                     Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                     Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
@@ -235,15 +237,19 @@ namespace CalamityMod.Projectiles.Melee
                     dust.noGravity = true;
                     dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
                 }
-                Vector2 linePos = Projectile.Center + (MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 25f;
-                Particle spark = new CustomSpark(linePos, (MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedByRandom(0.4f) * Main.rand.NextFloat(2f, 14f), "CalamityMod/Particles/BloomRing", false, Main.rand.Next(7, 16), Main.rand.NextFloat(0.25f, 0.5f), usedColor * 0.35f, new Vector2(1f, 1f), true, false, Main.rand.NextFloat(-10, 10));
+
+                Vector2 offset2 = new Vector2(0, -30).RotatedBy(-MathHelper.PiOver4 * 0.5f).RotatedBy(Projectile.rotation);
+                Vector2 velOffset2 = new Vector2(0, -5).RotatedBy(-MathHelper.PiOver4).RotatedBy(Projectile.rotation).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.8f, 1.5f);
+                Vector2 spawnPosition2 = Projectile.Center + offset2 + Main.rand.NextVector2Circular(6, 6);
+                Particle spark = new CustomSpark(spawnPosition2, velOffset2 * (InPulse > 0 ? 3 : 1), "CalamityMod/Particles/BloomRing", false, Main.rand.Next(7, 16), Main.rand.NextFloat(0.25f, 0.5f) * (InPulse > 0 ? 1.5f : 1), usedColor * 0.35f, new Vector2(1f, 1f), true, false, Main.rand.NextFloat(-10, 10));
                 GeneralParticleHandler.SpawnParticle(spark);
+
                 for (int i = 0; i < (InPulse > 0 ? 3 : 2); i++)
                 {
                     Vector2 offset = new Vector2(0, -30).RotatedBy(-MathHelper.PiOver4 * 0.5f).RotatedBy(Projectile.rotation);
                     Vector2 velOffset = new Vector2(0, -5).RotatedBy(-MathHelper.PiOver4).RotatedBy(Projectile.rotation) * Main.rand.NextFloat(0.4f, 1f);
                     Vector2 spawnPosition = Projectile.Center + offset + Main.rand.NextVector2Circular(6, 6);
-                    StreamGougeMetaball.SpawnParticle(spawnPosition, velOffset * (InPulse > 0 ? 3 : 0.2f), 40f * Main.rand.NextFloat(0.9f, 1.3f) * (InPulse > 0 ? 3 : 1));
+                    StreamGougeMetaball.SpawnParticle(spawnPosition, velOffset * (InPulse > 0 ? 3 : 0.2f), 40f * Main.rand.NextFloat(0.9f, 1.3f) * (InPulse > 0 ? 2 : 1));
                 }
             }
             time++;
@@ -262,27 +268,19 @@ namespace CalamityMod.Projectiles.Melee
 
                 int FunSizeHamID = ModContent.ProjectileType<GalaxySmasherMini>();
                 int FunSizeHamDamage = (int)(0.1f * Projectile.damage);
-                float FunSizeHamKB = 0.2f;
-                int NumOfFunSizeHams = EmpoweredHammer + 1;
-                for (int i = 0; i < NumOfFunSizeHams; ++i)
+                float FunSizeHamKB = 0.2f * Projectile.knockBack;
+                if (Projectile.owner == Main.myPlayer)
                 {
-                    float startDist = Main.rand.NextFloat(160f, 190f);
-                    Vector2 startDir = Main.rand.NextVector2Unit();
-                    Vector2 startPoint = Projectile.Center + startDir * startDist;
-
-                    float FunSizeHamSpeed = Main.rand.NextFloat(10f, 14f);
-                    Vector2 velocity = startDir * -FunSizeHamSpeed;
-
-                    if (Projectile.owner == Main.myPlayer)
+                    float numberOfProj = EmpoweredHammer + 1;
+                    float rotFactor2 = 360f / numberOfProj;
+                    float randRot = Main.rand.NextFloat(-6, 6);
+                    for (int i = 1; i < numberOfProj + 1; i++)
                     {
-                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPoint, velocity, FunSizeHamID, FunSizeHamDamage, FunSizeHamKB, Projectile.owner);
-                        if (proj.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
-                            Main.projectile[proj].tileCollide = false;
-                            Main.projectile[proj].timeLeft = 30;
-                            Main.projectile[proj].extraUpdates = 2;
-                        }
+                        float rot = MathHelper.ToRadians(i * rotFactor2);
+                        Vector2 offset = new Vector2(5f, 0).RotatedBy(rot).RotatedBy(randRot);
+                        Vector2 velOffset = new Vector2(1f, 0).RotatedBy(rot).RotatedBy(randRot);
+
+                        Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, velOffset, FunSizeHamID, FunSizeHamDamage, FunSizeHamKB, Projectile.owner, EmpoweredHammer, (EmpoweredHammer % 2 == 0 ? -1 : 1));
                     }
                 }
 
@@ -329,16 +327,23 @@ namespace CalamityMod.Projectiles.Melee
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.5f, 3, texture, true, true);
 
+            float shrinkLerp = (Utils.GetLerpValue(40, 35, EchoHammerPrep, true));
+            float growLerp = (Utils.GetLerpValue(0, 35, EchoHammerPrep, true));
+            float bonusScale = (returnhammer == 3 ? (EchoHammerPrep < 35 ? (growLerp * 3) : (shrinkLerp * 3)) : 1);
+
             Vector2 generalDrawPos = Projectile.Center - Main.screenPosition;
-            float fade = Utils.GetLerpValue(2, 15, Projectile.velocity.Length(), true);
-            Main.EntitySpriteDraw(p3.Value, generalDrawPos, null, Color.Black * fade, Projectile.rotation, p3.Size() * 0.5f, 0.6f, SpriteEffects.None);
+            float fade = (returnhammer == 3 ? 1 : Utils.GetLerpValue(2, 15, Projectile.velocity.Length(), true));
+            Main.EntitySpriteDraw(p3.Value, generalDrawPos, null, Color.Black * fade, Projectile.rotation, p3.Size() * 0.5f, 0.6f * bonusScale, SpriteEffects.None);
             for (int i = 0; i < 3; i++)
-            Main.EntitySpriteDraw(p.Value, generalDrawPos, null, Color.Indigo * 0.95f * fade, Projectile.rotation * Main.rand.NextFloat(1.2f, 1.3f) + i * 0.2f, p.Size() * 0.5f, 0.05f + i * 0.004f, SpriteEffects.None);
-            //Projectile.DrawProjectileWithBackglow(Color.Transparent with { A = 0 }, Color.White, 5f, texture);
+            Main.EntitySpriteDraw(p.Value, generalDrawPos, null, Color.Indigo * 0.95f * fade, Projectile.rotation * Main.rand.NextFloat(1.2f, 1.3f) + i * 0.2f, p.Size() * 0.5f, (0.05f + i * 0.004f) * bonusScale, SpriteEffects.None);
 
             Main.EntitySpriteDraw(texture, generalDrawPos, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, Projectile.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
-
-            Main.EntitySpriteDraw(p2.Value, generalDrawPos, null, usedColor with { A = 0 } * 0.65f * fade, Projectile.rotation * Main.rand.NextFloat(1.4f, 1.45f), p2.Size() * 0.5f, 0.9f * Main.rand.NextFloat(0.9f, 1.1f), SpriteEffects.None);
+            if (returnhammer < 3)
+                Main.EntitySpriteDraw(p2.Value, generalDrawPos, null, usedColor with { A = 0 } * 0.45f * fade, Projectile.rotation * Main.rand.NextFloat(1.4f, 1.45f), p2.Size() * 0.5f, 0.9f * Main.rand.NextFloat(0.9f, 1.1f), SpriteEffects.None);
+            else
+            {
+                Projectile.DrawProjectileWithBackglow(usedColor with { A = 0 }, Color.White, 6.5f * growLerp, texture, null, Projectile.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+            }
             return false;
         }
     }
