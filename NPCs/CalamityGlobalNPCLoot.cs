@@ -1651,6 +1651,34 @@ DukeEditFailed:
             if (CalamityLists.dungeonEnemyBuffList.Contains(npc.type))
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
+
+            // Blanket remove all specific food item drops that have changed obtainment methods in Calamity
+            // This is type-indiscriminate and will also most probably hit modded NPCs too
+            int[] randomFoodItems = new int[]
+            {
+                ItemID.ApplePie,
+                ItemID.BananaSplit,
+                ItemID.BBQRibs,
+                ItemID.Burger,
+                ItemID.MilkCarton,
+                ItemID.ChocolateChipCookie,
+                ItemID.CoffeeCup,
+                ItemID.CreamSoda,
+                ItemID.FriedEgg,
+                ItemID.Fries,
+                ItemID.Grapes,
+                ItemID.Hotdog,
+                ItemID.IceCream,
+                ItemID.Milkshake,
+                ItemID.Nachos,
+                ItemID.Pizza,
+                ItemID.PotatoChips,
+                ItemID.ShrimpPoBoy,
+                ItemID.Spaghetti,
+                ItemID.Steak
+            };
+            foreach (int foodItemID in randomFoodItems)
+                npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
         }
         #endregion
 
@@ -1681,32 +1709,6 @@ DukeEditFailed:
         #region Pre Kill
         public override bool PreKill(NPC npc)
         {
-            // Stop all random food drops that aren't sold, crafted or etc.
-            var randomFoodItems = new int[]
-            {
-                ItemID.ApplePie,
-                ItemID.BananaSplit,
-                ItemID.BBQRibs,
-                ItemID.Burger,
-                ItemID.MilkCarton,
-                ItemID.ChocolateChipCookie,
-                ItemID.CoffeeCup,
-                ItemID.CreamSoda,
-                ItemID.FriedEgg,
-                ItemID.Fries,
-                ItemID.Grapes,
-                ItemID.Hotdog,
-                ItemID.IceCream,
-                ItemID.Milkshake,
-                ItemID.Nachos,
-                ItemID.Pizza,
-                ItemID.PotatoChips,
-                ItemID.ShrimpPoBoy,
-                ItemID.Spaghetti,
-                ItemID.Steak
-            };
-            DropHelper.BlockDrops(randomFoodItems);
-
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
             if (CalamityWorld.revenge && (CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
