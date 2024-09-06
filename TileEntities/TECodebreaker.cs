@@ -194,11 +194,7 @@ namespace CalamityMod.TileEntities
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.UpdateCodebreakerDecryptCountdown);
-            packet.Write(ID);
-            packet.Write(DecryptionCountdown);
-            packet.Send();
+            TEUpdateCodebreakerDecryptCountdownPacket.Send(this);
         }
 
         public void UpdateTime()

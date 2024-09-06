@@ -121,30 +121,6 @@ namespace CalamityMod
                     CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
                     throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
                 }
-
-                switch (msgType)
-                {
-                    //
-                    // Player mechanic syncs
-                    //
-                    case CalamityModMessageType.CooldownAddition:
-                        Main.player[reader.ReadInt32()].Calamity().HandleCooldownAddition(reader);
-                        break;
-                    case CalamityModMessageType.CooldownRemoval:
-                        Main.player[reader.ReadInt32()].Calamity().HandleCooldownRemoval(reader);
-                        break;
-                    case CalamityModMessageType.SyncCooldownDictionary:
-                        Main.player[reader.ReadInt32()].Calamity().HandleCooldownDictionary(reader);
-                        break;
-
-                    //
-                    // Default case: with no idea how long the packet is, we can't safely read data.
-                    // Throw an exception now instead of allowing the network stream to corrupt.
-                    //
-                    default:
-                        CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
-                        throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
-                }
             }
             catch (Exception e)
             {
