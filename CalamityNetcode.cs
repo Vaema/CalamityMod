@@ -142,25 +142,41 @@ namespace CalamityMod
         }
 
         /// <summary>
-        /// Shorthand for NetMessage.SendData(MessageID.SyncNPC)
+        /// Shorthand Method for SyncNPC
+        /// <code>
+        /// This Equals to:
+        /// 
+        /// if (Main.dedServ and npc != null)
+        ///     NetMessage.SendData(MessageID.SyncNPC, ...)
+        /// </code>
         /// </summary>
         public static void SyncNPC(NPC npcToSync, int toClient = -1, int ignoreClient = -1)
         {
-            if (Main.netMode == NetmodeID.SinglePlayer)
+            if (!Main.dedServ)
                 return;
 
             if (npcToSync is null)
                 return;
 
-            NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcToSync.whoAmI);
+            var npcWhoAmI = npcToSync.whoAmI;
+            if (npcWhoAmI < 0 || npcWhoAmI >= Main.maxNPCs)
+                return;
+
+            NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcWhoAmI);
         }
 
         /// <summary>
-        /// Shorthand for NetMessage.SendData(MessageID.SyncNPC)
+        /// Shorthand Method for SyncNPC
+        /// <code>
+        /// This Equals to:
+        /// 
+        /// if (Main.dedServ and npcWhoAmI in valid range)
+        ///     NetMessage.SendData(MessageID.SyncNPC, ...)
+        /// </code>
         /// </summary>
         public static void SyncNPC(int npcWhoAmI, int toClient = -1, int ignoreClient = -1)
         {
-            if (Main.netMode == NetmodeID.SinglePlayer)
+            if (!Main.dedServ)
                 return;
 
             if (npcWhoAmI < 0 || npcWhoAmI >= Main.maxNPCs)
