@@ -12,6 +12,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
@@ -1829,11 +1830,7 @@ namespace CalamityMod.Items
 
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    ModPacket packet = CalamityMod.Instance.GetPacket();
-                    packet.Write((byte)CalamityModMessageType.SomeoneGotScammedByTinkerer);
-                    packet.Write((byte)p.whoAmI);
-                    packet.Write7BitEncodedInt(stolen);
-                    packet.Send();
+                    ScammedByTinkererPacket.Send(stolen);
                 }
             }
         }

@@ -204,21 +204,6 @@ namespace CalamityMod
                         Main.player[reader.ReadInt32()].Calamity().HandleMousePosition(reader);
                         break;
 
-
-                    //
-                    // Difficulty syncs
-                    //
-
-                    case CalamityModMessageType.SyncDifficulties:
-                        int sender = reader.ReadInt32();
-                        CalamityWorld.revenge = reader.ReadBoolean();
-                        CalamityWorld.death = reader.ReadBoolean();
-                        //TODO - Something so that other mods that hijack the difficulty ui can also use the remainder of the reader to have their own shit
-
-                        if (Main.netMode == NetmodeID.Server)
-                            SyncCalamityWorldDifficulties(sender);
-                        break;
-
                     //
                     // Music event syncs
                     //
@@ -228,47 +213,6 @@ namespace CalamityMod
 
                     case CalamityModMessageType.MusicEventSyncResponse:
                         MusicEventSystem.ReceiveSyncResponse(reader);
-                        break;
-
-                    //
-                    // Bandit refund syncs
-                    //
-                    case CalamityModMessageType.SomeoneGotScammedByTinkerer:
-                        int scammedOne = reader.ReadByte();
-                        int stolen = reader.Read7BitEncodedInt();
-
-                        CalamityWorld.MoneyStolenByBandit += stolen;
-                        CalamityWorld.Reforges++;
-
-                        // Broadcast back for tragic event
-                        // WorldSync DO sync the MoneyStolenByBandit and Refores variable, But spamming SyncWorld is not a ideal action
-                        if (Main.dedServ)
-                        {
-                            ModPacket packet = CalamityMod.Instance.GetPacket();
-                            packet.Write((byte)CalamityModMessageType.SomeoneGotScammedByTinkerer);
-                            packet.Write((byte)scammedOne);
-                            packet.Write7BitEncodedInt(stolen);
-                            packet.Send(ignoreClient: scammedOne);
-                        }
-
-                        break;
-
-                    case CalamityModMessageType.WantToRefundReforges:
-                        int requester = reader.ReadByte();
-
-                        // Only Server should handle this action!
-                        if (!Main.dedServ)
-                            break;
-
-                        int banditIdx = NPC.FindFirstNPC(ModContent.NPCType<THIEF>());
-                        if (banditIdx == -1)
-                            break;
-
-                        NPC bandit = Main.npc[banditIdx];
-                        if (bandit == null || !bandit.active)
-                            break;
-
-                        THIEF.DoRefund(bandit);
                         break;
 
                     //
@@ -332,14 +276,7 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.SyncDifficulties);
-            netMessage.Write(sender);
-            netMessage.Write(CalamityWorld.revenge);
-            netMessage.Write(CalamityWorld.death);
-
-            //TODO - Let other mods also add their own bits in that sync. Ideally would be done through the difficultystem itself
-            netMessage.Send(-1, sender);
+            SyncDifficultiesPacket.Send();
         }
 
         public static void NewNPC_ClientSide(Vector2 spawnPosition, int npcType, Player player)
@@ -428,7 +365,7 @@ namespace CalamityMod
         MusicEventSyncResponse,
         
         // Bandit Reforge Refund
-        SomeoneGotScammedByTinkerer,
+        ScammedByTinkerer,
         WantToRefundReforges,
 
         Reserved = 150

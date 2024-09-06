@@ -3,6 +3,7 @@ using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -231,10 +232,7 @@ namespace CalamityMod.NPCs.TownNPCs
                     //
                     // Other way possible is to having bandit stolen inventory per player
                     // But I didn't wanted to change system too much
-                    ModPacket packet = CalamityMod.Instance.GetPacket();
-                    packet.Write((byte)CalamityModMessageType.WantToRefundReforges);
-                    packet.Write((byte)Main.myPlayer);
-                    packet.Send();
+                    WantToRefundReforgesPacket.Send();
                 }
 
                 SoundEngine.PlaySound(SoundID.Coins); // Money dink sound
