@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Dusts.WaterSplash
 {
-    public class SunkenSeaSplash : SplashDust
+    public class SunkenSeaPolypSplash : SplashDust
     {
     }
 }

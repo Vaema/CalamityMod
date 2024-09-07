@@ -20,8 +20,8 @@ namespace CalamityMod.Waters
         {
             Instance = this;
             WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/UpperAbyssWaterflow");
-            SplashDust = ModContent.DustType<SunkenSeaSplash>();
-            DropletGore = ModContent.GoreType<SunkenSeaWaterDroplet>();
+            SplashDust = ModContent.DustType<SunkenSeaBurrowsSplash>();
+            DropletGore = ModContent.GoreType<SunkenSeaBurrowsWaterDroplet>();
         }
 
         public override void Unload()

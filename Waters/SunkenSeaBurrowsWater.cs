@@ -1,8 +1,9 @@
-﻿using CalamityMod.Systems;
+﻿using CalamityMod.Dusts.WaterSplash;
+using CalamityMod.Gores.WaterDroplet;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
@@ -28,11 +29,6 @@ namespace CalamityMod.Waters
             Instance = null;
         }
 
-        public override int ChooseWaterfallStyle()
-        {
-            return ModContent.Find<ModWaterfallStyle>("CalamityMod/SunkenSeaBurrowsWaterflow").Slot;
-        }
-
         public override void LightColorMultiplier(ref float r, ref float g, ref float b)
         {
             r = 1.02f;
@@ -53,9 +49,9 @@ namespace CalamityMod.Waters
             g = outputColor.Y;
             b = outputColor.Z;
         }
-
-        public override int GetSplashDust() => DustID.Water;
-        public override int GetDropletGore() => GoreID.WaterDripCavern;
+        public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/SunkenSeaBurrowsWaterflow").Slot;
+        public override int GetSplashDust() => ModContent.DustType<SunkenSeaBurrowsSplash>();
+        public override int GetDropletGore() => ModContent.GoreType<SunkenSeaBurrowsWaterDroplet>();
         public override Color BiomeHairColor() => Color.Blue;
     }
 }
