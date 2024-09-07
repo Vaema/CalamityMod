@@ -330,7 +330,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type == NPCID.TheDestroyer)
             {
                 // Spawn segments from head
-                if (npc.ai[0] == 0f)
+                if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.ai[3] = npc.whoAmI;
                     npc.realLife = npc.whoAmI;
