@@ -56,7 +56,7 @@ namespace CalamityMod.Systems
         {
             BrimstoneCragTiles = tileCounts[ModContent.TileType<InfernalSuevite>()] + tileCounts[ModContent.TileType<BrimstoneSlag>()];
             SunkenSeaTiles = tileCounts[ModContent.TileType<EutrophicSand>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()] + tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<Limestone>()] + tileCounts[ModContent.TileType<PolypSand>()] + tileCounts[ModContent.TileType<RuneSand>()] + tileCounts[ModContent.TileType<Runestone>()];
-            SunkenSeaShoresTiles = tileCounts[ModContent.TileType<Runestone>()] + + tileCounts[ModContent.TileType<RuneSand>()];
+            SunkenSeaShoresTiles = tileCounts[ModContent.TileType<Runestone>()] + tileCounts[ModContent.TileType<RuneSand>()];
             SunkenSeaPolypTiles = tileCounts[ModContent.TileType<Limestone>()] + tileCounts[ModContent.TileType<PolypSand>()];
             SunkenSeaReefsTiles = tileCounts[ModContent.TileType<Shellstone>()] + tileCounts[ModContent.TileType<EutrophicSand>()];
             SunkenSeaBurrowsTiles = tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()];
