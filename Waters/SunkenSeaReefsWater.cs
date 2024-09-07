@@ -12,7 +12,7 @@ namespace CalamityMod.Waters
 
     public class SunkenSeaReefsWater : CalamityModWaterStyle
     {
-        private readonly Vector3 WaterGlowColor = new Color(140, 222, 239).ToVector3();
+        private readonly Vector3 WaterGlowColor = new Color(140, 222, 240).ToVector3();
 
         public static int Type { get; private set; }
         public static CalamityModWaterStyle Instance { get; private set; }
