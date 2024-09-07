@@ -79,12 +79,12 @@ namespace CalamityMod.Projectiles.Typeless
                 return false;
 
             float scale = 2f - Projectile.scale;
-            float rotation = MathHelper.TwoPi * Projectile.scale;
+            // float rotation = MathHelper.TwoPi * Projectile.scale;
             Vector2 drawPosition = Target.Center + BullseyeOffsetFromCenter - Main.screenPosition;
             if (FadingOut)
             {
                 scale = Projectile.scale;
-                rotation = 0f;
+                // rotation = 0f;
             }
 
             Texture2D bullseyeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SpiritOriginRegularBullseye").Value;
@@ -93,12 +93,12 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 bullseyeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SpiritOriginBossBullseye").Value;
                 frame = bullseyeTexture.Frame(1, 4, 0, (int)(Main.GlobalTimeWrappedHourly * 7f) % 4);
-                rotation = 0f;
+                // rotation = 0f;
                 drawPosition.Y -= 17;
                 drawPosition.X -= 1;
             }
 
-            Main.EntitySpriteDraw(bullseyeTexture, drawPosition, frame, Color.White * Projectile.Opacity, rotation, frame.Size() * 0.5f, scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(bullseyeTexture, drawPosition, frame, Color.White * Projectile.Opacity, Projectile.rotation, frame.Size() * 0.5f, scale, SpriteEffects.None, 0);
             return false;
         }
     }

@@ -75,6 +75,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
 using static CalamityMod.Items.Accessories.DaawnlightSpiritOrigin;
+using CalamityMod.Projectiles.Pets;
 
 namespace CalamityMod.CalPlayer
 {
@@ -911,10 +912,23 @@ namespace CalamityMod.CalPlayer
                         continue;
 
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DaawnlightSpiritOrigin>()));
-                    if (Main.myPlayer == Player.whoAmI && target.WithinRange(Player.Center, 2000f))
+                    if (Main.myPlayer == Player.whoAmI && target.WithinRange(Player.Center , 2000f))
+                    {
                         Projectile.NewProjectile(source, target.Center, Vector2.Zero, bullseyeType, 0, 0f, Player.whoAmI, target.whoAmI);
-                    if (spiritOriginBullseyeShootCountdown <= 0)
-                        spiritOriginBullseyeShootCountdown = 45;
+
+                        foreach (var proj in Main.ActiveProjectiles)
+                        {
+                            if (proj.owner != Player.whoAmI && proj.type != ModContent.ProjectileType<DaawnlightSpiritOriginMinion>())
+                                continue;
+
+                            DaawnlightSpiritOriginMinion dsoPet = proj.ModProjectile<DaawnlightSpiritOriginMinion>();
+                            dsoPet.Projectile.spriteDirection = MathF.Sign(dsoPet.Projectile.Center.X - target.Center.X);
+                            if (dsoPet.CurrentAnimation != DaawnlightSpiritOriginMinion.AnimationState.Pointing)
+                                dsoPet.CurrentAnimation = DaawnlightSpiritOriginMinion.AnimationState.Pointing;
+
+                            break;
+                        }
+                    }
                 }
             }
 
