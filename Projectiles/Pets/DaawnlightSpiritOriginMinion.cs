@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Pets
                     return;
                 }
 
-                if (Owner.miscCounter % 4 == 0)
+                if (Owner.miscCounter % (Projectile.frame > 5 ? 8 : 4) == 0)
                     Projectile.frame = Math.Min(Projectile.frame + 1 , _animationFrames - 1);
 
                 if (Projectile.frame == _animationFrames - 1)
