@@ -146,6 +146,25 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove Expert Brain of Cthulhu Random Debuffs
+        private static void RemoveExpertBrainRandomDebuffs(ILContext il)
+        {
+            // Remove Expert+ Brain of Cthulhu and Creeper random debuffs on hit.
+            var cursor = new ILCursor(il);
+
+            // Go to the check for Expert Mode.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Main>("get_expertMode")))
+            {
+                LogFailure("Remove Expert Brain Random Debuffs", "Could not locate the Expert Mode check.");
+                return;
+            }
+
+            // AND with 0 (false), so that the game never thinks it is Expert Mode and thus never tries to inflict debuffs.
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
+        }
+        #endregion
+
         #region Make Meteorite Explodable
         private static void MakeMeteoriteExplodable(ILContext il)
         {

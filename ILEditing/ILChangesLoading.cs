@@ -180,6 +180,7 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.UpdateBuffs += RemoveFeralBiteRandomDebuffs;
+            IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
