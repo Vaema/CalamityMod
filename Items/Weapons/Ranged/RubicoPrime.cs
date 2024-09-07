@@ -114,8 +114,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<NitroExpressRifle>().
-                AddIngredient<ScoriaBar>(8).
                 AddIngredient(ItemID.IllegalGunParts).
+                AddIngredient<ScoriaBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/Ranged/AMRShot";
 
         private bool initialized = false;
+        public static int Lifetime = 600;
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -28,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.BulletHighVelocity;
             Projectile.penetrate = 5;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = Lifetime;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(CommonCalamitySounds.LargeWeaponFireSound with { Volume = CommonCalamitySounds.LargeWeaponFireSound.Volume * 0.45f }, Projectile.Center);
                 }
             }
-            if (Projectile.timeLeft == 596)
+            if (Projectile.timeLeft == Lifetime - 4)
             {
                 for (int i = 0; i <= 4; i++) //Dragon's Breath shot particles my beloved
                 {
