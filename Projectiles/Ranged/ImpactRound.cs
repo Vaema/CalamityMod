@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }
-            if (Projectile.timeLeft < 597 && Projectile.timeLeft > 450)
+            if (Projectile.timeLeft < Lifetime - 3 && Projectile.timeLeft > Lifetime - 150)
             {
                 AltSparkParticle spark = new AltSparkParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 15, 1f, Color.OrangeRed * 0.1f);
                 GeneralParticleHandler.SpawnParticle(spark);
