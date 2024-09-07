@@ -12,15 +12,6 @@ AdamantiteThrowingAxe: {
 	Tooltip: Stealth strikes ignore gravity and rain down lightning on enemy hits
 }
 
-AlphaVirus: {
-	DisplayName: Alpha Virus
-	Tooltip:
-		'''
-		Throws a giant plague cell with a lethal aura that explodes into 6 homing plague seekers
-		Stealth strikes cause the plague cell to move slower, accumulating an aura of swirling plague seekers as it flies
-		'''
-}
-
 Apoctolith: {
 	DisplayName: Apoctolith
 	Tooltip:
