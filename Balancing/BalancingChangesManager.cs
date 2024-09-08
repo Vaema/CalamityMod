@@ -100,8 +100,8 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region Crabulon
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.5f)));
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.75f)));
             #endregion
 
             #region Brain of Cthulhu: Creepers
