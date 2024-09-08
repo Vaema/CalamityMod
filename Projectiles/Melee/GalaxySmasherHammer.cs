@@ -213,7 +213,7 @@ namespace CalamityMod.Projectiles.Melee
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                         dust.noGravity = true;
                         dust.color = usedColor;
-                        StreamGougeMetaball.SpawnParticle(Projectile.Center + velOffset * 1.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 50f * Main.rand.NextFloat(0.9f, 1.3f) * fade);
+                        GalaxyMetaball.SpawnParticle(Projectile.Center + velOffset * 1.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 50f * Main.rand.NextFloat(0.9f, 1.3f) * fade);
                     }
                 }
                 if (EchoHammerPrep > 40)
@@ -249,7 +249,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 offset = new Vector2(0, -30).RotatedBy(-MathHelper.PiOver4 * 0.5f).RotatedBy(Projectile.rotation);
                     Vector2 velOffset = new Vector2(0, -5).RotatedBy(-MathHelper.PiOver4).RotatedBy(Projectile.rotation) * Main.rand.NextFloat(0.4f, 1f);
                     Vector2 spawnPosition = Projectile.Center + offset + Main.rand.NextVector2Circular(6, 6);
-                    StreamGougeMetaball.SpawnParticle(spawnPosition, velOffset * (InPulse > 0 ? 3 : 0.2f), 40f * Main.rand.NextFloat(0.9f, 1.3f) * (InPulse > 0 ? 2 : 1));
+                    GalaxyMetaball.SpawnParticle(spawnPosition, velOffset * (InPulse > 0 ? 3 : 0.2f), 40f * Main.rand.NextFloat(0.9f, 1.3f) * (InPulse > 0 ? 2 : 1));
                 }
             }
             time++;
@@ -280,7 +280,7 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 offset = new Vector2(5f, 0).RotatedBy(rot).RotatedBy(randRot);
                         Vector2 velOffset = new Vector2(1f, 0).RotatedBy(rot).RotatedBy(randRot);
 
-                        Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, velOffset, FunSizeHamID, FunSizeHamDamage, FunSizeHamKB, Projectile.owner, EmpoweredHammer, (EmpoweredHammer % 2 == 0 ? -1 : 1));
+                        Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, velOffset, FunSizeHamID, FunSizeHamDamage, FunSizeHamKB, Projectile.owner, EmpoweredHammer, (EmpoweredHammer % 2 == 0 ? -1 : 1), target.whoAmI);
                     }
                 }
 
@@ -296,7 +296,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (i % 3 == 0)
                 {
-                    StreamGougeMetaball.SpawnParticle(Projectile.Center + offset, velOffset * Main.rand.NextFloat(1f, 1.2f), 60f * Main.rand.NextFloat(0.9f, 1.3f));
+                    GalaxyMetaball.SpawnParticle(Projectile.Center + offset, velOffset * Main.rand.NextFloat(1f, 1.2f), 60f * Main.rand.NextFloat(0.9f, 1.3f));
                 }
                 else
                 {
@@ -312,6 +312,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
             float minMult = 0.7f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);

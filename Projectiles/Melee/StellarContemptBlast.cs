@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -31,6 +32,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 240);
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.95f);
             if (Projectile.damage < 1)

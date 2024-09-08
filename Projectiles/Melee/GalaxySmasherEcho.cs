@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
@@ -33,8 +34,8 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void SetDefaults()
         {
-            Projectile.width = 78;
-            Projectile.height = 78;
+            Projectile.width = 86;
+            Projectile.height = 72;
             Projectile.aiStyle = 0;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
@@ -94,7 +95,7 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int i = 0; i < 2; i++)
             {
-                StreamGougeMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 195f * Main.rand.NextFloat(0.9f, 1f));
+                GalaxyMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 195f * Main.rand.NextFloat(0.9f, 1f));
             }
         }
 
@@ -104,6 +105,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 420);
             if (target == targeted)
                 Projectile.Kill();
         }
@@ -115,7 +117,6 @@ namespace CalamityMod.Projectiles.Melee
             Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 15;
             if (Main.zenithWorld)
                 SoundEngine.PlaySound(Kunk, Projectile.Center);
-
             else
                 SoundEngine.PlaySound(SlamHamSound, Projectile.Center);
             for (int i = 0; i < 8; i++)
@@ -136,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee
                 Particle spark = new CustomSpark(Projectile.Center + offset * 6, velOffset, "CalamityMod/Particles/SmallBloom", false, 35, 1f, Color.Magenta * 0.75f, new Vector2(1.2f, 1f), true, false, 0, false, false, 0.3f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
-            StreamGougeMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, 275f);
+            GalaxyMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, 275f);
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<GalaxySmasherBlast>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
 

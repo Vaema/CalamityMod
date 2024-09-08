@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -96,6 +97,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
             if (target == targeted)
                 Projectile.Kill();
         }

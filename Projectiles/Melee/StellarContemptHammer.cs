@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer;
         public int returnhammer = 0;
         public int DustOnce = 1;
-        public float rotatehammer = 8f;
+        public float rotatehammer = 15f;
         public int time = 0;
         public override void SetStaticDefaults()
         {
@@ -32,8 +32,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 62;
-            Projectile.height = 62;
+            Projectile.width = 74;
+            Projectile.height = 74;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.tileCollide = false;
@@ -248,12 +248,12 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            SoundEngine.PlaySound(SoundID.Item14 with { Volume = 0.22f }, Projectile.Center);
             Projectile.ai[1] = target.whoAmI;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 90);
             float minMult = 0.7f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
@@ -300,7 +300,10 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPoint, velocity, ProjectileID.LunarFlare, flareDamage, flareKB, Main.myPlayer, 0f, AI1);
                     if (proj.WithinBounds(Main.maxProjectiles))
+                    {
                         Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
+                        Main.projectile[proj].tileCollide = false;
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetDefaults()
         {
             Projectile.width = 74;
-            Projectile.height = 74;
+            Projectile.height = 76;
             Projectile.aiStyle = 0;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
@@ -113,6 +114,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
             if (target == targeted)
                 Projectile.Kill();
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
@@ -18,7 +19,7 @@ namespace CalamityMod.Projectiles.Melee
         public float radius = 50f;
         public int time = 0;
         public bool homing = false;
-
+        public NPC targeted;
 
         public override void SetDefaults()
         {
@@ -28,7 +29,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 500;
             Projectile.extraUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
@@ -50,18 +51,18 @@ namespace CalamityMod.Projectiles.Melee
 
             if (time % 2 == 0)
             {
-                //Utils.Remap(Projectile.ai[0], 1, 8, 0, 0.4f, true)
-                //Particle pulse1 = new CustomSpark(Projectile.Center, Projectile.velocity, "CalamityMod/Particles/ShatteredExplosion", false, 6, 0.03f + Projectile.ai[0] * 0.012f, usedColor * 0.7f, new Vector2(1, 1), true, false, Main.rand.NextFloat(-5, 5), false, false, 0);
-                //GeneralParticleHandler.SpawnParticle(pulse1);
                 Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/SmallBloom", false, 6, 0.2f, usedColor, new Vector2(Utils.Remap(Projectile.velocity.Length(), 0, 5, 1, 0.6f, true), 1f), true, false, 0, false, false, Utils.Remap(Projectile.velocity.Length(), 0, 5, 0, 0.9f, true));
                 GeneralParticleHandler.SpawnParticle(spark);
             }
-            StreamGougeMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 0.7f), 30f * Main.rand.NextFloat(0.9f, 1f));
+            GalaxyMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 0.7f), 30f * Main.rand.NextFloat(0.9f, 1f));
             
             if (time > 45 || homing)
             {
                 homing = true;
-                NPC targeted = Projectile.Center.ClosestNPCAt(800);
+                targeted = Main.npc[(int)Projectile.ai[2]];
+                if (!targeted.CanBeChasedBy(Projectile, false) || !targeted.active || targeted == null)
+                    targeted = Projectile.Center.ClosestNPCAt(1000);
+
                 if (targeted != null)
                 {
                     float speedMult = 0.5f;
@@ -84,12 +85,16 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 60);
             for (int i = 0; i < 4; i++)
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity * 3) * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(0.65f, 1f));
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
             }
+
+            if (target == targeted)
+                Projectile.Kill();
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => homing ? CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox) : false;
     }

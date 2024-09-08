@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Metaballs
 {
-    public class StreamGougeMetaball : Metaball
+    public class GalaxyMetaball : Metaball
     {
         public class CosmicParticle
         {
@@ -56,7 +56,7 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeNPCs;
 
         public override Color EdgeColor => Color.Lerp(Color.DarkBlue, Color.Black, 0.75f);
 

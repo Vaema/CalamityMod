@@ -503,7 +503,7 @@ FallenPaladinsHammer: {
 	DisplayName: Fallen Paladin's Hammer
 	Tooltip:
 		'''
-		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
+		Throws a heavy, gravity-affected hammer that will explode and return to you after striking an enemy
 		After returning three times, a homing spectral hammer is summoned with devastating impact
 		'''
 }
@@ -603,7 +603,7 @@ GalaxySmasher: {
 	Tooltip:
 		'''
 		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
-		Consecutive hits summon more and more cosmic hammers
+		Consecutive hits summon more and more cosmic shards
 		After hitting eight times, the hammer supercharges itself with galactic energies,
 		delivering an apocalyptic strike that reverberates through space and time
 		'''

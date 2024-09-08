@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
@@ -183,24 +184,31 @@ namespace CalamityMod.Projectiles.Melee
 
                 returnhammer = 1;
             }
-            float numberOfDusts = 35f;
+            float numberOfDusts = 30f;
             float rotFactor = 360f / numberOfDusts;
             for (int i = 0; i < numberOfDusts; i++)
             {
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(3.6f, 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 4.1f));
                 Vector2 velOffset = new Vector2(3f, 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 4.1f));
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 90, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, (Projectile.numHits == 0 ? (Main.rand.NextBool() ? 90 : ModContent.DustType<LightDust>()) : 90), new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = true;
-                dust.velocity = velOffset;
-                dust.scale = Main.rand.NextFloat(1.5f, 3.2f);
+                dust.velocity = velOffset * (Projectile.numHits == 0 ? ( i % 3 == 0 ? 3 : 1.5f) : 1);
+                dust.scale = Main.rand.NextFloat(1.3f, 2.2f);
+                if (Projectile.numHits == 0)
+                    dust.color = Color.Red;
+            }
+            if (Projectile.numHits == 0)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Volume = 0.5f, Pitch = 0.3f }, Projectile.Center);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<FallenExplosionSmall>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0f);
             }
 
-            SoundEngine.PlaySound(SoundID.Item14 with { Volume = 0.22f }, Projectile.Center);
             Projectile.ai[1] = target.whoAmI;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
             float minMult = 0.7f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
