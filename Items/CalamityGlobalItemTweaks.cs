@@ -106,7 +106,6 @@ namespace CalamityMod.Items
                 { ItemID.Excalibur, Do(TrueMelee, UseRatio(0.8f), DamageExact(125), UseAnimationExact(45)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(15)) },
-                // For now, I think I will balance Celebration like a serious weapon. -CIT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
                 { ItemID.Flairon, Do(DamageExact(65)) },
                 { ItemID.Flamarang, Do(DamageExact(40)) },
