@@ -10,6 +10,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer
 {
+    // This should be a thing for reason:
+    // - Draw call invoke faster than Player.Update
+    // - Therefore draw call often gets default value for shield charge or such, results in flickering bug
+    // So we calculate those value as same rate as Player.Update
     public struct CalamityPlayerDrawingParameters
     {
         public float ProfanedShieldStrength;
