@@ -166,11 +166,6 @@ namespace CalamityMod.Items.Accessories
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            // TODO -- Control flow analysis indicates that this hook is not stable (as it was copied from Rover Drive).
-            // Sponge shields will be drawn for each player with the Sponge equipped, yes.
-            // But there is no guarantee that the shields will be in the right condition for each player.
-            // Visibility is not net synced, for example.
-
             foreach (Player player in Main.ActivePlayers)
             {
                 if (player.outOfRange || player.dead)
@@ -190,7 +185,6 @@ namespace CalamityMod.Items.Accessories
                 float maxExtraScale = 0.025f;
                 float extraScalePulseInterpolant = MathF.Pow(4f, MathF.Sin(Main.GlobalTimeWrappedHourly * 0.791f + i) - 1);
                 float scale = baseScale + maxExtraScale * extraScalePulseInterpolant;
-
                 float visualShieldStrength = modPlayer.drawingParameters.SpongeShieldCharge;
 
                 // The scale used for the noise overlay also grows and shrinks

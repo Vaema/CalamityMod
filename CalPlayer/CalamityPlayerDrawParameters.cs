@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.LunicCorps;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -12,9 +13,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.CalPlayer
 {
     // This should be a thing for reason:
-    // - Draw call invoke faster than Player.Update
+    // - Draw call invoke faster than Player.Update on different thread
     // - Therefore draw call often gets default value for shield charge or such, results in flickering bug
-    // So we calculate those value as same rate as Player.Update
+    // So we calculate those value as same rate as Player.Update and does NOT reset between updates
     public struct CalamityPlayerDrawingParameters
     {
         // Profaned Shield (Profaned Soul Artifact / Profaned Soul Crystal)
@@ -27,23 +28,70 @@ namespace CalamityMod.CalPlayer
         // RoverDrive Shield
         public float RoverShieldCharge;
         
-        // Lunic Cops
+        // Lunic Corps
         public float LunicShieldCharge;
     }
 
     public partial class CalamityPlayer : ModPlayer
     {
         public CalamityPlayerDrawingParameters drawingParameters;
+        private CalamityPlayerDrawingParameters drawingParametersForNetSmoothing;
 
         private void UpdateDrawingParameters()
         {
             // Non-Owner should receive update via network!
             if (Main.netMode == NetmodeID.SinglePlayer || Player.whoAmI == Main.myPlayer)
             {
+                UpdateDrawParameter_RoverDriveShield();
+                UpdateDrawParameter_LunicCorps();
                 UpdateDrawParameter_ProfanedShield();
                 UpdateDrawParameter_TheSponge();
             }
+            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+
+            }
         }
+
+        #region RoverDrive Shield
+        private void UpdateDrawParameter_RoverDriveShield()
+        {
+            bool isVanityOnly = roverDriveShieldVisible && !roverDrive;
+            bool shieldExists = isVanityOnly || RoverDriveShieldDurability > 0;
+            if (roverDriveShieldVisible && shieldExists)
+            {
+                float visualShieldStrength = 1f;
+                if (!isVanityOnly)
+                {
+                    float shieldDurabilityRatio = RoverDriveShieldDurability / (float)RoverDrive.ShieldDurabilityMax;
+                    visualShieldStrength = MathF.Pow(shieldDurabilityRatio, 0.5f);
+                }
+
+                drawingParameters.RoverShieldCharge = visualShieldStrength;
+            }
+            else
+            {
+                drawingParameters.RoverShieldCharge = -1.0f;
+            }
+        }
+        #endregion
+
+        #region LunicCorps Shield
+        private void UpdateDrawParameter_LunicCorps()
+        {
+            if (LunicCorpsShieldDurability > 0)
+            {
+                float shieldDurabilityRatio = LunicCorpsShieldDurability / (float)LunicCorpsHelmet.ShieldDurabilityMax;
+                float visualShieldStrength = MathF.Pow(shieldDurabilityRatio, 0.5f);
+
+                drawingParameters.LunicShieldCharge = visualShieldStrength;
+            }
+            else
+            {
+                drawingParameters.LunicShieldCharge = -1.0f;
+            }
+        }
+        #endregion
 
         #region Profaned Shield (Profaned Soul Artifact / Profaned Soul Crystal)
         private void UpdateDrawParameter_ProfanedShield()
@@ -94,7 +142,6 @@ namespace CalamityMod.CalPlayer
                 float visualShieldStrength = 1f;
                 if (!isVanityOnly)
                 {
-                    // Again, I believe there is no way this looks correct when two players have The Sponge equipped.
                     float shieldDurabilityRatio = SpongeShieldDurability / (float)TheSponge.ShieldDurabilityMax;
                     visualShieldStrength = MathF.Pow(shieldDurabilityRatio, 0.5f);
                 }

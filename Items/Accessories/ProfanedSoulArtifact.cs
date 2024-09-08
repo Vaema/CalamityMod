@@ -105,10 +105,6 @@ namespace CalamityMod.Items.Accessories
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         internal static void DrawProfanedSoulShields()
         {
-            // TODO -- Control flow analysis indicates that this hook is not stable (as it was copied from Rover Drive).
-            // Profaned Soul shields will be drawn for each player with the Profaned Soul artifact/crystal, yes.
-            // But there is no guarantee that the shields will be in the right condition for each player.
-            // Visibility is not net synced, for example.
             foreach (Player player in Main.ActivePlayers)
             {
                 if (player.outOfRange || player.dead)
@@ -155,10 +151,6 @@ namespace CalamityMod.Items.Accessories
                 // Define shader parameters for shield color
                 shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
-
-                // GOD I LOVE END BEGIN CAN THIS GAME PLEASE BE SWALLOWED BY THE FIRES OF HELL THANKS
-                // yes I copy pasted that comment, I hate end begin that much
-                // I also copy pasted that comment, this time for consistency :hdfailure:
 
                 var matrix = Main.GameViewMatrix.TransformationMatrix;
                 Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
