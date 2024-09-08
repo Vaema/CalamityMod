@@ -159,9 +159,10 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // AND with 0 (false), so that the game never thinks it is Expert Mode and thus never tries to inflict debuffs.
-            cursor.Emit(OpCodes.Ldc_I4_0);
-            cursor.Emit(OpCodes.And);
+            // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
+            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
         }
         #endregion
 
