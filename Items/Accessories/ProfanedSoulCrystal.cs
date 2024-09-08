@@ -41,22 +41,16 @@ namespace CalamityMod.Items.Accessories
         {
             get
             {
-                bool result = false;
                 foreach (Player player in Main.ActivePlayers)
                 {
                     if (player.outOfRange || player.dead)
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
-
-                    // Do not render the shield if its visibility is off (or it does not exist)
-                    bool isVanityOnly = modPlayer.pSoulShieldVisible && !modPlayer.pSoulArtifact;
-                    bool shouldNotDraw = modPlayer.andromedaState >= AndromedaPlayerState.LargeRobot; //I am not dealing with drawing that :taxevasion:
-                    bool shieldExists = isVanityOnly || modPlayer.pSoulShieldDurability > 0;
-                    bool shouldntDraw = !modPlayer.pSoulShieldVisible || modPlayer.drawnAnyShieldThisFrame || shouldNotDraw || !shieldExists;
-                    result |= !shouldntDraw;
+                    if (modPlayer.drawingParameters.ProfanedShieldStrength > 0.0f)
+                        return true;
                 }
-                return result;
+                return false;
             }
         }
 

@@ -86,29 +86,22 @@ namespace CalamityMod.Graphics.Renderers
             if (Main.gameMenu || Main.dedServ)
                 return;
 
+            // Reset drawn frame check
+            foreach (var player in Main.ActivePlayers)
+            {
+                player.Calamity().drawnAnyShieldThisFrame = false;
+            }
+
             foreach (var renderer in Renderers)
             {
                 if (!renderer.ShouldDraw)
                     continue;
 
-                try 
+                Main.spriteBatch.SafeAction(() =>
                 {
                     renderer.MainTarget.SwapTo(Color.Transparent);
-                    Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                     renderer.DrawToTarget(Main.spriteBatch);
-                }
-                catch (Exception e)
-                {
-                    Main.QueueMainThreadAction(() =>
-                    {
-                        CalamityMod.Instance.Logger.Error($"Exception Found on RenderDetour: {e}");
-                    });
-                }
-                finally
-                {
-                    // Always end the Batch!
-                    Main.spriteBatch.TryEnd();
-                }
+                });
             }
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);

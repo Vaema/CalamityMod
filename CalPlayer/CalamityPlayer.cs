@@ -1610,7 +1610,6 @@ namespace CalamityMod.CalPlayer
             noLifeRegen = false;
 
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
-            drawnAnyShieldThisFrame = false;
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
             if (!lunicCorpsSet)

@@ -157,7 +157,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 return;
 
             // Leave if nothing to draw.
-            if (!RenderersToDrawThisFrame.Any())
+            if (RenderersToDrawThisFrame.Count <= 0)
                 return;
 
             // Sort the list by draw order.
