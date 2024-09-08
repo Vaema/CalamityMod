@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.Cryogen;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
