@@ -46,21 +46,16 @@ namespace CalamityMod.Items.Accessories
         {
             get
             {
-                bool result = false;
                 foreach (Player player in Main.ActivePlayers)
                 {
                     if (player.outOfRange || player.dead)
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
-
-                    // Do not render the shield if its visibility is off (or it does not exist)
-                    bool isVanityOnly = modPlayer.spongeShieldVisible && !modPlayer.sponge;
-                    bool shieldExists = isVanityOnly || modPlayer.SpongeShieldDurability > 0;
-                    bool shouldntDraw = !modPlayer.spongeShieldVisible || modPlayer.drawnAnyShieldThisFrame || !shieldExists;
-                    result |= !shouldntDraw;
+                    if (modPlayer.drawingParameters.SpongeShieldCharge > 0.0f)
+                        return true;
                 }
-                return result;
+                return false;
             }
         }
 
@@ -175,7 +170,6 @@ namespace CalamityMod.Items.Accessories
             // Sponge shields will be drawn for each player with the Sponge equipped, yes.
             // But there is no guarantee that the shields will be in the right condition for each player.
             // Visibility is not net synced, for example.
-            bool alreadyDrawnShieldForPlayer = false;
 
             foreach (Player player in Main.ActivePlayers)
             {
@@ -183,11 +177,10 @@ namespace CalamityMod.Items.Accessories
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer.drawnAnyShieldThisFrame)
+                    continue;
 
-                // Do not render the shield if its visibility is off (or it does not exist)
-                bool isVanityOnly = modPlayer.spongeShieldVisible && !modPlayer.sponge;
-                bool shieldExists = isVanityOnly || modPlayer.SpongeShieldDurability > 0;
-                if (!modPlayer.spongeShieldVisible || modPlayer.drawnAnyShieldThisFrame || !shieldExists)
+                if (modPlayer.drawingParameters.SpongeShieldCharge <= 0.0f)
                     continue;
 
                 // Scale the shield is drawn at. The Sponge shield gently grows and shrinks; it should be largely imperceptible.
@@ -198,69 +191,50 @@ namespace CalamityMod.Items.Accessories
                 float extraScalePulseInterpolant = MathF.Pow(4f, MathF.Sin(Main.GlobalTimeWrappedHourly * 0.791f + i) - 1);
                 float scale = baseScale + maxExtraScale * extraScalePulseInterpolant;
 
-                if (!alreadyDrawnShieldForPlayer)
+                float visualShieldStrength = modPlayer.drawingParameters.SpongeShieldCharge;
+
+                // The scale used for the noise overlay also grows and shrinks
+                // This is intentionally out of sync with the shield, and intentionally desynced per player
+                // Don't put this anywhere less than 0.15f or higher than 0.75f. The higher it is, the denser / more zoomed out the noise overlay is.
+                // Changing this too quickly and/or too much makes the noise grow and shrink visibly, so be careful with that.
+                float noiseScale = MathHelper.Lerp(0.28f, 0.38f, 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.347f + i));
+
+                // Define shader parameters
+                Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
+                shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.0813f); // Scrolling speed of polygonal overlay
+                shieldEffect.Parameters["blowUpPower"].SetValue(3f);
+                shieldEffect.Parameters["blowUpSize"].SetValue(0.56f);
+                shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
+
+                // Shield opacity multiplier slightly changes, this is independent of current shield strength
+                float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
+                float minShieldStrengthOpacityMultiplier = 0.25f;
+                float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
+                shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
+                shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
+
+                Color shieldColor = new Color(24, 156, 204); // #189CCC
+                Color primaryEdgeColor = shieldColor;
+                Color secondaryEdgeColor = new Color(34, 224, 227); // #22E0E3                   
+
+                // Final shield edge color, which lerps about
+                Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
+
+                // Define shader parameters for shield color
+                shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
+                shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
+
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
                 {
-                    // If in vanity, the shield is always projected as if it's at full strength.
-                    float visualShieldStrength = 1f;
-                    if (!isVanityOnly)
-                    {
-                        // Again, I believe there is no way this looks correct when two players have The Sponge equipped.
-                        CalamityPlayer localModPlayer = Main.LocalPlayer.Calamity();
-                        float shieldDurabilityRatio = localModPlayer.SpongeShieldDurability / (float)ShieldDurabilityMax;
-                        visualShieldStrength = MathF.Pow(shieldDurabilityRatio, 0.5f);
-                    }
+                    // Fetch shield noise overlay texture (this is the polygons fed to the shader)
+                    NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
+                    Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                    Texture2D tex = NoiseTex.Value;
+                    Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
+                });
 
-                    // The scale used for the noise overlay also grows and shrinks
-                    // This is intentionally out of sync with the shield, and intentionally desynced per player
-                    // Don't put this anywhere less than 0.15f or higher than 0.75f. The higher it is, the denser / more zoomed out the noise overlay is.
-                    // Changing this too quickly and/or too much makes the noise grow and shrink visibly, so be careful with that.
-                    float noiseScale = MathHelper.Lerp(0.28f, 0.38f, 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.347f + i));
-
-                    // Define shader parameters
-                    Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
-                    shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.0813f); // Scrolling speed of polygonal overlay
-                    shieldEffect.Parameters["blowUpPower"].SetValue(3f);
-                    shieldEffect.Parameters["blowUpSize"].SetValue(0.56f);
-                    shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
-
-                    // Shield opacity multiplier slightly changes, this is independent of current shield strength
-                    float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
-                    float minShieldStrengthOpacityMultiplier = 0.25f;
-                    float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
-                    shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
-                    shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
-
-                    Color shieldColor = new Color(24, 156, 204); // #189CCC
-                    Color primaryEdgeColor = shieldColor;
-                    Color secondaryEdgeColor = new Color(34, 224, 227); // #22E0E3                   
-
-                    // Final shield edge color, which lerps about
-                    Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
-
-                    // Define shader parameters for shield color
-                    shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
-                    shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
-
-                    // GOD I LOVE END BEGIN CAN THIS GAME PLEASE BE SWALLOWED BY THE FIRES OF HELL THANKS
-                    // yes I copy pasted that comment, I hate end begin that much
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-                }
-
-                alreadyDrawnShieldForPlayer = true;
                 modPlayer.drawnAnyShieldThisFrame = true;
-
-                // Fetch shield noise overlay texture (this is the polygons fed to the shader)
-                NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
-                Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                Texture2D tex = NoiseTex.Value;
-                Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-            }
-
-            if (alreadyDrawnShieldForPlayer)
-            {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
             }
         }
     }
