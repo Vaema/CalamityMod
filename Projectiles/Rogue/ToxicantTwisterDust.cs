@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()
