@@ -15,7 +15,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 2;
             Projectile.timeLeft = 150;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -25,7 +24,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.rotation += 0.4f * Projectile.direction;
-            return;
+            if (Projectile.ai[0] == 1f)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 256f, 15f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
