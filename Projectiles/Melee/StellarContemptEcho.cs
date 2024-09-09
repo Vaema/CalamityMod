@@ -54,13 +54,16 @@ namespace CalamityMod.Projectiles.Melee
             else if (Projectile.ai[0] >= 42f)
             {
                 Projectile.extraUpdates = 5;
-
-                targeted = Main.npc[(int)Projectile.ai[1]];
-                if (!targeted.CanBeChasedBy(Projectile, false) || !targeted.active || targeted == null)
+                if (Projectile.ai[1] != -5)
+                    targeted = Main.npc[(int)Projectile.ai[1]];
+                if (targeted == null || !targeted.CanBeChasedBy(Projectile, false) || !targeted.active)
+                {
+                    Projectile.ai[1] = -5;
                     targeted = Projectile.Center.ClosestNPCAt(2000);
+                }
                 if (targeted != null)
                 {
-                    float speedMult = 0.7f;
+                    float speedMult = 0.85f;
                     Vector2 moveTotarget = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
                     if (Projectile.velocity.Length() < MathHelper.Clamp(25 - Projectile.ai[0] * 0.1f, 10, 25) * speedMult)
                         Projectile.velocity += moveTotarget * (0.35f + Projectile.ai[0] * 0.03f) * speedMult;

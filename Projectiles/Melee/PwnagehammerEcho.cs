@@ -56,9 +56,13 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 * 0.5f;
                 Projectile.extraUpdates = 2;
 
-                targeted = Main.npc[(int)Projectile.ai[1]];
-                if (!targeted.CanBeChasedBy(Projectile, false) || !targeted.active || targeted == null)
+                if (Projectile.ai[1] != -5)
+                    targeted = Main.npc[(int)Projectile.ai[1]];
+                if (targeted == null || !targeted.CanBeChasedBy(Projectile, false) || !targeted.active)
+                {
+                    Projectile.ai[1] = -5;
                     targeted = Projectile.Center.ClosestNPCAt(2000);
+                }
                 if (targeted != null)
                 {
                     Vector2 moveTotarget = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);

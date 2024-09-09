@@ -107,7 +107,6 @@ namespace CalamityMod.Projectiles.Melee
                 Main.projectile[hammer].netUpdate = true;
                 EmpoweredHammer = 0;
                 HighBong = 1;
-
             }
             else
             {

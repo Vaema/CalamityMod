@@ -56,9 +56,13 @@ namespace CalamityMod.Projectiles.Melee
             if (time > 45 || homing)
             {
                 homing = true;
-                targeted = Main.npc[(int)Projectile.ai[2]];
-                if (!targeted.CanBeChasedBy(Projectile, false) || !targeted.active || targeted == null)
+                if (Projectile.ai[2] != -5)
+                    targeted = Main.npc[(int)Projectile.ai[2]];
+                if (targeted == null || !targeted.CanBeChasedBy(Projectile, false) || !targeted.active)
+                {
                     targeted = Projectile.Center.ClosestNPCAt(1000);
+                    Projectile.ai[2] = -5;
+                }
 
                 if (targeted != null)
                 {

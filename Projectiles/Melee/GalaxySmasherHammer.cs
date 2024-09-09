@@ -259,6 +259,8 @@ namespace CalamityMod.Projectiles.Melee
             Player player = Main.player[Projectile.owner];
             if (returnhammer == 0)
             {
+                Projectile.ai[1] = target.whoAmI;
+
                 if (Main.zenithWorld)
                     SoundEngine.PlaySound(UseSoundFunny with { Pitch = EmpoweredHammer * 0.05f - 0.05f }, Projectile.Center);
 
@@ -306,7 +308,6 @@ namespace CalamityMod.Projectiles.Melee
                     dust.color = Main.rand.NextBool(3) ? Color.Aqua : Color.Magenta;
                 }
             }
-            Projectile.ai[1] = target.whoAmI;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

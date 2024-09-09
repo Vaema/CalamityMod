@@ -174,6 +174,8 @@ namespace CalamityMod.Projectiles.Melee
             Player player = Main.player[Projectile.owner];
             if (returnhammer == 0)
             {
+                Projectile.ai[1] = target.whoAmI;
+
                 if (Main.zenithWorld)
                     SoundEngine.PlaySound(UseSoundFunny with { Pitch = EmpoweredHammer * 0.2f - 0.4f }, Projectile.Center);
 
@@ -201,8 +203,6 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Volume = 0.5f, Pitch = 0.3f }, Projectile.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<FallenExplosionSmall>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0f);
             }
-
-            Projectile.ai[1] = target.whoAmI;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
