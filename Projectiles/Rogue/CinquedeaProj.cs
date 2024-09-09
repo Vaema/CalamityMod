@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -21,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
         private Vector2 StickOffset;
         private const int StickTime = 30;
         private int Stick = 0;
+        private int elecFrame = 0;
+        private int elecFrameCounter = 0;
 
         public override void SetStaticDefaults()
         {
@@ -34,6 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.penetrate = 2;
+            Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -60,6 +64,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Stick--;
                 if (Stick == 0)
                 {
+                    // Play sound, increase hitbox size, launch using stored velocity and with several extra updates
                     SoundEngine.PlaySound(StealthSliceSound, Projectile.Center);
                     Projectile.velocity = StoredVelocity;
                     Projectile.extraUpdates = 8;
@@ -74,11 +79,19 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            // Stealth visual
+            // Stealth visual code
             if (modProj.stealthStrike && Stick == 0 && Timer % (Projectile.numHits > 0 ? 1 : 3) == 0)
             {
                 ElectricSpark spark = new(Projectile.Center, Main.rand.NextVector2CircularEdge(3f, 3f), Color.Aqua, Color.AliceBlue, 0.9f, 25);
                 GeneralParticleHandler.SpawnParticle(spark);
+            }
+            elecFrameCounter++;
+            if (elecFrameCounter > 2)
+            {
+                elecFrameCounter = 0;
+                elecFrame++;
+                if (elecFrame > 3)
+                    elecFrame = 0;
             }
 
             //Face-forward rotation code
@@ -109,11 +122,18 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
             return false;
         }
 
         public override bool? CanDamage() => Stick == 0;
+
+        // Increase hitbox size after stealth strike launch
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            if (Projectile.Calamity().stealthStrike && Projectile.numHits > 0 && Stick == 0)
+                hitbox.Inflate(38, 38);
+        }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -125,6 +145,16 @@ namespace CalamityMod.Projectiles.Rogue
                 StickOffset = Projectile.Center - target.Center;
                 StoredVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Zero;
+            }
+        }
+
+        public override void PostDraw(Color lightColor)
+        {
+            if (Projectile.Calamity().stealthStrike && Projectile.numHits > 0 && Stick == 0)
+            {
+                Texture2D electric = ModContent.Request<Texture2D>("Terraria/Images/Projectile_443").Value;
+                Rectangle frame = electric.Frame(1, 4, 0, elecFrame);
+                Main.EntitySpriteDraw(electric, Projectile.Center - Main.screenPosition, frame, Color.White, 0f, frame.Size() / 2f, 1f, SpriteEffects.None);
             }
         }
     }
