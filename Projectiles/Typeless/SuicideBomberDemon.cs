@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 12;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 11;
         }

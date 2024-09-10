@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         private NPC lastTarget = null;
         private float distance;
         private int timesItCanHit = 3;
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 16;

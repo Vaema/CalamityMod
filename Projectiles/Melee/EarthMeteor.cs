@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public int colorTimer = 0;
         public int fallTime = 180;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 36;

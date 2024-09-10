@@ -85,8 +85,6 @@ DecaysRetortDash.DisplayName: Evisceration Lunge
 DemonBlast.DisplayName: Devil Fork
 DepthCrusherProjectile.DisplayName: Depth Crusher
 DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
-DepthOrb.DisplayName: Depth Trident
-DepthOrb2.DisplayName: Neptune's Trident
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
 DivineHatchetBoomerang.DisplayName: Scorching Seeker
 DNA.DisplayName: DNA
@@ -98,7 +96,6 @@ DragonRageFireball.DisplayName: Dragon Rage Fireball
 EarthBoom.DisplayName: Earth's Judgement
 EarthMeteor.DisplayName: Gaia Meteor
 ElementalGlassStar.DisplayName: Glass Star
-ElementBall.DisplayName: Elemental Ball
 EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
