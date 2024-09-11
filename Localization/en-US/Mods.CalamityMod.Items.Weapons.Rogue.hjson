@@ -719,8 +719,8 @@ MetalMonstrosity: {
 	DisplayName: Metal Monstrosity
 	Tooltip:
 		'''
-		Hurls a heavy metal ball that shatters on impact
-		Stealth strikes cause the ball to release spikes as it travels
+		Hurls a heavy metal ball that shatters into shards and spiky balls on impact
+		Stealth strikes cause the ball to impale hit enemies, piercing them with extra shards when it breaks
 		'This has to hurt'
 		'''
 }
