@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.knockBackResist = 0f;
             NPC.value = 0f;
-            NPC.Opacity = 0.8f;
+            NPC.Opacity = 1f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -822,9 +822,14 @@ namespace CalamityMod.NPCs.SlimeGod
             Vector2 scaleStretch = new Vector2(1f - stretch, 1f + stretch) * NPC.scale;
             float yOffset = stretch * 0.5f * NPC.height;
 
-            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY - yOffset), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() * 0.5f, scaleStretch, spriteEffects, 0f);
+            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY - yOffset), NPC.frame, drawColorAlpha, NPC.rotation + SlimeRotationFactor(NPC), NPC.frame.Size() * 0.5f, scaleStretch, spriteEffects, 0f);
 
             return false;
+        }
+
+        public static float SlimeRotationFactor(NPC npc)
+        {
+            return MathHelper.ToRadians(npc.velocity.X * (-npc.velocity.Y / 10));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

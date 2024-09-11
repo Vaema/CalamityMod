@@ -121,6 +121,57 @@ namespace CalamityMod.NPCs.SlimeGod
             });
         }
 
+        public static bool ShouldDespawn(NPC npc)
+        {
+            return (!EbonianPaladinAlive(npc) && !CrimulanPaladinAlive(npc)) || npc.Calamity().newAI[3] == 1f || npc.ai[3] == 1f;
+        }
+
+        public static bool EbonianPaladinAlive(NPC npc)
+        {
+            if (CalamityGlobalNPC.slimeGodPurple != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
+                {
+                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == 1)
+                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 1f;
+                    else
+                        Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 0f;
+
+                    npc.Calamity().newAI[0] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.X;
+                    npc.Calamity().newAI[1] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.Y;
+
+                    // Despawn check
+                    npc.Calamity().newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodPurple].ai[0] == 4f ? 1f : 0f;
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool CrimulanPaladinAlive(NPC npc)
+        {
+            if (CalamityGlobalNPC.slimeGodRed != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.slimeGodRed].active)
+                {
+                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == 2)
+                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 1f;
+                    else
+                        Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 0f;
+
+                    npc.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
+                    npc.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
+
+                    // Despawn check
+                    npc.Calamity().newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(slimesSpawned);
@@ -207,7 +258,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
                     NPC.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
                     NPC.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
-                    
+
                     // Despawn check
                     calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
 
@@ -219,7 +270,7 @@ namespace CalamityMod.NPCs.SlimeGod
             bool phase2 = !purpleSlimeAlive || !redSlimeAlive;
 
             // Vanish phase
-            if ((!purpleSlimeAlive && !redSlimeAlive) || calamityGlobalNPC.newAI[3] == 1f || NPC.ai[3] == 1f)
+            if (ShouldDespawn(NPC))
             {
             // Avoid cheap bullshit
             NPC.damage = 0;
@@ -594,12 +645,27 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override Color? GetAlpha(Color drawColor)
         {
-            Color newColor = buffedSlime == 0 ? new Color(255, 255, 255, drawColor.A) : drawColor;
+            Color newColor = new Color(255, 255, 255, 255);
             return newColor * NPC.Opacity;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            float sc = 1f;
+            if (!ShouldDespawn(NPC))
+            {
+                if (buffedSlime != 0f)
+                {
+                    NPC.scale = MathHelper.Lerp(NPC.scale, 0f, 0.2f);
+                    NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.7f, 0.4f);
+                }
+                else
+                {
+                    NPC.scale = MathHelper.Lerp(NPC.scale, sc, 0.2f);
+                    NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 1f, 0.4f);
+                }
+            }
+
             SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Color drawColorAlpha = NPC.GetAlpha(drawColor);
             Vector2 origin = NPC.frame.Size() * 0.5f;
@@ -654,7 +720,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     spriteBatch.Draw(texture, drawPosition, NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                     
                     // Draw the eye texture afterimages
-                    spriteBatch.Draw(eyeTexture, drawPosition, eyeFrame, drawColorAlpha, NPC.rotation, eyeOrigin, NPC.scale, spriteEffects, 0f);
+                    spriteBatch.Draw(eyeTexture, drawPosition, eyeFrame, drawColorAlpha, 0f, eyeOrigin, 1f, spriteEffects, 0f);
                     
                     // Draw the overlay texture afterimages
                     spriteBatch.Draw(overlayTexture, drawPosition, NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
@@ -670,7 +736,7 @@ namespace CalamityMod.NPCs.SlimeGod
             spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
             // Draw the eye
-            spriteBatch.Draw(eyeTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), eyeFrame, drawColorAlpha, NPC.rotation, eyeOrigin, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(eyeTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), eyeFrame, drawColorAlpha, 0f, eyeOrigin, 1f, spriteEffects, 0f);
 
             // Draw the overlay
             spriteBatch.Draw(overlayTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
