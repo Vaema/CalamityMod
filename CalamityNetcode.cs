@@ -281,6 +281,9 @@ namespace CalamityMod
         ScammedByTinkerer,
         WantToRefundReforges,
 
+        // Player Draw Effect Parameters
+        SyncPlayerDrawParameter,
+
         Reserved = 150
     }
 }

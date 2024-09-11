@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.LunicCorps;
+using CalamityMod.Packets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -19,7 +20,7 @@ namespace CalamityMod.CalPlayer
     public struct CalamityPlayerDrawingParameters
     {
         // Profaned Shield (Profaned Soul Artifact / Profaned Soul Crystal)
-        public float ProfanedShieldStrength;
+        public float ProfanedShieldCharge;
         public Color ProfanedShieldColor;
 
         // The Sponge Shield
@@ -30,26 +31,57 @@ namespace CalamityMod.CalPlayer
         
         // Lunic Corps
         public float LunicShieldCharge;
+
+        public static bool operator ==(CalamityPlayerDrawingParameters left, CalamityPlayerDrawingParameters right)
+        {
+            if (left.RoverShieldCharge != right.RoverShieldCharge) return false;
+            if (left.LunicShieldCharge != right.LunicShieldCharge) return false;
+            if (left.ProfanedShieldCharge != right.ProfanedShieldCharge) return false;
+            if (left.ProfanedShieldColor != right.ProfanedShieldColor) return false;
+            if (left.SpongeShieldCharge != right.SpongeShieldCharge) return false;
+            return true;
+        }
+
+        public static bool operator !=(CalamityPlayerDrawingParameters left, CalamityPlayerDrawingParameters right)
+        {
+            return !(left == right);
+        }
+
+        public override readonly bool Equals(object obj) => base.Equals(obj);
+        public override readonly int GetHashCode() => base.GetHashCode();
     }
 
     public partial class CalamityPlayer : ModPlayer
     {
         public CalamityPlayerDrawingParameters drawingParameters;
-        private CalamityPlayerDrawingParameters drawingParametersForNetSmoothing;
+        private CalamityPlayerDrawingParameters drawingParameters_LastNetSyncValue;
+        private int drawingParameters_NetSyncCountdown = 0;
 
         private void UpdateDrawingParameters()
         {
             // Non-Owner should receive update via network!
-            if (Main.netMode == NetmodeID.SinglePlayer || Player.whoAmI == Main.myPlayer)
+            if (Player.whoAmI == Main.myPlayer)
             {
                 UpdateDrawParameter_RoverDriveShield();
                 UpdateDrawParameter_LunicCorps();
                 UpdateDrawParameter_ProfanedShield();
                 UpdateDrawParameter_TheSponge();
-            }
-            else if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
 
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    if (drawingParameters_NetSyncCountdown > 0)
+                    {
+                        drawingParameters_NetSyncCountdown--;
+                        return;
+                    }
+
+                    if (drawingParameters != drawingParameters_LastNetSyncValue)
+                    {
+                        drawingParameters_NetSyncCountdown = 8;
+                        drawingParameters_LastNetSyncValue = drawingParameters;
+                        SyncPlayerDrawParameterPacket.Send(this);
+                    }
+                }
             }
         }
 
@@ -120,13 +152,12 @@ namespace CalamityMod.CalPlayer
                     shieldColor = tester ? CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25) * 0.8f, 6f) :
                     ProfanedSoulCrystal.GetLerpedColorForPsc(this);
                 }
-
                 drawingParameters.ProfanedShieldColor = shieldColor;
-                drawingParameters.ProfanedShieldStrength = visualShieldStrength;
+                drawingParameters.ProfanedShieldCharge = visualShieldStrength;
             }
             else
             {
-                drawingParameters.ProfanedShieldStrength = -1.0f;
+                drawingParameters.ProfanedShieldCharge = -1.0f;
                 drawingParameters.ProfanedShieldColor = Color.White;
             }
         }

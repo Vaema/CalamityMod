@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Accessories
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
-                    if (modPlayer.drawingParameters.ProfanedShieldStrength > 0.0f)
+                    if (modPlayer.drawingParameters.ProfanedShieldCharge > 0.0f)
                         return true;
                 }
                 return false;
@@ -118,14 +118,14 @@ namespace CalamityMod.Items.Accessories
                 if (modPlayer.drawnAnyShieldThisFrame)
                     continue;
 
-                if (modPlayer.drawingParameters.ProfanedShieldStrength <= 0.0f)
+                if (modPlayer.drawingParameters.ProfanedShieldCharge <= 0.0f)
                     continue;
 
                 // Scale the shield is drawn at.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
                 int i = player.whoAmI;
                 float scale = 0.15f + 0.03f * (0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f + i * 0.2f));
-                float visualShieldStrength = modPlayer.drawingParameters.ProfanedShieldStrength;
+                float visualShieldStrength = modPlayer.drawingParameters.ProfanedShieldCharge;
                 Color shieldColor = modPlayer.drawingParameters.ProfanedShieldColor;
 
                 // The scale used for the noise overlay polygons also grows and shrinks

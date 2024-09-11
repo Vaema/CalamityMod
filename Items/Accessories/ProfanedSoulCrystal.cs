@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Accessories
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
-                    if (modPlayer.drawingParameters.ProfanedShieldStrength > 0.0f)
+                    if (modPlayer.drawingParameters.ProfanedShieldCharge > 0.0f)
                         return true;
                 }
                 return false;
