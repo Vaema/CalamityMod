@@ -27,6 +27,7 @@ namespace CalamityMod.Packets
             packet.Write((Half)player.drawingParameters.ProfanedShieldCharge); // 2b
             packet.WriteRGB(player.drawingParameters.ProfanedShieldColor); // 3b
             packet.Write((Half)player.drawingParameters.SpongeShieldCharge); // 2b
+            packet.Send(toClient, ignoreClient);
         }
 
         public override void HandlePacket(in BinaryReader packet, int sender)
