@@ -330,24 +330,27 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type == NPCID.TheDestroyer)
             {
                 // Spawn segments from head
-                if (npc.ai[0] == 0f)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.ai[3] = npc.whoAmI;
-                    npc.realLife = npc.whoAmI;
-                    int index = npc.whoAmI;
-                    for (int j = 0; j <= totalSegments; j++)
+                    if (npc.ai[0] == 0f)
                     {
-                        int type = NPCID.TheDestroyerBody;
-                        if (j == totalSegments)
-                            type = NPCID.TheDestroyerTail;
+                        npc.ai[3] = npc.whoAmI;
+                        npc.realLife = npc.whoAmI;
+                        int index = npc.whoAmI;
+                        for (int j = 0; j <= totalSegments; j++)
+                        {
+                            int type = NPCID.TheDestroyerBody;
+                            if (j == totalSegments)
+                                type = NPCID.TheDestroyerTail;
 
-                        int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
-                        Main.npc[segment].ai[3] = npc.whoAmI;
-                        Main.npc[segment].realLife = npc.whoAmI;
-                        Main.npc[segment].ai[1] = index;
-                        Main.npc[index].ai[0] = segment;
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
-                        index = segment;
+                            int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
+                            Main.npc[segment].ai[3] = npc.whoAmI;
+                            Main.npc[segment].realLife = npc.whoAmI;
+                            Main.npc[segment].ai[1] = index;
+                            Main.npc[index].ai[0] = segment;
+                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
+                            index = segment;
+                        }
                     }
                 }
 

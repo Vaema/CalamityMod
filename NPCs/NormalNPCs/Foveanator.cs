@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using CalamityMod.Events;
+using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -27,6 +28,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static int phase1IconIndex;
         public static int phase2IconIndex;
 
+        public static Asset<Texture2D> GlowTexture;
+
         internal static void LoadHeadIcons()
         {
             string phase1IconPath = "CalamityMod/NPCs/NormalNPCs/Foveanator_Head_Boss";
@@ -44,6 +47,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
+
+            if (!Main.dedServ)
+                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/FoveanatorGlow", AssetRequestMode.AsyncLoad);
         }
 
         public override void SetDefaults()
@@ -152,7 +158,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 hoverRotation -= MathHelper.TwoPi;
 
             // Rotate faster during energy bomb and laser barrage
-            float rotationRate = NPC.ai[1] == 3f ? 0.25f : 0.1f;
+            float rotationRate = NPC.ai[1] == 3f ? 0.25f : 0.15f;
             NPC.rotation = NPC.rotation.AngleTowards(hoverRotation, rotationRate);
 
             if (Main.rand.NextBool(5))
@@ -308,13 +314,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                         {
                             NPC.ai[3] = 0f;
 
+                            SoundEngine.PlaySound(AstrumDeusHead.LaserSound, NPC.Center);
+
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float laserSpeed = 12f;
-                                laserSpeed += 4f * enrageScale;
-
-                                // TODO - Change this to Foveanator's laser when it's implemented
-                                int type = ProjectileID.EyeLaser;
+                                float laserSpeed = 3f + 1.5f * enrageScale;
+                                int type = ModContent.ProjectileType<FoveanatorLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -329,7 +334,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 }
 
                                 Vector2 laserVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 150f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 60f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -384,7 +389,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                         if (NPC.velocity.Length() < maxVelocity)
                         {
-                            NPC.velocity *= 1.025f;
+                            NPC.velocity *= 1.04f;
                             if (NPC.velocity.Length() > maxVelocity)
                             {
                                 NPC.velocity.Normalize();
@@ -458,13 +463,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     if (NPC.ai[1] % 10f == 0f)
                     {
-                        SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
+                        SoundEngine.PlaySound(AstrumDeusHead.LaserSound, NPC.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             bool shootLaser = NPC.ai[1] % 20f == 0f;
 
-                            // TODO - Change this to Foveanator's lasers and energy bombs when they're implemented
-                            int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<HomingLaserDart>();
+                            int type = shootLaser ? ModContent.ProjectileType<FoveanatorLaser>() : ModContent.ProjectileType<FoveanatorEnergyBomb>();
                             int damage = NPC.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -478,15 +482,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 7f;
+                            float projectileSpeed = shootLaser ? (3f + 1.5f * enrageScale) : 16f;
+                            Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                             int numProj = shootLaser ? 4 : 2;
                             int spread = shootLaser ? 15 : 30;
                             float rotation = MathHelper.ToRadians(spread);
-                            float offset = shootLaser ? 150f : 100f;
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * offset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -614,8 +618,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             {
                                 NPC.localAI[1] = 0f;
 
-                                float foveanatorFlamethrowerSpeed = 4f;
-                                foveanatorFlamethrowerSpeed += 2f * enrageScale;
+                                float foveanatorFlamethrowerSpeed = 4f + 2f * enrageScale;
                                 float timeForFlamethrowerToReachMaxVelocity = 60f;
                                 float flamethrowerSpeedScalar = MathHelper.Clamp(NPC.ai[2] / timeForFlamethrowerToReachMaxVelocity, 0f, 1f);
                                 foveanatorFlamethrowerSpeed = MathHelper.Lerp(0.1f, foveanatorFlamethrowerSpeed, flamethrowerSpeedScalar);
@@ -640,7 +643,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 if (NPC.IsMechQueenUp)
                                     flamethrowerVelocity = (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * foveanatorFlamethrowerSpeed + NPC.velocity * 0.5f;
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 25f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 40f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -668,7 +671,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.damage = setDamage;
 
                     // Play charge sound
-                    SoundEngine.PlaySound(SoundID.ForceRoar, NPC.Center);
+                    // TODO - Make this a jet turbine sound or something
+                    //SoundEngine.PlaySound(SoundID.ForceRoar, NPC.Center);
 
                     // Set rotation and velocity
                     NPC.rotation = hoverRotation;
@@ -689,7 +693,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     // Set damage
                     NPC.damage = setDamage;
 
-                    NPC.ai[2] += (retAlive || spazAlive) ? 1f : 1.25f;
+                    NPC.ai[2] += 1f;
 
                     float chargeTime = 60f - (death ? 20f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
 
@@ -710,7 +714,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                     else
                     {
                         // Accelerative charge
-                        // TODO - Make the charge leave behind energy bomb projectiles when the projectiles are done
                         float maxVelocity = 27f;
                         maxVelocity += 6f * enrageScale;
                         if (death)
@@ -718,9 +721,34 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (Main.getGoodWorld)
                             maxVelocity *= 1.2f;
 
+                        // Spawn Energy Bombs along the way
+                        float energyBombFireRate = 8f;
+                        if (NPC.ai[2] % energyBombFireRate == 0f)
+                        {
+                            SoundEngine.PlaySound(AstrumDeusHead.LaserSound, NPC.Center);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int type = ModContent.ProjectileType<FoveanatorEnergyBomb>();
+                                int damage = NPC.GetProjectileDamage(type);
+
+                                // Reduce mech boss projectile damage depending on the new ore progression changes
+                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                                {
+                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                                    if (!NPC.downedMechBossAny)
+                                        damage = (int)(damage * firstMechMultiplier);
+                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                        damage = (int)(damage * secondMechMultiplier);
+                                }
+
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                            }
+                        }
+
                         if (NPC.velocity.Length() < maxVelocity)
                         {
-                            NPC.velocity *= 1.05f;
+                            NPC.velocity *= 1.06f;
                             if (NPC.velocity.Length() > maxVelocity)
                             {
                                 NPC.velocity.Normalize();
@@ -785,15 +813,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                         float laserBarrageFireRate = 45f;
                         float energyBombFireRate = 90f;
 
-                        // Laser barrages
                         NPC.ai[2] += 1f;
-                        if (NPC.ai[2] % laserBarrageFireRate == 0f)
+
+                        // Energy bombs
+                        if (NPC.ai[2] % energyBombFireRate == 0f)
                         {
-                            SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
+                            SoundEngine.PlaySound(AstrumDeusHead.LaserSound, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                // TODO - Change this to Foveanator's laser when it's made
-                                int type = ProjectileID.DeathLaser;
+                                int type = ModContent.ProjectileType<FoveanatorEnergyBomb>();
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -807,28 +835,26 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 12f;
-                                int numProj = 4;
-                                int spread = 40;
+                                Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 16f;
+                                int numProj = 3;
+                                int spread = 30;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
                                 }
                             }
 
                             NPC.ai[3] += 1f;
                         }
 
-                        // Energy bombs
-                        else if (NPC.ai[2] % energyBombFireRate == 0f)
+                        else if (NPC.ai[2] % laserBarrageFireRate == 0f)
                         {
-                            SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
+                            SoundEngine.PlaySound(AstrumDeusHead.LaserSound, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                // TODO - Change this to Foveanator's energy bomb when it's made
-                                int type = ModContent.ProjectileType<HomingLaserDart>();
+                                int type = ModContent.ProjectileType<FoveanatorLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -842,15 +868,15 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 6f;
-                                int numProj = 3;
-                                int spread = 30;
+                                float projectileSpeed = 4f + 2f * enrageScale;
+                                Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
+                                int numProj = 4;
+                                int spread = 40;
                                 float rotation = MathHelper.ToRadians(spread);
-                                float offset = 50f;
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * offset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
                                 }
                             }
 
@@ -885,6 +911,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
+
+            Texture2D glowTexture = GlowTexture.Value;
+            spriteBatch.Draw(glowTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
 
             return false;
         }

@@ -1,0 +1,133 @@
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Projectiles.Boss
+{
+    public class FoveanatorEnergyBomb : ModProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Boss";
+
+        private const int TotalXFrames = 2;
+        private const int TotalYFrames = 8;
+        private const int ExplodeFrames = 6;
+        private const int ExplodeDamageStartFrame = 3;
+        private const int FrameTimer = 6;
+
+        public int frameX = 0;
+        public int frameY = 0;
+
+        public int CurrentFrame
+        {
+            get => frameX * TotalYFrames + frameY;
+            set
+            {
+                frameX = value / TotalYFrames;
+                frameY = value % TotalYFrames;
+            }
+        }
+
+        private const int TimeLeft = 300;
+        private const int ExplodeTime = TimeLeft - FrameTimer * ExplodeFrames;
+
+        private const float ExplodeDistance = 50f;
+
+        public override void SetDefaults()
+        {
+            Projectile.width = 133;
+            Projectile.height = 142;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = TimeLeft;
+        }
+
+        public override void AI()
+        {
+            // Get a target and calculate distance from it.
+            int target = Player.FindClosest(Projectile.Center, 1, 1);
+            float distanceFromTarget = (Main.player[target].Center - Projectile.Center).Length();
+
+            // Explode when within a certain distance of the target.
+            if (distanceFromTarget <= ExplodeDistance && Projectile.timeLeft > ExplodeTime)
+                Projectile.timeLeft = ExplodeTime;
+
+            bool explode = Projectile.timeLeft <= ExplodeTime;
+
+            // Stop immediately if explosion is triggered.
+            if (explode && Projectile.velocity.Length() > 0f)
+                Projectile.velocity = Vector2.Zero;
+
+            // Reset the frame counter and frameY when explosion is triggered.
+            if (Projectile.timeLeft == ExplodeTime)
+            {
+                Projectile.frameCounter = 0;
+                frameY = 0;
+            }
+
+            // Explosion noise when actually exploding.
+            if (frameY == ExplodeDamageStartFrame && explode && Projectile.localAI[0] == 0f)
+            {
+                Projectile.localAI[0] = 1f;
+                SoundEngine.PlaySound(DeusMine.ExplodeSound, Projectile.Center);
+            }
+
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter % FrameTimer == 0)
+            {
+                CurrentFrame++;
+
+                // Non-explosion uses the left side of the sheet, explosion uses the right side of the sheet.
+                frameX = explode ? 1 : 0;
+
+                // Kill the projectile when the explosion animation is done.
+                if (explode && frameY >= ExplodeFrames)
+                {
+                    Projectile.Kill();
+                    return;
+                }
+            }
+
+            // Explosion has brighter light.
+            float redLight = explode ? 1.2f : 0.6f;
+            float greenLight = explode ? 0.3f : 0.15f;
+            float blueLight = (Main.DiscoB / 255f) * (explode ? 1.5f : 0.75f);
+            Lighting.AddLight(Projectile.Center, redLight, greenLight, blueLight);
+        }
+
+        public override bool PreDraw(ref Color lightColor) => false;
+
+        public override void PostDraw(Color lightColor)
+        {
+            if (Projectile.frameCounter < 5)
+                return;
+
+            lightColor.R = (byte)(255 * Projectile.Opacity);
+            lightColor.G = (byte)(255 * Projectile.Opacity);
+            lightColor.B = (byte)(255 * Projectile.Opacity);
+
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 position = Projectile.Center - Main.screenPosition;
+            Vector2 origin = texture.Size() / new Vector2(TotalXFrames, TotalYFrames) * 0.5f;
+            Rectangle frame = texture.Frame(TotalXFrames, TotalYFrames, frameX, frameY);
+            Main.EntitySpriteDraw(texture, position, frame, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None);
+        }
+
+        public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= ExplodeTime && frameY >= ExplodeDamageStartFrame;
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplodeDistance, targetHitbox);
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            if (Projectile.timeLeft <= ExplodeTime)
+                target.AddBuff(BuffID.Frostburn, 180);
+        }
+    }
+}
