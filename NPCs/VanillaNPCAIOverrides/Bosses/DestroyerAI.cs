@@ -348,7 +348,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.npc[index].ai[0] = segment;
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
                             index = segment;
-                        }
                     }
                 }
 
