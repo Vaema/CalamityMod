@@ -3,6 +3,7 @@ using CalamityMod.Buffs.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 
@@ -65,10 +66,10 @@ namespace CalamityMod.Projectiles.Pets
             Projectile.netImportant = true;
         }
 
+        public override void OnSpawn(IEntitySource source) => _smoothedBobble = Projectile.Center - Main.screenPosition;
+
         public override void AI()
         {
-            Main.NewText(_animationFrames);
-            
             ShouldPetExist();
             DoMovement();
             DoAnimation();
