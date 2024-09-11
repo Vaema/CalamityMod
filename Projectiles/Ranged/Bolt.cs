@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -10,86 +12,115 @@ namespace CalamityMod.Projectiles.Ranged
     public class Bolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
-
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public int time = 0;
+        public bool homing = true;
+        public bool hasZaged = false;
+        public int zagDirection = 1;
+        public Vector2 effectVel;
+        public NPC closestTarget;
+        public float colorValue = 0;
         public override void SetDefaults()
         {
-            Projectile.width = 8;
-            Projectile.height = 8;
+            Projectile.width = 60;
+            Projectile.height = 60;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.alpha = 255;
-            Projectile.penetrate = 4;
-            Projectile.extraUpdates = 1;
+            Projectile.penetrate = 3;
+            Projectile.extraUpdates = 4;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.timeLeft = 600;
+            Projectile.ArmorPenetration = 20; // Fast weapon go brr
+            Projectile.timeLeft = 300;
         }
 
         public override void AI()
         {
-            Projectile.velocity *= 1.015f;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Projectile.timeLeft % 30 == 0)
+            if (time == 0)
             {
-                for (int l = 0; l < 12; l++)
+                if (Projectile.ai[0] == 5)
+                { 
+                    Projectile.extraUpdates = 60;
+                    Projectile.penetrate = -1;
+                }
+                colorValue += Main.rand.Next(0, 20);
+                zagDirection = Main.rand.NextBool() ? 1 : -1;
+                effectVel = Projectile.velocity;
+            }
+            colorValue = MathHelper.Lerp(colorValue, 50, 0.035f);
+            Color usedColor = Color.Lerp(Color.Cyan, Color.Orchid, Utils.GetLerpValue(0, 50, colorValue));
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            if (targetDist < 1400f)
+            {
+                if (Projectile.timeLeft % 2 == 0)
                 {
-                    Vector2 rotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
-                    rotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
-                    rotate = rotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int blueDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 160, default, 1f);
-                    Main.dust[blueDust].scale = 1.1f;
-                    Main.dust[blueDust].noGravity = true;
-                    Main.dust[blueDust].position = Projectile.Center + rotate;
-                    Main.dust[blueDust].velocity = Projectile.velocity * 0.1f;
-                    Main.dust[blueDust].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[blueDust].position) * 1.25f;
+                    Particle spark2 = new BoltParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 7, 0.3f, usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.7f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+                if (Main.rand.NextBool(35))
+                {
+                    Particle spark2 = new BoltParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.9f), false, 23, Main.rand.NextFloat(0.2f, 0.3f), usedColor, new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }
-        }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            if (Projectile.timeLeft < 85)
+            if (Projectile.numHits > 0)
+                homing = false;
+            if (time % 15 == 0)
             {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(100f * ((float)b2 / 255f));
-                return new Color((int)b2, (int)b2, (int)b2, (int)a2);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, (effectVel * 10) * Main.rand.NextFloat(-0.4f, -0.7f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
+                dust.noGravity = true;
+                dust.color = usedColor;
+                effectVel = Projectile.velocity.RotatedBy(0.2f * zagDirection * (hasZaged ? 1 : 0.5f)) * 0.08f;
             }
-            return new Color(255, 255, 255, 100);
+            if (time % 20 == 0)
+            {
+                hasZaged = true;
+                zagDirection *= -1;
+            }
+
+            closestTarget = Projectile.Center.ClosestNPCAt(900);
+            if (closestTarget != null && homing && Projectile.ai[0] < 5)
+            {
+                Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (Projectile.velocity.Length() < MathHelper.Clamp(12 * Utils.GetLerpValue(75, 300, Projectile.timeLeft, true), 4, 12))
+                    Projectile.velocity += moveTotarget * Utils.GetLerpValue(300, 200, Projectile.timeLeft, true) * 1f;
+                else
+                    Projectile.velocity *= 0.85f;
+                colorValue = MathHelper.Lerp(50, 0, Utils.GetLerpValue(500, 0, Vector2.Distance(closestTarget.Center, Projectile.Center), true));
+            }
+            if (!homing && Projectile.velocity.Length() < 12)
+                Projectile.velocity *= 1.01f;
+
+            time++;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (target != closestTarget)
+            {
+                Projectile.numHits--;
+                Projectile.penetrate++;
+            }
+            else
+                colorValue = Main.rand.Next(0, 10);
             target.AddBuff(BuffID.Electrified, 90);
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 32;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
-            int rando = Main.rand.Next(4, 8);
-            for (int i = 0; i < rando; i++)
+            for (int i = 0; i <= 2; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
-                Main.dust[dust].velocity *= 2f;
-                Main.dust[dust].noGravity = true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, (Projectile.velocity * 4).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
+                dust.noGravity = true;
+                dust.color = Main.rand.NextBool(5) ? Color.Cyan : Color.Orchid;
             }
         }
     }
