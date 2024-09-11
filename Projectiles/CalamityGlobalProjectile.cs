@@ -199,8 +199,9 @@ namespace CalamityMod.Projectiles
         #region Set Defaults
         public override void SetDefaults(Projectile projectile)
         {
-            // OLD 1.3 CODE: Disable Lunatic Cultist's homing resistance globally
-            // ProjectileID.Sets.CultistIsResistantTo[projectile.type] = false;
+            // This code is needed to ensure that the code for preventing damage multipliers from triggering more than once works
+            if (projectile.type == ProjectileID.ZapinatorLaser)
+                projectile.originalDamage = projectile.damage;
 
             // Apply Calamity Global Projectile Tweaks.
             SetDefaults_ApplyTweaks(projectile);
@@ -3543,6 +3544,20 @@ namespace CalamityMod.Projectiles
                 int spreadOutTime = 90;
                 if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - spreadOutTime)
                     projectile.velocity *= ((Main.masterMode || BossRushEvent.BossRushActive) ? 1.017078f : 1.015525f);
+            }
+
+            // Zapinator lasers cannot trigger their damage multiplier more than once
+            if (projectile.type == ProjectileID.ZapinatorLaser && projectile.damage > projectile.originalDamage)
+            {
+                if (projectile.ai[0] == 0f)
+                {
+                    projectile.originalDamage = projectile.damage;
+                    projectile.ai[0] = 1f;
+                }
+                else
+                {
+                    projectile.damage = projectile.originalDamage;
+                }
             }
 
             // Golf Balls go nyoom on touching Auric Ore/Repulsers
