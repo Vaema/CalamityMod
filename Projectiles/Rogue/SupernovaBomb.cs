@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
         public bool returning = false;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

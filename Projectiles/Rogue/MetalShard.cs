@@ -11,13 +11,14 @@ namespace CalamityMod.Projectiles.Rogue
     public class MetalShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public bool Stuck = false;
         public override void SetDefaults()
         {
             Projectile.friendly = true;
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.penetrate = 10;
+            Projectile.penetrate = 2;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 60;
@@ -25,16 +26,21 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            //Rotation
-            if (Projectile.ai[0] == 0f)
-                Projectile.rotation += 0.1f;
-            //Gravity
-            Projectile.velocity.Y += 0.1f;
-            if (Projectile.velocity.Y > 16f)
-                Projectile.velocity.Y = 16f;
+            // Rotation and gravity if not stuck
+            if (!Stuck)
+            {
+                if (Projectile.ai[0] == 0f)
+                    Projectile.rotation += 0.1f;
+
+                Projectile.velocity.Y += 0.1f;
+                if (Projectile.velocity.Y > 16f)
+                    Projectile.velocity.Y = 16f;
+            }
             //Sticky Behaviour
             Projectile.StickyProjAI(15);
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Stuck = true;
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(8);
 

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -16,7 +17,7 @@ namespace CalamityMod.Tiles.Furniture.Fountains
         {
             string waterColor = Main.zenithWorld ? "CalamityMod/PissWater" : "CalamityMod/SulphuricWater";
             if (!Main.dedServ && Main.tile[i, j].TileFrameX >= 36)
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>(waterColor).Slot;
+                Main.SceneMetrics.ActiveFountainColor = Main.zenithWorld ? PissWater.Instance.Slot : SulphuricWater.Instance.Slot;
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;

@@ -29,6 +29,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 15;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }

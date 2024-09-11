@@ -37,14 +37,14 @@ namespace CalamityMod.Items.Potions
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
                 AddIngredient<PurifiedGel>(2).
-                AddIngredient<DemonicBoneAsh>().
+                AddIngredient(ItemID.Fireblossom, 2).
                 AddTile(TileID.AlchemyTable).
                 AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(20).
+                AddIngredient<BloodOrb>(5).
                 AddIngredient<PurifiedGel>(2).
                 AddTile(TileID.AlchemyTable).
                 Register()

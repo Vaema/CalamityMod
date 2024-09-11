@@ -24,6 +24,17 @@ namespace CalamityMod.World
         -Make sunken sea walls produce water
         */
 
+        /*
+         ena todo
+
+        fix the fucking forest being shaved
+        cut a half oval out of the top of forest in anticipation of structure placement
+        change the type of noise both reefs and forest use (reefs more jagged, forest more flat)
+        cut a curve out of the top of shores (the desert part)
+        extend basalt to hell - DONE
+            convert normal terrain blocks below basalt into basalt
+        BLOTCHES EVERYWHERE
+         */
         public static void PlaceTimelessShores(int startPosX, int startPosY)
         {
             int biomeSize = 250 + (Main.maxTilesX / 180);
@@ -55,7 +66,7 @@ namespace CalamityMod.World
                         ShapeData circle = new ShapeData();
                         WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(30), Actions.Chain(new GenAction[]
                         {
-                            new Modifiers.RadialDither(1, 30).Output(circle),
+                            //new Modifiers.RadialDither(1, 30).Output(circle),
                             new Modifiers.Blotches().Output(circle),
                         }));
                         WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
@@ -81,7 +92,7 @@ namespace CalamityMod.World
                         ShapeData circle = new();
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(30), Actions.Chain(new GenAction[]
                         {
-                            new Modifiers.RadialDither(1, 30).Output(circle),
+                            //new Modifiers.RadialDither(1, 30).Output(circle),
                             new Modifiers.Blotches().Output(circle),
                         }));
                         WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
@@ -102,7 +113,7 @@ namespace CalamityMod.World
                         ShapeData circle = new();
                         WorldUtils.Gen(new Point(x, y), new Shapes.Circle(30), Actions.Chain(new GenAction[]
                         {
-                            new Modifiers.RadialDither(1, 30).Output(circle),
+                            //new Modifiers.RadialDither(1, 30).Output(circle),
                             new Modifiers.Blotches().Output(circle),
                         }));
                         WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
@@ -167,7 +178,7 @@ namespace CalamityMod.World
             //
             const int platformSize = 130;
             const int platformHeight = 35; // Remember that because of Terraria's coordinate system, making it lower actually makes it higher.
-            const int platformDepth = 20; // How deep it goes. Like above, the higher it is, the lower it goes.
+            const int platformDepth = 35; // How deep it goes. Like above, the higher it is, the lower it goes.
             FastParallel.For(startPosX - platformSize / 2, startPosX + platformSize / 2, (start, end, _) =>
             {
                 for (int platformX = start; platformX <= end; platformX += 5)
@@ -198,10 +209,10 @@ namespace CalamityMod.World
             //
             // Makes a hole into the actual Sunken Sea at the botoom-left and bottom-right of the middle platform of the Timeless Shores.
             //
-            const int furthestDistanceFromCenter = 80;
-            const int shortestDistanceFromCenter = 25;
-            const int holeStart = 53;
-            const int holeDepth = 37;
+            const int furthestDistanceFromCenter = 55;
+            const int shortestDistanceFromCenter = 35;
+            const int holeStart = 50;
+            const int holeDepth = 35;
             FastParallel.For(startPosX - furthestDistanceFromCenter, startPosX - shortestDistanceFromCenter, (start, end, _) =>
             {
                 for (int holeX = start; holeX <= end; holeX++)
@@ -211,17 +222,12 @@ namespace CalamityMod.World
                         ShapeData circle = new();
 
                         // As the hole gets deeper, we want the holes to be bigger and more blurry, so it's not so monotonous.
-                        int sizeIncrement = (int)Utils.Remap(holeY, startPosY + holeStart, startPosY + holeStart + holeDepth, 1, 5);
+                        int sizeIncrement = (int)Utils.Remap(holeY, startPosY + holeStart, startPosY + holeStart + holeDepth, 1, 20);
 
-                        GenAction dither = new Modifiers.RadialDither(2 * sizeIncrement, 5 * sizeIncrement);
+                        // may or may not be useful later
+                        //GenAction dither = new Modifiers.RadialDither(2 * sizeIncrement, 5 * sizeIncrement);
 
-                        // We set the shape to a circle with radial dithering.
-                        WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Circle(WorldGen.genRand.Next(4, 10) * sizeIncrement), Actions.Chain(new GenAction[]
-                        {
-                            dither.Output(circle)
-                        }));
-
-                        WorldUtils.Gen(new Point(holeX, holeY), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                        WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Circle(sizeIncrement), Actions.Chain(new GenAction[]
                         {
                             new Actions.ClearTile(),    // The shape removes tiles.
                             new Actions.SetLiquid()     // The shape adds liquid (Default to max water).
@@ -238,17 +244,9 @@ namespace CalamityMod.World
                         ShapeData circle = new();
 
                         // As the hole gets deeper, we want the holes to be bigger and more blurry, so it's not so monotonous.
-                        int sizeIncrement = (int)Utils.Remap(holeY, startPosY + holeStart, startPosY + holeStart + holeDepth, 1, 5);
+                        int sizeIncrement = (int)Utils.Remap(holeY, startPosY + holeStart, startPosY + holeStart + holeDepth, 1, 20);
 
-                        GenAction dither = new Modifiers.RadialDither(2 * sizeIncrement, 5 * sizeIncrement);
-
-                        // We set the shape to a circle with radial dithering.
-                        WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Circle(WorldGen.genRand.Next(4, 10) * sizeIncrement), Actions.Chain(new GenAction[]
-                        {
-                            dither.Output(circle)
-                        }));
-
-                        WorldUtils.Gen(new Point(holeX, holeY), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                        WorldUtils.Gen(new Point(holeX, holeY), new Shapes.Circle(sizeIncrement), Actions.Chain(new GenAction[]
                         {
                             new Actions.ClearTile(),    // The shape removes tiles.
                             new Actions.SetLiquid()     // The shape adds liquid (Default to max water).
@@ -661,7 +659,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y > origin.Y))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.98f;
@@ -734,7 +732,7 @@ namespace CalamityMod.World
                 {
                     for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                     {
-                        if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                        if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y > origin.Y))
                         {
                             //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                             bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -762,9 +760,9 @@ namespace CalamityMod.World
             {
                 for (int X = start; X <= end; X++)
                 {
-                    for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                    for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 20; Y <= origin.Y + verticalRadius + 20; Y++)
                     {
-                        if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                        if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y > origin.Y))
                         {
                             bool canPlaceSand = false;
 
@@ -791,7 +789,7 @@ namespace CalamityMod.World
                 {
                     for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                     {
-                        if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                        if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, false, Y > origin.Y))
                         {
                             //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                             bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -861,16 +859,16 @@ namespace CalamityMod.World
 
                             if (percent > blurPercent)
                             {
-                                if (Y > origin.Y + 20)
+                                if (Y > origin.Y - 10)
                                 {
                                     ShapeData circle = new ShapeData();
-                                    GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                                    GenAction blotchMod = new Modifiers.Blotches(10, 0.4);
 
-                                    WorldUtils.Gen(new Point(X, Y + 10), new Shapes.Circle(20), Actions.Chain(new GenAction[]
+                                    WorldUtils.Gen(new Point(X, Y - 10), new Shapes.Circle(20), Actions.Chain(new GenAction[]
                                     {
                                         blotchMod.Output(circle)
                                     }));
-                                    WorldUtils.Gen(new Point(X, Y + 10), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                                    WorldUtils.Gen(new Point(X, Y - 10), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                                     {
                                         new Actions.Clear(),
                                         new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>())
@@ -1060,13 +1058,13 @@ namespace CalamityMod.World
         //basalt biome underneath the sunken sea
         public static void PlaceBasaltGully(int startPosX, int startPosY)
         {
-            int biomeSize = 230 + (Main.maxTilesX / 180);
+            int biomeSize = 200 + (Main.maxTilesX / 180);
 
-            int XLeft = GenVars.UndergroundDesertLocation.Left;
-            int XRight = GenVars.UndergroundDesertLocation.Right;
+            int XLeft = GenVars.UndergroundDesertLocation.Left + 30;
+            int XRight = GenVars.UndergroundDesertLocation.Right - 30;
 
             //place circles of basalt along the 2 edges of the area
-            for (int Y = startPosY - 30; Y <= Main.maxTilesY - 260; Y += 20)
+            for (int Y = startPosY - 60; Y <= Main.maxTilesY - 230; Y += 20)
             {
                 ShapeData circle = new ShapeData();
                 GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
@@ -1104,7 +1102,7 @@ namespace CalamityMod.World
             {
                 for (int X = start; X <= end; X++)
                 {
-                    for (int Y = startPosY - 30; Y <= Main.maxTilesY - 250; Y++)
+                    for (int Y = startPosY - 30; Y <= Main.maxTilesY - 200; Y++)
                     {
                         Main.tile[X, Y].ClearEverything();
                         WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Basalt>());
@@ -1600,7 +1598,7 @@ namespace CalamityMod.World
         }
 
         //method to make sure things only generate in each biome circle
-        public static bool CheckInBiomeArea(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance, bool collapse = false)
+        public static bool CheckInBiomeArea(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance, bool collapse = false, bool collapseBottom = false)
         {
             Vector2 point = tile.ToWorldCoordinates();
 
@@ -1609,7 +1607,11 @@ namespace CalamityMod.World
                 float distY = center.Y - point.Y;
                 point.Y -= distY * 4f;
             }
-
+            if (collapseBottom)
+            {
+                float distY = center.Y - point.Y;
+                point.Y += distY * 4f;
+            }
             float distance1 = Vector2.Distance(point, focus1);
             float distance2 = Vector2.Distance(point, focus2);
             distance = distance1 + distance2;

@@ -60,6 +60,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<MagneticMeltdown>().
+                AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddTile<CosmicAnvil>().
                 Register();

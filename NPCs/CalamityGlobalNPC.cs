@@ -1104,7 +1104,7 @@ namespace CalamityMod.NPCs
             // Static Discharge
             if (staticDischarge > 0)
             {
-                int baseStaticDischargeDoTValue = (int)(6 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
+                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
                 ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
@@ -7520,7 +7520,7 @@ namespace CalamityMod.NPCs
                         for (int i = 0; i < totalAfterimages; i++)
                         {
                             Color currentColor = npc.GetAlpha(drawColor);
-                            float opacityScale = 1f - MathHelper.Lerp(0.3f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
+                            float opacityScale = 1f - MathHelper.Lerp(0.34f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
                             float opacity = Main.getGoodWorld ? 0.7f : opacityScale;
 
                             opacity = MathHelper.Clamp(opacity, 0f, 1f);

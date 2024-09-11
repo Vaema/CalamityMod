@@ -31,12 +31,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 300;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = 60 * Projectile.MaxUpdates;
         }
 
         public override void AI()
@@ -44,6 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             Player Owner = Main.player[Projectile.owner];
             if (Projectile.Calamity().stealthStrike)
             {
+                Projectile.penetrate = -1;
                 Projectile.extraUpdates = 2;
                 if (Projectile.ai[1] == 0)
                 {
@@ -57,6 +58,8 @@ namespace CalamityMod.Projectiles.Rogue
                     dustProjectile.timeLeft = 240;
                 }
             }
+            else if (Projectile.ai[1] == 0)
+                Projectile.timeLeft = (int)(Projectile.timeLeft * Main.rand.NextFloat(1.05f, 1.2f));
 
             if (Main.rand.NextBool(4) && Projectile.ai[1] > 7)
             {
@@ -98,6 +101,18 @@ namespace CalamityMod.Projectiles.Rogue
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 215 : (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
                 dust.noGravity = true;
             }
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 8);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel, 278, dustVel * 0.7f);
+                dust2.scale = Main.rand.NextFloat(0.8f, 0.9f);
+                dust2.noGravity = false;
+                dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Chartreuse : Color.Green, 0.7f);
+            }
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Chartreuse, "CalamityMod/Particles/HighResFoggyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.07f, 8);
+            GeneralParticleHandler.SpawnParticle(pulse);
+            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 3);
+            SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = Main.rand.NextFloat(-0.2f, 0.2f), MaxInstances = 4 }, Projectile.Center);
         }
         public override bool PreDraw(ref Color lightColor)
         {

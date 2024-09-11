@@ -57,13 +57,12 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.ConfettiCannon).
                 AddIngredient<CosmicRainbow>().
                 AddIngredient(ItemID.Celeb2).
-                AddIngredient(ItemID.FlaskofParty, 5).
+                AddIngredient(ItemID.ConfettiCannon).
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient(ItemID.SoulofLight, 25).
                 AddIngredient(ItemID.Confetti, 50).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

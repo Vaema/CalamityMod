@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Potions
         public override void AddRecipes()
         {
             CreateRecipe(3).
-                AddIngredient(ItemID.BottledWater).
+                AddIngredient(ItemID.BottledWater, 3).
                 AddIngredient(ItemID.Frog).
                 AddIngredient(ItemID.Vine).
                 AddTile(TileID.Bottles).
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Potions
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(20).
+                AddIngredient<BloodOrb>(10).
                 AddTile(TileID.AlchemyTable).
                 Register()
                 .DisableDecraft();

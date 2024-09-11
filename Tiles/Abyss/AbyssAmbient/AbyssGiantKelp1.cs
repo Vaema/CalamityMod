@@ -10,18 +10,11 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
-    public class AbyssGiantKelp1 : ModTile
+    public class AbyssGiantKelp1 : GlowMaskTile
     {
-        protected virtual string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1Glow";
-        internal static FramedGlowMask GlowMask;
-
-        public override void SetStaticDefaults()
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1Glow";
+        public override void SetupStatic()
         {
-            if (!string.IsNullOrEmpty(GlowAsset))
-            {
-                GlowMask = new(GlowAsset, 18, 18);
-            }
-
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.Width = 2;
@@ -39,9 +32,8 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             AddMapEntry(new Color(92, 93, 42));
             DustType = DustID.Grass;
             HitSound = SoundID.Grass;
-
-            base.SetStaticDefaults();
         }
+
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (closer && Main.rand.NextBool(100) && j > Main.worldSurface)
@@ -70,23 +62,15 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             num = fail ? 1 : 2;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            if (GlowMask is not null && GlowMask.HasContentInFramePos(tile.TileFrameX, tile.TileFrameY))
-            {
-                Vector2 pos = new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero;
-                Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
-                spriteBatch.Draw(GlowMask.Texture, pos, frame, Color.White);
-            }
+            return Color.White;
         }
     }
 
     //just clone the first one its literally the same size
     public class AbyssGiantKelp2 : AbyssGiantKelp1
     {
-        protected override string GlowAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2Glow";
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2Glow";
     }
 }

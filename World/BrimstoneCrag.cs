@@ -516,7 +516,6 @@ namespace CalamityMod.World
             List<ChestItem> contents = new List<ChestItem>()
             {
                 new ChestItem(ItemID.HellstoneBar, WorldGen.genRand.Next(4, 6)),
-                new ChestItem(ModContent.ItemType<Items.Materials.DemonicBoneAsh>(), WorldGen.genRand.Next(4, 15)),
                 new ChestItem(ModContent.ItemType<Items.Fishing.BrimstoneCragCatches.CoastalDemonfish>(), WorldGen.genRand.Next(2, 5)),
                 new ChestItem(ItemID.HellfireArrow, WorldGen.genRand.Next(25, 50)),
                 new ChestItem(potionType, WorldGen.genRand.Next(1, 3)),
@@ -529,10 +528,7 @@ namespace CalamityMod.World
             }
             else
             {
-                contents.RemoveAt(0);
                 contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Weapons.Melee.BladecrestOathsword>(), 1));
-                //re-add hellstone bars to the list since removing the first item also removes hellstone bars for some reason
-                contents.Insert(1, new ChestItem(ItemID.HellstoneBar, WorldGen.genRand.Next(2, 5)));
             }
 
             for (int i = 0; i < contents.Count; i++)

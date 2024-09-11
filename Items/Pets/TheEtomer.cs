@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
@@ -48,9 +47,9 @@ namespace CalamityMod.Items.Pets
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PrismShard>(5).
                 AddRecipeGroup("AnyGoldBar", 8).
-                AddIngredient<DemonicBoneAsh>().
+                AddIngredient<PrismShard>(5).
+                AddIngredient<ScorchedBone>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

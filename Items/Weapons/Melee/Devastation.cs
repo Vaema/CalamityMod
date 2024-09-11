@@ -130,7 +130,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<CatastropheClaymore>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<AstralBar>(10).
-                AddIngredient(ItemID.MeteoriteBar, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -1020,13 +1020,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Extra DoT in the lava of the crags. Negated by Flame-licked Shell.
-            if (Player.lavaWet)
-            {
-                if (ZoneCalamity && !flameLickedShell)
-                    Player.AddBuff(ModContent.BuffType<SearingLava>(), 2, false);
-            }
-            else
+            if (!Player.lavaWet)
             {
                 if (Player.lavaImmune)
                 {
@@ -1822,7 +1816,7 @@ namespace CalamityMod.CalPlayer
                     int hasBuff = Player.buffType[l];
                     if (Player.buffTime[l] <= 2 && hasBuff == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
                         if (Player.whoAmI == Main.myPlayer)
-                            Player.AddCooldown(Cooldowns.TarragonImmunity.ID, CalamityUtils.SecondsToFrames(30));
+                            Player.AddCooldown(Cooldowns.TarragonImmunity.ID, CalamityUtils.SecondsToFrames(25));
 
                     bool shouldAffect = CalamityLists.debuffList.Contains(hasBuff);
                     if (shouldAffect)

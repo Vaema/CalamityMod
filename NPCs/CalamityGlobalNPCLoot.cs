@@ -342,20 +342,6 @@ namespace CalamityMod.NPCs
                 #region Jungle
                 //Moss hornets are after all of this switching since it no longer works if placed here
 
-                // Jungle Slime, Spiked Jungle Slime, Arapaima
-                // Murky Paste @ 33.33% Normal, 50% Expert+
-                case NPCID.JungleSlime:
-                case NPCID.SpikedJungleSlime:
-                case NPCID.Arapaima:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<MurkyPaste>(), 3, 2));
-                    break;
-
-                // Angry Trapper
-                // Trapper Bulb @ 50% Normal, 100% Expert+
-                case NPCID.AngryTrapper:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<TrapperBulb>(), 2, 1));
-                    break;
-
                 // Moth
                 // Butterfly Dust @ 100% INSTEAD OF 50%
                 case NPCID.Moth:
@@ -429,30 +415,24 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Demon, Voodoo Demon
-                // Demonic Bone Ash @ 33.33% Normal, 50% Expert+
                 // Bladecrest Oathsword @ 4% Normal, 6.67% Expert+
                 case NPCID.Demon:
                 case NPCID.VoodooDemon:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DemonicBoneAsh>(), 3, 2));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BladecrestOathsword>(), 25, 15));
                     break;
 
                 // Bone Serpent
-                // Demonic Bone Ash @ 33.33% Normal, 50% Expert+
                 // Old Lord Oathsword @ 8.33% Normal, 14.29% Expert+
                 case NPCID.BoneSerpentHead:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DemonicBoneAsh>(), 3, 2));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<OldLordClaymore>(), 12, 7));
                     break;
 
                 // Red Devil
                 // Fire Feather @ 10% INSTEAD OF 1.33%
-                // Demonic Bone Ash @ 33.33% Normal, 50% Expert+
                 // Abbadon @ 8.33% Normal, 14.29% Expert+
                 // Essence of Chaos @ 50%
                 case NPCID.RedDevil:
                     npcLoot.ChangeDropRate(ItemID.FireFeather, 1, 10);
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DemonicBoneAsh>(), 3, 2));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Abaddon>(), 12, 7));
                     npcLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2);
                     break;
@@ -1671,6 +1651,34 @@ DukeEditFailed:
             if (CalamityLists.dungeonEnemyBuffList.Contains(npc.type))
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
+
+            // Blanket remove all specific food item drops that have changed obtainment methods in Calamity
+            // This is type-indiscriminate and will also most probably hit modded NPCs too
+            int[] randomFoodItems = new int[]
+            {
+                ItemID.ApplePie,
+                ItemID.BananaSplit,
+                ItemID.BBQRibs,
+                ItemID.Burger,
+                ItemID.MilkCarton,
+                ItemID.ChocolateChipCookie,
+                ItemID.CoffeeCup,
+                ItemID.CreamSoda,
+                ItemID.FriedEgg,
+                ItemID.Fries,
+                ItemID.Grapes,
+                ItemID.Hotdog,
+                ItemID.IceCream,
+                ItemID.Milkshake,
+                ItemID.Nachos,
+                ItemID.Pizza,
+                ItemID.PotatoChips,
+                ItemID.ShrimpPoBoy,
+                ItemID.Spaghetti,
+                ItemID.Steak
+            };
+            foreach (int foodItemID in randomFoodItems)
+                npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
         }
         #endregion
 
@@ -1701,32 +1709,6 @@ DukeEditFailed:
         #region Pre Kill
         public override bool PreKill(NPC npc)
         {
-            // Stop all random food drops that aren't sold, crafted or etc.
-            var randomFoodItems = new int[]
-            {
-                ItemID.ApplePie,
-                ItemID.BananaSplit,
-                ItemID.BBQRibs,
-                ItemID.Burger,
-                ItemID.MilkCarton,
-                ItemID.ChocolateChipCookie,
-                ItemID.CoffeeCup,
-                ItemID.CreamSoda,
-                ItemID.FriedEgg,
-                ItemID.Fries,
-                ItemID.Grapes,
-                ItemID.Hotdog,
-                ItemID.IceCream,
-                ItemID.Milkshake,
-                ItemID.Nachos,
-                ItemID.Pizza,
-                ItemID.PotatoChips,
-                ItemID.ShrimpPoBoy,
-                ItemID.Spaghetti,
-                ItemID.Steak
-            };
-            DropHelper.BlockDrops(randomFoodItems);
-
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
             if (CalamityWorld.revenge && (CalamityLists.EaterofWorldsIDs.Contains(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);

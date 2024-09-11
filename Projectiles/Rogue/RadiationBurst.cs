@@ -9,6 +9,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
+using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -86,7 +87,15 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
             target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.75f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => time >= boomTime ? CalamityUtils.CircularHitboxCollision(Projectile.Center, 350, targetHitbox) : false;
     }

@@ -46,9 +46,9 @@ namespace CalamityMod.Items
         {
             CreateRecipe().
                 AddIngredient(ItemID.RodofDiscord).
+                AddIngredient(ItemID.FragmentStardust, 30).
                 AddIngredient<Cinderplate>(5).
                 AddIngredient<ExodiumCluster>(10).
-                AddIngredient(ItemID.FragmentStardust, 30).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

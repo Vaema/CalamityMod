@@ -39,8 +39,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.SapphireStaff).
-                AddIngredient<Necroplasm>(10).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<Necroplasm>(10).
                 AddTile<DraedonsForge>().
                 Register();
         }

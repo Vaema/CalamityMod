@@ -52,8 +52,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<SlagMagnum>().
-                AddIngredient<PlagueCellCanister>(12).
                 AddIngredient<InfectedArmorPlating>(7).
+                AddIngredient<PlagueCellCanister>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

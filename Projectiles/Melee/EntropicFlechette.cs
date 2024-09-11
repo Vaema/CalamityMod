@@ -20,6 +20,8 @@ namespace CalamityMod.Projectiles.Melee
         public int spinDir = 100;
         public int waveOften = 40;
         public float scaleVariance = 1;
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 50;

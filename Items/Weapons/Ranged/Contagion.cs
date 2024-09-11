@@ -43,8 +43,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Riftburst>().
-                AddIngredient<PlagueCellCanister>(20).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<PlagueCellCanister>(20).
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }

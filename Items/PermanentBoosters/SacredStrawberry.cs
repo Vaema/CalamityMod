@@ -74,7 +74,6 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             CreateRecipe().
                 AddIngredient(ItemID.LifeFruit, 5).
-                AddIngredient(ItemID.FragmentSolar, 15).
                 AddIngredient<YharonSoulFragment>(5).
                 AddIngredient<AscendantSpiritEssence>().
                 AddTile<CosmicAnvil>().
