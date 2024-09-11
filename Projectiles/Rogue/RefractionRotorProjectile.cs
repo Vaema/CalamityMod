@@ -70,7 +70,11 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.timeLeft = 80;
             Projectile.ModifyHitNPCSticky(10);
             Projectile.velocity *= 0.8f;
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.7f}, Projectile.Center);
+            if (Projectile.soundDelay == 0)
+            {
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.7f }, Projectile.Center);
+                Projectile.soundDelay = 10;
+            }
             if (Main.myPlayer == Projectile.owner)
             {
                 int slash = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.1f, ModContent.ProjectileType<RefractionRotorSlashCreator>(), Projectile.damage, 0f, Projectile.owner, target.whoAmI, Projectile.velocity.ToRotation());
