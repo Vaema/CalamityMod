@@ -66,6 +66,13 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool StealthInvisibility { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [SliderColor(224, 165, 56, 128)]
+        [DefaultValue(1.0f)]
+        [Range(0.0f, 1.0f)]
+        public float EnergyShieldOpacity { get; set; }
+
         #endregion
 
         #region UI Changes

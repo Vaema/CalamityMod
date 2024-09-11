@@ -37,6 +37,9 @@ namespace CalamityMod.Items.Accessories
         {
             get
             {
+                if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
+                    return false;
+
                 foreach (Player player in Main.ActivePlayers)
                 {
                     if (player.outOfRange || player.dead)
@@ -129,7 +132,10 @@ namespace CalamityMod.Items.Accessories
 
                 // Shield opacity multiplier slightly changes, this is independent of current shield strength
                 float baseShieldOpacity = 0.9f + 0.1f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f);
-                shieldEffect.Parameters["shieldOpacity"].SetValue(baseShieldOpacity * (0.5f + 0.5f * shieldStrength));
+                float finalShieldOpacity = baseShieldOpacity * (0.5f + 0.5f * shieldStrength);
+                finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
+
+                shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
                 shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
 
                 // Get the shield color.

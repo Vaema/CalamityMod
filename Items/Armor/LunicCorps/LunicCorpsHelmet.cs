@@ -41,6 +41,9 @@ namespace CalamityMod.Items.Armor.LunicCorps
         {
             get
             {
+                if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
+                    return false;
+
                 foreach (Player player in Main.ActivePlayers)
                 {
                     if (player.outOfRange || player.dead)
@@ -143,6 +146,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
                 float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
                 float minShieldStrengthOpacityMultiplier = 0.5f;
                 float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
+                finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
+
                 shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
                 shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
 
