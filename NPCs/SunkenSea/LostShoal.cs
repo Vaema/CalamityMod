@@ -213,8 +213,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
             }
             Lighting.AddLight(NPC.Center, glowColor.R * intensity, glowColor.G * intensity, glowColor.B * intensity);
-            // Sprinkle down ash particles
-            // Trail glowing dust as they move
+            // Formerly, sprinkle down ash particles
+            // Now they trail glowing dust as they move
+            // Keeping it as reference in case i want to use it somewhere else (i will)
             if (Main.rand.NextBool(120))
             {
                 //Color ashColor = new(40, 48, 41);
@@ -252,7 +253,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // This is just usual swimmer ai with some modifications
             NPC.spriteDirection = (NPC.direction > 0) ? -1 : 1;
 
-            NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.2f;
+            NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.06f;
             NPC.noGravity = true;
             if (NPC.collideX)
             {
@@ -276,9 +277,16 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.ai[0] = 1f;
                 }
             }
+            if (NPC.Calamity().newAI[0] <= 0 && NPC.Distance(Main.player[NPC.target].Center) > (45 * 16))
+            {
+                //NPC.velocity.X *= -1;
+                NPC.direction *= -1;
+                NPC.Calamity().newAI[0] = 300;
+            }
+            NPC.Calamity().newAI[0] -= 1;
             // No target behavior
-            NPC.velocity.X += (float)NPC.direction * 0.05f;
-            if (NPC.velocity.X < -2f || NPC.velocity.X > 2f)
+            NPC.velocity.X += (float)NPC.direction * 0.02f;
+            if (NPC.velocity.X < -1.5f || NPC.velocity.X > 1.5f)
             {
                 NPC.velocity.X *= 0.95f;
             }

@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
         public int framesInAir = 0;
         public int SparkChance = 1;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 34;
@@ -25,7 +26,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.penetrate = 3;
             Projectile.timeLeft = 800;
-            AIType = 0;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;

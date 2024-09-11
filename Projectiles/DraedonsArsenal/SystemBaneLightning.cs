@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public static readonly Color InnerLightningColor = Color.White;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 60;
         }

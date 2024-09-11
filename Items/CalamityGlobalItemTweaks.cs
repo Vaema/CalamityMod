@@ -43,9 +43,10 @@ namespace CalamityMod.Items
                 { ItemID.AmethystStaff, Do(ManaExact(2)) },
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) },
                 { ItemID.AntlionClaw, Do(UseExact(14)) }, // Mandible Blade
+                { ItemID.AquaScepter, Do(DamageExact(24)) },
                 { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
                 { ItemID.BatScepter, Do(DamageExact(50)) },
-                { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(142), UseAnimationExact(45), ShootSpeedExact(23f), KnockbackExact(8)) },
+                { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), ShootSpeedExact(23f), KnockbackExact(8)) },
                 { ItemID.BeeGun, Do(DamageExact(11), ManaExact(4)) },
                 { ItemID.BeeKeeper, Do(UseTurn, DamageExact(32)) },
                 { ItemID.Beenade, Do(DamageExact(11), UseTimeExact(22), ShootSpeedExact(10f)) },
@@ -56,7 +57,7 @@ namespace CalamityMod.Items
                 { ItemID.Blowgun, Do(PointBlank, DamageExact(40), ShootSpeedExact(15f)) },
                 { ItemID.BluePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
                 { ItemID.BluePhasesaber, Do(DamageExact(60)) },
-                { ItemID.BookofSkulls, Do(ManaExact(12), ShootSpeedExact(5.5f)) },
+                { ItemID.BookofSkulls, Do(DamageExact(27), ManaExact(13), ShootSpeedExact(5.5f)) },
                 { ItemID.BookStaff, Do(ManaExact(14)) }, // Tome of Infinite Wisdom
                 { ItemID.Boomstick, Do(PointBlank, DamageExact(11)) },
                 { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, DamageExact(97)) },
@@ -86,7 +87,7 @@ namespace CalamityMod.Items
                 { ItemID.Cutlass, Do(UseRatio(0.9f), DamageExact(90)) },
                 { ItemID.DaedalusStormbow, Do(DamageExact(30)) },
                 { ItemID.DaoofPow, Do(DamageExact(85), ShootSpeedExact(10)) },
-                { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(45)) },
+                { ItemID.DarkLance, Do(AutoReuse, TrueMelee, DamageExact(41)) },
                 { ItemID.DartRifle, Do(PointBlank, DamageExact(58)) },
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(20)) },
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
@@ -105,13 +106,12 @@ namespace CalamityMod.Items
                 { ItemID.Excalibur, Do(TrueMelee, UseRatio(0.8f), DamageExact(125), UseAnimationExact(45)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(15)) },
-                // For now, I think I will balance Celebration like a serious weapon. -CIT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
                 { ItemID.Flairon, Do(DamageExact(65)) },
                 { ItemID.Flamarang, Do(DamageExact(40)) },
                 { ItemID.Flamelash, Do(DamageExact(40)) },
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) },
-                { ItemID.FlowerofFire, Do(AutoReuse, ManaExact(7), UseRatio(0.88f), DamageRatio(0.65f)) }, // Uses ratios due to remix seed
+                { ItemID.FlowerofFire, Do(AutoReuse, ManaExact(7), UseRatio(0.88f), DamageRatio(0.7f)) }, // Uses ratios due to remix seed
                 { ItemID.FlowerofFrost, Do(AutoReuse, ManaExact(7), UseExact(22), DamageExact(70), ShootSpeedExact(14)) },
                 { ItemID.FlyingKnife, Do(DamageExact(53)) },
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
@@ -126,7 +126,7 @@ namespace CalamityMod.Items
                 { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
                 { ItemID.Gungnir, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(92), ShootSpeedRatio(1.25f)) },
                 { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
-                { ItemID.Handgun, Do(PointBlank, UseExact(22), DamageExact(36)) },
+                { ItemID.Handgun, Do(PointBlank, UseExact(22)) },
                 { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) },
                 { ItemID.HiveFive, Do(AutoReuse, DamageExact(27)) },
@@ -190,7 +190,7 @@ namespace CalamityMod.Items
                 { ItemID.PearlwoodSword, Do(UseTurn, DamageExact(45)) },
                 { ItemID.PewMaticHorn, Do(DamageExact(25), ShootSpeedExact(15)) },
                 { ItemID.Phantasm, Do(PointBlank, DamageExact(48)) },
-                { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(18)) },
+                { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(20)) },
                 { ItemID.PiranhaGun, Do(DamageExact(48)) },
                 { ItemID.PlatinumBow, Do(PointBlank, DamageExact(12)) },
                 { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },

@@ -14,8 +14,12 @@ namespace CalamityMod.Tiles.SunkenSea
         private static int sheetWidth = 216;
         private static int sheetHeight = 72;
 
+        public static int TypeCache;
+
         public override void SetStaticDefaults()
         {
+            TypeCache = Type;
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = false;
             CalamityUtils.MergeWithGeneral(Type);
@@ -54,9 +58,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Rectangle frame = new Rectangle(tile.TileFrameX + frameXOffset, tile.TileFrameY + frameYOffset, 16, 16);
 
             Color color = Lighting.GetColor(i, j) * transparency;
-            Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-            Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-            TileFramingSystem.SlopedGlowmask(i, j, tile.TileType, tex, drawPos, frame, GetDrawColour(i, j, color), default);
+            TileFramingSystem.SlopedGlowmask(in tile, i, j, tex, frame, GetDrawColour(i, j, color), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

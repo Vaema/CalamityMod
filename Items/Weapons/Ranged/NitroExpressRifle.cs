@@ -47,16 +47,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.Musket).
-                AddIngredient<EssenceofHavoc>(3).
                 AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofHavoc>(3).
                 AddIngredient(ItemID.ExplosivePowder, 5).
                 AddTile(TileID.Anvils).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.TheUndertaker).
-                AddIngredient<EssenceofHavoc>(3).
                 AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofHavoc>(3).
                 AddIngredient(ItemID.ExplosivePowder, 5).
                 AddTile(TileID.Anvils).
                 Register();

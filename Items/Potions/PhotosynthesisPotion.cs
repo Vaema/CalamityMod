@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<TrapperBulb>().
+                AddIngredient(ItemID.Daybloom, 3).
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
                 AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Potions
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(40).
+                AddIngredient<BloodOrb>(5).
                 AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.AlchemyTable).
                 Register()

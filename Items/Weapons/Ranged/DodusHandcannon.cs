@@ -49,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Arietes41>().
-                AddIngredient<RuinousSoul>(5).
                 AddIngredient(ItemID.LunarBar, 15).
+                AddIngredient<RuinousSoul>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

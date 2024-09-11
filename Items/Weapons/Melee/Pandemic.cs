@@ -45,8 +45,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.HiveFive).
-                AddIngredient<PlagueCellCanister>(10).
                 AddIngredient<InfectedArmorPlating>(6).
+                AddIngredient<PlagueCellCanister>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

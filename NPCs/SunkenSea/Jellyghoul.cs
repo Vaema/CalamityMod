@@ -1,10 +1,15 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -15,8 +20,8 @@ namespace CalamityMod.NPCs.SunkenSea
     public class Jellyghoul : ModNPC
     {
         public static Color lesserRed = new Color(255, 100, 100);
-        public static Color startColor = new Color(131, 115, 122);
-        public static Color endColor = new Color(101, 116, 113);
+        public static Color startColor = new Color(111, 115, 122);
+        public static Color endColor = new Color(87, 103, 113);
 
         // Cycle between two gray colors by default
         public Color DefaultColor => Color.Lerp(startColor, endColor, NPC.localAI[1] * 0.25f + MathF.Sin(Main.GlobalTimeWrappedHourly));
@@ -62,6 +67,10 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            //NPC.Center -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
+        }
         public override void AI()
         {
             // LocalAI controls variance between jellies. Randomize it on spawn to desync them
@@ -87,12 +96,12 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ai[1]++;
 
-                float screenShakePower = 2 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
+                float screenShakePower = 2 * Utils.GetLerpValue(500f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
 
-                // After 2 seconds, stop shaking and set the scream on cooldown
-                if (NPC.ai[1] > 120)
+                // After 1 second, stop shaking and set the scream on cooldown
+                if (NPC.ai[1] > 60)
                 {
                     NPC.ai[0] = 0;
                     NPC.ai[1] = 0;
@@ -122,6 +131,11 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.ai[3] = 0;
                 }
             }
+            if (Main.rand.NextBool(80))
+            { 
+            Particle ash = new SquareAshParticle(Main.rand.NextVector2FromRectangle(NPC.getRect()), new Vector2(0, 2), Main.rand.Next(100, 200), Main.rand.NextFloat(0.8f, 1.2f), new Color(50, 50, 50));
+            GeneralParticleHandler.SpawnParticle(ash);
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -134,11 +148,16 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity)
-            {
-                return 0.05f;
-            }
-            return 0f;
+            Tile tile = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY);
+
+            return !spawnInfo.Player.Calamity().clamity && tile.WallType == WallID.CrimstoneUnsafe ? 0.05f : 0f;
+
+            //fuck this
+            //if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>())
+            //{
+            //    return 0.05f;
+            //}
+            //return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

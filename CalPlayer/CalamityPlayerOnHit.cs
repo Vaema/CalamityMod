@@ -295,6 +295,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ProjectileID.Cascade:
+                case ProjectileID.FlamingMace:
                     target.AddBuff(BuffID.OnFire, 60);
                     break;
 

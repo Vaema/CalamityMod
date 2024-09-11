@@ -27,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Melee
         private int useTime = 18;
         private int opacityAdjust = 0;
         private float smearOpacity = 0;
-        private bool smearGrowth = true;
         public override void SetDefaults()
         {
             Item.width = Item.height = 108;

@@ -66,8 +66,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.StardustDragonStaff).
-                AddIngredient(ItemID.LightShard).
                 AddIngredient(ItemID.DarkShard).
+                AddIngredient(ItemID.LightShard).
                 AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

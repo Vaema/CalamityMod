@@ -93,7 +93,7 @@ HolyFireBullet: {
 	Tooltip:
 		'''
 		Profaned bullets that explode on impact, dealing extra damage
-		              The explosion grows weaker the further the bullet travels
+		The explosion grows weaker the further the bullet travels
 		'''
 }
 

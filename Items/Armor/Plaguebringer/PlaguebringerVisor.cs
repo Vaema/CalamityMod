@@ -76,8 +76,8 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         {
             CreateRecipe().
                 AddIngredient(ItemID.BeeHeadgear).
-                AddIngredient<PlagueCellCanister>(4).
                 AddIngredient<InfectedArmorPlating>(4).
+                AddIngredient<PlagueCellCanister>(4).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

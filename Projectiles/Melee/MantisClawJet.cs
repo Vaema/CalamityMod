@@ -50,16 +50,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1] = 40;
         }
 
-        int dir = 1;
-
         public override void OnSpawn(IEntitySource source)
         {
             Projectile.ai[1] = 40;
-        }
-
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
-
         }
 
         public override void AI()

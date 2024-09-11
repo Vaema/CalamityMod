@@ -57,14 +57,14 @@ namespace CalamityMod.Items.Weapons.Magic
         }
         public override void AddRecipes()
         {
-            Recipe r = CreateRecipe();
-            r.AddIngredient<VenusianTrident>();
-            r.AddIngredient<ForbiddenSun>();
-            r.AddIngredient(ItemID.FragmentSolar, 10);
-            r.AddIngredient(ItemID.FragmentNebula, 5);
-            r.AddIngredient<AuricBar>(5);
-            r.AddTile<CosmicAnvil>();
-            r.Register();
+            CreateRecipe().
+                AddIngredient<VenusianTrident>().
+                AddIngredient<ForbiddenSun>().
+                AddIngredient<AuricBar>(5).
+                AddIngredient(ItemID.FragmentSolar, 10).
+                AddIngredient(ItemID.FragmentNebula, 5).
+                AddTile<CosmicAnvil>().
+                Register();
         }
     }
 }

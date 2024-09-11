@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Potions
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(10).
+                AddIngredient<BloodOrb>(5).
                 AddTile(TileID.AlchemyTable).
                 Register()
                 .DisableDecraft();

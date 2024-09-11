@@ -330,18 +330,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type == NPCID.TheDestroyer)
             {
                 // Spawn segments from head
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (npc.ai[0] == 0f)
+                    npc.ai[3] = npc.whoAmI;
+                    npc.realLife = npc.whoAmI;
+                    int index = npc.whoAmI;
+                    for (int j = 0; j <= totalSegments; j++)
                     {
-                        npc.ai[3] = npc.whoAmI;
-                        npc.realLife = npc.whoAmI;
-                        int index = npc.whoAmI;
-                        for (int j = 0; j <= totalSegments; j++)
-                        {
-                            int type = NPCID.TheDestroyerBody;
-                            if (j == totalSegments)
-                                type = NPCID.TheDestroyerTail;
+                        int type = NPCID.TheDestroyerBody;
+                        if (j == totalSegments)
+                            type = NPCID.TheDestroyerTail;
 
                             int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
                             Main.npc[segment].ai[3] = npc.whoAmI;

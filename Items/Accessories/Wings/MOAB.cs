@@ -90,7 +90,9 @@ namespace CalamityMod.Items.Accessories.Wings
             player.autoJump = true;
             player.noFallDmg = true;
             player.jumpSpeedBoost += 1.6f;
-            player.luck += 0.05f;
+
+            // Mirrors the +5% luck from Lucky Horseshoe (vanilla behavior).
+            player.Calamity().calamityBonusLuck += 0.05f;
         }
 
         public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
