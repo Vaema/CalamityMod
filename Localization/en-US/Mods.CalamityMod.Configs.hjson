@@ -92,13 +92,13 @@ CalamityClientConfig: {
 		Tooltip: Plays Calamity Mod OST - "Scourge of the Universe (Eulogy for the Ego)", after the Devourer of Gods has been defeated.
 	}
 
-    EnergyShieldOpacity: {
+	EnergyShieldOpacity: {
 		Label: "[i:CalamityMod/TheSponge] Energy Shield Opacity"
-		Tooltip: 
-            '''
-            Decide final Opacity for Energy Shield visual effects.
-            Settings this to 0 will disable the Shield visual effects entirely.
-            '''
+		Tooltip:
+			'''
+			Decide final Opacity for Energy Shield visual effects.
+			Settings this to 0 will disable the Shield visual effects entirely.
+			'''
 	}
 
 	FasterFallHotkey: {
