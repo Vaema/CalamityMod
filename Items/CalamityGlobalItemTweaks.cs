@@ -78,7 +78,7 @@ namespace CalamityMod.Items
                 { ItemID.Code2, Do(AutoReuse, DamageExact(43)) },
                 { ItemID.CorruptYoyo, Do(AutoReuse, DamageExact(20)) }, // Malaise
                 { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(20)) }, // Artery
-                { ItemID.CrystalBullet, Do(DamageExact(8)) },
+                { ItemID.CrystalBullet, Do(DamageExact(6)) },
                 { ItemID.CrystalDart, Do(DamageExact(20)) },
                 { ItemID.CrystalSerpent, Do(DamageExact(45)) },
                 { ItemID.CrystalStorm, Do(DamageExact(40)) },
@@ -263,7 +263,7 @@ namespace CalamityMod.Items
                 { ItemID.Trimarang, Do(DamageExact(24)) },
                 { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(107)) },
                 { ItemID.TrueNightsEdge, Do(DamageExact(105)) },
-                { ItemID.Tsunami, Do(PointBlank, DamageExact(49)) },
+                { ItemID.Tsunami, Do(PointBlank, DamageExact(45)) },
                 { ItemID.TungstenBullet, Do(DamageExact(8)) },
                 { ItemID.TungstenShortsword, Do(AutoReuse, TrueMelee, DamageExact(15)) },
                 { ItemID.UnholyArrow, Do(DamageExact(11)) },

@@ -276,6 +276,9 @@ namespace CalamityMod.Balancing
             // 50% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AuroraFire>()))));
 
+            // 35% to Aerial Bane.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2BetsyArrow))));
+
             // 35% resist to Ballistic Poison Bomb's clouds.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<BallisticPoisonCloud>()))));
 
@@ -479,6 +482,9 @@ namespace CalamityMod.Balancing
 
             // 15% resist to The Final Dawn's AoE sweep flames.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<FinalDawnFlame>()))));
+
+            // 15% resist to Dragon's Breath Beam.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<DragonsBreathBurst>()))));
 
             // 15% resist to God Slayer Slugs.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.ThanatosIDs, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<GodSlayerSlugProj>()))));
