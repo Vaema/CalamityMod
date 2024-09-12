@@ -25,6 +25,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -184,6 +185,17 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+
+            // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if you change this one!)
+            if (arcFlashRing && (Main.rand.Next(0, 100) < 6))
+            {
+                var source = item.GetSource_FromThis();
+                int damage = (int)(hit.Damage * 4f); // 400% damage
+                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
+                Vector2 position = target.Center + new Vector2(0, -750);
+
+                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1);
+            }
         }
         #endregion
 
@@ -350,6 +362,19 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+
+            CalamityGlobalProjectile globalProj = proj.Calamity();
+            // Arc Flash Ring lightning strike (Remember to change the one for item hits if you change this one!)
+            if (arcFlashRing && (Main.rand.Next(0, 100) < MathHelper.Clamp(6 - proj.numHits, 1, 6)) && proj.type != ProjectileType<FlashBolt>() && globalProj.spawnArcFlash)
+            {
+                var source = proj.GetSource_FromThis();
+                int damage = (int)(hit.Damage * 4f); // 400% damage
+                damage = Player.ApplyArmorAccDamageBonusesTo(damage);
+                Vector2 position = target.Center + new Vector2(0, -750);
+
+                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1, target.whoAmI);
+                globalProj.spawnArcFlash = false;
+            }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {

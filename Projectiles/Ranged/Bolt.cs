@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (target != closestTarget)
+            if (target != closestTarget && Projectile.ai[0] < 5)
             {
                 Projectile.numHits--;
                 Projectile.penetrate++;

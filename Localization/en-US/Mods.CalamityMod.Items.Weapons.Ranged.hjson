@@ -1341,6 +1341,7 @@ TheStorm: {
 		'''
 		Fires a spread of homing lightning bolts and arrows from the sky
 		Converts wooden arrows into powerful electric beams
+		95% chance to save ammo
 		'''
 }
 

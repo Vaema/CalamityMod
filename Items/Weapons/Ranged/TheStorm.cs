@@ -44,7 +44,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             return new Vector2(-10, 0);
         }
-
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            if (Main.rand.Next(0, 100) < 95)
+                return false;
+            return true;
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (shots % 2 == 0)

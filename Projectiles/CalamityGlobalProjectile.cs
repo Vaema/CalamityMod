@@ -86,6 +86,9 @@ namespace CalamityMod.Projectiles
         // If true, this projectile can apply the infinitely-stacking Shred debuff iconic to Soma Prime.
         public bool appliesSomaShred = false;
 
+        // Arc Flash bolt spawning management
+        public bool spawnArcFlash = true;
+
         // Adds Brimstone flames to bullets, currently only used by Animosity
         public bool brimstoneBullets = false;
 
@@ -3893,6 +3896,10 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
+
+                // Support to help things like holdout swords work with Arc Flash Ring
+                if (!spawnArcFlash && projectile.numHits == 0)
+                    spawnArcFlash = true;
 
                 if (allProjectilesHome)
                 {

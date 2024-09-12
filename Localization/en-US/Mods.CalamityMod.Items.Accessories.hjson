@@ -2063,3 +2063,8 @@ Popo: {
 		'Don't let the demons steal your nose'
 		'''
 }
+
+ArcFlashRing: {
+	DisplayName: Arc Flash Ring
+	Tooltip: ""
+}
