@@ -646,7 +646,7 @@ Kylie: {
 	DisplayName: Kylie
 	Tooltip:
 		'''
-		Stealth strikes throws three shorter ranged kylies instead of a single long range one
+		Stealth strikes throw a kylie that weakly seeks out your cursor
 		'Also known as Dowak'
 		'''
 }
