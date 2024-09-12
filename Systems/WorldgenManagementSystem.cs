@@ -136,6 +136,13 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
+                    SunkenSea.ForLoop = CalamityClientConfig.Instance.MultiThreadingType switch
+                    {
+                        2 => SunkenSea.CSharpParallelFor,
+                        1 => SunkenSea.ReLogicParallelFor,
+                        _ => SunkenSea.NormalForLoop,
+                    };
+
                     //place each piece of the sunken sea based on the above positons
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);

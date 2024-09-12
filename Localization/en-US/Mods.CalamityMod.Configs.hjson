@@ -7,6 +7,7 @@ CalamityClientConfig: {
 		UI: UI Changes
 		MeterPositions: Meter Positions
 		MusicEvents: In-Game Music Events
+		Multithreading: Multi-Threading
 	}
 
 	AdrenalineMeterPosX: {
@@ -315,6 +316,16 @@ CalamityClientConfig: {
 	WikiStatusMessage: {
 		Label: "[i:Book] Wiki Status Message"
 		Tooltip: Enable or disable the status message promoting the Official Calamity Wiki that plays on world entry.
+	}
+
+	MultiThreadingType: {
+		Label: Sunken Sea Multi-Threading Option
+		Tooltip:
+			'''
+			Option 0 will disable worldgen multi-threading.
+			Option 1 will enable ReLogic's multi-threading.
+			Option 2 will enable custom multi-threading.
+			'''
 	}
 }
 

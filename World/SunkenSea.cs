@@ -38,13 +38,13 @@ namespace CalamityMod.World
         BLOTCHES EVERYWHERE
          */
 
-        private static void NormalForLoop(int fromInclusive, int toExclusive, int step, Action<int> action)
+        public static void NormalForLoop(int fromInclusive, int toExclusive, int step, Action<int> action)
         {
             for (int i = fromInclusive; i < toExclusive; i += step)
                 action.Invoke(i);
         }
 
-        private static void ReLogicParallelFor(int fromInclusive, int toExclusive, int step, Action<int> action)
+        public static void ReLogicParallelFor(int fromInclusive, int toExclusive, int step, Action<int> action)
         {
             FastParallel.For(fromInclusive, toExclusive, (start, end, _) =>
             {
@@ -53,7 +53,7 @@ namespace CalamityMod.World
             });
         }
 
-        private static void CSharpParallelFor(int fromInclusive, int toExclusive, int step, Action<int> action)
+        public static void CSharpParallelFor(int fromInclusive, int toExclusive, int step, Action<int> action)
         {
             var partitioner = Partitioner.Create(fromInclusive, toExclusive, step);
             Parallel.ForEach(partitioner, (range, _) =>
