@@ -13,9 +13,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class ThunderstormHoldout : BaseGunHoldoutProjectile
+    public class ThunderboltHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ModContent.ItemType<Thunderstorm>();
+        public override int AssociatedItemID => ModContent.ItemType<Thunderbolt>();
         public override float MaxOffsetLengthFromArm => 64f;
         public override float BaseOffsetY => -16f;
         public override float OffsetXUpwards => -16f;
@@ -23,12 +23,12 @@ namespace CalamityMod.Projectiles.Magic
         public override float OffsetYUpwards => 6f;
         public override float OffsetYDownwards => 20f;
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.3f;
-        public override string Texture => "CalamityMod/Projectiles/Magic/ThunderstormHoldout";
+        public override string Texture => "CalamityMod/Projectiles/Magic/ThunderboltHoldout";
 
         public ref float FlashTimer => ref Projectile.ai[0];
 
         public static Asset<Texture2D> MuzzleFlash;
-        public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/ThunderstormHoldoutFlash");
+        public override void Load() => MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/ThunderboltHoldoutFlash");
 
         public override void SetStaticDefaults() => Main.projFrames[Projectile.type] = 15;
 
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Magic
                     // Start from slightly behind the tip
                     Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
                     Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<ThunderstormShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<ThunderboltShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
                     for (int i = 0; i < 8; i++)
                     {
