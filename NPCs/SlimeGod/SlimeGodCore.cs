@@ -453,9 +453,10 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.velocity = Vector2.Normalize(goToPosition) * 24f;
 
                 // Reduce velocity to 0 to avoid spastic movement when inside big slime.
-                if (Vector2.Distance(NPC.Center, goToVector) < 24f)
+                if (Vector2.Distance(NPC.Center, goToVector) < 80f)
                 {
                     NPC.velocity = Vector2.Zero;
+                    NPC.Center = goToVector + Vector2.UnitY * 80f;
 
                     NPC.Opacity -= 0.2f;
                     if (NPC.Opacity < 0f)
@@ -667,7 +668,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Color drawColorAlpha = NPC.GetAlpha(drawColor);
+            Color drawColorAlpha = buffedSlime != 0f ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
             Vector2 origin = NPC.frame.Size() * 0.5f;
             Vector2 halfSize = NPC.Size * 0.5f;
 

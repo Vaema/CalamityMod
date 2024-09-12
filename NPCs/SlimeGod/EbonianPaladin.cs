@@ -630,7 +630,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
             float stretch = addedStretch;
 
-            float rot = MathHelper.Lerp(0f, MathHelper.WrapAngle(Vector2.Zero.AngleTo(NPC.velocity) + MathHelper.ToRadians(90f)), Math.Clamp(vel / 10f, 0f, 1f));
+            float rot = MathHelper.Lerp(0f, MathHelper.WrapAngle(Vector2.Zero.AngleTo(NPC.velocity) + MathHelper.ToRadians(90f)), Math.Clamp(vel / 30f, 0f, 1f));
 
             NPC.rotation = MathHelper.Lerp(NPC.rotation, rot, 0.1f);
 
@@ -680,8 +680,8 @@ namespace CalamityMod.NPCs.SlimeGod
             Vector2 wingOffset2 = Vector2.Zero;
 
             // Draw the wings.
-            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + wingOffset1, wingFrame1, drawColorAlpha, 0f, wingOrigin1, 1f, spriteEffects, 0f);
-            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + wingOffset2, wingFrame2, drawColorAlpha, 0f, wingOrigin2, 1f, spriteEffects, 0f);
+            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + wingOffset1, wingFrame1, drawColorAlpha, 0f, wingOrigin1, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + wingOffset2, wingFrame2, drawColorAlpha, 0f, wingOrigin2, NPC.scale, spriteEffects, 0f);
 
             // Draw the actual paladin.
             spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + new Vector2(0, 16), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() * 0.5f + new Vector2(0, 8), scaleStretch, spriteEffects, 0f);
