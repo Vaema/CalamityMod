@@ -276,7 +276,7 @@ namespace CalamityMod.Balancing
             // 50% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AuroraFire>()))));
 
-            // 35% to Aerial Bane.
+            // 35% resist to Aerial Bane.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.AstrumDeusIDs, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2BetsyArrow))));
 
             // 35% resist to Ballistic Poison Bomb's clouds.
