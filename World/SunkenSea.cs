@@ -71,7 +71,7 @@ namespace CalamityMod.World
         /// <summary>
         /// The current type of for loop used to generate the Sunken Sea.
         /// </summary>
-        public static ForLoopMethod ForLoop = CSharpParallelFor;
+        public static ForLoopMethod ForLoop;
 
         public static void PlaceTimelessShores(int startPosX, int startPosY)
         {
