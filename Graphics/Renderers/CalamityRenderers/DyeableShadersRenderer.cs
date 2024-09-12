@@ -171,6 +171,9 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 // Swap to the assosiated target and call the interface method.
                 target.SwapTo();
                 renderer.DrawDyeableShader(spriteBatch);
+
+                // TODO: Dye will applied as first dye item it found on "server" (aka player index 0's dye)
+                // - This should be fixed but can't figure out good way to fix this in clean way
             }
         }
 
