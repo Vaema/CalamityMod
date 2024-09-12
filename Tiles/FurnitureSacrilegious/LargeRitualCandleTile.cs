@@ -14,8 +14,10 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
     {
         public override void SetStaticDefaults()
         {
+            // Due to how Ritual Candles are implemented (right click to swap styles), item drop for the alternate style will never register normally.
             RegisterItemDrop(ModContent.ItemType<LargeRitualCandle>());
 
+            Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
@@ -33,11 +35,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             TileObjectData.newTile.Origin = new Point16(0, 4);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.LavaDeath = false;
-            TileObjectData.newTile.StyleLineSkip = 4;
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
+            TileObjectData.newTile.StyleWrapLimit = 2;
             TileObjectData.addTile(Type);
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(43, 19, 42), Language.GetText("Large Ritual Candle"));
+            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<LargeRitualCandle>());
 
             TileID.Sets.DisableSmartCursor[Type] = true;
             AdjTiles = new int[] { TileID.Lamps };
@@ -57,7 +61,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            if (Main.tile[i, j].TileFrameX < 54)
+            if (Main.tile[i, j].TileFrameX < 36)
             {
                 r = 3f;
                 g = 0.6f;
@@ -73,7 +77,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 4, 6);
+            CalamityUtils.LightHitWire(Type, i, j, 2, 6);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

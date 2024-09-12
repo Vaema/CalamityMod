@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -68,7 +69,6 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (homeTracker == 1)
             {
-                int inc;
                 Projectile.rotation -= MathHelper.Pi / 30f;
                 Vector2 projCenter = Projectile.Center;
                 float homingRange = 150f;

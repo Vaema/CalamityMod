@@ -51,6 +51,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.NebulaArcanum).
                 AddIngredient(ItemID.NebulaBlaze).
                 AddIngredient<CosmiliteBar>(8).
+                AddIngredient<NightmareFuel>(20).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Ranged;
@@ -39,25 +40,38 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            sparkColor = Main.rand.Next(4) switch
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            List<Color> eColors = new List<Color>()
             {
-                0 => Color.Red,
-                1 => Color.MediumTurquoise,
-                2 => Color.Orange,
-                _ => Color.LawnGreen,
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
             };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
             Time++;
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3() * 0.2f);
-            Player Owner = Main.player[Projectile.owner];
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center); //used for some drawing prevention for when it's offscreen since it makes a fuck load of particles
+
             if (targetDist < 1400f)
             {
-                if (PhotoTimer == 0)
-                    PhotoMetaball3.SpawnParticle(Projectile.Center + Owner.velocity, 42 - Time * 0.165f);
-                if (PhotoTimer == 1)
-                    PhotoMetaball3.SpawnParticle(Projectile.Center + Owner.velocity, (37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)); ;
+                //if (PhotoTimer == 0)
+                //PhotoMetaball3.SpawnParticle(Projectile.Center + Owner.velocity, 42 - Time * 0.165f);
+                //if (PhotoTimer == 1)
+                //PhotoMetaball3.SpawnParticle(Projectile.Center + Owner.velocity, (37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)); ;
 
-                PhotoMetaball4.SpawnParticle(Projectile.Center + Owner.velocity, (37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0));
+                //PhotoMetaball4.SpawnParticle(Projectile.Center + Owner.velocity, (37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0));
+                
+                // I hate metaballs >:(
+                Particle beam3 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.005f, sparkColor, new Vector2(1f, 1 + Time * 0.1f), true, false);
+                GeneralParticleHandler.SpawnParticle(beam3);
+                Particle beam32 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.003f, Color.Lerp(Color.White, sparkColor, 0.5f), new Vector2(1f, 1 + Time * 0.1f), true, false);
+                GeneralParticleHandler.SpawnParticle(beam32);
             }
             if (Main.rand.NextBool(35) && targetDist < 1400f && Time > 5)
             {

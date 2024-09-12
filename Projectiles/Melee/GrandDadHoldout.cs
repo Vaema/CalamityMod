@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
         public float fadeIn = 0;
         public int useAnim;
         public int swingCount;
+        public bool finalFlip = false;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -91,6 +92,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 swingCount++;
+                finalFlip = false;
             }
             else
             {
@@ -122,6 +124,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
+                    if (!finalFlip)
+                    {
+                        FlipAsSword = Owner.direction < 0 ? true : false;
+                    }
+
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
@@ -197,8 +204,8 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().GeneralScreenShakePower = 6.5f;
             }
 
-            int heal = (int)(MathHelper.Clamp(12 - Projectile.numHits * 5, 1, 12));
-            if (Projectile.numHits < 12)
+            int heal = (int)(MathHelper.Clamp(20 - Projectile.numHits * 5, 1, 20));
+            if (Projectile.numHits < 20)
             {
                 Owner.statLife += heal;
                 Owner.HealEffect(heal);
@@ -250,7 +257,7 @@ namespace CalamityMod.Projectiles.Melee
             else
             {
                 float minMult = 0.5f;
-                int hitsToMinMult = 7;
+                int hitsToMinMult = 15;
                 float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
                 modifiers.SourceDamage *= damageMult;
             }

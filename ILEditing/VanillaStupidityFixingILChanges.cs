@@ -146,6 +146,26 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Remove Expert Brain of Cthulhu Random Debuffs
+        private static void RemoveExpertBrainRandomDebuffs(ILContext il)
+        {
+            // Remove Expert+ Brain of Cthulhu and Creeper random debuffs on hit.
+            var cursor = new ILCursor(il);
+
+            // Go to the check for Expert Mode.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Main>("get_expertMode")))
+            {
+                LogFailure("Remove Expert Brain Random Debuffs", "Could not locate the Expert Mode check.");
+                return;
+            }
+
+            // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
+            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
+        }
+        #endregion
+
         #region Make Meteorite Explodable
         private static void MakeMeteoriteExplodable(ILContext il)
         {

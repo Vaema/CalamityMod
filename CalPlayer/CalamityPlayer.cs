@@ -45,11 +45,15 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.Liquid;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -66,6 +70,7 @@ namespace CalamityMod.CalPlayer
         #region No Category
         public static bool areThereAnyDamnBosses = false;
         public static bool areThereAnyDamnEvents = false;
+        public float calamityBonusLuck = 0f;
         public bool potionSick = false;
         public int timePotionSick;
         public bool drawBossHPBar = true;
@@ -139,10 +144,17 @@ namespace CalamityMod.CalPlayer
         public string CurrentlyViewedHologramText;
         #endregion
 
-        #region External variables -- Only set by Mod.Call
+        #region External variables -- Not used by Calamity, only via Mod.Call or reflection
         public int externalAbyssLight = 0;
+        public float externalBreathLossMultBoost = 0f;
+        public float externalBreathTickBoost = 0f;
+        public float externalFlightTimeMultBoost = 0f;
         public bool externalColdImmunity = false;
         public bool externalHeatImmunity = false;
+
+        // 27AUG2024: Ozzatron: per request, there is now an external bool for per-player defense damage immunity
+        public bool externalDefenseDamageImmunity = false;
+
         // NOTE -- With the Armageddon item removed from Calamity, this bool can only be set by other mods
         public bool disableAllDodges = false;
         #endregion
@@ -1571,6 +1583,8 @@ namespace CalamityMod.CalPlayer
 
             ResetRogueStealth();
 
+            calamityBonusLuck = 0f;
+
             // Reset adrenaline duration to default. If Draedon's Heart is equipped, it'll change itself every frame.
             AdrenalineDuration = CalamityUtils.SecondsToFrames(5);
 
@@ -1582,8 +1596,14 @@ namespace CalamityMod.CalPlayer
             accStealthGenBoost = 0f;
 
             DashID = string.Empty;
+
             externalAbyssLight = 0;
+            externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
+            externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
@@ -2329,6 +2349,8 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            calamityBonusLuck = 0f;
+
             #region Defense Damage
             totalDefenseDamage = 0;
             defenseDamageRecoveryFrames = 0;
@@ -2376,8 +2398,14 @@ namespace CalamityMod.CalPlayer
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
             hideOfDeusMeleeBoostTimer = 0;
+
             externalAbyssLight = 0;
+            externalBreathLossMultBoost = 0f;
+            externalBreathTickBoost = 0f;
+            externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
+            externalDefenseDamageImmunity = false;
+
             dragonRageHits = 0;
             dragonRageCooldown = 0;
             spectralVeilImmunity = 0;
@@ -3939,6 +3967,13 @@ namespace CalamityMod.CalPlayer
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
                 knockback += item.knockBack;
+        }
+        #endregion
+
+        #region Modify Luck
+        public override void ModifyLuck(ref float luck)
+        {
+            luck += calamityBonusLuck;
         }
         #endregion
 

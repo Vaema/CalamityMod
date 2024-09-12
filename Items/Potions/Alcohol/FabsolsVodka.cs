@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
             CreateRecipe().
                 AddIngredient(ItemID.Ale).
-                AddIngredient<BloodOrb>(40).
+                AddIngredient<BloodOrb>(15).
                 AddIngredient(ItemID.CrystalShard).
                 AddTile(TileID.AlchemyTable).
                 Register()

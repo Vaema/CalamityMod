@@ -3,6 +3,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class SulphurousSeaBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => Main.zenithWorld ? ModContent.Find<ModWaterStyle>("CalamityMod/PissWater") : ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater");
+        public override ModWaterStyle WaterStyle => Main.zenithWorld ? PissWater.Instance : SulphuricWater.Instance;
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => Main.zenithWorld ? ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/PissSeaSurfaceBGStyle") : ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/SulphurSeaSurfaceBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<SulphurousTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;

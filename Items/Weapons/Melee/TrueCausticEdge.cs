@@ -58,9 +58,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<TaintedBlade>().
-                AddRecipeGroup("AnyEvilFlask", 5).
-                AddIngredient(ItemID.FlaskofPoison, 5).
-                AddIngredient(ItemID.Deathweed, 4).
+                AddRecipeGroup("CursedFlameIchor", 8).
+                AddIngredient(ItemID.SpiderFang, 8).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

@@ -106,7 +106,13 @@ ArtAttack: {
 
 AsteroidStaff: {
 	DisplayName: Asteroid Staff
-	Tooltip: Summons asteroids from the sky
+	Tooltip: "[GFB]"
+	TooltipNormal: Summons asteroids from the sky
+	TooltipGFB:
+		'''
+		Core Keeper Chaos Staff
+		bottom text
+		'''
 }
 
 AstralachneaStaff: {
@@ -276,7 +282,7 @@ EidolicWail: {
 	DisplayName: Eidolic Wail
 	Tooltip:
 		'''
-		Fires a string of bouncing sound waves that become stronger as they travel
+		Fires a string of bouncing sound waves that slow down on enemy hits
 		RIP headphone users
 		'''
 }
@@ -899,8 +905,8 @@ ThornBlossom: {
 		'''
 }
 
-Thunderstorm: {
-	DisplayName: Thunderstorm
+Thunderbolt: {
+	DisplayName: Thunderbolt
 	Tooltip:
 		'''
 		Fires a stream of exploding green plasma bullets that rain down additional plasma from the sky

@@ -21,8 +21,10 @@ namespace CalamityMod.Projectiles.Ranged
         public bool Phase2 = false;
         public float HomingTime = 0;
         public Color MainColor;
+        public NPC targeted;
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -35,8 +37,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.arrow = true;
             Projectile.penetrate = 2;
-            Projectile.timeLeft = 1200;
-            Projectile.extraUpdates = 8;
+            Projectile.timeLeft = 300;
+            Projectile.extraUpdates = 7;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15 * Projectile.extraUpdates;
@@ -52,25 +54,28 @@ namespace CalamityMod.Projectiles.Ranged
             }
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
-            if (Time > 4f && Main.rand.NextBool(4))
+            if (Time > 4f && Main.rand.NextBool(6))
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 226 : 272, -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.15f, 0.35f);
+                dust.noLightEmittence = true;
             }
 
+            if (Phase2 == false)
+                targeted = Projectile.Center.ClosestNPCAt(165);
 
-            NPC target = Projectile.Center.ClosestNPCAt(65);
-
-            if (target != null)
+            if (targeted != null)
             {
-                //Projectile.velocity = Projectile.velocity.RotatedByRandom(0.1f);
                 Phase2 = true;
                 HomingTime = 1;
             }
 
             if (HomingTime == 1)
+            {
+                Projectile.timeLeft++;
                 CalamityUtils.HomeInOnNPC(Projectile, true, 2000f, 12, 200f);
+            }
 
             Time++;
         }
@@ -105,17 +110,19 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnKill(int timeLeft)
         {
-            VoidSparkParticle spark2 = new VoidSparkParticle(Projectile.Center, new Vector2(0.1f, 0.1f).RotatedByRandom(100), false, 9, Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool() ? Color.Magenta : Color.Cyan);
-            GeneralParticleHandler.SpawnParticle(spark2);
+            if (Projectile.numHits > 0)
+            {
+                VoidSparkParticle spark2 = new VoidSparkParticle(Projectile.Center, new Vector2(0.1f, 0.1f).RotatedByRandom(100), false, 9, Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool() ? Color.Magenta : Color.Cyan);
+                GeneralParticleHandler.SpawnParticle(spark2);
 
-            SoundStyle onKill = new("CalamityMod/Sounds/Item/ScorpioHit");
-            SoundEngine.PlaySound(onKill with { Volume = 0.25f, Pitch = 0.1f, PitchVariance = 0.3f }, Projectile.Center);
-            SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with { Volume = 0.8f, Pitch = -0.5f, PitchVariance = 0.3f }, Projectile.Center);
-
+                SoundStyle onKill = new("CalamityMod/Sounds/Item/ScorpioHit");
+                SoundEngine.PlaySound(onKill with { Volume = 0.25f, Pitch = 0.1f, PitchVariance = 0.3f }, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with { Volume = 0.8f, Pitch = -0.5f, PitchVariance = 0.3f }, Projectile.Center);
+            }
         }
         public override bool PreDraw(ref Color lightColor)
         {
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
                 if (Time > 6)
                     CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], MainColor * 0.3f, 1, texture);
                 return true;

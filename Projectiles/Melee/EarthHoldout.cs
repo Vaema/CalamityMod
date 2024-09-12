@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
@@ -21,7 +22,6 @@ namespace CalamityMod.Projectiles.Melee
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Earth>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Earth";
         public override float HitboxOutset => 135;
-
         public override Vector2 HitboxSize => new Vector2(255, 255);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
@@ -35,6 +35,7 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool spawnBoom = true;
         public Color mainColor = Color.OrangeRed;
+        public bool finalFlip = false;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -61,6 +62,19 @@ namespace CalamityMod.Projectiles.Melee
         public override void UseStyle()
         {
             DrawUnconditionally = false;
+
+            float rate = Main.GlobalTimeWrappedHourly * 19;
+            List<Color> earthColors = new List<Color>()
+            {
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.LimeGreen
+            };
+
+            int colorIndex = (int)(rate / 2 % earthColors.Count);
+            Color currentColor = earthColors[colorIndex];
+            Color nextColor = earthColors[(colorIndex + 1) % earthColors.Count];
+            mainColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
@@ -91,6 +105,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 swingCount++;
+                finalFlip = false;
             }
             else
             {
@@ -122,6 +137,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
+                    if (!finalFlip)
+                    {
+                        FlipAsSword = Owner.direction < 0 ? true : false;
+                    }
+
                     float time = (AnimationProgress) - (useAnim / 3);
                     float timeMax = useAnim - (useAnim / 3);
 
@@ -136,27 +156,21 @@ namespace CalamityMod.Projectiles.Melee
 
                         for (int i = 0; i < 2; i++)
                         {
-                            mainColor = Main.rand.Next(3) switch
-                            {
-                                0 => Color.OrangeRed,
-                                1 => Color.MediumTurquoise,
-                                _ => Color.LawnGreen,
-                            };
                             Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                             Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 170), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                            GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, false, 12, Main.rand.NextFloat(0.03f, 0.01f), mainColor, new Vector2 (0.3f, 1f)));
+                            GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.75f, 0.9f), false, 14, Main.rand.NextFloat(0.06f, 0.03f), mainColor, new Vector2(1.3f, 0.2f), true, false, 0.55f));
                         }
                         for (int i = 0; i < 6; i++)
                         {
-                            mainColor = Main.rand.Next(3) switch
-                            {
-                                0 => Color.OrangeRed,
-                                1 => Color.MediumTurquoise,
-                                _ => Color.LawnGreen,
-                            };
                             Vector2 particleVel = new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                             Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(30, 240), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                            GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, 0, true));
+                            if (Main.rand.NextBool(3))
+                            {
+                                Particle sparker = new CustomSpark(particlePos + Main.rand.NextVector2Circular(15, 15), -particleVel * Main.rand.NextFloat(0.4f, 0.8f), "CalamityMod/Particles/Sparkle", false, 30, Main.rand.NextFloat(1.2f, 2.2f), mainColor, new Vector2(0.4f, Main.rand.NextFloat(0.9f, 1.4f)), true, true);
+                                GeneralParticleHandler.SpawnParticle(sparker);
+                            }
+                            else
+                                GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(particlePos, -particleVel.RotatedByRandom(0.2f) * 2, mainColor, 23, Main.rand.NextFloat(0.5f, 1f), 0.65f, Main.rand.NextFloat(-0.1f, 0.1f), true));
                         }
                     }
                     else
@@ -174,18 +188,14 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         for (int i = 0; i < 3; i++)
                         {
-                            mainColor = Main.rand.Next(3) switch
-                            {
-                                0 => Color.OrangeRed,
-                                1 => Color.MediumTurquoise,
-                                _ => Color.LawnGreen,
-                            };
-                            bool color = Main.rand.NextBool();
+                            float randRot = Main.rand.NextFloat(-30, -60);
+                            Vector2 dustVel = (new Vector2(0, 10 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
+
                             GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(240, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, Color.White, mainColor, Main.rand.NextFloat(0.5f, 0.7f), 11, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(240, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
-                            dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(240, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel);
+                            dust2.scale = Main.rand.NextFloat(0.65f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);
                         }
@@ -195,13 +205,6 @@ namespace CalamityMod.Projectiles.Melee
 
             ArmRotationOffset = MathHelper.ToRadians(-140f);
             ArmRotationOffsetBack = MathHelper.ToRadians(-140f);
-
-            mainColor = Main.rand.Next(3) switch
-            {
-                0 => Color.OrangeRed,
-                1 => Color.MediumTurquoise,
-                _ => Color.LawnGreen,
-            };
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -261,12 +264,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
                 {
-                    mainColor = Main.rand.Next(3) switch
-                    {
-                        0 => Color.OrangeRed,
-                        1 => Color.MediumTurquoise,
-                        _ => Color.LawnGreen,
-                    };
                     Particle mini = new CustomPulse(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 1f), mainColor, "CalamityMod/Particles/HealingPlus", Vector2.One, Main.rand.NextFloat(-10, 10), Main.rand.NextFloat(0.8f, 1.4f) * scaleFactor, 0.2f * scaleFactor, 35, true);
                     GeneralParticleHandler.SpawnParticle(mini);
 

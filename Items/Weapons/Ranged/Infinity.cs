@@ -82,7 +82,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Shredder>().
-                AddIngredient<CosmiliteBar>(10).
+                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<NightmareFuel>(20).
                 AddTile<CosmicAnvil>().
                 Register();
         }

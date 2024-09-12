@@ -90,7 +90,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<RealmRavager>().
                 AddIngredient(ItemID.VortexBeater).
                 AddIngredient(ItemID.IllegalGunParts).
-                AddIngredient<ArmoredShell>(2).
+                AddIngredient<ArmoredShell>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

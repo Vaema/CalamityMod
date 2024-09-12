@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
+    [LegacyName("DemonicBoneAsh")]
     public class AncientBoneDust : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Materials";

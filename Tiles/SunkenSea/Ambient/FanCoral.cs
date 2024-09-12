@@ -1,4 +1,4 @@
-﻿using System;
+﻿using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaBurrowsWater").Slot;
+                Main.SceneMetrics.ActiveFountainColor = SunkenSeaBurrowsWater.Type;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

@@ -125,12 +125,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (lookAt.X > 0f)
                 {
                     NPC.spriteDirection = 1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X);
+                    NPC.rotation = lookAt.ToRotation();
                 }
                 if (lookAt.X < 0f)
                 {
                     NPC.spriteDirection = -1;
-                    NPC.rotation = (float)Math.Atan2(lookAt.Y, lookAt.X) + MathHelper.Pi;
+                    NPC.rotation = lookAt.ToRotation() + MathHelper.Pi;
                 }
             }
 
@@ -291,6 +291,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void HitEffect(NPC.HitInfo hit)
         {
+            if (Main.dedServ)
+                return;
+
             if (NPC.life > 0)
             {
                 for (int i = 0; i < hit.Damage / (double)NPC.lifeMax * 100; i++)

@@ -23,15 +23,10 @@ namespace CalamityMod.Tiles.FurnitureAuric
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
+            var tileCache = Main.tile[i, j];
             Color drawColour = GetDrawColour(i, j, Color.White);
-            Tile trackTile = Main.tile[i, j];
-            double num6 = Main.time * 0.08;
 
-            TileFramingSystem.SlopedGlowmask(i, j, 0, TextureAssets.Tile[Type].Value, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFramingSystem.SlopedGlowmask(in tileCache, i, j, TextureAssets.Tile[Type].Value, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

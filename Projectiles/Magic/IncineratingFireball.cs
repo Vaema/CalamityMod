@@ -168,6 +168,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawScale = Projectile.Size / TheodoreJNoise.Size() * 1.25f;
             float rotation = Main.GlobalTimeWrappedHourly * 4.2f;
 
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(0.6f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Big fucking fireball

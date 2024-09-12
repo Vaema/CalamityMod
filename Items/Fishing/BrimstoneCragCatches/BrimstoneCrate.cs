@@ -46,7 +46,6 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
             itemLoot.Add(ItemID.Obsidian, 1, 2, 5);
             itemLoot.Add(ItemID.Hellstone, 4, 2, 5);
             itemLoot.Add(ItemID.HellstoneBar, 10, 1, 3);
-            itemLoot.Add(ModContent.ItemType<DemonicBoneAsh>(), 1, 1, 4);
             itemLoot.AddIf(() => DownedBossSystem.downedBrimstoneElemental, ModContent.ItemType<UnholyCore>(), 10, 1, 3);
             itemLoot.AddIf(() => DownedBossSystem.downedProvidence, ModContent.ItemType<Bloodstone>(), 2, 1, 3);
 

@@ -208,6 +208,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.3f;
         }
@@ -968,6 +969,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.25f;
         }
         public override void SetDefaults()
@@ -1670,6 +1672,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 2;
             ProjectileID.Sets.TrailingMode[Type] = 0;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.5f;
@@ -1987,6 +1990,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             ProjectileID.Sets.SummonTagDamageMultiplier[Type] = 0.3f;
         }

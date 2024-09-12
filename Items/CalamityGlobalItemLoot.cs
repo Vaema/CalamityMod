@@ -315,7 +315,6 @@ namespace CalamityMod.Items
 
                 case ItemID.JungleFishingCrate:
                 case ItemID.JungleFishingCrateHard:
-                    loot.Add(ModContent.ItemType<MurkyPaste>(), new Fraction(1, 5), 1, 3); // 20% 1-3 Murky Paste
                     var postPlant = loot.DefineConditionalDropSet(() => NPC.downedPlantBoss);
                     postPlant.Add(ModContent.ItemType<PerennialOre>(), 5, 16, 28); // 20% 16-28 Perennial Ore
                     postPlant.Add(ModContent.ItemType<PerennialBar>(), fifteenPercent, 4, 7); // 15% 4-7 Perennial Bar

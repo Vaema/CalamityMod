@@ -155,6 +155,7 @@ namespace CalamityMod.NPCs
             "Farsni",
             "Fanny", // <@!799749125720637460> (zombiewolf511)
             "Mausi", // <@!194156349347594241> (sadouken)
+            "Fiona", // <@!475216964168450048> (thatgayguy69)
         };
         private static readonly string[] PainterNames =
         {
@@ -221,6 +222,7 @@ namespace CalamityMod.NPCs
         {
             "Stan Pines",
             "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Borgus", // <@!539127427482255376> (therealmeepman)
         };
         private static readonly string[] TruffleNames =
         {
@@ -301,6 +303,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Chease", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
@@ -801,6 +804,8 @@ namespace CalamityMod.NPCs
                 case NPCID.Demolitionist:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG)
                         chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.DoGDefeated");
+                    else if (Main.rand.NextBool(10))
+                        chat = CalamityUtils.GetTextValue("Vanilla.DemolitionistChat.MentionSkynamite");
                     break;
 
                 case NPCID.Dryad:
@@ -843,7 +848,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Mechanic:
-                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
+                        chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.HasPortalGun");
+                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
@@ -924,9 +931,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Steampunker:
-                    if (Main.rand.NextBool(5) && Main.LocalPlayer.InventoryHas(ItemID.PortalGun))
-                        chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.HasPortalGun");
-                    else if (Main.rand.NextBool(5) && NPC.downedMoonlord)
+                    if (Main.rand.NextBool(5) && NPC.downedMoonlord)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneAstral)
                         chat = CalamityUtils.GetTextValue("Vanilla.SteampunkerChat.Astral");

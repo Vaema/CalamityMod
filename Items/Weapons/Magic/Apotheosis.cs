@@ -49,9 +49,9 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<CosmicDischarge>().
                 AddIngredient<StaffoftheMechworm>(2).
                 AddIngredient<Excelsus>(2).
-                AddIngredient<AscendantSpiritEssence>(11).
-                AddIngredient<CosmiliteBar>(33).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CosmiliteBar>(33).
+                AddIngredient<AscendantSpiritEssence>(11).
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -152,14 +152,14 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)
         {
-            damage = 50;
+            damage = 300;
             knockback = 10f;
         }
 
         public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
         {
             cooldown = 10;
-            randExtraCooldown = 50;
+            randExtraCooldown = 15;
         }
 
         public override bool PreAI()
