@@ -309,12 +309,11 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCShop shop = new(Type);
             shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
                 .AddWithCustomValue(ModContent.ItemType<Glaive>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<Kylie>(), Item.buyPrice(gold: 9))
+                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
                 .AddWithCustomValue(ModContent.ItemType<OldDie>(), Item.buyPrice(gold: 40))
                 .Add(ItemID.TigerClimbingGear)
                 .AddWithCustomValue(ItemID.InvisibilityPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
                 .AddWithCustomValue(ItemID.NightOwlPotion, Item.buyPrice(silver: 25), potionSells, Condition.HappyEnough)
-                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 25))
                 .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
                 .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
                 .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)
