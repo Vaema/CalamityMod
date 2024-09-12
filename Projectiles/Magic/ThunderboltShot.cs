@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -66,6 +67,13 @@ namespace CalamityMod.Projectiles.Magic
                         TrailPos.RemoveAt(TrailPos.Count - 1);
                 }
 
+                // Randomly spawn glowing bolts outwards
+                if (Main.rand.NextBool(6))
+                {
+                    BoltParticle bolt = new BoltParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(36f)), false, 10, 0.3f, TrailColorFunction(0f), Vector2.One, true);
+                    GeneralParticleHandler.SpawnParticle(bolt);
+                }
+
                 if (Projectile.timeLeft < 50) // Starts exploding and fading by itself if it never hits anything
                     Decay();
             }
@@ -100,6 +108,20 @@ namespace CalamityMod.Projectiles.Magic
                 TrailPos.RemoveAt(TrailPos.Count - 1);
 
             SoundEngine.PlaySound(AnomalysNanogunMPFBBoom.MPFBExplosion, Projectile.Center);
+
+            for (int i = 0; i < 12; i++)
+            {
+                Color color = Main.rand.NextBool() ? Color.Cyan : Color.Orchid;
+                Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(12f, 15f));
+                BoltParticle bolt = new BoltParticle(Projectile.Center, velocity, false, 18, Main.rand.NextFloat(0.4f, 0.6f), color, new Vector2(0.6f, 1f), true);
+                GeneralParticleHandler.SpawnParticle(bolt);
+            }
+            for (int k = 0; k < 8; k++)
+            {
+                Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(8f, 14f));
+                Dust spark = Dust.NewDustPerfect(Projectile.Center, 278, velocity);
+                spark.color = Main.rand.NextBool() ? Color.Cyan : Color.Orchid;
+            }
         }
 
         internal float TrailWidthFunction(float completionRatio) => Projectile.scale * 12f * Utils.GetLerpValue(0.5f, 0.4f, MathF.Abs(0.5f - completionRatio), true);
