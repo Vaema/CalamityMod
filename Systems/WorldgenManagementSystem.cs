@@ -136,7 +136,7 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.ForLoop = CalamityClientConfig.Instance.MultiThreadingType switch
+                    SunkenSea.ForLoop = CalamityClientConfig.Instance.SunkenSeaMultiThreading switch
                     {
                         2 => SunkenSea.CSharpParallelFor,
                         1 => SunkenSea.ReLogicParallelFor,

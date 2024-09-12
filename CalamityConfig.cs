@@ -25,6 +25,7 @@ namespace CalamityMod
             ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
         }
 
+        #region Multi-Threading Settings
         [Header("Multithreading")]
 
         [BackgroundColor(192, 54, 64, 192)]
@@ -33,7 +34,8 @@ namespace CalamityMod
         [DefaultValue(0f)]
         [Increment(1f)]
         [DrawTicks]
-        public float MultiThreadingType { get; set; }
+        public float SunkenSeaMultiThreading { get; set; } 
+        #endregion
 
         #region Graphics Changes
         [Header("Graphics")]
