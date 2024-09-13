@@ -278,7 +278,7 @@ namespace CalamityMod
         MusicEventSyncResponse,
         
         // Bandit Reforge Refund
-        ScammedByTinkerer,
+        BanditStolenMoneySync,
         WantToRefundReforges,
 
         // Player Draw Effect Parameters

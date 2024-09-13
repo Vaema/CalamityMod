@@ -1830,7 +1830,7 @@ namespace CalamityMod.Items
 
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    ScammedByTinkererPacket.Send(stolen);
+                    BanditStolenMoneySyncPacket.Send(stolen);
                 }
             }
         }

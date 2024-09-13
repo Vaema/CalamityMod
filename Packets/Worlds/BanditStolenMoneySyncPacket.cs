@@ -9,11 +9,11 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class ScammedByTinkererPacket : CalamityPacket
+    public sealed class BanditStolenMoneySyncPacket : CalamityPacket
     {
-        public static ScammedByTinkererPacket Instance { get; private set; }
+        public static BanditStolenMoneySyncPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.ScammedByTinkerer;
+        public override byte MessageType => (byte)CalamityModMessageType.BanditStolenMoneySync;
 
         public static void Send(int amountStolenByBandit, int toClient = -1, int ignoreClient = -1)
         {
