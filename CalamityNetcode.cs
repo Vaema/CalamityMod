@@ -88,17 +88,20 @@ namespace CalamityMod
 
         public override void OnModUnload()
         {
-            foreach (var packetHandler in _PacketRegistry ?? Enumerable.Empty<CalamityPacket>())
+            if (_PacketRegistry is not null)
             {
-                if (packetHandler is null)
-                    continue;
+                foreach (var packetHandler in _PacketRegistry)
+                {
+                    if (packetHandler is null)
+                        continue;
 
-                packetHandler.OnUnloaded();
-                packetHandler._Prop_Static_Instance?.SetValue(null, null);
-                packetHandler._Prop_Static_Instance = null;
+                    packetHandler.OnUnloaded();
+                    packetHandler._Prop_Static_Instance?.SetValue(null, null);
+                    packetHandler._Prop_Static_Instance = null;
+                }
+
+                _PacketRegistry = null;
             }
-
-            _PacketRegistry = null;
         }
 
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
