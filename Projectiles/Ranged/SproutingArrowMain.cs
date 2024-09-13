@@ -51,12 +51,12 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 vel1 = (Projectile.velocity * 0.4f).RotatedBy(Main.rand.NextFloat(0.015f, 0.04f));
                 Vector2 vel2 = (Projectile.velocity * 0.4f).RotatedBy(Main.rand.NextFloat(-0.015f, -0.04f));
 
-                int split1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel1 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), (int)(Projectile.damage * 2), 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
-                int split2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel2 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), (int)(Projectile.damage * 2), 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
-                if (Projectile.Calamity().allProjectilesHome) // Allows the split arrows to home when using Arterial Assault as well
+                Projectile split1 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel1 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), Projectile.damage * 2, 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
+                Projectile split2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel2 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), Projectile.damage * 2, 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
+                if (Projectile.Calamity().conditionalHomingRange > 0f) // Allows the split arrows to home when using Arterial Assault as well
                 {
-                    Main.projectile[split1].Calamity().allProjectilesHome = true;
-                    Main.projectile[split2].Calamity().allProjectilesHome = true;
+                    split1.Calamity().conditionalHomingRange = Projectile.Calamity().conditionalHomingRange;
+                    split2.Calamity().conditionalHomingRange = Projectile.Calamity().conditionalHomingRange;
                 }
                 
                 PointParticle spark = new PointParticle(Projectile.Center - Projectile.velocity + Projectile.velocity.RotatedBy(2.3f), Projectile.velocity.RotatedBy(2.3f) * 0.5f, false, 5, 1.1f, Color.LimeGreen);
