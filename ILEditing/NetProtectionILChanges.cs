@@ -10,6 +10,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
+    // These IL edits are contained in their own ModSystem instead of the main ILChanges system for the following reasons:
+    // - Easily filter out only the NetProtectionILChanges from the call stack, and not other IL edits
+    // - No interference with the existing ILChanges system, which contains gameplay changes and is already packed
+    //
+    // Original comment by Flowaria:
+    //
     // We want to set this as Separate ILChages type for reasons:
     // - To easily filter ILChanges callstack from StackTrace
     // - To make no impact on ILChanges type which is already clustered
@@ -34,7 +40,8 @@ namespace CalamityMod.ILEditing
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                CalamityMod.Instance.Logger.Warn($"{nameof(NPC.NewNPC)} was called from Client! {GetSimplifiedStackTrace()}");
+                CalamityMod.Instance.Logger.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NPC.NewNPC)} was called from a Multiplayer Client");
+                CalamityMod.Instance.Logger.Error(GetSimplifiedStackTrace());
                 return Main.maxNPCs;
             }
 
@@ -47,7 +54,8 @@ namespace CalamityMod.ILEditing
             // So we simply stop that from happening
             if (msgType == MessageID.SyncNPC && Main.netMode == NetmodeID.MultiplayerClient)
             {
-                CalamityMod.Instance.Logger.Warn($"{nameof(NetMessage.SendData)} ({nameof(MessageID.SyncNPC)}) was called from Client! {GetSimplifiedStackTrace()}");
+                CalamityMod.Instance.Logger.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NetMessage.SendData)} ({nameof(MessageID.SyncNPC)}) was called from a Multiplayer Client");
+                CalamityMod.Instance.Logger.Error(GetSimplifiedStackTrace());
                 return;
             }
 
