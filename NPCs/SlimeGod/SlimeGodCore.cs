@@ -453,10 +453,11 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.velocity = Vector2.Normalize(goToPosition) * 24f;
 
                 // Reduce velocity to 0 to avoid spastic movement when inside big slime.
-                if (Vector2.Distance(NPC.Center, goToVector) < 80f)
+                float stickPositionAdjustment = buffedSlime == 1 ? 16f : 32f;
+                if (Vector2.Distance(NPC.Center, goToVector) < 80f + stickPositionAdjustment)
                 {
                     NPC.velocity = Vector2.Zero;
-                    NPC.Center = goToVector + Vector2.UnitY * 80f;
+                    NPC.Center = goToVector + Vector2.UnitY * stickPositionAdjustment;
 
                     NPC.Opacity -= 0.2f;
                     if (NPC.Opacity < 0f)
