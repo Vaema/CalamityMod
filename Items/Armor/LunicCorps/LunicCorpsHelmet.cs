@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(2);
 
         // Interface stuff.
+        public Player OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.HaloShieldDepth;
-
         public bool ShaderIsDyeable => false;
 
         public bool ShouldDrawDyeableShader
@@ -109,70 +109,71 @@ namespace CalamityMod.Items.Armor.LunicCorps
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            foreach (Player player in Main.ActivePlayers)
+            var player = OwnerPlayer;
+            if (player is null)
+                return;
+
+            if (player.outOfRange || player.dead)
+                return;
+
+            CalamityPlayer modPlayer = player.Calamity();
+            if (modPlayer.drawnAnyShieldThisFrame)
+                return;
+
+            if (modPlayer.drawingParameters.LunicShieldCharge <= 0.0f)
+                return;
+
+            // Scale the shield is drawn at. The Lunic Corps shield sticks very close to the body to mimic Halo and occasionally pulses.
+            // The "i" parameter is to make different player's shields not be perfectly synced.
+            int i = player.whoAmI;
+            float baseScale = 0.11f;
+            float maxExtraScale = 0.013f;
+            float extraScalePulseInterpolant = MathF.Pow(12f, MathF.Sin(Main.GlobalTimeWrappedHourly * 1.6f + i) - 1);
+            float scale = baseScale + maxExtraScale * extraScalePulseInterpolant;
+            float visualShieldStrength = modPlayer.drawingParameters.LunicShieldCharge;
+
+            // The scale used for the noise overlay polygons also grows and shrinks
+            // This is intentionally out of sync with the shield, and intentionally desynced per player
+            // Don't put this anywhere less than 0.25f or higher than 1f. The higher it is, the denser / more zoomed out the noise overlay is.
+            float noiseScale = MathHelper.Lerp(0.65f, 0.75f, 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.87f + i));
+
+            // Define shader parameters
+            Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
+            shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.058f); // Scrolling speed of polygonal overlay
+            shieldEffect.Parameters["blowUpPower"].SetValue(2.8f);
+            shieldEffect.Parameters["blowUpSize"].SetValue(0.4f);
+            shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
+
+            // Shield opacity multiplier slightly changes, this is independent of current shield strength
+            float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
+            float minShieldStrengthOpacityMultiplier = 0.5f;
+            float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
+            finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
+
+            shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
+            shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
+
+            // Lunic Corps shields are not team specific
+            Color shieldColor = new Color(201, 180, 129);
+            Color primaryEdgeColor = new Color(232, 212, 175);
+            Color secondaryEdgeColor = new Color(237, 205, 145);
+            Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
+
+            // Define shader parameters for shield color
+            shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
+            shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
+
+            var matrix = Main.GameViewMatrix.TransformationMatrix;
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
             {
-                if (player.outOfRange || player.dead)
-                    continue;
+                // Fetch shield noise overlay texture (this is the polygons fed to the shader)
+                NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");
+                Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                Texture2D tex = NoiseTex.Value;
+                spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
+            });
 
-                CalamityPlayer modPlayer = player.Calamity();
-                if (modPlayer.drawnAnyShieldThisFrame)
-                    continue;
-
-                if (modPlayer.drawingParameters.LunicShieldCharge <= 0.0f)
-                    continue;
-
-                // Scale the shield is drawn at. The Lunic Corps shield sticks very close to the body to mimic Halo and occasionally pulses.
-                // The "i" parameter is to make different player's shields not be perfectly synced.
-                int i = player.whoAmI;
-                float baseScale = 0.11f;
-                float maxExtraScale = 0.013f;
-                float extraScalePulseInterpolant = MathF.Pow(12f, MathF.Sin(Main.GlobalTimeWrappedHourly * 1.6f + i) - 1);
-                float scale = baseScale + maxExtraScale * extraScalePulseInterpolant;
-                float visualShieldStrength = modPlayer.drawingParameters.LunicShieldCharge;
-
-                // The scale used for the noise overlay polygons also grows and shrinks
-                // This is intentionally out of sync with the shield, and intentionally desynced per player
-                // Don't put this anywhere less than 0.25f or higher than 1f. The higher it is, the denser / more zoomed out the noise overlay is.
-                float noiseScale = MathHelper.Lerp(0.65f, 0.75f, 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.87f + i));
-
-                // Define shader parameters
-                Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
-                shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.058f); // Scrolling speed of polygonal overlay
-                shieldEffect.Parameters["blowUpPower"].SetValue(2.8f);
-                shieldEffect.Parameters["blowUpSize"].SetValue(0.4f);
-                shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
-
-                // Shield opacity multiplier slightly changes, this is independent of current shield strength
-                float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
-                float minShieldStrengthOpacityMultiplier = 0.5f;
-                float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
-                finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
-
-                shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
-                shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
-
-                // Lunic Corps shields are not team specific
-                Color shieldColor = new Color(201, 180, 129);
-                Color primaryEdgeColor = new Color(232, 212, 175);
-                Color secondaryEdgeColor = new Color(237, 205, 145);
-                Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
-
-                // Define shader parameters for shield color
-                shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
-                shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
-
-                var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
-                {
-                    // Fetch shield noise overlay texture (this is the polygons fed to the shader)
-                    NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");
-                    Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                    Texture2D tex = NoiseTex.Value;
-                    spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-                });
-
-                modPlayer.drawnAnyShieldThisFrame = true;
-            }
+            modPlayer.drawnAnyShieldThisFrame = true;
         }
     }
 }

@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Accessories
         public const int maxPscAnimTime = 120;
 
         // Interface stuff.
+        public Player OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.ProfanedSoulShieldDepth;
-
         public bool ShaderIsDyeable => false;
 
         public bool ShouldDrawDyeableShader
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Accessories
             Empowered //psc but no other minions, healer guardian functionality, inherits all other functionality (except vanity) and goes even further beyond, any remaining attack changes are here
         }
 
-        public void DrawDyeableShader(SpriteBatch spriteBatch) => ProfanedSoulArtifact.DrawProfanedSoulShields();
+        public void DrawDyeableShader(SpriteBatch spriteBatch) => ProfanedSoulArtifact.DrawProfanedSoulShields(OwnerPlayer);
 
         internal static ProfanedSoulCrystalState GetPscStateFor(Player player, bool ignoreNoBuffs = false)
         {

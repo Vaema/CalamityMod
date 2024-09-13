@@ -44,8 +44,13 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         public override void Unload()
         {
+            Targets?.Clear();
             Targets = null;
+
+            Dyes?.Clear();
             Dyes = null;
+
+            RenderersToDrawThisFrame?.Clear();
             RenderersToDrawThisFrame = null;
         }
         #endregion
@@ -61,7 +66,8 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (armorItem.ModItem is not IDyeableShaderRenderer drawer)
                 return;
 
-            // Store the dye in the slot.
+            // Store the dye and player in the slot.
+            drawer.OwnerPlayer = self;
             Dyes[drawer] = GameShaders.Armor.GetShaderFromItemId(dyeItem.type);
         }
 
@@ -149,7 +155,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         #region Updates/Drawing
         // Clear the list at the beginning of each update, to ensure its only populated by correct ones.
-        public override void PreUpdate() => RenderersToDrawThisFrame?.Clear();
+        public override void PreUpdate()
+        {
+            RenderersToDrawThisFrame?.Clear();
+        }
 
         public override void DrawToTarget(SpriteBatch spriteBatch)
         {
@@ -171,9 +180,6 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 // Swap to the assosiated target and call the interface method.
                 target.SwapTo();
                 renderer.DrawDyeableShader(spriteBatch);
-
-                // TODO: Dye will applied as first dye item it found on "server" (aka player index 0's dye)
-                // - This should be fixed but can't figure out good way to fix this in clean way
             }
         }
 
@@ -183,7 +189,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 return;
 
             // Leave if nothing to draw.
-            if (!RenderersToDrawThisFrame.Any())
+            if (RenderersToDrawThisFrame.Count <= 0)
                 return;
 
             foreach (var renderer in RenderersToDrawThisFrame)

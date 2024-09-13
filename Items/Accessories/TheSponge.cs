@@ -40,6 +40,7 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldActiveDefense = 30;
         public static float ShieldActiveDamageReduction = 0.1f;
 
+        public Player OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.SpongeShieldDepth;
 
         public bool ShouldDrawDyeableShader
@@ -169,72 +170,73 @@ namespace CalamityMod.Items.Accessories
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            foreach (Player player in Main.ActivePlayers)
+            var player = OwnerPlayer;
+            if (player is null)
+                return;
+
+            if (player.outOfRange || player.dead)
+                return;
+
+            CalamityPlayer modPlayer = player.Calamity();
+            if (modPlayer.drawnAnyShieldThisFrame)
+                return;
+
+            if (modPlayer.drawingParameters.SpongeShieldCharge <= 0.0f)
+                return;
+
+            // Scale the shield is drawn at. The Sponge shield gently grows and shrinks; it should be largely imperceptible.
+            // The "i" parameter is to make different player's shields not be perfectly synced.
+            int i = player.whoAmI;
+            float baseScale = 0.155f;
+            float maxExtraScale = 0.025f;
+            float extraScalePulseInterpolant = MathF.Pow(4f, MathF.Sin(Main.GlobalTimeWrappedHourly * 0.791f + i) - 1);
+            float scale = baseScale + maxExtraScale * extraScalePulseInterpolant;
+            float visualShieldStrength = modPlayer.drawingParameters.SpongeShieldCharge;
+
+            // The scale used for the noise overlay also grows and shrinks
+            // This is intentionally out of sync with the shield, and intentionally desynced per player
+            // Don't put this anywhere less than 0.15f or higher than 0.75f. The higher it is, the denser / more zoomed out the noise overlay is.
+            // Changing this too quickly and/or too much makes the noise grow and shrink visibly, so be careful with that.
+            float noiseScale = MathHelper.Lerp(0.28f, 0.38f, 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.347f + i));
+
+            // Define shader parameters
+            Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
+            shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.0813f); // Scrolling speed of polygonal overlay
+            shieldEffect.Parameters["blowUpPower"].SetValue(3f);
+            shieldEffect.Parameters["blowUpSize"].SetValue(0.56f);
+            shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
+
+            // Shield opacity multiplier slightly changes, this is independent of current shield strength
+            float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
+            float minShieldStrengthOpacityMultiplier = 0.25f;
+            float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
+            finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
+
+            shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
+            shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
+
+            Color shieldColor = new Color(24, 156, 204); // #189CCC
+            Color primaryEdgeColor = shieldColor;
+            Color secondaryEdgeColor = new Color(34, 224, 227); // #22E0E3                   
+
+            // Final shield edge color, which lerps about
+            Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
+
+            // Define shader parameters for shield color
+            shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
+            shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
+
+            var matrix = Main.GameViewMatrix.TransformationMatrix;
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
             {
-                if (player.outOfRange || player.dead)
-                    continue;
+                // Fetch shield noise overlay texture (this is the polygons fed to the shader)
+                NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
+                Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                Texture2D tex = NoiseTex.Value;
+                Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
+            });
 
-                CalamityPlayer modPlayer = player.Calamity();
-                if (modPlayer.drawnAnyShieldThisFrame)
-                    continue;
-
-                if (modPlayer.drawingParameters.SpongeShieldCharge <= 0.0f)
-                    continue;
-
-                // Scale the shield is drawn at. The Sponge shield gently grows and shrinks; it should be largely imperceptible.
-                // The "i" parameter is to make different player's shields not be perfectly synced.
-                int i = player.whoAmI;
-                float baseScale = 0.155f;
-                float maxExtraScale = 0.025f;
-                float extraScalePulseInterpolant = MathF.Pow(4f, MathF.Sin(Main.GlobalTimeWrappedHourly * 0.791f + i) - 1);
-                float scale = baseScale + maxExtraScale * extraScalePulseInterpolant;
-                float visualShieldStrength = modPlayer.drawingParameters.SpongeShieldCharge;
-
-                // The scale used for the noise overlay also grows and shrinks
-                // This is intentionally out of sync with the shield, and intentionally desynced per player
-                // Don't put this anywhere less than 0.15f or higher than 0.75f. The higher it is, the denser / more zoomed out the noise overlay is.
-                // Changing this too quickly and/or too much makes the noise grow and shrink visibly, so be careful with that.
-                float noiseScale = MathHelper.Lerp(0.28f, 0.38f, 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 0.347f + i));
-
-                // Define shader parameters
-                Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
-                shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.0813f); // Scrolling speed of polygonal overlay
-                shieldEffect.Parameters["blowUpPower"].SetValue(3f);
-                shieldEffect.Parameters["blowUpSize"].SetValue(0.56f);
-                shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
-
-                // Shield opacity multiplier slightly changes, this is independent of current shield strength
-                float baseShieldOpacity = 0.9f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 1.95f);
-                float minShieldStrengthOpacityMultiplier = 0.25f;
-                float finalShieldOpacity = baseShieldOpacity * MathHelper.Lerp(minShieldStrengthOpacityMultiplier, 1f, visualShieldStrength);
-                finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
-
-                shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
-                shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
-
-                Color shieldColor = new Color(24, 156, 204); // #189CCC
-                Color primaryEdgeColor = shieldColor;
-                Color secondaryEdgeColor = new Color(34, 224, 227); // #22E0E3                   
-
-                // Final shield edge color, which lerps about
-                Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
-
-                // Define shader parameters for shield color
-                shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
-                shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
-
-                var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
-                {
-                    // Fetch shield noise overlay texture (this is the polygons fed to the shader)
-                    NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
-                    Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                    Texture2D tex = NoiseTex.Value;
-                    Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-                });
-
-                modPlayer.drawnAnyShieldThisFrame = true;
-            }
+            modPlayer.drawnAnyShieldThisFrame = true;
         }
     }
 }
