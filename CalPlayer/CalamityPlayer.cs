@@ -1132,6 +1132,8 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
+        public bool FlarebatBool = false;
+        public bool FrostbatBool = false;
         #endregion
 
         #region Biome
@@ -2227,6 +2229,8 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
+            FlarebatBool = false;
+            FrostbatBool = false;
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
