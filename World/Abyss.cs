@@ -1196,7 +1196,7 @@ namespace CalamityMod.World
         /// <summary>
         /// Actually Unlocks all abyss chests, This is NOT synced between clients. Call <see cref="Abyss.UnlockAllAbyssChests"/> instead unless you know what you doing.
         /// </summary>
-        public static void DoUnlockAllAbyssChests()
+        internal static void DoUnlockAllAbyssChests()
         {
             UnlockChests = true;
 
