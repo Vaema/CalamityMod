@@ -1564,11 +1564,11 @@ Voidfrost: {
 }
 
 FlarebatBuff: {
-	DisplayName: Flarebat Buff
+	DisplayName: Flarebat
 	Description: The construct of fire will protect you
 }
 
 FrostbatBuff: {
-	DisplayName: Frostbat Buff
+	DisplayName: Frostbat
 	Description: The construct of ice will protect you
 }
