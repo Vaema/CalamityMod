@@ -672,7 +672,11 @@ GreatswordofJudgement: {
 
 Greentide: {
 	DisplayName: Greentide
-	Tooltip: Summons teeth to chomp your foes on hit
+	Tooltip:
+		'''
+		Launches a spread of four teeth with one stronger piercing tooth in the center
+		Hitting with the blade creates two jaws of teeth to chomp on the enemy closest to your cursor
+		'''
 }
 
 HellfireFlamberge: {

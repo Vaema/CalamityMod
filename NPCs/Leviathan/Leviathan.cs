@@ -870,7 +870,7 @@ namespace CalamityMod.NPCs.Leviathan
                     ModContent.ItemType<AnahitasArpeggio>(),
                     ModContent.ItemType<Atlantis>(),
                     ModContent.ItemType<GastricBelcherStaff>(),
-                    ModContent.ItemType<BrackishFlask>(),
+                    ModContent.ItemType<Whitewater>(),
                     ModContent.ItemType<LeviathanTeeth>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
