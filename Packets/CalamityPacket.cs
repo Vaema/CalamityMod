@@ -31,7 +31,8 @@ namespace CalamityMod.Packets
 
             packet.BaseStream.Position = startIndex;
 
-            Span<byte> buffer = stackalloc byte[length];
+            // Limit stackalloc size to 256 bytes
+            Span<byte> buffer = length <= 256 ? stackalloc byte[length] : new byte[length];
             packet.BaseStream.Read(buffer);
 
             var newPacket = CreateBasePacket();
