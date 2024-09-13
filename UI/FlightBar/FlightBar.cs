@@ -201,7 +201,7 @@ namespace CalamityMod.UI
                 FlightAnimTimer++;
                 if (FlightAnimTimer >= FlightAnimFrameDelay)
                 {
-                    if (FlightAnimFrame >= FlightAnimFrames)
+                    if (FlightAnimFrame >= FlightAnimFrames - 1) // Must be # of frames - 1 or else there is 1 frame of normal border before it cuts to infinite border
                     {
                         FlightAnimFrame = -1;
                         FlightAnimTimer = 0;
@@ -237,8 +237,7 @@ namespace CalamityMod.UI
                 Vector2 origin = new Vector2(correctBorder.Width * 0.5f, (correctBorder.Height / FlightAnimFrames) * 0.5f);
                 float xOffset = (correctBorder.Width - flightBarAnimTexture.Width) / 2f;
                 int frameHeight = (flightBarAnimTexture.Height / FlightAnimFrames) - 1;
-                float yOffset = FlightAnimFrame == 0 ? 0 : ((correctBorder.Height / FlightAnimFrame) - frameHeight) / 2f;
-                Vector2 sizeDiffOffset = new Vector2(xOffset, yOffset);
+                Vector2 sizeDiffOffset = new Vector2(xOffset, -37f);
                 Rectangle animCropRect = new Rectangle(0, (frameHeight + 1) * FlightAnimFrame, flightBarAnimTexture.Width, frameHeight);
                 spriteBatch.Draw(flightBarAnimTexture, screenPos + sizeDiffOffset, animCropRect, Color.White, 0f, origin * Main.UIScale, uiScale, SpriteEffects.None, 0);
             }
