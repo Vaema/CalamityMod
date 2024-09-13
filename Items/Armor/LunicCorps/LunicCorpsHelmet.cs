@@ -44,16 +44,18 @@ namespace CalamityMod.Items.Armor.LunicCorps
                 if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
                     return false;
 
-                foreach (Player player in Main.ActivePlayers)
-                {
-                    if (player.outOfRange || player.dead)
-                        continue;
+                var player = OwnerPlayer;
+                if (player is null)
+                    return false;
 
-                    CalamityPlayer modPlayer = player.Calamity();
-                    if (modPlayer.drawingParameters.LunicShieldCharge > 0.0f)
-                        return true;
-                }
-                return false;
+                if (player.outOfRange || player.dead)
+                    return false;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer.drawingParameters.LunicShieldCharge <= 0.0f)
+                    return false;
+
+                return true;
             }
         }
 
