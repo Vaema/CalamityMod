@@ -144,7 +144,11 @@ Ataraxia: {
 
 Avalanche: {
 	DisplayName: Avalanche
-	Tooltip: Spawns ice bombs that explode after 3 seconds into ice shards on hit
+	Tooltip:
+		'''
+		Hitting enemies spawns orbiting ice bombs
+		After 2 seconds, ice bombs explode into gravity-affected ice shards
+		'''
 }
 
 Azathoth: {
