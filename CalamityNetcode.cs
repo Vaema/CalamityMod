@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Potions.Alcohol;
@@ -7,6 +12,7 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Systems;
 using CalamityMod.TileEntities;
 using CalamityMod.World;
@@ -15,387 +21,105 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod
 {
-    public class CalamityNetcode
+    public class CalamityNetcode : ModSystem
     {
+        private static CalamityPacket[] _PacketRegistry;
+
+        public override void OnModLoad()
+        {
+            _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
+
+            var types = ModLoader.Mods.SelectMany(mod => AssemblyManager.GetLoadableTypes(mod.Code));
+            foreach (var type in types)
+            {
+                try
+                {
+                    if (type.IsAbstract || !type.IsSubclassOf(typeof(CalamityPacket)))
+                        continue;
+
+                    if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
+                        continue;
+
+                    var msgType = packetHandler.MessageType;
+                    var existingHandler = _PacketRegistry[msgType];
+                    if (existingHandler != null)
+                    {
+                        CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
+                            $" [Failed On: '{type.FullName}'" +
+                            $" Current Owner: '{existingHandler.GetType().FullName}'," +
+                            $" msgTypeToRegister: '{msgType}']");
+                        continue;
+                    }
+
+                    _PacketRegistry[packetHandler.MessageType] = packetHandler;
+
+                    var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                    if (instanceProperty is not null)
+                    {
+                        if (instanceProperty.PropertyType.IsAssignableFrom(type))
+                        {
+                            instanceProperty.SetValue(null, packetHandler);
+                            packetHandler._Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
+                        }
+                        else
+                        {
+                            CalamityMod.Instance.Logger.Error($"Packet instance's 'Instance' property is not asssignable with given type!" +
+                                $" [Failed On: '{type.FullName}']");
+                        }
+                    }
+
+                    // We should not print error message if "Instance" property is missing
+                    // Addons still can assign them with OnLoaded overload, and it's up to their implementation
+                    // Still, Calamity's Standard is having "Instance" property for every packet types
+
+                    packetHandler.OnLoaded();
+                }
+                catch (Exception e)
+                {
+                    CalamityMod.Instance.Logger.Error($"Exception was thrown while loading for Packets! {e}");
+                    continue;
+                }
+            }
+        }
+
+        public override void OnModUnload()
+        {
+            foreach (var packetHandler in _PacketRegistry ?? Enumerable.Empty<CalamityPacket>())
+            {
+                if (packetHandler is null)
+                    continue;
+
+                packetHandler.OnUnloaded();
+                packetHandler._Prop_Static_Instance?.SetValue(null, null);
+                packetHandler._Prop_Static_Instance = null;
+            }
+
+            _PacketRegistry = null;
+        }
+
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
         {
             try
             {
                 CalamityModMessageType msgType = (CalamityModMessageType)reader.ReadByte();
-                switch (msgType)
+                var packetHandler = _PacketRegistry[(byte)msgType];
+                if (packetHandler is not null)
                 {
-                    //
-                    // Player mechanic syncs
-                    //
-
-                    case CalamityModMessageType.DefenseDamageSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleDefenseDamage(reader);
-                        break;
-                    case CalamityModMessageType.RageSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleRage(reader);
-                        break;
-                    case CalamityModMessageType.AdrenalineSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleAdrenaline(reader);
-                        break;
-                    case CalamityModMessageType.CooldownAddition:
-                        Main.player[reader.ReadInt32()].Calamity().HandleCooldownAddition(reader);
-                        break;
-                    case CalamityModMessageType.CooldownRemoval:
-                        Main.player[reader.ReadInt32()].Calamity().HandleCooldownRemoval(reader);
-                        break;
-                    case CalamityModMessageType.SyncCooldownDictionary:
-                        Main.player[reader.ReadInt32()].Calamity().HandleCooldownDictionary(reader);
-                        break;
-
-                    //
-                    // Syncs for specific bosses or entities
-                    //
-
-                    case CalamityModMessageType.SyncDestroyerLaserColor:
-                        byte npcIdx3 = reader.ReadByte();
-                        int laserColor = reader.ReadInt32();
-
-                        // If the NPC in question isn't valid, don't do anything.
-                        NPC npc3 = Main.npc[npcIdx3];
-                        if (!npc3.active)
-                            break;
-
-                        CalamityGlobalNPC cgn3 = npc3.Calamity();
-                        cgn3.destroyerLaserColor = laserColor;
-                        break;
-
-                    // This code has been edited to fail gracefully when trying to provide data for an invalid NPC.
-                    case CalamityModMessageType.SyncCalamityNPCAIArray:
-                        // Read the entire packet regardless of anything
-                        byte npcIdx = reader.ReadByte();
-                        float ai0 = reader.ReadSingle();
-                        float ai1 = reader.ReadSingle();
-                        float ai2 = reader.ReadSingle();
-                        float ai3 = reader.ReadSingle();
-
-                        // If the NPC in question isn't valid, don't do anything.
-                        NPC npc = Main.npc[npcIdx];
-                        if (!npc.active)
-                            break;
-
-                        CalamityGlobalNPC cgn = npc.Calamity();
-                        cgn.newAI[0] = ai0;
-                        cgn.newAI[1] = ai1;
-                        cgn.newAI[2] = ai2;
-                        cgn.newAI[3] = ai3;
-                        break;
-
-                    case CalamityModMessageType.SyncVanillaNPCLocalAIArray:
-                        // Read the entire packet regardless of anything
-                        byte npcIdx2 = reader.ReadByte();
-                        float localAI0 = reader.ReadSingle();
-                        float localAI1 = reader.ReadSingle();
-                        float localAI2 = reader.ReadSingle();
-                        float localAI3 = reader.ReadSingle();
-
-                        // If the NPC in question isn't valid, don't do anything.
-                        NPC npc2 = Main.npc[npcIdx2];
-                        if (!npc2.active)
-                            break;
-
-                        npc2.localAI[0] = localAI0;
-                        npc2.localAI[1] = localAI1;
-                        npc2.localAI[2] = localAI2;
-                        npc2.localAI[3] = localAI3;
-                        break;
-
-                    case CalamityModMessageType.SpawnSuperDummy:
-                        int x = reader.ReadInt32();
-                        int y = reader.ReadInt32();
-                        // Not strictly necessary, but helps prevent unnecessary packetstorm in MP
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            NPC.NewNPC(new EntitySource_WorldEvent(), x, y, ModContent.NPCType<SuperDummyNPC>());
-                        break;
-
-                    case CalamityModMessageType.DeleteAllSuperDummies:
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            SuperDummy.DeleteDummies();
-                        break;
-
-                    case CalamityModMessageType.SyncAndroombaSolution:
-                        int index = reader.ReadInt32();
-                        int solType = reader.ReadInt32();
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            AndroombaFriendly.SwapSolution(index, solType);
-                        break;
-
-                    case CalamityModMessageType.SyncAndroombaAI:
-                        {
-                            int idx = reader.ReadInt32();
-                            int phase = reader.ReadInt32();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                AndroombaFriendly.ChangeAI(idx, phase);
-                        }
-                        break;
-
-                    case CalamityModMessageType.SyncSlabCrabAI:
-                        {
-                            int idx = reader.ReadInt32();
-                            int phase = reader.ReadInt32();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                AndroombaFriendly.ChangeAI(idx, phase);
-                        }
-                        break;
-
-                    case CalamityModMessageType.PlaceAltCritter:
-                        {
-                            int placerplayer = reader.ReadInt32();
-                            int posX = reader.ReadInt32();
-                            int posY = reader.ReadInt32();
-                            int type = reader.ReadInt32();
-                            int itemType = reader.ReadInt32();
-                            float color = reader.ReadInt32();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int n = NPC.NewNPC(Main.player[placerplayer].GetSource_ReleaseEntity(), posX, posY, type, ai1: color);
-                                Main.npc[n].catchItem = itemType;
-                                Main.npc[n].releaseOwner = (short)placerplayer;
-                            }
-                        }
-                        break;
-
-                    case CalamityModMessageType.ServersideSpawnOldDuke:
-                        byte playerIndex2 = reader.ReadByte();
-                        CalamityUtils.SpawnOldDuke(playerIndex2);
-                        break;
-
-                    case CalamityModMessageType.ProvidenceDyeConditionSync:
-                        byte npcIndex3 = reader.ReadByte();
-                        (Main.npc[npcIndex3].ModNPC as Providence).hasTakenDaytimeDamage = reader.ReadBoolean();
-                        break;
-
-                    case CalamityModMessageType.PSCChallengeSync:
-                        byte npcIndex4 = reader.ReadByte();
-                        (Main.npc[npcIndex4].ModNPC as Providence).challenge = reader.ReadBoolean();
-                        break;
-
-                    //
-                    // General syncs for entities
-                    //
-
-                    case CalamityModMessageType.SpawnNPCOnPlayer:
-                        x = reader.ReadInt32();
-                        y = reader.ReadInt32();
-                        int npcType = reader.ReadInt32();
-                        int player = reader.ReadInt32();
-                        Vector2 spawnPosition = reader.ReadVector2();
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            int spawnedNPC = NPC.NewNPC(new EntitySource_WorldEvent(), x, y, npcType, Target: player);
-                            NetMessage.SendData(MessageID.SyncNPC, -1, player, null, spawnedNPC);
-                        }
-                        break;
-
-                    case CalamityModMessageType.SyncNPCMotionDataToServer:
-                        int npcIndex = reader.ReadInt32();
-                        Vector2 center = reader.ReadVector2();
-                        Vector2 velocity = reader.ReadVector2();
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Main.npc[npcIndex].Center = center;
-                            Main.npc[npcIndex].velocity = velocity;
-                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npcIndex);
-                        }
-                        break;
-
-                    case CalamityModMessageType.SyncNPCPosAndRotOnly:
-                        npcIndex = reader.ReadByte();
-                        Vector2 position = reader.ReadVector2();
-                        float rotation = (float)reader.ReadHalf(); //rotation unit is radian (-π/2 ≤ rotation ≤ π/2) so Half precision should works
-
-                        if (npcIndex >= Main.maxNPCs)
-                            break;
-
-                        npc = Main.npc[npcIndex];
-                        npc.position = position;
-                        npc.rotation = rotation;
-
-                        if (Main.dedServ)
-                        {
-                            ModPacket packet = CalamityMod.Instance.GetPacket();
-                            packet.Write((byte)CalamityModMessageType.SyncNPCPosAndRotOnly);
-                            packet.Write((byte)npcIndex);
-                            packet.WriteVector2(position);
-                            packet.Write((Half)rotation);
-                            packet.Send(ignoreClient: whoAmI);
-                        }
-                        break;
-
-                    //
-                    // Tile Entities
-                    //
-
-                    case CalamityModMessageType.UnlockAbyssChests:
-                        Abyss.UnlockAllAbyssChests();
-                        break;
-                    case CalamityModMessageType.PowerCellFactory:
-                        TEPowerCellFactory.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.ChargingStationStandard:
-                        TEChargingStation.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.ChargingStationItemChange:
-                        TEChargingStation.ReadItemSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.Turret:
-                        TEBaseTurret.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.LabHologramProjector:
-                        TELabHologramProjector.ReadSyncPacket(mod, reader);
-                        break;
-                    case CalamityModMessageType.UpdateCodebreakerConstituents:
-                        TECodebreaker.ReadConstituentsUpdateSync(mod, reader);
-                        break;
-                    case CalamityModMessageType.UpdateCodebreakerContainedStuff:
-                        TECodebreaker.ReadContainmentSync(mod, reader);
-                        break;
-                    case CalamityModMessageType.UpdateCodebreakerDecryptCountdown:
-                        TECodebreaker.ReadDecryptCountdownSync(mod, reader);
-                        break;
-
-                    //
-                    // Boss Rush
-                    //
-
-                    case CalamityModMessageType.BossRushStage:
-                        int stage = reader.ReadInt32();
-                        BossRushEvent.BossRushStage = stage;
-                        break;
-                    case CalamityModMessageType.BossRushStartTimer:
-                        BossRushEvent.StartTimer = reader.ReadInt32();
-                        break;
-                    case CalamityModMessageType.BossRushEndTimer:
-                        BossRushEvent.EndTimer = reader.ReadInt32();
-                        break;
-                    case CalamityModMessageType.EndBossRush:
-                        BossRushEvent.EndEffects();
-                        break;
-                    case CalamityModMessageType.BRHostileProjKillSync:
-                        int countdown3 = reader.ReadInt32();
-                        BossRushEvent.HostileProjectileKillCounter = countdown3;
-                        break;
-
-                    //
-                    // Acid Rain
-                    //
-
-                    case CalamityModMessageType.AcidRainSync:
-                        AcidRainEvent.AcidRainEventIsOngoing = reader.ReadBoolean();
-                        AcidRainEvent.AccumulatedKillPoints = reader.ReadInt32();
-                        AcidRainEvent.TimeSinceLastAcidRainKill = reader.ReadInt32();
-                        break;
-                    case CalamityModMessageType.AcidRainOldDukeSummonSync:
-                        AcidRainEvent.HasTriedToSummonOldDuke = reader.ReadBoolean();
-                        break;
-                    case CalamityModMessageType.EncounteredOldDukeSync:
-                        AcidRainEvent.OldDukeHasBeenEncountered = reader.ReadBoolean();
-                        break;
-
-                    //
-                    // Draedon Summoner stuff
-                    //
-                    case CalamityModMessageType.CodebreakerSummonStuff:
-                        CalamityWorld.DraedonSummonCountdown = reader.ReadInt32();
-                        CalamityWorld.DraedonSummonPosition = reader.ReadVector2();
-                        CalamityWorld.DraedonMechdusa = reader.ReadBoolean();
-                        break;
-                    case CalamityModMessageType.ExoMechSelection:
-                        CalamityWorld.DraedonMechToSummon = (ExoMech)reader.ReadInt32();
-                        break;
-
-                    //
-                    // Mouse control syncs
-                    //
-
-                    case CalamityModMessageType.RightClickSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleRightClick(reader);
-                        break;
-                    case CalamityModMessageType.MousePositionSync:
-                        Main.player[reader.ReadInt32()].Calamity().HandleMousePosition(reader);
-                        break;
-
-
-                    //
-                    // Difficulty syncs
-                    //
-
-                    case CalamityModMessageType.SyncDifficulties:
-                        int sender = reader.ReadInt32();
-                        CalamityWorld.revenge = reader.ReadBoolean();
-                        CalamityWorld.death = reader.ReadBoolean();
-                        //TODO - Something so that other mods that hijack the difficulty ui can also use the remainder of the reader to have their own shit
-
-                        if (Main.netMode == NetmodeID.Server)
-                            SyncCalamityWorldDifficulties(sender);
-                        break;
-
-                    //
-                    // Music event syncs
-                    //
-                    case CalamityModMessageType.MusicEventSyncRequest:
-                        MusicEventSystem.FulfillSyncRequest(whoAmI);
-                        break;
-
-                    case CalamityModMessageType.MusicEventSyncResponse:
-                        MusicEventSystem.ReceiveSyncResponse(reader);
-                        break;
-
-                    //
-                    // Bandit refund syncs
-                    //
-                    case CalamityModMessageType.SomeoneGotScammedByTinkerer:
-                        int scammedOne = reader.ReadByte();
-                        int stolen = reader.Read7BitEncodedInt();
-
-                        CalamityWorld.MoneyStolenByBandit += stolen;
-                        CalamityWorld.Reforges++;
-
-                        // Broadcast back for tragic event
-                        // WorldSync DO sync the MoneyStolenByBandit and Refores variable, But spamming SyncWorld is not a ideal action
-                        if (Main.dedServ)
-                        {
-                            ModPacket packet = CalamityMod.Instance.GetPacket();
-                            packet.Write((byte)CalamityModMessageType.SomeoneGotScammedByTinkerer);
-                            packet.Write((byte)scammedOne);
-                            packet.Write7BitEncodedInt(stolen);
-                            packet.Send(ignoreClient: scammedOne);
-                        }
-
-                        break;
-
-                    case CalamityModMessageType.WantToRefundReforges:
-                        int requester = reader.ReadByte();
-
-                        // Only Server should handle this action!
-                        if (!Main.dedServ)
-                            break;
-
-                        int banditIdx = NPC.FindFirstNPC(ModContent.NPCType<THIEF>());
-                        if (banditIdx == -1)
-                            break;
-
-                        NPC bandit = Main.npc[banditIdx];
-                        if (bandit == null || !bandit.active)
-                            break;
-
-                        THIEF.DoRefund(bandit);
-                        break;
-
+                    packetHandler.HandlePacket(in reader, whoAmI);
+                }
+                else
+                {
                     //
                     // Default case: with no idea how long the packet is, we can't safely read data.
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
-                    default:
-                        CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
-                        throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
+
+                    CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
+                    throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
                 }
             }
             catch (Exception e)
@@ -417,19 +141,56 @@ namespace CalamityMod
                 NetMessage.SendData(MessageID.WorldData);
         }
 
+        /// <summary>
+        /// Shorthand Method for SyncNPC
+        /// <code>
+        /// This Equals to:
+        /// 
+        /// if (Main.dedServ and npc != null)
+        ///     NetMessage.SendData(MessageID.SyncNPC, ...)
+        /// </code>
+        /// </summary>
+        public static void SyncNPC(NPC npcToSync, int toClient = -1, int ignoreClient = -1)
+        {
+            if (!Main.dedServ)
+                return;
+
+            if (npcToSync is null)
+                return;
+
+            var npcWhoAmI = npcToSync.whoAmI;
+            if (npcWhoAmI < 0 || npcWhoAmI >= Main.maxNPCs)
+                return;
+
+            NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcWhoAmI);
+        }
+
+        /// <summary>
+        /// Shorthand Method for SyncNPC
+        /// <code>
+        /// This Equals to:
+        /// 
+        /// if (Main.dedServ and npcWhoAmI in valid range)
+        ///     NetMessage.SendData(MessageID.SyncNPC, ...)
+        /// </code>
+        /// </summary>
+        public static void SyncNPC(int npcWhoAmI, int toClient = -1, int ignoreClient = -1)
+        {
+            if (!Main.dedServ)
+                return;
+
+            if (npcWhoAmI < 0 || npcWhoAmI >= Main.maxNPCs)
+                return;
+
+            NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcWhoAmI);
+        }
+
         public static void SyncCalamityWorldDifficulties(int sender)
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.SyncDifficulties);
-            netMessage.Write(sender);
-            netMessage.Write(CalamityWorld.revenge);
-            netMessage.Write(CalamityWorld.death);
-
-            //TODO - Let other mods also add their own bits in that sync. Ideally would be done through the difficultystem itself
-            netMessage.Send(-1, sender);
+            SyncDifficultiesPacket.Send();
         }
 
         public static void NewNPC_ClientSide(Vector2 spawnPosition, int npcType, Player player)
@@ -439,14 +200,10 @@ namespace CalamityMod
                 NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType, Target: player.whoAmI);
                 return;
             }
-
-            var netMessage = CalamityMod.Instance.GetPacket();
-            netMessage.Write((byte)CalamityModMessageType.SpawnNPCOnPlayer);
-            netMessage.Write((int)spawnPosition.X);
-            netMessage.Write((int)spawnPosition.Y);
-            netMessage.Write(npcType);
-            netMessage.Write(player.whoAmI);
-            netMessage.Send();
+            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                SpawnNPCOnPlayerPacket.Send(player, (int)spawnPosition.X, (int)spawnPosition.Y, npcType);
+            }
         }
     }
 
@@ -470,12 +227,12 @@ namespace CalamityMod
         SyncAndroombaAI,
         SyncSlabCrabAI,
         PlaceAltCritter,
-        ServersideSpawnOldDuke,
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.
         PSCChallengeSync, // TODO -- once you've failed the PSC challenge this packetstorms
 
         // General things for entities
         SpawnNPCOnPlayer,
+        SpawnBossOnPosition,
         SyncNPCMotionDataToServer,
         SyncNPCPosAndRotOnly,
 
@@ -518,7 +275,9 @@ namespace CalamityMod
         MusicEventSyncResponse,
         
         // Bandit Reforge Refund
-        SomeoneGotScammedByTinkerer,
-        WantToRefundReforges
+        ScammedByTinkerer,
+        WantToRefundReforges,
+
+        Reserved = 150
     }
 }

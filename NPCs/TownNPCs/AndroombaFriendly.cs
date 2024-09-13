@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
+using CalamityMod.Packets;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -166,11 +167,7 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.SyncAndroombaAI);
-                netMessage.Write(NPC.whoAmI);
-                netMessage.Write(phase);
-                netMessage.Send();
+                SyncAndroombaAIPacket.Send(this, phase: phase);
             }
         }
 

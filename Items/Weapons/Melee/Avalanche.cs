@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 64;
             Item.height = 64;
-            Item.damage = 100;
+            Item.damage = 75;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 35;
             Item.useTime = 35;
@@ -29,39 +29,16 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            var source = player.GetSource_ItemUse(Item);
-            int totalProjectiles = 4;
-            float radians = MathHelper.TwoPi / totalProjectiles;
             int type = ModContent.ProjectileType<IceBombFriendly>();
-            int bombDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-            float velocity = 4f;
-            double angleA = radians * 0.5;
-            double angleB = MathHelper.ToRadians(90f) - angleA;
-            float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));
-            Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
-            for (int k = 0; k < totalProjectiles; k++)
+            if (CalamityUtils.CountProjectiles(type) < 16)
             {
-                Vector2 projRotation = spinningPoint.RotatedBy(radians * k);
-                Projectile.NewProjectile(source, target.Center, projRotation, type, bombDamage, hit.Knockback * 0.5f, Main.myPlayer);
-            }
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            var source = player.GetSource_ItemUse(Item);
-            int totalProjectiles = 4;
-            float radians = MathHelper.TwoPi / totalProjectiles;
-            int type = ModContent.ProjectileType<IceBombFriendly>();
-            int bombDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-            float velocity = 4f;
-            double angleA = radians * 0.5;
-            double angleB = MathHelper.ToRadians(90f) - angleA;
-            float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));
-            Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
-            for (int k = 0; k < totalProjectiles; k++)
-            {
-                Vector2 projRotation = spinningPoint.RotatedBy(radians * k);
-                Projectile.NewProjectile(source, target.Center, projRotation, type, bombDamage, 0f, Main.myPlayer);
+                var source = player.GetSource_ItemUse(Item);
+                int bombDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
+                for (int k = 0; k < 4; k++)
+                {
+                    // ai0: projectile timer. ai1: target index. ai2: rotation offset based on ice bomb number.
+                    Projectile.NewProjectile(source, target.Center, Vector2.Zero, type, bombDamage, hit.Knockback * 0.5f, Main.myPlayer, 0f, target.whoAmI, k);
+                }
             }
         }
 

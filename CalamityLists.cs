@@ -1508,7 +1508,7 @@ namespace CalamityMod
                 ItemType<Leviatitan>(),
                 ItemType<Atlantis>(),
                 ItemType<AnahitasArpeggio>(),
-                ItemType<BrackishFlask>(),
+                ItemType<Whitewater>(),
                 ItemType<LeviathanTeeth>(),
                 ItemType<GastricBelcherStaff>(),
                 ItemType<PearlofEnthrallment>(),

@@ -7,25 +7,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class BrackishFlask : RogueWeapon
+    [LegacyName("BrackishFlask")]
+    public class Whitewater : RogueWeapon
     {
+        public bool splitDirection = false;
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 30;
-            Item.damage = 60;
+            Item.width = 36;
+            Item.height = 40;
+            Item.damage = 97;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 35;
+            Item.useAnimation = 42;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 35;
+            Item.useTime = 42;
             Item.knockBack = 6.5f;
-            Item.UseSound = SoundID.Item106;
+            Item.UseSound = SoundID.Item106 with { Volume = 0.7f };
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.shoot = ModContent.ProjectileType<BrackishFlaskProj>();
-            Item.shootSpeed = 12f;
+            Item.shoot = ModContent.ProjectileType<WhitewaterProj>();
+            Item.shootSpeed = 6f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
@@ -37,10 +39,17 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (stealth.WithinBounds(Main.maxProjectiles))
+                {
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
+                }
             }
-            return true;
+            else
+            {
+                int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+                Main.projectile[proj].ai[1] = splitDirection ? 1 : -1;
+                splitDirection = !splitDirection;
+            }
+            return false;
         }
     }
 }

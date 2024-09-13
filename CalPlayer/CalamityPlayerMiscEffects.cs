@@ -45,6 +45,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Magic;
@@ -246,7 +247,7 @@ namespace CalamityMod.CalPlayer
                         Player.velocity.X *= 1.2f;
                         int damage = Player.ApplyArmorAccDamageBonusesTo(Player.GetBestClassDamage().ApplyTo(75));
 
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 20f, Player.whoAmI);
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                         HasIncreasedDashFirstFrame = true;
                     }
                     float numberOfDusts = 10f;
@@ -4452,11 +4453,7 @@ namespace CalamityMod.CalPlayer
                             }
                             else
                             {
-                                var netMessage = Mod.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.SyncAndroombaSolution);
-                                netMessage.Write(npc.whoAmI);
-                                netMessage.Write(soltype);
-                                netMessage.Send();
+                                SyncAndroombaSolutionPacket.Send(npc.ModNPC<AndroombaFriendly>(), soltype);
                             }
                             if (npc.ai[0] == 0f)
                             {
@@ -4466,11 +4463,7 @@ namespace CalamityMod.CalPlayer
                                 }
                                 else
                                 {
-                                    var netMessage = Mod.GetPacket();
-                                    netMessage.Write((byte)CalamityModMessageType.SyncAndroombaAI);
-                                    netMessage.Write(npc.whoAmI);
-                                    netMessage.Write(1);
-                                    netMessage.Send();
+                                    SyncAndroombaAIPacket.Send(npc.ModNPC<AndroombaFriendly>(), phase: 1);
                                 }
                             }
                             if (Main.netMode == NetmodeID.Server)

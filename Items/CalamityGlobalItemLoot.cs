@@ -274,6 +274,7 @@ namespace CalamityMod.Items
                 case ItemID.WoodenCrate:
                 case ItemID.WoodenCrateHard:
                     loot.Add(ModContent.ItemType<WulfrumMetalScrap>(), 4, 3, 5); // 25% 3-5 Wulfrum Scrap
+                    loot.Add(ModContent.ItemType<Kylie>(), 20);
                     break;
 
                 case ItemID.IronCrate:
