@@ -526,12 +526,12 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 if (!ableToDropSlime)
                 {
-                    if (npc.Distance(destination) < 40f)
+                    if (npc.Distance(destination) < 80f)
                         npc.ai[1] = 1f;
                 }
                 else
                 {
-                    if (npc.ai[3] >= 180f || npc.Distance(destination) < 40f)
+                    if (npc.ai[3] >= 180f || npc.Distance(destination) < 80f)
                         npc.ai[1] = 2f;
                 }
             }
