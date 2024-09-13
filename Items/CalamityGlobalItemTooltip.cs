@@ -1147,7 +1147,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.SquireGreatHelm)
                 EditTooltipByNum(0, (line) => line.Text = "Increases your max number of sentries by 1 and grants +2 HP/s life regen");
             if (item.type == ItemID.SquirePlating)
-                EditTooltipByNum(0, (line) => line.Text = "10% increased minion and melee damage");
+                EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and 15% increased melee damage");
             if (item.type == ItemID.SquireGreaves)
                 EditTooltipByNum(0, (line) => line.Text = "5% increased minion damage and melee critical strike chance\n" +
                 "15% increased movement speed");

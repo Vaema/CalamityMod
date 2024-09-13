@@ -1111,7 +1111,6 @@ namespace CalamityMod.Items
                     break;
                 case ItemID.SquirePlating:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetDamage<MeleeDamageClass>() -= 0.05f;
                     break;
                 case ItemID.SquireGreaves:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;

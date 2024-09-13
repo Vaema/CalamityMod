@@ -193,6 +193,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
+            IL_Player.Update += PreventUFODismountInWater;
             On_Player.GetAnglerReward += ImproveAnglerRewards;
 
             On_Player.ItemCheck_CheckCanUse += RemoveCelestialSigilUseLock;
