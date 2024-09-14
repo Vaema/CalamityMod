@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Magic
         // Lightning
         public static float AttackRate = 60f;
         public static float AttackRange = 800f;
-        public static float LightningDamageMult = 0.5f;
+        public static float LightningDamageMult = 0.25f;
 
         public ref float OrbType => ref Projectile.ai[0];
         public ref float AttackTimer => ref Projectile.ai[1];

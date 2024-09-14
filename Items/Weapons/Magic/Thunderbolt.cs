@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 220;
             Item.height = 60;
-            Item.damage = 400;
+            Item.damage = 840;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 50;
             Item.useTime = Item.useAnimation = 80; // 42 frames of firing animation
