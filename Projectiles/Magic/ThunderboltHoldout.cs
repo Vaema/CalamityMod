@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -24,6 +23,8 @@ namespace CalamityMod.Projectiles.Magic
         public override float OffsetYDownwards => 20f;
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.3f;
         public override string Texture => "CalamityMod/Projectiles/Magic/ThunderboltHoldout";
+
+        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/ThunderboltFire") { Volume = 0.35f };
 
         public ref float FlashTimer => ref Projectile.ai[0];
 
@@ -96,7 +97,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Owner.CheckMana(Owner.ActiveItem(), -1, true))
                 {
                     FlashTimer = 4f;
-                    SoundEngine.PlaySound(CommonCalamitySounds.PlasmaBlastSound, GunTipPosition);
+                    SoundEngine.PlaySound(FireSound, GunTipPosition);
 
                     // Start from slightly behind the tip
                     Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;

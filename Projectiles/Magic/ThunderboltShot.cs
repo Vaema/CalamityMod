@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class ThunderboltShot : ModProjectile, ILocalizedModType
@@ -21,11 +20,13 @@ namespace CalamityMod.Projectiles.Magic
         public List<Vector2> TrailPos = new List<Vector2>();
         public const int TrailLength = 50;
 
+        public ref float OrbType => ref Projectile.ai[0];
+
         public override void SetStaticDefaults() => ProjectileID.Sets.DrawScreenCheckFluff[Type] = 5000;
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 18;
+            Projectile.width = Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.MaxUpdates = 15;
@@ -41,8 +42,8 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.numHits > 0)
             {
-                Projectile.scale -= 0.01f;
-                Projectile.Opacity -= 0.01f;
+                Projectile.scale -= 0.005f;
+                Projectile.Opacity -= 0.005f;
                 if (Projectile.Opacity <= 0f)
                     Projectile.Kill();
             }
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
         public void Decay()
         {
             Projectile.numHits++; // Ensure this can only happen once
-            Projectile.timeLeft = 100;
+            Projectile.timeLeft = 200;
             Projectile.velocity = Vector2.Zero;
             Projectile.netUpdate = true;
 
@@ -107,12 +108,23 @@ namespace CalamityMod.Projectiles.Magic
             while (TrailPos.Count > TrailLength)
                 TrailPos.RemoveAt(TrailPos.Count - 1);
 
-            SoundEngine.PlaySound(AnomalysNanogunMPFBBoom.MPFBExplosion, Projectile.Center);
-
-            for (int i = 0; i < 12; i++)
+            bool secondary = OrbType > 0f;
+            if (Projectile.owner == Main.myPlayer && !secondary)
             {
-                Color color = Main.rand.NextBool() ? Color.Cyan : Color.Orchid;
-                Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(12f, 15f));
+                float rotOffset = Main.rand.NextFloat(0f, MathHelper.TwoPi);
+                for (int i = 0; i < 5; i++)
+                {
+                    Vector2 velocity = Vector2.UnitX.RotatedBy(rotOffset + MathHelper.TwoPi * 0.2f * (i + Main.rand.NextFloat(-0.4f, 0.4f))) * (Main.rand.NextFloat(40f, 45f));
+                    Projectile orb = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ThunderboltOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner, i);
+                    orb.rotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
+                }
+            }
+
+            int boltCount = secondary ? 6 : 10;
+            for (int i = 0; i < boltCount; i++)
+            {
+                Color color = OrbType > 0f ? ThunderboltOrb.GetColor(OrbType - 1f) : (Main.rand.NextBool() ? Color.Cyan : Color.Orchid);
+                Vector2 velocity = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * 0.2f * (i + Main.rand.NextFloat(-0.4f, 0.4f))) * (Main.rand.NextFloat(12f, 15f));
                 BoltParticle bolt = new BoltParticle(Projectile.Center, velocity, false, 18, Main.rand.NextFloat(0.4f, 0.6f), color, new Vector2(0.6f, 1f), true);
                 GeneralParticleHandler.SpawnParticle(bolt);
             }
@@ -120,12 +132,12 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(8f, 14f));
                 Dust spark = Dust.NewDustPerfect(Projectile.Center, 278, velocity);
-                spark.color = Main.rand.NextBool() ? Color.Cyan : Color.Orchid;
+                spark.color = OrbType > 0f ? ThunderboltOrb.GetColor(OrbType - 1f) : (Main.rand.NextBool() ? Color.Cyan : Color.Orchid);;
             }
         }
 
-        internal float TrailWidthFunction(float completionRatio) => Projectile.scale * 12f * Utils.GetLerpValue(0.5f, 0.4f, MathF.Abs(0.5f - completionRatio), true);
-        internal Color TrailColorFunction(float completionRatio) => Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f)) * Projectile.Opacity;
+        internal float TrailWidthFunction(float completionRatio) => Projectile.scale * 15f * Utils.GetLerpValue(0.5f, 0.4f, MathF.Abs(0.5f - completionRatio), true);
+        internal Color TrailColorFunction(float completionRatio) => OrbType > 0f ? ThunderboltOrb.GetColor(OrbType - 1f) : Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f)) * Projectile.Opacity;
 
         public override bool PreDraw(ref Color lightColor)
         {
