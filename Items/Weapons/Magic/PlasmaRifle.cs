@@ -26,13 +26,13 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 72;
             Item.height = 20;
-            Item.damage = 150;
+            Item.damage = 360;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 40;
             Item.useAnimation = Item.useTime = 40;
             Item.knockBack = 4f;
             Item.shoot = ModContent.ProjectileType<PlasmaRifleShot>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 14f;
 
             Item.UseSound = HeavyShotSound;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -67,7 +67,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, position, velocity, type, damage * 2, knockback, player.whoAmI, 1f);
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 1f);
                 return false;
             }
             return true;
