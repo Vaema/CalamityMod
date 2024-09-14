@@ -128,11 +128,12 @@ namespace CalamityMod.Projectiles.Magic
                 BoltParticle bolt = new BoltParticle(Projectile.Center, velocity, false, 18, Main.rand.NextFloat(0.4f, 0.6f), color, new Vector2(0.6f, 1f), true);
                 GeneralParticleHandler.SpawnParticle(bolt);
             }
-            for (int k = 0; k < 8; k++)
+            for (int k = 0; k < 7; k++)
             {
                 Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(8f, 14f));
                 Dust spark = Dust.NewDustPerfect(Projectile.Center, 278, velocity);
-                spark.color = OrbType > 0f ? ThunderboltOrb.GetColor(OrbType - 1f) : (Main.rand.NextBool() ? Color.Cyan : Color.Orchid);;
+                spark.noLight = true;
+                spark.color = Main.rand.NextBool() ? Color.Cyan : Color.Orchid;
             }
         }
 

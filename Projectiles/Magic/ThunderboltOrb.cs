@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Magic
         // Explosion
         public static float ExplosionTime = 150f; // Time taken to explode
         public static float ExplosionLifetime = 18f;
-        public static float MaxScale = 8f;
+        public static float MaxScale = 7.5f;
 
         // Lightning
         public static float AttackRate = 60f;
@@ -88,6 +88,14 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.Kill();
                 }
                 // Builds up dust readying up to explode
+                else if (AttackTimer > MathHelper.Lerp(AttackRate * 2f, ExplosionTime, 0.8f) || AttackTimer % 3 == 2)
+                {
+                    Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(8f, 10f));
+                    Dust spark = Dust.NewDustPerfect(Projectile.Center, 278, velocity);
+                    spark.noLight = true;
+                    spark.noGravity = Main.rand.NextBool();
+                    spark.color = GetColor(OrbType);
+                }
             }
             else if (AttackTimer % AttackRate == (AttackRate - offset - 1f))
             {
@@ -116,7 +124,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public static Color GetColor(float type) => Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.2f + 0.15f * type + 0.2f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f));
+        public static Color GetColor(float type) => Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.2f + 0.15f * type + 0.2f * MathF.Sin(Main.GlobalTimeWrappedHourly * 10f));
 
         public override Color? GetAlpha(Color lightColor) => GetColor(OrbType);
 
@@ -136,7 +144,7 @@ namespace CalamityMod.Projectiles.Magic
 
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
             Texture2D bloomTex = Bloom.Value;
-            Main.EntitySpriteDraw(bloomTex, drawPos, null, color * 0.5f, 0, bloomTex.Size() * 0.5f, 0.36f, SpriteEffects.None);
+            Main.EntitySpriteDraw(bloomTex, drawPos, null, color * 0.5f, 0, bloomTex.Size() * 0.5f, 0.42f, SpriteEffects.None);
             Main.spriteBatch.ExitShaderRegion();
             return true;
         }
