@@ -2045,6 +2045,11 @@ GhostBracelet: {
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
+PunchCard: {
+	DisplayName: Punch Card
+	Tooltip: "[c/842593:'Please... please get world record...']"
+}
+
 HapuFruit: {
 	DisplayName: Ha-pu Fruit
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"

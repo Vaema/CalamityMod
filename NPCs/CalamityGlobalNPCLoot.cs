@@ -147,6 +147,12 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<PlasmaRod>(), 3, 2));
                     break;
 
+                // Skeleton Merchant
+                // Punch Card @ 100%
+                case NPCID.SkeletonMerchant:
+                    npcLoot.Add(ModContent.ItemType<PunchCard>());
+                    break;
+
                 // Mimic
                 // Drops all of its items Calamity Style @ 25% each
                 // This requires erasing its vanilla behavior.

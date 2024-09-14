@@ -1197,6 +1197,7 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
         public bool ghostBracelet;
+        public bool punchCard;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -2263,6 +2264,7 @@ namespace CalamityMod.CalPlayer
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
 
             ghostBracelet = false;
+            punchCard = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -4344,6 +4346,12 @@ namespace CalamityMod.CalPlayer
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
+            }
+            if (punchCard)
+            {
+                Player.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
+                Player.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
+                Player.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
             }
 
             if (snowRuffianSet)

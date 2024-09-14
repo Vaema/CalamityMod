@@ -100,6 +100,16 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
 
+            // Shayy dev item
+            // Name specific: "Shayy"
+            static bool getsPunchCard(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Shayy";
+            }
+
+            itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
+
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"
             static bool getsOracleHeadphones(DropAttemptInfo info)
