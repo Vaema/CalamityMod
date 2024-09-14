@@ -339,18 +339,19 @@ namespace CalamityMod.NPCs.SlimeGod
                 if (NPC.ai[1] == 0f)
                 {
                     Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(new Vector2(NPC.direction, 0f)) * maxChargeVelocity;
-                    NPC.velocity = velocity * chargeVelocityMult;
-
                     if (NPC.Distance(player.Center) < minChargeSafeDistance)
                     {
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
                         // Move away if too close
-                        NPC.velocity /= chargeVelocityMult * -1f;
+                        NPC.SimpleFlyMovement(velocity * -1f, 0.25f);
                     }
                     else
                     {
+                        // Set initial charge velocity
+                        NPC.velocity = velocity * chargeVelocityMult;
+
                         // Set damage
                         NPC.damage = setDamage;
 
