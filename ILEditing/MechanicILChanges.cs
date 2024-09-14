@@ -36,6 +36,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -75,6 +76,33 @@ namespace CalamityMod.ILEditing
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
         public static event Func<VertexColors, int, Point, VertexColors> ExtraColorChangeConditions;
+
+        #region Punch Card Spawning Command
+        private static void SpawnPunchCard(Terraria.On_Main.orig_DoUpdate_HandleChat orig)
+        {
+            // Any of these conditions should result in normal behaviour
+            if (!Main.drawingPlayerChat || Main.CurrentInputTextTakerOverride != null || Main.editSign || PlayerInput.UsingGamepad)
+            {
+                orig();
+                return;
+            }
+
+            // Find 2 specific sets of text from the live chat box (as the player is typing)
+            // Gives the item to you and abruptly shuts the chat box down if both parts are found
+            string text = Main.chatText.ToLower();
+            string prefix = "Items.Accessories.PunchCard.SpawnText";
+            if ((text.Contains(CalamityUtils.GetTextValue($"{prefix}1")) || text.Contains(CalamityUtils.GetTextValue($"{prefix}1Alt"))) && text.Contains(CalamityUtils.GetTextValue($"{prefix}2")))
+            {
+                Main.player[Main.myPlayer].QuickSpawnItem(Player.GetSource_None(), ModContent.ItemType<PunchCard>(), 1);
+                Main.chatText = "";
+                Main.ClosePlayerChat();
+                Main.chatRelease = false;
+                SoundEngine.PlaySound(SoundID.MenuClose);
+                return;
+            }
+            orig();
+        }
+        #endregion
 
         #region Dash Fixes and Improvements
         private static void MakeShieldSlamIFramesConsistent(ILContext il)
