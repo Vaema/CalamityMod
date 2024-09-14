@@ -298,7 +298,7 @@ namespace CalamityMod.Events
                             int playerClosestToAbyss = Player.FindClosest(new Vector2(Abyss.AtLeftSideOfWorld ? 0 : Main.maxTilesX * 16, (int)Main.worldSurface), 0, 0);
                             Player closestToAbyss = Main.player[playerClosestToAbyss];
                             if (Main.netMode != NetmodeID.MultiplayerClient && Math.Abs(closestToAbyss.Center.X - (Abyss.AtLeftSideOfWorld ? 0 : Main.maxTilesX * 16)) <= 12000f)
-                                Projectile.NewProjectile(source, closestToAbyss.Center + Vector2.UnitY * 160f, Vector2.Zero, ModContent.ProjectileType<OverlyDramaticDukeSummoner>(), 120, 8f, Main.myPlayer);
+                                Projectile.NewProjectile(source, closestToAbyss.Center + Vector2.UnitY * 160f, Vector2.Zero, ModContent.ProjectileType<OverlyDramaticDukeSummoner>(), 0, 8f, Main.myPlayer);
                         }
                     }
                 }
