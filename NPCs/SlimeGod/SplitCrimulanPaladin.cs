@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.defense = 10;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 1, 0, 0);
-            NPC.Opacity = 0.8f;
+            NPC.Opacity = 1f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -802,7 +802,7 @@ namespace CalamityMod.NPCs.SlimeGod
             Vector2 scaleStretch = new Vector2(1f - stretch, 1f + stretch) * NPC.scale;
             float yOffset = stretch * 0.5f * NPC.height;
 
-            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY - yOffset), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() * 0.5f, scaleStretch, spriteEffects, 0f);
+            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY - yOffset), NPC.frame, drawColorAlpha, NPC.rotation + CrimulanPaladin.SlimeRotationFactor(NPC), NPC.frame.Size() * 0.5f, scaleStretch, spriteEffects, 0f);
 
             return false;
         }

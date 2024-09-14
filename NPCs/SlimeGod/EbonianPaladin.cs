@@ -49,7 +49,7 @@ namespace CalamityMod.NPCs.SlimeGod
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.value = 0f;
-            NPC.Opacity = 0.8f;
+            NPC.Opacity = 1f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
@@ -449,8 +449,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.velocity.X *= 0.98f;
             }
 
-            NPC.rotation = MathHelper.Clamp(NPC.velocity.X * 0.05f, -0.5f, 0.5f);
-
             if (bossLife == 0f && NPC.life > 0)
                 bossLife = NPC.lifeMax;
 
@@ -528,12 +526,12 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 if (!ableToDropSlime)
                 {
-                    if (npc.Distance(destination) < 40f)
+                    if (npc.Distance(destination) < 80f)
                         npc.ai[1] = 1f;
                 }
                 else
                 {
-                    if (npc.ai[3] >= 180f || npc.Distance(destination) < 40f)
+                    if (npc.ai[3] >= 180f || npc.Distance(destination) < 80f)
                         npc.ai[1] = 2f;
                 }
             }
@@ -628,16 +626,21 @@ namespace CalamityMod.NPCs.SlimeGod
             Color drawColorAlpha = NPC.GetAlpha(drawColor);
 
             // Stretch based on Y velocity.
-            float stretch = NPC.velocity.Y * 0.015f;
-            stretch = Math.Abs(stretch) + addedStretch;
+            float vel = NPC.velocity.Length();
+
+            float stretch = addedStretch;
+
+            float rot = MathHelper.Lerp(0f, MathHelper.WrapAngle(Vector2.Zero.AngleTo(NPC.velocity) + MathHelper.ToRadians(90f)), Math.Clamp(vel / 30f, 0f, 1f));
+
+            NPC.rotation = MathHelper.Lerp(NPC.rotation, rot, 0.1f);
 
             // Stretch rapidly if about to jump or teleport.
             if (NPC.aiAction == 1)
-                stretch += MathHelper.Lerp(0f, 0.32f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f) / 2f + 0.5f);
+                stretch += MathHelper.Lerp(-0.24f, 0.24f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f) / 2f + 0.5f) * (vel / 30);
 
             // Stretch while idle.
             else
-                stretch += MathHelper.Lerp(0f, 0.16f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) / 2f + 0.5f);
+                stretch += MathHelper.Lerp(-0.1f, 0.1f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) / 2f + 0.5f) * (vel / 30);
 
             if (stretch > 0.5f)
                 stretch = 0.5f;
@@ -667,13 +670,21 @@ namespace CalamityMod.NPCs.SlimeGod
                 if (wingFrameDrawn >= TotalWingFrames)
                     wingFrameDrawn = 0;
             }
-            Rectangle wingFrame = new Rectangle(0, wingTexture.Height / TotalWingFrames * wingFrameDrawn, wingTexture.Width, wingTexture.Height / TotalWingFrames);
-            Vector2 wingOrigin = new Vector2(wingTexture.Width, wingTexture.Height / TotalWingFrames) * 0.5f;
+            Rectangle wingFrame1 = new Rectangle(0, wingTexture.Height / TotalWingFrames * wingFrameDrawn, wingTexture.Width / 2, wingTexture.Height / TotalWingFrames);
+            Rectangle wingFrame2 = new Rectangle(wingTexture.Width / 2, wingTexture.Height / TotalWingFrames * wingFrameDrawn, wingTexture.Width / 2, wingTexture.Height / TotalWingFrames);
+            
+            Vector2 wingOrigin1 = new Vector2(wingTexture.Width, wingTexture.Height / TotalWingFrames) * 0.5f;
+            Vector2 wingOrigin2 = new Vector2(0, wingTexture.Height / TotalWingFrames) * 0.5f;
+
+            Vector2 wingOffset1 = Vector2.Zero;
+            Vector2 wingOffset2 = Vector2.Zero;
 
             // Draw the wings.
-            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), wingFrame, drawColorAlpha, NPC.rotation, wingOrigin, scaleStretch, spriteEffects, 0f);
+            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + wingOffset1, wingFrame1, drawColorAlpha, 0f, wingOrigin1, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(wingTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + wingOffset2, wingFrame2, drawColorAlpha, 0f, wingOrigin2, NPC.scale, spriteEffects, 0f);
 
-            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() * 0.5f, scaleStretch, spriteEffects, 0f);
+            // Draw the actual paladin.
+            spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY) + new Vector2(0, 16), NPC.frame, drawColorAlpha, NPC.rotation, NPC.frame.Size() * 0.5f + new Vector2(0, 8), scaleStretch, spriteEffects, 0f);
 
             return false;
         }
