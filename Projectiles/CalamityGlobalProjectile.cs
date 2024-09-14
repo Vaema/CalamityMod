@@ -116,8 +116,9 @@ namespace CalamityMod.Projectiles
         // If true, this projectile creates impact sparks upon hitting enemies
         public bool deepcoreBullet = false;
 
-        // If true, causes all projectiles fired by this weapon to have homing. Currently used for Arterial Assault.
-        public bool allProjectilesHome = false;
+        // If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.
+        // Currently used for Arterial Assault.
+        public float conditionalHomingRange = 0f;
 
         // Amount of extra updates that are set in SetDefaults.
         public int defExtraUpdates = -1;
@@ -3909,9 +3910,9 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
-                if (allProjectilesHome)
+                if (conditionalHomingRange > 0f)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, 300f, 12f, 20f);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
                 }
                 if (brimstoneBullets)
                 {

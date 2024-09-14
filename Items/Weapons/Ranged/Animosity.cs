@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.25f };
         // Very cool sound and it would be a shame for it to not be used elsewhere, would be even better if a new sound is made in the future, but for now this is good enough
 
-        public float SniperDmgMult = 8f;
+        public float SniperDmgMult = 9f;
         public float SniperCritMult = Main.zenithWorld ? 7f : 1.35f;
         public float SniperVelocityMult = 2f;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 45;
+            Item.damage = 46;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 70;
             Item.height = 18;

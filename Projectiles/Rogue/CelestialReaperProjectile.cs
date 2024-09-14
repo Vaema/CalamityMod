@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/CelestialReaper";
 
         public int HomingCooldown = 0;
+        public NPC HitTarget;
 
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                NPC target = Projectile.Center.ClosestNPCAt(640f);
+                NPC target = (HitTarget != null && HitTarget.active) ? HitTarget : Projectile.Center.ClosestNPCAt(800f);
                 if (target != null)
                     Projectile.velocity = (Projectile.velocity * 20f + Projectile.SafeDirectionTo(target.Center) * 20f) / 21f;
             }
@@ -57,13 +58,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        // The explicit (bool?) cast is necessary until C# 9.0. How ugly.
-        public override bool? CanHitNPC(NPC target) => HomingCooldown > 0 ? false : (bool?)null;
+        public override bool? CanHitNPC(NPC target) => HomingCooldown > 0 ? false : null;
 
         public override bool CanHitPvp(Player target) => HomingCooldown <= 0;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (HitTarget == null || !HitTarget.active)
+                HitTarget = target;
             HomingCooldown = 25;
             Projectile.velocity *= -0.75f; // Bounce off of the enemy.
         }

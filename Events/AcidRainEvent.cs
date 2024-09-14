@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI;
 using CalamityMod.World;
@@ -334,32 +335,13 @@ namespace CalamityMod.Events
                 }
                 CalamityNetcode.SyncWorld();
 
-                // You will be tempted to turn this into a single if conditional.
-                // Don't do this. Doing so has caused so much misery, with various things being read instead
-                // of the correct thing, like booleans being mixed up in the sending and receiving process.
-                // In short, leave this alone.
+                // Flow: 2024/09/06 
+                // Salute for the one who wrote 3 if conditional block after experiencing immeasurable torment with packet generations
                 if (Main.netMode == NetmodeID.Server)
                 {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.AcidRainSync);
-                    netMessage.Write(AcidRainEventIsOngoing);
-                    netMessage.Write(AccumulatedKillPoints);
-                    netMessage.Write(TimeSinceLastAcidRainKill);
-                    netMessage.Send();
-                }
-                if (Main.netMode == NetmodeID.Server)
-                {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.AcidRainOldDukeSummonSync);
-                    netMessage.Write(HasTriedToSummonOldDuke);
-                    netMessage.Send();
-                }
-                if (Main.netMode == NetmodeID.Server)
-                {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.EncounteredOldDukeSync);
-                    netMessage.Write(OldDukeHasBeenEncountered);
-                    netMessage.Send();
+                    AcidRainSyncPacket.Send();
+                    AcidRainOldDukeSummonSyncPacket.Send();
+                    EncounteredOldDukeSyncPacket.Send();
                 }
             }
         }

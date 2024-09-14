@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.World;
 using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
@@ -136,7 +137,14 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
-                    //place each piece of the sunken sea based on the above positons
+                    SunkenSea.ForLoop = CalamityClientConfig.Instance.SunkenSeaMultiThreading switch
+                    {
+                        2 => SunkenSea.CSharpParallelFor,
+                        1 => SunkenSea.ReLogicParallelFor,
+                        _ => SunkenSea.NormalForLoop,
+                    };
+
+                    // place each piece of the sunken sea based on the above positons
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
@@ -412,6 +420,16 @@ namespace CalamityMod.Systems
                                 }
                                 break;
                             }
+                        }
+                    }
+
+                    // Replace Step Stool in surface Chests with Kylie
+                    // Calamity adds a very easy recipe for this so hopefully this isn't a big deal (The 4 unironic Step Stool lovers will be out for my head)
+                    if (isBrownChest)
+                    {
+                        if (chest.item[0].type == ItemID.PortableStool)
+                        {
+                            chest.item[0].SetDefaults(ModContent.ItemType<Kylie>());
                         }
                     }
 

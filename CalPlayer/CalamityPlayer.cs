@@ -823,6 +823,7 @@ namespace CalamityMod.CalPlayer
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
         public int AbaddonCooldown = 0;
+        public int VoidCooldown = 0;
         public int ursaSergeantCooldown = 0;
         public int AlchFlaskCooldown = 0;
         public bool plagueReaper = false;
@@ -1132,6 +1133,8 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
+        public bool FlarebatBool = false;
+        public bool FrostbatBool = false;
         #endregion
 
         #region Biome
@@ -1608,7 +1611,6 @@ namespace CalamityMod.CalPlayer
             noLifeRegen = false;
 
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
-            drawnAnyShieldThisFrame = false;
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
             if (!lunicCorpsSet)
@@ -2227,6 +2229,8 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
+            FlarebatBool = false;
+            FrostbatBool = false;
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
@@ -2391,6 +2395,7 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
+            VoidCooldown = 0;
             ursaSergeantCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;

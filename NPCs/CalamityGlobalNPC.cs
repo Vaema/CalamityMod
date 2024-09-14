@@ -82,6 +82,7 @@ using Terraria.UI.Chat;
 using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 
 namespace CalamityMod.NPCs
 {
@@ -8326,33 +8327,32 @@ namespace CalamityMod.NPCs
                         // has an owner, hence the MyPlayer check.
                         if (Main.myPlayer == projectile.owner)
                         {
+                            if (!player.active || player.dead)
+                                return;
+
+                            Projectile proj = null;
+                            foreach (Projectile p in Main.ActiveProjectiles)
+                            {
+                                proj = p;
+                                if (p.bobber && p.owner == player.whoAmI)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (proj is null)
+                                return;
+
+                            var spawnPosX = (int)proj.Center.X;
+                            var spawnPosY = (int)proj.Center.Y + 100;
                             if (Main.netMode == NetmodeID.SinglePlayer)
                             {
-                                if (!player.active || player.dead)
-                                    return;
-
-                                Projectile proj = null;
-                                foreach (Projectile p in Main.ActiveProjectiles)
-                                {
-                                    proj = p;
-                                    if (p.bobber && p.owner == player.whoAmI)
-                                    {
-                                        break;
-                                    }
-                                }
-
-                                if (proj is null)
-                                    return;
-
-                                int oldDuke = NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), (int)proj.Center.X, (int)proj.Center.Y + 100, NPCType<OldDuke.OldDuke>());
+                                int oldDuke = NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>());
                                 CalamityUtils.BossAwakenMessage(oldDuke);
                             }
-                            else
+                            else if (Main.netMode == NetmodeID.MultiplayerClient)
                             {
-                                var netMessage = CalamityMod.Instance.GetPacket();
-                                netMessage.Write((byte)CalamityModMessageType.ServersideSpawnOldDuke);
-                                netMessage.Write((byte)player.whoAmI);
-                                netMessage.Send();
+                                SpawnBossOnPositionPacket.Send(spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>(), player);
                             }
                         }
                     }

@@ -7,6 +7,7 @@ using CalamityMod.Items.Placeables.FurnitureBotanic;
 using CalamityMod.Items.Placeables.FurnitureCosmilite;
 using CalamityMod.Items.Placeables.FurnitureEutrophic;
 using CalamityMod.Items.Placeables.FurnitureExo;
+using CalamityMod.Items.Placeables.FurnitureMarnite;
 using CalamityMod.Items.Placeables.FurnitureMonolith;
 using CalamityMod.Items.Placeables.FurnitureOtherworldly;
 using CalamityMod.Items.Placeables.FurniturePlagued;
@@ -55,6 +56,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             AddIngredient<CosmiliteChair>().
             AddIngredient<EutrophicChair>().
             AddIngredient<ExoChair>().
+            AddIngredient<MarniteChair>().
             AddIngredient<MonolithChair>().
             AddIngredient<SacrilegiousChair>().
             AddIngredient<OtherworldlyChair>().

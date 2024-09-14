@@ -195,6 +195,13 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Ice
+
+                // Ice Bat.
+                // Frostbat Staff @ 6.67%
+                case NPCID.IceBat:
+                    npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
+                    break;
+
                 // Icy Merman, Icy Tortoise, Ice Elemental, Wolf
                 // Essence of Eleum @ 100%
                 case NPCID.IcyMerman:
@@ -408,6 +415,13 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Hell
+
+                // Hellbat.
+                // Flarebat Staff @ 4%
+                case NPCID.Hellbat:
+                    npcLoot.Add(ModContent.ItemType<FlarebatStaff>(), 25);
+                    break;
+
                 // Fire Imp
                 // Ashen Stalactite @ 10% Normal, 16.67% Expert+
                 case NPCID.FireImp:

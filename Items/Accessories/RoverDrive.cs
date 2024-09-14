@@ -31,27 +31,28 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldDefenseBoost = 10;
 
         // Interface stuff.
+        public Player OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.RoverDriveDepth;
 
         public bool ShouldDrawDyeableShader
         {
             get
             {
-                bool result = false;
-                foreach (Player player in Main.ActivePlayers)
-                {
-                    if (player.outOfRange || player.dead)
-                       continue;
+                if (CalamityClientConfig.Instance.EnergyShieldOpacity <= 0.0f)
+                    return false;
 
-                    CalamityPlayer modPlayer = player.Calamity();
+                var player = OwnerPlayer;
+                if (player is null)
+                    return false;
 
-                    // Do not render the shield if its visibility is off (or it does not exist)
-                    bool isVanityOnly = modPlayer.roverDriveShieldVisible && !modPlayer.roverDrive;
-                    bool shieldExists = isVanityOnly || modPlayer.RoverDriveShieldDurability > 0;
-                    bool shouldntDraw = (!modPlayer.roverDriveShieldVisible || modPlayer.drawnAnyShieldThisFrame || !shieldExists);
-                    result |= !shouldntDraw;
-                }
-                return result;
+                if (player.outOfRange || player.dead)
+                    return false;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer.drawingParameters.RoverShieldCharge <= 0.0f)
+                    return false;
+
+                return true;
             }
         }
 
@@ -105,88 +106,66 @@ namespace CalamityMod.Items.Accessories
         // This is applied as IL (On hook) which draws right before Inferno Ring.
         public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
-            // TODO -- Control flow analysis indicates that this hook is not stable.
-            // Rover Drive shields will be drawn for each player with Rover Drive, yes.
-            // But there is no guarantee that the shields will be in the right condition for each player.
-            // Visibility is not net synced, for example.
-            bool alreadyDrawnShieldForPlayer = false;
+            var player = OwnerPlayer;
+            if (player is null)
+                return;
 
-            foreach (Player player in Main.ActivePlayers)
+            if (player.outOfRange || player.dead)
+                return;
+
+            CalamityPlayer modPlayer = player.Calamity();
+            if (modPlayer.drawnAnyShieldThisFrame)
+                return;
+
+            if (modPlayer.drawingParameters.RoverShieldCharge <= 0.0f)
+                return;
+
+            // The shield very gently grows and shrinks
+            float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + player.whoAmI * 0.2f));
+            // If in vanity, the shield is always projected as if it's at full strength.
+            float shieldStrength = modPlayer.drawingParameters.RoverShieldCharge;
+
+            // Noise scale also grows and shrinks, although out of sync with the shield
+            float noiseScale = MathHelper.Lerp(0.4f, 0.8f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.3f) * 0.5f + 0.5f);
+
+            // Define shader parameters
+            Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
+            shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.24f);
+            shieldEffect.Parameters["blowUpPower"].SetValue(2.5f);
+            shieldEffect.Parameters["blowUpSize"].SetValue(0.5f);
+            shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
+
+            // Shield opacity multiplier slightly changes, this is independent of current shield strength
+            float baseShieldOpacity = 0.9f + 0.1f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f);
+            float finalShieldOpacity = baseShieldOpacity * (0.5f + 0.5f * shieldStrength);
+            finalShieldOpacity *= CalamityClientConfig.Instance.EnergyShieldOpacity;
+
+            shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
+            shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
+
+            // Get the shield color.
+            Color blueTint = new Color(51, 102, 255);
+            Color cyanTint = new Color(71, 202, 255);
+            Color wulfGreen = new Color(194, 255, 67) * 0.8f;
+            Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
+            Color shieldColor = blueTint;
+
+
+            // Define shader parameters for shield color
+            shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
+            shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
+
+            var matrix = Main.GameViewMatrix.TransformationMatrix;
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
             {
-                if (player.outOfRange || player.dead)
-                    continue;
-
-                CalamityPlayer modPlayer = player.Calamity();
-
-                // Do not render the shield if its visibility is off (or it does not exist)
-                bool isVanityOnly = modPlayer.roverDriveShieldVisible && !modPlayer.roverDrive;
-                bool shieldExists = isVanityOnly || modPlayer.RoverDriveShieldDurability > 0;
-                if (!modPlayer.roverDriveShieldVisible || modPlayer.drawnAnyShieldThisFrame || !shieldExists)
-                    continue;
-
-                // The shield very gently grows and shrinks
-                float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + player.whoAmI * 0.2f));
-
-                if (!alreadyDrawnShieldForPlayer)
-                {
-                    // If in vanity, the shield is always projected as if it's at full strength.
-                    float shieldStrength = 1f;
-                    if (!isVanityOnly)
-                    {
-                        // Again, I believe there is no way this looks correct when two players have Rover Drive equipped.
-                        CalamityPlayer localModPlayer = Main.LocalPlayer.Calamity();
-                        float shieldDurabilityRatio = localModPlayer.RoverDriveShieldDurability / (float)ShieldDurabilityMax;
-                        shieldStrength = MathF.Pow(shieldDurabilityRatio, 0.5f);
-                    }
-
-                    // Noise scale also grows and shrinks, although out of sync with the shield
-                    float noiseScale = MathHelper.Lerp(0.4f, 0.8f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.3f) * 0.5f + 0.5f);
-
-                    // Define shader parameters
-                    Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
-                    shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.24f);
-                    shieldEffect.Parameters["blowUpPower"].SetValue(2.5f);
-                    shieldEffect.Parameters["blowUpSize"].SetValue(0.5f);
-                    shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
-
-                    // Shield opacity multiplier slightly changes, this is independent of current shield strength
-                    float baseShieldOpacity = 0.9f + 0.1f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f);
-                    shieldEffect.Parameters["shieldOpacity"].SetValue(baseShieldOpacity * (0.5f + 0.5f * shieldStrength));
-                    shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
-
-                    // Get the shield color.
-                    Color blueTint = new Color(51, 102, 255);
-                    Color cyanTint = new Color(71, 202, 255);
-                    Color wulfGreen = new Color(194, 255, 67) * 0.8f;
-                    Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
-                    Color shieldColor = blueTint;
-
-
-                    // Define shader parameters for shield color
-                    shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
-                    shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
-
-                    // GOD I LOVE END BEGIN CAN THIS GAME PLEASE BE SWALLOWED BY THE FIRES OF HELL THANKS
-                    spriteBatch.End();
-                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-
-                }
-
-                alreadyDrawnShieldForPlayer = true;
-                modPlayer.drawnAnyShieldThisFrame = true;
-
                 // Fetch shield noise overlay texture (this is the techy overlay fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/TechyNoise");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                 Texture2D tex = NoiseTex.Value;
                 spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-            }
+            });
 
-            if (alreadyDrawnShieldForPlayer)
-            {
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-            }
+            modPlayer.drawnAnyShieldThisFrame = true;
         }
     }
 }

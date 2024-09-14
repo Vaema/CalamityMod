@@ -16,7 +16,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 76;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 51;
             Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -32,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.timeLeft < 150)
             {
-                NPC target = Projectile.Center.ClosestNPCAt(640f);
+                NPC target = Projectile.Center.ClosestNPCAt(800f);
                 if (target != null)
                     Projectile.velocity = (Projectile.velocity * 20f + Projectile.SafeDirectionTo(target.Center) * 20f) / 21f;
             }

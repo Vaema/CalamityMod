@@ -4,6 +4,7 @@ using System.Text;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.ExoMechs;
+using CalamityMod.Packets;
 using CalamityMod.TileEntities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -652,12 +653,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = CalamityMod.Instance.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.CodebreakerSummonStuff);
-                        netMessage.Write(CalamityWorld.DraedonSummonCountdown);
-                        netMessage.WriteVector2(CalamityWorld.DraedonSummonPosition);
-                        netMessage.Write(CalamityWorld.DraedonMechdusa);
-                        netMessage.Send();
+                        CodebreakerSummonStuffPacket.Send();
                     }
                 }
             }
