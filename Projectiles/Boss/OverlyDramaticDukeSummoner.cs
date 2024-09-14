@@ -91,13 +91,13 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 velocity = new Vector2(0f, -18f).RotatedByRandom(0.7f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top + new Vector2(Main.rand.NextFloat(-80f, 80f), 100f), velocity,
-                        ModContent.ProjectileType<OldDukeSummonDrop>(), 65, 2f);
+                        ModContent.ProjectileType<OldDukeSummonDrop>(), 0, 0f);
                 }
                 if (Projectile.ai[0] % 35f == 34f)
                 {
                     Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), -7f - Main.rand.NextFloat(4f, 12f)).RotatedByRandom(0.5f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top + new Vector2(Main.rand.NextFloat(-30f, 30f), 100f), velocity,
-                        ModContent.ProjectileType<OldDukeGore>(), 65, 2f);
+                        ModContent.ProjectileType<OldDukeGore>(), 0, 0f);
                 }
             }
 
@@ -201,16 +201,6 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override bool CanHitPlayer(Player target) => Projectile.ai[0] >= 90f;
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 240f * Projectile.scale, targetHitbox);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 420);
-        }
+        public override bool CanHitPlayer(Player target) => false;
     }
 }
