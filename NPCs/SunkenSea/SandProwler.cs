@@ -107,7 +107,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaSerpent")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SandProwler")
             });
         }
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
