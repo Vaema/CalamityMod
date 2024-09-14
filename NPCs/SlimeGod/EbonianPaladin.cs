@@ -322,6 +322,9 @@ namespace CalamityMod.NPCs.SlimeGod
             // Charge by swooping down
             else if (NPC.ai[0] == 3f)
             {
+                // Distance required to charge
+                float minChargeSafeDistance = 400f;
+
                 // Charge variables
                 float chargeVelocityMult = 0.125f;
                 float maxChargeVelocity = (bossRush || enraged) ? 24f : death ? 21f : revenge ? 19.5f : expertMode ? 18f : 15f;
@@ -339,18 +342,29 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Start charge
                 if (NPC.ai[1] == 0f)
                 {
-                    // Set damage
-                    NPC.damage = setDamage;
-
                     Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(new Vector2(NPC.direction, 0f)) * maxChargeVelocity;
                     NPC.velocity = velocity * chargeVelocityMult;
 
-                    NPC.ai[1] = 1f;
-                    NPC.netUpdate = true;
+                    if (NPC.Distance(player.Center) > minChargeSafeDistance)
+                    {
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
 
-                    SoundEngine.PlaySound(SlimeGodCore.BigShotSound, NPC.Center);
+                        // Move away if too close
+                        NPC.velocity /= chargeVelocityMult * -1f;
+                    }
+                    else
+                    {
+                        // Set damage
+                        NPC.damage = setDamage;
 
-                    NPC.aiAction = 1;
+                        NPC.ai[1] = 1f;
+                        NPC.netUpdate = true;
+
+                        SoundEngine.PlaySound(SlimeGodCore.BigShotSound, NPC.Center);
+
+                        NPC.aiAction = 1;
+                    }
                 }
                 else if (NPC.ai[1] == 1f)
                 {
