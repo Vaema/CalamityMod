@@ -150,10 +150,10 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 SoundEngine.PlaySound(SoundID.NPCDeath1, NPC.Center);
                 Vector2 spawnAt = NPC.Center + new Vector2(0f, NPC.height / 2f);
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X - 30, (int)spawnAt.Y, ModContent.NPCType<SplitCrimulanPaladin>());
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X + 30, (int)spawnAt.Y, ModContent.NPCType<SplitCrimulanPaladin>());
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X - 80, (int)spawnAt.Y, ModContent.NPCType<SplitCrimulanPaladin>(), 0, 0f, 0f, 0f);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X + 80, (int)spawnAt.Y, ModContent.NPCType<SplitCrimulanPaladin>(), 0, 0f, 0f, 45f);
                 if (Main.zenithWorld && NPC.CountNPCS(ModContent.NPCType<SplitEbonianPaladin>()) < 3) // Split into 3 slimes if the other large slime hasn't split yet
-                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X, (int)spawnAt.Y - 30, ModContent.NPCType<SplitCrimulanPaladin>());
+                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnAt.X, (int)spawnAt.Y - 80, ModContent.NPCType<SplitCrimulanPaladin>(), 0, 0f, 0f, 90f);
 
                 NPC.life = 0;
                 NPC.HitEffect();
