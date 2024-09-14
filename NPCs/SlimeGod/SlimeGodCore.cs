@@ -208,10 +208,6 @@ namespace CalamityMod.NPCs.SlimeGod
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                NPC.TargetClosest();
-
             Player player = Main.player[NPC.target];
 
             if (!slimesSpawned)
@@ -272,8 +268,8 @@ namespace CalamityMod.NPCs.SlimeGod
             // Vanish phase
             if (ShouldDespawn(NPC))
             {
-            // Avoid cheap bullshit
-            NPC.damage = 0;
+                // Avoid cheap bullshit
+                NPC.damage = 0;
 
                 // Make sure Opacity is set to 0.8f if it's below that when the vanish phase starts
                 if (NPC.ai[3] == 0f)
@@ -381,11 +377,11 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Despawn
-            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles))
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles))
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
                 {
                     if (NPC.velocity.Y < -3f)
                         NPC.velocity.Y = -3f;
@@ -393,7 +389,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     if (NPC.velocity.Y > 16f)
                         NPC.velocity.Y = 16f;
 
-                    if (NPC.position.Y > Main.worldSurface * 16.0)
+                    if (NPC.position.Y > Main.worldSurface * 16D)
                     {
                         for (int x = 0; x < Main.maxNPCs; x++)
                         {
