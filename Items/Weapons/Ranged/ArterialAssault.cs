@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Projectile shotArrow = Projectile.NewProjectileDirect(source, realPlayerPos, arrowVel, type, damage, knockback, player.whoAmI);
             shotArrow.noDropItem = true;
             shotArrow.tileCollide = false;
-            shotArrow.Calamity().allProjectilesHome = 300f;
+            shotArrow.Calamity().conditionalHomingRange = 300f;
             return false;
         }
 
