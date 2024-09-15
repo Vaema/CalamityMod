@@ -87,13 +87,22 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
+            // Allow only one pick up of the card this way per player (also don't give it to dead people)
+            Player player = Main.player[Main.myPlayer];
+            if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
+            {
+                orig();
+                return;
+            }
+
             // Find 2 specific sets of text from the live chat box (as the player is typing)
             // Gives the item to you and abruptly shuts the chat box down if both parts are found
             string text = Main.chatText.ToLower();
             string prefix = "Items.Accessories.PunchCard.SpawnText";
             if ((text.Contains(CalamityUtils.GetTextValue($"{prefix}1")) || text.Contains(CalamityUtils.GetTextValue($"{prefix}1Alt"))) && text.Contains(CalamityUtils.GetTextValue($"{prefix}2")))
             {
-                Main.player[Main.myPlayer].QuickSpawnItem(Player.GetSource_None(), ModContent.ItemType<PunchCard>(), 1);
+                player.QuickSpawnItem(Player.GetSource_None(), ModContent.ItemType<PunchCard>(), 1);
+                player.Calamity().spawnedPunchCard = true;
                 Main.chatText = "";
                 Main.ClosePlayerChat();
                 Main.chatRelease = false;
