@@ -186,11 +186,12 @@ namespace CalamityMod.CalPlayer
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
 
-            // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if you change this one!)
+            // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
+            // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
             if (arcFlashRing && (Main.rand.Next(0, 100) < 6))
             {
                 var source = item.GetSource_FromThis();
-                int damage = (int)(hit.Damage * 4f); // 400% damage
+                int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
                 damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                 Vector2 position = target.Center + new Vector2(0, -750);
 
@@ -364,16 +365,22 @@ namespace CalamityMod.CalPlayer
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
 
             CalamityGlobalProjectile globalProj = proj.Calamity();
-            // Arc Flash Ring lightning strike (Remember to change the one for item hits if you change this one!)
-            if (arcFlashRing && (Main.rand.Next(0, 100) < MathHelper.Clamp(6 - proj.numHits, 1, 6)) && proj.type != ProjectileType<FlashBolt>() && globalProj.spawnArcFlash)
+            // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)
+            // Minions ignore the chance penalty on penetration
+            bool spawnChance = (Main.rand.Next(0, 100) < MathHelper.Clamp(6 - proj.numHits, (proj.minion ? 6 : 1), 6));
+            if (arcFlashRing && spawnChance && proj.type != ProjectileType<FlashBolt>() && globalProj.spawnArcFlash)
             {
                 var source = proj.GetSource_FromThis();
-                int damage = (int)(hit.Damage * 4f); // 400% damage
+                int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
                 damage = Player.ApplyArmorAccDamageBonusesTo(damage);
                 Vector2 position = target.Center + new Vector2(0, -750);
 
-                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1, target.whoAmI);
+                Projectile bolt = Projectile.NewProjectileDirect(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, 1, target.whoAmI);
+                bolt.DamageType = hit.DamageType;
+
                 globalProj.spawnArcFlash = false;
+                // This is really only used for long lasting projectiles and contact damage minions
+                globalProj.arcFlashCooldown = 90;
             }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)

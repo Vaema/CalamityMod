@@ -213,6 +213,17 @@ AquaticHeart: {
 		'''
 }
 
+ArcFlashRing: {
+	DisplayName: Arc Flash Ring
+	Tooltip:
+		'''
+Attacks have a 6% chance to call down a lightning bolt for 4x damage
+The chance is reduced for each enemy an attack hits
+The bolt's damage is based on non-crit damage, but can itself crit 
+Bolts are transparent and silent if visibility is disabled
+		'''
+}
+
 ArchaicPowder: {
 	DisplayName: Archaic Powder
 	Tooltip:
@@ -2062,9 +2073,4 @@ Popo: {
 		Transforms the holder into a snowman
 		'Don't let the demons steal your nose'
 		'''
-}
-
-ArcFlashRing: {
-	DisplayName: Arc Flash Ring
-	Tooltip: ""
 }

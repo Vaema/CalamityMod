@@ -34,6 +34,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
+            // Visibility/Sound toggle on acc visibility
             bool visible = Owner.Calamity().arcFlashRingVisual;
             colorValue = MathHelper.Lerp(colorValue, 50, 0.025f);
             Color usedColor = Color.Lerp(Color.Cyan, Color.Orchid, Utils.GetLerpValue(0, 50, colorValue));
@@ -100,11 +101,11 @@ namespace CalamityMod.Projectiles.Typeless
                     dust.noGravity = false;
                     dust.color = Main.rand.NextBool(5) ? Color.Cyan : Color.Orchid;
                 }
-                Particle pulse2 = new CustomPulse(pos   , Vector2.Zero, Color.Orchid, "CalamityMod/Particles/HighResFoggyCircleHardEdge", new Vector2(1, 1), 0, 0f, 0.055f, 10);
+                Particle pulse2 = new CustomPulse(pos, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/HighResFoggyCircleHardEdge", new Vector2(1, 1), 0, 0f, 0.0715f, 10);
                 GeneralParticleHandler.SpawnParticle(pulse2);
-                Particle orb = new CustomPulse(pos, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.6f, 0.5f, 14);
+                Particle orb = new CustomPulse(pos, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.78f, 0.5f, 14);
                 GeneralParticleHandler.SpawnParticle(orb);
-                Particle orb2 = new CustomPulse(pos, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.25f, 0.2f, 14);
+                Particle orb2 = new CustomPulse(pos, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.325f, 0.2f, 14);
                 GeneralParticleHandler.SpawnParticle(orb2);
             }
         }

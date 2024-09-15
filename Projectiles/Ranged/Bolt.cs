@@ -68,8 +68,6 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }
-            if (Projectile.numHits > 0)
-                homing = false;
             if (time % 15 == 0)
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, (effectVel * 10) * Main.rand.NextFloat(-0.4f, -0.7f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
@@ -106,7 +104,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.penetrate++;
             }
             else
+            {
                 colorValue = Main.rand.Next(0, 10);
+                homing = false;
+            }
+
             target.AddBuff(BuffID.Electrified, 90);
         }
         public override bool PreDraw(ref Color lightColor)

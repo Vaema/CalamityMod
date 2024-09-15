@@ -88,6 +88,7 @@ namespace CalamityMod.Projectiles
 
         // Arc Flash bolt spawning management
         public bool spawnArcFlash = true;
+        public int arcFlashCooldown = 0;
 
         // Adds Brimstone flames to bullets, currently only used by Animosity
         public bool brimstoneBullets = false;
@@ -3899,6 +3900,11 @@ namespace CalamityMod.Projectiles
 
                 // Support to help things like holdout swords work with Arc Flash Ring
                 if (!spawnArcFlash && projectile.numHits == 0)
+                    spawnArcFlash = true;
+                // Cooldown for the arc flash so that long lasting projectiles (like dashing summons) can spawn multiple bolts
+                if (arcFlashCooldown >= 0)
+                    arcFlashCooldown--;
+                if (arcFlashCooldown == 0)
                     spawnArcFlash = true;
 
                 if (allProjectilesHome)
