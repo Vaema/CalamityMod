@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.AstralDesert
 {
-    public class AstralPalmTree : ModPalmTree
+    public class AstralPalmTree : GlowMaskPalmTree
     {
         public override void SetStaticDefaults()
         {
@@ -32,12 +32,20 @@ namespace CalamityMod.Tiles.AstralDesert
         };
 
         public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree");
+        public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTreeGlow");
 
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_Tops");
+        public override Asset<Texture2D> GetTopGlowTextures() => null;
 
 
         //I don't know what this means. Why do palm trees have branches?? Since when. Will ask spriters for an oasis alt later
         public override Asset<Texture2D> GetOasisTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_OasisTops");
+        public override Asset<Texture2D> GetOasisTopGlowTextures() => null;
+
+        public override Color GetGlowColor(int i, int j)
+        {
+            return Color.White;
+        }
 
         public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
 

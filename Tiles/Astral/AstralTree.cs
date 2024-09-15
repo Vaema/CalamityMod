@@ -39,6 +39,11 @@ namespace CalamityMod.Tiles.Astral
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Tops");
         public override Asset<Texture2D> GetTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Tops_Glow");
 
+        public override Color GetGlowColor(int i, int j)
+        {
+            return Color.White * 0.5f;
+        }
+
         public override void SetTreeFoliageSettings(Tile tile, ref int xoffset, ref int treeFrame, ref int floorY, ref int topTextureFrameWidth, ref int topTextureFrameHeight)
         {
             //What does this code do?

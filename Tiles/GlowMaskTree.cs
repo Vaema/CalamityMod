@@ -22,5 +22,7 @@ namespace CalamityMod.Tiles
         public abstract Asset<Texture2D> GetGlowTexture();
         public abstract Asset<Texture2D> GetTopGlowTextures();
         public abstract Asset<Texture2D> GetBranchGlowTextures();
+
+        public abstract Color GetGlowColor(int i, int j);
     }
 }

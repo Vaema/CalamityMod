@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria.GameContent.RGB;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -13,5 +15,7 @@ namespace CalamityMod.Tiles
     {
         public abstract Asset<Texture2D> GetFruitGlowTexture();
         public abstract Asset<Texture2D> GetGlowTexture();
+
+        public abstract Color GetGlowColor(int i, int j);
     }
 }

@@ -54,6 +54,7 @@ namespace CalamityMod.ILEditing
 
             // Graphics (ModPlant stuff)
             IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
+            On_TileDrawing.DrawBasicTile += DrawTreeTrunkAndCactusGlowMask;
 
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
