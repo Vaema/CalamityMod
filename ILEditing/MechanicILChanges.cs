@@ -1942,6 +1942,8 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Hellscape for GlowMask ModPlants
+
+        #region Tree Trunk / Cactus GlowMask
         private void DrawTreeTrunkAndCactusGlowMask(On_TileDrawing.orig_DrawBasicTile orig, TileDrawing self, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, TileDrawInfo drawData, Rectangle normalTileRect, Vector2 normalTilePosition)
         {
             orig(self, screenPosition, screenOffset, tileX, tileY, drawData, normalTileRect, normalTilePosition);
@@ -2014,7 +2016,9 @@ namespace CalamityMod.ILEditing
             }
             #endregion
         }
+        #endregion
 
+        #region Tree Parts GlowMask
         private static void DrawTreeGlowMask(ILContext il)
         {
             var cursor = new ILCursor(il);
@@ -2083,6 +2087,7 @@ namespace CalamityMod.ILEditing
                 };
             });
         }
+        #endregion
 
         #region GlowMask Patch SubParts
         private static void ApplyTreeGlowMaskSubParts<PlantType>(
@@ -2099,14 +2104,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            cursor.Index -= 1; // 1 Instruction Backward should be TreeStyle LdLoc
-            if (!cursor.Next.MatchLdloc(out var colorLocaIdx))
-            {
-                LogFailure("GlowMask Tree Rendering", $"Could not locate Ldloc for TreeStyleIndex ({debugSubpartName})");
-                return;
-            }
-
-            cursor.Index -= 2; // 2 (total 3) Instruction Backward should be TreeStyle LdLoc
+            cursor.Index -= 3; // 3 Instruction Backward should be TreeStyle LdLoc
             if (!cursor.Next.MatchLdloc(out var treeStyleLocaIdx))
             {
                 LogFailure("GlowMask Tree Rendering", $"Could not locate Ldloc for TreeStyleIndex ({debugSubpartName})");
@@ -2119,9 +2117,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            cursor.EmitLdarg0(); // self
             cursor.EmitLdloc(treeStyleLocaIdx); // TreeStyle
-            cursor.EmitLdloc(colorLocaIdx);
             cursor.EmitLdloc(xLocaIdx);
             cursor.EmitLdloc(yLocaIdx);
             cursor.EmitDelegate((
@@ -2136,9 +2132,7 @@ namespace CalamityMod.ILEditing
                 SpriteEffects effects,
                 float layerDepth,
 
-                TileDrawing self,
                 int style,
-                int colorId,
                 int tileX,
                 int tileY) =>
             {
