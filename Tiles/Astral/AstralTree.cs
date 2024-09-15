@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Astral
 {
-    public class AstralTree : ModTree
+    public class AstralTree : GlowMaskTree
     {
         public override void SetStaticDefaults()
         {
@@ -32,7 +32,12 @@ namespace CalamityMod.Tiles.Astral
             SpecialGroupMaximumSaturationValue = 1f
         };
 
+        public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree");
+        public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Glow");
+        public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Branches");
+        public override Asset<Texture2D> GetBranchGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Branches_Glow");
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Tops");
+        public override Asset<Texture2D> GetTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Tops_Glow");
 
         public override void SetTreeFoliageSettings(Tile tile, ref int xoffset, ref int treeFrame, ref int floorY, ref int topTextureFrameWidth, ref int topTextureFrameHeight)
         {
@@ -40,8 +45,6 @@ namespace CalamityMod.Tiles.Astral
             //treeFrame = (i + j * j) % 3;
         }
 
-        public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree_Branches");
-        public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/Astral/AstralTree");
         public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 

@@ -1940,5 +1940,122 @@ namespace CalamityMod.ILEditing
             }
         }
         #endregion
+
+        #region Hellscape for GlowMask ModPlants
+
+        #region GlowMask Trees
+        private static void DrawTreeGlowMask(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-Top", "GetTreeTopTexture", (glowMaskTree) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetTopGlowTextures().Value,
+                    Color = Color.White
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-R", "GetTreeBranchTexture", (glowMaskTree) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetBranchGlowTextures().Value,
+                    Color = Color.White
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-L", "GetTreeBranchTexture", (glowMaskTree) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetBranchGlowTextures().Value,
+                    Color = Color.White
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskPalmTree>(cursor, "GlowMaskPalmTree-Top", "GetTreeTopTexture", (glowMaskPalmTree) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskPalmTree.GetTopGlowTextures().Value,
+                    Color = Color.White
+                };
+            });
+        }
+
+        private static void ApplyTreeGlowMaskSubParts<PlantType>(ILCursor cursor, string debugSubpartName, string getTextureMethodName, Func<PlantType, GlowMaskPlantDrawInfo?> onPlantDrawn) where PlantType : IPlant
+        {
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<TileDrawing>(getTextureMethodName)))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate First {getTextureMethodName} call ({debugSubpartName})");
+                return;
+            }
+
+            cursor.Index -= 1; // 1 Instruction Backward should be TreeStyle LdLoc
+            if (!cursor.Next.MatchLdloc(out var colorLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate Ldloc for TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            cursor.Index -= 2; // 2 (total 3) Instruction Backward should be TreeStyle LdLoc
+            if (!cursor.Next.MatchLdloc(out var treeStyleLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate Ldloc for TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<SpriteBatch>("Draw")))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate DrawCall ({debugSubpartName})");
+                return;
+            }
+
+            cursor.EmitLdarg0(); // self
+            cursor.EmitLdloc(treeStyleLocaIdx); // TreeStyle
+            cursor.EmitLdloc(colorLocaIdx);
+            cursor.EmitDelegate((
+                SpriteBatch spriteBatch,
+                Texture2D texture,
+                Vector2 position,
+                Rectangle? sourceRectangle,
+                Color color,
+                float rotation,
+                Vector2 origin,
+                float scale,
+                SpriteEffects effects,
+                float layerDepth,
+
+                TileDrawing self,
+                int style,
+                int colorId) =>
+            {
+                spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+
+                // Spooky Hardcoded Index: style above 100 is modded tile
+                if (style < 100)
+                    return;
+
+                int lookup = style - 100;
+                if (PlantLoader.Get<ModTree>(TileID.Trees, lookup) is not PlantType plant)
+                    return;
+
+                GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant) ?? default;
+                if (drawInfo.HasValue)
+                {
+                    var info = drawInfo.Value;
+                    spriteBatch.Draw(info.Texture, position, sourceRectangle, info.Color, rotation, origin, scale, effects, layerDepth);
+                }
+            });
+            cursor.Next.OpCode = OpCodes.Nop; // remove next drawcall
+        }
+        #endregion
+
+        #region GlowMask Cactus
+
+        #endregion
+
+        #endregion
     }
 }

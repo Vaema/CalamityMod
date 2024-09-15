@@ -52,6 +52,9 @@ namespace CalamityMod.ILEditing
             On_Player.ApplyEquipVanity_Item += DyeableShadersRenderer.CheckVanityDetour;
             On_Player.UpdateArmorSets += DyeableShadersRenderer.CheckArmorSetsDetour;
 
+            // Graphics (ModPlant stuff)
+            IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
+
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
