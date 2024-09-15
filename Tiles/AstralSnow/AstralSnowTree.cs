@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.AstralSnow
 {
-    public class AstralSnowTree : ModTree
+    public class AstralSnowTree : GlowMaskTree
     {
         public override void SetStaticDefaults()
         {
@@ -32,17 +32,23 @@ namespace CalamityMod.Tiles.AstralSnow
             SpecialGroupMaximumSaturationValue = 1f
         };
 
+        public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree");
+        public override Asset<Texture2D> GetGlowTexture() => null;
+        public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_Branches");
+        public override Asset<Texture2D> GetBranchGlowTextures() => null;
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_Tops");
+        public override Asset<Texture2D> GetTopGlowTextures() => null;
+
+        public override Color GetGlowColor(int i, int j)
+        {
+            return Color.White * 0.5f;
+        }
 
         public override void SetTreeFoliageSettings(Tile tile, ref int xoffset, ref int treeFrame, ref int floorY, ref int topTextureFrameWidth, ref int topTextureFrameHeight)
         {
             //What does this code do?
             //treeFrame = (i + j * j) % 6;
         }
-
-        public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_Branches");
-
-        public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree");
 
         public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
 

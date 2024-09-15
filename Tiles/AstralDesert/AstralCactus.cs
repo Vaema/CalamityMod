@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.AstralDesert
         public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralCactus");
         public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralCactusGlow");
 
-        //What is a FruitTexture
+        // TODO: Fruit Texture for Astral Cactus (it's for Pink Prickly Pear)
         public override Asset<Texture2D> GetFruitTexture() => null;
         public override Asset<Texture2D> GetFruitGlowTexture() => null;
 
