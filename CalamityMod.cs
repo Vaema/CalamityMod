@@ -208,17 +208,9 @@ namespace CalamityMod
             // Initialize the EnemyStats struct as early as it is safe to do so
             NPCStats.Load();
 
-            // Initialize Calamity Lists so they may be used elsewhere immediately
-            CalamityLists.LoadLists();
-
             // Initialize Calamity Balance, since it is tightly coupled with the remaining lists
             CalamityGlobalItem.LoadTweaks();
             CalamityGlobalProjectile.LoadTweaks();
-
-            // Make Graveyard biomes require more Gravestones
-            SceneMetrics.GraveyardTileMax = 60;
-            SceneMetrics.GraveyardTileMin = 40;
-            SceneMetrics.GraveyardTileThreshold = 52;
 
             if (!Main.dedServ)
             {
@@ -330,7 +322,6 @@ namespace CalamityMod
             Attunement.Unload();
             EnchantmentManager.UnloadAllEnchantments();
             VanillaArmorChangeManager.Unload();
-            CalamityLists.UnloadLists();
             NPCStats.Unload();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
@@ -357,10 +348,6 @@ namespace CalamityMod
                 TextureAssets.FlyingCarpet = carpetOriginal;
                 GeneralParticleHandler.Unload();
             }
-
-            SceneMetrics.GraveyardTileMax = 36;
-            SceneMetrics.GraveyardTileMin = 16;
-            SceneMetrics.GraveyardTileThreshold = 28;
 
             carpetOriginal = null;
 
