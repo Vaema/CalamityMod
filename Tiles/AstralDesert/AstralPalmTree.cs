@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
@@ -44,7 +45,14 @@ namespace CalamityMod.Tiles.AstralDesert
 
         public override Color GetGlowColor(int i, int j)
         {
-            return Color.White;
+            float brightness = 1f;
+            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.012f;
+            brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness = MathHelper.Clamp(brightness, 0.0f, 1.0f);
+            return Color.White * MathHelper.Lerp(0.05f, 0.75f, brightness);
         }
 
         public override int DropWood() => ModContent.ItemType<Items.Placeables.AstralMonolith>();
