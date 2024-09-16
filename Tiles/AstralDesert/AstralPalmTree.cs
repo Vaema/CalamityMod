@@ -35,12 +35,12 @@ namespace CalamityMod.Tiles.AstralDesert
         public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTreeGlow");
 
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_Tops");
-        public override Asset<Texture2D> GetTopGlowTextures() => null;
+        public override Asset<Texture2D> GetTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_TopsGlow");
 
 
         //I don't know what this means. Why do palm trees have branches?? Since when. Will ask spriters for an oasis alt later
         public override Asset<Texture2D> GetOasisTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_OasisTops");
-        public override Asset<Texture2D> GetOasisTopGlowTextures() => null;
+        public override Asset<Texture2D> GetOasisTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralDesert/AstralPalmTree_OasisTopsGlow");
 
         public override Color GetGlowColor(int i, int j)
         {

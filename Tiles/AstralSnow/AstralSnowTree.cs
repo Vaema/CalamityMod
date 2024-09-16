@@ -33,15 +33,15 @@ namespace CalamityMod.Tiles.AstralSnow
         };
 
         public override Asset<Texture2D> GetTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree");
-        public override Asset<Texture2D> GetGlowTexture() => null;
+        public override Asset<Texture2D> GetGlowTexture() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTreeGlow");
         public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_Branches");
-        public override Asset<Texture2D> GetBranchGlowTextures() => null;
+        public override Asset<Texture2D> GetBranchGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_BranchesGlow");
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_Tops");
-        public override Asset<Texture2D> GetTopGlowTextures() => null;
+        public override Asset<Texture2D> GetTopGlowTextures() => ModContent.Request<Texture2D>("CalamityMod/Tiles/AstralSnow/AstralSnowTree_TopsGlow");
 
         public override Color GetGlowColor(int i, int j)
         {
-            return Color.White * 0.5f;
+            return Color.White;
         }
 
         public override void SetTreeFoliageSettings(Tile tile, ref int xoffset, ref int treeFrame, ref int floorY, ref int topTextureFrameWidth, ref int topTextureFrameHeight)
