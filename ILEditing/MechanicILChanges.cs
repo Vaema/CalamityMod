@@ -2077,19 +2077,22 @@ namespace CalamityMod.ILEditing
                 };
             });
 
-            ApplyTreeGlowMaskSubParts<GlowMaskPalmTree>(cursor, "GlowMaskPalmTree-Top", "GetTreeTopTexture", xLocaIdx, yLocaIdx,
+            ApplyPalmTreeGlowMaskSubParts<GlowMaskPalmTree>(cursor, "GlowMaskPalmTree-Top", "GetTreeTopTexture", xLocaIdx, yLocaIdx,
                 (glowMaskPalmTree, tileX, tileY) =>
             {
                 return new GlowMaskPlantDrawInfo()
                 {
-                    Texture = glowMaskPalmTree.GetTopGlowTextures().Value,
+                    Texture = WorldGen.IsPalmOasisTree(tileX) ?
+                        glowMaskPalmTree.GetOasisTopGlowTextures().Value :
+                        glowMaskPalmTree.GetTopGlowTextures().Value,
+
                     Color = glowMaskPalmTree.GetGlowColor(tileX, tileY)
                 };
             });
         }
         #endregion
 
-        #region GlowMask Patch SubParts
+        #region GlowMask Patch Tree SubParts
         private static void ApplyTreeGlowMaskSubParts<PlantType>(
             ILCursor cursor,
             string debugSubpartName,
@@ -2144,6 +2147,66 @@ namespace CalamityMod.ILEditing
 
                 int lookup = style - 100;
                 if (PlantLoader.Get<ModTree>(TileID.Trees, lookup) is not PlantType plant)
+                    return;
+
+                GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant, tileX, tileY) ?? default;
+                if (drawInfo.HasValue)
+                {
+                    var info = drawInfo.Value;
+                    spriteBatch.Draw(info.Texture, position, sourceRectangle, info.Color, rotation, origin, scale, effects, layerDepth);
+                }
+            });
+            cursor.Next.OpCode = OpCodes.Nop; // remove next drawcall
+        }
+        #endregion
+
+        #region GlowMask Patch PalmTree SubParts
+        private static void ApplyPalmTreeGlowMaskSubParts<PlantType>(
+            ILCursor cursor,
+            string debugSubpartName,
+            string getTextureMethodName,
+            int xLocaIdx,
+            int yLocaIdx,
+            Func<PlantType, int, int, GlowMaskPlantDrawInfo?> onPlantDrawn)
+        {
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<TileDrawing>(getTextureMethodName)))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate First {getTextureMethodName} call ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<SpriteBatch>("Draw")))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate DrawCall ({debugSubpartName})");
+                return;
+            }
+
+            cursor.EmitLdloc(xLocaIdx);
+            cursor.EmitLdloc(yLocaIdx);
+            cursor.EmitDelegate((
+                SpriteBatch spriteBatch,
+                Texture2D texture,
+                Vector2 position,
+                Rectangle? sourceRectangle,
+                Color color,
+                float rotation,
+                Vector2 origin,
+                float scale,
+                SpriteEffects effects,
+                float layerDepth,
+
+                int tileX,
+                int tileY) =>
+            {
+                spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+
+                // TODO: This can be replace to read style and biome index from ilcode
+                // ... When we can figure out how to extract info from them
+                // Check TileDrawing.DrawTrees for context
+                WorldGen.GetTreeBottom(tileX, tileY, out var sandX, out var sandY);
+                var sandType = Main.tile[sandX, sandY].TileType;
+
+                if (PlantLoader.Get<ModPalmTree>(TileID.PalmTree, sandType) is not PlantType plant)
                     return;
 
                 GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant, tileX, tileY) ?? default;
