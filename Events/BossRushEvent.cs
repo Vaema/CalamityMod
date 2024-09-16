@@ -39,6 +39,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Skies;
 using CalamityMod.Systems;
 using CalamityMod.UI.DraedonSummoning;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -590,7 +591,7 @@ namespace CalamityMod.Events
 
                     // Change time as necessary.
                     if (Bosses[BossRushStage].ToChangeTimeTo != TimeChangeContext.None)
-                        CalamityUtils.ChangeTime(Bosses[BossRushStage].ToChangeTimeTo == TimeChangeContext.Day);
+                        CalamityWorld.ResetTime(Bosses[BossRushStage].ToChangeTimeTo == TimeChangeContext.Day);
 
                     // Play a special boss roar sound by default.
                     if (!Bosses[BossRushStage].UsesSpecialSound)

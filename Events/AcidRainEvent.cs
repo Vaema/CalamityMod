@@ -331,7 +331,7 @@ namespace CalamityMod.Events
                         DownedBossSystem.downedAquaticScourgeAcidRain = DownedBossSystem.downedAquaticScourge;
                     }
                     HasTriedToSummonOldDuke = false;
-                    CalamityMod.StopRain();
+                    CalamityWorld.StopRain();
                 }
                 CalamityNetcode.SyncWorld();
 

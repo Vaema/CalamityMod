@@ -433,16 +433,6 @@ namespace CalamityMod
         }
         #endregion
 
-        #region Stop Rain
-        public static void StopRain()
-        {
-            if (!Main.raining)
-                return;
-            Main.raining = false;
-            CalamityNetcode.SyncWorld();
-        }
-        #endregion
-
         #region Netcode
         public override void HandlePacket(BinaryReader reader, int whoAmI) => CalamityNetcode.HandlePacket(this, reader, whoAmI);
         #endregion

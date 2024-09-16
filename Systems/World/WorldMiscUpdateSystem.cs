@@ -99,7 +99,7 @@ namespace CalamityMod.Systems
 
             // Disable sandstorms if the Desert Scourge is still alive and Hardmode hasn't begun.
             if (!DownedBossSystem.downedDesertScourge && Main.netMode != NetmodeID.MultiplayerClient && !Main.hardMode)
-                CalamityUtils.StopSandstorm();
+                CalamityWorld.StopSandstorm();
 
             // Attempt to summon lab critters manually since they refuse to exist when using vanilla's spawn methods.
             // This needs to check all players since the method only runs server-side.

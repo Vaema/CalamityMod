@@ -178,9 +178,9 @@ namespace CalamityMod.NPCs.StormWeaver
             bool expertMode = Main.expertMode || bossRush;
 
             if (CalamityServerConfig.Instance.BossesStopWeather)
-                CalamityMod.StopRain();
+                CalamityWorld.StopRain();
             else if (!Main.raining && !bossRush)
-                CalamityUtils.StartRain();
+                CalamityWorld.StartRain();
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -817,7 +817,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 if (Main.netMode == NetmodeID.MultiplayerClient || (Main.netMode == NetmodeID.SinglePlayer && Main.gameMenu) || calamityGlobalNPC.newAI[1] > 0f || bossRush)
                     return;
 
-                CalamityUtils.StartRain(true, true);
+                CalamityWorld.StartRain(true, true);
                 calamityGlobalNPC.newAI[1] = 1f;
             }
         }
