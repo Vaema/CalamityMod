@@ -5001,7 +5001,7 @@ namespace CalamityMod.CalPlayer
                 CalamityMod.SpeedrunTimer.Restart();
 
             bool showWikiMessage = CalamityClientConfig.Instance.WikiStatusMessage;
-            bool showVCMMMessage = CalamityClientConfig.Instance.VCMMStatusMessage && !CalamityMod.Instance.VCMMAvailable;
+            bool showVCMMMessage = CalamityClientConfig.Instance.VCMMStatusMessage && !ExternalMods.VCMMAvailable;
             bool showStartupMessages = showWikiMessage || showVCMMMessage;
 
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display

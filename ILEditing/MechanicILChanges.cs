@@ -1246,7 +1246,7 @@ namespace CalamityMod.ILEditing
                     lightColor.Y = Math.Max(lightColor.Y, G);
                     lightColor.Z = Math.Max(lightColor.Z, B);
                 }
-                else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+                else if (tile.LiquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
                 {
                     Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
 
@@ -1332,7 +1332,7 @@ namespace CalamityMod.ILEditing
                 {
                     CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor);
                 }
-                else if (liquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+                else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
                 {
                     LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
                 }

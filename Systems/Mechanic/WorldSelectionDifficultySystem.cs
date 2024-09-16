@@ -19,7 +19,7 @@ namespace CalamityMod.Systems
             // The difficulty the world uses will be the latest applicable one, so these are added in order from easiest to hardest
             // These colors are all picked from the wiki's colors for each Difficulty combo
             // Calamity's own difficulties aren't added if the Luminance mod is on, as it adds its own world system
-            if (CalamityMod.Instance.luminance == null)
+            if (ExternalMods.luminance == null)
             {
                 WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Revengeance"), GetRevengeance, new(211, 42, 42)));
                 WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Death"), GetDeath, new(192, 64, 219)));

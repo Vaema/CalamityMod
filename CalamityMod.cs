@@ -124,86 +124,12 @@ namespace CalamityMod
 
         internal static CalamityMod Instance;
 
-        // TODO -- Mod references should be contained in a ModSystem (example name "ModLoadedChecker")
-
-        // This is Calamity's official music mod, CalamityModMusic. It is now a hard dependency.
-        internal Mod musicMod = null;
-        internal bool MusicAvailable => musicMod is not null;
-
-        // This is Vanilla Calamity Mod Music, internally named UnCalamityModMusic.
-        // VCMM is an official music add-on. Unlike the main music mod, it is not a dependency.
-        internal Mod vcmm = null;
-        internal bool VCMMAvailable => vcmm is not null;
-
-        // Please keep this in alphabetical order so it's easy to read
-        internal Mod ancientsAwakened = null;
-        internal Mod biomeLava = null;
-        internal Mod bossChecklist = null;
-        internal Mod coloredDamageTypes = null;
-        internal Mod crouchMod = null;
-        internal Mod dialogueTweak = null;
-        internal Mod fargos = null;
-        internal Mod luminance = null;
-        internal Mod magicStorage = null;
-        internal Mod overhaul = null;
-        internal Mod redemption = null;
-        internal Mod soa = null;
-        internal Mod subworldLibrary = null;
-        internal Mod summonersAssociation = null;
-        internal Mod thorium = null;
-        internal Mod varia = null;
-        internal Mod wikithis = null;
-
-        //hell background
-        //private List<HellBGLoad> loadCache;
-
         #region Load
         public override void Load()
         {
             Instance = this;
 
             carpetOriginal = TextureAssets.FlyingCarpet;
-
-            // If any of these mods aren't loaded, it will simply keep them as null.
-            musicMod = null;
-            ModLoader.TryGetMod("CalamityModMusic", out musicMod);
-            vcmm = null;
-            ModLoader.TryGetMod("UnCalamityModMusic", out vcmm);
-
-            ancientsAwakened = null;
-            ModLoader.TryGetMod("AAMod", out ancientsAwakened);
-            biomeLava = null;
-            ModLoader.TryGetMod("BiomeLava", out biomeLava);
-            bossChecklist = null;
-            ModLoader.TryGetMod("BossChecklist", out bossChecklist);
-            coloredDamageTypes = null;
-            ModLoader.TryGetMod("ColoredDamageTypes", out coloredDamageTypes);
-            crouchMod = null;
-            ModLoader.TryGetMod("CrouchMod", out crouchMod);
-            dialogueTweak = null;
-            ModLoader.TryGetMod("DialogueTweak", out dialogueTweak);
-            fargos = null;
-            ModLoader.TryGetMod("Fargowiltas", out fargos);
-            luminance = null;
-            ModLoader.TryGetMod("Luminance", out luminance);
-            magicStorage = null;
-            ModLoader.TryGetMod("MagicStorage", out magicStorage);
-            overhaul = null;
-            ModLoader.TryGetMod("TerrariaOverhaul", out overhaul);
-            redemption = null;
-            ModLoader.TryGetMod("Redemption", out redemption);
-            soa = null;
-            ModLoader.TryGetMod("SacredTools", out soa);
-            subworldLibrary = null;
-            ModLoader.TryGetMod("SubworldLibrary", out subworldLibrary);
-            summonersAssociation = null;
-            ModLoader.TryGetMod("SummonersAssociation", out summonersAssociation);
-            thorium = null;
-            ModLoader.TryGetMod("ThoriumMod", out thorium);
-            varia = null;
-            ModLoader.TryGetMod("Varia", out varia);
-            wikithis = null;
-            ModLoader.TryGetMod("Wikithis", out wikithis);
 
             // Initialize the EnemyStats struct as early as it is safe to do so
             NPCStats.Load();
@@ -234,7 +160,6 @@ namespace CalamityMod
 
             //lava
             LavaRendering.instance = new LavaRendering();
-            WeakReferenceSupport.LavaStytleToBiomeLava();
 
             Attunement.Load();
             BalancingChangesManager.Load();
@@ -292,27 +217,6 @@ namespace CalamityMod
         #region Unload
         public override void Unload()
         {
-            musicMod = null;
-            vcmm = null;
-
-            ancientsAwakened = null;
-            biomeLava = null;
-            bossChecklist = null;
-            coloredDamageTypes = null;
-            crouchMod = null;
-            dialogueTweak = null;
-            fargos = null;
-            luminance = null;
-            magicStorage = null;
-            overhaul = null;
-            redemption = null;
-            soa = null;
-            subworldLibrary = null;
-            summonersAssociation = null;
-            thorium = null;
-            varia = null;
-            wikithis = null;
-
             bossKillTimes?.Clear();
             bossKillTimes = null;
 
@@ -486,17 +390,15 @@ namespace CalamityMod
         #region Music
 
         // This function returns an available Calamity Music Mod track, or null if the Calamity Music Mod is not available.
-        public int? GetMusicFromMusicMod(string songFilename) => MusicAvailable ? MusicLoader.GetMusicSlot(musicMod, "Sounds/Music/" + songFilename) : null;
+        public int? GetMusicFromMusicMod(string songFilename) => ExternalMods.MusicAvailable ? MusicLoader.GetMusicSlot(ExternalMods.musicMod, "Sounds/Music/" + songFilename) : null;
 
         // This function returns an available VCMM track, or null if VCMM is not available.
         // Unlike the main Music Mod, VCMM is hierarchical.
-        public int? GetMusicFromVCMM(string songPath) => VCMMAvailable ? MusicLoader.GetMusicSlot(vcmm, "Assets/" + songPath) : null;
+        public int? GetMusicFromVCMM(string songPath) => ExternalMods.VCMMAvailable ? MusicLoader.GetMusicSlot(ExternalMods.vcmm, "Assets/" + songPath) : null;
 
         #endregion
 
         #region Mod Support
-        public override void PostSetupContent() => WeakReferenceSupport.Setup();
-
         public override object Call(params object[] args) => ModCalls.Call(args);
         #endregion
 

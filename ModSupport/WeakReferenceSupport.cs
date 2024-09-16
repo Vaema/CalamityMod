@@ -118,7 +118,7 @@ namespace CalamityMod
         public static readonly Func<bool> DownedBossRush = () => DownedBossSystem.downedBossRush;
     }
 
-    internal class WeakReferenceSupport
+    internal class WeakReferenceSupport : ModSystem
     {
         public const string CalamityWikiURLOld = "calamitymod.wiki.gg";
         public const string CalamityWikiURL = "https://calamitymod.wiki.gg/wiki/{}";
@@ -188,8 +188,9 @@ namespace CalamityMod
             // { "Xeroc", 26f },
         };
 
-        public static void Setup()
+        public override void PostSetupContent()
         {
+            LavaStyleToBiomeLava();
             BossChecklistSupport();
             FargosSupport();
             DialogueTweakSupport();
@@ -206,10 +207,10 @@ namespace CalamityMod
         }
 
         #region BiomeLava
-        public static void LavaStytleToBiomeLava()
+        public static void LavaStyleToBiomeLava()
         {
             CalamityMod calamity = GetInstance<CalamityMod>();
-            Mod biomelava = calamity.biomeLava;
+            Mod biomelava = ExternalMods.biomeLava;
             if (biomelava == null)
                 return;
 
@@ -262,7 +263,7 @@ namespace CalamityMod
                 return;
 
             CalamityMod calamity = GetInstance<CalamityMod>();
-            Mod wiki = calamity.wikithis;
+            Mod wiki = ExternalMods.wikithis;
             if (wiki is null)
                 return;
 
@@ -350,15 +351,15 @@ namespace CalamityMod
         // Wrapper function to detect if a subworld is in use for Subworld Library.
         internal static bool InAnySubworld()
         {
-            if (CalamityMod.Instance.subworldLibrary is null)
+            if (ExternalMods.subworldLibrary is null)
                 return false;
 
             foreach (Mod mod in ModLoader.Mods)
             {
-                if (mod.Name.Equals(CalamityMod.Instance.subworldLibrary.Name))
+                if (mod.Name.Equals(ExternalMods.subworldLibrary.Name))
                     continue;
 
-                bool anySubworldForMod = (CalamityMod.Instance.subworldLibrary.Call("AnyActive", mod) as bool?) ?? false;
+                bool anySubworldForMod = (ExternalMods.subworldLibrary.Call("AnyActive", mod) as bool?) ?? false;
                 if (anySubworldForMod)
                     return true;
             }
@@ -386,8 +387,8 @@ namespace CalamityMod
 
         private static void BossChecklistSupport()
         {
-            CalamityMod calamity = GetInstance<CalamityMod>();
-            Mod bossChecklist = calamity.bossChecklist;
+            CalamityMod calamity = CalamityMod.Instance;
+            Mod bossChecklist = ExternalMods.bossChecklist;
             if (bossChecklist is null)
                 return;
 
@@ -1111,7 +1112,7 @@ namespace CalamityMod
         #region Fargo's Mutant Mod
         private static void FargosSupport()
         {
-            Mod fargos = GetInstance<CalamityMod>().fargos;
+            Mod fargos = ExternalMods.fargos;
             if (fargos is null)
                 return;
 
@@ -1141,7 +1142,7 @@ namespace CalamityMod
         #region Dialogue Tweaks
         private static void DialogueTweakSupport()
         {
-            Mod dialogueMod = GetInstance<CalamityMod>().dialogueTweak;
+            Mod dialogueMod = ExternalMods.dialogueTweak;
             if (dialogueMod != null)
             {
                 dialogueMod.Call("ReplaceShopButtonIcon", NPCType<WITCH>(), "Head");
@@ -1152,7 +1153,7 @@ namespace CalamityMod
         #region Summoner's Association
         private static void SummonersAssociationSupport()
         {
-            Mod sAssociation = GetInstance<CalamityMod>().summonersAssociation;
+            Mod sAssociation = ExternalMods.summonersAssociation;
             if (sAssociation is null)
                 return;
 
@@ -1294,7 +1295,7 @@ namespace CalamityMod
 
         public static void ColoredDamageTypesSupport()
         {
-            Mod coloredDamageTypes = GetInstance<CalamityMod>().coloredDamageTypes;
+            Mod coloredDamageTypes = ExternalMods.coloredDamageTypes;
             if (coloredDamageTypes is null)
                 return;
 
@@ -1321,7 +1322,7 @@ namespace CalamityMod
         
         public static void LuminanceSupport()
         {
-            Mod luminance = GetInstance<CalamityMod>().luminance;
+            Mod luminance = ExternalMods.luminance;
             if (luminance is null)
                 return;
 

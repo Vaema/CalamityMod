@@ -91,7 +91,7 @@ namespace CalamityMod.ILEditing
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
 
             //LavaStyles
-            if (CalamityMod.Instance.biomeLava == null)
+            if (ExternalMods.biomeLava == null)
             {
                 //Rendering/Drawing
                 IL_Main.DoDraw += DoDrawLavas;
