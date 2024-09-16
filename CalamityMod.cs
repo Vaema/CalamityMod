@@ -250,8 +250,6 @@ namespace CalamityMod
             LavaTextures.block[0] = TextureAssets.Liquid[1];
             var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
             LavaTextures.fall[0] = waterfallTexture[1];
-            
-            CalamityShaders.LoadShaders();
 
             // This must be done separately from immediate loading, as loading is now multithreaded.
             // However, render targets and certain other graphical objects can only be created on the main thread.
