@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.UI;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -42,6 +43,15 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.rare = ItemRarityID.Purple;
             Item.vanity = true;
             Item.Calamity().devItem = true;
+            Item.useAnimation = Item.useTime = 20;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+        }
+
+        public override bool? UseItem(Player player)
+        {
+            if (Main.myPlayer == player.whoAmI)
+                PopupGUIManager.FlipActivityOfGUIWithType(typeof(PunchCardGUI));
+            return true;
         }
 
         public override void UpdateVanity(Player player)
