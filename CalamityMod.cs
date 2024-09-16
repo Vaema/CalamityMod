@@ -134,14 +134,13 @@ namespace CalamityMod
             // Initialize the EnemyStats struct as early as it is safe to do so
             NPCStats.Load();
 
-            // Initialize Calamity Balance, since it is tightly coupled with the remaining lists
+            // Initialize Calamity Balance, since it is tightly coupled with the remaining systems
             CalamityGlobalItem.LoadTweaks();
             CalamityGlobalProjectile.LoadTweaks();
 
             if (!Main.dedServ)
             {
                 LoadClient();
-                GeneralParticleHandler.Load();
                 PrimitiveRenderer.Initialize();
                 ForegroundDrawing.ForegroundManager.Load();
 
@@ -248,7 +247,6 @@ namespace CalamityMod
             if (!Main.dedServ)
             {
                 TextureAssets.FlyingCarpet = carpetOriginal;
-                GeneralParticleHandler.Unload();
             }
 
             carpetOriginal = null;

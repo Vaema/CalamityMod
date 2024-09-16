@@ -9,11 +9,12 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Particles
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class GeneralParticleHandler
+    [Autoload(Side = ModSide.Client)]
+    public sealed class GeneralParticleHandler : ModSystem
     {
         private static List<Particle> particles;
         private static Queue<Particle> particlesToSpawnNextFrame;
@@ -28,45 +29,39 @@ namespace CalamityMod.Particles
         private static List<Particle> batchedNonPremultipliedParticles;
         private static List<Particle> batchedAdditiveBlendParticles;
 
-        public static void LoadModParticleInstances()
+        public override void PostSetupContent()
         {
             Type baseParticleType = typeof(Particle);
-            foreach (Mod mod in ModLoader.Mods)
+            ReflectionHelper.IterateEveryModsTypes<Particle>(action: type =>
             {
-                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
-                {
-                    if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
-                    {
-                        int ID = particleTypes.Count; //Get the ID of the particle
-                        particleTypes[type] = ID;
+                int ID = particleTypes.Count; //Get the ID of the particle
+                particleTypes[type] = ID;
 
-                        Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
-                        particleInstances.Add(instance);
+                Particle instance = (Particle)Activator.CreateInstance(type);
+                particleInstances.Add(instance);
 
-                        string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
-                        if (instance.Texture != "")
-                            texturePath = instance.Texture;
-                        particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
-                    }
-                }
-            }
+                string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                if (instance.Texture != "")
+                    texturePath = instance.Texture;
+                particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+            });
         }
 
-        internal static void Load()
+        public override void Load()
         {
-            particles = new List<Particle>();
-            particlesToSpawnNextFrame = new Queue<Particle>();
-            particlesToKill = new List<Particle>();
-            particleTypes = new Dictionary<Type, int>();
-            particleTextures = new Dictionary<int, Texture2D>();
-            particleInstances = new List<Particle>();
+            particles = [];
+            particlesToSpawnNextFrame = [];
+            particlesToKill = [];
+            particleTypes = [];
+            particleTextures = [];
+            particleInstances = [];
 
-            batchedAlphaBlendParticles = new List<Particle>();
-            batchedNonPremultipliedParticles = new List<Particle>();
-            batchedAdditiveBlendParticles = new List<Particle>();
+            batchedAlphaBlendParticles = [];
+            batchedNonPremultipliedParticles = [];
+            batchedAdditiveBlendParticles = [];
         }
 
-        internal static void Unload()
+        public override void Unload()
         {
             particles = null;
             particlesToSpawnNextFrame = null;
