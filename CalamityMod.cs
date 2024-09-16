@@ -89,33 +89,6 @@ namespace CalamityMod
 
         public static Asset<Texture2D> carpetOriginal;
 
-        // Astral Sky/BG
-        public static Texture2D AstralSky;
-        public static Texture2D AstralSurfaceFront;
-        public static Texture2D AstralSurfaceFrontGlow;
-        public static Texture2D AstralSurfaceClose;
-        public static Texture2D AstralSurfaceCloseGlow;
-        public static Texture2D AstralSurfaceMiddle;
-        public static Texture2D AstralSurfaceMiddleGlow;
-
-        // Astral Desert Sky/BG
-        public static Texture2D AstralDesertSurfaceClose;
-        public static Texture2D AstralDesertSurfaceMiddle;
-
-        // Astral Snow Sky/BG
-        public static Texture2D AstralSnowSurfaceMiddle;
-
-        // Sulphur Sea Sky/BG
-        public static Texture2D SulphurSeaSky;
-        public static Texture2D SulphurSeaSkyFront;
-        public static Texture2D SulphurSeaSurface;
-
-        // Destroyer glowmasks
-        public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
-
-        // Probe glowmask
-        public static Asset<Texture2D> ProbeGlowmask;
-
         // Holds the Texture Arrays for all the lava textures.
         // These are used for the lava styles. They are seperate from Textureasset.Instance._liquidTexture as they will conflict with ModWaterStyle
         // Can hold up to 255 lava styles (more than enough) (excluding the normal lava texture which is liquidTexture 1)
@@ -130,14 +103,6 @@ namespace CalamityMod
         public static int LavaStyle;
 
         public static float[] lavaAlpha = new float[1];
-
-        // Wall of Flesh glowmasks
-        public static Asset<Texture2D> WallOfFleshEyeGlowmask;
-        public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
-
-        // Master Rev+ Skeletron Prime
-        public static Asset<Texture2D> ChadPrime;
-        public static Asset<Texture2D> ChadPrimeEyeGlowmask;
 
         // Boss Kill Time data structure
         public static SortedDictionary<int, int> bossKillTimes;
@@ -287,50 +252,13 @@ namespace CalamityMod
 
         private void LoadClient()
         {
-            // Astral Sky/BG
-            AstralSky = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSky", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceFront = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceFront", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceFrontGlow = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceFrontGlow", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceClose = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceClose", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceCloseGlow = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceCloseGlow", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceMiddleGlow = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceMiddleGlow", AssetRequestMode.ImmediateLoad).Value;
-
-            //Astral Desert Sky/BG
-            AstralDesertSurfaceClose = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralDesertSurfaceClose", AssetRequestMode.ImmediateLoad).Value;
-            AstralDesertSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralDesertSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
-
-            //Astral Snow Sky/BG
-            AstralSnowSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSnowSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
-
-            // Sulpher Sea Sky/BG
-            SulphurSeaSky = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSky", AssetRequestMode.ImmediateLoad).Value;
-            SulphurSeaSkyFront = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSkyFront", AssetRequestMode.ImmediateLoad).Value;
-            SulphurSeaSurface = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSurface", AssetRequestMode.ImmediateLoad).Value;
-
-            // Destroyer glowmasks
-            DestroyerGlowmasks[0] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
-            DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
-            DestroyerGlowmasks[2] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
-
             // Lava Texture
             LavaTextures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
             LavaTextures.slope[0] = TextureAssets.LiquidSlope[1];
             LavaTextures.block[0] = TextureAssets.Liquid[1];
             var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
             LavaTextures.fall[0] = waterfallTexture[1];
-
-            // Probe glowmask
-            ProbeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/ProbeGlow", AssetRequestMode.AsyncLoad);
-
-            // Wall of Flesh glowmasks
-            WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
-            WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
-
-            // Master Rev+ Skeletron Prime textures
-            ChadPrime = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrime", AssetRequestMode.AsyncLoad);
-            ChadPrimeEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrimeHeadGlow", AssetRequestMode.AsyncLoad);
-
+            
             CalamityShaders.LoadShaders();
 
             // This must be done separately from immediate loading, as loading is now multithreaded.
@@ -395,7 +323,6 @@ namespace CalamityMod
             varia = null;
             wikithis = null;
 
-            AstralSky = null;
             bossKillTimes?.Clear();
             bossKillTimes = null;
 
