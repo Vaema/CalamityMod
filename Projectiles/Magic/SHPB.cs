@@ -28,6 +28,33 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
         }
 
+        public static Color FindColorForSoul(int projai)
+        {
+            Color returnColor = new(0, 0, 0);
+            switch (projai)
+            {
+                case 0:
+                    returnColor = new(240, 29, 196);
+                    break;
+                case 1:
+                    returnColor = new(123, 29, 220);
+                    break;
+                case 2:
+                    returnColor = new(106, 240, 250);
+                    break;
+                case 3:
+                    returnColor = new(4, 51, 222);
+                    break;
+                case 4:
+                    returnColor = new(79, 255, 124);
+                    break;
+                case 5:
+                    returnColor = new(255, 128, 20);
+                    break;
+            }
+            return returnColor;
+        }
+
         public override void AI()
         {
             // Light and fade in
@@ -88,7 +115,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255, Main.DiscoG, 155, Projectile.alpha);
+        public override Color? GetAlpha(Color lightColor) => FindColorForSoul((int)Projectile.ai[0]);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -106,7 +133,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
             }
         }
     }

@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.localAI[0] = 100f;
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255, Main.DiscoG, 155, Projectile.alpha);
+        public override Color? GetAlpha(Color lightColor) => SHPB.FindColorForSoul((int)Projectile.ai[0]);
 
         public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(100f, 3f, lightColor);
 

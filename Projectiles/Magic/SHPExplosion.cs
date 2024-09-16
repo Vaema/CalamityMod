@@ -30,9 +30,9 @@ namespace CalamityMod.Projectiles.Magic
             lights *= Main.essScale;
             Lighting.AddLight(Projectile.Center, 5f * lights, 1f * lights, 4f * lights);
 
-            if (Projectile.ai[0] == 0f)
+            if (Projectile.ai[1] == 0f)
             {
-                Color particleColor = new(255, Main.DiscoG, 155);
+                Color particleColor = SHPB.FindColorForSoul((int)Projectile.ai[0]);
                 CustomPulse inner = new(Projectile.Center, Vector2.Zero, particleColor, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.4f, 1.5f, 20);
                 CustomPulse outer = new(Projectile.Center, Vector2.Zero, particleColor, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0.4f, 2.5f, 20);
                 CustomPulse explode = new(Projectile.Center, Vector2.Zero, particleColor, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.026f, 0.26f, 20);
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
                 GeneralParticleHandler.SpawnParticle(inner);
                 GeneralParticleHandler.SpawnParticle(outer);
                 GeneralParticleHandler.SpawnParticle(explode);
-                Projectile.ai[0] = 1f;
+                Projectile.ai[1] = 1f;
             }
         }
     }

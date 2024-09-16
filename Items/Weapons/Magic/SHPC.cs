@@ -23,6 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public const int ShotsPerSoul = 50;
         public int storedSoulpower = 0;
+        public int storedSoulType = ItemID.SoulofLight; // Determines bar color and soul effects for projectile
         public int recoilProgress = 0;
 
         public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
@@ -47,6 +48,94 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ItemRarityID.Pink;
         }
 
+        #region Weapon-Specific Functions
+        public int FindSoulForAmmo(Player player)
+        {
+            int soul = -1;
+            bool foundItem = false;
+
+            // First check ammo slots
+            for (int s = 54; s < 58; s++)
+            {
+                if (player.inventory[s].stack > 0 && player.inventory[s].ammo == ItemID.SoulofLight)
+                {
+                    soul = player.inventory[s].type;
+                    foundItem = true;
+                    break;
+                }
+            }
+
+            // If you didn't find anything in ammo slots, check normal inventory
+            if (!foundItem)
+            {
+                for (int i = 0; i < 54; i++)
+                {
+                    if (player.inventory[i].stack > 0 && player.inventory[i].ammo == ItemID.SoulofLight)
+                    {
+                        soul = player.inventory[i].type;
+                        break;
+                    }
+                }
+            }
+
+            return soul;
+        }
+
+        public Color FindColorForSoul()
+        {
+            Color returnColor = new(0, 0, 0);
+            switch (storedSoulType)
+            {
+                case ItemID.SoulofLight:
+                    returnColor = new(240, 29, 196);
+                    break;
+                case ItemID.SoulofNight:
+                    returnColor = new(123, 29, 220);
+                    break;
+                case ItemID.SoulofFlight:
+                    returnColor = new(106, 240, 250);
+                    break;
+                case ItemID.SoulofMight:
+                    returnColor = new(4, 51, 222);
+                    break;
+                case ItemID.SoulofSight:
+                    returnColor = new(79, 255, 124);
+                    break;
+                case ItemID.SoulofFright:
+                    returnColor = new(255, 128, 20);
+                    break;
+            }
+            return returnColor;
+        }
+
+        public int TransferColorToProj()
+        {
+            int projai = 0;
+            switch (storedSoulType)
+            {
+                case ItemID.SoulofLight:
+                    projai = 0;
+                    break;
+                case ItemID.SoulofNight:
+                    projai = 1;
+                    break;
+                case ItemID.SoulofFlight:
+                    projai = 2;
+                    break;
+                case ItemID.SoulofMight:
+                    projai = 3;
+                    break;
+                case ItemID.SoulofSight:
+                    projai = 4;
+                    break;
+                case ItemID.SoulofFright:
+                    projai = 5;
+                    break;
+            }
+            return projai;
+        }
+        #endregion Weapon-Specific Functions
+
         public override Vector2? HoldoutOffset() => new Vector2(-35, -10);
 
         public override bool AltFunctionUse(Player player) => true;
@@ -57,45 +146,37 @@ namespace CalamityMod.Items.Weapons.Magic
                 storedSoulpower = ShotsPerSoul;
         }
 
-        public int FindSoulForAmmo(Player player)
-        {
-            if (player.HasItem(ItemID.SoulofLight))
-                return ItemID.SoulofLight;
-            if (player.HasItem(ItemID.SoulofNight))
-                return ItemID.SoulofNight;
-            if (player.HasItem(ItemID.SoulofFlight))
-                return ItemID.SoulofFlight;
-            if (player.HasItem(ItemID.SoulofFright))
-                return ItemID.SoulofFright;
-            if (player.HasItem(ItemID.SoulofSight))
-                return ItemID.SoulofSight;
-            if (player.HasItem(ItemID.SoulofMight))
-                return ItemID.SoulofMight;
-            return -1;
-        }
-
         public override bool CanUseItem(Player player)
         {
             if (player.altFunctionUse == 2)
+            {
+                Item.useTime = 3;
+                Item.useAnimation = 3 * storedSoulpower;
                 Item.UseSound = CommonCalamitySounds.LaserCannonSound;
+            }
             else
+            {
+                Item.useTime = Item.useAnimation = 60;
                 Item.UseSound = FireSound;
+            }
 
-            return storedSoulpower > 0 || FindSoulForAmmo(player) != -1;
+            return storedSoulpower > 0 || (FindSoulForAmmo(player) != -1 && player.altFunctionUse != 2);
         }
 
         public override bool? UseItem(Player player)
         {
-            if (player.altFunctionUse != 2)
+            if (storedSoulpower > 0)
                 storedSoulpower--;
 
-            if (storedSoulpower <= 0)
+            if (storedSoulpower <= 0 && player.altFunctionUse != 2)
             {
                 bool ammoConsumed = false;
 
                 if (FindSoulForAmmo(player) != -1)
                 {
-                    player.ConsumeItem(FindSoulForAmmo(player));
+                    int soulType = FindSoulForAmmo(player);
+                    player.ConsumeItem(soulType);
+                    storedSoulType = soulType;
                     ammoConsumed = true;
                 }
 
@@ -127,13 +208,13 @@ namespace CalamityMod.Items.Weapons.Magic
                 for (int shootAmt = 0; shootAmt < 2; shootAmt++)
                 {
                     Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
-                    Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), damage, knockback * 0.5f, player.whoAmI);
+                    Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.33f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
                 }
                 return false;
             }
             else
             {
-                Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 3f, velocity, ModContent.ProjectileType<SHPB>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 3f, velocity, ModContent.ProjectileType<SHPB>(), damage, knockback, player.whoAmI, TransferColorToProj());
                 return false;
             }
         }
@@ -146,8 +227,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
             Vector2 drawPos = position + new Vector2((frame.Width - barBG.Width * 0.5f) * scale, (frame.Height + 45f) * scale);
             Rectangle frameCrop = new Rectangle(0, 0, (int)(storedSoulpower / (float)ShotsPerSoul * barFG.Width), barFG.Height);
-            Color colorBG = Color.RoyalBlue;
-            Color colorFG = Color.Lerp(Color.DarkGray, Main.DiscoColor, storedSoulpower / (float)ShotsPerSoul);
+            Color colorBG = Color.Black;
+            Color colorFG = Color.Lerp(Color.DarkGray, FindColorForSoul(), storedSoulpower / (float)ShotsPerSoul);
 
             spriteBatch.Draw(barBG, drawPos, null, colorBG, 0f, origin, scale * barScale, 0f, 0f);
             spriteBatch.Draw(barFG, drawPos, frameCrop, colorFG * 0.8f, 0f, origin, scale * barScale, 0f, 0f);

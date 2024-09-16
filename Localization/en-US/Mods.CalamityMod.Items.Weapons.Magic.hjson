@@ -781,7 +781,7 @@ SHPC: {
 		Consumes Souls as ammo
 		Fires orbs of unstable, concentrated soulpower that linger after ejection
 		Orbs create a large explosion and emit seeking souls after collapse
-		Press Right Click to fire energy beams
+		Press Right Click to discharge all soulpower in the weapon as weak energy beams
 		'''
 	TooltipGFB: It scales again :)
 }
