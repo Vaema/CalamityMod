@@ -778,8 +778,10 @@ SHPC: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Fires plasma orbs that linger and emit massive explosions
-		Press <right> to fire powerful energy beams
+		Consumes Souls as ammo
+		Fires orbs of unstable, concentrated soulpower that linger after ejection
+		Orbs create a large explosion and emit seeking souls after collapse
+		Press Right Click to fire energy beams
 		'''
 	TooltipGFB: It scales again :)
 }

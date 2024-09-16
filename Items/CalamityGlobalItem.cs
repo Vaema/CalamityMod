@@ -8,6 +8,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
@@ -203,6 +204,13 @@ namespace CalamityMod.Items
                 case ItemID.LongRainbowTrailWings:
                     item.expert = false;
                     break;
+            }
+
+            // Allow Souls to be used as ammo for SHPC.
+            if (item.type == ItemID.SoulofLight || item.type == ItemID.SoulofNight || item.type == ItemID.SoulofFlight || item.type == ItemID.SoulofMight || item.type == ItemID.SoulofSight || item.type == ItemID.SoulofFright)
+            {
+                item.ammo = ItemID.SoulofLight;
+                item.notAmmo = true; // Prevents them from showing an "Ammo" tooltip or going to ammo slots.
             }
 
             // Increase how much health Mushrooms heal.

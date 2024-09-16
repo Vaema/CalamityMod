@@ -23,49 +23,45 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 24;
             Projectile.friendly = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = 1;
+            Projectile.scale = 0.4f;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Magic;
         }
 
         public override void AI()
         {
+            // Light and fade in
             float lights = (float)Main.rand.Next(90, 111) * 0.01f;
             lights *= Main.essScale;
             Lighting.AddLight(Projectile.Center, 1f * lights, 0.2f * lights, 0.75f * lights);
             Projectile.alpha -= 2;
+
+            // Animation
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
             {
-                Projectile.frame++;
                 Projectile.frameCounter = 0;
+                Projectile.frame++;
+                if (Projectile.frame > 3)
+                    Projectile.frame = 0;
             }
-            if (Projectile.frame > 3)
-            {
-                Projectile.frame = 0;
-            }
-            Projectile.ai[0] = (float)Main.rand.Next(-100, 101) * 0.0025f;
-            Projectile.ai[1] = (float)Main.rand.Next(-100, 101) * 0.0025f;
+
+            // Size pulsing
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.scale += 0.05f;
-                if ((double)Projectile.scale > 1.2)
-                {
+                if (Projectile.scale > 1.9f)
                     Projectile.localAI[0] = 1f;
-                }
             }
             else
             {
                 Projectile.scale -= 0.05f;
-                if ((double)Projectile.scale < 0.8)
-                {
+                if (Projectile.scale < 1.5f)
                     Projectile.localAI[0] = 0f;
-                }
             }
+
             Projectile.velocity.X *= 0.985f;
             Projectile.velocity.Y *= 0.985f;
-            float projX = Projectile.Center.X;
-            float projY = Projectile.Center.Y;
             float explodeRange = 250f;
             bool canExplode = false;
             foreach (NPC n in Main.ActiveNPCs)
@@ -92,26 +88,25 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(255, Main.DiscoG, 155, Projectile.alpha);
-        }
+        public override Color? GetAlpha(Color lightColor) => new Color(255, Main.DiscoG, 155, Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
-            int y6 = framing * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
+            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3.5f)
+                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3.5f;
+
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<SHPExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, 0f, 0f);
             }
         }
     }
