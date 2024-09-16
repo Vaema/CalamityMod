@@ -2017,6 +2017,49 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Disable Tree/Cactus Culling
+        private static void DisableCullingForTreeAndCactus(ILContext il)
+        {
+            // Justification:
+            //   Culling for Tree/Cactus should be disabled to simplify the GlowMask rendering on Plants
+            //   Without this We would need to setup more ilchanges to properly gather draw position
+            //   Furthermore we might need to clone the whole vanilla code for tree rendering
+            //
+            //   And disable culling for pitch black tree/cactus would not affect the performance that much as it's really niche case
+
+            var cursor = new ILCursor(il);
+
+            int visibleFlagIndex = 0;
+            if (!cursor.TryGotoNext(MoveType.Before,
+            [
+                x => x.MatchLdloc(out visibleFlagIndex),
+                x => x.MatchLdarg(out _),
+                x => x.MatchLdfld(out _),
+                x => x.MatchCallOrCallvirt<TileDrawing>("IsVisible")
+            ]))
+            {
+                LogFailure("Disable Tree And Cactus Culling", "Unable to Locate IsVisible Call");
+                return;
+            }
+
+            if (!cursor.TryGotoPrev(MoveType.Before, x => x.MatchBrfalse(out _)))
+            {
+                LogFailure("Disable Tree And Cactus Culling", "Unable to Locate Brfalse.s");
+                return;
+            }
+
+            cursor.EmitLdarg1(); // TileDrawInfo drawInfo
+            cursor.EmitDelegate((TileDrawInfo drawInfo) =>
+            {
+                var type = drawInfo.typeCache;
+                return type == TileID.Cactus || type == TileID.Trees || type == TileID.PalmTree;
+            });
+            cursor.EmitLdloc(visibleFlagIndex);
+            cursor.EmitOr(); // visible || isTree || isCactus || isPalmTree
+            cursor.EmitStloc(visibleFlagIndex);
+        }
+        #endregion
+
         #region Tree Parts GlowMask
         private static void DrawTreeGlowMask(ILContext il)
         {

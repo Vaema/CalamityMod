@@ -53,6 +53,7 @@ namespace CalamityMod.ILEditing
             On_Player.UpdateArmorSets += DyeableShadersRenderer.CheckArmorSetsDetour;
 
             // Graphics (ModPlant stuff)
+            IL_TileDrawing.DrawSingleTile += DisableCullingForTreeAndCactus;
             IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
             On_TileDrawing.DrawBasicTile += DrawTreeTrunkAndCactusGlowMask;
 
