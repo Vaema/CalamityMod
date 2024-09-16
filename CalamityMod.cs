@@ -250,13 +250,6 @@ namespace CalamityMod
             CalamityGlobalItem.LoadTweaks();
             CalamityGlobalProjectile.LoadTweaks();
 
-            // Mount balancing occurs during runtime and is undone when Calamity is unloaded.
-            Mount.mounts[MountID.Unicorn].dashSpeed *= CalamityPlayer.UnicornSpeedNerfPower;
-            Mount.mounts[MountID.Unicorn].runSpeed *= CalamityPlayer.UnicornSpeedNerfPower;
-
-            // Buff DCU's pickaxe power to equal PML pickaxe capabilities
-            Mount.drillPickPower = 225;
-
             // Make Graveyard biomes require more Gravestones
             SceneMetrics.GraveyardTileMax = 60;
             SceneMetrics.GraveyardTileMin = 40;
@@ -437,11 +430,6 @@ namespace CalamityMod
                 TextureAssets.FlyingCarpet = carpetOriginal;
                 GeneralParticleHandler.Unload();
             }
-
-            Mount.mounts[MountID.Unicorn].dashSpeed /= CalamityPlayer.UnicornSpeedNerfPower;
-            Mount.mounts[MountID.Unicorn].runSpeed /= CalamityPlayer.UnicornSpeedNerfPower;
-
-            Mount.drillPickPower = 210;
 
             SceneMetrics.GraveyardTileMax = 36;
             SceneMetrics.GraveyardTileMin = 16;
