@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
         }
 
+        // This is reused for all SHPC projectiles
         public static Color FindColorForSoul(int projai)
         {
             Color returnColor = new(0, 0, 0);
@@ -109,9 +110,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 explosionTimer--;
                 if (explosionTimer <= 0)
-                {
                     Projectile.Kill();
-                }
             }
         }
 
@@ -134,6 +133,12 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
+
+                for (int i = 0; i < 5; i++)
+                {
+                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(6f, 9f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6));
+                }
             }
         }
     }

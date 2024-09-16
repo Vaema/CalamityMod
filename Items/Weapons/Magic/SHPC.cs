@@ -152,7 +152,7 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 Item.useTime = 3;
                 Item.useAnimation = 3 * storedSoulpower;
-                Item.UseSound = CommonCalamitySounds.LaserCannonSound;
+                Item.UseSound = null;
             }
             else
             {
@@ -205,11 +205,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                for (int shootAmt = 0; shootAmt < 2; shootAmt++)
-                {
-                    Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
-                    Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.33f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
-                }
+                SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, player.Center);
+                Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
+                Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.25f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
                 return false;
             }
             else
