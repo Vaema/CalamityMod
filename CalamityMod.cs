@@ -421,29 +421,6 @@ namespace CalamityMod
             CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
             chadPrimeIcon = ModContent.GetModBossHeadSlot(chadPrimeIconPath);
 
-            // TODO -- Is this not possible to place in ModItem.Load or ModItem.SetStaticDefaults ?
-            // Centralizing hair dye shaders like this seems absurdly stiff
-            GameShaders.Hair.BindShader(ModContent.ItemType<AdrenalineHairDye>(), new LegacyHairShaderData().UseLegacyMethod((Player player, Color newColor, ref bool lighting) => Color.Lerp(player.hairColor, new Color(0, 255, 171), ((float)player.Calamity().adrenaline / (float)player.Calamity().adrenalineMax))));
-            GameShaders.Hair.BindShader(ModContent.ItemType<RageHairDye>(), new LegacyHairShaderData().UseLegacyMethod((Player player, Color newColor, ref bool lighting) => Color.Lerp(player.hairColor, new Color(255, 83, 48), ((float)player.Calamity().rage / (float)player.Calamity().rageMax))));
-            GameShaders.Hair.BindShader(ModContent.ItemType<WingTimeHairDye>(), new LegacyHairShaderData().UseLegacyMethod((Player player, Color newColor, ref bool lighting) =>
-            {
-                float flightTimeInterpolant = player.wingTime / player.wingTimeMax;
-                if (player.mount.Active)
-                    flightTimeInterpolant = 1f;
-                else if (float.IsInfinity(flightTimeInterpolant) || float.IsNaN(flightTimeInterpolant))
-                    flightTimeInterpolant = 0f;
-
-                return Color.Lerp(player.hairColor, new Color(139, 205, 255), flightTimeInterpolant);
-            }));
-            GameShaders.Hair.BindShader(ModContent.ItemType<StealthHairDye>(), new LegacyHairShaderData().UseLegacyMethod((Player player, Color newColor, ref bool lighting) =>
-            {
-                float stealthInterpolant = player.Calamity().rogueStealth / player.Calamity().rogueStealthMax;
-                if (float.IsInfinity(stealthInterpolant) || float.IsNaN(stealthInterpolant))
-                    stealthInterpolant = 0f;
-
-                return Color.Lerp(player.hairColor, new Color(186, 85, 211), stealthInterpolant);
-            }));
-
             InvasionProgressUIManager.LoadGUIs();
         }
         #endregion
