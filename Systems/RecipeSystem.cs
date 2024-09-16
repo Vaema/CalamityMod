@@ -1950,6 +1950,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofFright);
             r.AddIngredient(ItemID.SoulofMight);
             r.AddIngredient(ItemID.SoulofSight);
+            r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
             r.DisableDecraft();
 
@@ -1960,6 +1961,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofFright);
             r.AddIngredient(ItemID.SoulofMight);
             r.AddIngredient(ItemID.SoulofSight);
+            r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
             r.DisableDecraft();
 

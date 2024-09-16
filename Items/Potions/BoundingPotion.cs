@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Potions
             CreateRecipe(3).
                 AddIngredient(ItemID.BottledWater, 3).
                 AddIngredient(ItemID.Frog).
-                AddIngredient(ItemID.Vine).
+                AddIngredient(ItemID.Moonglow).
                 AddTile(TileID.Bottles).
                 Register();
 
