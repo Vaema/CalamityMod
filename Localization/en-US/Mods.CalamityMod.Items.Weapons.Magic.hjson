@@ -910,7 +910,7 @@ Thunderbolt: {
 	Tooltip:
 		'''
 		Discharges a high-voltage stream which bursts into 5 balls of lightning on hit
-		Each ball lightning stores two additional lightning bolts before exploding
+		Each ball lightning emits two additional lightning bolts before exploding
 		'''
 }
 
