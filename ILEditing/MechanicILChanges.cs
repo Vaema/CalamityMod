@@ -1855,11 +1855,15 @@ namespace CalamityMod.ILEditing
                 int colType = tileCache.TileColor;
 
                 Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
-                Color tileLight = drawData.tileLight;
 
-                if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
-                if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
-                if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+                if (glowMaskTile.GlowMaskAffectedByLight)
+                {
+                    Color tileLight = drawData.tileLight;
+
+                    if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
+                    if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
+                    if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+                }
 
                 drawColor = glowMaskTile.GlowMaskPaintInteraction switch
                 {
@@ -1868,9 +1872,12 @@ namespace CalamityMod.ILEditing
                     _ => drawColor
                 };
 
-                // Cull no lit and too dark colors
-                if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
-                    return;
+                if (glowMaskTile.GlowMaskCanBeCulled)
+                {
+                    // Cull no lit and too dark colors
+                    if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
+                        return;
+                }
 
                 drawColor.A = 255;
 
@@ -1881,8 +1888,7 @@ namespace CalamityMod.ILEditing
                 }
                 else
                 {
-                    Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - Main.screenPosition + zero;
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - screenPosition + screenOffset;
                     Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
                     Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }
