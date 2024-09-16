@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (value == AIState.Attack)
                 {
                     Animation = AnimationState.Run;
-                    SoundEngine.PlaySound(_screamSound, Projectile.Center);
+                    SoundEngine.PlaySound(ScreamSound, Projectile.Center);
                 }
                 else if (value == AIState.Idle)
                     Animation = AnimationState.Idle;
@@ -154,19 +154,19 @@ namespace CalamityMod.Projectiles.Summon
             set => Projectile.spriteDirection = Projectile.direction = value;
         }
 
-        private SoundStyle _growSound = new("CalamityMod/Sounds/Custom/PumpkinEmerge", 3);
+        public static SoundStyle GrowSound = new("CalamityMod/Sounds/Custom/PumpkinEmerge", 3);
 
-        private SoundStyle _idleSound = new("CalamityMod/Sounds/Custom/PumpkinIdle", 4);
+        public static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/PumpkinIdle", 4);
 
-        private SoundStyle _idleRareSound = new("CalamityMod/Sounds/Custom/PumpkinRareIdle") { Volume = 0.2f };
+        public static SoundStyle IdleRareSound = new("CalamityMod/Sounds/Custom/PumpkinRareIdle") { Volume = 0.2f };
 
-        private SoundStyle _screamSound = new("CalamityMod/Sounds/Custom/PumpkinScream", 2) { Volume = 0.5f };
+        public static SoundStyle ScreamSound = new("CalamityMod/Sounds/Custom/PumpkinScream", 2) { Volume = 0.5f };
 
-        private SoundStyle _jumpSound = new("CalamityMod/Sounds/Custom/PumpkinJump");
+        public static SoundStyle JumpSound = new("CalamityMod/Sounds/Custom/PumpkinJump");
 
-        private SoundStyle _boomSound = new("CalamityMod/Sounds/Custom/PumpkinExplode", 2) { Volume = 0.6f };
+        public static SoundStyle BoomSound = new("CalamityMod/Sounds/Custom/PumpkinExplode", 2) { Volume = 0.6f };
 
-        private SoundStyle _boomSoundGFB = new("CalamityMod/Sounds/Custom/PumpkinExplodeGFB", 2);
+        public static SoundStyle BoomSoundGFB = new("CalamityMod/Sounds/Custom/PumpkinExplodeGFB", 2);
 
         /// <summary>
         /// The owner of this minion.
@@ -325,9 +325,9 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             if (Main.zenithWorld)
-                SoundEngine.PlaySound(_boomSoundGFB, Projectile.Center);
+                SoundEngine.PlaySound(BoomSoundGFB, Projectile.Center);
             else
-                SoundEngine.PlaySound(_boomSound, Projectile.Center);
+                SoundEngine.PlaySound(BoomSound, Projectile.Center);
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace CalamityMod.Projectiles.Summon
             if ((Target is not null || (AnyPlayer is not null && Projectile.getRect().Intersects(AnyPlayer.getRect()))) && Animation == AnimationState.Grow && CompletedAnimation)
             {
                 Animation = AnimationState.Rise;
-                SoundEngine.PlaySound(_growSound, Projectile.Center);
+                SoundEngine.PlaySound(GrowSound, Projectile.Center);
             }
 
             // And when they have completed their jumping out animation, they idle until they find a target.
@@ -386,7 +386,7 @@ namespace CalamityMod.Projectiles.Summon
             Collision.StepUp(ref Projectile.position, ref Projectile.velocity, Projectile.width, Projectile.height, ref Projectile.stepSpeed, ref Projectile.gfxOffY);
 
             if (Main.rand.NextBool(700))
-                SoundEngine.PlaySound(Main.rand.NextBool(20) ? _idleRareSound : _idleSound, Projectile.Center);
+                SoundEngine.PlaySound(Main.rand.NextBool(20) ? IdleRareSound : IdleSound, Projectile.Center);
         }
 
         /// <summary>
@@ -436,7 +436,7 @@ namespace CalamityMod.Projectiles.Summon
             Direction = MathF.Sign(AnyPlayer.Center.X - Projectile.Center.X);
             Animation = AnimationState.Jump;
 
-            SoundEngine.PlaySound(_jumpSound with { Pitch = Utils.Remap(Variant, 0f, 2f, -0.3f, 0.3f) }, Projectile.Center);
+            SoundEngine.PlaySound(JumpSound with { Pitch = Utils.Remap(Variant, 0f, 2f, -0.3f, 0.3f) }, Projectile.Center);
         }
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace CalamityMod.Projectiles.Summon
             // And now we need to negate the velocity to get it on Terraria's coordinate system: v = -sqrt(-2 * gravity * distance).
             Projectile.velocity.Y = -MathF.Sqrt(-2f * PumpkinGravityStrength * (destination.Y - Projectile.Bottom.Y));
             Animation = AnimationState.Jump;
-            SoundEngine.PlaySound(_jumpSound with { Pitch = Utils.Remap(Variant, 0f, 2f, -0.3f, 0.3f) }, Projectile.Center);
+            SoundEngine.PlaySound(JumpSound with { Pitch = Utils.Remap(Variant, 0f, 2f, -0.3f, 0.3f) }, Projectile.Center);
         }
 
         /// <summary>

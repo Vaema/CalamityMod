@@ -222,9 +222,9 @@ namespace CalamityMod.Tiles
                 case 50:
                     npc = NPCType<ProfanedEnergyBody>();
                     break;
-                /*case 51:
-                    npc = NPCType<Unused>(); - Formerly Wulfrum Slime
-                    break*/
+                case 51:
+                    npc = NPCType<Shroomble>();
+                    break;
                 case 52:
                     npc = NPCType<WulfrumDrone>();
                     break;
