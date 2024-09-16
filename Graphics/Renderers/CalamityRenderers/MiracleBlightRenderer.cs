@@ -69,7 +69,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 return false;
 
             // Safety check for weird MP bug when getting global npcs.
-            if (!npc.TryGetGlobalNPC<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPC<CalamityPolarityNPC>(out var polNPC))
+            if (!npc.TryGetGlobalNPCSafer<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPCSafer<CalamityPolarityNPC>(out var polNPC))
                 return false;
 
             // Do not draw if the npc does not have miracle blight, or has the polarity effect.

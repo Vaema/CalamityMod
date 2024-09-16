@@ -74,18 +74,21 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 calamityGlobalNPC.newAI[1] = 1f;
             }
 
+            // CIT 14SEP2024: Fixed bug where her phases would get offset by dealing a large amount of damage in a single hit to take her into a new phase.
+            // newAI[0] now starts at 1 and has 0.3 subtracted from it for each phase, instead of it storing her current health when she enters a new phase.
+
             // Do bullet hell or spawn brothers
             if (calamityGlobalNPC.newAI[0] == 0f && npc.life > 0)
-                calamityGlobalNPC.newAI[0] = npc.lifeMax;
+                calamityGlobalNPC.newAI[0] = 1f;
 
             // Bullet hells at 70% and 10%, brothers at 40%
             if (npc.life > 0)
             {
                 int calClonePhaseThreshold = (int)(npc.lifeMax * 0.3);
-                if ((npc.life + calClonePhaseThreshold) < calamityGlobalNPC.newAI[0])
+                if (((npc.life + calClonePhaseThreshold) / (float)npc.lifeMax) < calamityGlobalNPC.newAI[0])
                 {
-                    calamityGlobalNPC.newAI[0] = npc.life;
-                    if (calamityGlobalNPC.newAI[0] <= npc.lifeMax * 0.1)
+                    calamityGlobalNPC.newAI[0] -= 0.3f;
+                    if (calamityGlobalNPC.newAI[0] <= 0.1f)
                     {
                         SoundEngine.PlaySound(SoundID.Item109, npc.Center);
                         calamityGlobalNPC.newAI[2] = 2f;
@@ -95,7 +98,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                         SpawnDust();
                     }
-                    else if (calamityGlobalNPC.newAI[0] <= npc.lifeMax * 0.4)
+                    else if (calamityGlobalNPC.newAI[0] <= 0.4f)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {

@@ -97,7 +97,8 @@ namespace CalamityMod.Graphics.Renderers
                 if (!renderer.ShouldDraw)
                     continue;
 
-                Main.spriteBatch.SafeAction(() =>
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.AlphaBlend, null, matrix, () =>
                 {
                     renderer.MainTarget.SwapTo(Color.Transparent);
                     renderer.DrawToTarget(Main.spriteBatch);

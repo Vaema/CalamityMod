@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
@@ -164,17 +165,27 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         for (int i = 0; i < 6; i++)
                         {
-                            if (Main.rand.NextBool(4))
+                            if (Main.rand.NextBool(3))
+                            {
+                                Dust dust = Dust.NewDustPerfect(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), ModContent.DustType<VoidDust>(), Vector2.Zero, 0, default, Main.rand.NextFloat(1.15f, 1.5f));
+                                dust.noGravity = true;
+                                dust.color = Color.DodgerBlue;
                                 GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, false, 23, Main.rand.NextFloat(0.5f, 1f), Color.Black, false, false, false));
+                            }
                             else
+                            {
+                                Dust dust = Dust.NewDustPerfect(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), ModContent.DustType<LightDust>(), Vector2.Zero, 0, default, Main.rand.NextFloat(1.15f, 1.5f));
+                                dust.noGravity = true;
+                                dust.color = Color.Blue;
                                 GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, false, 23, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue));
+                            }
                         }
                         for (int i = 0; i < 3; i++)
                         {
                             float randRot = Main.rand.NextFloat(-30, -60);
                             Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
                             Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
-                            dust2.scale = Main.rand.NextFloat(0.45f, 0.95f);
+                            dust2.scale = Main.rand.NextFloat(0.55f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool(3) ? Color.Goldenrod : Color.Gold;
                         }
@@ -217,7 +228,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (target.type == ModContent.NPCType<PrimordialWyrmHead>())
                 {
-                    CombatText.NewText(target.Hitbox, Color.Aqua, "boop!");
+                    CombatText.NewText(target.Hitbox, Color.Aqua, CalamityUtils.GetTextValue("Misc.HecBoop"));
                     SoundStyle boop = new("CalamityMod/Sounds/Item/SnootBooped");
                     SoundEngine.PlaySound(boop with {Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, Projectile.Center);
                 }
@@ -237,17 +248,20 @@ namespace CalamityMod.Projectiles.Melee
                 // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
                 target.FlungNPC().ApplyCollisionDamage(target, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel, 5f, true);
             }
-            Particle spark = new VoidSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35, false, 13, 0.5f, Color.DodgerBlue);
-            GeneralParticleHandler.SpawnParticle(spark);
+
+            if (Projectile.numHits < 3)
+            {
+                Particle spark = new VoidSparkParticle(target.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (-45 + Projectile.numHits * 5), false, (int)(16 - Projectile.numHits * 3), 0.6f - Projectile.numHits * 0.15f, Color.DodgerBlue, 0.45f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {
-                Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), true, 55, Main.rand.NextFloat(0.4f, 1.5f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue);
+                Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), false, 55, Main.rand.NextFloat(0.4f, 1.5f), Main.rand.NextBool(4) ? Color.DodgerBlue : Color.Blue);
                 GeneralParticleHandler.SpawnParticle(spark2);
-                if (Main.rand.NextBool(3))
-                {
-                    Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), true, 55, Main.rand.NextFloat(0.4f, 1.5f), Color.Black);
-                    GeneralParticleHandler.SpawnParticle(spark3);
-                }
+                Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<VoidDust>(), ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -35).RotatedByRandom(0.7) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(1.55f, 2.2f));
+                dust.noGravity = true;
+                dust.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Blue;
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
