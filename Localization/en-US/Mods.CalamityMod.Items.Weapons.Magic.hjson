@@ -636,8 +636,8 @@ PlasmaRifle: {
 	DisplayName: Plasma Rifle
 	Tooltip:
 		'''
-		Fires a plasma blast that explodes
-		Press <right> to rapidly fire plasma bolts
+		Fires an explosive plasma blast with pinpoint accuracy
+		Press <right> to rapidly fire non-explosive blasts
 		'''
 }
 
@@ -909,8 +909,8 @@ Thunderbolt: {
 	DisplayName: Thunderbolt
 	Tooltip:
 		'''
-		Fires a stream of exploding green plasma bullets that rain down additional plasma from the sky
-		'Make it rain'
+		Discharges a high-voltage stream which bursts into 5 balls of lightning on hit
+		Each ball lightning emits two additional lightning bolts before exploding
 		'''
 }
 
