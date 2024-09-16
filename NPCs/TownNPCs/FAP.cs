@@ -79,7 +79,6 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.knockBackResist = 0.5f;
-            //AnimationType = NPCID.Guide;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -94,17 +93,6 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void FindFrame(int frameHeight)
         {
             int extraFrameAmt = (NPC.isLikeATownNPC ? NPCID.Sets.ExtraFramesCount[NPC.type] : 0);
-            /*if (false && !Main.dedServ && TownNPCProfiles.Instance.GetProfile(this, out var profile))
-            {
-                Asset<Texture2D> textureNPCShouldUse = profile.GetTextureNPCShouldUse(this);
-                if (textureNPCShouldUse.IsLoaded)
-                {
-                    num = textureNPCShouldUse.Height() / Main.npcFrameCount[type];
-                    frame.Width = textureNPCShouldUse.Width();
-                    frame.Height = num;
-                }
-            }*/
-
             if (NPC.velocity.Y == 0f)
             {
                 if (NPC.direction == 1)
