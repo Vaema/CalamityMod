@@ -1009,8 +1009,9 @@ namespace CalamityMod.Systems
             convert[ItemID.SandstorminaBottle] = ItemID.FlyingCarpet;
             convert[ItemID.FlyingCarpet] = ItemID.AmberHook;
 
-            // Shimmer Enchanted Sword into Terragrim
+            // Enchanted Sword and Terragrim shimmer into each other
             convert[ItemID.EnchantedSword] = ItemID.Terragrim;
+            convert[ItemID.Terragrim] = ItemID.EnchantedSword;
         }
         #endregion
 
