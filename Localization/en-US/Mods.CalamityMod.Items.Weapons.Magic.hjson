@@ -784,6 +784,13 @@ SHPC: {
 		Orbs have varying effects depending on Soul type used
 		Press Right Click to discharge all soulpower in the weapon as weak energy beams
 		'''
+	LegendaryText:
+		'''
+		[c/1FFBFF:'Despite the failure of the Soul Mechs project, I did not give up on souls as a form of fueling weapons.]
+		[c/1FFBFF:The Soul-Howling Powered Cannon was created so they could be used without the Soul affecting the behavior of the product, eliminating the flaw in my previous project.]
+		[c/1FFBFF:Without volunteers, however, the ammunition was too scarce for it to be reliable. I soon gave up on the project.]
+		[c/1FFBFF:Now you wield it, alongside its rare fuel. It is a defective product, but perhaps I overlooked potential in it. I would be willing to observe its performance.']
+		'''
 	TooltipGFB: It scales again :)
 }
 

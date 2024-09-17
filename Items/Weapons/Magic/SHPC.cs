@@ -16,7 +16,7 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class SHPC : ModItem, ILocalizedModType
+    public class SHPC : LegendaryItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
