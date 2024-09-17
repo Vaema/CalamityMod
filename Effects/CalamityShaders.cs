@@ -206,11 +206,8 @@ namespace CalamityMod.Effects
         internal static Effect TeslaTrailShader;
         #endregion
 
-        public override void Load()
+        public override void PostSetupContent()
         {
-            if (Main.dedServ)
-                return;
-
             AssetRepository calAss = CalamityMod.Instance.Assets;
 
             // Shorthand to load shaders immediately.

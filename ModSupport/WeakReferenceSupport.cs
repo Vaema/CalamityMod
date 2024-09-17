@@ -200,7 +200,6 @@ namespace CalamityMod
             // done here to assure that all other mods have already loaded so that Calamity can automatically grab any of these types they may have
             if (!Main.dedServ)
             {
-                GeneralParticleHandler.LoadModParticleInstances();
                 CooldownRegistry.RegisterModCooldowns();
                 PopupGUIManager.LoadGUIs();
             }

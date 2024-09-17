@@ -33,7 +33,7 @@ namespace CalamityMod.Skies
         public static Texture2D SulphurSeaSkyFront;
         public static Texture2D SulphurSeaSurface;
 
-        public override void Load()
+        public override void OnModLoad()
         {
             // Astral Sky/BG
             AstralSky = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSky", AssetRequestMode.ImmediateLoad).Value;

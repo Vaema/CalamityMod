@@ -77,7 +77,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod
 {
-    public sealed class CalamityLists : ModSystem
+    public class CalamityLists : ModSystem
     {
         public static IList<string> donatorList;
         public static List<int> projectileDestroyExceptionList;
@@ -157,7 +157,7 @@ namespace CalamityMod
 
         public static List<int> VeneratedLocketBanlist; //To ban projectiles from locket, mainly spikeballs altho Toasty asked me to add mod calls for adding stuff like Dreamtastic
 
-        public override void Load()
+        public override void OnModLoad()
         {
             donatorList = new List<string>()
             {

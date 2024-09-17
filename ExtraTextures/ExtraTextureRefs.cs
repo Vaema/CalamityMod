@@ -24,7 +24,7 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> WallOfFleshEyeGlowmask;
         public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
 
-        public override void Load()
+        public override void OnModLoad()
         {
             DestroyerGlowmasks[0] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
             DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
